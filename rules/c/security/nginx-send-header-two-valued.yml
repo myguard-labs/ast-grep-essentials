@@ -20,14 +20,13 @@ rule:
     - kind: if_statement
       has:
         field: condition
-        has:
-          kind: binary_expression
-          all:
-            - regex: '!=\s*NGX_OK'
-            - has:
-                kind: identifier
-                regex: ^rc$
+        pattern: $CONDITION
       follows:
         any:
           - pattern: rc = ngx_http_send_header($R);
           - pattern: rc = ngx_http_output_filter($R, $IN);
+constraints:
+  CONDITION:
+    has:
+      pattern: rc != NGX_OK
+      stopBy: end

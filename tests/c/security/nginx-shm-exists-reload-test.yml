@@ -3,5 +3,10 @@ valid:
 - void f(void) { if (data) { return NGX_OK; } }
 - /* void f(void) { if (zone->shm.exists) { return NGX_OK; } } */
 - void f(void) { const char *text = "void f(void) { if (zone->shm.exists) { return NGX_OK; } }"; }
+- void f(void) { zone->shm.exists = 1; }
+- void f(void) { report(zone->shm.exists); }
+- void f(void) { if (ready) { report(zone->shm.exists); } }
 invalid:
 - void f(void) { if (zone->shm.exists) { return NGX_OK; } }
+- void f(void) { if (zone->shm.exists != 0) return NGX_OK; }
+- void f(void) { if (ready && zone->shm.exists) return NGX_OK; }

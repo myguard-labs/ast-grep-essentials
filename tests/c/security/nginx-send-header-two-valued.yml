@@ -7,6 +7,9 @@ valid:
   } }"; }
 - void f(void) { other = ngx_http_send_header(r); if (rc != NGX_OK) return NGX_ERROR; }
 - void f(void) { rc = unrelated(r); if (rc != NGX_OK) return NGX_ERROR; }
+- void f(void) { rc = ngx_http_send_header(r); if (other != NGX_OK && rc) return NGX_ERROR; }
+- void f(void) { rc = ngx_http_output_filter(r, chain); if (other != NGX_OK && rc) return NGX_ERROR; }
+- void f(void) { rc = ngx_http_send_header(r); if (ready) { if (rc != NGX_OK) return NGX_ERROR; } }
 invalid:
 - void f(void) { if (ngx_http_send_header(r) != NGX_OK) { return NGX_ERROR; } }
 - void f(void) { if (ngx_http_output_filter(r, chain) != NGX_OK) { return NGX_ERROR; } }
@@ -14,3 +17,4 @@ invalid:
 - void f(void) { if (ngx_http_output_filter(r, chain) != NGX_OK) return NGX_ERROR; }
 - void f(void) { rc = ngx_http_send_header(r); if (rc != NGX_OK) return NGX_ERROR; }
 - void f(void) { rc = ngx_http_output_filter(r, chain); if (rc != NGX_OK) return NGX_ERROR; }
+- void f(void) { rc = ngx_http_send_header(r); if (rc != NGX_OK && ready) return NGX_ERROR; }

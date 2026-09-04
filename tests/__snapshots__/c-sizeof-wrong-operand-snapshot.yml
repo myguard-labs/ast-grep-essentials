@@ -1,8 +1,26 @@
 id: c-sizeof-wrong-operand
 snapshots:
+  void f(void) { memcpy(dst, "abc", sizeof(ptr) - 1); }:
+    labels:
+    - source: memcpy(dst, "abc", sizeof(ptr) - 1)
+      style: primary
+      start: 15
+      end: 50
   void f(void) { memcpy(dst, src, sizeof(ptr) - 1); }:
     labels:
     - source: memcpy(dst, src, sizeof(ptr) - 1)
       style: primary
       start: 15
       end: 48
+  void f(void) { ngx_cpymem(dst, "abc", sizeof(ptr) - 1); }:
+    labels:
+    - source: ngx_cpymem(dst, "abc", sizeof(ptr) - 1)
+      style: primary
+      start: 15
+      end: 54
+  void f(void) { ngx_memcpy(dst, "abc", sizeof(ptr) - 1); }:
+    labels:
+    - source: ngx_memcpy(dst, "abc", sizeof(ptr) - 1)
+      style: primary
+      start: 15
+      end: 54

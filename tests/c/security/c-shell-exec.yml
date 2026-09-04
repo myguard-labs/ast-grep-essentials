@@ -3,6 +3,30 @@ valid:
 - void f(void) { execve(path, argv, envp); }
 - /* void f(void) { system(cmd); } */
 - void f(void) { const char *text = "void f(void) { system(cmd); }"; }
+- void f(void) { custom_execl(path, arg0, (char *)0); }
+- /* void f(void) { execl(path, arg0, (char *)0); } */
+- void f(void) { const char *text = "execl(path, arg0, (char *)0);"; }
+- void f(void) { custom_execlp(file, arg0, (char *)0); }
+- /* void f(void) { execlp(file, arg0, (char *)0); } */
+- void f(void) { const char *text = "execlp(file, arg0, (char *)0);"; }
+- void f(void) { custom_execle(path, arg0, (char *)0, envp); }
+- /* void f(void) { execle(path, arg0, (char *)0, envp); } */
+- void f(void) { const char *text = "execle(path, arg0, (char *)0, envp);"; }
+- void f(void) { custom_execv(path, argv); }
+- /* void f(void) { execv(path, argv); } */
+- void f(void) { const char *text = "execv(path, argv);"; }
+- void f(void) { custom_execvp(file, argv); }
+- /* void f(void) { execvp(file, argv); } */
+- void f(void) { const char *text = "execvp(file, argv);"; }
+- void f(void) { custom_execvpe(file, argv, envp); }
+- /* void f(void) { execvpe(file, argv, envp); } */
+- void f(void) { const char *text = "execvpe(file, argv, envp);"; }
 invalid:
 - void f(void) { system(cmd); }
 - void f(void) { popen(cmd, "r"); }
+- void f(void) { execl(path, arg0, (char *)0); }
+- void f(void) { execlp(file, arg0, (char *)0); }
+- void f(void) { execle(path, arg0, (char *)0, envp); }
+- void f(void) { execv(path, argv); }
+- void f(void) { execvp(file, argv); }
+- void f(void) { execvpe(file, argv, envp); }

@@ -2,13 +2,16 @@ id: php-exec-sink
 language: php
 severity: warning
 message: >-
-  Command/code-execution sink — system/exec/passthru/shell_exec/popen/proc_open/
-  eval. If any part of the argument derives from request input it is command or
-  code injection. Use escapeshellarg/escapeshellcmd for shell args, or avoid the
-  shell entirely; never eval request-derived strings.
+  Execution-related call:
+  system/exec/passthru/shell_exec/popen/proc_open/eval/assert. Review shell
+  use and input trust for execution APIs; never evaluate request-derived code.
+  assert evaluated string arguments only before PHP 8.0; modern assertions are
+  not string-evaluation sinks.
 note: >-
-  Fires on every call to these functions — a candidate, not a verdict. Dismiss
-  when the whole argument is a trusted constant. eval() is almost never justified.
+  Candidate inventory, not a verdict. Inspect each API and PHP version: fixed
+  commands and ordinary assertions can match. Prefer direct argument arrays
+  where supported over composing shell commands. Assertion-based validation
+  also needs review because assertions can be disabled.
 rule:
   kind: function_call_expression
   has:

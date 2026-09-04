@@ -45,6 +45,13 @@ global utilities require consumer `utilDirs` wiring.
 [Utilities](https://ast-grep.github.io/guide/rule-config/utility-rule.html),
 [rule configuration](https://ast-grep.github.io/reference/yaml.html).
 
+Constrain the operand named in the diagnostic, not every descendant of its
+enclosing call. Add near misses with a similar function name, an unrelated
+argument, and the same expression outside the intended control-flow position.
+Regexes search node text; anchor them when an exact name is intended. On 0.45.2,
+a PHP positional-argument capture can be an `argument` node wrapping the
+expression, so verify its shape before applying a `kind` constraint.
+
 ## Add and test
 
 Put the rule in `rules/<language>/<category>/<id>.yml` and matching fixtures in
@@ -60,6 +67,12 @@ Run `npm test`. When authoring, `ast-grep test --skip-snapshot-tests` checks
 match behavior; review snapshot additions with `ast-grep test -i`. Snapshots
 also protect match ranges and fixes. Confirm the positive fails when the
 matcher is removed or broken. [Testing](https://ast-grep.github.io/guide/test-rule.html).
+
+Exercise each alternative and supported API, including its argument positions.
+Inspect secondary labels as well as detection counts: nested `has` relations
+can annotate the same range twice. A captured condition with a constraint can
+check descendants without repeating their labels; regenerate snapshots only
+after checking the resulting ranges.
 
 Before adding a `fix`, establish that every match admits that rewrite. Preview
 it, inspect the diff, and test both replacement text and surrounding syntax.

@@ -8,10 +8,19 @@ syntax coverage; they do not prove all variants of a bug are detected.
 - Allocation, slab, response-header, reload, and intervention rules flag sites;
   they cannot prove a missing guard, initialization, or cleanup on every path.
 - `c-format-string` checks format arguments in its listed libc calls; aliases
-  and wrappers need separate rules. The ctype cast exclusion is broad and does
-  not prove the argument has the correct type.
+  and wrappers need separate rules. The ctype rule excludes a direct
+  `unsigned char` cast, but cannot infer already-safe integer ranges, EOF, or
+  typedefs. A cast elsewhere inside an expression does not make its result safe.
 - `php-sql-string-interp` currently matches function calls, not all database
   member-call AST shapes. No interprocedural SQL or command dataflow is modeled.
+- `php-extract-superglobal` recognizes a direct superglobal as the first
+  positional argument. Named arguments, aliases and transformed arrays need
+  separate analysis. A superglobal used only to compute flags or a prefix is
+  not the extracted array.
+- `php-exec-sink` inventories selected calls, including ordinary assertions.
+  String evaluation by `assert` was deprecated in PHP 7.2 and removed in PHP 8.0;
+  an assertion match is not a code-execution diagnosis on modern PHP. See the
+  [PHP assertion contract](https://www.php.net/manual/en/function.assert.php).
 - The Python YAML rule recognizes SafeLoader/CSafeLoader spellings, including
   `yaml.` qualification. Aliases and positional loaders require review; their
   safety cannot be inferred from names. Modern PyYAML requires a Loader, so a
@@ -19,6 +28,16 @@ syntax coverage; they do not prove all variants of a bug are detected.
 - `go-exec-sprintf` flags formatted arguments for review. Go's `exec.Command`
   does not invoke a shell automatically; formatting alone is not proof of
   command injection. Inspect the executable, arguments, and whether a shell runs.
+- `c-shell-exec` inventories its listed shell and direct-execution APIs.
+  Exec arguments remain separate argv elements, but the selected program can
+  interpret them. The `*p` variants can also invoke a shell after an `ENOEXEC`
+  failure; see [exec(3)](https://man7.org/linux/man-pages/man3/exec.3.html).
+  Executable selection, option handling and PATH lookup still need review.
+  The inventory is not exhaustive: `execve` remains outside this rule.
+- `nginx-shm-exists-reload-test` identifies `shm.exists` references within an
+  `if` condition, including compound conditions. It excludes ordinary writes
+  and argument uses outside conditions; it does not prove that the condition
+  is the sole reload guard or cover every possible control-flow form.
 - `c-snprintf-return-advance` covers direct compound assignments. Separately
   stored return values require another analysis; nginx formatting functions
   have different return contracts from libc.

@@ -4,5 +4,9 @@ valid:
 - void f(void) { memcpy(dst, src, length); }
 - /* void f(void) { memcpy(dst, src, sizeof(ptr) - 1); } */
 - void f(void) { const char *text = "void f(void) { memcpy(dst, src, sizeof(ptr) - 1); }"; }
+- void f(void) { memcpy(dst, src, sizeof("a" "bc") - 1); }
 invalid:
 - void f(void) { memcpy(dst, src, sizeof(ptr) - 1); }
+- void f(void) { memcpy(dst, "abc", sizeof(ptr) - 1); }
+- void f(void) { ngx_memcpy(dst, "abc", sizeof(ptr) - 1); }
+- void f(void) { ngx_cpymem(dst, "abc", sizeof(ptr) - 1); }

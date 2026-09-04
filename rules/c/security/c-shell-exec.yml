@@ -2,12 +2,19 @@ id: c-shell-exec
 language: c
 severity: warning
 message: >-
-  Shell/command execution (system/popen/execl*/execvp). If any part of the
-  argument is attacker-influenced this is command injection. Prefer execve with a
-  fixed argv and no shell, and validate/allow-list inputs.
-note: Trace the command string back to input before dismissing.
+  Execution API (system/popen/execl/execlp/execle/execv/execvp/execvpe).
+  system and popen interpret a shell command. The exec variants pass arguments
+  directly; review executable selection, options and PATH lookup for the *p
+  forms. Use a fixed executable and argument boundaries; validate untrusted
+  values.
+note: >-
+  Candidate inventory of the listed APIs, not proof of injection. Separate
+  argv elements are not a shell command string. Also check interpreter use:
+  the *p variants can fall back to a shell for an unrecognized executable
+  format. execve is outside this rule; it still requires executable,
+  argument and environment validation.
 rule:
   kind: call_expression
   has:
     field: function
-    regex: ^(system|popen|execl|execlp|execle|execvp|execvpe)$
+    regex: ^(system|popen|execl|execlp|execle|execv|execvp|execvpe)$

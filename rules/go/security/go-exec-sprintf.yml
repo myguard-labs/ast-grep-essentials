@@ -2,13 +2,14 @@ id: go-exec-sprintf
 language: go
 severity: warning
 message: >-
-  exec.Command/CommandContext with a fmt.Sprintf-built argument — if any
-  interpolated value is external input this is command injection, and a
-  "sh -c <sprintf>" form makes it a shell-injection too. Pass fixed args as
-  separate argv elements; never build the command line by string formatting.
+  Formatted argument in exec.Command/CommandContext. These APIs pass arguments
+  directly without invoking a shell. Review executable selection and option
+  handling; shell injection is relevant when the command explicitly invokes a
+  shell. Formatting alone does not establish injection.
 note: >-
-  Fires when a Sprintf call appears anywhere inside the exec.Command args.
-  Dismiss if every %-verb is filled by a trusted constant.
+  Candidate: finds a Sprintf call inside the command arguments. Check which
+  argument is formatted and how the executable interprets it; safely formatted
+  direct arguments can match.
 rule:
   kind: call_expression
   all:

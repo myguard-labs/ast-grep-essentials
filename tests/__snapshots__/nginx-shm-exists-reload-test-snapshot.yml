@@ -1,8 +1,44 @@
 id: nginx-shm-exists-reload-test
 snapshots:
+  void f(void) { if (ready && zone->shm.exists) return NGX_OK; }:
+    labels:
+    - source: if (ready && zone->shm.exists) return NGX_OK;
+      style: primary
+      start: 15
+      end: 60
+    - source: (ready && zone->shm.exists)
+      style: secondary
+      start: 18
+      end: 45
+    - source: zone->shm.exists
+      style: secondary
+      start: 28
+      end: 44
+  void f(void) { if (zone->shm.exists != 0) return NGX_OK; }:
+    labels:
+    - source: if (zone->shm.exists != 0) return NGX_OK;
+      style: primary
+      start: 15
+      end: 56
+    - source: (zone->shm.exists != 0)
+      style: secondary
+      start: 18
+      end: 41
+    - source: zone->shm.exists
+      style: secondary
+      start: 19
+      end: 35
   void f(void) { if (zone->shm.exists) { return NGX_OK; } }:
     labels:
-    - source: zone->shm.exists
+    - source: if (zone->shm.exists) { return NGX_OK; }
       style: primary
+      start: 15
+      end: 55
+    - source: (zone->shm.exists)
+      style: secondary
+      start: 18
+      end: 36
+    - source: zone->shm.exists
+      style: secondary
       start: 19
       end: 35

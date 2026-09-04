@@ -8,16 +8,20 @@ message: >-
   bytes in hostile input → UB / wrong classification. Cast:
   `isdigit((unsigned char)c)`.
 note: >-
-  Candidate — fires on every ctype call; dismiss when the arg is already
-  `(unsigned char)` or a known-ASCII literal. Reviewer confirms the cast.
+  Candidate: excludes a direct unsigned char cast. Values already in the
+  unsigned-char range and EOF are also valid, but their types and ranges
+  require review.
 rule:
   kind: call_expression
   all:
     - has:
         field: function
-        regex: "^(is(digit|alpha|alnum|space|upper|lower|punct|xdigit|\
-          cntrl|print|graph)|to(upper|lower))$"
+        regex: '^(is(digit|alpha|alnum|space|upper|lower|punct|xdigit|cntrl|print|graph)|to(upper|lower))$'
     - not:
         has:
-          kind: cast_expression
-          stopBy: end
+          field: arguments
+          has:
+            kind: cast_expression
+            has:
+              field: type
+              regex: '^unsigned\s+char$'

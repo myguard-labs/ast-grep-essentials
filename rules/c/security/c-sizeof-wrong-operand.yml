@@ -12,7 +12,13 @@ rule:
     - pattern: ngx_cpymem($DST, $SRC, sizeof($X) - 1)
     - pattern: ngx_memcpy($DST, $SRC, sizeof($X) - 1)
     - pattern: memcpy($DST, $SRC, sizeof($X) - 1)
-  not:
-    has:
-      kind: string_literal
-      stopBy: end
+constraints:
+  X:
+    not:
+      any:
+        - kind: string_literal
+        - kind: concatenated_string
+          not:
+            has:
+              kind: identifier
+              stopBy: end

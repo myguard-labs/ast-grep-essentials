@@ -1,29 +1,85 @@
 id: c-assign-in-if
 snapshots:
+  void f(void) { if (x += f()) {} }:
+    labels:
+    - source: if (x += f()) {}
+      style: primary
+      start: 15
+      end: 31
+    - source: (x += f())
+      style: secondary
+      start: 18
+      end: 28
+    - source: x += f()
+      style: secondary
+      start: 19
+      end: 27
+  void f(void) { if (x /* comment */ = f()) {} }:
+    labels:
+    - source: if (x /* comment */ = f()) {}
+      style: primary
+      start: 15
+      end: 44
+    - source: (x /* comment */ = f())
+      style: secondary
+      start: 18
+      end: 41
+    - source: x /* comment */ = f()
+      style: secondary
+      start: 19
+      end: 40
   void f(void) { if (x = f()) {} }:
     labels:
     - source: if (x = f()) {}
       style: primary
       start: 15
       end: 30
+    - source: (x = f())
+      style: secondary
+      start: 18
+      end: 27
     - source: x = f()
       style: secondary
       start: 19
       end: 26
+  void f(void) { while (/* before */ x = f() /* after */) {} }:
+    labels:
+    - source: while (/* before */ x = f() /* after */) {}
+      style: primary
+      start: 15
+      end: 58
+    - source: (/* before */ x = f() /* after */)
+      style: secondary
+      start: 21
+      end: 55
     - source: x = f()
       style: secondary
-      start: 19
-      end: 26
+      start: 35
+      end: 42
+  void f(void) { while (x <<= shift) {} }:
+    labels:
+    - source: while (x <<= shift) {}
+      style: primary
+      start: 15
+      end: 37
+    - source: (x <<= shift)
+      style: secondary
+      start: 21
+      end: 34
+    - source: x <<= shift
+      style: secondary
+      start: 22
+      end: 33
   void f(void) { while (x = f()) {} }:
     labels:
     - source: while (x = f()) {}
       style: primary
       start: 15
       end: 33
-    - source: x = f()
+    - source: (x = f())
       style: secondary
-      start: 22
-      end: 29
+      start: 21
+      end: 30
     - source: x = f()
       style: secondary
       start: 22

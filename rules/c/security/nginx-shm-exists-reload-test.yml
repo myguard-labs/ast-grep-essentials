@@ -17,5 +17,13 @@ note: >-
   works: `sh = shpool->data; if (sh != NULL) return NGX_OK;` — a fresh arena
   is mmap'd zero-filled so NULL genuinely means "new".
 rule:
-  kind: field_expression
-  regex: ^[A-Za-z_][A-Za-z0-9_]*->shm\.exists$
+  kind: if_statement
+  has:
+    field: condition
+    pattern: $CONDITION
+constraints:
+  CONDITION:
+    has:
+      kind: field_expression
+      regex: ^[A-Za-z_][A-Za-z0-9_]*->shm\.exists$
+      stopBy: end
