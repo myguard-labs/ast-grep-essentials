@@ -1,0 +1,21 @@
+id: c-format-string
+valid:
+- void f(void) { printf("%s", fmt); }
+- void f(void) { fprintf(stream, "%s", fmt); }
+- /* void f(void) { printf(fmt); } */
+- void f(void) { const char *text = "void f(void) { printf(fmt); }"; }
+- void f(void) { syslog(priority, "%s", text); }
+- void f(void) { printf("prefix " "%s", text); }
+- void f(void) { vprintf("prefix " "%s", text); }
+- void f(void) { fprintf(stream, "prefix " "%s", text); }
+- void f(void) { dprintf(fd, "prefix " "%s", text); }
+- void f(void) { vfprintf(stream, "prefix " "%s", text); }
+- void f(void) { syslog(priority, "prefix " "%s", text); }
+- void f(void) { vsyslog(priority, "prefix " "%s", text); }
+invalid:
+- void f(void) { printf(fmt); }
+- void f(void) { fprintf(stream, fmt); }
+- void f(void) { printf(fmt, "text"); }
+- void f(void) { fprintf(stream, fmt, "text"); }
+- void f(void) { syslog(priority, fmt, "text"); }
+- void f(void) { printf("%" FORMAT, value); }

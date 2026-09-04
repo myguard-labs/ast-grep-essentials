@@ -1,0 +1,23 @@
+id: go-sql-sprintf
+language: go
+severity: warning
+message: >-
+  SQL query built with fmt.Sprintf/Sprint/strings.Join and passed to a
+  Query/Exec/Prepare call — SQL injection. Use placeholders ($1, ?) and pass the
+  values as separate query arguments so the driver binds them.
+note: >-
+  Fires when a formatting call feeds a db Query/Exec/Prepare method. Dismiss only
+  if every interpolated value is a compile-time constant (e.g. a table name from
+  a fixed allowlist) — and prefer an allowlist check even then.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '\.(Query|QueryRow|QueryContext|QueryRowContext|Exec|ExecContext|Prepare|PrepareContext)$'
+    - has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          regex: '(Sprintf|Sprint|Join)$'

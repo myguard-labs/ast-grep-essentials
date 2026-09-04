@@ -1,0 +1,21 @@
+id: c-time-truncated-to-int
+language: c
+severity: warning
+message: >-
+  time(NULL) truncated to int. A 32-bit signed seconds value overflows in 2038,
+  and comparison order inverts earlier for any far-future expiry computed from
+  it. Persisted or wire-format timestamps built this way are a data contract
+  that cannot be widened later without a migration (CWE-197).
+note: >-
+  Use time_t end to end; on 32-bit glibc build with -D_TIME_BITS=64 plus
+  -D_FILE_OFFSET_BITS=64. Dismiss only for a value that is provably ephemeral
+  and never stored, compared far-forward, or serialized. Detail:
+  _shared/time-review.md §3.
+rule:
+  any:
+    - pattern: (int) time($$$)
+    - pattern: (unsigned int) time($$$)
+    - pattern: (int32_t) time($$$)
+    - pattern: int $NAME = time($$$);
+    - pattern: unsigned int $NAME = time($$$);
+    - pattern: int32_t $NAME = time($$$);

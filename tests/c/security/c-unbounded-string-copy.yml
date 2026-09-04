@@ -1,0 +1,12 @@
+id: c-unbounded-string-copy
+valid:
+- void f(void) { snprintf(dst, size, "%s", src); }
+- void f(void) { ngx_cpystrn(dst, src, size); }
+- /* void f(void) { strcpy(dst, src); } */
+- void f(void) { const char *text = "void f(void) { strcpy(dst, src); }"; }
+invalid:
+- void f(void) { strcpy(dst, src); }
+- void f(void) { strcat(dst, src); }
+- void f(void) { sprintf(dst, "%s", src); }
+- void f(void) { gets(dst); }
+- void f(void) { stpcpy(dst, src); }

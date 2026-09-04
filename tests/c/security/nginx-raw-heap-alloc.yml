@@ -1,0 +1,10 @@
+id: nginx-raw-heap-alloc
+valid:
+- void f(void) { ngx_palloc(pool, size); }
+- void f(void) { ngx_pcalloc(pool, size); }
+- /* void f(void) { ngx_alloc(size, log); } */
+- void f(void) { const char *text = "void f(void) { ngx_alloc(size, log); }"; }
+invalid:
+- void f(void) { ngx_alloc(size, log); }
+- void f(void) { ngx_calloc(size, log); }
+- void f(void) { ngx_memalign(alignment, size, log); }

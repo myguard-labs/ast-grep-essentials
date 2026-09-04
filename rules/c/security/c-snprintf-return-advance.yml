@@ -1,0 +1,17 @@
+id: c-snprintf-return-advance
+language: c
+severity: warning
+message: >-
+  snprintf return value used to advance a pointer or offset. snprintf returns
+  the length it WOULD have written, not what it wrote, so on truncation the
+  cursor moves past the end of the buffer; the next `end - p` goes negative,
+  converts to a huge size_t, and every later write is out of bounds (CWE-193).
+note: >-
+  Fix: check the return against the remaining space before advancing
+  (`n = snprintf(p, avail, ...); if (n < 0 || (size_t)n >= avail) goto truncated;`),
+  or use a helper that clamps. Dismiss only when the buffer is provably large
+  enough for every input — state the bound. Catalog: _shared/numeric-review.md §1.
+rule:
+  any:
+    - pattern: $P += snprintf($$$ARGS)
+    - pattern: $P += vsnprintf($$$ARGS)

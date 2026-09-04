@@ -1,0 +1,13 @@
+id: go-sql-sprintf
+valid:
+- 'package p
+
+  func f() { db.Query("SELECT ?", value) }'
+- // package p func f() { db.Query(fmt.Sprintf("SELECT %s", value)) }
+- 'package p
+
+  var text = "package p\nfunc f() { db.Query(fmt.Sprintf(\"SELECT %s\", value)) }"'
+invalid:
+- 'package p
+
+  func f() { db.Query(fmt.Sprintf("SELECT %s", value)) }'

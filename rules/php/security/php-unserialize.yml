@@ -1,0 +1,16 @@
+id: php-unserialize
+language: php
+severity: warning
+message: >-
+  unserialize() on request/external data — PHP object injection. A crafted
+  payload instantiates arbitrary classes and triggers __wakeup/__destruct gadget
+  chains (RCE, file write, SQLi). Use json_decode for data, or pass
+  ['allowed_classes' => false] if you must unserialize.
+note: >-
+  Fires on every unserialize call. Safe only when the input is data you
+  serialized and never exposed to an attacker.
+rule:
+  kind: function_call_expression
+  has:
+    field: function
+    regex: '(?i)^unserialize$'

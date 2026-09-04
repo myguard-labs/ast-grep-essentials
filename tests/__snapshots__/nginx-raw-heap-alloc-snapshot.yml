@@ -1,0 +1,32 @@
+id: nginx-raw-heap-alloc
+snapshots:
+  void f(void) { ngx_alloc(size, log); }:
+    labels:
+    - source: ngx_alloc(size, log)
+      style: primary
+      start: 15
+      end: 35
+    - source: ngx_alloc
+      style: secondary
+      start: 15
+      end: 24
+  void f(void) { ngx_calloc(size, log); }:
+    labels:
+    - source: ngx_calloc(size, log)
+      style: primary
+      start: 15
+      end: 36
+    - source: ngx_calloc
+      style: secondary
+      start: 15
+      end: 25
+  void f(void) { ngx_memalign(alignment, size, log); }:
+    labels:
+    - source: ngx_memalign(alignment, size, log)
+      style: primary
+      start: 15
+      end: 49
+    - source: ngx_memalign
+      style: secondary
+      start: 15
+      end: 27

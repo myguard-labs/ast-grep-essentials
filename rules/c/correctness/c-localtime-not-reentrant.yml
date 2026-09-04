@@ -1,0 +1,19 @@
+id: c-localtime-not-reentrant
+language: c
+severity: warning
+message: >-
+  localtime/gmtime/ctime/asctime return a pointer to shared static storage, so a
+  second call anywhere in the process — another thread, a signal handler, or a
+  logging helper invoked between the call and the read — overwrites the result
+  under the first caller.
+note: >-
+  Use localtime_r/gmtime_r with a caller-owned struct tm, or ctime_r/asctime_r
+  with a caller-owned character buffer.
+  localtime also reads the process TZ, which a library caller does not control.
+  Dismiss for provably single-threaded startup code, and say so. Detail:
+  _shared/time-review.md §4.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: ^(localtime|gmtime|ctime|asctime)$

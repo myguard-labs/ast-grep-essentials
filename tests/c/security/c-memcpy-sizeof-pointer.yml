@@ -1,0 +1,10 @@
+id: c-memcpy-sizeof-pointer
+valid:
+- void f(void) { memcpy(dst, src, sizeof(*ptr)); }
+- void f(void) { memcpy(dst, src, length); }
+- /* void f(void) { memcpy(dst, src, sizeof(ptr)); } */
+- void f(void) { const char *text = "void f(void) { memcpy(dst, src, sizeof(ptr)); }"; }
+invalid:
+- void f(void) { memcpy(dst, src, sizeof(ptr)); }
+- void f(void) { memmove(dst, src, sizeof(ptr)); }
+- void f(void) { ngx_memcpy(dst, src, sizeof(ptr)); }

@@ -1,0 +1,65 @@
+id: c-format-string
+language: c
+severity: warning
+message: >-
+  Non-literal format string — printf/fprintf/syslog and related libc calls with a variable
+  as the format argument. If that variable carries user input it is a
+  format-string vuln (%n write, info leak). Use a literal "%s" and pass the data
+  as an argument.
+note: >-
+  Candidate: matches a non-literal format argument in the listed libc calls.
+  Dismiss if the format is a trusted constant or a validated choice of literals.
+rule:
+  any:
+    - pattern:
+        context: void f() { printf($FMT); }
+        selector: call_expression
+    - pattern:
+        context: void f() { printf($FMT, $$$ARGS); }
+        selector: call_expression
+    - pattern:
+        context: void f() { vprintf($FMT); }
+        selector: call_expression
+    - pattern:
+        context: void f() { vprintf($FMT, $$$ARGS); }
+        selector: call_expression
+    - pattern:
+        context: void f() { fprintf($STREAM, $FMT); }
+        selector: call_expression
+    - pattern:
+        context: void f() { fprintf($STREAM, $FMT, $$$ARGS); }
+        selector: call_expression
+    - pattern:
+        context: void f() { dprintf($FD, $FMT); }
+        selector: call_expression
+    - pattern:
+        context: void f() { dprintf($FD, $FMT, $$$ARGS); }
+        selector: call_expression
+    - pattern:
+        context: void f() { vfprintf($STREAM, $FMT); }
+        selector: call_expression
+    - pattern:
+        context: void f() { vfprintf($STREAM, $FMT, $$$ARGS); }
+        selector: call_expression
+    - pattern:
+        context: void f() { syslog($PRIORITY, $FMT); }
+        selector: call_expression
+    - pattern:
+        context: void f() { syslog($PRIORITY, $FMT, $$$ARGS); }
+        selector: call_expression
+    - pattern:
+        context: void f() { vsyslog($PRIORITY, $FMT); }
+        selector: call_expression
+    - pattern:
+        context: void f() { vsyslog($PRIORITY, $FMT, $$$ARGS); }
+        selector: call_expression
+constraints:
+  FMT:
+    not:
+      any:
+        - kind: string_literal
+        - kind: concatenated_string
+          not:
+            has:
+              kind: identifier
+              stopBy: end

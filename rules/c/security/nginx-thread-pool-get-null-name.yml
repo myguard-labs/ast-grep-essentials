@@ -1,0 +1,14 @@
+id: nginx-thread-pool-get-null-name
+language: c
+severity: error
+message: >-
+  ngx_thread_pool_get(cycle, NULL) dereferences name->len with no NULL check
+  (src/core/ngx_thread_pool.c) — worker SIGSEGV the first time the code path
+  runs. ngx_thread_pool_add() DOES accept NULL (defaults to "default"), which
+  is why the asymmetry gets missed. Pass a real ngx_str_t (ngx_string("default")).
+note: >-
+  Exact shape, no reviewer judgement needed. Only reachable in a --with-threads
+  build, so a threads-off CI matrix is green while the shipped binary crashes
+  (nginx-error-abuse-module persist timer, 2026-06-12).
+rule:
+  pattern: ngx_thread_pool_get($CYCLE, NULL)

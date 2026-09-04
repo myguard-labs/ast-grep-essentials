@@ -1,0 +1,51 @@
+# NOT IN THE ACTIVE RULESET -- measured 2026-09-01 and rejected for it.
+#
+# On 400 module .c/.h files: with struct types included, 112 hits of which 141
+# cast fragments were `struct sockaddr*` -- the standard POSIX idiom, safe by
+# construction. Narrowed to scalar/size types: 10 hits, and ALL TEN are the
+# nginx pool idiom -- `(ngx_uint_t *) array->elts` (pool-allocated with element
+# alignment) and `(ngx_int_t *) (p + cmd->offset)` (a struct field offset).
+# Zero true positives, ten false positives.
+#
+# EXP36-C is real (see _shared/lang/c-cpp.md) but is NOT expressible
+# structurally: the defect depends on whether the base pointer is byte-aligned
+# wire/buffer memory or an aligned allocation, which ast-grep cannot see. The
+# working lens is `clang -Wcast-align` (not in -Wall -Wextra) plus UBSan
+# `-fsanitize=alignment` on executed paths.
+#
+# Kept for the measurement. Promote only if a variant reaches a real hit rate.
+id: c-align-cast-byte-buffer
+language: c
+severity: warning
+message: >-
+  Cast of a byte/character pointer to a more-aligned type (EXP36-C). The
+  undefined behavior is at the CAST, not the dereference: a pool suballocation
+  (`ngx_palloc` returns interior offsets) and any wire/network buffer are
+  byte-aligned, so the target type's alignment requirement is not guaranteed.
+  Works on x86 until the compiler vectorizes or the build targets aarch64,
+  where it faults or tears. Fix: `memcpy` into a properly typed local — it
+  compiles to the same single load.
+note: >-
+  Candidate. Dismiss when the source is a malloc/calloc/aligned_alloc result
+  (those are max-aligned and exempt — the rule already excludes the direct
+  call form), when the pointer is provably aligned by construction, or when
+  the cast does not increase alignment (to void*, char*, or the same type).
+  Lens note: `clang -Wcast-align` catches the same class but is NOT in
+  `-Wall -Wextra`; gcc does not warn on x86 at all.
+rule:
+  any:
+    - pattern: ($T *)($P + $O)
+    - pattern: (const $T *)($P + $O)
+    - pattern: ($T *)$P
+    - pattern: (const $T *)$P
+constraints:
+  T:
+    # Scalar/size types only. `struct sockaddr*` and friends are deliberately
+    # EXCLUDED: casting a sockaddr_storage/sockaddr_in to `struct sockaddr *`
+    # is the standard POSIX idiom and the storage is suitably aligned by
+    # construction -- including them produced 141/112 hits of pure noise on our
+    # own modules (measured 2026-09-01), which is how a rule gets ignored.
+    regex: "^(uint(16|32|64)_t|int(16|32|64)_t|size_t|ngx_uint_t|ngx_int_t)$"
+  P:
+    not:
+      regex: "^(malloc|calloc|realloc|aligned_alloc|ngx_alloc|ngx_calloc)\\s*\\("

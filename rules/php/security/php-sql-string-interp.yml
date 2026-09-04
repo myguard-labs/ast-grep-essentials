@@ -1,0 +1,24 @@
+id: php-sql-string-interp
+language: php
+severity: warning
+message: >-
+  SQL query built by interpolating a variable into a double-quoted string, then
+  passed to a query/prepare/exec call — classic SQL injection. Use a prepared
+  statement with bound parameters (?, :name); never concatenate/interpolate
+  user data into the SQL text.
+note: >-
+  Fires when a db call receives an interpolated (encapsed) string containing a
+  variable. Dismiss only if every interpolated value is a hardcoded constant or
+  already validated to a fixed enum.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)(query|prepare|exec|get_results|get_row|get_var)$'
+    - has:
+        stopBy: end
+        kind: encapsed_string
+        has:
+          stopBy: end
+          kind: variable_name

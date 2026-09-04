@@ -1,0 +1,23 @@
+id: nginx-raw-heap-alloc
+language: c
+severity: info
+message: >-
+  ngx_alloc/ngx_calloc/ngx_memalign allocate from the SYSTEM heap, not a pool.
+  Unlike ngx_palloc, nothing frees them when the request or connection is
+  destroyed -- every early return, `goto`, and error branch between the
+  allocation and its ngx_free is a per-request leak, and a per-request
+  allocation of this kind is an attacker-pumpable memory cost.
+note: >-
+  Candidate only. Legitimate for long-lived state, for a buffer explicitly
+  released by an ngx_pool_cleanup_t, or for a large scratch buffer that must not
+  persist for the pool's lifetime. Reviewer must confirm: (1) every exit path
+  from the allocating function reaches ngx_free exactly once, including the
+  paths added by later edits, and (2) a request-scoped buffer is bounded, since
+  ngx_alloc per request under concurrency is a memory-exhaustion surface that
+  ngx_palloc's pool accounting does not have either. Prefer ngx_palloc unless
+  the lifetime genuinely must be shorter than the pool's.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: ^(ngx_alloc|ngx_calloc|ngx_memalign)$

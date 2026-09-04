@@ -1,0 +1,23 @@
+id: nginx-intervention-poll-error-page
+language: c
+severity: info
+message: >-
+  WAF intervention poll. In a connector, every site that turns an intervention
+  into a response status must decide what to do when `r->error_page` is already
+  set: on the error_page re-entry pass the handler has to yield (NGX_DECLINED)
+  rather than return the status again, or the request is finalized twice with a
+  different response than the identical non-error_page request produced.
+note: >-
+  Candidate only. The finding is NOT "this call is wrong" -- it is "the poll
+  sites in this file disagree with each other". Enumerate EVERY poll site in the
+  translation unit and compare: if some pair `ret` with an `r->error_page`
+  check and others do not, the divergence is the finding, whichever side is
+  currently in the majority. New code copying the local majority is exactly how
+  this propagates. A poll whose result is discarded, or one that provably
+  cannot run during an error_page pass, is legitimately unpaired -- say which,
+  in a comment, at the site.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: process_intervention

@@ -1,0 +1,15 @@
+id: py-pickle-loads
+language: python
+severity: warning
+message: >-
+  pickle.load()/loads() on untrusted data — unpickling runs __reduce__ and can
+  execute arbitrary code. Never unpickle data crossing a trust boundary (network,
+  cache, uploaded file). Use json, or sign the payload (hmac) before trusting it.
+note: >-
+  Fires on any pickle.load/loads. Safe only when the source is data you produced
+  and never exposed to an attacker.
+rule:
+  kind: call
+  has:
+    field: function
+    regex: 'pickle\.loads?$'

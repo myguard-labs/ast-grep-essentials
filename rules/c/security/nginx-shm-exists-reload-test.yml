@@ -1,0 +1,21 @@
+id: nginx-shm-exists-reload-test
+language: c
+severity: warning
+message: >-
+  `shm.exists` tested in a zone init — it is NOT the reload signal. On
+  Linux/mmap ngx_shm_alloc never sets it; ngx_init_cycle's reuse path copies
+  shm.addr onto the new cycle's zone and calls init(zone, old_data) with
+  shm.exists still 0. A zone whose ONLY "inherited" test is shm.exists
+  re-ngx_slab_alloc()s its header on every `nginx -s reload`, orphaning the
+  rbtree/ring and losing in-flight state (tokens, counters, bans).
+note: >-
+  Candidate only. Dismiss when the same init callback ALSO adopts the old
+  cycle's `data` argument (`if (data) { ...; return NGX_OK; }`) or tests
+  `shpool->data != NULL` BEFORE reaching this branch — then the shm.exists
+  arm is dead-on-Linux but harmless. Confirmed real when shm.exists is the
+  sole guard (nginx-autocert-module, 3 zones, 2026-07-13). Idiom that always
+  works: `sh = shpool->data; if (sh != NULL) return NGX_OK;` — a fresh arena
+  is mmap'd zero-filled so NULL genuinely means "new".
+rule:
+  kind: field_expression
+  regex: ^[A-Za-z_][A-Za-z0-9_]*->shm\.exists$

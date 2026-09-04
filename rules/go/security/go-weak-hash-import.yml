@@ -1,0 +1,21 @@
+id: go-weak-hash-import
+language: go
+severity: warning
+message: >-
+  Import of crypto/md5 or crypto/sha1 — both are broken for any security use
+  (signatures, password hashing, integrity of untrusted data, token derivation).
+  Use crypto/sha256 (or bcrypt/argon2 for passwords).
+note: >-
+  Fires on the import alone. Acceptable ONLY for interop with a legacy protocol
+  that mandates the algorithm, or a non-security checksum (e.g. cache key) — say
+  which when dismissing.
+rule:
+  any:
+    - kind: interpreted_string_literal
+    - kind: raw_string_literal
+  regex: '^["`]crypto/(md5|sha1)["`]$'
+  inside:
+    stopBy: end
+    any:
+      - kind: import_spec
+      - kind: import_spec_list

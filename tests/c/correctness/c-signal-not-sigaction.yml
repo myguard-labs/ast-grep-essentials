@@ -1,0 +1,9 @@
+id: c-signal-not-sigaction
+valid:
+- void f(void) { signal(SIGPIPE, SIG_IGN); }
+- void f(void) { signal(SIGTERM, SIG_DFL); }
+- void f(void) { sigaction(SIGTERM, &action, NULL); }
+- /* void f(void) { signal(SIGTERM, handler); } */
+- void f(void) { const char *text = "void f(void) { signal(SIGTERM, handler); }"; }
+invalid:
+- void f(void) { signal(SIGTERM, handler); }

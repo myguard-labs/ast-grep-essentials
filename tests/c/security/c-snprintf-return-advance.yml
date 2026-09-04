@@ -1,0 +1,9 @@
+id: c-snprintf-return-advance
+valid:
+- void f(void) { n = snprintf(p, available, "%s", text); }
+- void f(void) { p = ngx_snprintf(p, available, "%s", text); }
+- /* void f(void) { p += snprintf(p, available, "%s", text); } */
+- void f(void) { const char *text = "void f(void) { p += snprintf(p, available, \"%s\", text); }"; }
+invalid:
+- void f(void) { p += snprintf(p, available, "%s", text); }
+- void f(void) { offset += vsnprintf(p, available, fmt, args); }

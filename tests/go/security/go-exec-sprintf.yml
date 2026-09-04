@@ -1,0 +1,13 @@
+id: go-exec-sprintf
+valid:
+- 'package p
+
+  func f() { exec.Command("echo", value) }'
+- // package p func f() { exec.Command("echo", fmt.Sprintf("%s", value)) }
+- 'package p
+
+  var text = "package p\nfunc f() { exec.Command(\"echo\", fmt.Sprintf(\"%s\", value)) }"'
+invalid:
+- 'package p
+
+  func f() { exec.Command("echo", fmt.Sprintf("%s", value)) }'

@@ -1,0 +1,17 @@
+id: c-prctl-set-dumpable
+language: c
+severity: warning
+message: >-
+  prctl(PR_SET_DUMPABLE, 1) re-arms core dumps. The kernel clears the dumpable
+  flag when a process changes credentials precisely so a post-drop crash cannot
+  write privileged memory into a core a lower-privileged user may read
+  (CVE-2025-4598 / CVE-2025-5054 class).
+note: >-
+  Dismiss only with a stated reason plus the compensating control (safe
+  core_pattern, fs.suid_dumpable=0, LimitCORE=0, or secrets zeroed before the
+  window). Setting it to 0 is hardening and is not matched. Detail:
+  _shared/crash-triage-review.md §3.
+rule:
+  any:
+    - pattern: prctl(PR_SET_DUMPABLE, 1, $$$)
+    - pattern: prctl(PR_SET_DUMPABLE, 1)

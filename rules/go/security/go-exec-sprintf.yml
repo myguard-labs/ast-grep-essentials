@@ -1,0 +1,23 @@
+id: go-exec-sprintf
+language: go
+severity: warning
+message: >-
+  exec.Command/CommandContext with a fmt.Sprintf-built argument — if any
+  interpolated value is external input this is command injection, and a
+  "sh -c <sprintf>" form makes it a shell-injection too. Pass fixed args as
+  separate argv elements; never build the command line by string formatting.
+note: >-
+  Fires when a Sprintf call appears anywhere inside the exec.Command args.
+  Dismiss if every %-verb is filled by a trusted constant.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: 'exec\.(Command|CommandContext)'
+    - has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          regex: 'Sprintf$'

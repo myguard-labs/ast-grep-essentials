@@ -1,0 +1,20 @@
+id: php-extract-superglobal
+language: php
+severity: warning
+message: >-
+  extract() on a superglobal ($_GET/$_POST/$_REQUEST/$_COOKIE) — lets a request
+  overwrite arbitrary local variables (including flags that gate auth/logic).
+  Read the specific keys you need explicitly; never bulk-extract request data.
+note: >-
+  Fires only when a superglobal is the extract source. extract() on a curated
+  local array is lower risk but still discouraged.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^extract$'
+    - has:
+        stopBy: end
+        kind: variable_name
+        regex: '_(GET|POST|REQUEST|COOKIE|SERVER)'

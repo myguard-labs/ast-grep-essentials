@@ -1,0 +1,23 @@
+id: py-subprocess-shell
+language: python
+severity: warning
+message: >-
+  subprocess call with shell=True — the command string is parsed by /bin/sh, so
+  any interpolated input is a shell-injection vector. Pass an argv list and drop
+  shell=True; if a shell is truly needed, shlex.quote every interpolated field.
+note: >-
+  Fires on subprocess.* with a shell=True keyword. Low risk only when the whole
+  command is a hardcoded constant; still prefer argv form.
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        regex: subprocess
+    - has:
+        kind: argument_list
+        has:
+          kind: keyword_argument
+          all:
+            - has: { field: name, regex: ^shell$ }
+            - has: { field: value, regex: ^True$ }

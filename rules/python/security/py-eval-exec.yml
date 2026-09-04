@@ -1,0 +1,15 @@
+id: py-eval-exec
+language: python
+severity: warning
+message: >-
+  eval()/exec() on a non-literal — arbitrary code execution if the argument
+  carries any external input (request data, file contents, env). Replace with a
+  narrow parser (ast.literal_eval for data, a dispatch dict for commands).
+note: >-
+  Fires on eval/exec with any argument. Dismiss only if the argument is a
+  hardcoded literal and provably never derives from input.
+rule:
+  kind: call
+  has:
+    field: function
+    regex: ^(eval|exec)$

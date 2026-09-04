@@ -1,0 +1,19 @@
+id: c-signal-not-sigaction
+language: c
+severity: warning
+message: >-
+  signal() has historically divergent BSD/SysV semantics — whether the handler is
+  reset on delivery, whether the signal is blocked while the handler runs, and
+  whether slow syscalls restart are all left to the platform. That last one
+  decides whether every read/write in the process can return EINTR.
+note: >-
+  Use sigaction() with an explicit sa_flags (SA_RESTART chosen deliberately) and
+  an explicit sa_mask. Dismiss for signal(SIGPIPE, SIG_IGN)-style disposition
+  changes where no handler runs — but say which. Detail:
+  _shared/fork-signal-review.md §2.
+rule:
+  pattern: signal($SIG, $HANDLER)
+  not:
+    any:
+      - pattern: signal($SIG, SIG_IGN)
+      - pattern: signal($SIG, SIG_DFL)

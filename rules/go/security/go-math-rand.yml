@@ -1,0 +1,21 @@
+id: go-math-rand
+language: go
+severity: warning
+message: >-
+  Import of math/rand — a deterministic, predictable PRNG. Fine for simulations
+  and jitter, but NEVER for security values (tokens, session IDs, keys, nonces,
+  password/OTP generation, salt). Use crypto/rand for anything an attacker must
+  not predict.
+note: >-
+  Fires on the import. Dismiss when the package only uses it for non-security
+  randomness (backoff jitter, load-test data, shuffling display order).
+rule:
+  any:
+    - kind: interpreted_string_literal
+    - kind: raw_string_literal
+  regex: '^["`]math/rand(/v2)?["`]$'
+  inside:
+    stopBy: end
+    any:
+      - kind: import_spec
+      - kind: import_spec_list

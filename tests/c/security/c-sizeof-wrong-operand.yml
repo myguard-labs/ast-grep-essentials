@@ -1,0 +1,8 @@
+id: c-sizeof-wrong-operand
+valid:
+- void f(void) { memcpy(dst, src, sizeof("abc") - 1); }
+- void f(void) { memcpy(dst, src, length); }
+- /* void f(void) { memcpy(dst, src, sizeof(ptr) - 1); } */
+- void f(void) { const char *text = "void f(void) { memcpy(dst, src, sizeof(ptr) - 1); }"; }
+invalid:
+- void f(void) { memcpy(dst, src, sizeof(ptr) - 1); }

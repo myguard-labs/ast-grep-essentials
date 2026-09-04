@@ -1,0 +1,9 @@
+id: nginx-slab-alloc-unzeroed
+valid:
+- void f(void) { ngx_slab_calloc(pool, size); }
+- void f(void) { ngx_slab_calloc_locked(pool, size); }
+- /* void f(void) { ngx_slab_alloc(pool, size); } */
+- void f(void) { const char *text = "void f(void) { ngx_slab_alloc(pool, size); }"; }
+invalid:
+- void f(void) { ngx_slab_alloc(pool, size); }
+- void f(void) { ngx_slab_alloc_locked(pool, size); }

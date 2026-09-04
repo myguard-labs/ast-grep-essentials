@@ -1,0 +1,11 @@
+id: c-localtime-not-reentrant
+valid:
+- void f(void) { localtime_r(&t, &tm); }
+- void f(void) { gmtime_r(&t, &tm); }
+- /* void f(void) { localtime(&t); } */
+- void f(void) { const char *text = "void f(void) { localtime(&t); }"; }
+invalid:
+- void f(void) { localtime(&t); }
+- void f(void) { gmtime(&t); }
+- void f(void) { ctime(&t); }
+- void f(void) { asctime(tm); }

@@ -1,0 +1,9 @@
+id: c-alloc-mul-overflow
+valid:
+- void f(void) { calloc(n, size); }
+- void f(void) { malloc(size); }
+- /* void f(void) { malloc(n * size); } */
+- void f(void) { const char *text = "void f(void) { malloc(n * size); }"; }
+invalid:
+- void f(void) { malloc(n * size); }
+- void f(void) { ngx_palloc(pool, n * size); }

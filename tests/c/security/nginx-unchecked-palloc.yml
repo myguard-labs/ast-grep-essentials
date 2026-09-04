@@ -1,0 +1,9 @@
+id: nginx-unchecked-palloc
+valid:
+- void f(void) { ngx_slab_calloc(pool, size); }
+- /* void f(void) { ngx_palloc(pool, size); } */
+- void f(void) { const char *text = "void f(void) { ngx_palloc(pool, size); }"; }
+invalid:
+- void f(void) { ngx_palloc(pool, size); }
+- void f(void) { ngx_pnalloc(pool, size); }
+- void f(void) { ngx_pcalloc(pool, size); }

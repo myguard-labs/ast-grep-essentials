@@ -1,0 +1,33 @@
+id: nginx-send-header-two-valued
+language: c
+severity: warning
+message: >-
+  ngx_http_send_header() / ngx_http_output_filter() result collapsed to a
+  two-valued test. These run the filter chain and return NGX_OK, NGX_ERROR,
+  NGX_AGAIN/NGX_DONE (negative) OR a positive HTTP status the caller must
+  finalize with (416 from the range filter, 304 from not_modified). `!= NGX_OK`
+  turns a legitimate 416 into finalize(-1): connection closed, no response.
+note: >-
+  Candidate. Correct shape (ngx_http_upstream.c): `rc == NGX_ERROR || rc > NGX_OK
+  || r->header_only` then finalize with rc. `if (rc != NGX_OK) return rc;` is
+  ALSO fine — it propagates the status. The bug is `!= NGX_OK` followed by a
+  constant (`return NGX_ERROR`, `return NGX_HTTP_INTERNAL_SERVER_ERROR`) or by
+  ignoring rc. Real: nginx-cache-turbo-module serve path, 2026-08-03.
+rule:
+  any:
+    - pattern: if (ngx_http_send_header($R) != NGX_OK) $BODY
+    - pattern: if (ngx_http_output_filter($R, $IN) != NGX_OK) $BODY
+    - kind: if_statement
+      has:
+        field: condition
+        has:
+          kind: binary_expression
+          all:
+            - regex: '!=\s*NGX_OK'
+            - has:
+                kind: identifier
+                regex: ^rc$
+      follows:
+        any:
+          - pattern: rc = ngx_http_send_header($R);
+          - pattern: rc = ngx_http_output_filter($R, $IN);

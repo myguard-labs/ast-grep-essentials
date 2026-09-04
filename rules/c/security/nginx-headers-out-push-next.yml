@@ -1,0 +1,17 @@
+id: nginx-headers-out-push-next
+language: c
+severity: info
+message: >-
+  ngx_list_push(&r->headers_out.headers) returns UNZEROED pool memory. Since
+  nginx 1.23.0 same-name response headers are a linked list through
+  ngx_table_elt_t.next, so every push must set `h->next = NULL` (core does
+  `h->hash = 1; h->next = NULL;` on every push — gzip_filter:283,
+  headers_filter:365). An indeterminate `next` is a wild pointer walk in any
+  consumer that follows the chain (Vary/Cache-Control merges, proxy, more_headers).
+note: >-
+  Candidate — the reviewer confirms `next = NULL` (or a full memzero/struct
+  assignment) follows within the same function. Invisible to ASan (live pool
+  memory). Guard with `#if (nginx_version >= 1023000)` only where the tree
+  still builds pre-1.23. Real: labs/http-zstd Vary push, PR #117, 2026-08.
+rule:
+  pattern: ngx_list_push(&$R->headers_out.headers)
