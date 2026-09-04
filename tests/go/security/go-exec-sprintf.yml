@@ -3,6 +3,21 @@ valid:
 - 'package p
 
   func f() { exec.Command("echo", value) }'
+- 'package p
+
+  func f() { exec.CommandContext(withLabel(fmt.Sprintf("%s", value)), "echo") }'
+- 'package p
+
+  func f() { myexec.Command("echo", fmt.Sprintf("%s", value)) }'
+- 'package p
+
+  func f() { exec.Commander(fmt.Sprintf("%s", value)) }'
+- 'package p
+
+  func f() { exec.Command("echo", customSprintf(value)) }'
+- 'package p
+
+  func f() { exec.Command("echo", build(func() string { return fmt.Sprintf("%s", value) })) }'
 - // package p func f() { exec.Command("echo", fmt.Sprintf("%s", value)) }
 - 'package p
 
@@ -11,3 +26,9 @@ invalid:
 - 'package p
 
   func f() { exec.Command("echo", fmt.Sprintf("%s", value)) }'
+- 'package p
+
+  func f() { exec.CommandContext(ctx, "echo", fmt.Sprintf("%s", value)) }'
+- 'package p
+
+  func f() { exec . Command("echo", fmt . Sprintf("%s", value)) }'

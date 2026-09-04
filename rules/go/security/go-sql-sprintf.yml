@@ -2,22 +2,67 @@ id: go-sql-sprintf
 language: go
 severity: warning
 message: >-
-  SQL query built with fmt.Sprintf/Sprint/strings.Join and passed to a
-  Query/Exec/Prepare call — SQL injection. Use placeholders ($1, ?) and pass the
-  values as separate query arguments so the driver binds them.
+  SQL query expression contains fmt.Sprintf/Sprint or strings.Join and is
+  passed to a Query/Exec/Prepare call. Review it as a SQL-injection candidate;
+  use placeholders ($1, ?) and pass values as separate arguments for binding.
 note: >-
-  Fires when a formatting call feeds a db Query/Exec/Prepare method. Dismiss only
-  if every interpolated value is a compile-time constant (e.g. a table name from
-  a fixed allowlist) — and prefer an allowlist check even then.
+  Checks the query position, accounting for Context variants. Receiver types
+  are unresolved, so Query/Exec on a prepared statement can still need review.
+  Dismiss only if every interpolated value is a compile-time constant (for
+  example, a table name from a fixed allowlist).
 rule:
-  kind: call_expression
   all:
-    - has:
-        field: function
-        regex: '\.(Query|QueryRow|QueryContext|QueryRowContext|Exec|ExecContext|Prepare|PrepareContext)$'
-    - has:
-        stopBy: end
-        kind: call_expression
-        has:
-          field: function
-          regex: '(Sprintf|Sprint|Join)$'
+    - kind: call_expression
+    - any:
+        - all:
+            - has:
+                field: function
+                matches: query-method
+            - has:
+                field: arguments
+                kind: argument_list
+                has:
+                  all:
+                    - nthChild: 1
+                    - matches: formatted-query
+        - all:
+            - has:
+                field: function
+                matches: context-query-method
+            - has:
+                field: arguments
+                kind: argument_list
+                has:
+                  all:
+                    - nthChild: 2
+                    - matches: formatted-query
+utils:
+  query-method:
+    kind: selector_expression
+    has:
+      field: field
+      regex: '^(Query|QueryRow|Exec|Prepare)$'
+  context-query-method:
+    kind: selector_expression
+    has:
+      field: field
+      regex: '^(QueryContext|QueryRowContext|ExecContext|PrepareContext)$'
+  query-builder:
+    kind: call_expression
+    has:
+      field: function
+      kind: selector_expression
+      any:
+        - all:
+            - has: {field: operand, regex: ^fmt$}
+            - has: {field: field, regex: '^(Sprintf|Sprint)$'}
+        - all:
+            - has: {field: operand, regex: ^strings$}
+            - has: {field: field, regex: ^Join$}
+  formatted-query:
+    any:
+      - matches: query-builder
+      - has:
+          stopBy:
+            kind: func_literal
+          matches: query-builder

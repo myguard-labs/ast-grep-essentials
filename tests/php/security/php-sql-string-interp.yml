@@ -2,8 +2,15 @@ id: php-sql-string-interp
 valid:
 - <?php query("SELECT column");
 - <?php query($sql, $params);
+- <?php mysqli_execute_query($db, "SELECT ?", ["$value"]);
+- <?php mysqli_execute_query($db, "SELECT ?", [fn() => "$value"]);
+- <?php preg_query("$value");
+- <?php Vendor\query("$value");
 - <?php /* <?php query("SELECT $column"); */
 - <?php $text = '<?php query("SELECT $column");';
 invalid:
 - <?php query("SELECT $column");
 - <?php QUERY("SELECT $column");
+- <?php mysqli_query($db, "SELECT $column");
+- <?php mysqli_execute_query($db, "SELECT $column");
+- <?php \mysqli_execute_query($db, "SELECT $column");

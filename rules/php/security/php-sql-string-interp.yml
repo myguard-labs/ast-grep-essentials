@@ -2,23 +2,57 @@ id: php-sql-string-interp
 language: php
 severity: warning
 message: >-
-  SQL query built by interpolating a variable into a double-quoted string, then
-  passed to a query/prepare/exec call — classic SQL injection. Use a prepared
-  statement with bound parameters (?, :name); never concatenate/interpolate
-  user data into the SQL text.
+  A supported database function receives an interpolated string in its query
+  position. Review it as a SQL-injection candidate; use a prepared statement
+  with bound parameters (?, :name) instead of interpolation in SQL text.
 note: >-
-  Fires when a db call receives an interpolated (encapsed) string containing a
-  variable. Dismiss only if every interpolated value is a hardcoded constant or
-  already validated to a fixed enum.
+  The matcher recognizes explicit function names and their query positions; it
+  does not resolve aliases or member calls. Dismiss only if every interpolated
+  value is hardcoded or validated to a fixed enum.
 rule:
-  kind: function_call_expression
   all:
-    - has:
-        field: function
-        regex: '(?i)(query|prepare|exec|get_results|get_row|get_var)$'
-    - has:
-        stopBy: end
-        kind: encapsed_string
-        has:
-          stopBy: end
-          kind: variable_name
+    - kind: function_call_expression
+    - any:
+        - all:
+            - has:
+                field: function
+                regex: '(?i)^\\?(query|prepare|exec|get_results|get_row|get_var)$'
+            - has:
+                field: arguments
+                kind: arguments
+                has:
+                  all:
+                    - kind: argument
+                    - nthChild: 1
+                    - has:
+                        stopBy:
+                          any:
+                            - kind: anonymous_function
+                            - kind: arrow_function
+                        all:
+                          - kind: variable_name
+                          - inside:
+                              kind: encapsed_string
+                              stopBy: end
+        - all:
+            - has:
+                field: function
+                regex: >-
+                  (?i)^\\?(mysqli_query|mysqli_real_query|mysqli_multi_query|mysqli_execute_query)$
+            - has:
+                field: arguments
+                kind: arguments
+                has:
+                  all:
+                    - kind: argument
+                    - nthChild: 2
+                    - has:
+                        stopBy:
+                          any:
+                            - kind: anonymous_function
+                            - kind: arrow_function
+                        all:
+                          - kind: variable_name
+                          - inside:
+                              kind: encapsed_string
+                              stopBy: end

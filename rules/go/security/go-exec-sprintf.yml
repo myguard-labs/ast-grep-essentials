@@ -11,14 +11,54 @@ note: >-
   argument is formatted and how the executable interprets it; safely formatted
   direct arguments can match.
 rule:
-  kind: call_expression
   all:
-    - has:
-        field: function
-        regex: 'exec\.(Command|CommandContext)'
-    - has:
-        stopBy: end
-        kind: call_expression
-        has:
-          field: function
-          regex: 'Sprintf$'
+    - kind: call_expression
+    - any:
+        - all:
+            - has:
+                field: function
+                matches: command
+            - has:
+                field: arguments
+                kind: argument_list
+                has:
+                  all:
+                    - nthChild: n+1
+                    - matches: formatted-argument
+        - all:
+            - has:
+                field: function
+                matches: command-context
+            - has:
+                field: arguments
+                kind: argument_list
+                has:
+                  all:
+                    - nthChild: n+2
+                    - matches: formatted-argument
+utils:
+  command:
+    kind: selector_expression
+    all:
+      - has: {field: operand, regex: ^exec$}
+      - has: {field: field, regex: ^Command$}
+  command-context:
+    kind: selector_expression
+    all:
+      - has: {field: operand, regex: ^exec$}
+      - has: {field: field, regex: ^CommandContext$}
+  sprintf-call:
+    kind: call_expression
+    has:
+      field: function
+      kind: selector_expression
+      all:
+        - has: {field: operand, regex: ^fmt$}
+        - has: {field: field, regex: ^Sprintf$}
+  formatted-argument:
+    any:
+      - matches: sprintf-call
+      - has:
+          stopBy:
+            kind: func_literal
+          matches: sprintf-call

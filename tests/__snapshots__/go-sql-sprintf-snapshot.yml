@@ -2,16 +2,208 @@ id: go-sql-sprintf
 snapshots:
   ? |-
     package p
+    func f() { db . Query(fmt . Sprintf("SELECT %s", value)) }
+  : labels:
+    - source: db . Query(fmt . Sprintf("SELECT %s", value))
+      style: primary
+      start: 21
+      end: 66
+    - source: Query
+      style: secondary
+      start: 26
+      end: 31
+    - source: db . Query
+      style: secondary
+      start: 21
+      end: 31
+    - source: fmt
+      style: secondary
+      start: 32
+      end: 35
+    - source: Sprintf
+      style: secondary
+      start: 38
+      end: 45
+    - source: fmt . Sprintf
+      style: secondary
+      start: 32
+      end: 45
+    - source: fmt . Sprintf("SELECT %s", value)
+      style: secondary
+      start: 32
+      end: 65
+    - source: (fmt . Sprintf("SELECT %s", value))
+      style: secondary
+      start: 31
+      end: 66
+  ? |-
+    package p
+    func f() { db.Exec(fmt.Sprintf("DELETE FROM %s", table)) }
+  : labels:
+    - source: db.Exec(fmt.Sprintf("DELETE FROM %s", table))
+      style: primary
+      start: 21
+      end: 66
+    - source: Exec
+      style: secondary
+      start: 24
+      end: 28
+    - source: db.Exec
+      style: secondary
+      start: 21
+      end: 28
+    - source: fmt
+      style: secondary
+      start: 29
+      end: 32
+    - source: Sprintf
+      style: secondary
+      start: 33
+      end: 40
+    - source: fmt.Sprintf
+      style: secondary
+      start: 29
+      end: 40
+    - source: fmt.Sprintf("DELETE FROM %s", table)
+      style: secondary
+      start: 29
+      end: 65
+    - source: (fmt.Sprintf("DELETE FROM %s", table))
+      style: secondary
+      start: 28
+      end: 66
+  ? |-
+    package p
+    func f() { db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s", table)) }
+  : labels:
+    - source: db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s", table))
+      style: primary
+      start: 21
+      end: 78
+    - source: ExecContext
+      style: secondary
+      start: 24
+      end: 35
+    - source: db.ExecContext
+      style: secondary
+      start: 21
+      end: 35
+    - source: fmt
+      style: secondary
+      start: 41
+      end: 44
+    - source: Sprintf
+      style: secondary
+      start: 45
+      end: 52
+    - source: fmt.Sprintf
+      style: secondary
+      start: 41
+      end: 52
+    - source: fmt.Sprintf("DELETE FROM %s", table)
+      style: secondary
+      start: 41
+      end: 77
+    - source: (ctx, fmt.Sprintf("DELETE FROM %s", table))
+      style: secondary
+      start: 35
+      end: 78
+  ? |-
+    package p
+    func f() { db.Prepare(fmt.Sprintf("SELECT %s", column)) }
+  : labels:
+    - source: db.Prepare(fmt.Sprintf("SELECT %s", column))
+      style: primary
+      start: 21
+      end: 65
+    - source: Prepare
+      style: secondary
+      start: 24
+      end: 31
+    - source: db.Prepare
+      style: secondary
+      start: 21
+      end: 31
+    - source: fmt
+      style: secondary
+      start: 32
+      end: 35
+    - source: Sprintf
+      style: secondary
+      start: 36
+      end: 43
+    - source: fmt.Sprintf
+      style: secondary
+      start: 32
+      end: 43
+    - source: fmt.Sprintf("SELECT %s", column)
+      style: secondary
+      start: 32
+      end: 64
+    - source: (fmt.Sprintf("SELECT %s", column))
+      style: secondary
+      start: 31
+      end: 65
+  ? |-
+    package p
+    func f() { db.PrepareContext(ctx, fmt.Sprintf("SELECT %s", column)) }
+  : labels:
+    - source: db.PrepareContext(ctx, fmt.Sprintf("SELECT %s", column))
+      style: primary
+      start: 21
+      end: 77
+    - source: PrepareContext
+      style: secondary
+      start: 24
+      end: 38
+    - source: db.PrepareContext
+      style: secondary
+      start: 21
+      end: 38
+    - source: fmt
+      style: secondary
+      start: 44
+      end: 47
+    - source: Sprintf
+      style: secondary
+      start: 48
+      end: 55
+    - source: fmt.Sprintf
+      style: secondary
+      start: 44
+      end: 55
+    - source: fmt.Sprintf("SELECT %s", column)
+      style: secondary
+      start: 44
+      end: 76
+    - source: (ctx, fmt.Sprintf("SELECT %s", column))
+      style: secondary
+      start: 38
+      end: 77
+  ? |-
+    package p
     func f() { db.Query(fmt.Sprintf("SELECT %s", value)) }
   : labels:
     - source: db.Query(fmt.Sprintf("SELECT %s", value))
       style: primary
       start: 21
       end: 62
+    - source: Query
+      style: secondary
+      start: 24
+      end: 29
     - source: db.Query
       style: secondary
       start: 21
       end: 29
+    - source: fmt
+      style: secondary
+      start: 30
+      end: 33
+    - source: Sprintf
+      style: secondary
+      start: 34
+      end: 41
     - source: fmt.Sprintf
       style: secondary
       start: 30
@@ -20,3 +212,151 @@ snapshots:
       style: secondary
       start: 30
       end: 61
+    - source: (fmt.Sprintf("SELECT %s", value))
+      style: secondary
+      start: 29
+      end: 62
+  ? |-
+    package p
+    func f() { db.QueryContext(ctx, strings.Join(parts, " ")) }
+  : labels:
+    - source: db.QueryContext(ctx, strings.Join(parts, " "))
+      style: primary
+      start: 21
+      end: 67
+    - source: QueryContext
+      style: secondary
+      start: 24
+      end: 36
+    - source: db.QueryContext
+      style: secondary
+      start: 21
+      end: 36
+    - source: strings
+      style: secondary
+      start: 42
+      end: 49
+    - source: Join
+      style: secondary
+      start: 50
+      end: 54
+    - source: strings.Join
+      style: secondary
+      start: 42
+      end: 54
+    - source: strings.Join(parts, " ")
+      style: secondary
+      start: 42
+      end: 66
+    - source: (ctx, strings.Join(parts, " "))
+      style: secondary
+      start: 36
+      end: 67
+  ? |-
+    package p
+    func f() { db.QueryRow(fmt.Sprint("SELECT ", column)) }
+  : labels:
+    - source: db.QueryRow(fmt.Sprint("SELECT ", column))
+      style: primary
+      start: 21
+      end: 63
+    - source: QueryRow
+      style: secondary
+      start: 24
+      end: 32
+    - source: db.QueryRow
+      style: secondary
+      start: 21
+      end: 32
+    - source: fmt
+      style: secondary
+      start: 33
+      end: 36
+    - source: Sprint
+      style: secondary
+      start: 37
+      end: 43
+    - source: fmt.Sprint
+      style: secondary
+      start: 33
+      end: 43
+    - source: fmt.Sprint("SELECT ", column)
+      style: secondary
+      start: 33
+      end: 62
+    - source: (fmt.Sprint("SELECT ", column))
+      style: secondary
+      start: 32
+      end: 63
+  ? |-
+    package p
+    func f() { db.QueryRowContext(ctx, fmt.Sprintf("SELECT %s", column)) }
+  : labels:
+    - source: db.QueryRowContext(ctx, fmt.Sprintf("SELECT %s", column))
+      style: primary
+      start: 21
+      end: 78
+    - source: QueryRowContext
+      style: secondary
+      start: 24
+      end: 39
+    - source: db.QueryRowContext
+      style: secondary
+      start: 21
+      end: 39
+    - source: fmt
+      style: secondary
+      start: 45
+      end: 48
+    - source: Sprintf
+      style: secondary
+      start: 49
+      end: 56
+    - source: fmt.Sprintf
+      style: secondary
+      start: 45
+      end: 56
+    - source: fmt.Sprintf("SELECT %s", column)
+      style: secondary
+      start: 45
+      end: 77
+    - source: (ctx, fmt.Sprintf("SELECT %s", column))
+      style: secondary
+      start: 39
+      end: 78
+  ? |-
+    package p
+    func f() { stmt.Query(fmt.Sprintf("%s", value)) }
+  : labels:
+    - source: stmt.Query(fmt.Sprintf("%s", value))
+      style: primary
+      start: 21
+      end: 57
+    - source: Query
+      style: secondary
+      start: 26
+      end: 31
+    - source: stmt.Query
+      style: secondary
+      start: 21
+      end: 31
+    - source: fmt
+      style: secondary
+      start: 32
+      end: 35
+    - source: Sprintf
+      style: secondary
+      start: 36
+      end: 43
+    - source: fmt.Sprintf
+      style: secondary
+      start: 32
+      end: 43
+    - source: fmt.Sprintf("%s", value)
+      style: secondary
+      start: 32
+      end: 56
+    - source: (fmt.Sprintf("%s", value))
+      style: secondary
+      start: 31
+      end: 57

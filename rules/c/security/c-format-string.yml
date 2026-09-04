@@ -56,10 +56,19 @@ rule:
 constraints:
   FMT:
     not:
-      any:
-        - kind: string_literal
-        - kind: concatenated_string
-          not:
-            has:
-              kind: identifier
-              stopBy: end
+      matches: literal-format
+utils:
+  string-format:
+    any:
+      - kind: string_literal
+      - kind: concatenated_string
+        not:
+          has:
+            kind: identifier
+            stopBy: end
+  literal-format:
+    any:
+      - matches: string-format
+      - kind: parenthesized_expression
+        has:
+          matches: string-format

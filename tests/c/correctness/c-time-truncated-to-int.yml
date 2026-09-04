@@ -1,6 +1,8 @@
 id: c-time-truncated-to-int
 valid:
 - void f(void) { time_t value = time(NULL); }
+- void f(void) { const time_t value = time(NULL); }
+- void f(void) { int *value = time(NULL); }
 - /* void f(void) { value = (int) time(NULL); } */
 - void f(void) { const char *text = "void f(void) { value = (int) time(NULL); }"; }
 invalid:
@@ -10,3 +12,6 @@ invalid:
 - void f(void) { int expires = time(NULL); }
 - void f(void) { unsigned int expires = time(NULL); }
 - void f(void) { int32_t expires = time(NULL); }
+- void f(void) { const int expires = time(NULL); }
+- void f(void) { signed int expires = time(NULL); }
+- void f(void) { int first = 0, expires = time(NULL); }

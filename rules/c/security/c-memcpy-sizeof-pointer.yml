@@ -12,6 +12,13 @@ rule:
     - pattern: memcpy($DST, $SRC, sizeof($PTR))
     - pattern: ngx_memcpy($DST, $SRC, sizeof($PTR))
     - pattern: memmove($DST, $SRC, sizeof($PTR))
+    - pattern: memcpy($DST, $SRC, sizeof $PTR)
+    - pattern: ngx_memcpy($DST, $SRC, sizeof $PTR)
+    - pattern: memmove($DST, $SRC, sizeof $PTR)
 constraints:
   PTR:
-    kind: identifier
+    any:
+      - kind: identifier
+      - kind: parenthesized_expression
+        has:
+          kind: identifier

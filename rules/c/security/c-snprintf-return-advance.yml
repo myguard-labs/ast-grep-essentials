@@ -10,7 +10,8 @@ note: >-
   Fix: check the return against the remaining space before advancing
   (`n = snprintf(p, avail, ...); if (n < 0 || (size_t)n >= avail) goto truncated;`),
   or use a helper that clamps. Dismiss only when the buffer is provably large
-  enough for every input — state the bound. Catalog: _shared/numeric-review.md §1.
+  enough for every input. See
+  https://man7.org/linux/man-pages/man3/printf.3.html.
 rule:
   any:
     - pattern: $P += snprintf($$$ARGS)

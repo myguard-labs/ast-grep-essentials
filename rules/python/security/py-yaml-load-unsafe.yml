@@ -2,9 +2,9 @@ id: py-yaml-load-unsafe
 language: python
 severity: warning
 message: >-
-  yaml.load() without an explicit safe Loader — the default loader constructs
-  arbitrary Python objects and can execute code on a malicious document. Use
-  yaml.safe_load() or pass Loader=yaml.SafeLoader.
+  yaml.load() without a recognized safe Loader requires API and security review.
+  Modern PyYAML versions require an explicit Loader; unsafe loaders can construct
+  arbitrary Python objects. Prefer yaml.safe_load() for untrusted input.
 note: >-
   Candidate: accepts the recognized SafeLoader/CSafeLoader spellings only.
   Loader aliases and positional loaders require review. Modern PyYAML requires
@@ -15,7 +15,10 @@ rule:
   all:
     - has:
         field: function
-        regex: 'yaml\.load$'
+        kind: attribute
+        all:
+          - has: {field: object, regex: ^yaml$}
+          - has: {field: attribute, regex: ^load$}
     - not:
         has:
           kind: argument_list
@@ -25,4 +28,19 @@ rule:
               - has: {field: name, regex: ^Loader$}
               - has:
                   field: value
-                  regex: '^(yaml\.)?C?SafeLoader$'
+                  matches: safe-loader-value
+utils:
+  safe-loader:
+    any:
+      - kind: identifier
+        regex: ^C?SafeLoader$
+      - kind: attribute
+        all:
+          - has: {field: object, regex: ^yaml$}
+          - has: {field: attribute, regex: '^C?SafeLoader$'}
+  safe-loader-value:
+    any:
+      - matches: safe-loader
+      - kind: parenthesized_expression
+        has:
+          matches: safe-loader

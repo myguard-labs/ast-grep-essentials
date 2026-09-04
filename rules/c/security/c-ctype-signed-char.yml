@@ -20,8 +20,15 @@ rule:
     - not:
         has:
           field: arguments
+          kind: argument_list
           has:
-            kind: cast_expression
-            has:
-              field: type
-              regex: '^unsigned\s+char$'
+            matches: safe-ctype-argument
+utils:
+  unsigned-char-cast:
+    pattern: (unsigned char)$VALUE
+  safe-ctype-argument:
+    any:
+      - matches: unsigned-char-cast
+      - kind: parenthesized_expression
+        has:
+          matches: unsigned-char-cast

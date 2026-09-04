@@ -18,15 +18,21 @@ rule:
     - pattern: if (ngx_http_send_header($R) != NGX_OK) $BODY
     - pattern: if (ngx_http_output_filter($R, $IN) != NGX_OK) $BODY
     - kind: if_statement
-      has:
-        field: condition
-        pattern: $CONDITION
-      follows:
-        any:
-          - pattern: rc = ngx_http_send_header($R);
-          - pattern: rc = ngx_http_output_filter($R, $IN);
+      all:
+        - follows:
+            any:
+              - pattern: $RESULT = ngx_http_send_header($R);
+              - pattern: $RESULT = ngx_http_output_filter($R, $IN);
+              - pattern: $TYPE $RESULT = ngx_http_send_header($R);
+              - pattern: $TYPE $RESULT = ngx_http_output_filter($R, $IN);
+            stopBy:
+              not:
+                kind: comment
+        - has:
+            field: condition
+            pattern: $CONDITION
 constraints:
   CONDITION:
     has:
-      pattern: rc != NGX_OK
+      pattern: $RESULT != NGX_OK
       stopBy: end

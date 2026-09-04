@@ -2,20 +2,39 @@ id: c-time-truncated-to-int
 language: c
 severity: warning
 message: >-
-  time(NULL) truncated to int. A 32-bit signed seconds value overflows in 2038,
-  and comparison order inverts earlier for any far-future expiry computed from
-  it. Persisted or wire-format timestamps built this way are a data contract
-  that cannot be widened later without a migration (CWE-197).
+  time(NULL) converted to a narrower integer type. Signed 32-bit seconds
+  overflow in 2038; unsigned types have a different range but can still truncate
+  a wider time_t. Persisted or wire timestamps require an explicit migration
+  when widened (CWE-197).
 note: >-
   Use time_t end to end; on 32-bit glibc build with -D_TIME_BITS=64 plus
   -D_FILE_OFFSET_BITS=64. Dismiss only for a value that is provably ephemeral
-  and never stored, compared far-forward, or serialized. Detail:
-  _shared/time-review.md §3.
+  and never stored, compared far-forward, or serialized. See
+  https://man7.org/linux/man-pages/man2/time.2.html.
 rule:
   any:
     - pattern: (int) time($$$)
     - pattern: (unsigned int) time($$$)
     - pattern: (int32_t) time($$$)
-    - pattern: int $NAME = time($$$);
-    - pattern: unsigned int $NAME = time($$$);
     - pattern: int32_t $NAME = time($$$);
+    - kind: init_declarator
+      all:
+        - has: {field: declarator, kind: identifier}
+        - has:
+            field: value
+            kind: call_expression
+            has: {field: function, regex: ^time$}
+        - inside:
+            kind: declaration
+            has:
+              field: type
+              matches: narrow-time-type
+utils:
+  narrow-time-type:
+    any:
+      - kind: primitive_type
+        regex: ^int$
+      - kind: sized_type_specifier
+        regex: '^(signed|unsigned)\s+int$'
+      - kind: type_identifier
+        regex: ^int32_t$

@@ -2,13 +2,14 @@ id: go-weak-hash-import
 language: go
 severity: warning
 message: >-
-  Import of crypto/md5 or crypto/sha1 — both are broken for any security use
-  (signatures, password hashing, integrity of untrusted data, token derivation).
-  Use crypto/sha256 (or bcrypt/argon2 for passwords).
+  Import of crypto/md5 or crypto/sha1 requires review of the construction and
+  required hash properties. Collision-dependent uses such as signatures need a
+  modern alternative; new designs should prefer crypto/sha256 or a dedicated
+  password-hashing construction.
 note: >-
-  Fires on the import alone. Acceptable ONLY for interop with a legacy protocol
-  that mandates the algorithm, or a non-security checksum (e.g. cache key) — say
-  which when dismissing.
+  Fires on the import alone and does not establish compromise. Record whether
+  the use needs collision resistance, message authentication, legacy interop,
+  or only a non-security checksum. See https://www.rfc-editor.org/rfc/rfc6151.
 rule:
   any:
     - kind: interpreted_string_literal

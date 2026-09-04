@@ -3,6 +3,24 @@ valid:
 - 'package p
 
   func f() { db.Query("SELECT ?", value) }'
+- 'package p
+
+  func f() { db.Query("SELECT ?", fmt.Sprintf("%s", value)) }'
+- 'package p
+
+  func f() { db.QueryContext(withLabel(fmt.Sprintf("%s", value)), "SELECT ?", value) }'
+- 'package p
+
+  func f() { db.Query(customSprint(value)) }'
+- 'package p
+
+  func f() { db.Query("SELECT ?", func() string { return fmt.Sprintf("%s", value) }()) }'
+- 'package p
+
+  func f() { db.Query(build(func() string { return fmt.Sprintf("SELECT %s", value) })) }'
+- 'package p
+
+  func f() { db.Query(func() string { return fmt.Sprintf("SELECT %s", value) }()) }'
 - // package p func f() { db.Query(fmt.Sprintf("SELECT %s", value)) }
 - 'package p
 
@@ -11,3 +29,30 @@ invalid:
 - 'package p
 
   func f() { db.Query(fmt.Sprintf("SELECT %s", value)) }'
+- 'package p
+
+  func f() { db . Query(fmt . Sprintf("SELECT %s", value)) }'
+- 'package p
+
+  func f() { db.QueryRow(fmt.Sprint("SELECT ", column)) }'
+- 'package p
+
+  func f() { db.QueryContext(ctx, strings.Join(parts, " ")) }'
+- 'package p
+
+  func f() { db.QueryRowContext(ctx, fmt.Sprintf("SELECT %s", column)) }'
+- 'package p
+
+  func f() { db.Exec(fmt.Sprintf("DELETE FROM %s", table)) }'
+- 'package p
+
+  func f() { db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s", table)) }'
+- 'package p
+
+  func f() { db.Prepare(fmt.Sprintf("SELECT %s", column)) }'
+- 'package p
+
+  func f() { db.PrepareContext(ctx, fmt.Sprintf("SELECT %s", column)) }'
+- 'package p
+
+  func f() { stmt.Query(fmt.Sprintf("%s", value)) }'

@@ -13,11 +13,23 @@ rule:
   all:
     - has:
         field: function
-        regex: '^subprocess\.'
+        kind: attribute
+        has:
+          field: object
+          regex: ^subprocess$
     - has:
         kind: argument_list
         has:
           kind: keyword_argument
           all:
             - has: { field: name, regex: ^shell$ }
-            - has: { field: value, regex: ^True$ }
+            - has:
+                field: value
+                matches: true-value
+utils:
+  true-value:
+    any:
+      - kind: 'true'
+      - kind: parenthesized_expression
+        has:
+          kind: 'true'

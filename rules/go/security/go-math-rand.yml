@@ -2,13 +2,13 @@ id: go-math-rand
 language: go
 severity: warning
 message: >-
-  Import of math/rand — a deterministic, predictable PRNG. Fine for simulations
-  and jitter, but NEVER for security values (tokens, session IDs, keys, nonces,
-  password/OTP generation, salt). Use crypto/rand for anything an attacker must
-  not predict.
+  Import of math/rand or math/rand/v2 requires review before use for security
+  values. An import alone does not identify the generator, seed behavior, or Go
+  version. Use crypto/rand when unpredictability is a security requirement.
 note: >-
   Fires on the import. Dismiss when the package only uses it for non-security
-  randomness (backoff jitter, load-test data, shuffling display order).
+  randomness. Go 1.22 introduced ChaCha8-based global generation while explicit
+  legacy sources can remain predictable. See https://go.dev/blog/chacha8rand.
 rule:
   any:
     - kind: interpreted_string_literal

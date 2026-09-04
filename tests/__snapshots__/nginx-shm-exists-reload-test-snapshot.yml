@@ -1,5 +1,31 @@
 id: nginx-shm-exists-reload-test
 snapshots:
+  void f(void) { if ((zone)->shm.exists) initialize(); }:
+    labels:
+    - source: if ((zone)->shm.exists) initialize();
+      style: primary
+      start: 15
+      end: 52
+    - source: ((zone)->shm.exists)
+      style: secondary
+      start: 18
+      end: 38
+    - source: exists
+      style: secondary
+      start: 31
+      end: 37
+    - source: shm
+      style: secondary
+      start: 27
+      end: 30
+    - source: (zone)->shm
+      style: secondary
+      start: 19
+      end: 30
+    - source: (zone)->shm.exists
+      style: secondary
+      start: 19
+      end: 37
   void f(void) { if (ready && zone->shm.exists) return NGX_OK; }:
     labels:
     - source: if (ready && zone->shm.exists) return NGX_OK;
@@ -10,10 +36,74 @@ snapshots:
       style: secondary
       start: 18
       end: 45
+    - source: exists
+      style: secondary
+      start: 38
+      end: 44
+    - source: shm
+      style: secondary
+      start: 34
+      end: 37
+    - source: zone->shm
+      style: secondary
+      start: 28
+      end: 37
     - source: zone->shm.exists
       style: secondary
       start: 28
       end: 44
+  void f(void) { if (zone -> shm . exists) initialize(); }:
+    labels:
+    - source: if (zone -> shm . exists) initialize();
+      style: primary
+      start: 15
+      end: 54
+    - source: (zone -> shm . exists)
+      style: secondary
+      start: 18
+      end: 40
+    - source: exists
+      style: secondary
+      start: 33
+      end: 39
+    - source: shm
+      style: secondary
+      start: 27
+      end: 30
+    - source: zone -> shm
+      style: secondary
+      start: 19
+      end: 30
+    - source: zone -> shm . exists
+      style: secondary
+      start: 19
+      end: 39
+  void f(void) { if (zone->shm /* existing */ .exists) initialize(); }:
+    labels:
+    - source: if (zone->shm /* existing */ .exists) initialize();
+      style: primary
+      start: 15
+      end: 66
+    - source: (zone->shm /* existing */ .exists)
+      style: secondary
+      start: 18
+      end: 52
+    - source: exists
+      style: secondary
+      start: 45
+      end: 51
+    - source: shm
+      style: secondary
+      start: 25
+      end: 28
+    - source: zone->shm
+      style: secondary
+      start: 19
+      end: 28
+    - source: zone->shm /* existing */ .exists
+      style: secondary
+      start: 19
+      end: 51
   void f(void) { if (zone->shm.exists != 0) return NGX_OK; }:
     labels:
     - source: if (zone->shm.exists != 0) return NGX_OK;
@@ -24,6 +114,18 @@ snapshots:
       style: secondary
       start: 18
       end: 41
+    - source: exists
+      style: secondary
+      start: 29
+      end: 35
+    - source: shm
+      style: secondary
+      start: 25
+      end: 28
+    - source: zone->shm
+      style: secondary
+      start: 19
+      end: 28
     - source: zone->shm.exists
       style: secondary
       start: 19
@@ -38,6 +140,18 @@ snapshots:
       style: secondary
       start: 18
       end: 36
+    - source: exists
+      style: secondary
+      start: 29
+      end: 35
+    - source: shm
+      style: secondary
+      start: 25
+      end: 28
+    - source: zone->shm
+      style: secondary
+      start: 19
+      end: 28
     - source: zone->shm.exists
       style: secondary
       start: 19

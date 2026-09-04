@@ -2,15 +2,15 @@ id: php-unserialize
 language: php
 severity: warning
 message: >-
-  unserialize() on request/external data — PHP object injection. A crafted
-  payload instantiates arbitrary classes and triggers __wakeup/__destruct gadget
-  chains (RCE, file write, SQLi). Use json_decode for data, or pass
-  ['allowed_classes' => false] if you must unserialize.
+  unserialize() can instantiate objects and invoke loading hooks. Never pass
+  request or other untrusted data; use a standard data format such as JSON.
 note: >-
-  Fires on every unserialize call. Safe only when the input is data you
-  serialized and never exposed to an attacker.
+  Fires on every unserialize call. allowed_classes=false is only an additional
+  restriction for independently trusted or authenticated serialized data; it
+  does not make untrusted input safe. See
+  https://www.php.net/manual/en/function.unserialize.php.
 rule:
   kind: function_call_expression
   has:
     field: function
-    regex: '(?i)^unserialize$'
+    regex: '(?i)^\\?unserialize$'

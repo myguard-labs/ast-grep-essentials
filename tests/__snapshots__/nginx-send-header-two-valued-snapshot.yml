@@ -24,38 +24,74 @@ snapshots:
       style: primary
       start: 15
       end: 75
+  void f(void) { ngx_int_t rc = ngx_http_send_header(r); if (rc != NGX_OK) return NGX_ERROR; }:
+    labels:
+    - source: if (rc != NGX_OK) return NGX_ERROR;
+      style: primary
+      start: 55
+      end: 90
+    - source: ngx_int_t rc = ngx_http_send_header(r);
+      style: secondary
+      start: 15
+      end: 54
+    - source: (rc != NGX_OK)
+      style: secondary
+      start: 58
+      end: 72
+    - source: rc != NGX_OK
+      style: secondary
+      start: 59
+      end: 71
   void f(void) { rc = ngx_http_output_filter(r, chain); if (rc != NGX_OK) return NGX_ERROR; }:
     labels:
     - source: if (rc != NGX_OK) return NGX_ERROR;
       style: primary
       start: 54
       end: 89
-    - source: (rc != NGX_OK)
-      style: secondary
-      start: 57
-      end: 71
     - source: rc = ngx_http_output_filter(r, chain);
       style: secondary
       start: 15
       end: 53
+    - source: (rc != NGX_OK)
+      style: secondary
+      start: 57
+      end: 71
     - source: rc != NGX_OK
       style: secondary
       start: 58
       end: 70
+  void f(void) { rc = ngx_http_send_header(r); /* result */ if (rc != NGX_OK) return NGX_ERROR; }:
+    labels:
+    - source: if (rc != NGX_OK) return NGX_ERROR;
+      style: primary
+      start: 58
+      end: 93
+    - source: rc = ngx_http_send_header(r);
+      style: secondary
+      start: 15
+      end: 44
+    - source: (rc != NGX_OK)
+      style: secondary
+      start: 61
+      end: 75
+    - source: rc != NGX_OK
+      style: secondary
+      start: 62
+      end: 74
   void f(void) { rc = ngx_http_send_header(r); if (rc != NGX_OK && ready) return NGX_ERROR; }:
     labels:
     - source: if (rc != NGX_OK && ready) return NGX_ERROR;
       style: primary
       start: 45
       end: 89
-    - source: (rc != NGX_OK && ready)
-      style: secondary
-      start: 48
-      end: 71
     - source: rc = ngx_http_send_header(r);
       style: secondary
       start: 15
       end: 44
+    - source: (rc != NGX_OK && ready)
+      style: secondary
+      start: 48
+      end: 71
     - source: rc != NGX_OK
       style: secondary
       start: 49
@@ -66,15 +102,33 @@ snapshots:
       style: primary
       start: 45
       end: 80
-    - source: (rc != NGX_OK)
-      style: secondary
-      start: 48
-      end: 62
     - source: rc = ngx_http_send_header(r);
       style: secondary
       start: 15
       end: 44
+    - source: (rc != NGX_OK)
+      style: secondary
+      start: 48
+      end: 62
     - source: rc != NGX_OK
       style: secondary
       start: 49
       end: 61
+  void f(void) { status = ngx_http_send_header(r); if (status != NGX_OK) return NGX_ERROR; }:
+    labels:
+    - source: if (status != NGX_OK) return NGX_ERROR;
+      style: primary
+      start: 49
+      end: 88
+    - source: status = ngx_http_send_header(r);
+      style: secondary
+      start: 15
+      end: 48
+    - source: (status != NGX_OK)
+      style: secondary
+      start: 52
+      end: 70
+    - source: status != NGX_OK
+      style: secondary
+      start: 53
+      end: 69

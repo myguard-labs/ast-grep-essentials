@@ -11,8 +11,9 @@ syntax coverage; they do not prove all variants of a bug are detected.
   and wrappers need separate rules. The ctype rule excludes a direct
   `unsigned char` cast, but cannot infer already-safe integer ranges, EOF, or
   typedefs. A cast elsewhere inside an expression does not make its result safe.
-- `php-sql-string-interp` currently matches function calls, not all database
-  member-call AST shapes. No interprocedural SQL or command dataflow is modeled.
+- `php-sql-string-interp` recognizes its listed function names and query
+  positions, not database member calls or aliases. No interprocedural SQL or
+  command dataflow is modeled.
 - `php-extract-superglobal` recognizes a direct superglobal as the first
   positional argument. Named arguments, aliases and transformed arrays need
   separate analysis. A superglobal used only to compute flags or a prefix is
@@ -25,9 +26,14 @@ syntax coverage; they do not prove all variants of a bug are detected.
   `yaml.` qualification. Aliases and positional loaders require review; their
   safety cannot be inferred from names. Modern PyYAML requires a Loader, so a
   missing one can be an API error rather than unsafe deserialization.
-- `go-exec-sprintf` flags formatted arguments for review. Go's `exec.Command`
+- `go-exec-sprintf` flags formatted executable and argv expressions for review,
+  while excluding `CommandContext`'s context argument. Go's `exec.Command`
   does not invoke a shell automatically; formatting alone is not proof of
   command injection. Inspect the executable, arguments, and whether a shell runs.
+- `go-sql-sprintf` checks the documented query position for ordinary and
+  context-aware methods. Syntax cannot distinguish a DB or transaction receiver
+  from a prepared statement, whose Query/Exec arguments are bound values, so a
+  formatted first argument on a statement remains an advisory candidate.
 - `c-shell-exec` inventories its listed shell and direct-execution APIs.
   Exec arguments remain separate argv elements, but the selected program can
   interpret them. The `*p` variants can also invoke a shell after an `ENOEXEC`
@@ -47,5 +53,6 @@ positives. Its dated measurements are historical evidence, not current counts.
 Use type/alignment diagnostics and executed-path sanitizers for that question.
 
 The time truncation rule covers explicit casts and direct integer declarations.
-Assignments to previously declared variables need type resolution and remain
-outside this matcher.
+It includes qualifiers, signed/unsigned forms, and individual declarators in a
+multi-declaration. Assignments to previously declared variables need type
+resolution and remain outside this matcher.
