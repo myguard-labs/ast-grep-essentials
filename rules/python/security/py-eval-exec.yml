@@ -3,8 +3,10 @@ language: python
 severity: warning
 message: >-
   eval()/exec() call requires review. It executes Python code and can allow code
-  execution when its argument carries external input. Prefer a narrow parser
-  such as ast.literal_eval for data or a dispatch table for commands.
+  execution when its argument carries external input. Use a format-specific parser
+  with input limits for untrusted data, or a dispatch table for commands. Recommend
+  ast.literal_eval only for trusted, resource-bounded input; it can exhaust memory,
+  stack, or CPU.
 note: >-
   Fires on eval/exec with any argument. Dismiss only if the argument is a
   hardcoded literal and provably never derives from input.

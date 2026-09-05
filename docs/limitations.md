@@ -3,6 +3,9 @@
 These migrated rules primarily identify review candidates. Tests demonstrate
 syntax coverage; they do not prove all variants of a bug are detected.
 
+- `c-prctl-set-dumpable` recognizes decimal `1` with optional `U`/`L`
+  suffixes (either order and case), not computed values, aliases, or other
+  integer spellings. Zero remains excluded.
 - `c-memcpy-sizeof-pointer` also matches valid fixed-array and struct copies:
   ast-grep cannot resolve the identifier's type. Keep it advisory.
 - Allocation, slab, response-header, reload, and intervention rules flag sites;

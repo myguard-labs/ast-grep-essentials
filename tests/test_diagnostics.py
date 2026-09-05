@@ -14,7 +14,7 @@ class DiagnosticTests(unittest.TestCase):
         (
             "c/security/c-prctl-set-dumpable.yml",
             "void f(void) { prctl(PR_SET_DUMPABLE, 1L); }",
-            ("1/1L", "RLIMIT_CORE is ignored for piped collectors", "core.5.html"),
+            ("optional U/L suffix", "RLIMIT_CORE is ignored for piped collectors", "core.5.html"),
             ("fs.suid_dumpable=0",),
         ),
         (
@@ -26,7 +26,8 @@ class DiagnosticTests(unittest.TestCase):
         (
             "python/security/py-eval-exec.yml",
             'eval("1 + 1")',
-            ("requires review", "external input"),
+            ("requires review", "external input", "trusted, resource-bounded input",
+             "format-specific parser with input limits", "exhaust memory"),
             ("on a non-literal",),
         ),
         (
@@ -72,6 +73,35 @@ class DiagnosticTests(unittest.TestCase):
             (),
         ),
     )
+
+    def test_php_sql_secondary_labels_are_unique(self):
+        for source in (
+            '<?php query("SELECT $column");',
+            '<?php QUERY("SELECT $column");',
+            '<?php mysqli_query($db, "SELECT $column");',
+            '<?php mysqli_execute_query($db, "SELECT $column");',
+            '<?php \\mysqli_execute_query($db, "SELECT $column");',
+        ):
+            with self.subTest(source=source):
+                result = subprocess.run(
+                    [AST_GREP, "scan", "--rule",
+                     ROOT / "rules/php/security/php-sql-string-interp.yml",
+                     "--json=compact", "--stdin"],
+                    input=source, text=True, capture_output=True, check=True,
+                )
+                findings = json.loads(result.stdout)
+                self.assertEqual(len(findings), 1)
+                labels = findings[0]["labels"]
+                ranges = [
+                    (label["range"]["byteOffset"]["start"],
+                     label["range"]["byteOffset"]["end"])
+                    for label in labels if label["style"] == "secondary"
+                ]
+                self.assertTrue(ranges)
+                self.assertEqual(len(ranges), len(set(ranges)),
+                                 "duplicate secondary label ranges")
+                self.assertEqual(sum(label["text"] == '\"SELECT $column\"'
+                                     for label in labels), 1)
 
     def test_emitted_diagnostic_contracts(self):
         for relative, source, required, forbidden in self.CASES:
