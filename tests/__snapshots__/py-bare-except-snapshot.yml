@@ -1,0 +1,88 @@
+id: py-bare-except
+snapshots:
+  ? |
+    try:
+        f()
+    except:
+        def later():
+            raise
+        pass
+  : labels:
+    - source: |-
+        except:
+            def later():
+                raise
+            pass
+      style: primary
+      start: 13
+      end: 60
+  ? |
+    try:
+        f()
+    except:
+        for item in items:
+            if item.bad:
+                raise
+        log.info("ignored")
+  : labels:
+    - source: |-
+        except:
+            for item in items:
+                if item.bad:
+                    raise
+            log.info("ignored")
+      style: primary
+      start: 13
+      end: 106
+  ? |
+    try:
+        f()
+    except:
+        if debug:
+            raise
+        pass
+  : labels:
+    - source: |-
+        except:
+            if debug:
+                raise
+            pass
+      style: primary
+      start: 13
+      end: 57
+  ? |
+    try:
+        f()
+    except:
+        log.info("ignored")
+  : labels:
+    - source: |-
+        except:
+            log.info("ignored")
+      style: primary
+      start: 13
+      end: 44
+  ? |
+    try:
+        f()
+    except:
+        pass
+  : labels:
+    - source: |-
+        except:
+            pass
+      style: primary
+      start: 13
+      end: 29
+  ? |
+    try:
+        f()
+    except:
+        raise RuntimeError("failed")
+  : labels:
+    - source: |-
+        except:
+            raise RuntimeError("failed")
+      style: primary
+      start: 13
+      end: 53

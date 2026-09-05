@@ -1,0 +1,92 @@
+id: py-jwt-decode-unverified
+language: python
+severity: error
+message: >-
+  JWT decoded with signature verification disabled — the token's claims are
+  attacker-controlled, so any identity, role or expiry inside it can be forged.
+  Remove verify_signature/verify=False and decode with the expected algorithms
+  and key. To read claims without trusting them, keep the value out of any
+  authorization decision.
+note: >-
+  Fires on jwt.decode, or bare decode when the module has a top-level exact
+  `from jwt import decode`, with verify=False or options disabling
+  verify_signature. Aliases and shadowing are not resolved. Reading an
+  unverified claim purely for logging or routing is the only routine dismissal,
+  and it must not gate access.
+utils:
+  jwt-module:
+    any:
+      - kind: identifier
+        regex: '^jwt$'
+      - kind: parenthesized_expression
+        has:
+          kind: identifier
+          regex: '^jwt$'
+  jwt-decode:
+    kind: attribute
+    all:
+      - has:
+          field: object
+          matches: jwt-module
+      - has:
+          field: attribute
+          regex: '^decode$'
+  authorized-decode-function:
+    any:
+      - matches: jwt-decode
+      - kind: identifier
+        regex: '^decode$'
+        inside:
+          kind: module
+          stopBy: end
+          has:
+            pattern: from jwt import decode
+rule:
+  kind: keyword_argument
+  all:
+    - any:
+        - all:
+            - has: {field: name, regex: '^verify$'}
+            - has: {field: value, regex: '^False$'}
+        - all:
+            - has: {field: name, regex: '^options$'}
+            - has:
+                field: value
+                kind: dictionary
+                has:
+                  kind: pair
+                  all:
+                    - has:
+                        field: key
+                        regex: '^["'']verify_signature["'']$'
+                    - has: {field: value, regex: '^False$'}
+    # A call with both legacy and options spellings still emits one finding.
+    - not:
+        follows:
+          stopBy: end
+          kind: keyword_argument
+          any:
+            - all:
+                - has: {field: name, regex: '^verify$'}
+                - has: {field: value, regex: '^False$'}
+            - all:
+                - has: {field: name, regex: '^options$'}
+                - has:
+                    field: value
+                    kind: dictionary
+                    has:
+                      kind: pair
+                      all:
+                        - has:
+                            field: key
+                            regex: '^["'']verify_signature["'']$'
+                        - has: {field: value, regex: '^False$'}
+    - inside:
+        stopBy: neighbor
+        kind: argument_list
+        inside:
+          stopBy: neighbor
+          kind: call
+          has:
+            field: function
+            matches: authorized-decode-function

@@ -1,0 +1,15 @@
+id: py-hardcoded-tempfile
+language: python
+severity: warning
+message: >-
+  Hardcoded /tmp path — a predictable name in a world-writable directory lets a
+  local attacker pre-create the path as a symlink and redirect the write, or race
+  the open between check and use. Use tempfile.NamedTemporaryFile/mkstemp/
+  TemporaryDirectory, which create the file exclusively with private permissions.
+note: >-
+  Fires on string literals beginning with /tmp/ or /var/tmp/. Dismiss for a path
+  the process creates via mkdtemp, or a read of a well-known file it does not
+  itself write.
+rule:
+  kind: string
+  regex: '^[a-zA-Z]*["'']{1,3}/(var/)?tmp/'

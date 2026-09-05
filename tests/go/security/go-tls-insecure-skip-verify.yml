@@ -1,0 +1,21 @@
+id: go-tls-insecure-skip-verify
+valid:
+- 'package m; func f() { c := &tls.Config{MinVersion: tls.VersionTLS13} }'
+- 'package m; func f() { c := &tls.Config{InsecureSkipVerify: false} }'
+- 'package m; func f() { c := &tls.Config{InsecureSkipVerify: (/* test */ false)} }'
+- 'package m; func f() { c := &tls.Config{InsecureSkipVerify: allowInsecure} }'
+- 'package m; func f() { c := &tls.Config{RootCAs: pool} }'
+- 'package m; // c := &tls.Config{InsecureSkipVerify: true}'
+- 'package m; func f() { s := "tls.Config{InsecureSkipVerify: true}" }'
+- 'package m; func f() { c := &myconf{InsecureSkipVerify: true} }'
+- 'package m; func f() { cfg.InsecureSkipVerify = allowInsecure }'
+- 'package m; func f() { cfg.InsecureSkipVerify = true }'
+- 'package m; func f() { c := tls.Config{Wrapper: Wrapper{Local: LocalConfig{InsecureSkipVerify: true}}} }'
+invalid:
+- 'package m; func f() { c := &tls.Config{InsecureSkipVerify: true} }'
+- 'package m; func f() { c := &tls.Config{MinVersion: tls.VersionTLS12, InsecureSkipVerify: true} }'
+- 'package m; func f() { c := &tls.Config{InsecureSkipVerify: (true)} }'
+- 'package m; func f() { c := &tls.Config{InsecureSkipVerify: (((true)))} }'
+- 'package m; func f() { c := &tls.Config{InsecureSkipVerify: (/* test */ true)} }'
+- 'package m; func f() { t := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}} }'
+- 'package m; func f() { c := tls.Config{InsecureSkipVerify: true} }'

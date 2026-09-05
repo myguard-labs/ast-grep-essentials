@@ -1,0 +1,34 @@
+id: php-file-inclusion-variable
+language: php
+severity: error
+message: >-
+  include/require with a request-reachable path — if any part of the expression
+  comes from the request, an attacker chooses which file the interpreter
+  executes (local file inclusion, and remote inclusion when allow_url_include is
+  on). Map the input to a fixed allowlist of filenames and include the matched
+  constant, never the raw value.
+note: >-
+  Fires when a variable, array subscript, interpolated string or call result
+  reaches the included path. A path built only from string literals, constants
+  and __DIR__ does not match. A match still needs review to confirm the variable
+  is request-derived rather than internal.
+rule:
+  kind: expression_statement
+  has:
+    any:
+      - kind: include_expression
+      - kind: include_once_expression
+      - kind: require_expression
+      - kind: require_once_expression
+    has:
+      stopBy: end
+      any:
+        - kind: variable_name
+        - kind: subscript_expression
+        - kind: member_call_expression
+        # A call other than the dirname(__FILE__) base idiom.
+        - kind: function_call_expression
+          not:
+            all:
+              - has: {field: function, regex: '(?i)^\\?dirname$'}
+              - has: {field: arguments, regex: '^\(__FILE__\)$'}

@@ -1,0 +1,64 @@
+id: py-requests-verify-false
+language: python
+severity: error
+message: >-
+  requests call with verify=False — the server's TLS certificate is not checked,
+  so a machine-in-the-middle can present any certificate and read or rewrite the
+  traffic, credentials and tokens included. Drop verify=False; to trust a private
+  CA pass verify="/path/to/ca-bundle.pem" instead.
+note: >-
+  Fires on requests.*, requests.Session().*, or a lexically named local
+  session/client receiver with a literal verify=False. Object attributes and
+  aliases under other names are not resolved. A scan of a host with a known-bad
+  certificate is the only routine dismissal; it should not reach production
+  code.
+utils:
+  requests-module:
+    any:
+      - kind: identifier
+        regex: '^requests$'
+      - kind: parenthesized_expression
+        has:
+          kind: identifier
+          regex: '^requests$'
+  requests-session-constructor:
+    kind: call
+    has:
+      field: function
+      kind: attribute
+      all:
+        - has:
+            field: object
+            matches: requests-module
+        - has:
+            field: attribute
+            regex: '^Session$'
+  request-receiver:
+    any:
+      - matches: requests-module
+      - kind: identifier
+        regex: '^(session|sess|client)$'
+      - matches: requests-session-constructor
+      - kind: parenthesized_expression
+        has:
+          matches: requests-session-constructor
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        kind: attribute
+        all:
+          - has:
+              field: object
+              matches: request-receiver
+          - has:
+              field: attribute
+              regex: '^(get|post|put|patch|delete|head|options|request)$'
+    - has:
+        kind: argument_list
+        has:
+          kind: keyword_argument
+          all:
+            - has: { field: name, regex: ^verify$ }
+            - has: { field: value, regex: ^False$ }

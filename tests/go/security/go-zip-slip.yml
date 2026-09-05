@@ -1,0 +1,13 @@
+id: go-zip-slip
+valid:
+- 'package m; func f() { p := filepath.Join(dst, "static.txt") }'
+- 'package m; func f() { r, _ := os.OpenRoot(dst); r.Create(h.Name) }'
+- 'package m; func f() { p := filepath.Join(a, b) }'
+- 'package m; func f() { fi, _ := os.Stat(filepath.Join(dir, e.Name())) }'
+- 'package m; // p := filepath.Join(dst, h.Name)'
+invalid:
+# filepath.Clean normalises ../ but does not confine the result to dst.
+- 'package m; func f() { p := filepath.Join(dst, filepath.Clean(h.Name)) }'
+- 'package m; func f() { p := filepath.Join(dst, h.Name) }'
+- 'package m; func f() { p := filepath.Join(dst, f.Name) }'
+- 'package m; func f() { p := filepath.Join(dir, hdr.Name) }'

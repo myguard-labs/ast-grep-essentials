@@ -1,0 +1,32 @@
+id: go-defer-in-loop
+snapshots:
+  package m; func f() { for _, p := range paths { f, _ := os.Open(p); defer f.Close() } }:
+    labels:
+    - source: defer f.Close()
+      style: primary
+      start: 68
+      end: 83
+    - source: for _, p := range paths { f, _ := os.Open(p); defer f.Close() }
+      style: secondary
+      start: 22
+      end: 85
+  package m; func f() { for i := 0; i < n; i++ { mu.Lock(); defer mu.Unlock() } }:
+    labels:
+    - source: defer mu.Unlock()
+      style: primary
+      start: 58
+      end: 75
+    - source: for i := 0; i < n; i++ { mu.Lock(); defer mu.Unlock() }
+      style: secondary
+      start: 22
+      end: 77
+  package m; func f() { for rows.Next() { r := q(); defer r.Close() } }:
+    labels:
+    - source: defer r.Close()
+      style: primary
+      start: 50
+      end: 65
+    - source: for rows.Next() { r := q(); defer r.Close() }
+      style: secondary
+      start: 22
+      end: 67

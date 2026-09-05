@@ -1,0 +1,28 @@
+id: py-ssrf-request-fstring
+valid:
+- requests.get(API_URL, timeout=5)
+- requests.get("https://api.example.com/v1/status")
+- requests.post(url, json=payload)
+- 'requests.get(BASE, params={"id": user_id})'
+- urlopen(SAFE_URL)
+- urlopen(SAFE_URL, f"payload={value}")
+- requests.post(SAFE_URL, data=f"payload={value}")
+- session.request("POST", SAFE_URL, data=f"payload={value}")
+- session.request(f"{method}", SAFE_URL)
+- '# requests.get(f"https://{host}/a")'
+- cache.get(f"user:{uid}")
+- d.get("k:" + key)
+- self.client.post(f"{base}/submit", json=p)
+- self.session.get(f"{base}/status")
+- requests.get("https://example.com" + "/status")
+invalid:
+- session.get(f"https://{host}/api")
+- requests.get(f"https://{host}/api")
+- requests . get(f"https://{host}/api")
+- requests.get(url=f"https://{host}/api")
+- requests.get("https://" + host + "/api")
+- session.request("GET", f"https://{host}/api")
+- session.request(method="GET", url=f"https://{host}/api")
+- httpx.get(f"{base}/users/{uid}")
+- urlopen(f"http://{target}/meta")
+- urlopen(url=f"http://{target}/meta", data=payload)

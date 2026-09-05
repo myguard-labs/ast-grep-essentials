@@ -1,0 +1,11 @@
+id: go-defer-in-loop
+valid:
+- 'package m; func f() { defer mu.Unlock() }'
+- 'package m; func f() { for _, n := range xs { func() { defer mu.Unlock(); use(n) }() } }'
+- 'package m; func f() { for i := 0; i < n; i++ { g(i) }; defer done() }'
+- 'package m; func f() { for _, n := range xs { go func() { defer wg.Done(); use(n) }() } }'
+- 'package m; // for _, n := range xs { defer f.Close() }'
+invalid:
+- 'package m; func f() { for _, p := range paths { f, _ := os.Open(p); defer f.Close() } }'
+- 'package m; func f() { for i := 0; i < n; i++ { mu.Lock(); defer mu.Unlock() } }'
+- 'package m; func f() { for rows.Next() { r := q(); defer r.Close() } }'

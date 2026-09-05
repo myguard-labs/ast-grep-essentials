@@ -1,0 +1,23 @@
+id: py-mutable-default-arg
+language: python
+severity: warning
+message: >-
+  Mutable default argument ([], {} or set()) — the default object is created
+  once at definition time and shared by every call, so mutations leak between
+  unrelated calls and can carry one caller's data into another's. Default to
+  None and build the container inside the function.
+note: >-
+  Fires on a list, dict or set literal in a parameter default. A default that is
+  never mutated is harmless but still fragile; prefer the None idiom.
+rule:
+  kind: default_parameter
+  has:
+    field: value
+    any:
+      - kind: list
+      - kind: dictionary
+      - kind: set
+      - kind: call
+        has:
+          field: function
+          regex: '^(list|dict|set)$'

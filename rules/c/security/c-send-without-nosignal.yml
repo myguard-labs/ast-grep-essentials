@@ -1,0 +1,42 @@
+id: c-send-without-nosignal
+language: c
+severity: warning
+message: >-
+  send()/sendmsg() called with no MSG_NOSIGNAL in the flags. The default
+  SIGPIPE action terminates the process, so a peer that closes the connection
+  first kills the writer instead of returning EPIPE. Pass MSG_NOSIGNAL, set
+  SO_NOSIGPIPE on the socket, or install a process-wide SIG_IGN at startup —
+  and check which one this program actually has rather than assuming a library
+  did it.
+note: >-
+  Advisory: sendto() is not matched because it is the datagram call in
+  practice and SIGPIPE is a stream-socket concern; a stream socket written
+  through sendto() with a NULL address is left to review. The rule reads
+  the flags argument syntactically and accepts MSG_NOSIGNAL alone or an
+  OR-only mask containing it. Expressions that clear, mask, toggle or
+  conditionally add the bit still match. A program that installs
+  signal(SIGPIPE, SIG_IGN) at startup or sets SO_NOSIGPIPE on the socket is safe
+  and still matches. Worst in code whose purpose is provoking the peer into
+  closing — active health probes, test probers, fuzz drivers, protocol scanners
+  — where the crash lands exactly on the case the tool exists to exercise, and
+  reads as a missing test rather than a bug. Portability note: MSG_NOSIGNAL is
+  POSIX-2008 and Linux; macOS uses the SO_NOSIGPIPE sockopt instead.
+rule:
+  any:
+    - pattern:
+        context: void f(void) { send($FD, $BUF, $LEN, $FLAGS); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { sendmsg($FD, $MSG, $FLAGS); }
+        selector: call_expression
+constraints:
+  FLAGS:
+    not:
+      matches: nosignal-enabled
+utils:
+  nosignal-enabled:
+    all:
+      - regex: '(^|[^A-Za-z0-9_])MSG_NOSIGNAL([^A-Za-z0-9_]|$)'
+      # An OR-only mask of identifiers and integer constants is
+      # unconditionally safe. Parentheses may wrap the mask or its operands.
+      - regex: '^[\s()]*(?:[A-Za-z_][A-Za-z0-9_]*|(?:0[xX][0-9A-Fa-f]+|[0-9]+)[uUlL]*)(?:[\s()]*\|[\s()]*(?:[A-Za-z_][A-Za-z0-9_]*|(?:0[xX][0-9A-Fa-f]+|[0-9]+)[uUlL]*))*[\s()]*$'

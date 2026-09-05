@@ -1,0 +1,14 @@
+id: php-upload-unvalidated-name
+valid:
+- '<?php move_uploaded_file($tmp, $dir . "/" . $generatedId . ".png");'
+- '<?php move_uploaded_file($_FILES["f"]["tmp_name"], $safeDest);'
+- '<?php $name = $_FILES["f"]["name"];'
+- '<?php // move_uploaded_file($tmp, $dir . $_FILES["f"]["name"]);'
+- '<?php move_uploaded_file($tmp, $dir . $_FILES["f"]["size"]);'
+- '<?php move_uploaded_file($tmp, $dir . md5($_FILES["f"]["tmp_name"]));'
+invalid:
+- '<?php move_uploaded_file($tmp, "/var/www/up/" . $_FILES["f"]["name"]);'
+- '<?php move_uploaded_file($_FILES["f"]["tmp_name"], $dir . basename($_FILES["f"]["name"]));'
+- "<?php move_uploaded_file($tmp, '/var/www/up/' . $_FILES['f']['name']);"
+- '<?php MOVE_UPLOADED_FILE($tmp, $dir . $_FILES["f"]["name"]);'
+- '<?php \move_uploaded_file($tmp, $dir . $_FILES["f"]["name"]);'

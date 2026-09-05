@@ -1,0 +1,203 @@
+id: nginx-atoi-unchecked
+valid:
+  # The canonical guard: explicit NGX_ERROR comparison.
+  - |
+    static ngx_int_t
+    parse_count(ngx_str_t *v)
+    {
+        ngx_int_t  n;
+
+        n = ngx_atoi(v->data, v->len);
+
+        if (n == NGX_ERROR) {
+            return NGX_ERROR;
+        }
+
+        return n;
+    }
+  # A range check also rejects NGX_ERROR (-1) and is a correct dismissal.
+  - |
+    static ngx_int_t
+    parse_status(ngx_str_t *v)
+    {
+        ngx_int_t  status;
+
+        status = ngx_atoi(v->data, v->len);
+
+        if (status < 100 || status > 599) {
+            return NGX_ERROR;
+        }
+
+        return status;
+    }
+  # The guard sits after an enclosing if/else rather than beside the call.
+  - |
+    static ngx_int_t
+    parse_range(u_char *p, u_char *end, u_char *dash)
+    {
+        ngx_int_t  first, final;
+
+        if (dash == NULL) {
+            first = ngx_atoi(p, end - p);
+            final = first;
+        } else {
+            first = ngx_atoi(p, dash - p);
+            final = ngx_atoi(dash + 1, end - dash - 1);
+        }
+
+        if (first < 0 || final < first) {
+            return NGX_ERROR;
+        }
+
+        return first;
+    }
+  # Hex flavour, guarded.
+  - |
+    static ngx_int_t
+    parse_hex(ngx_str_t *v)
+    {
+        ngx_int_t  n;
+
+        n = ngx_hextoi(v->data, v->len);
+
+        if (n == NGX_ERROR) {
+            return NGX_ERROR;
+        }
+
+        return n;
+    }
+  # Near miss: a different converter with no NGX_ERROR convention.
+  - |
+    static ngx_int_t
+    other(ngx_str_t *v)
+    {
+        ngx_int_t  n;
+
+        n = my_parse_int(v->data, v->len);
+
+        return n;
+    }
+  # Lexical control: the name appears only in a comment and a string.
+  - |
+    static const char *
+    describe(void)
+    {
+        /* ngx_atoi(p, len) returns NGX_ERROR on bad input */
+        return "ngx_atoi";
+    }
+  # A direct field assignment is guarded by a real comparison operator.
+  - |
+    static ngx_int_t
+    field_guarded(ngx_str_t *v, ngx_http_demo_ctx_t *ctx)
+    {
+        ctx->count = ngx_atoi(v->data, v->len);
+
+        if (ctx->count == NGX_ERROR) {
+            return NGX_ERROR;
+        }
+
+        return ctx->count;
+    }
+invalid:
+  # A declaration initializer must be checked just like a later assignment.
+  - |
+    static ngx_int_t
+    initialized(ngx_str_t *v)
+    {
+        ngx_int_t  n = ngx_atoi(v->data, v->len);
+
+        return n;
+    }
+  # Result used as a length with no validation at all.
+  - |
+    static ngx_int_t
+    unchecked(ngx_str_t *v, ngx_str_t *out)
+    {
+        ngx_int_t  len;
+
+        len = ngx_atoi(v->data, v->len);
+
+        out->len = (size_t) len;
+
+        return NGX_OK;
+    }
+  # Stored straight into a struct field; NGX_ERROR becomes the value.
+  - |
+    static ngx_int_t
+    stored(ngx_str_t *v, ngx_http_demo_ctx_t *r)
+    {
+        ngx_int_t  slot;
+
+        slot = ngx_atoi(v->data, v->len);
+
+        r->min = slot;
+
+        return NGX_OK;
+    }
+  # Offset added to a pointer with no check: NGX_ERROR underflows the pointer.
+  - |
+    static ngx_int_t
+    offset(ngx_str_t *v, ngx_str_t *ret)
+    {
+        ngx_int_t  offs;
+
+        offs = ngx_atoi(v->data, v->len);
+
+        ret->data += offs;
+
+        return NGX_OK;
+    }
+  # ngx_atoof flavour, equally unchecked.
+  - |
+    static ngx_int_t
+    sized(ngx_str_t *v, off_t *out)
+    {
+        off_t  n;
+
+        n = ngx_atoof(v->data, v->len);
+
+        *out = n;
+
+        return NGX_OK;
+    }
+  # ngx_hextoi flavour, unchecked.
+  - |
+    static ngx_int_t
+    hexed(ngx_str_t *v, ngx_uint_t *out)
+    {
+        ngx_int_t  n;
+
+        n = ngx_hextoi(v->data, v->len);
+
+        *out = (ngx_uint_t) n;
+
+        return NGX_OK;
+    }
+  # Arithmetic use is not a validation comparison.
+  - |
+    static ngx_int_t
+    arithmetic_only(ngx_str_t *v)
+    {
+        ngx_int_t  n;
+
+        n = ngx_atoi(v->data, v->len);
+        n = n + 1;
+
+        return n;
+    }
+  # Direct field assignments have the same NGX_ERROR contract.
+  - |
+    static ngx_int_t
+    field_unchecked(ngx_str_t *v, ngx_http_demo_ctx_t *ctx)
+    {
+        ctx->count = ngx_atoi(v->data, v->len);
+        return ctx->count;
+    }
+  # Indirect assignments likewise need validation.
+  - |
+    static ngx_int_t
+    indirect_unchecked(ngx_str_t *v, ngx_int_t *out)
+    {
+        *out = ngx_atoi(v->data, v->len);
+        return *out;
+    }

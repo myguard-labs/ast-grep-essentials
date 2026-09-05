@@ -1,0 +1,37 @@
+id: py-bare-except
+language: python
+severity: warning
+message: >-
+  Bare `except:` catches BaseException subclasses such as KeyboardInterrupt and
+  SystemExit, so a shutdown signal can be treated as a routine error (OWASP
+  A10:2025, CWE-396). Catch `Exception` when you mean ordinary failures, or name
+  the specific errors you can handle.
+note: >-
+  Fires on a clause with no exception type. A bare clause that re-raises with
+  a bare `raise` is the documented cleanup idiom and does not match; one that
+  raises a different exception replaces KeyboardInterrupt or SystemExit and
+  does match. PEP 760 proposed removing this
+  form from the language.
+utils:
+  terminal-bare-reraise:
+    kind: raise_statement
+    regex: '^raise$'
+    not:
+      precedes:
+        stopBy: end
+        all:
+          - regex: '.'
+          - not: {kind: comment}
+rule:
+  all:
+    - kind: except_clause
+    - not:
+        has:
+          field: value
+          regex: '.'
+    # The cleanup idiom ends the handler block with an unconditional bare re-raise.
+    - not:
+        has:
+          kind: block
+          has:
+            matches: terminal-bare-reraise

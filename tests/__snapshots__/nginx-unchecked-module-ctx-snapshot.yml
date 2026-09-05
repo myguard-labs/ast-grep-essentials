@@ -1,0 +1,825 @@
+id: nginx-unchecked-module-ctx
+snapshots:
+  ? |
+    static ngx_int_t
+    and_then_deref(ngx_http_request_t *r, ngx_uint_t ready)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx && ready) {
+            trace_request(r);
+        }
+
+        return ctx->status;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 111
+      end: 166
+    - source: ctx
+      style: secondary
+      start: 111
+      end: 114
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 117
+      end: 140
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 117
+      end: 165
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 111
+      end: 165
+    - source: ctx->status
+      style: secondary
+      start: 236
+      end: 247
+    - source: return ctx->status;
+      style: secondary
+      start: 229
+      end: 248
+  ? |
+    static ngx_int_t
+    conjunctive_null_guard(ngx_http_request_t *r, ngx_uint_t ready)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL && ready) {
+            return NGX_DECLINED;
+        }
+
+        return ctx->status;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 119
+      end: 174
+    - source: ctx
+      style: secondary
+      start: 119
+      end: 122
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 125
+      end: 148
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 125
+      end: 173
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 119
+      end: 173
+    - source: ctx->status
+      style: secondary
+      start: 255
+      end: 266
+    - source: return ctx->status;
+      style: secondary
+      start: 248
+      end: 267
+  ? |
+    static ngx_int_t
+    decl(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+        return ctx->status;
+    }
+  : labels:
+    - source: ngx_http_demo_ctx_t  *ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 51
+      end: 128
+    - source: ctx
+      style: secondary
+      start: 73
+      end: 76
+    - source: '*ctx'
+      style: secondary
+      start: 72
+      end: 76
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 79
+      end: 102
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 79
+      end: 127
+    - source: '*ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)'
+      style: secondary
+      start: 72
+      end: 127
+    - source: ctx->status
+      style: secondary
+      start: 140
+      end: 151
+    - source: return ctx->status;
+      style: secondary
+      start: 133
+      end: 152
+  ? |
+    static ngx_int_t
+    deref_in_null_branch(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL) {
+            log_status(ctx->status);
+            return NGX_DECLINED;
+        }
+
+        return NGX_OK;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 99
+      end: 154
+    - source: ctx
+      style: secondary
+      start: 99
+      end: 102
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 105
+      end: 128
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 105
+      end: 153
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 99
+      end: 153
+    - source: ctx->status
+      style: secondary
+      start: 198
+      end: 209
+    - source: |-
+        if (ctx == NULL) {
+                log_status(ctx->status);
+                return NGX_DECLINED;
+            }
+      style: secondary
+      start: 160
+      end: 246
+  ? |
+    static ngx_int_t
+    deref_in_null_or_branch(ngx_http_request_t *r, ngx_uint_t ready)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL || ready) {
+            return ctx->status;
+        }
+
+        return NGX_OK;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 120
+      end: 175
+    - source: ctx
+      style: secondary
+      start: 120
+      end: 123
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 126
+      end: 149
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 126
+      end: 174
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 120
+      end: 174
+    - source: ctx->status
+      style: secondary
+      start: 224
+      end: 235
+    - source: |-
+        if (ctx == NULL || ready) {
+                return ctx->status;
+            }
+      style: secondary
+      start: 181
+      end: 242
+  ? |
+    static ngx_int_t
+    explicit_deref(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        return (*ctx).status;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 93
+      end: 148
+    - source: ctx
+      style: secondary
+      start: 93
+      end: 96
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 99
+      end: 122
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 99
+      end: 147
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 93
+      end: 147
+    - source: (*ctx).status
+      style: secondary
+      start: 161
+      end: 174
+    - source: return (*ctx).status;
+      style: secondary
+      start: 154
+      end: 175
+  ? |
+    static ngx_int_t
+    intervening(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        trace_request(r);
+        return ctx->status;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 90
+      end: 145
+    - source: ctx
+      style: secondary
+      start: 90
+      end: 93
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 96
+      end: 119
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 96
+      end: 144
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 90
+      end: 144
+    - source: ctx->status
+      style: secondary
+      start: 180
+      end: 191
+    - source: return ctx->status;
+      style: secondary
+      start: 173
+      end: 192
+  ? |
+    static ngx_int_t
+    late_guard(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+        ngx_uint_t            n;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        n = ctx->count;
+
+        if (ctx == NULL) {
+            return NGX_DECLINED;
+        }
+
+        return (ngx_int_t) n;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 118
+      end: 173
+    - source: ctx
+      style: secondary
+      start: 118
+      end: 121
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 124
+      end: 147
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 124
+      end: 172
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 118
+      end: 172
+    - source: ctx->count
+      style: secondary
+      start: 183
+      end: 193
+    - source: n = ctx->count;
+      style: secondary
+      start: 179
+      end: 194
+  ? |
+    static ngx_int_t
+    negated_nonterminating(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (!ctx) {
+            log_missing_ctx(r);
+        }
+
+        return ctx->status;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 101
+      end: 156
+    - source: ctx
+      style: secondary
+      start: 101
+      end: 104
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 107
+      end: 130
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 107
+      end: 155
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 101
+      end: 155
+    - source: ctx->status
+      style: secondary
+      start: 220
+      end: 231
+    - source: return ctx->status;
+      style: secondary
+      start: 213
+      end: 232
+  ? |
+    static ngx_int_t
+    nested_return_nonterminating(ngx_http_request_t *r, ngx_uint_t noisy)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL) {
+            if (noisy) {
+                return NGX_DECLINED;
+            }
+        }
+
+        return ctx->status;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 125
+      end: 180
+    - source: ctx
+      style: secondary
+      start: 125
+      end: 128
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 131
+      end: 154
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 131
+      end: 179
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 125
+      end: 179
+    - source: ctx->status
+      style: secondary
+      start: 287
+      end: 298
+    - source: return ctx->status;
+      style: secondary
+      start: 280
+      end: 299
+  ? |
+    static ngx_int_t
+    null_compare_nonterminating(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL) {
+            log_missing_ctx(r);
+        }
+
+        return ctx->status;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 106
+      end: 161
+    - source: ctx
+      style: secondary
+      start: 106
+      end: 109
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 112
+      end: 135
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 112
+      end: 160
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 106
+      end: 160
+    - source: ctx->status
+      style: secondary
+      start: 232
+      end: 243
+    - source: return ctx->status;
+      style: secondary
+      start: 225
+      end: 244
+  ? |
+    static ngx_int_t
+    or_then_deref(ngx_http_request_t *r, ngx_uint_t fallback)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx || fallback) {
+            trace_request(r);
+        }
+
+        return ctx->status;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 113
+      end: 168
+    - source: ctx
+      style: secondary
+      start: 113
+      end: 116
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 119
+      end: 142
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 119
+      end: 167
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 113
+      end: 167
+    - source: ctx->status
+      style: secondary
+      start: 241
+      end: 252
+    - source: return ctx->status;
+      style: secondary
+      start: 234
+      end: 253
+  ? |
+    static ngx_int_t
+    reverse_null_guard(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx->done || ctx == NULL) {
+            return NGX_DECLINED;
+        }
+
+        return ctx->status;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 97
+      end: 152
+    - source: ctx
+      style: secondary
+      start: 97
+      end: 100
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 103
+      end: 126
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 103
+      end: 151
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 97
+      end: 151
+    - source: (ctx->done || ctx == NULL)
+      style: secondary
+      start: 161
+      end: 187
+    - source: |-
+        if (ctx->done || ctx == NULL) {
+                return NGX_DECLINED;
+            }
+      style: secondary
+      start: 158
+      end: 224
+  ? |
+    static ngx_int_t
+    reverse_positive_guard(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx->ready && ctx) {
+            return ctx->status;
+        }
+
+        return NGX_DECLINED;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 101
+      end: 156
+    - source: ctx
+      style: secondary
+      start: 101
+      end: 104
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 107
+      end: 130
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 107
+      end: 155
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 101
+      end: 155
+    - source: (ctx->ready && ctx)
+      style: secondary
+      start: 165
+      end: 184
+    - source: |-
+        if (ctx->ready && ctx) {
+                return ctx->status;
+            }
+      style: secondary
+      start: 162
+      end: 220
+  ? |
+    static ngx_int_t
+    stream_unguarded(ngx_stream_session_t *s)
+    {
+        ngx_stream_demo_ctx_t  *ctx;
+
+        ctx = ngx_stream_get_module_ctx(s, ngx_stream_demo_module);
+
+        return ctx->status;
+    }
+  : labels:
+    - source: ctx = ngx_stream_get_module_ctx(s, ngx_stream_demo_module);
+      style: primary
+      start: 99
+      end: 158
+    - source: ctx
+      style: secondary
+      start: 99
+      end: 102
+    - source: ngx_stream_get_module_ctx
+      style: secondary
+      start: 105
+      end: 130
+    - source: ngx_stream_get_module_ctx(s, ngx_stream_demo_module)
+      style: secondary
+      start: 105
+      end: 157
+    - source: ctx = ngx_stream_get_module_ctx(s, ngx_stream_demo_module)
+      style: secondary
+      start: 99
+      end: 157
+    - source: ctx->status
+      style: secondary
+      start: 171
+      end: 182
+    - source: return ctx->status;
+      style: secondary
+      start: 164
+      end: 183
+  ? |
+    static ngx_int_t
+    unguarded(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        return ctx->status;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 88
+      end: 143
+    - source: ctx
+      style: secondary
+      start: 88
+      end: 91
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 94
+      end: 117
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 94
+      end: 142
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 88
+      end: 142
+    - source: ctx->status
+      style: secondary
+      start: 156
+      end: 167
+    - source: return ctx->status;
+      style: secondary
+      start: 149
+      end: 168
+  ? |
+    static ngx_int_t
+    unsafe_alternative(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx != NULL) {
+            return NGX_OK;
+        } else {
+            return ctx->status;
+        }
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 97
+      end: 152
+    - source: ctx
+      style: secondary
+      start: 97
+      end: 100
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 103
+      end: 126
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 103
+      end: 151
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 97
+      end: 151
+    - source: ctx->status
+      style: secondary
+      start: 228
+      end: 239
+    - source: |-
+        if (ctx != NULL) {
+                return NGX_OK;
+            } else {
+                return ctx->status;
+            }
+      style: secondary
+      start: 158
+      end: 246
+  ? |
+    static ngx_int_t
+    unsafe_or_consequence(ngx_http_request_t *r, ngx_uint_t ready)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx != NULL || ready) {
+            return ctx->status;
+        }
+
+        return NGX_DECLINED;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 118
+      end: 173
+    - source: ctx
+      style: secondary
+      start: 118
+      end: 121
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 124
+      end: 147
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 124
+      end: 172
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 118
+      end: 172
+    - source: ctx->status
+      style: secondary
+      start: 222
+      end: 233
+    - source: |-
+        if (ctx != NULL || ready) {
+                return ctx->status;
+            }
+      style: secondary
+      start: 179
+      end: 240
+  ? |
+    static void
+    resume(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        ctx->resume_handler = ngx_http_demo_wev_handler;
+        ctx->waiting = 0;
+    }
+  : labels:
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+      style: primary
+      start: 80
+      end: 135
+    - source: ctx
+      style: secondary
+      start: 80
+      end: 83
+    - source: ngx_http_get_module_ctx
+      style: secondary
+      start: 86
+      end: 109
+    - source: ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 86
+      end: 134
+    - source: ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module)
+      style: secondary
+      start: 80
+      end: 134
+    - source: ctx->resume_handler
+      style: secondary
+      start: 141
+      end: 160
+    - source: ctx->resume_handler = ngx_http_demo_wev_handler;
+      style: secondary
+      start: 141
+      end: 189

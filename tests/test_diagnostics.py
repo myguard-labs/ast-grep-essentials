@@ -37,6 +37,12 @@ class DiagnosticTests(unittest.TestCase):
             ("the default loader",),
         ),
         (
+            "python/correctness/py-bare-except.yml",
+            "try:\n    work()\nexcept:\n    pass",
+            ("BaseException subclasses", "KeyboardInterrupt", "SystemExit"),
+            ("MemoryError", "out-of-memory"),
+        ),
+        (
             "c/correctness/c-time-truncated-to-int.yml",
             "void f(void) { unsigned int stamp = time(NULL); }",
             ("Signed 32-bit seconds", "unsigned types have a different range", "time.2.html"),
@@ -53,6 +59,12 @@ class DiagnosticTests(unittest.TestCase):
             'package p\nimport "math/rand"',
             ("import alone does not identify", "ChaCha8-based global generation"),
             ("a deterministic, predictable PRNG",),
+        ),
+        (
+            "go/correctness/go-context-cancel-leak.yml",
+            "package m; func f() { ctx, _ := context.WithCancelCause(p); use(ctx) }",
+            ("defer cancel()", "defer cancel(nil)", "WithCancelCause"),
+            (),
         ),
         (
             "c/correctness/c-signal-not-sigaction.yml",
@@ -102,6 +114,25 @@ class DiagnosticTests(unittest.TestCase):
                                  "duplicate secondary label ranges")
                 self.assertEqual(sum(label["text"] == '\"SELECT $column\"'
                                      for label in labels), 1)
+
+    def test_php_upload_diagnostic_is_literal_and_complete(self):
+        result = subprocess.run(
+            [AST_GREP, "scan", "--rule",
+             ROOT / "rules/php/security/php-upload-unvalidated-name.yml",
+             "--json=compact", "--stdin"],
+            input="<?php move_uploaded_file($_FILES['f']['tmp_name'], "
+                  "'/uploads/' . $_FILES['f']['name']);",
+            text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(result.returncode, 1, result.stderr)
+        findings = json.loads(result.stdout)
+        self.assertEqual(len(findings), 1, result.stderr)
+        finding = findings[0]
+        self.assertEqual(finding["severity"], "error")
+        diagnostic = f'{finding["message"]}\n{finding["note"]}'
+        self.assertIn("client-supplied upload name field", diagnostic)
+        self.assertIn("Generate the stored name yourself", diagnostic)
+        self.assertNotIn("$_FILES", diagnostic)
 
     def test_emitted_diagnostic_contracts(self):
         for relative, source, required, forbidden in self.CASES:

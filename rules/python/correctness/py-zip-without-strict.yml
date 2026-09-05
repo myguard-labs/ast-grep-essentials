@@ -1,0 +1,45 @@
+id: py-zip-without-strict
+language: python
+severity: info
+message: >-
+  `zip()` without `strict=` stops at the shortest argument, so a length
+  mismatch between parallel sequences is silently truncated instead of raising
+  (PEP 618, ruff B905). Pass `strict=True` when the sequences are expected to
+  correspond element by element.
+note: >-
+  `strict=` requires Python 3.10 or newer; check the interpreter floor before
+  applying the fix. The rule cannot tell a deliberate shortest-wins zip — a
+  sequence paired with `itertools.count()` or an intentionally longer lookup
+  table — from an alignment invariant, so an `info` match is a review prompt.
+  Zero-argument and single-argument `zip()` calls cannot mismatch and do not
+  match, except for `zip(*rows)`: one `list_splat` argument expands to many
+  iterables, so it does match.
+rule:
+  all:
+    - kind: call
+    - has:
+        field: function
+        kind: identifier
+        regex: ^zip$
+    - has:
+        field: arguments
+        any:
+          - has:
+              nthChild:
+                position: 2
+                ofRule:
+                  not:
+                    any:
+                      - kind: keyword_argument
+                      - kind: dictionary_splat
+                      - kind: comment
+          - has:
+              kind: list_splat
+    - not:
+        has:
+          field: arguments
+          has:
+            kind: keyword_argument
+            has:
+              field: name
+              regex: ^strict$

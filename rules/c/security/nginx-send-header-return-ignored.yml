@@ -1,0 +1,37 @@
+id: nginx-send-header-return-ignored
+language: c
+severity: warning
+message: >-
+  ngx_http_send_header called as a bare statement with its return value
+  discarded. The documented contract is to stop when it returns NGX_ERROR, a
+  value greater than NGX_OK, or when r->header_only is set: a body filter has
+  already finalized the request in those cases. Sending the body anyway writes
+  after finalization and double-counts r->main->count. Use the house idiom
+  `rc = ngx_http_send_header(r); if (rc == NGX_ERROR || rc > NGX_OK ||
+  r->header_only) { return rc; }`.
+note: >-
+  A match means the call is an expression statement whose value is not assigned,
+  returned, or tested. It does not model whether the following code actually
+  sends a body: a handler that only sends headers and finalizes immediately is
+  harmless and still matches, so read the site before acting. The HEAD-request
+  path is the one that bites most often, because r->header_only makes a
+  correct-looking handler emit a body for a request that must not have one.
+rule:
+  any:
+    # Specific wrappers precede the broad form so smart matching binds the
+    # intended expression shape.
+    - pattern:
+        context: void f(void) { ((ngx_http_send_header($R))); }
+        selector: expression_statement
+    - pattern:
+        context: void f(void) { ($TYPE) ngx_http_send_header($R); }
+        selector: expression_statement
+    - pattern:
+        context: void f(void) { (void) ngx_http_send_header($R); }
+        selector: expression_statement
+    - pattern:
+        context: void f(void) { (ngx_http_send_header($R)); }
+        selector: expression_statement
+    - pattern:
+        context: void f(void) { ngx_http_send_header($R); }
+        selector: expression_statement

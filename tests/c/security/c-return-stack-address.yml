@@ -1,0 +1,11 @@
+id: c-return-stack-address
+valid:
+- int f(void) { int x = 1; return x; }
+- int *f(int *p) { return p; }
+- int *f(void) { static int x; return &x; }
+- int *f(void) { return ngx_palloc(pool, n); }
+- int f(int *p) { return *p; }
+- /* int *f(void) { int x; return &x; } */
+invalid:
+- int *f(void) { int x = 1; return &x; }
+- struct s *f(void) { struct s v; return &v; }

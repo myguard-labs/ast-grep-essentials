@@ -1,0 +1,202 @@
+id: py-tarfile-extractall
+language: python
+severity: warning
+message: >-
+  Archive extracted without a protective filter — a member named
+  ../../etc/cron.d/x, or an absolute path, can be written outside the destination
+  (CWE-22). Python 3.12 and 3.13
+  accept filter="data", which rejects traversal, absolute paths,
+  out-of-destination links and device files, and 3.14 defaults to it; on 3.11
+  and older, validate every member path against the destination before
+  extracting. No built-in filter makes untrusted archives safe without limits
+  and prior inspection.
+note: >-
+  Fires on extractall/extract with no recognized protective filter on the call itself;
+  one parenthesis layer around a recognized literal or filter function is accepted,
+  where the receiver has a preceding tarfile.open, tarfile.TarFile or
+  tarfile.TarFile.open assignment in the same statement list or the statement
+  list containing an enclosing if, is bound by the nearest enclosing with
+  statement, or the call is chained directly on that open. A simple intervening
+  assignment in the relevant statement list stops the match. Other control-flow
+  bindings and reassignments, or bindings in another file, are not modelled, so
+  confirm the receiver type.
+  zipfile.ZipFile.extractall has no filter parameter and is outside this
+  tar-specific rule; Python still requires prior inspection of untrusted ZIP
+  archives. Python 3.12 and 3.13 accept filter="data" but do not default to it;
+  PEP 706 made it the default in 3.14, reducing path and link risks. Untrusted
+  archives still require prior inspection and resource limits. Check the
+  interpreter floor and archive trust before dismissing, since the same call on
+  an older interpreter is exploitable.
+utils:
+  # Only a known path-protecting filter on this call suppresses the review.
+  has-protective-filter:
+    has:
+      field: arguments
+      has:
+        kind: keyword_argument
+        all:
+          - has:
+              field: name
+              regex: '^filter$'
+          - has:
+              field: value
+              any:
+                - kind: string
+                  regex: '^[rRuUfF]*["'']{1,3}(data|tar)["'']{1,3}$'
+                - kind: identifier
+                  regex: '^(data_filter|tar_filter)$'
+                - kind: attribute
+                  all:
+                    - has: {field: object, regex: '^tarfile$'}
+                    - has:
+                        field: attribute
+                        regex: '^(data_filter|tar_filter)$'
+                - kind: parenthesized_expression
+                  has:
+                    any:
+                      - kind: string
+                        regex: '^[rRuUfF]*["'']{1,3}(data|tar)["'']{1,3}$'
+                      - kind: identifier
+                        regex: '^(data_filter|tar_filter)$'
+                      - kind: attribute
+                        all:
+                          - has: {field: object, regex: '^tarfile$'}
+                          - has:
+                              field: attribute
+                              regex: '^(data_filter|tar_filter)$'
+  tar-with-binding:
+    kind: as_pattern
+    all:
+      - has:
+          stopBy: end
+          kind: call
+          has:
+            field: function
+            regex: '^tarfile\.(open|TarFile|TarFile\.open)$'
+      - has:
+          kind: as_pattern_target
+          pattern: $T
+  tar-binding-statement:
+    any:
+      - pattern:
+          context: $T = tarfile.open($$$A)
+          selector: expression_statement
+      - pattern:
+          context: $T = tarfile.TarFile($$$A)
+          selector: expression_statement
+      - pattern:
+          context: $T = tarfile.TarFile.open($$$A)
+          selector: expression_statement
+      - pattern:
+          context: $T = (tarfile.open($$$A))
+          selector: expression_statement
+      - pattern:
+          context: $T = (tarfile.TarFile($$$A))
+          selector: expression_statement
+      - pattern:
+          context: $T = (tarfile.TarFile.open($$$A))
+          selector: expression_statement
+      - pattern:
+          context: '$T: $_ = tarfile.open($$$A)'
+          selector: expression_statement
+      - pattern:
+          context: '$T: $_ = tarfile.TarFile($$$A)'
+          selector: expression_statement
+      - pattern:
+          context: '$T: $_ = tarfile.TarFile.open($$$A)'
+          selector: expression_statement
+  receiver-assignment-statement:
+    kind: expression_statement
+    has:
+      any:
+        - pattern: $T = $_
+        - pattern: '$T: $_ = $_'
+rule:
+  kind: call
+  any:
+    # Chained directly on the open call.
+    - all:
+        - any:
+            - pattern: tarfile.open($$$A).$M($$$ARGS)
+            - pattern: tarfile.TarFile($$$A).$M($$$ARGS)
+            - pattern: tarfile.TarFile.open($$$A).$M($$$ARGS)
+            - pattern: (tarfile.open($$$A)).$M($$$ARGS)
+            - pattern: (tarfile.TarFile($$$A)).$M($$$ARGS)
+            - pattern: (tarfile.TarFile.open($$$A)).$M($$$ARGS)
+        - not:
+            matches: has-protective-filter
+    # Receiver bound by the nearest enclosing with statement.
+    - all:
+        - pattern: $T.$M($$$ARGS)
+        - has:
+            field: function
+            regex: '\.(extractall|extract)$'
+        - not:
+            matches: has-protective-filter
+        - inside:
+            stopBy:
+              kind: with_statement
+            kind: with_statement
+            has:
+              stopBy: end
+              matches: tar-with-binding
+        # A nested function runs after the with statement has exited.
+        - not:
+            inside:
+              kind: function_definition
+              stopBy:
+                kind: with_statement
+        # A simple rebind in this statement list changes the receiver type.
+        - not:
+            inside:
+              kind: expression_statement
+              stopBy:
+                kind: expression_statement
+              follows:
+                matches: receiver-assignment-statement
+                stopBy: end
+    # Receiver assigned earlier in the same statement list. Stop at the nearest
+    # assignment to the name so an intervening rebind cannot inherit tar type.
+    - all:
+        - pattern: $T.$M($$$ARGS)
+        - has:
+            field: function
+            regex: '\.(extractall|extract)$'
+        - not:
+            matches: has-protective-filter
+        - inside:
+            kind: expression_statement
+            stopBy:
+              kind: expression_statement
+            follows:
+              matches: tar-binding-statement
+              stopBy:
+                matches: receiver-assignment-statement
+    # Receiver assigned in the statement list containing an enclosing if.
+    - all:
+        - pattern: $T.$M($$$ARGS)
+        - has:
+            field: function
+            regex: '\.(extractall|extract)$'
+        - not:
+            matches: has-protective-filter
+        - inside:
+            kind: if_statement
+            stopBy:
+              kind: function_definition
+            follows:
+              matches: tar-binding-statement
+              stopBy:
+                matches: receiver-assignment-statement
+        # A rebind inside the conditional changes the receiver type.
+        - not:
+            inside:
+              kind: expression_statement
+              stopBy:
+                kind: expression_statement
+              follows:
+                matches: receiver-assignment-statement
+                stopBy: end
+constraints:
+  M:
+    regex: '^(extractall|extract)$'

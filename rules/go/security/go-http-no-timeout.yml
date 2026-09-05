@@ -1,0 +1,98 @@
+id: go-http-no-timeout
+language: go
+severity: warning
+message: >-
+  HTTP client or server lacks the timeout coverage needed to bound active
+  requests. A slow or hostile peer can hold a connection and its goroutine until
+  file descriptors or memory run out. Set a positive Timeout on a client. On a
+  server, set a positive ReadHeaderTimeout or ReadTimeout and a positive
+  WriteTimeout.
+note: >-
+  The package qualifier is required, so unrelated Client and Server types do
+  not match. For Server, a zero ReadHeaderTimeout inherits ReadTimeout, while a
+  negative value disables the header timeout; IdleTimeout alone does not bound
+  active requests. Computed expressions that evaluate to zero or negative are
+  not resolved.
+utils:
+  zero-timeout-value:
+    regex: '(?s)^(?:\s|[()]|/\*.*?\*/|//[^\n]*(?:\n|$))*\+?(?:0[xX](?:(?:[0_]+(?:\.[0_]*)?|\.[0_]+)[pP][+-]?[0-9_]+|[0_]+)|0[bB][0_]+|0[oO][0_]+|[0_]+(?:\.[0_]*)?(?:[eE][+-]?[0-9_]+)?|\.[0_]+(?:[eE][+-]?[0-9_]+)?)(?:\s|[()]|/\*.*?\*/|//[^\n]*(?:\n|$))*$'
+  negative-timeout-value:
+    regex: '(?s)^(?:\s|[()]|/\*.*?\*/|//[^\n]*(?:\n|$))*-.*$'
+  nonpositive-timeout-value:
+    any:
+      - matches: zero-timeout-value
+      - matches: negative-timeout-value
+  positive-client-timeout:
+    kind: keyed_element
+    all:
+      - has: {field: key, regex: '^Timeout$'}
+      - not:
+          has: {field: value, matches: nonpositive-timeout-value}
+  positive-read-timeout:
+    kind: keyed_element
+    all:
+      - has: {field: key, regex: '^ReadTimeout$'}
+      - not:
+          has: {field: value, matches: nonpositive-timeout-value}
+  positive-read-header-timeout:
+    kind: keyed_element
+    all:
+      - has: {field: key, regex: '^ReadHeaderTimeout$'}
+      - not:
+          has: {field: value, matches: nonpositive-timeout-value}
+  negative-read-header-timeout:
+    kind: keyed_element
+    all:
+      - has: {field: key, regex: '^ReadHeaderTimeout$'}
+      - has: {field: value, matches: negative-timeout-value}
+  positive-write-timeout:
+    kind: keyed_element
+    all:
+      - has: {field: key, regex: '^WriteTimeout$'}
+      - not:
+          has: {field: value, matches: nonpositive-timeout-value}
+rule:
+  kind: composite_literal
+  any:
+    - all:
+        - has: {field: type, regex: '^http\.Client$'}
+        - has:
+            field: body
+            kind: literal_value
+        - not:
+            has:
+              field: body
+              kind: literal_value
+              has:
+                matches: positive-client-timeout
+    - all:
+        - has: {field: type, regex: '^http\.Server$'}
+        - has:
+            field: body
+            kind: literal_value
+        - any:
+            - not:
+                any:
+                  - has:
+                      field: body
+                      kind: literal_value
+                      has:
+                        matches: positive-read-header-timeout
+                  - all:
+                      - has:
+                          field: body
+                          kind: literal_value
+                          has:
+                            matches: positive-read-timeout
+                      - not:
+                          has:
+                            field: body
+                            kind: literal_value
+                            has:
+                              matches: negative-read-header-timeout
+            - not:
+                has:
+                  field: body
+                  kind: literal_value
+                  has:
+                    matches: positive-write-timeout

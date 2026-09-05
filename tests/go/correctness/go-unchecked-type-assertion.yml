@@ -1,0 +1,18 @@
+id: go-unchecked-type-assertion
+valid:
+- 'package m; func f() { s, ok := i.(string); if !ok { return } }'
+- 'package m; func f() { v, ok := m["k"].(int); use(v, ok) }'
+- 'package m; func f() { switch v := i.(type) { case string: use(v) } }'
+- 'package m; func f() { var s, ok = i.(string); use(s, ok) }'
+- 'package m; func f() { s, ok := (i.(string)); use(s, ok) }'
+- 'package m; func f() { s, ok = (i.(string)); use(s, ok) }'
+- 'package m; func f() { var s, ok = (i.(string)); use(s, ok) }'
+- 'package m; func f() { var s string = "x" }'
+- 'package m; // s := i.(string)'
+invalid:
+- 'package m; func f() { s := i.(string) }'
+- 'package m; func f() { use(i.(*Config)) }'
+- 'package m; func f() { return i.(error).Error() }'
+- 'package m; func f() { n, s := len(xs), i.(string); use(n, s) }'
+- 'package m; func f() { s, n := i.(string), len(xs); use(s, n) }'
+- 'package m; func f() { var n, s = len(xs), i.(string); use(n, s) }'

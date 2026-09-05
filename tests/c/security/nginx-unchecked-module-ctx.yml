@@ -1,0 +1,467 @@
+id: nginx-unchecked-module-ctx
+valid:
+  # Guarded with an explicit NULL comparison before any member access.
+  - |
+    static ngx_int_t
+    handler(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL) {
+            return NGX_DECLINED;
+        }
+
+        return ctx->status;
+    }
+  # The house idiom: NULL check folded into a compound condition.
+  - |
+    static ngx_int_t
+    filter(ngx_http_request_t *r, ngx_chain_t *in)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL || ctx->done) {
+            return ngx_http_next_body_filter(r, in);
+        }
+
+        ctx->done = 1;
+        return NGX_OK;
+    }
+  # Truthiness test rather than an explicit comparison.
+  - |
+    static ngx_int_t
+    probe(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx && ctx->active) {
+            return NGX_OK;
+        }
+
+        return NGX_DECLINED;
+    }
+  # Negated truthiness guard.
+  - |
+    static ngx_int_t
+    negated(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (!ctx) {
+            return NGX_DECLINED;
+        }
+
+        return ctx->status;
+    }
+  # Fetched and stored, never dereferenced here — nothing to guard.
+  - |
+    static void
+    store(ngx_http_request_t *r, ngx_http_demo_ctx_t **out)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        *out = ctx;
+    }
+  # Lexical control: the call name appears in a comment and a string only.
+  - |
+    static ngx_int_t
+    lexical(ngx_http_request_t *r)
+    {
+        /* ngx_http_get_module_ctx(r, m) would return NULL here */
+        static const char *msg = "ngx_http_get_module_ctx";
+
+        return NGX_OK;
+    }
+  # Near miss: a different accessor whose result cannot be NULL this way.
+  - |
+    static ngx_int_t
+    conf(ngx_http_request_t *r)
+    {
+        ngx_http_demo_loc_conf_t  *dlcf;
+
+        dlcf = ngx_http_get_module_loc_conf(r, ngx_http_demo_module);
+
+        return dlcf->enable;
+    }
+  # Declaration initializer, guarded.
+  - |
+    static ngx_int_t
+    decl_guarded(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL) {
+            return NGX_DECLINED;
+        }
+        return ctx->status;
+    }
+  # Reversed NULL comparison with a direct jump also protects later access.
+  - |
+    static ngx_int_t
+    reversed_goto_guard(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (NULL == ctx) {
+            goto failed;
+        }
+
+        return ctx->status;
+
+    failed:
+        return NGX_DECLINED;
+    }
+  # A member access inside a positive branch is scoped to non-NULL ctx.
+  - |
+    static ngx_int_t
+    positive_scope(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx) {
+            return ctx->status;
+        }
+
+        return NGX_DECLINED;
+    }
+  # A true AND condition also establishes ctx for its consequence.
+  - |
+    static ngx_int_t
+    short_circuit_scope(ngx_http_request_t *r, ngx_uint_t ready)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx && ready) {
+            return ctx->status;
+        }
+
+        return NGX_DECLINED;
+    }
+  # A NULL condition makes the alternative branch non-NULL.
+  - |
+    static ngx_int_t
+    safe_alternative(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL) {
+            return NGX_DECLINED;
+        } else {
+            return ctx->status;
+        }
+    }
+  # A non-dereferencing left operand is safe before the truthiness check.
+  - |
+    static ngx_int_t
+    safe_reverse_positive(ngx_http_request_t *r, ngx_uint_t ready)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ready && ctx) {
+            return ctx->status;
+        }
+
+        return NGX_DECLINED;
+    }
+  # A non-dereferencing left operand is safe before the NULL-exit check.
+  - |
+    static ngx_int_t
+    safe_reverse_null(ngx_http_request_t *r, ngx_uint_t ready)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ready || ctx == NULL) {
+            return NGX_DECLINED;
+        }
+
+        return ctx->status;
+    }
+invalid:
+  # The left operand dereferences ctx before the later truthiness check.
+  - |
+    static ngx_int_t
+    reverse_positive_guard(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx->ready && ctx) {
+            return ctx->status;
+        }
+
+        return NGX_DECLINED;
+    }
+  # The left operand dereferences ctx before the later NULL-exit check.
+  - |
+    static ngx_int_t
+    reverse_null_guard(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx->done || ctx == NULL) {
+            return NGX_DECLINED;
+        }
+
+        return ctx->status;
+    }
+  # Declaration initializer dereferenced with no guard.
+  - |
+    static ngx_int_t
+    decl(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+        return ctx->status;
+    }
+  # Immediate member access with no guard at all.
+  - |
+    static ngx_int_t
+    unguarded(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        return ctx->status;
+    }
+  # Written through rather than read — same dereference.
+  - |
+    static void
+    resume(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        ctx->resume_handler = ngx_http_demo_wev_handler;
+        ctx->waiting = 0;
+    }
+  # Stream flavour of the same macro.
+  - |
+    static ngx_int_t
+    stream_unguarded(ngx_stream_session_t *s)
+    {
+        ngx_stream_demo_ctx_t  *ctx;
+
+        ctx = ngx_stream_get_module_ctx(s, ngx_stream_demo_module);
+
+        return ctx->status;
+    }
+  # A guard exists but only AFTER the first dereference.
+  - |
+    static ngx_int_t
+    late_guard(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+        ngx_uint_t            n;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        n = ctx->count;
+
+        if (ctx == NULL) {
+            return NGX_DECLINED;
+        }
+
+        return (ngx_int_t) n;
+    }
+  # An unrelated statement before the first dereference is not a guard.
+  - |
+    static ngx_int_t
+    intervening(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        trace_request(r);
+        return ctx->status;
+    }
+  # A truthy OR condition does not establish that ctx is non-NULL afterward.
+  - |
+    static ngx_int_t
+    or_then_deref(ngx_http_request_t *r, ngx_uint_t fallback)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx || fallback) {
+            trace_request(r);
+        }
+
+        return ctx->status;
+    }
+  # A truthy AND condition can fail because ctx is NULL, then execution resumes.
+  - |
+    static ngx_int_t
+    and_then_deref(ngx_http_request_t *r, ngx_uint_t ready)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx && ready) {
+            trace_request(r);
+        }
+
+        return ctx->status;
+    }
+  # A NULL check that merely logs does not protect the following dereference.
+  - |
+    static ngx_int_t
+    negated_nonterminating(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (!ctx) {
+            log_missing_ctx(r);
+        }
+
+        return ctx->status;
+    }
+  # An explicit comparison likewise needs to exit its NULL consequence.
+  - |
+    static ngx_int_t
+    null_compare_nonterminating(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL) {
+            log_missing_ctx(r);
+        }
+
+        return ctx->status;
+    }
+  # A nested conditional return does not terminate every NULL path.
+  - |
+    static ngx_int_t
+    nested_return_nonterminating(ngx_http_request_t *r, ngx_uint_t noisy)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL) {
+            if (noisy) {
+                return NGX_DECLINED;
+            }
+        }
+
+        return ctx->status;
+    }
+  # A conjunctive NULL test can fall through while ctx is NULL.
+  - |
+    static ngx_int_t
+    conjunctive_null_guard(ngx_http_request_t *r, ngx_uint_t ready)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL && ready) {
+            return NGX_DECLINED;
+        }
+
+        return ctx->status;
+    }
+  # An OR condition does not establish non-NULL in its consequence.
+  - |
+    static ngx_int_t
+    unsafe_or_consequence(ngx_http_request_t *r, ngx_uint_t ready)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx != NULL || ready) {
+            return ctx->status;
+        }
+
+        return NGX_DECLINED;
+    }
+  # A NULL branch must not dereference ctx even when it terminates afterward.
+  - |
+    static ngx_int_t
+    deref_in_null_branch(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL) {
+            log_status(ctx->status);
+            return NGX_DECLINED;
+        }
+
+        return NGX_OK;
+    }
+  # A NULL-or-other branch can still run while ctx is NULL.
+  - |
+    static ngx_int_t
+    deref_in_null_or_branch(ngx_http_request_t *r, ngx_uint_t ready)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx == NULL || ready) {
+            return ctx->status;
+        }
+
+        return NGX_OK;
+    }
+  # Explicit dereference plus dot is equivalent to arrow member access.
+  - |
+    static ngx_int_t
+    explicit_deref(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        return (*ctx).status;
+    }
+  # The alternative branch is unsafe unless the condition proves ctx is NULL.
+  - |
+    static ngx_int_t
+    unsafe_alternative(ngx_http_request_t *r)
+    {
+        ngx_http_demo_ctx_t  *ctx;
+
+        ctx = ngx_http_get_module_ctx(r, ngx_http_demo_module);
+
+        if (ctx != NULL) {
+            return NGX_OK;
+        } else {
+            return ctx->status;
+        }
+    }

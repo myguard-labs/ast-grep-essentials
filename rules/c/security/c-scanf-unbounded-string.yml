@@ -1,0 +1,34 @@
+id: c-scanf-unbounded-string
+language: c
+severity: error
+message: >-
+  scanf-family %s or %[ conversion with no field width — the conversion writes
+  until whitespace regardless of the destination size, so any longer input
+  overflows the buffer (CWE-120/CWE-787). Give every string conversion an
+  explicit width one smaller than the buffer, as in %31s for char buf[32], or
+  read a line and parse it.
+note: >-
+  Fires on a format string containing %s, %ls, %[ or %l[ with no width, in the scanf
+  family. A width-limited conversion does not match, nor does an
+  assignment-suppressed %*s or an escaped %%s, since neither writes to a
+  buffer. %c and numeric conversions are unaffected.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^(scanf|fscanf|sscanf|vscanf|vfscanf|vsscanf)$'
+    - has:
+        # Stop at a concatenated string so its child literals cannot turn a
+        # split escaped %% into a false positive.
+        stopBy: {kind: concatenated_string}
+        any:
+          - kind: string_literal
+            # A %s or %[ conversion with no width. An escaped %% is not a
+            # conversion and %*s suppresses assignment, so neither writes.
+            # POSIX's n$ argument selector is not a field width.
+            regex: '(?:^|[^%])(?:%%)*%(?:[1-9][0-9]*\$)?l?(s|\[)'
+          - kind: concatenated_string
+            # Treat adjacent literal boundaries as zero-width while retaining
+            # percent-pair parity across those boundaries.
+            regex: '(?:^"|[^%"](?:"\s*")*)(?:%(?:"\s*")*%(?:"\s*")*)*%(?:"\s*")*(?:[1-9](?:"\s*")*(?:[0-9](?:"\s*")*)*\$(?:"\s*")*)?l?(?:"\s*")*(s|\[)'

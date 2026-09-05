@@ -1,0 +1,18 @@
+id: php-strcmp-loose-compare
+valid:
+- '<?php if (strcmp($a, $b) === 0) { ok(); }'
+- '<?php if (strcmp($a, $b) !== 0) { no(); }'
+- '<?php if (hash_equals($known, $given)) { ok(); }'
+- '<?php if (password_verify($p, $h)) { ok(); }'
+- '<?php if ($a == $b) { ok(); }'
+- '<?php // if (strcmp($a, $b) == 0) { ok(); }'
+- '<?php if (strcmp($a, "x==y") === 0) { ok(); }'
+- '<?php if (strlen(strcmp($a, $b)) == 1) { ok(); }'
+invalid:
+- '<?php if (strcmp($a, $b) == 0) { ok(); }'
+- '<?php if ((strcmp($a, $b)) == 0) { ok(); }'
+- '<?php if (strcasecmp($u, $name) == 0) { ok(); }'
+- '<?php if (strcmp($pass, $stored) != 1) { no(); }'
+- '<?php if (strcmp($a, $b) <> 0) { no(); }'
+- '<?php if (STRCMP($a, $b) == 0) { no(); }'
+- '<?php if (\strcmp($a, $b) == 0) { no(); }'

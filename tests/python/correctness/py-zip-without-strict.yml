@@ -1,0 +1,34 @@
+id: py-zip-without-strict
+valid:
+- |
+  for name, value in zip(names, values, strict=True):
+      emit(name, value)
+- |
+  for name, value in zip(names, values, strict=False):
+      emit(name, value)
+- |
+  for i in zip(names):
+      emit(i)
+- |
+  for i, v in enumerate(values):
+      emit(i, v)
+- |
+  rows = obj.zip(names, values)
+- |
+  cols = zip(*rows, strict=True)
+- |
+  only = zip(names, key=f)
+invalid:
+- |
+  for name, value in zip(names, values):
+      emit(name, value)
+- |
+  pairs = dict(zip(FEATURE_NAMES, model.feature_importances_))
+- |
+  for a, b, c in zip(docs, embeddings, metadata):
+      store(a, b, c)
+- |
+  cols = list(zip(*rows))
+- |
+  for a, b in zip(names, values, key=f):
+      emit(a, b)

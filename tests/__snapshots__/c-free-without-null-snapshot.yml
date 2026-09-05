@@ -1,0 +1,62 @@
+id: c-free-without-null
+snapshots:
+  void f(void) { free(((p))); use(p); }:
+    labels:
+    - source: free(((p)));
+      style: primary
+      start: 15
+      end: 27
+  void f(void) { free((p)); use(p); }:
+    labels:
+    - source: free((p));
+      style: primary
+      start: 15
+      end: 25
+  void f(void) { free((void *) p); use(p); }:
+    labels:
+    - source: free((void *) p);
+      style: primary
+      start: 15
+      end: 32
+  void f(void) { free(buf); }:
+    labels:
+    - source: free(buf);
+      style: primary
+      start: 15
+      end: 25
+  void f(void) { free(p); p += 1; use(p); }:
+    labels:
+    - source: free(p);
+      style: primary
+      start: 15
+      end: 23
+  void f(void) { free(p); use(p); }:
+    labels:
+    - source: free(p);
+      style: primary
+      start: 15
+      end: 23
+  void f(void) { ngx_free(((tmp))); use(tmp); }:
+    labels:
+    - source: ngx_free(((tmp)));
+      style: primary
+      start: 15
+      end: 33
+  void f(void) { ngx_free((tmp)); use(tmp); }:
+    labels:
+    - source: ngx_free((tmp));
+      style: primary
+      start: 15
+      end: 31
+  void f(void) { ngx_free((u_char *) tmp); use(tmp); }:
+    labels:
+    - source: ngx_free((u_char *) tmp);
+      style: primary
+      start: 15
+      end: 40
+  void f(void) { ngx_free(tmp); log("done"); }:
+    labels:
+    - source: ngx_free(tmp);
+      style: primary
+      start: 15
+      end: 29

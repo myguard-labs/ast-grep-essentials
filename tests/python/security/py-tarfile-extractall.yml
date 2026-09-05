@@ -1,0 +1,149 @@
+id: py-tarfile-extractall
+valid:
+- |
+  import tarfile
+  with tarfile.open(p) as tar:
+      tar.extractall(path=dest, filter="data")
+- |
+  import tarfile
+  tar = tarfile.open(p)
+  tar.extract(member, path=dest, filter="tar")
+- tarfile.open(p).extractall(dest, filter="data")
+- tarfile.open(p).extractall(dest, filter="tar")
+- tarfile.open(p).extractall(dest, filter=tarfile.data_filter)
+- tarfile.open(p).extractall(dest, filter=("data"))
+- tarfile.open(p).extractall(dest, filter=(tarfile.data_filter))
+# ZipFile has no tar-style filter parameter and is outside this rule. Python's
+# documentation still requires prior inspection for untrusted ZIP archives.
+- |
+  import zipfile
+  with zipfile.ZipFile(p) as zf:
+      zf.extractall(dest)
+- zf.extractall(dest)
+# Receiver not bound to a tarfile anywhere in the file.
+- archive.extractall(dest)
+- shutil.unpack_archive(src, dest)
+- |
+  import tarfile
+  # tar.extractall(dest)
+  tar = tarfile.open(p)
+  tar.close()
+# A tarfile is open in the file, but this receiver is a different object.
+- |
+  import tarfile
+  tar = tarfile.open(p)
+  zf.extractall(dest)
+# A later tar binding must not retroactively type an earlier ZipFile call.
+- |
+  import tarfile, zipfile
+  archive = zipfile.ZipFile(z)
+  archive.extractall(dest)
+  archive = tarfile.open(p)
+# Nor may a later assignment elsewhere in a with body act as its binding.
+- |
+  import tarfile, zipfile
+  with lock:
+      archive = zipfile.ZipFile(z)
+      archive.extractall(dest)
+      archive = tarfile.open(p)
+# An intervening assignment changes the receiver before extraction.
+- |
+  import tarfile, zipfile
+  archive = tarfile.open(p)
+  archive = zipfile.ZipFile(z)
+  archive.extractall(dest)
+# The same applies to a receiver introduced by a with statement.
+- |
+  import tarfile, zipfile
+  with tarfile.open(p) as archive:
+      archive = zipfile.ZipFile(z)
+      archive.extractall(dest)
+# A rebind inside a nested conditional also changes the receiver type.
+- |
+  import tarfile, zipfile
+  archive = tarfile.open(p)
+  if ready:
+      archive = zipfile.ZipFile(z)
+      archive.extractall(dest)
+# A binding after the conditional must not type an earlier extraction.
+- |
+  import tarfile
+  if ready:
+      archive.extractall(dest)
+  archive = tarfile.open(p)
+# An explicit filter remains safe when the binding is outside the conditional.
+- |
+  import tarfile
+  archive = tarfile.open(p)
+  if ready:
+      archive.extractall(dest, filter="data")
+# A same-named binding in another function is not type evidence.
+- |
+  import tarfile, zipfile
+  def open_tar():
+      archive = tarfile.open(p)
+  def extract_zip():
+      archive = zipfile.ZipFile(z)
+      archive.extractall(dest)
+invalid:
+- |
+  import tarfile
+  with (tarfile.open(p)) as tar:
+      tar.extractall(dest)
+- |
+  import tarfile
+  tar = tarfile.open(p)
+  tar.extractall(dest)
+- |
+  import tarfile
+  tar: tarfile.TarFile = tarfile.open(p)
+  tar.extractall(dest)
+- |
+  import tarfile
+  tar = (tarfile.open(p))
+  tar.extractall(dest)
+- |
+  import tarfile
+  archive = tarfile.open(p)
+  prepare_destination(dest)
+  archive.extractall(dest)
+- |
+  import tarfile
+  archive = tarfile.open(p)
+  if ready:
+      archive.extractall(dest)
+- |
+  import tarfile
+  with tarfile.open(p) as tar:
+      tar.extractall(path=dest)
+- |
+  import tarfile
+  with tarfile.TarFile.open(p) as tar:
+      tar.extractall(path=dest)
+- |
+  import tarfile
+  tar = tarfile.TarFile(p)
+  tar.extract(member, dest)
+- tarfile.open(p).extractall(dest)
+- (tarfile.open(p)).extractall(dest)
+- |
+  import tarfile
+  tar = tarfile.open(p)
+  tar.extractall(dest, filter=None)
+- |
+  import tarfile
+  tar = tarfile.open(p)
+  tar.extractall(dest, filter="fully_trusted")
+- |
+  import tarfile
+  tar = tarfile.open(p)
+  tar.extractall(dest, filter=tarfile.fully_trusted_filter)
+- |
+  import tarfile
+  tar = tarfile.open(p)
+  tar.extractall(dest, filter=cfg.filter)
+# The filter keyword sits on a nested call, not on extractall.
+- |
+  import tarfile
+  archive = tarfile.open(p)
+  archive.extractall(path=make_path(filter="data"))

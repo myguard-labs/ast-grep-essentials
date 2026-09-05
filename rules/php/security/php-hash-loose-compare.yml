@@ -1,0 +1,38 @@
+id: php-hash-loose-compare
+language: php
+severity: error
+message: >-
+  Hash compared loosely — magic-hash bypass (CWE-697). PHP reads a string like
+  "0e462097431906509019562988736854" as scientific notation, so two hashes that
+  both begin 0e followed by digits compare equal to each other and to 0. Known
+  inputs produce such hashes for md5 and sha1. Use hash_equals(), which is both
+  strict and timing-safe, or password_verify() for passwords.
+note: >-
+  Fires on a loose comparison where one side is a hash call. A strict ===
+  comparison is not vulnerable to the magic-hash trick but still leaks timing;
+  hash_equals() is the correct primitive for secrets.
+utils:
+  direct-hash-call:
+    kind: function_call_expression
+    has:
+      field: function
+      regex: '(?i)^\\?(md5|sha1|hash|crc32|crypt)$'
+  hash-operand:
+    any:
+      - matches: direct-hash-call
+      - kind: parenthesized_expression
+        has:
+          matches: direct-hash-call
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^(==|!=|<>)$'
+    - any:
+        - has:
+            field: left
+            matches: hash-operand
+        - has:
+            field: right
+            matches: hash-operand

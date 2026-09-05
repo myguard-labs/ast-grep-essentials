@@ -1,0 +1,16 @@
+id: py-mark-safe-interpolation
+valid:
+- mark_safe("<br>")
+- 'format_html("<b>{}</b>", name)'
+- mark_safe(STATIC_HTML)
+- escape(value)
+- '# mark_safe(f"<b>{name}</b>")'
+- mark_safe("<b>" + "</b>")
+- mark_safe("<br>".format())
+invalid:
+- mark_safe("<p>" + obj.body + "</p>")
+- mark_safe(f"<b>{name}</b>")
+- mark_safe("<b>" + name + "</b>")
+- 'mark_safe("<b>{}</b>".format(name))'
+- utils.mark_safe(f"<p>{body}</p>")
+- utils . mark_safe(f"<p>{body}</p>")

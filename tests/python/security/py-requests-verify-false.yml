@@ -1,0 +1,21 @@
+id: py-requests-verify-false
+valid:
+- requests.get(url, timeout=5)
+- requests.post(url, data=d, verify=True)
+- requests.get(url, verify="/etc/ssl/certs/ca.pem")
+- requests.get(url, verify=cfg.verify)
+- other.get(url, check=False)
+- cache.get(key, verify=False)
+- self.client.get(url, verify=False)
+- self.session.get(url, verify=False)
+- '# requests.get(url, verify=False)'
+- s = "requests.get(url, verify=False)"
+invalid:
+- requests.get(url, verify=False)
+- requests.post(url, json=payload, verify=False)
+- session.request("GET", url, verify=False)
+- requests.Session().request("GET", url, verify=False)
+- requests.Session( ).get(url, verify=False)
+- (requests.Session()).get(url, verify=False)
+- requests . get(url, verify=False)
+- requests.delete(url, verify=False, timeout=5)

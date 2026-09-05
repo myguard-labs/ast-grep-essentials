@@ -1,0 +1,26 @@
+id: py-jwt-decode-unverified
+valid:
+- jwt.decode(token, key, algorithms=["RS256"])
+- 'jwt.decode(token, key, options={"verify_signature": True})'
+- jwt.decode(token, key, algorithms=["HS256"], verify=True)
+- base64.decode(data)
+- codec.decode(data, verify=False)
+- decode(token, verify=False)
+- 'jwt.decode(token, metadata={"verify_signature": False})'
+- 'jwt.decode(token, options={"not_verify_signature": False})'
+- 'jwt.decode(token, data={"nested": {"verify_signature": False}})'
+- |
+  def configure_decoder():
+      from jwt import decode
+  decode(token, verify=False)
+- '# jwt.decode(token, verify=False)'
+- s = 'jwt.decode(token, verify=False)'
+invalid:
+- jwt.decode(token, verify=False)
+- jwt . decode(token, verify=False)
+- (jwt).decode(token, verify=False)
+- |
+  from jwt import decode
+  decode(token, verify=False)
+- 'jwt.decode(token, key, options={"verify_signature": False})'
+- jwt.decode(token, key, algorithms=["HS256"], verify=False)

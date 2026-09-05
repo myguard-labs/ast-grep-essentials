@@ -1,0 +1,60 @@
+id: go-error-swallowed
+language: go
+severity: warning
+message: >-
+  Call result discarded with the blank identifier while no error is captured —
+  if the call returns an error it is lost, and the code continues as though the
+  call succeeded. Capture the error and handle it, or state in a comment why the
+  failure is safe to ignore here.
+note: >-
+  Only fires when nothing in the assignment binds an err- or ok-named variable,
+  so `_, err := f()` and the `_, ok := m[k]` comma-ok idiom do not match.
+  Deliberate discards containing only cleanup calls (`_ = f.Close()`) are
+  excluded by name; a mixed assignment with another expression still matches.
+  Other intentional discards should carry a comment.
+utils:
+  cleanup-function:
+    kind: selector_expression
+    has:
+      field: field
+      regex: '^(Close|Flush|Sync|Kill|Wait|Remove|RemoveAll|SetReadDeadline|SetWriteDeadline|SetDeadline)$'
+  cleanup-call:
+    kind: call_expression
+    has:
+      field: function
+      matches: cleanup-function
+  non-cleanup-expression:
+    regex: '.'
+    not:
+      any:
+        - matches: cleanup-call
+        - regex: '^,$'
+        - kind: comment
+rule:
+  any:
+    - kind: assignment_statement
+    - kind: short_var_declaration
+  all:
+    - has:
+        field: left
+        kind: expression_list
+        has:
+          kind: identifier
+          regex: '^_$'
+    - has:
+        field: right
+        kind: expression_list
+        has:
+          kind: call_expression
+    - has:
+        field: right
+        kind: expression_list
+        has:
+          matches: non-cleanup-expression
+    - not:
+        has:
+          field: left
+          kind: expression_list
+          has:
+            kind: identifier
+            regex: '(?i)^(e|err[a-z0-9_]*|ok[a-z0-9_]*)$'

@@ -1,0 +1,97 @@
+id: nginx-send-header-return-ignored
+valid:
+  # The house idiom: assigned, tested for all three stop conditions.
+  - |
+    static ngx_int_t
+    handler(ngx_http_request_t *r, ngx_chain_t *out)
+    {
+        ngx_int_t  rc;
+
+        rc = ngx_http_send_header(r);
+
+        if (rc == NGX_ERROR || rc > NGX_OK || r->header_only) {
+            return rc;
+        }
+
+        return ngx_http_output_filter(r, out);
+    }
+  # Returned directly by a header-only handler.
+  - |
+    static ngx_int_t
+    header_only(ngx_http_request_t *r)
+    {
+        return ngx_http_send_header(r);
+    }
+  # Near miss: a different function whose result is genuinely void.
+  - |
+    static void
+    other(ngx_http_request_t *r)
+    {
+        ngx_http_finalize_request(r, NGX_DONE);
+    }
+  # Lexical control: the name in a comment and a string only.
+  - |
+    static const char *
+    describe(void)
+    {
+        /* ngx_http_send_header(r) must have its return checked */
+        return "ngx_http_send_header";
+    }
+invalid:
+  # Discarded, then a body is sent anyway.
+  - |
+    static ngx_int_t
+    discarded(ngx_http_request_t *r, ngx_chain_t *out)
+    {
+        r->headers_out.status = NGX_HTTP_SERVICE_UNAVAILABLE;
+
+        ngx_http_send_header(r);
+
+        ngx_http_output_filter(r, out);
+        ngx_http_finalize_request(r, 0);
+
+        return NGX_DONE;
+    }
+  # Discarded inside a conditional branch.
+  - |
+    static ngx_int_t
+    branch(ngx_http_request_t *r, ngx_chain_t *out)
+    {
+        if (r->method == NGX_HTTP_GET) {
+            ngx_http_send_header(r);
+        }
+
+        return ngx_http_output_filter(r, out);
+    }
+  # Parentheses do not preserve the discarded return value.
+  - |
+    static ngx_int_t
+    parenthesized(ngx_http_request_t *r)
+    {
+        (ngx_http_send_header(r));
+        return NGX_OK;
+    }
+  # An explicit void cast still discards the contract-bearing result.
+  - |
+    static ngx_int_t
+    cast_void(ngx_http_request_t *r)
+    {
+        (void) ngx_http_send_header(r);
+        return NGX_OK;
+    }
+  # Deeper parentheses still discard the result.
+  - |
+    static ngx_int_t
+    nested_parentheses(ngx_http_request_t *r)
+    {
+        ((ngx_http_send_header(r)));
+        return NGX_OK;
+    }
+  # A non-void cast does not consume the result when it remains a statement.
+  - |
+    static ngx_int_t
+    cast_nonvoid(ngx_http_request_t *r)
+    {
+        (ngx_int_t) ngx_http_send_header(r);
+        return NGX_OK;
+    }

@@ -1,0 +1,61 @@
+id: py-bare-except
+valid:
+- |
+  try:
+      f()
+  except Exception:
+      log.exception("failed")
+- |
+  try:
+      f()
+  except:
+      raise
+- |
+  try:
+      f()
+  except:
+      cleanup()
+      raise
+- |
+  try:
+      f()
+  except ValueError:
+      pass
+invalid:
+- |
+  try:
+      f()
+  except:
+      def later():
+          raise
+      pass
+- |
+  try:
+      f()
+  except:
+      raise RuntimeError("failed")
+- |
+  try:
+      f()
+  except:
+      log.info("ignored")
+- |
+  try:
+      f()
+  except:
+      pass
+- |
+  try:
+      f()
+  except:
+      if debug:
+          raise
+      pass
+- |
+  try:
+      f()
+  except:
+      for item in items:
+          if item.bad:
+              raise
+      log.info("ignored")

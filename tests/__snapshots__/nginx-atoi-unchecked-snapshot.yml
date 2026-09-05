@@ -1,0 +1,284 @@
+id: nginx-atoi-unchecked
+snapshots:
+  ? |
+    static ngx_int_t
+    arithmetic_only(ngx_str_t *v)
+    {
+        ngx_int_t  n;
+
+        n = ngx_atoi(v->data, v->len);
+        n = n + 1;
+
+        return n;
+    }
+  : labels:
+    - source: n = ngx_atoi(v->data, v->len);
+      style: primary
+      start: 72
+      end: 102
+    - source: n
+      style: secondary
+      start: 72
+      end: 73
+    - source: ngx_atoi
+      style: secondary
+      start: 76
+      end: 84
+    - source: ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 76
+      end: 101
+    - source: n = ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 72
+      end: 101
+  ? |
+    static ngx_int_t
+    field_unchecked(ngx_str_t *v, ngx_http_demo_ctx_t *ctx)
+    {
+        ctx->count = ngx_atoi(v->data, v->len);
+        return ctx->count;
+    }
+  : labels:
+    - source: ctx->count = ngx_atoi(v->data, v->len);
+      style: primary
+      start: 79
+      end: 118
+    - source: ctx->count
+      style: secondary
+      start: 79
+      end: 89
+    - source: ngx_atoi
+      style: secondary
+      start: 92
+      end: 100
+    - source: ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 92
+      end: 117
+    - source: ctx->count = ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 79
+      end: 117
+  ? |
+    static ngx_int_t
+    hexed(ngx_str_t *v, ngx_uint_t *out)
+    {
+        ngx_int_t  n;
+
+        n = ngx_hextoi(v->data, v->len);
+
+        *out = (ngx_uint_t) n;
+
+        return NGX_OK;
+    }
+  : labels:
+    - source: n = ngx_hextoi(v->data, v->len);
+      style: primary
+      start: 79
+      end: 111
+    - source: n
+      style: secondary
+      start: 79
+      end: 80
+    - source: ngx_hextoi
+      style: secondary
+      start: 83
+      end: 93
+    - source: ngx_hextoi(v->data, v->len)
+      style: secondary
+      start: 83
+      end: 110
+    - source: n = ngx_hextoi(v->data, v->len)
+      style: secondary
+      start: 79
+      end: 110
+  ? |
+    static ngx_int_t
+    indirect_unchecked(ngx_str_t *v, ngx_int_t *out)
+    {
+        *out = ngx_atoi(v->data, v->len);
+        return *out;
+    }
+  : labels:
+    - source: '*out = ngx_atoi(v->data, v->len);'
+      style: primary
+      start: 72
+      end: 105
+    - source: '*out'
+      style: secondary
+      start: 72
+      end: 76
+    - source: ngx_atoi
+      style: secondary
+      start: 79
+      end: 87
+    - source: ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 79
+      end: 104
+    - source: '*out = ngx_atoi(v->data, v->len)'
+      style: secondary
+      start: 72
+      end: 104
+  ? |
+    static ngx_int_t
+    initialized(ngx_str_t *v)
+    {
+        ngx_int_t  n = ngx_atoi(v->data, v->len);
+
+        return n;
+    }
+  : labels:
+    - source: ngx_int_t  n = ngx_atoi(v->data, v->len);
+      style: primary
+      start: 49
+      end: 90
+    - source: n
+      style: secondary
+      start: 60
+      end: 61
+    - source: ngx_atoi
+      style: secondary
+      start: 64
+      end: 72
+    - source: ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 64
+      end: 89
+    - source: n = ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 60
+      end: 89
+  ? |
+    static ngx_int_t
+    offset(ngx_str_t *v, ngx_str_t *ret)
+    {
+        ngx_int_t  offs;
+
+        offs = ngx_atoi(v->data, v->len);
+
+        ret->data += offs;
+
+        return NGX_OK;
+    }
+  : labels:
+    - source: offs = ngx_atoi(v->data, v->len);
+      style: primary
+      start: 82
+      end: 115
+    - source: offs
+      style: secondary
+      start: 82
+      end: 86
+    - source: ngx_atoi
+      style: secondary
+      start: 89
+      end: 97
+    - source: ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 89
+      end: 114
+    - source: offs = ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 82
+      end: 114
+  ? |
+    static ngx_int_t
+    sized(ngx_str_t *v, off_t *out)
+    {
+        off_t  n;
+
+        n = ngx_atoof(v->data, v->len);
+
+        *out = n;
+
+        return NGX_OK;
+    }
+  : labels:
+    - source: n = ngx_atoof(v->data, v->len);
+      style: primary
+      start: 70
+      end: 101
+    - source: n
+      style: secondary
+      start: 70
+      end: 71
+    - source: ngx_atoof
+      style: secondary
+      start: 74
+      end: 83
+    - source: ngx_atoof(v->data, v->len)
+      style: secondary
+      start: 74
+      end: 100
+    - source: n = ngx_atoof(v->data, v->len)
+      style: secondary
+      start: 70
+      end: 100
+  ? |
+    static ngx_int_t
+    stored(ngx_str_t *v, ngx_http_demo_ctx_t *r)
+    {
+        ngx_int_t  slot;
+
+        slot = ngx_atoi(v->data, v->len);
+
+        r->min = slot;
+
+        return NGX_OK;
+    }
+  : labels:
+    - source: slot = ngx_atoi(v->data, v->len);
+      style: primary
+      start: 90
+      end: 123
+    - source: slot
+      style: secondary
+      start: 90
+      end: 94
+    - source: ngx_atoi
+      style: secondary
+      start: 97
+      end: 105
+    - source: ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 97
+      end: 122
+    - source: slot = ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 90
+      end: 122
+  ? |
+    static ngx_int_t
+    unchecked(ngx_str_t *v, ngx_str_t *out)
+    {
+        ngx_int_t  len;
+
+        len = ngx_atoi(v->data, v->len);
+
+        out->len = (size_t) len;
+
+        return NGX_OK;
+    }
+  : labels:
+    - source: len = ngx_atoi(v->data, v->len);
+      style: primary
+      start: 84
+      end: 116
+    - source: len
+      style: secondary
+      start: 84
+      end: 87
+    - source: ngx_atoi
+      style: secondary
+      start: 90
+      end: 98
+    - source: ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 90
+      end: 115
+    - source: len = ngx_atoi(v->data, v->len)
+      style: secondary
+      start: 84
+      end: 115

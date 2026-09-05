@@ -1,0 +1,18 @@
+id: php-hash-loose-compare
+valid:
+- '<?php if (hash_equals($stored, md5($in))) { ok(); }'
+- '<?php if (md5($a) === $stored) { ok(); }'
+- '<?php if (password_verify($p, $h)) { ok(); }'
+- '<?php $h = md5($data);'
+- '<?php if ($a == $b) { ok(); }'
+- '<?php if (strlen(md5($data)) == 32) { ok(); }'
+- '<?php $order = md5($data) <=> "==";'
+- '<?php // if (md5($p) == $stored) { ok(); }'
+invalid:
+- '<?php if (md5($p) == $stored) { ok(); }'
+- '<?php if ((md5($p)) == $stored) { ok(); }'
+- '<?php if (sha1($token) == $expected) { no(); }'
+- '<?php if ($stored != hash("sha256", $in)) { no(); }'
+- '<?php if (md5($token) <> $stored) { no(); }'
+- '<?php if (MD5($token) == $stored) { no(); }'
+- '<?php if (\md5($token) == $stored) { no(); }'

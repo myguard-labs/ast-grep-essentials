@@ -1,0 +1,68 @@
+id: py-raise-without-from
+snapshots:
+  ? |
+    try:
+        connect()
+    except OSError as e:
+        raise RuntimeError(f"connect failed: {e}")
+  : labels:
+    - source: 'raise RuntimeError(f"connect failed: {e}")'
+      style: primary
+      start: 44
+      end: 86
+    - source: |-
+        except OSError as e:
+            raise RuntimeError(f"connect failed: {e}")
+      style: secondary
+      start: 19
+      end: 86
+  ? |
+    try:
+        connect()
+    except OSError:
+        raise (RuntimeError("connect failed"))
+  : labels:
+    - source: raise (RuntimeError("connect failed"))
+      style: primary
+      start: 39
+      end: 77
+    - source: |-
+        except OSError:
+            raise (RuntimeError("connect failed"))
+      style: secondary
+      start: 19
+      end: 77
+  ? |
+    try:
+        connect()
+    except OSError:
+        with lock:
+            raise RuntimeError("connect failed")
+  : labels:
+    - source: raise RuntimeError("connect failed")
+      style: primary
+      start: 58
+      end: 94
+    - source: |-
+        except OSError:
+            with lock:
+                raise RuntimeError("connect failed")
+      style: secondary
+      start: 19
+      end: 94
+  ? |
+    try:
+        load()
+    except ImportError:
+        raise RuntimeError("dependency missing")
+  : labels:
+    - source: raise RuntimeError("dependency missing")
+      style: primary
+      start: 40
+      end: 80
+    - source: |-
+        except ImportError:
+            raise RuntimeError("dependency missing")
+      style: secondary
+      start: 16
+      end: 80

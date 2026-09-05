@@ -1,0 +1,128 @@
+id: c-send-without-nosignal
+valid:
+  # The fix: MSG_NOSIGNAL in the flags.
+  - |
+    static int
+    write_all(int fd, const char *buf, size_t len)
+    {
+        size_t off = 0;
+
+        while (off < len) {
+            ssize_t n = send(fd, buf + off, len - off, MSG_NOSIGNAL);
+
+            if (n <= 0) {
+                return -1;
+            }
+            off += (size_t) n;
+        }
+
+        return 0;
+    }
+  # Combined with another flag.
+  - |
+    static int
+    urgent(int fd, const char *buf, size_t len)
+    {
+        return (int) send(fd, buf, len, MSG_NOSIGNAL | MSG_DONTWAIT);
+    }
+  # A runtime mask is safe when MSG_NOSIGNAL is unconditionally ORed in.
+  - |
+    static int
+    runtime_flags(int fd, const char *buf, size_t len, int flags)
+    {
+        return (int) send(fd, buf, len, flags | MSG_NOSIGNAL);
+    }
+  # Parenthesized operands remain an OR-only mask.
+  - |
+    static int
+    parenthesized_flag(int fd, const char *buf, size_t len)
+    {
+        return (int) send(fd, buf, len,
+                          MSG_NOSIGNAL | (MSG_DONTWAIT));
+    }
+  # ORing with an integer constant cannot clear MSG_NOSIGNAL.
+  - |
+    static int
+    numeric_flag(int fd, const char *buf, size_t len)
+    {
+        return (int) send(fd, buf, len, MSG_NOSIGNAL | 0U);
+    }
+  # sendto with the flag set.
+  - |
+    static int
+    dgram(int fd, const char *buf, size_t len, const struct sockaddr *to,
+        socklen_t addrlen)
+    {
+        return (int) sendto(fd, buf, len, MSG_NOSIGNAL, to, addrlen);
+    }
+  # write() is a different call — out of scope for this rule.
+  - |
+    static int
+    plain(int fd, const char *buf, size_t len)
+    {
+        return (int) write(fd, buf, len);
+    }
+  # Lexical control: the call name in a comment and a string.
+  - |
+    static const char *
+    describe(void)
+    {
+        /* send(fd, b, n, 0) would risk SIGPIPE */
+        return "send(fd, b, n, 0)";
+    }
+  # sendto is the datagram call; SIGPIPE is a stream-socket concern, so it
+  # is out of scope even with zero flags.
+  - |
+    static int
+    dgram(int fd, const char *buf, size_t len, const struct sockaddr *to,
+        socklen_t addrlen)
+    {
+        return (int) sendto(fd, buf, len, 0, to, addrlen);
+    }
+invalid:
+  # Nonzero mask that omits MSG_NOSIGNAL — still raises SIGPIPE on a closed peer.
+  - |
+    static int
+    nonblocking(int fd, const char *buf, size_t len)
+    {
+        return (int) send(fd, buf, len, MSG_DONTWAIT);
+    }
+  # Combined mask, still no MSG_NOSIGNAL.
+  - |
+    static int
+    corked(int fd, const char *buf, size_t len)
+    {
+        return (int) send(fd, buf, len, MSG_MORE | MSG_DONTWAIT);
+    }
+  # Bare zero flags on a stream socket.
+  - |
+    static int
+    write_all(int fd, const char *buf, size_t len)
+    {
+        size_t off = 0;
+
+        while (off < len) {
+            ssize_t n = send(fd, buf + off, len - off, 0);
+
+            if (n <= 0) {
+                return -1;
+            }
+            off += (size_t) n;
+        }
+
+        return 0;
+    }
+  # sendmsg with zero flags.
+  - |
+    static int
+    scattered(int fd, const struct msghdr *msg)
+    {
+        return (int) sendmsg(fd, msg, 0);
+    }
+  # Mentioning the flag while explicitly clearing it is still unsafe.
+  - |
+    static int
+    clears_flag(int fd, const char *buf, size_t len, int flags)
+    {
+        return (int) send(fd, buf, len, flags & ~MSG_NOSIGNAL);
+    }

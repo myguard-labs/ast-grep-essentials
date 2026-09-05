@@ -1,0 +1,43 @@
+id: py-except-pass
+language: python
+severity: info
+message: >-
+  Exception caught and discarded — the failure is invisible and the code
+  continues in an unknown state (OWASP A10:2025 Mishandling of Exceptional
+  Conditions, CWE-390). If a security check raised, swallowing it fails open.
+  Log the exception with context, or narrow the clause to the one error that is
+  genuinely expected and act on it.
+note: >-
+  Fires on an except body whose only statement is `pass` or `...`; a body
+  that does anything else, including a `pass` followed by real work or a
+  `pass` nested in a loop, does not match. A narrow clause with a comment explaining the
+  deliberate ignore is the routine dismissal; keep it narrow. Info severity
+  because that dismissal is common: measured across labs/nginx-cache-turbo-module
+  and labs/nginx-http-shield-module, all 34 first-party hits were narrowly typed
+  clauses (BrokenPipeError, SystemExit, OSError), mostly in CI tooling. The bare
+  form is the dangerous one and lives in py-bare-except at warning.
+rule:
+  any:
+    - all:
+        - pattern:
+            context: |
+              try:
+                  work()
+              except:
+                  pass
+            selector: pass_statement
+        - inside: &only-except-body
+            stopBy: neighbor
+            kind: block
+            inside:
+              stopBy: neighbor
+              kind: except_clause
+            not:
+              has:
+                nthChild:
+                  position: 2
+                  ofRule: {not: {kind: comment}}
+    - all:
+        - kind: expression_statement
+        - regex: '^\.\.\.$'
+        - inside: *only-except-body

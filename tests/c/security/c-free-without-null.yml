@@ -1,0 +1,21 @@
+id: c-free-without-null
+valid:
+- void f(void) { free(p); p = NULL; }
+- void f(void) { ngx_free(buf); buf = NULL; }
+- void f(void) { free(p); other(); p = NULL; }
+- void f(void) { free((p)); p = NULL; }
+- void f(void) { free(((p))); p = NULL; }
+- void f(void) { free((void *) p); p = NULL; }
+- void f(void) { char *q = ngx_palloc(pool, n); use(q); }
+- /* void f(void) { free(p); } */
+invalid:
+- void f(void) { free(p); use(p); }
+- void f(void) { free(buf); }
+- void f(void) { ngx_free(tmp); log("done"); }
+- void f(void) { free(p); p += 1; use(p); }
+- void f(void) { free((p)); use(p); }
+- void f(void) { free(((p))); use(p); }
+- void f(void) { free((void *) p); use(p); }
+- void f(void) { ngx_free((tmp)); use(tmp); }
+- void f(void) { ngx_free(((tmp))); use(tmp); }
+- void f(void) { ngx_free((u_char *) tmp); use(tmp); }

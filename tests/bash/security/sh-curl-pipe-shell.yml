@@ -1,0 +1,87 @@
+id: sh-curl-pipe-shell
+valid:
+- curl -sSL https://example.com/i.sh -o i.sh
+- curl -s https://example.com/data.json | jq .
+- wget https://example.com/f.tar.gz && sha256sum -c f.sha256
+- bash ./install.sh
+- cat script.sh | grep curl
+- curl -sS "$H/api/ps" | python3 -c 'import sys, json; print(json.load(sys.stdin))'
+- curl -s "$H/v" | perl -e 'print <>'
+- curl -fsSL https://example.com/i.sh | sudo tee /usr/local/bin/i.sh
+- curl -fsSL https://example.com/i.sh | sudo install -m 755 /dev/stdin /usr/local/bin/i
+- curl -fsSL https://example.com/i.sh | sudo tee bash
+- curl -o /tmp/i.sh https://example.com/i.sh | bash
+- curl -o/tmp/i.sh https://example.com/i.sh | bash
+- curl --output=/tmp/i.sh https://example.com/i.sh | bash
+- curl -sLo/tmp/i.sh https://example.com/i.sh | bash
+- curl -sLo /tmp/i.sh https://example.com/i.sh | bash
+- wget https://example.com/setup.sh | sh
+- curl https://example.com/data | bash ./local.sh
+- curl https://example.com/data | python3 ./local.py
+- bash | curl https://example.com/i.sh
+- curl https://example.com/i.sh | sudo -n -E python3 -c 'print("local")'
+- curl https://example.com/i.sh | sudo -u root tee /usr/local/bin/i.sh
+- curl https://example.com/i.sh | sudo --user=root install -m 755 /dev/stdin /usr/local/bin/i
+- curl https://example.com/i.sh | sudo -u bash tee /usr/local/bin/i.sh
+- curl https://example.com/i.sh | sudo --user bash install /dev/stdin /usr/local/bin/i
+- curl https://example.com/i.sh | sudo -E -u root bash ./local.sh
+- curl https://example.com/get.py | sudo --user=root python3 -c 'print("local")'
+- curl https://example.com/i.sh | bash -c 'cat >/tmp/not-remote-code'
+- curl https://example.com/i.sh | bash -x ./local.sh
+- 'curl https://example.com/i.sh | sudo "bash" "-c" "cat >/tmp/not-remote-code"'
+- curl https://example.com/i.sh | sudo bash -x ./local.sh
+- curl https://example.com/i.sh | bash -- ./local.sh
+- curl https://example.com/i.sh | bash -x -- ./local.sh
+- curl https://example.com/i.sh | sudo bash -- ./local.sh
+- '"curl" "-o" /tmp/i.sh https://example.com/i.sh | bash'
+- '"wget" "-O" /tmp/i.sh https://example.com/i.sh | sh'
+invalid:
+- curl -sSL https://get.example.com/i.sh | bash
+- wget -qO- https://example.com/setup.sh | sh
+- curl https://example.com/get.py | python3
+- curl -fsSL https://example.com/i.sh | sudo bash
+- curl -fsSL https://example.com/i.sh | sudo -E bash
+- curl -o - https://example.com/i.sh | bash
+- curl -o- https://example.com/i.sh | bash
+- curl --output=- https://example.com/i.sh | bash
+- curl -sLo- https://example.com/i.sh | bash
+- curl -sLo - https://example.com/i.sh | bash
+- curl -fsSLo- https://example.com/i.sh | bash
+- curl https://example.com/i.sh | bash -s
+- curl https://example.com/get.py | python3 -
+- curl https://example.com/i.sh | sudo bash -s
+- curl https://example.com/get.py | sudo -E python3 -
+- curl https://example.com/i.sh | bash -s -- deploy
+- curl https://example.com/get.py | python3 - deploy
+- curl https://example.com/i.sh | sudo bash -s -- deploy
+- curl https://example.com/get.py | sudo -E python3 - deploy
+- curl https://example.com/i.sh | sudo -E -n bash
+- curl https://example.com/get.py | sudo -n -E python3 - deploy
+- curl https://example.com/i.sh | sudo -HnE bash -s -- deploy
+- curl https://example.com/i.sh | sudo -E -u root bash
+- curl https://example.com/i.sh | sudo -uroot bash
+- curl https://example.com/i.sh | sudo --user root bash
+- curl https://example.com/i.sh | sudo --user=root bash
+- curl https://example.com/i.sh | sudo -n --user root -EH bash -s -- deploy
+- curl https://example.com/get.py | sudo --user=root -n python3 - deploy
+- curl https://example.com/i.sh | sudo -Eu root bash
+- curl https://example.com/i.sh | sudo -Euroot bash -s -- deploy
+- curl https://example.com/i.sh | sudo -u root -- bash
+- curl https://example.com/i.sh | bash -x
+- curl https://example.com/i.sh | bash --noprofile -s
+- curl https://example.com/i.sh | bash -x -s -- deploy
+- curl https://example.com/i.sh | sudo -E bash -x
+- curl https://example.com/i.sh | sudo -n bash --noprofile -s -- deploy
+- '"curl" https://example.com/i.sh | bash'
+- 'curl https://example.com/i.sh | "bash"'
+- 'curl https://example.com/i.sh | bash "-s"'
+- 'curl https://example.com/i.sh | sudo "bash"'
+- curl https://example.com/i.sh | bash --
+- curl https://example.com/i.sh | bash -x --
+- curl https://example.com/i.sh | bash -x -s deploy
+- curl https://example.com/i.sh | sudo bash -x -s deploy
+- 'curl https://example.com/i.sh | bash "--"'
+- '"wget" "-qO-" https://example.com/i.sh | sh'
+- '"curl" "-o" "-" https://example.com/i.sh | bash'
+- curl https://example.com/i.sh | bash -sx -- deploy
+- curl https://example.com/i.sh | sudo bash -sx -- deploy

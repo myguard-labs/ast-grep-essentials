@@ -1,0 +1,181 @@
+id: php-insecure-cookie-flags
+language: php
+severity: error
+message: >-
+  Cookie set without both httponly and secure enabled — script on the page can
+  read it via document.cookie, or the browser can send it over plaintext HTTP
+  where it can be captured (CWE-1004, CWE-614). For a session or auth cookie
+  that is account takeover. Enable both flags and set samesite as appropriate.
+note: >-
+  Fires on a positional or named expires_or_options array in which either
+  httponly or secure is absent or not literally true. Named options are
+  recognized in any argument order. For duplicate option keys, PHP keeps the
+  last value, so an earlier unsafe value followed by literal true is accepted
+  while a later false or computed value still matches. Outside the options-array form, secure and
+  httponly must each be literally true, supplied either at positional arguments
+  six and seven or by a named argument. Mixed positional/named calls are
+  supported. A deliberately readable, non-sensitive preference cookie is the
+  routine dismissal.
+utils:
+  positional-options-array:
+    kind: array_creation_expression
+    inside:
+      stopBy: neighbor
+      kind: argument
+      nthChild: 3
+  named-options-array:
+    kind: array_creation_expression
+    inside:
+      stopBy: neighbor
+      kind: argument
+      has:
+        field: name
+        regex: '^expires_or_options$'
+  options-array:
+    any:
+      - matches: positional-options-array
+      - matches: named-options-array
+  positional-secure-true:
+    kind: argument
+    nthChild: 6
+    regex: '(?i)^true$'
+  positional-httponly-true:
+    kind: argument
+    nthChild: 7
+    regex: '(?i)^true$'
+  named-secure-true:
+    kind: argument
+    all:
+      - has:
+          field: name
+          regex: '^secure$'
+      - regex: '(?i):\s*true$'
+  named-httponly-true:
+    kind: argument
+    all:
+      - has:
+          field: name
+          regex: '^httponly$'
+      - regex: '(?i):\s*true$'
+  secure-true:
+    any:
+      - matches: positional-secure-true
+      - matches: named-secure-true
+  httponly-true:
+    any:
+      - matches: positional-httponly-true
+      - matches: named-httponly-true
+  secure-true-element:
+    kind: array_element_initializer
+    all:
+      - has:
+          nthChild:
+            position: 1
+            ofRule: {not: {kind: comment}}
+          regex: '(?i)^["\x27]secure["\x27]$'
+      - has:
+          nthChild:
+            position: 2
+            ofRule: {not: {kind: comment}}
+          regex: '(?i)^true$'
+  httponly-true-element:
+    kind: array_element_initializer
+    all:
+      - has:
+          nthChild:
+            position: 1
+            ofRule: {not: {kind: comment}}
+          regex: '(?i)^["\x27]httponly["\x27]$'
+      - has:
+          nthChild:
+            position: 2
+            ofRule: {not: {kind: comment}}
+          regex: '(?i)^true$'
+  secure-unsafe-element:
+    kind: array_element_initializer
+    all:
+      - has:
+          nthChild:
+            position: 1
+            ofRule: {not: {kind: comment}}
+          regex: '(?i)^["\x27]secure["\x27]$'
+      - not:
+          has:
+            nthChild:
+              position: 2
+              ofRule: {not: {kind: comment}}
+            regex: '(?i)^true$'
+      - not:
+          precedes:
+            stopBy: end
+            matches: secure-true-element
+  httponly-unsafe-element:
+    kind: array_element_initializer
+    all:
+      - has:
+          nthChild:
+            position: 1
+            ofRule: {not: {kind: comment}}
+          regex: '(?i)^["\x27]httponly["\x27]$'
+      - not:
+          has:
+            nthChild:
+              position: 2
+              ofRule: {not: {kind: comment}}
+            regex: '(?i)^true$'
+      - not:
+          precedes:
+            stopBy: end
+            matches: httponly-true-element
+rule:
+  any:
+    # Match the options array itself so each diagnostic has one array label.
+    - all:
+        - kind: array_creation_expression
+        - inside:
+            stopBy: neighbor
+            kind: argument
+            any:
+              - nthChild: 3
+              - has:
+                  field: name
+                  regex: '^expires_or_options$'
+            inside:
+              stopBy: neighbor
+              kind: arguments
+              inside:
+                stopBy: neighbor
+                kind: function_call_expression
+                has:
+                  field: function
+                  regex: '(?i)^\\?(setcookie|setrawcookie)$'
+        - any:
+            - not: {has: {matches: httponly-true-element}}
+            - not: {has: {matches: secure-true-element}}
+            - has:
+                any:
+                  - matches: secure-unsafe-element
+                  - matches: httponly-unsafe-element
+    # Non-options form missing or disabling either positional/named flag.
+    - all:
+        - kind: function_call_expression
+        - has:
+            field: function
+            regex: '(?i)^\\?(setcookie|setrawcookie)$'
+        - not:
+            has:
+              field: arguments
+              has:
+                stopBy: end
+                matches: options-array
+        - any:
+            - not:
+                has:
+                  field: arguments
+                  has:
+                    matches: secure-true
+            - not:
+                has:
+                  field: arguments
+                  has:
+                    matches: httponly-true

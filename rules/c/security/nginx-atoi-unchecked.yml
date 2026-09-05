@@ -1,0 +1,67 @@
+id: nginx-atoi-unchecked
+language: c
+severity: warning
+message: >-
+  ngx_atoi family result assigned and never compared anywhere in the enclosing
+  function. These converters return NGX_ERROR (-1) on any malformed input, and
+  the value is typically derived from a request header, URI segment, or
+  configuration token an attacker can shape. Using it unvalidated turns a parse
+  failure into a negative length, a negative offset, or a negative index —
+  pointer arithmetic underflow (CWE-191) rather than a rejected request. Compare
+  against NGX_ERROR, or range-check the value, before using it.
+note: >-
+  A match means no binary comparison mentioning the assigned name appears
+  anywhere in the same function definition, which is deliberately generous: a
+  range check such as `if (n < 100)` also rejects NGX_ERROR and correctly
+  dismisses the site, so the rule does not insist on a literal NGX_ERROR
+  comparison. Because the guard search is function-wide rather than
+  flow-sensitive, a comparison that happens on an unrelated path still
+  suppresses the match; this trades false negatives for a low false-positive
+  rate. Covers ngx_atoi, ngx_atosz, ngx_atoof, ngx_atotm, ngx_atofp and
+  ngx_hextoi, all of which share the NGX_ERROR convention.
+utils:
+  converter-call:
+    kind: call_expression
+    has:
+      field: function
+      regex: '^(ngx_atoi|ngx_atosz|ngx_atoof|ngx_atotm|ngx_atofp|ngx_hextoi)$'
+rule:
+  any:
+    - kind: expression_statement
+      all:
+        - has:
+            kind: assignment_expression
+            all:
+              - has: {field: left, pattern: $V}
+              - has: {field: right, matches: converter-call}
+        - not:
+            inside:
+              stopBy: end
+              kind: function_definition
+              has:
+                stopBy: end
+                kind: binary_expression
+                all:
+                  - has:
+                      field: operator
+                      regex: '^(==|!=|<|<=|>|>=)$'
+                  - has: {pattern: $V}
+    - kind: declaration
+      all:
+        - has:
+            kind: init_declarator
+            all:
+              - has: {field: declarator, kind: identifier, pattern: $V}
+              - has: {field: value, matches: converter-call}
+        - not:
+            inside:
+              stopBy: end
+              kind: function_definition
+              has:
+                stopBy: end
+                kind: binary_expression
+                all:
+                  - has:
+                      field: operator
+                      regex: '^(==|!=|<|<=|>|>=)$'
+                  - has: {pattern: $V}

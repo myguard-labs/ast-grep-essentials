@@ -1,0 +1,27 @@
+id: c-strncat-size-misuse
+valid:
+- void f(void) { strncat(dst, src, sizeof(dst) - strlen(dst) - 1); }
+- void f(void) { strncpy(dst, src, sizeof(dst) - 1); }
+- void f(void) { snprintf(dst, sizeof(dst), "%s", src); }
+- void f(void) { strncat(dst, src, remaining); }
+- void f(void) { ngx_cpystrn(dst, src, sizeof(dst)); }
+- /* void f(void) { strncat(dst, src, sizeof(dst)); } */
+- void f(void) { const char *t = "strncat(dst, src, sizeof(dst))"; }
+- void f(void) { char src[4] = "x"; char dst[32]; strncpy(dst, src, sizeof(src)); }
+- void f(void) { strncpy(dst, src, strlen(dst)); }
+invalid:
+- void f(void) { strncat(dst, src, sizeof(dst)); }
+- void f(void) { strncat(dst, src, strlen(dst)); }
+- void f(void) { strncpy(dst, src, sizeof(dst)); }
+- void f(void) { strncat(ctx->buf, src, sizeof(ctx->buf)); }
+- void f(void) { strncat(dst, src, sizeof dst); }
+- void f(void) { strncpy(dst, src, sizeof dst); }
+- void f(void) { strncat((dst), src, sizeof(dst)); }
+- void f(void) { strncat((dst), src, strlen(dst)); }
+- void f(void) { strncpy((dst), src, sizeof(dst)); }
+- void f(void) { strncat(dst, src, sizeof((dst))); }
+- void f(void) { strncat(dst, src, strlen((dst))); }
+- void f(void) { strncpy(dst, src, sizeof((dst))); }
+- void f(void) { strncat((dst), src, sizeof((dst))); }
+- void f(void) { strncat((dst), src, strlen((dst))); }
+- void f(void) { strncpy((dst), src, sizeof((dst))); }

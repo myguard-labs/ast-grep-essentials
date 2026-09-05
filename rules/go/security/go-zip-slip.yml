@@ -1,0 +1,37 @@
+id: go-zip-slip
+language: go
+severity: error
+message: >-
+  Archive entry name joined into a destination path without containment — Zip
+  Slip (CWE-22). An entry named ../../etc/cron.d/x escapes the extraction
+  directory and overwrites files outside it. On Go 1.24+ extract through
+  os.OpenRoot so the kernel enforces containment; otherwise filepath.Clean the
+  result and reject any path that does not stay under the destination prefix.
+note: >-
+  Fires on filepath.Join whose argument reads a .Name field, a common
+  archive-entry shape. It does not resolve the receiver type, so a trusted
+  non-archive struct with a Name field is a legitimate dismissal. A .Name()
+  method call (os.DirEntry over a local directory) does not match.
+  filepath.Clean on the entry name is not containment (it normalises
+  ../ but does not confine the result to the destination), so a join wrapping
+  it still matches; the containment check is necessarily a later statement,
+  and confirming it by reading the surrounding block is the routine dismissal.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^(filepath|path)\.Join$'
+    - has:
+        field: arguments
+        has:
+          stopBy: end
+          kind: selector_expression
+          all:
+            - has:
+                field: field
+                regex: '^Name$'
+            - not:
+                inside:
+                  kind: call_expression
+                  field: function

@@ -1,0 +1,35 @@
+id: c-return-stack-address
+language: c
+severity: error
+message: >-
+  Address of a local returned from a function — the stack frame is destroyed on
+  return, so the caller dereferences memory that is already reused. The read is
+  undefined behaviour and often yields attacker-influenced bytes from a later
+  frame. Return by value, take a caller-supplied buffer, or allocate from a pool
+  whose lifetime outlives the call.
+note: >-
+  Fires on `return &x;` where x is declared in the same function without a
+  storage class. A static local does not match. A name that resolves to a
+  parameter or an outer scope still needs the declaration checked by hand.
+rule:
+  kind: return_statement
+  has:
+    kind: pointer_expression
+    regex: '^&'
+    has:
+      kind: identifier
+      pattern: $VAR
+  inside:
+    stopBy: end
+    kind: function_definition
+    has:
+      stopBy: end
+      kind: declaration
+      all:
+        - has:
+            stopBy: end
+            kind: identifier
+            pattern: $VAR
+        - not:
+            has:
+              kind: storage_class_specifier

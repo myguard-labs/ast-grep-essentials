@@ -1,0 +1,108 @@
+id: py-ssrf-request-fstring
+language: python
+severity: warning
+message: >-
+  Outbound request to a URL built by interpolation — SSRF (CWE-918) if any part
+  of the URL comes from the caller. The server makes the request with its own
+  network position, reaching cloud metadata (169.254.169.254), localhost admin
+  ports and internal hosts a client cannot. Resolve the target against an
+  allowlist of scheme and host before requesting it.
+note: >-
+  Fires on requests/httpx/urllib3/aiohttp, a lexically named local session or
+  client receiver, or urlopen when the URL argument is an f-string or
+  concatenation. For request(method, url), the URL is the second positional
+  argument; the other calls use the first. A named url argument is also covered.
+  Object attributes and aliases under other names are not resolved, and a dict
+  or cache .get() with an interpolated key is deliberately not matched. An
+  interpolated path segment under a fixed, trusted host is the routine
+  dismissal; an interpolated host is not.
+utils:
+  interpolated-url:
+    any:
+      - kind: string
+        has:
+          kind: interpolation
+      - kind: binary_operator
+        all:
+          - has:
+              stopBy: end
+              kind: string
+          - has:
+              stopBy: end
+              any:
+                - kind: identifier
+                - kind: call
+                - kind: attribute
+                - kind: subscript
+                - kind: interpolation
+  named-interpolated-url:
+    kind: keyword_argument
+    all:
+      - has:
+          field: name
+          regex: '^url$'
+      - has:
+          field: value
+          matches: interpolated-url
+  request-receiver:
+    any:
+      - kind: identifier
+        regex: '^(requests|httpx|urllib3|aiohttp|http|session|sess|client)$'
+      - kind: parenthesized_expression
+        has:
+          kind: identifier
+          regex: '^(requests|httpx|urllib3|aiohttp|http|session|sess|client)$'
+  urlopen-function:
+    any:
+      - kind: identifier
+        regex: '^urlopen$'
+      - kind: attribute
+        has:
+          field: attribute
+          regex: '^urlopen$'
+rule:
+  kind: call
+  all:
+    - any:
+        # Most clients and urlopen take the URL as the first positional argument.
+        - all:
+            - has:
+                field: function
+                any:
+                  - kind: attribute
+                    all:
+                      - has:
+                          field: object
+                          matches: request-receiver
+                      - has:
+                          field: attribute
+                          regex: '^(get|post|put|patch|delete|head)$'
+                  - matches: urlopen-function
+            - has:
+                field: arguments
+                any:
+                  - has:
+                      nthChild: 1
+                      matches: interpolated-url
+                  - has:
+                      matches: named-interpolated-url
+        # request(method, url) takes the URL as the second positional argument.
+        - all:
+            - has:
+                field: function
+                kind: attribute
+                all:
+                  - has:
+                      field: object
+                      matches: request-receiver
+                  - has:
+                      field: attribute
+                      regex: '^request$'
+            - has:
+                field: arguments
+                any:
+                  - has:
+                      nthChild: 2
+                      matches: interpolated-url
+                  - has:
+                      matches: named-interpolated-url

@@ -1,0 +1,21 @@
+id: php-weak-crypto
+language: php
+severity: error
+message: >-
+  md5/sha1 call, unsafe for a password; crypt call requiring salt and algorithm
+  review; or mt_rand/rand/uniqid call, unsafe for a security value. md5 and sha1
+  are fast and collision-prone, while crypt strength depends on its
+  salt-selected algorithm and cost. These PRNGs are predictable, so tokens can
+  be guessed. Use password_hash/password_verify for passwords and
+  random_bytes/random_int for tokens.
+note: >-
+  Fires on the call itself. md5/sha1 over a non-secret (cache key, ETag,
+  checksum) is a legitimate use and the routine dismissal. crypt can select a
+  strong password algorithm with a suitable salt, but hand-rolled salt,
+  algorithm and cost selection require review; password_hash is preferred for
+  new code. The password and token cases are otherwise not dismissals.
+rule:
+  kind: function_call_expression
+  has:
+    field: function
+    regex: '(?i)^\\?(md5|sha1|crypt|mt_rand|rand|uniqid)$'

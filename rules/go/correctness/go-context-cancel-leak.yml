@@ -1,0 +1,20 @@
+id: go-context-cancel-leak
+language: go
+severity: warning
+message: >-
+  Context cancel function discarded — assigning cancel to _ retains resources
+  associated with the derived context until its parent is canceled or its
+  deadline fires. Bind the function and defer it immediately: use
+  `defer cancel()` for a CancelFunc and `defer cancel(nil)` for the
+  CancelCauseFunc returned by WithCancelCause. Calling cancel twice is safe.
+note: >-
+  Fires only when cancel is assigned to the blank identifier, which vet does not
+  reject. A bound cancel that is never deferred is a separate defect this
+  matcher cannot see.
+rule:
+  any:
+    - pattern: $CTX, _ := context.$METHOD($$$ARGS)
+    - pattern: $CTX, _ = context.$METHOD($$$ARGS)
+constraints:
+  METHOD:
+    regex: '^With(Timeout|Cancel|Deadline|TimeoutCause|CancelCause|DeadlineCause)$'

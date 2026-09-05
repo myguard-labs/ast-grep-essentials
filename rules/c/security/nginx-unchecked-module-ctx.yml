@@ -1,0 +1,185 @@
+id: nginx-unchecked-module-ctx
+language: c
+severity: warning
+message: >-
+  ngx_http_get_module_ctx result dereferenced without a NULL check. The macro is
+  a plain array read of r->ctx[module.ctx_index] and returns NULL whenever the
+  context was never installed for this request — an internal redirect, an error
+  page, a subrequest, or any phase reached before the handler that creates it.
+  Dereferencing it is a NULL dereference (CWE-476) on exactly the paths testing
+  covers least. Use a terminating guard such as
+  `if (ctx == NULL) { return NGX_DECLINED; }` before the first member access.
+note: >-
+  A match means the assigned name reaches a member access in the same block
+  before a recognized terminating NULL guard, and the access is not scoped
+  inside a recognized positive condition. It does not prove the site is
+  reachable with a NULL context: a handler that is only ever installed after
+  the context exists is safe, and such a site should state that invariant in a
+  comment rather than rely on the reader re-deriving it. A NULL branch counts
+  as a persistent guard only when its consequence directly returns or jumps;
+  merely logging does not protect a later access. Member access scoped inside
+  a positive condition remains accepted. Also covers ngx_stream_get_module_ctx
+  and declaration initializers.
+utils:
+  ctx-call:
+    kind: call_expression
+    has:
+      field: function
+      regex: '^(ngx_http_get_module_ctx|ngx_stream_get_module_ctx)$'
+  ctx-deref:
+    any:
+      - pattern: $C->$F
+      - pattern: (*$C).$F
+  no-ctx-deref:
+    all:
+      - regex: '(?s).+'
+      - not:
+          any:
+            - matches: ctx-deref
+            - has:
+                stopBy: end
+                matches: ctx-deref
+  nonnull-condition-on-c:
+    any:
+      - pattern: ($C)
+      - pattern: ($C != NULL)
+      - pattern: (NULL != $C)
+      - pattern: ($C && $X)
+      - pattern: ($SAFE_X && $C)
+      - pattern: ($C != NULL && $X)
+      - pattern: ($SAFE_X && $C != NULL)
+      - pattern: (NULL != $C && $X)
+      - pattern: ($SAFE_X && NULL != $C)
+  null-condition-on-c:
+    any:
+      - pattern: ($C == NULL)
+      - pattern: (NULL == $C)
+      - pattern: (!$C)
+      - pattern: ($C == NULL || $X)
+      - pattern: ($SAFE_X || $C == NULL)
+      - pattern: (NULL == $C || $X)
+      - pattern: ($SAFE_X || NULL == $C)
+      - pattern: (!$C || $X)
+      - pattern: ($SAFE_X || !$C)
+  unsafe-condition-before-c:
+    any:
+      - pattern: ($BAD_X && $C)
+      - pattern: ($BAD_X && $C != NULL)
+      - pattern: ($BAD_X && NULL != $C)
+      - pattern: ($BAD_X || $C == NULL)
+      - pattern: ($BAD_X || NULL == $C)
+      - pattern: ($BAD_X || !$C)
+  null-exit-guard:
+    kind: if_statement
+    all:
+      - has:
+          field: condition
+          matches: null-condition-on-c
+      - has:
+          field: consequence
+          any:
+            - kind: return_statement
+            - kind: goto_statement
+            - kind: compound_statement
+              has:
+                any:
+                  - kind: return_statement
+                  - kind: goto_statement
+      - not:
+          has:
+            field: consequence
+            has:
+              stopBy: end
+              matches: ctx-deref
+  # Walk following statements until a terminating NULL guard; report the first
+  # dereference reached before that guard.
+  unguarded-deref:
+    precedes:
+      stopBy:
+        matches: null-exit-guard
+      any:
+        # A dereference evaluated before the pointer check is itself unsafe.
+        - kind: if_statement
+          has:
+            field: condition
+            matches: unsafe-condition-before-c
+        # Non-if statements do not establish a branch-local pointer fact.
+        - all:
+            - not: {kind: if_statement}
+            - has:
+                stopBy: end
+                matches: ctx-deref
+        # A consequence is safe only when entering it proves C non-NULL.
+        - kind: if_statement
+          all:
+            - has:
+                stopBy: end
+                all:
+                  - matches: ctx-deref
+                  - not:
+                      not:
+                        inside:
+                          stopBy: end
+                          field: consequence
+                          regex: '(?s).+'
+            - not:
+                has:
+                  field: condition
+                  matches: nonnull-condition-on-c
+        # An alternative is safe only when the condition proves C is NULL.
+        - kind: if_statement
+          all:
+            - has:
+                stopBy: end
+                all:
+                  - matches: ctx-deref
+                  - not:
+                      not:
+                        inside:
+                          stopBy: end
+                          field: alternative
+                          regex: '(?s).+'
+            - not:
+                has:
+                  field: condition
+                  matches: null-condition-on-c
+rule:
+  any:
+    - kind: expression_statement
+      all:
+        - has:
+            kind: assignment_expression
+            all:
+              - has:
+                  field: left
+                  kind: identifier
+                  pattern: $C
+              - has:
+                  field: right
+                  matches: ctx-call
+        - matches: unguarded-deref
+    - kind: declaration
+      all:
+        - has:
+            kind: init_declarator
+            all:
+              - has:
+                  field: declarator
+                  kind: pointer_declarator
+                  has:
+                    field: declarator
+                    kind: identifier
+                    pattern: $C
+              - has:
+                  field: value
+                  matches: ctx-call
+        - matches: unguarded-deref
+constraints:
+  SAFE_X:
+    matches: no-ctx-deref
+  BAD_X:
+    any:
+      - matches: ctx-deref
+      - has:
+          stopBy: end
+          matches: ctx-deref

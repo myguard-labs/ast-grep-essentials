@@ -1,0 +1,43 @@
+id: go-tls-insecure-skip-verify
+language: go
+severity: error
+message: >-
+  InsecureSkipVerify: true in a tls.Config — the peer certificate chain and host
+  name are not validated, so any machine-in-the-middle can present a self-signed
+  certificate and read or rewrite the connection. Remove the field and fix the
+  trust store instead; to pin a private CA, set RootCAs to a cert pool holding it.
+note: >-
+  Fires on a literal `true` in the InsecureSkipVerify field of a tls.Config
+  literal. An assignment after construction cannot be tied to its receiver type
+  syntactically and is not matched. A struct of another type that happens to
+  carry the field name does not match. A test harness
+  talking to a throwaway local server is the only routine dismissal, and even
+  that should not ship in a production build path.
+utils:
+  literal-true:
+    any:
+      - kind: literal_element
+        regex: '^true$'
+      - kind: literal_element
+        all:
+          - has:
+              stopBy: end
+              kind: 'true'
+          - regex: '(?s)^(?:\s|[()]|/\*.*?\*/|//[^\n]*(?:\n|$))*true(?:\s|[()]|/\*.*?\*/|//[^\n]*(?:\n|$))*$'
+          - not: {regex: '^true$'}
+rule:
+  kind: keyed_element
+  all:
+    - has:
+        field: key
+        regex: ^InsecureSkipVerify$
+    - has:
+        field: value
+        matches: literal-true
+    - inside:
+        kind: composite_literal
+        stopBy:
+          kind: composite_literal
+        has:
+          field: type
+          regex: '^tls\.Config$'

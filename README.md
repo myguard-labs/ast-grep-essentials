@@ -1,7 +1,7 @@
 # astgrep-rules
 
-Handcrafted [ast-grep](https://ast-grep.github.io/) rules for C/nginx, Go, PHP,
-and Python. Security and correctness checks identify code that needs review;
+Handcrafted [ast-grep](https://ast-grep.github.io/) rules for Bash, C/nginx, Go,
+PHP, and Python. Security and correctness checks identify code that needs review;
 a match alone does not establish a vulnerability.
 
 ## Layout

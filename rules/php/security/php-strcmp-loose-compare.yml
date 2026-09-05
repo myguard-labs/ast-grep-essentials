@@ -1,0 +1,38 @@
+id: php-strcmp-loose-compare
+language: php
+severity: error
+message: >-
+  strcmp/strcasecmp result compared loosely — authentication bypass by type
+  juggling (CWE-697). Before PHP 8, passing an array (password[]=) makes these
+  return NULL, and NULL == 0 is true, so the comparison succeeds without the
+  right value. Compare strictly with === 0, or use hash_equals() for secrets and
+  password_verify() for passwords.
+note: >-
+  Fires on a loose ==, != or <> against a string-comparison result. PHP 8 raises a
+  TypeError on array arguments instead of returning NULL, but the loose
+  comparison remains wrong and is still a bypass on any pre-8 deployment.
+utils:
+  direct-string-comparison-call:
+    kind: function_call_expression
+    has:
+      field: function
+      regex: '(?i)^\\?(strcmp|strcasecmp|strncmp|strncasecmp)$'
+  string-comparison-operand:
+    any:
+      - matches: direct-string-comparison-call
+      - kind: parenthesized_expression
+        has:
+          matches: direct-string-comparison-call
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^(==|!=|<>)$'
+    - any:
+        - has:
+            field: left
+            matches: string-comparison-operand
+        - has:
+            field: right
+            matches: string-comparison-operand

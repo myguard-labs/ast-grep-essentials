@@ -1,0 +1,82 @@
+id: sh-curl-pipe-shell
+language: bash
+severity: error
+message: >-
+  Remote script piped straight into a shell — the fetched bytes execute with no
+  chance to inspect or verify them (OWASP A03:2025 Software Supply Chain
+  Failures). A compromised host, a hijacked DNS answer or a MITM on the
+  connection gets arbitrary code execution, and a truncated download executes
+  half a script. Fetch to a file, verify a published checksum or signature, then
+  run it.
+note: >-
+  Fires when curl writes its response to stdout, or wget explicitly selects
+  stdout, and that stream reaches sh/bash/zsh/ksh/dash with no script path
+  (including stdin-preserving shell options), or python/perl/ruby with `-`.
+  Also covers sudo with any sequence or cluster of the common no-argument
+  -E/-H/-n/-S options and short or long user selection. Arguments after an
+  explicit stdin selector are program argv, so they remain covered. A terminal
+  `--` with no script path also reads stdin. Commands that select an output
+  file, interpreters given a script path or `-c`, and sudo tee/install do not
+  match.
+  Vendor install instructions use this shape; that is the reason to pin and
+  verify locally rather than a reason to dismiss it. An interpreter given an
+  inline script (python3 -c, perl -e) does not match: stdin is data there, not
+  the code being run.
+utils:
+  interpreter:
+    regex: '^["'']?(sh|bash|zsh|ksh|dash|python|python3|perl|ruby)["'']?$'
+  stdin-marker:
+    regex: '^["'']?(-s|-)["'']?$'
+  shell-with-stdin-options:
+    regex: '^["'']?(sh|bash|zsh|ksh|dash)["'']?(\s+["'']?(-[abefhkmnptuvxBCEHPT]+|--(noprofile|norc|posix|restricted|verbose|noediting|login|debugger))["'']?)*(\s+["'']?-[abefhkmnptuvxBCEHPTs]*s[abefhkmnptuvxBCEHPTs]*["'']?(\s+.*)?|\s+["'']?--["'']?)?$'
+  stdout-fetch:
+    kind: command
+    any:
+      - all:
+          - has: {field: name, regex: '^["'']?curl["'']?$'}
+          - any:
+              # These output-option forms explicitly select stdout.
+              - regex: '(^|\s)(["'']?-[sSfLvikN]*o["'']?\s+["'']?-["'']?|["'']?-[sSfLvikN]*o-["'']?|["'']?--output["'']?\s+["'']?-["'']?|["'']?--output=-["'']?)(\s|$)'
+              - not:
+                  has:
+                    field: argument
+                    # curl short -o/-O forms and their common no-argument
+                    # prefixes, plus the equivalent long output-file options.
+                    regex: '^["'']?(?:-o.*|-O.*|-[sSfLvikN]*[oO].*|--output(?:=.*)?|--remote-name|--remote-name-all|--remote-header-name)["'']?$'
+      - all:
+          - has: {field: name, regex: '^["'']?wget["'']?$'}
+          - any:
+              - has:
+                  field: argument
+                  regex: '^["'']?(?:-[A-Za-z]*O-|--output-document=-)["'']?$'
+              - all:
+                  - has: {field: argument, regex: '^["'']?(-O|--output-document)["'']?$'}
+                  - has: {field: argument, regex: '^["'']?-["'']?$'}
+  stdin-interpreter:
+    kind: command
+    any:
+      # A direct, bare interpreter reads the pipe as program text.
+      - all:
+          - matches: interpreter
+          - not:
+              has: {field: argument, regex: '.+'}
+      - all:
+          - has: {field: name, matches: interpreter}
+          - any:
+              - has: {nthChild: 2, matches: stdin-marker}
+              - matches: shell-with-stdin-options
+      # Supported sudo options and user selectors can be interleaved before the
+      # interpreter. A stdin selector may be followed by argv.
+      - all:
+          - has: {field: name, regex: '^sudo$'}
+          - any:
+              - regex: '^sudo(?:\s+(?:-[EHnS]+|-[EHnS]*u(?:\S+|\s+\S+)|--user(?:=\S+|\s+\S+)))*(?:\s+--)?\s+["'']?(?:sh|bash|zsh|ksh|dash)["'']?(?:\s+["'']?(?:-[abefhkmnptuvxBCEHPT]+|--(?:noprofile|norc|posix|restricted|verbose|noediting|login|debugger))["'']?)*(?:\s+["'']?-[abefhkmnptuvxBCEHPTs]*s[abefhkmnptuvxBCEHPTs]*["'']?(?:\s+.*)?|\s+["'']?--["'']?)?$'
+              - regex: '^sudo(?:\s+(?:-[EHnS]+|-[EHnS]*u(?:\S+|\s+\S+)|--user(?:=\S+|\s+\S+)))*(?:\s+--)?\s+["'']?(?:python3?|perl|ruby)["'']?(?:\s+["'']?-["'']?(?:\s+.*)?)?$'
+rule:
+  kind: pipeline
+  has:
+    all:
+      - matches: stdout-fetch
+      - precedes:
+          stopBy: end
+          matches: stdin-interpreter

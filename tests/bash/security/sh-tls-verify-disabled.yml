@@ -1,0 +1,39 @@
+id: sh-tls-verify-disabled
+valid:
+- curl -sSL https://example.com/f -o f
+- curl --cacert /etc/ssl/ca.pem https://example.com/f
+- wget https://example.com/f
+- pip install --cert /etc/ssl/ca.pem requests
+- pip install requests
+- wget -k https://example.com/page.html
+- curl -K /etc/curlrc https://example.com/f
+- curl -ok https://example.com/f
+- curl -Hk https://example.com/f
+- curl -o -k https://example.com/f
+- curl -H -k https://example.com/f
+- curl --output "-k" https://example.com/f
+- curl "--header" "--insecure" https://example.com/f
+- curl -K -k https://example.com/f
+- curl -A -k https://example.com/f
+- curl --config "--insecure" https://example.com/f
+- curl --user-agent -k https://example.com/f
+- curl --cacert -k https://example.com/f
+- curl --resolve -k https://example.com/f
+- curl --url -k
+invalid:
+- curl -k https://example.com/f -o f
+- curl --insecure https://example.com/i.sh -o i.sh
+- wget --no-check-certificate https://example.com/f
+- pip install --trusted-host pypi.org requests
+- pip install --trusted-host=pypi.org requests
+- curl -sSk https://example.com/f -o f
+- curl "-k" https://example.com/f
+- curl '--insecure' https://example.com/f
+- wget "--no-check-certificate" https://example.com/f
+- pip install "--trusted-host" pypi.org requests
+- curl -o f -k https://example.com/f
+- curl -H -k --insecure https://example.com/f
+- curl -K cfg -k https://example.com/f
+- curl -A agent -k https://example.com/f
+- curl --cacert ca.pem -k https://example.com/f
+- curl --resolve example.com:443:127.0.0.1 -k https://example.com/f

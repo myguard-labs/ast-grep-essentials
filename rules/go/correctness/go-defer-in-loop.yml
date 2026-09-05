@@ -1,0 +1,22 @@
+id: go-defer-in-loop
+language: go
+severity: warning
+message: >-
+  defer inside a for/range loop body — deferred calls run when the enclosing
+  function returns, not at the end of each iteration, so files, rows, locks and
+  connections accumulate for the whole loop. Move the body into its own function
+  (or a closure invoked per iteration) so each defer fires on that iteration.
+note: >-
+  Fires on a defer whose nearest enclosing function is outside the loop.
+  Dismiss when the loop provably runs a small bounded number of times and the
+  held resource is cheap; prefer restructuring anyway.
+rule:
+  kind: defer_statement
+  inside:
+    stopBy:
+      any:
+        - kind: func_literal
+        - kind: function_declaration
+        - kind: method_declaration
+    any:
+      - kind: for_statement

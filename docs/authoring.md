@@ -52,6 +52,17 @@ Regexes search node text; anchor them when an exact name is intended. On 0.45.2,
 a PHP positional-argument capture can be an `argument` node wrapping the
 expression, so verify its shape before applying a `kind` constraint.
 
+A descendant test proves syntax is present, not that a Boolean condition
+implies a guard. For guard rules, pair `&&` and `||` cases and test the branch in
+which the protected access executes. A NULL comparison nested under the wrong
+operator can otherwise suppress the exact dereference the rule should report.
+
+Quoted tokens are parser nodes, not interchangeable source text. In PHP,
+single-quoted literals are `string` nodes while double-quoted literals are
+`encapsed_string` nodes. In Bash, quote an executable, an option and an option
+value in separate fixtures; also test whether an argument-taking option consumes
+the following word before treating that word as another flag.
+
 ## Add and test
 
 Put the rule in `rules/<language>/<category>/<id>.yml` and matching fixtures in
@@ -68,11 +79,20 @@ match behavior; review snapshot additions with `ast-grep test -i`. Snapshots
 also protect match ranges and fixes. Confirm the positive fails when the
 matcher is removed or broken. [Testing](https://ast-grep.github.io/guide/test-rule.html).
 
+Snapshot files can retain cases that no longer exist in `invalid`; the fixture
+runner does not reject those orphan keys. During review, compare the snapshot
+keys explicitly with the current invalid fixtures.
+
 Exercise each alternative and supported API, including its argument positions.
 Inspect secondary labels as well as detection counts: nested `has` relations
 can annotate the same range twice. A captured condition with a constraint can
 check descendants without repeating their labels; regenerate snapshots only
 after checking the resulting ranges.
+
+Main messages and notes interpolate metavariables too. Avoid literal
+metavariable-shaped text such as a dollar-prefixed uppercase name in a
+diagnostic, or assert the emitted JSON text explicitly; snapshots do not store
+the main message or note.
 
 Before adding a `fix`, establish that every match admits that rewrite. Preview
 it, inspect the diff, and test both replacement text and surrounding syntax.

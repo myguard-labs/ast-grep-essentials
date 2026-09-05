@@ -1,0 +1,59 @@
+id: c-strncat-size-misuse
+language: c
+severity: error
+message: >-
+  strncat/strncpy sized with the whole destination buffer. strncat's third
+  argument is the count of bytes appended, not the buffer size, so
+  sizeof(dst)/strlen(dst) overflows by the existing contents plus the NUL.
+  strncpy given sizeof(dst) leaves the result unterminated when the source is
+  that long. Pass the remaining space (sizeof(dst) - strlen(dst) - 1) and
+  terminate explicitly, or use snprintf.
+note: >-
+  Fires when strncat's length is sizeof/strlen of the destination itself, or
+  when strncpy's length is sizeof of the destination. A correct remaining-space
+  computation subtracts from that and does not match.
+rule:
+  kind: call_expression
+  any:
+    - pattern:
+        context: void f(void) { strncat(($DST), $SRC, sizeof(($DST))); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncat(($DST), $SRC, strlen(($DST))); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncpy(($DST), $SRC, sizeof(($DST))); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncat($DST, $SRC, sizeof(($DST))); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncat($DST, $SRC, strlen(($DST))); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncpy($DST, $SRC, sizeof(($DST))); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncat(($DST), $SRC, sizeof($DST)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncat(($DST), $SRC, strlen($DST)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncpy(($DST), $SRC, sizeof($DST)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncat($DST, $SRC, sizeof($DST)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncat($DST, $SRC, strlen($DST)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncpy($DST, $SRC, sizeof($DST)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncat($DST, $SRC, sizeof $DST); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { strncpy($DST, $SRC, sizeof $DST); }
+        selector: call_expression

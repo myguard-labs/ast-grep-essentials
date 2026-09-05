@@ -1,0 +1,89 @@
+id: sh-tls-verify-disabled
+language: bash
+severity: error
+message: >-
+  TLS certificate verification disabled on a download — curl -k, wget
+  --no-check-certificate or pip --trusted-host accept any certificate, so a
+  machine-in-the-middle serves whatever content it likes and the result is
+  usually then installed or executed (OWASP A03:2025). Fix the trust store or
+  pass the private CA bundle instead: curl --cacert, pip --cert.
+note: >-
+  Fires on the flag itself, bound to the command that defines it: curl -k or
+  --insecure (also inside a cluster of common no-argument options such as
+  -sSk), wget
+  --no-check-certificate and pip --trusted-host, with or without =host.
+  wget -k is --convert-links and does not match. A temporary local workaround is the stated excuse;
+  it should never reach a committed script, Dockerfile or CI job, which is
+  exactly where this rule looks.
+utils:
+  curl-insecure-option:
+    any:
+      - kind: word
+      - kind: string
+      - kind: raw_string
+    regex: '^["'']?(--insecure|-[sSLfIiNvk]*k[sSLfIiNvk]*)["'']?$'
+  curl-value-option:
+    any:
+      - kind: word
+      - kind: string
+      - kind: raw_string
+    regex: >-
+      (?x)^["']?(?:
+      -[sSLfIiNv]*(?:A|b|c|C|d|D|e|E|F|h|H|K|m|o|P|Q|r|t|T|u|U|w|x|X|y|Y|z)
+      |--(?:abstract-unix-socket|alt-svc|aws-sigv4|cacert|capath|cert|cert-type|ciphers|config|
+      connect-timeout|connect-to|continue-at|cookie|cookie-jar|create-file-mode|crlfile|curves|data|
+      data-ascii|data-binary|data-raw|data-urlencode|delegation|dns-interface|dns-ipv4-addr|
+      dns-ipv6-addr|dns-servers|doh-url|dump-header|ech|egd-file|engine|etag-compare|etag-save|
+      expect100-timeout|form|form-string|ftp-account|ftp-alternative-to-user|ftp-method|ftp-port|
+      ftp-ssl-ccc-mode|happy-eyeballs-timeout-ms|haproxy-clientip|header|help|hostpubmd5|
+      hostpubsha256|hsts|interface|ip-tos|ipfs-gateway|json|keepalive-cnt|keepalive-time|key|
+      key-type|krb|libcurl|limit-rate|local-port|login-options|mail-auth|mail-from|mail-rcpt|
+      max-filesize|max-redirs|max-time|netrc-file|noproxy|oauth2-bearer|output|output-dir|
+      parallel-max|pass|pinnedpubkey|preproxy|proto|proto-default|proto-redir|proxy|proxy-cacert|
+      proxy-capath|proxy-cert|proxy-cert-type|proxy-ciphers|proxy-crlfile|proxy-header|proxy-key|
+      proxy-key-type|proxy-pass|proxy-pinnedpubkey|proxy-service-name|proxy-tls13-ciphers|
+      proxy-tlsauthtype|proxy-tlspassword|proxy-tlsuser|proxy-user|proxy1\.0|pubkey|quote|
+      random-file|range|rate|referer|request|request-target|resolve|retry|retry-delay|
+      retry-max-time|sasl-authzid|service-name|sigalgs|socks4|socks4a|socks5|
+      socks5-gssapi-service|socks5-hostname|speed-limit|speed-time|ssl-sessions|stderr|
+      telnet-option|tftp-blksize|time-cond|tls-max|tls13-ciphers|tlsauthtype|tlspassword|
+      tlsuser|trace|trace-ascii|trace-config|unix-socket|upload-file|upload-flags|url|
+      url-query|user|user-agent|variable|vlan-priority|write-out)
+      )["']?$
+rule:
+  kind: command
+  any:
+    # curl: --insecure, or a short-option cluster carrying k (lowercase; -K
+    # is the config-file option).
+    - all:
+        - has:
+            field: name
+            regex: '^["'']?curl["'']?$'
+        - has:
+            all:
+              - matches: curl-insecure-option
+              # Do not treat the value of a required-argument option as another
+              # option.
+              - not:
+                  follows:
+                    matches: curl-value-option
+    - all:
+        - has:
+            field: name
+            regex: '^["'']?wget["'']?$'
+        - has:
+            any:
+              - kind: word
+              - kind: string
+              - kind: raw_string
+            regex: '^["'']?--no-check-certificate["'']?$'
+    - all:
+        - has:
+            field: name
+            regex: '^["'']?(pip|pip3)["'']?$'
+        - has:
+            any:
+              - kind: word
+              - kind: string
+              - kind: raw_string
+            regex: '^["'']?--trusted-host(=.*)?["'']?$'
