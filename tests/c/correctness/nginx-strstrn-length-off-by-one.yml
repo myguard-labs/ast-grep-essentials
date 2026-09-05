@@ -1,0 +1,17 @@
+id: nginx-strstrn-length-off-by-one
+valid:
+- void f(void) { p = ngx_strcasestrn(ae->data, "zstd", sizeof("zstd") - 2); }
+- void f(void) { p = ngx_strcasestrn(start, "gzip", 4 - 1); }
+- void f(void) { p = ngx_strstrn(s, "br", sizeof("br") - 2); }
+- void f(void) { p = ngx_strlcasestrn(s, last, "zstd", sizeof("zstd") - 2); }
+- void f(void) { p = ngx_strcasestrn(ae->data, needle, sizeof(needle) - 1); }
+- void f(void) { p = ngx_strcasestrn(ae->data, "zstd", sizeof("zst") - 1); }
+- void f(void) { n = ngx_strncasecmp(a, "zstd", sizeof("zstd") - 1); }
+- void f(void) { p = ngx_strlcasestrn(s, last, "zstd", sizeof("zstd") - 1 - 1); }
+- /* void f(void) { p = ngx_strcasestrn(ae->data, "zstd", sizeof("zstd") - 1); } */
+- void f(void) { const char *t = "ngx_strcasestrn(ae->data, \"zstd\", sizeof(\"zstd\") - 1)"; }
+invalid:
+- void f(void) { p = ngx_strcasestrn(ae->data, "zstd", sizeof("zstd") - 1); }
+- void f(void) { p = ngx_strstrn(s, "br", sizeof("br") - 1); }
+- void f(void) { p = ngx_strlcasestrn(s, last, "zstd", sizeof("zstd") - 1); }
+- void f(void) { if (ngx_strcasestrn(h->value.data, "no-transform", sizeof("no-transform") - 1)) { x(); } }

@@ -1,0 +1,69 @@
+id: nginx-pool-cleanup-add-size-discarded
+language: c
+severity: info
+message: >-
+  ngx_pool_cleanup_add() was given a size expression other than literal zero,
+  so it may allocate cleanup->data, and a later statement overwrites
+  cleanup->data with another pointer. Where the size is genuinely non-zero the
+  allocated block is orphaned. Pass 0 when the handler receives an external
+  pointer.
+note: >-
+  Real: nginx-zstd-module f735a5d. Advisory: ngx_pool_cleanup_add allocates
+  only when the runtime size is non-zero (core/ngx_palloc.c), and this rule
+  cannot evaluate the expression, so a macro or variable that happens to be
+  zero still matches. The allocating statement may be a plain assignment, a
+  declaration with an initialiser, or an assignment anywhere inside a
+  preceding statement, including an if, loop or switch body.
+  The overwrite must follow it in source order, but no path analysis is done,
+  so the two may sit on branches that never both execute: an allocation in an
+  if arm and a write in its else arm still match, which is why this rule is
+  info severity rather than a finding. Both statements must
+  be siblings in the same function body, so an allocation in one function and
+  a write in another do not pair, and neither side may sit inside a GNU
+  nested function definition.
+utils:
+  not-nested:
+    not:
+      inside:
+        kind: function_definition
+        stopBy: end
+        inside:
+          kind: function_definition
+          stopBy: end
+  alloc-anywhere:
+    any:
+      - has:
+          pattern: $C = ngx_pool_cleanup_add($P, $N)
+          kind: assignment_expression
+          stopBy: end
+          matches: not-nested
+      - has:
+          kind: init_declarator
+          stopBy: end
+          all:
+            - has:
+                field: declarator
+                has: {kind: identifier, pattern: $C, stopBy: end}
+            - has:
+                field: value
+                pattern: ngx_pool_cleanup_add($P, $N)
+                matches: not-nested
+rule:
+  any:
+    - kind: expression_statement
+    - kind: if_statement
+    - kind: declaration
+    - kind: for_statement
+    - kind: while_statement
+    - kind: switch_statement
+    - kind: compound_statement
+    - kind: do_statement
+  matches: alloc-anywhere
+  precedes:
+    stopBy: end
+    has:
+      pattern: $C->data = $V
+      stopBy: end
+      matches: not-nested
+constraints:
+  N: {not: {regex: '^0$'}}

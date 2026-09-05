@@ -1,0 +1,112 @@
+id: nginx-table-missing-sentinel
+valid:
+- |
+  static ngx_conf_enum_t  ngx_http_x_static[] = {
+      { ngx_string("off"), 0 },
+      { ngx_string("on"), 1 },
+      { ngx_null_string, 0 }
+  };
+- |
+  static ngx_conf_bitmask_t  ngx_http_x_mask[] = {
+      { ngx_string("a"), 1 },
+      { ngx_null_string, 0 },
+  };
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x"), NGX_HTTP_LOC_CONF|NGX_CONF_FLAG, ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_loc_conf_t, enable), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_http_variable_t  ngx_http_x_vars[] = {
+      { ngx_string("x_ratio"), NULL, ngx_http_x_ratio_variable, 0, NGX_HTTP_VAR_NOCACHEABLE, 0 },
+      ngx_http_null_variable
+  };
+- |
+  static ngx_stream_variable_t  ngx_stream_x_vars[] = {
+      { ngx_string("x"), NULL, ngx_stream_x_variable, 0, 0, 0 },
+      ngx_stream_null_variable
+  };
+- static ngx_str_t  names[] = { ngx_string("a"), ngx_string("b") };
+- |
+  static ngx_conf_enum_t  ngx_http_x_static[] = {
+      { ngx_string("on"), 1 },
+      { ngx_null_string, 0 } /* terminal marker */
+  };
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x"), NGX_HTTP_LOC_CONF|NGX_CONF_FLAG, ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_loc_conf_t, enable), NULL },
+      ngx_null_command  /* end of table */
+  };
+- |
+  static ngx_http_variable_t  ngx_http_x_vars[] = {
+      { ngx_string("x_ratio"), NULL, ngx_http_x_ratio_variable, 0, 0, 0 },
+      ngx_http_null_variable  /* sentinel */
+  };
+- static ngx_conf_enum_t  *table;
+- static ngx_command_t  scalar_cmd = { ngx_string("x"), 0, NULL, 0, 0, NULL };
+- static ngx_conf_enum_t  scalar_enum = { ngx_string("on"), 1 };
+# Known limit: a sentinel in the middle satisfies this rule even though the
+# walker stops there. Documented in the rule note and docs/limitations.md.
+- |
+  static ngx_conf_enum_t  ngx_http_x_early[] = {
+      { ngx_null_string, 0 },
+      { ngx_string("on"), 1 }
+  };
+- /* static ngx_conf_enum_t  bad[] = { { ngx_string("off"), 0 } }; */
+- static const char  *text = "static ngx_command_t  bad[] = { { ngx_string(\"x\") } };";
+invalid:
+- |
+  ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x"), NGX_HTTP_LOC_CONF|NGX_CONF_FLAG, ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_loc_conf_t, enable), NULL }
+  };
+# Spoof controls: the sentinel must be a real identifier child, not text that
+# merely names it inside a string or a comment.
+- |
+  static ngx_conf_enum_t  ngx_http_x_spoof[] = {
+      { ngx_string("ngx_null_string"), 1 },
+      { ngx_string("off"), 0 }
+  };
+- |
+  static ngx_conf_enum_t  ngx_http_x_spoof2[] = {
+      { ngx_string("on"), 1 /* ngx_null_string */ },
+      { ngx_string("off"), 0 }
+  };
+# The sentinel name must match whole: a longer identifier that merely starts
+# or ends with it is not the terminator.
+- |
+  static ngx_http_variable_t  ngx_http_x_spoof3[] = {
+      { ngx_string("x"), NULL, ngx_http_x_variable, 0, 0, 0 },
+      ngx_http_null_variable_extra
+  };
+- |
+  static ngx_http_variable_t  ngx_http_x_spoof4[] = {
+      { ngx_string("x"), NULL, ngx_http_x_variable, 0, 0, 0 },
+      { custom_ngx_null_string, NULL, NULL, 0, 0, 0 }
+  };
+- |
+  static ngx_conf_enum_t  ngx_http_x_static[] = {
+      { ngx_string("off"), 0 },
+      { ngx_string("on"), 1 },
+      { ngx_string("always"), 2 },
+  };
+- |
+  static ngx_conf_bitmask_t  ngx_http_x_mask[] = {
+      { ngx_string("a"), 1 },
+      { ngx_string("b"), 2 }
+  };
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x"), NGX_HTTP_LOC_CONF|NGX_CONF_FLAG, ngx_conf_set_flag_slot,
+        NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_loc_conf_t, enable), NULL },
+  };
+- |
+  static ngx_http_variable_t  ngx_http_x_vars[] = {
+      { ngx_string("x_ratio"), NULL, ngx_http_x_ratio_variable, 0, NGX_HTTP_VAR_NOCACHEABLE, 0 },
+  };
+- |
+  static ngx_stream_variable_t  ngx_stream_x_vars[] = {
+      { ngx_string("x"), NULL, ngx_stream_x_variable, 0, 0, 0 }
+  };

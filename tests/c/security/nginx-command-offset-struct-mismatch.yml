@@ -1,0 +1,100 @@
+id: nginx-command-offset-struct-mismatch
+valid:
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x_dict_file"), NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1, ngx_conf_set_str_slot,
+        NGX_HTTP_MAIN_CONF_OFFSET, offsetof(ngx_http_x_main_conf_t, dict_file), NULL },
+      { ngx_string("x"), NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_FLAG,
+        ngx_conf_set_flag_slot, NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_loc_conf_t, enable), NULL },
+      { ngx_string("x_zone"), NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1, ngx_conf_set_str_slot,
+        NGX_HTTP_SRV_CONF_OFFSET, offsetof(ngx_http_x_srv_conf_t, zone), NULL },
+      { ngx_string("x_stream"), NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE1, ngx_conf_set_num_slot,
+        NGX_STREAM_MAIN_CONF_OFFSET, offsetof(ngx_stream_x_main_conf_t, n), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("status_zone"), NGX_HTTP_SRV_CONF|NGX_CONF_TAKE12, ngx_http_core_status_zone,
+        NGX_HTTP_SRV_CONF_OFFSET, offsetof(ngx_http_core_main_conf_t, server_zones), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x"), NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1, ngx_conf_set_str_slot,
+        NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_conf_t, name), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_other_t  table[] = {
+      { ngx_string("x"), NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1, ngx_conf_set_str_slot,
+        NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_main_conf_t, dict_file), NULL },
+  };
+- |
+  /* { ngx_string("x"), NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1, ngx_conf_set_str_slot,
+       NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_main_conf_t, dict_file), NULL }, */
+  static ngx_command_t  ngx_http_x_commands[] = { ngx_null_command };
+- |
+  static const char  *doc =
+      "{ ngx_string(\"x\"), NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1, ngx_conf_set_str_slot, "
+      "NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_main_conf_t, dict_file), NULL },";
+invalid:
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x"), NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1, /* c */ ngx_conf_set_str_slot,
+        /* c */ NGX_HTTP_SRV_CONF_OFFSET, /* c */ offsetof(ngx_http_x_loc_conf_t, n), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_command_t  ngx_stream_x_commands[] = {
+      { ngx_string("x"), NGX_STREAM_MAIN_CONF|NGX_CONF_TAKE1, ngx_stream_set_str_slot,
+        NGX_STREAM_MAIN_CONF_OFFSET, offsetof(ngx_stream_x_srv_conf_t, n), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_command_t  ngx_mail_x_commands[] = {
+      { ngx_string("x"), NGX_MAIL_MAIN_CONF|NGX_CONF_TAKE1, ngx_mail_set_str_slot,
+        NGX_MAIL_MAIN_CONF_OFFSET, offsetof(ngx_mail_x_srv_conf_t, n), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x"), NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1, ngx_conf_set_str_slot,
+        NGX_HTTP_SRV_CONF_OFFSET, offsetof(ngx_http_x_main_conf_t, n), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x"), NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1, ngx_conf_set_str_slot,
+        NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_srv_conf_t, n), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x"), NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1, /* c */ ngx_conf_set_str_slot,
+        /* c */ NGX_HTTP_MAIN_CONF_OFFSET, /* c */ offsetof(ngx_http_x_loc_conf_t, n), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x_dict_file"), NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1, ngx_conf_set_str_slot,
+        NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_main_conf_t, dict_file), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x"), NGX_HTTP_LOC_CONF|NGX_CONF_FLAG, ngx_conf_set_flag_slot,
+        NGX_HTTP_MAIN_CONF_OFFSET, offsetof(ngx_http_x_loc_conf_t, enable), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x"), NGX_HTTP_MAIN_CONF|NGX_CONF_TAKE1, /* handler */ ngx_conf_set_str_slot,
+        NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_main_conf_t, dict_file), NULL },
+      ngx_null_command
+  };
+- |
+  static ngx_command_t  ngx_http_x_commands[] = {
+      { ngx_string("x_zone"), NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1, ngx_http_set_complex_value_slot,
+        NGX_HTTP_SRV_CONF_OFFSET, offsetof(ngx_http_x_loc_conf_t, zone), NULL },
+      ngx_null_command
+  };

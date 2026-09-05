@@ -1,0 +1,106 @@
+id: nginx-format-libc-length-modifier
+language: c
+severity: error
+message: >-
+  libc length modifier in an nginx format string. ngx_vslprintf() reads
+  u, m, x and X as prefixes and then expects one of its own conversions
+  (d i l z L D O T M A p P s V v Z N c f r %). It has no h, ll, j or t
+  modifier, and no trailing-letter forms: %lu consumes a long for the l
+  and then prints a literal u, %zu prints a literal u after the size,
+  and a bare %u with no conversion after it consumes nothing at all.
+  Use %ui, %uz, %uL, %ul or %O.
+note: >-
+  Motivated by nginx-zstd-module 6038ff2 (#207), which reprinted the byte
+  counters through the unsigned %uL. That specific bug, a signed %L holding an
+  unsigned value, needs the argument's type and this rule does not detect it;
+  the rule covers the neighbouring class of libc modifiers nginx cannot parse. The related 89199b0 (#290) left its specifier alone and
+  narrowed four casts from ngx_uint_t to unsigned so the arguments match %xd.
+  A * before the modifier is nginx's own string-length prefix (it consumes a
+  size_t), so %*hu and %*zu are flagged like %hu and %zu while %*s is legal.
+  The format argument is matched by position per function, so a %lu inside a
+  data argument is not flagged.
+  Field positions skip comment nodes, so an inline comment before the format
+  does not hide it. An escaped %% is not a conversion, so "100%%lu" is left
+  alone. Adjacent literals are judged piece by piece, skipping any piece whose
+  specifier may continue across a join: a piece ending in an unterminated
+  specifier, and the piece after it, are left alone, so "%l" "u",
+  "%" "%lu" and "%u" "i" are all passed over while "%lu" " bytes"
+  is still flagged. Wrappers and macros with their own format position need
+  their own entry,
+  and a format string held in a variable is not seen. Snapshots show the
+  format literal twice as a secondary label: the argument-list traversal and
+  the literal match annotate the same range. Scan output reports one finding
+  per call; the repeat is a label artefact, not a double match.
+utils:
+  bad-format:
+    regex: '(?:^|[^%])(?:%%)*%[-+ 0#*]*\d*(?:\.\d+)?(?:(?:hh?|ll?|j|t|q)[diouxX]|z[diouxX])|(?:^|[^%])(?:%%)*%[-+ 0#*]*\d*[umxX]*u[^A-Za-z.*%]'
+  open-tail:
+    regex: '%(?:%%)*[-+ 0#*]*\d*[umxX]*"$'
+  format-literal:
+    any:
+      - kind: string_literal
+        matches: bad-format
+        not:
+          inside: {kind: concatenated_string}
+      - kind: concatenated_string
+        has:
+          kind: string_literal
+          matches: bad-format
+          not:
+            any:
+              - follows: {kind: string_literal, matches: open-tail}
+              - matches: open-tail
+rule:
+  kind: call_expression
+  any:
+    # ngx_sprintf(buf, fmt, ...) -- format is argument 2
+    - all:
+        - has:
+            field: function
+            regex: ^ngx_sprintf$
+        - has:
+            field: arguments
+            has:
+              nthChild:
+                position: 2
+                ofRule: {not: {kind: comment}}
+              matches: format-literal
+    # ngx_snprintf(buf, max, fmt, ...) / ngx_slprintf(buf, last, fmt, ...)
+    # / ngx_vslprintf(buf, last, fmt, args) -- format is argument 3
+    - all:
+        - has:
+            field: function
+            regex: ^(ngx_snprintf|ngx_slprintf|ngx_vslprintf)$
+        - has:
+            field: arguments
+            has:
+              nthChild:
+                position: 3
+                ofRule: {not: {kind: comment}}
+              matches: format-literal
+    # ngx_log_error(level, log, err, fmt, ...) and the ngx_log_debugN macros,
+    # ngx_conf_log_error(level, cf, err, fmt, ...) -- format is argument 4
+    - all:
+        - has:
+            field: function
+            regex: ^(ngx_log_error|ngx_log_debug\d|ngx_conf_log_error|ngx_ssl_error)$
+        - has:
+            field: arguments
+            has:
+              nthChild:
+                position: 4
+                ofRule: {not: {kind: comment}}
+              matches: format-literal
+    # ngx_log_stderr(err, fmt, ...) and ngx_log_abort(err, fmt, ...)
+    # -- format is argument 2
+    - all:
+        - has:
+            field: function
+            regex: ^(ngx_log_stderr|ngx_log_abort)$
+        - has:
+            field: arguments
+            has:
+              nthChild:
+                position: 2
+                ofRule: {not: {kind: comment}}
+              matches: format-literal

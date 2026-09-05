@@ -1,0 +1,28 @@
+id: nginx-buf-flush-before-last-buf
+language: c
+severity: warning
+message: >-
+  flush is tested before last_buf in an else-if chain. A chain link can carry
+  both bits, and the else drops the last_buf branch, so the stream is flushed
+  but never finished. Test last_buf first, as ngx_http_gzip_filter_module does.
+note: >-
+  Real: nginx-zstd-module 9c964ab (#44). Only the direct else-if shape on
+  the same buffer is matched; two independent ifs are fine and not flagged.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        field: condition
+        any:
+          - pattern: ($B->flush)
+          - pattern: ($B.flush)
+    - has:
+        field: alternative
+        kind: else_clause
+        has:
+          kind: if_statement
+          has:
+            field: condition
+            any:
+              - pattern: ($B->last_buf)
+              - pattern: ($B.last_buf)

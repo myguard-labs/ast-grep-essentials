@@ -1,0 +1,56 @@
+id: nginx-format-libc-length-modifier
+valid:
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "size %uz bytes %ui total %uL", n, m, t); }
+- void f(void) { p = ngx_sprintf(p, "%uL", v); }
+- void f(void) { p = ngx_sprintf(p, "%ul.%T@%V", ngx_random(), ngx_time(), &name); }
+- void f(void) { ngx_log_debug2(NGX_LOG_DEBUG_HTTP, log, 0, "fd:%d %z of %uz", fd, n, size); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%O %T %M %A %p %P %d %i %l %s %V %Xd %02xd", a, b, c, d, e, f, g, h, i, j, k, l, m); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "100%% done %ud", n); }
+- void f(void) { snprintf(buf, sizeof(buf), "%lu %zu", n, m); }
+- void f(void) { printf("%lld\n", v); }
+- void f(void) { my_log("%lu", n); }
+# Known gap: a specifier split across a join cannot be judged piece by piece,
+# so these three are passed over deliberately.
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%l" "u", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%" "%lu", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%u" "i", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%s", "%lu"); }
+- 'void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "value: %V", &fmt); }'
+- void f(void) { p = ngx_snprintf(buf, sizeof("%lu") - 1, "%uz", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%uf %uc %up %uV %us", a, b, c, d, e); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%u.3f done", v); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%08XD %*s", v, n, s); }
+- /* void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%lu", n); } */
+- void f(void) { const char *t = "ngx_log_error(NGX_LOG_ERR, log, 0, \"%lu\", n)"; }
+invalid:
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "size %lu bytes", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "size %zu bytes", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%lld", v); }
+- void f(void) { ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "ratio %ld", r); }
+- void f(void) { p = ngx_sprintf(p, "%llu", v); }
+- void f(void) { p = ngx_snprintf(p, len, "%hu", v); }
+- void f(void) { p = ngx_vslprintf(buf, last, "%lu", args); }
+- void f(void) { ngx_ssl_error(NGX_LOG_ERR, log, 0, "%lu", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%jd", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%td", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%qd", n); }
+- void f(void) { p = ngx_sprintf(p, /* fmt */ "%lu", n); }
+- void f(void) { p = ngx_snprintf(p, len, /* fmt */ "%lu", n); }
+- void f(void) { ngx_log_stderr(0, /* fmt */ "%lu", n); }
+- void f(void) { ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "level %u out of range", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "n=%u, m=%ui", n, m); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%zd", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%%%lu", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%lu%%", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%zi", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%zo", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%zX", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "%lu" " bytes", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "size " "%lu", n); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, 0, "size " "%lu" " bytes", n); }
+- void f(void) { p = ngx_slprintf(buf, last, "%lu", n); }
+- void f(void) { ngx_log_stderr(0, "%llu", n); }
+- void f(void) { ngx_log_abort(0, "%lu", n); }
+- void f(void) { ngx_log_abort(0, "%*hu", n, v); }
+- void f(void) { ngx_log_abort(0, "%*zu", n, v); }
+- void f(void) { ngx_log_error(NGX_LOG_ERR, log, /* errno */ 0, "%lu", n); }

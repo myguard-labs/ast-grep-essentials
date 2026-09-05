@@ -1,0 +1,68 @@
+id: nginx-buf-flush-before-last-buf
+snapshots:
+  void f(void) { if (b.flush) { x(); } else if (b.last_buf) { y(); } }:
+    labels:
+    - source: if (b.flush) { x(); } else if (b.last_buf) { y(); }
+      style: primary
+      start: 15
+      end: 66
+    - source: (b.flush)
+      style: secondary
+      start: 18
+      end: 27
+    - source: (b.last_buf)
+      style: secondary
+      start: 45
+      end: 57
+    - source: if (b.last_buf) { y(); }
+      style: secondary
+      start: 42
+      end: 66
+    - source: else if (b.last_buf) { y(); }
+      style: secondary
+      start: 37
+      end: 66
+  void f(void) { if (ctx->in_buf->flush) ctx->flush = 1; else if (ctx->in_buf->last_buf) ctx->last = 1; }:
+    labels:
+    - source: if (ctx->in_buf->flush) ctx->flush = 1; else if (ctx->in_buf->last_buf) ctx->last = 1;
+      style: primary
+      start: 15
+      end: 101
+    - source: (ctx->in_buf->flush)
+      style: secondary
+      start: 18
+      end: 38
+    - source: (ctx->in_buf->last_buf)
+      style: secondary
+      start: 63
+      end: 86
+    - source: if (ctx->in_buf->last_buf) ctx->last = 1;
+      style: secondary
+      start: 60
+      end: 101
+    - source: else if (ctx->in_buf->last_buf) ctx->last = 1;
+      style: secondary
+      start: 55
+      end: 101
+  void f(void) { if (in->flush) { ctx->flush = 1; } else if (in->last_buf) { ctx->last = 1; } }:
+    labels:
+    - source: if (in->flush) { ctx->flush = 1; } else if (in->last_buf) { ctx->last = 1; }
+      style: primary
+      start: 15
+      end: 91
+    - source: (in->flush)
+      style: secondary
+      start: 18
+      end: 29
+    - source: (in->last_buf)
+      style: secondary
+      start: 58
+      end: 72
+    - source: if (in->last_buf) { ctx->last = 1; }
+      style: secondary
+      start: 55
+      end: 91
+    - source: else if (in->last_buf) { ctx->last = 1; }
+      style: secondary
+      start: 50
+      end: 91

@@ -1,0 +1,137 @@
+id: nginx-conf-return-code-confusion
+language: c
+severity: warning
+message: >-
+  Return code from the wrong nginx family. Configuration handlers return
+  char * and use NGX_CONF_OK / NGX_CONF_ERROR; ngx_int_t handlers use NGX_OK /
+  NGX_ERROR. The wrong family only works by pointer/integer coincidence
+  (NGX_OK is 0, NGX_ERROR is -1) and breaks any caller that compares the
+  result against the other family.
+note: >-
+  Motivated by nginx-zstd-module 1b52f42, where merge_loc_conf used NGX_OK in
+  a char * function. That commit assigned it to a local rather than returning
+  it directly, so this rule does not detect that instance; it covers the
+  direct-return form of the same confusion. The char * side requires either ngx_conf_t * as the first
+  parameter (a directive handler) or exactly the two parameters of the core
+  module init_conf callback, ngx_cycle_t * then void * (core/ngx_module.h).
+  Parameters are matched structurally by position, each required to be a
+  pointer to a named value, so a comment between them does not shift the count
+  and none of an unrelated three-parameter helper, a variadic one, a by-value
+  signature, or a double pointer is flagged. A callback whose parameters are written through a
+  typedef alias is not recognised. A return nested inside an inner
+  function is attributed to that function, not the enclosing handler. Only return
+  statements are matched; a value stored in a local first needs the local's
+  type, and u_char * / char ** functions are out of scope.
+utils:
+  conf-callback:
+    kind: function_declarator
+    any:
+      - has:
+          field: parameters
+          has:
+            kind: parameter_declaration
+            nthChild:
+              position: 1
+              ofRule: {kind: parameter_declaration}
+            all:
+              - has:
+                  field: type
+                  regex: ^ngx_conf_t$
+              - has:
+                  field: declarator
+                  kind: pointer_declarator
+                  has:
+                    field: declarator
+                    kind: identifier
+      - has:
+          field: parameters
+          all:
+            - has:
+                kind: parameter_declaration
+                nthChild:
+                  position: 1
+                  ofRule: {kind: parameter_declaration}
+                all:
+                  - has:
+                      field: type
+                      regex: ^ngx_cycle_t$
+                  - has:
+                      field: declarator
+                      kind: pointer_declarator
+                      has:
+                        field: declarator
+                        kind: identifier
+            - has:
+                kind: parameter_declaration
+                nthChild:
+                  position: 2
+                  ofRule: {kind: parameter_declaration}
+                all:
+                  - has:
+                      field: type
+                      regex: ^void$
+                  - has:
+                      field: declarator
+                      kind: pointer_declarator
+                      has:
+                        field: declarator
+                        kind: identifier
+            - not:
+                has:
+                  kind: parameter_declaration
+                  nthChild:
+                    position: 3
+                    ofRule: {kind: parameter_declaration}
+            - not:
+                has:
+                  kind: variadic_parameter
+rule:
+  any:
+    - kind: return_statement
+      regex: ^return\s+NGX_(OK|ERROR|AGAIN|DECLINED|DONE|BUSY|ABORT)\s*;$
+      all:
+        - inside:
+            kind: function_definition
+            stopBy: end
+            all:
+              - has:
+                  field: type
+                  regex: ^char$
+              - has:
+                  field: declarator
+                  kind: pointer_declarator
+                  has:
+                    field: declarator
+                    matches: conf-callback
+        - not:
+            inside:
+              kind: function_definition
+              stopBy: end
+              not:
+                has:
+                  field: declarator
+                  kind: pointer_declarator
+                  has:
+                    field: declarator
+                    matches: conf-callback
+    - kind: return_statement
+      regex: ^return\s+NGX_CONF_(OK|ERROR)\s*;$
+      all:
+        - inside:
+            kind: function_definition
+            stopBy: end
+            all:
+              - has:
+                  field: type
+                  regex: ^(ngx_int_t|ngx_uint_t|int)$
+              - has:
+                  field: declarator
+                  kind: function_declarator
+        - not:
+            inside:
+              kind: function_definition
+              stopBy: end
+              not:
+                has:
+                  field: type
+                  regex: ^(ngx_int_t|ngx_uint_t|int)$

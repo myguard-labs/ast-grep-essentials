@@ -1,0 +1,167 @@
+id: nginx-conf-return-code-confusion
+valid:
+- |
+  static char *
+  merge(ngx_conf_t *cf, void *parent, void *child)
+  {
+      if (x) { return NGX_CONF_ERROR; }
+      return NGX_CONF_OK;
+  }
+- |
+  static ngx_int_t
+  init(ngx_conf_t *cf)
+  {
+      if (x) return NGX_ERROR;
+      return NGX_OK;
+  }
+- |
+  static u_char *
+  fmt(u_char *p)
+  {
+      return NGX_OK;
+  }
+- |
+  char *
+  outer(ngx_conf_t *cf)
+  {
+      ngx_int_t inner(void) { return NGX_OK; }
+      return NGX_CONF_OK;
+  }
+- |
+  char *
+  outer2(ngx_conf_t *cf)
+  {
+      char *helper(void) { return NGX_OK; }
+      return NGX_CONF_OK;
+  }
+- |
+  char *
+  lookup(void)
+  {
+      return NGX_OK;
+  }
+- |
+  static char **
+  names(void)
+  {
+      return NGX_OK;
+  }
+- |
+  static char *
+  merge(ngx_conf_t *cf, void *parent, void *child)
+  {
+      rc = NGX_OK;
+      return rc;
+  }
+- |
+  static char *
+  merge(ngx_conf_t *cf, void *parent, void *child)
+  {
+      /* return NGX_OK; */
+      return "return NGX_ERROR;";
+  }
+- |
+  char *
+  cycle_label(ngx_cycle_t *cycle)
+  {
+      return NGX_ERROR;
+  }
+- |
+  char *
+  three(ngx_cycle_t *cycle, void *a, void *b)
+  {
+      return NGX_OK;
+  }
+- |
+  char *
+  va(ngx_cycle_t *cycle, void *conf, ...)
+  {
+      return NGX_OK;
+  }
+- |
+  char *
+  byval(ngx_cycle_t cycle, void conf)
+  {
+      return NGX_OK;
+  }
+- |
+  char *
+  dbl(ngx_cycle_t **cycle, void *conf)
+  {
+      return NGX_OK;
+  }
+- |
+  char *
+  dbl2(ngx_cycle_t *cycle, void **conf)
+  {
+      return NGX_OK;
+  }
+invalid:
+- |
+  char *
+  h1(ngx_conf_t *cf)
+  {
+      return NGX_AGAIN;
+  }
+- |
+  char *
+  h2(ngx_conf_t *cf)
+  {
+      return NGX_DECLINED;
+  }
+- |
+  char *
+  h3(ngx_conf_t *cf)
+  {
+      return NGX_DONE;
+  }
+- |
+  char *
+  h4(ngx_conf_t *cf)
+  {
+      return NGX_BUSY;
+  }
+- |
+  char *
+  h5(ngx_conf_t *cf)
+  {
+      return NGX_ABORT;
+  }
+- |
+  ngx_uint_t
+  h6(ngx_conf_t *cf)
+  {
+      return NGX_CONF_ERROR;
+  }
+- |
+  char *
+  init_conf(ngx_cycle_t *cycle, void *conf)
+  {
+      return NGX_OK;
+  }
+- |
+  static char *
+  merge(ngx_conf_t *cf, void *parent, void *child)
+  {
+      if (x) { return NGX_OK; }
+      return NGX_CONF_OK;
+  }
+- |
+  char *
+  handler(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+  {
+      return NGX_ERROR;
+  }
+- |
+  static ngx_int_t
+  init(ngx_conf_t *cf)
+  {
+      if (x) return NGX_CONF_ERROR;
+      return NGX_OK;
+  }
+- |
+  int
+  init(ngx_conf_t *cf)
+  {
+      return NGX_CONF_OK;
+  }

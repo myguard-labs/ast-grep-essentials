@@ -1,0 +1,42 @@
+id: zstd-ifdef-on-enum-constant
+valid:
+- |
+  #if ZSTD_VERSION_NUMBER >= 10506
+  int a;
+  #endif
+- |
+  #ifdef ZSTD_STATIC_LINKING_ONLY
+  int a;
+  #endif
+- |
+  #ifdef ZSTD_VERSION_NUMBER
+  int a;
+  #endif
+- |
+  #if defined(ZSTD_STATIC_LINKING_ONLY) && ZSTD_VERSION_NUMBER >= 10506
+  int a;
+  #endif
+- void f(void) { ZSTD_CCtx_setParameter(cctx, ZSTD_c_targetCBlockSize, 4096); }
+- '/* #ifdef ZSTD_c_targetCBlockSize */'
+- void f(void) { const char *t = "#ifdef ZSTD_c_targetCBlockSize"; }
+invalid:
+- |
+  #ifdef ZSTD_c_targetCBlockSize
+  int a;
+  #endif
+- |
+  #ifndef ZSTD_c_targetCBlockSize
+  int a;
+  #endif
+- |
+  #if defined(ZSTD_c_targetCBlockSize) && ZSTD_VERSION_NUMBER >= 10506
+  int a;
+  #endif
+- |
+  #if !defined(ZSTD_d_windowLogMax)
+  int a;
+  #endif
+- |
+  #ifdef ZSTD_e_end
+  int a;
+  #endif

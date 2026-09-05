@@ -1,0 +1,29 @@
+id: zstd-ifdef-on-enum-constant
+language: c
+severity: warning
+message: >-
+  Preprocessor test on a libzstd ZSTD_c_* / ZSTD_d_* / ZSTD_e_* name. A stable
+  parameter is a plain enumerator, invisible to the preprocessor, so #ifdef
+  and defined() are always false and the code inside is dropped, while
+  #ifndef is always true: gate on ZSTD_VERSION_NUMBER instead. An experimental parameter is a macro alias visible only under
+  ZSTD_STATIC_LINKING_ONLY, so there the #ifdef is meaningful and a
+  version-only replacement would reference an undeclared identifier in a
+  release build. Check which kind the name is before changing the guard.
+note: >-
+  Real: nginx-zstd-module b3cd0ad / 3ff4c24, #ifdef ZSTD_c_targetCBlockSize
+  compiled the feature out on every release build against libzstd >= 1.5.6,
+  where that name became a plain enumerator. That commit supports only the
+  ZSTD_c_targetCBlockSize transition; the rule matches the whole ZSTD_[cde]_
+  family, so the reviewer confirms whether the specific name is stable
+  (enumerator, gate on version) or experimental (macro under
+  ZSTD_STATIC_LINKING_ONLY, keep the guard and add a version condition).
+rule:
+  any:
+    - kind: preproc_ifdef
+      has:
+        field: name
+        regex: ^ZSTD_[cde]_
+    - kind: preproc_defined
+      has:
+        kind: identifier
+        regex: ^ZSTD_[cde]_

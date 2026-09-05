@@ -1,0 +1,43 @@
+id: nginx-pool-cleanup-add-size-discarded
+valid:
+- void f(void) { cln = ngx_pool_cleanup_add(cf->pool, 0); if (cln == NULL) return; cln->data = conf->dict; }
+- void f(void) { cln = ngx_pool_cleanup_add(cf->pool, sizeof(ngx_x_cleanup_t)); if (cln == NULL) return; clnd = cln->data; clnd->dict = conf->dict; }
+- void f(void) { cln = ngx_pool_cleanup_add(cf->pool, sizeof(ZSTD_CDict *)); other->data = conf->dict; }
+- void f(void) { cln = ngx_pool_cleanup_add(cf->pool, sizeof(ZSTD_CDict *)); cln->handler = h; }
+- void f(void) { cln->data = ctx; cln = ngx_pool_cleanup_add(pool, n); }
+- /* void f(void) { cln = ngx_pool_cleanup_add(cf->pool, sizeof(x)); cln->data = conf->dict; } */
+- void f(void) { const char *t = "cln = ngx_pool_cleanup_add(cf->pool, sizeof(x)); cln->data = conf->dict;"; }
+- |
+  void alloc_only(void)
+  {
+      cln = ngx_pool_cleanup_add(pool, sizeof(x));
+  }
+
+  void write_only(void)
+  {
+      cln->data = ctx;
+  }
+- |
+  void outer(void)
+  {
+      cln = ngx_pool_cleanup_add(pool, sizeof(x));
+
+      void inner(void)
+      {
+          cln->data = ctx;
+      }
+  }
+invalid:
+- void f(void) { while (go) { cln = ngx_pool_cleanup_add(pool, sizeof(x)); } cln->data = ctx; }
+- void f(void) { do { cln = ngx_pool_cleanup_add(pool, sizeof(x)); } while (go); cln->data = ctx; }
+- void f(void) { { cln = ngx_pool_cleanup_add(pool, sizeof(x)); } { cln->data = ctx; } }
+# Advisory: mutually exclusive arms cannot both run, but the rule does no path
+# analysis and reports the site for review. Documented in the rule note.
+- void f(void) { if (a) { cln = ngx_pool_cleanup_add(pool, sizeof(x)); } else { cln->data = ctx; } }
+- void f(void) { for (i = 0; i < n; i++) { cln = ngx_pool_cleanup_add(pool, sizeof(x)); } cln->data = ctx; }
+- 'void f(void) { switch (k) { case 1: cln = ngx_pool_cleanup_add(pool, sizeof(x)); break; } cln->data = ctx; }'
+- void f(void) { if (ready) { cln = ngx_pool_cleanup_add(pool, sizeof(x)); } cln->data = ctx; }
+- void f(void) { ngx_pool_cleanup_t *cln = ngx_pool_cleanup_add(pool, sizeof(x)); cln->data = ctx; }
+- void f(void) { if ((cln = ngx_pool_cleanup_add(pool, sizeof(x))) == NULL) { return; } cln->data = ctx; }
+- void f(void) { cln = ngx_pool_cleanup_add(cf->pool, sizeof(ZSTD_CDict *)); if (cln == NULL) return; cln->handler = h; cln->data = conf->dict; }
+- void f(void) { cln = ngx_pool_cleanup_add(pool, size); if (cln == NULL) { return; } if (ready) { cln->data = ctx; } }

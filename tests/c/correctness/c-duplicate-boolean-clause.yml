@@ -1,0 +1,51 @@
+id: c-duplicate-boolean-clause
+valid:
+- void f(void) { if (a || b) { x(); } }
+- void f(void) { if (a && b || a) { x(); } }
+- void f(void) { if (a || b || c || a) { x(); } }
+- void f(void) { if (a && b && a) { x(); } }
+- void f(void) { if (a == 1 || a == 2) { x(); } }
+- void f(void) { if (a | a) { x(); } }
+- void f(void) { if (g(&rp, end) == NGX_OK && g(&rp, end) == NGX_OK) { x(); } }
+- void f(void) { if (*cp++ == '/' && *cp++ == '/') { x(); } }
+- void f(void) { if (n-- && n--) { x(); } }
+- void f(void) { if (a || (g() && b) || (g() && b)) { x(); } }
+- |
+  #if defined(NGX_X) \
+      && defined(NGX_X)
+  int a;
+  #endif
+- |
+  #if defined(NGX_HTTP_X_TEST) \
+      && NGX_HTTP_X_TEST
+  int a;
+  #endif
+# The ERROR exclusion has no unit fixture: an isolated continued #if parses
+# cleanly. Reproduce with the rule's ERROR clause removed against
+# labs/nginx-cache-turbo-module/src/ngx_http_cache_turbo_module.c:553.
+- |
+  #if NGX_A && NGX_A
+  int a;
+  #endif
+- |
+  #if NGX_X && NGX_X
+  int a;
+  #endif
+- |
+  #if NGX_Z
+  int b;
+  #elif NGX_Y || NGX_Y
+  int a;
+  #endif
+- /* void f(void) { if (a || a) { x(); } } */
+- void f(void) { const char *t = "if (a || a) { x(); }"; }
+invalid:
+# Advisory: a volatile operand is re-read, so this match is a review candidate
+# rather than proven dead code. Documented in the rule note.
+- void f(void) { volatile int ready; if (ready || ready) { x(); } }
+- void f(void) { if (a || a) { x(); } }
+- void f(void) { if (a && a) { x(); } }
+- void f(void) { if (a || (b && c) || (b && c) || d) { x(); } }
+- void f(void) { if (x && conf->max != NGX_CONF_UNSET && conf->max != NGX_CONF_UNSET) { y(); } }
+- void f(void) { if (a->b == c->d || a->b == c->d) { x(); } }
+- void f(void) { r = a || b || b; }

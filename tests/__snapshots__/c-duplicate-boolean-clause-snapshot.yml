@@ -1,0 +1,56 @@
+id: c-duplicate-boolean-clause
+snapshots:
+  void f(void) { if (a && a) { x(); } }:
+    labels:
+    - source: a && a
+      style: primary
+      start: 19
+      end: 25
+  void f(void) { if (a || (b && c) || (b && c) || d) { x(); } }:
+    labels:
+    - source: a || (b && c) || (b && c)
+      style: primary
+      start: 19
+      end: 44
+    - source: a || (b && c)
+      style: secondary
+      start: 19
+      end: 32
+  void f(void) { if (a || a) { x(); } }:
+    labels:
+    - source: a || a
+      style: primary
+      start: 19
+      end: 25
+  void f(void) { if (a->b == c->d || a->b == c->d) { x(); } }:
+    labels:
+    - source: a->b == c->d || a->b == c->d
+      style: primary
+      start: 19
+      end: 47
+  void f(void) { if (x && conf->max != NGX_CONF_UNSET && conf->max != NGX_CONF_UNSET) { y(); } }:
+    labels:
+    - source: x && conf->max != NGX_CONF_UNSET && conf->max != NGX_CONF_UNSET
+      style: primary
+      start: 19
+      end: 82
+    - source: x && conf->max != NGX_CONF_UNSET
+      style: secondary
+      start: 19
+      end: 51
+  void f(void) { r = a || b || b; }:
+    labels:
+    - source: a || b || b
+      style: primary
+      start: 19
+      end: 30
+    - source: a || b
+      style: secondary
+      start: 19
+      end: 25
+  void f(void) { volatile int ready; if (ready || ready) { x(); } }:
+    labels:
+    - source: ready || ready
+      style: primary
+      start: 39
+      end: 53

@@ -1,0 +1,21 @@
+id: nginx-strstrn-length-off-by-one
+language: c
+severity: error
+message: >-
+  ngx_strstrn / ngx_strcasestrn / ngx_strlcasestrn take the needle length
+  minus one: they match the first byte themselves and strncmp the rest with n.
+  nginx core passes "gzip", 4 - 1. sizeof(lit) - 1 is the full length, so the
+  compare includes the needle's NUL and only matches a needle that ends the
+  haystack. Use sizeof(lit) - 2.
+note: >-
+  Real: nginx-zstd-module 4582ef9 / c24ce2a flipped between -1 and -2 twice
+  in the Accept-Encoding scan. Only the sizeof(literal) - 1 form with the same
+  literal is matched; a hand-counted number needs the reviewer.
+rule:
+  any:
+    - pattern: ngx_strstrn($S, $LIT, sizeof($LIT) - 1)
+    - pattern: ngx_strcasestrn($S, $LIT, sizeof($LIT) - 1)
+    - pattern: ngx_strlcasestrn($S, $LAST, $LIT, sizeof($LIT) - 1)
+constraints:
+  LIT:
+    kind: string_literal

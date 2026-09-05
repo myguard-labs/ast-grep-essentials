@@ -1,0 +1,76 @@
+id: zstd-ifdef-on-enum-constant
+snapshots:
+  ? |
+    #if !defined(ZSTD_d_windowLogMax)
+    int a;
+    #endif
+  : labels:
+    - source: defined(ZSTD_d_windowLogMax)
+      style: primary
+      start: 5
+      end: 33
+    - source: ZSTD_d_windowLogMax
+      style: secondary
+      start: 13
+      end: 32
+  ? |
+    #if defined(ZSTD_c_targetCBlockSize) && ZSTD_VERSION_NUMBER >= 10506
+    int a;
+    #endif
+  : labels:
+    - source: defined(ZSTD_c_targetCBlockSize)
+      style: primary
+      start: 4
+      end: 36
+    - source: ZSTD_c_targetCBlockSize
+      style: secondary
+      start: 12
+      end: 35
+  ? |
+    #ifdef ZSTD_c_targetCBlockSize
+    int a;
+    #endif
+  : labels:
+    - source: |-
+        #ifdef ZSTD_c_targetCBlockSize
+        int a;
+        #endif
+      style: primary
+      start: 0
+      end: 44
+    - source: ZSTD_c_targetCBlockSize
+      style: secondary
+      start: 7
+      end: 30
+  ? |
+    #ifdef ZSTD_e_end
+    int a;
+    #endif
+  : labels:
+    - source: |-
+        #ifdef ZSTD_e_end
+        int a;
+        #endif
+      style: primary
+      start: 0
+      end: 31
+    - source: ZSTD_e_end
+      style: secondary
+      start: 7
+      end: 17
+  ? |
+    #ifndef ZSTD_c_targetCBlockSize
+    int a;
+    #endif
+  : labels:
+    - source: |-
+        #ifndef ZSTD_c_targetCBlockSize
+        int a;
+        #endif
+      style: primary
+      start: 0
+      end: 45
+    - source: ZSTD_c_targetCBlockSize
+      style: secondary
+      start: 8
+      end: 31

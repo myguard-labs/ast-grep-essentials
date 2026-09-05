@@ -1,0 +1,60 @@
+id: c-duplicate-boolean-clause
+language: c
+severity: warning
+message: >-
+  Two adjacent operands of one && / || chain are identical. Usually the repeat is
+  dead and a copy-paste left a condition out, but confirm it: a volatile read
+  or a macro that expands to a side effect is evaluated again and may differ
+  between the two operands.
+note: >-
+  Real: nginx-zstd-module e9cf598, a three-line max_length clause duplicated
+  verbatim in the header-filter eligibility test. Operands containing a call
+  are skipped because a repeated side-effecting call (skip two DNS names) is
+  intentional, and an operand containing ++ or -- is skipped for the same
+  reason: *cp++ == '/' && *cp++ == '/' advances the pointer twice on purpose. Preprocessor conditions and anything under a parse-error
+  node are skipped: a continued #if line recovers into an ERROR subtree. That
+  ERROR exclusion is verified against real code rather than a fixture --
+  removing it produces a false positive on the multi-line directive at
+  nginx-cache-turbo-module src/ngx_http_cache_turbo_module.c:553, but the same
+  construct in an isolated snippet parses without an ERROR node, so no unit
+  fixture pins it.
+  Operand text is compared as written, so the rule cannot tell a volatile or
+  macro-expanded operand from a pure one; those remain review candidates
+  rather than proven redundancy.
+utils:
+  call-free:
+    not:
+      any:
+        - kind: call_expression
+        - kind: update_expression
+        - has:
+            kind: call_expression
+            stopBy: end
+        - has:
+            kind: update_expression
+            stopBy: end
+rule:
+  kind: binary_expression
+  not:
+    inside:
+      any:
+        - kind: preproc_if
+        - kind: preproc_elif
+        - kind: ERROR
+      stopBy: end
+  any:
+    - pattern: $A || $A
+    - pattern: $A && $A
+    - all:
+        - pattern: $L || $A
+        - has:
+            field: left
+            pattern: $M || $A
+    - all:
+        - pattern: $L && $A
+        - has:
+            field: left
+            pattern: $M && $A
+constraints:
+  A:
+    matches: call-free

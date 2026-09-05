@@ -1,0 +1,68 @@
+id: nginx-command-offset-struct-mismatch
+language: c
+severity: error
+message: >-
+  ngx_command_t entry pairs a generic *_slot handler with a conf-level OFFSET
+  that disagrees with the struct named in offsetof(). The slot handler adds
+  the field offset to the conf selected by the OFFSET macro, so a main-conf
+  field offset applied to the loc conf reads and writes an unrelated field.
+note: >-
+  Real: nginx-zstd-module 20e56fc, zstd_dict_file used NGX_HTTP_LOC_CONF_OFFSET
+  with offsetof(ngx_http_zstd_main_conf_t, ...) and nginx reported the
+  directive as duplicate. Custom handlers may interpret the offset themselves
+  (Angie's status_zone does) and are not matched. The struct level is read
+  from the *_main_conf_t / *_srv_conf_t / *_loc_conf_t naming convention,
+  which a typedef can defeat: ngx_stream_lua aliases loc_conf_t to
+  srv_conf_t, so the stream and mail SRV-offset pairing is not checked.
+  Field positions skip comment nodes, so an inline comment between fields
+  does not hide a mismatch.
+utils:
+  slot-handler:
+    nthChild:
+      position: 3
+      ofRule: {not: {kind: comment}}
+    regex: ^ngx_(conf|http|stream|mail)_set_\w+_slot$
+rule:
+  kind: initializer_list
+  inside:
+    kind: declaration
+    stopBy: end
+    has:
+      field: type
+      regex: ^ngx_command_t$
+  has:
+    matches: slot-handler
+  any:
+    - all:
+        - has:
+            nthChild:
+              position: 4
+              ofRule: {not: {kind: comment}}
+            regex: ^NGX_(HTTP|STREAM|MAIL)_MAIN_CONF_OFFSET$
+        - has:
+            nthChild:
+              position: 5
+              ofRule: {not: {kind: comment}}
+            regex: ^offsetof\(\s*\w+_(srv|loc)_conf_t\b
+    - all:
+        - has:
+            nthChild:
+              position: 4
+              ofRule: {not: {kind: comment}}
+            regex: ^NGX_HTTP_SRV_CONF_OFFSET$
+        - has:
+            nthChild:
+              position: 5
+              ofRule: {not: {kind: comment}}
+            regex: ^offsetof\(\s*\w+_(main|loc)_conf_t\b
+    - all:
+        - has:
+            nthChild:
+              position: 4
+              ofRule: {not: {kind: comment}}
+            regex: ^NGX_HTTP_LOC_CONF_OFFSET$
+        - has:
+            nthChild:
+              position: 5
+              ofRule: {not: {kind: comment}}
+            regex: ^offsetof\(\s*\w+_(main|srv)_conf_t\b
