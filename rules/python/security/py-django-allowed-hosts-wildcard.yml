@@ -1,0 +1,24 @@
+id: py-django-allowed-hosts-wildcard
+language: python
+severity: warning
+message: >-
+  ALLOWED_HOSTS contains the wildcard entry, which turns off Django's Host
+  header check. An attacker-chosen Host is then reflected into password-reset
+  links, absolute URLs and cache keys, giving account takeover by e-mail and
+  cache poisoning. List the exact hostnames the deployment answers on.
+note: >-
+  Fires on an ALLOWED_HOSTS assignment whose list or tuple contains a bare
+  asterisk string. A host list built from the environment is not matched, and
+  the matcher does not know whether this settings module reaches production. A
+  deployment fronted by a proxy that already validates Host is the routine
+  dismissal, and the check is still worth keeping in Django.
+rule:
+  kind: assignment
+  all:
+    - has: {field: left, kind: identifier, regex: '^ALLOWED_HOSTS$'}
+    - has:
+        field: right
+        any: [{kind: list}, {kind: tuple}]
+        has:
+          kind: string
+          regex: '^["'']\*["'']$'

@@ -1,0 +1,55 @@
+id: py-open-request-arg
+language: python
+severity: error
+message: >-
+  File path taken straight from the incoming request. A caller who sends an
+  absolute path or a parent-directory sequence reads or overwrites any file the
+  process can reach, including configuration and credentials. Resolve the name
+  against a fixed base directory and reject anything that escapes it.
+note: >-
+  Fires when open, os.remove, os.unlink, shutil.copy, shutil.move or
+  send_file receives a first argument that reads through a request object. A
+  path copied into a variable first, or sanitised there, is not seen. A value
+  the framework already reduced to a single safe filename is the routine
+  dismissal, and the resolved path should still be checked against the base.
+utils:
+  request-root:
+    any:
+      - kind: identifier
+        regex: '^request$'
+      - kind: attribute
+        has:
+          field: object
+          matches: request-root
+      - kind: subscript
+        has:
+          field: value
+          matches: request-root
+      - kind: call
+        has:
+          field: function
+          matches: request-root
+  request-derived:
+    all:
+      - matches: request-root
+      - not: {kind: identifier}
+  file-path-sink:
+    any:
+      - kind: identifier
+        regex: '^(open|send_file)$'
+      - kind: attribute
+        all:
+          - has: {field: object, regex: '^(os|shutil|pathlib|Path)$'}
+          - has: {field: attribute, regex: '^(remove|unlink|copy|copyfile|move|rename)$'}
+rule:
+  kind: call
+  all:
+    - has: {field: function, matches: file-path-sink}
+    - has:
+        field: arguments
+        has:
+          nthChild:
+            position: 1
+            ofRule:
+              not: {kind: comment}
+          matches: request-derived

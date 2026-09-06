@@ -1,0 +1,16 @@
+id: py-open-redirect-request
+valid:
+- redirect(url_for("index"))
+- redirect("/dashboard")
+- HttpResponseRedirect(reverse("home"))
+- redirect(target)
+- render(request, "page.html")
+- RedirectResponse("/login")
+- '# redirect(request.args["next"])'
+- text = 'redirect(request.args["next"])'
+invalid:
+- redirect(request.args.get("next", "/"))
+- redirect(request.args["next"])
+- HttpResponseRedirect(request.GET.get("next"))
+- RedirectResponse(request.query_params["to"])
+- flask.redirect(request.form["next"])

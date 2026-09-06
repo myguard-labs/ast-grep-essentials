@@ -1,0 +1,37 @@
+id: py-ldap-xpath-filter-build
+language: python
+severity: warning
+message: >-
+  Directory filter or XPath expression assembled by interpolation. LDAP filter
+  metacharacters and XPath quotes are structure, not data, so an interpolated
+  value rewrites the query and returns entries or nodes the caller was never
+  meant to see, including an authentication bypass on a bind filter. Escape the
+  value with escape_filter_chars, or pass XPath values as bound variables.
+note: >-
+  Fires on a search, search_s or xpath call whose relevant argument is an
+  f-string with an interpolation, a concatenation or a percent expression
+  involving a string literal. The receiver type is not resolved, so an unrelated
+  search method on another object matches too, and that plus an interpolated
+  value the program itself produced is the routine dismissal.
+utils:
+  runtime-built-filter:
+    any:
+      - kind: string
+        has:
+          kind: interpolation
+      - kind: binary_operator
+        has:
+          stopBy: end
+          kind: string
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        kind: attribute
+        has: {field: attribute, regex: '^(search|search_s|search_ext_s|xpath)$'}
+    - has:
+        field: arguments
+        has:
+          stopBy: end
+          matches: runtime-built-filter

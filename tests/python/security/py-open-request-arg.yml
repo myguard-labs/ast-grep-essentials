@@ -1,0 +1,16 @@
+id: py-open-request-arg
+valid:
+- open(ALLOWED[request.args["name"]]).read()
+- open(path).read()
+- send_from_directory(UPLOAD_DIR, request.args["f"])
+- os.remove(path)
+- open("/etc/hosts")
+- os.stat(request.args["f"])
+- '# open(request.args["path"])'
+- text = 'open(request.args["path"])'
+invalid:
+- open(request.args["path"]).read()
+- open(request.form.get("p"), "w")
+- send_file(request.args["f"])
+- os.remove(request.GET["f"])
+- shutil.copy(request.json["src"], dest)

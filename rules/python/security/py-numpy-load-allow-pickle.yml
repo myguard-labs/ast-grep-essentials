@@ -1,0 +1,29 @@
+id: py-numpy-load-allow-pickle
+language: python
+severity: error
+message: >-
+  numpy load called with allow_pickle=True re-enables object-array unpickling, so
+  a crafted .npy or .npz file runs arbitrary code at load time. Drop the keyword
+  to keep the safe default, or store the data in a format that carries no Python
+  objects.
+note: >-
+  Fires on a numpy or np module load call with a literal True for the
+  allow_pickle keyword. A numpy module bound to a different name, or the value
+  passed through a variable or a dictionary splat, is not resolved. Loading a
+  file the same program wrote in the same trust domain is the routine dismissal.
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        kind: attribute
+        all:
+          - has: {field: object, regex: '^(np|numpy)$'}
+          - has: {field: attribute, regex: '^load$'}
+    - has:
+        field: arguments
+        has:
+          kind: keyword_argument
+          all:
+            - has: {field: name, regex: '^allow_pickle$'}
+            - has: {field: value, regex: '^True$'}

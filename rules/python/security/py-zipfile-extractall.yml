@@ -1,0 +1,24 @@
+id: py-zipfile-extractall
+language: python
+severity: warning
+message: >-
+  Archive extracted wholesale. A crafted archive can carry parent-directory
+  entries or absolute paths that land outside the destination, or expand to
+  orders of magnitude more than its own size and fill the disk. Iterate the
+  member list, reject names that escape the destination, cap the declared sizes,
+  and extract members one at a time.
+note: >-
+  Fires on an extractall call on any receiver and on shutil.unpack_archive. The
+  matcher cannot tell a zip, tar or wheel receiver apart, nor whether the archive
+  came from a user. An archive the deployment produced and stores under a path no
+  caller controls is the routine dismissal.
+rule:
+  kind: call
+  has:
+    field: function
+    kind: attribute
+    any:
+      - has: {field: attribute, regex: '^extractall$'}
+      - all:
+          - has: {field: object, regex: '^shutil$'}
+          - has: {field: attribute, regex: '^unpack_archive$'}

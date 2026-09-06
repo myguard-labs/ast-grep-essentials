@@ -1,0 +1,20 @@
+id: py-sql-string-build
+valid:
+- cur.execute("SELECT * FROM t WHERE id = %s", (uid,))
+- cur.execute("SELECT 1")
+- User.objects.raw("SELECT * FROM u WHERE name = %s", [name])
+- session.execute(text("SELECT 1"))
+- cur.execute(QUERY, params)
+- cur.executemany(STATEMENT, rows)
+- cur.executable(f"{x}")
+- '# cur.execute(f"SELECT {x}")'
+- text = 'cur.execute(f"SELECT {x}")'
+invalid:
+- cur.execute(f"SELECT * FROM t WHERE id = {uid}")
+- cur.execute("SELECT * FROM t WHERE id = %s" % uid)
+- cur.execute("SELECT * FROM t WHERE id = {}".format(uid))
+- cur.executemany(f"INSERT INTO t VALUES ({cols})", rows)
+- cur.executescript("DROP TABLE " + name)
+- User.objects.raw("SELECT * FROM u WHERE name = '%s'" % name)
+- session.execute(text(f"SELECT {col} FROM t"))
+- RawSQL(f"col = {v}", [])

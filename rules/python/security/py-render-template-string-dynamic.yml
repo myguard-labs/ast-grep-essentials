@@ -1,0 +1,45 @@
+id: py-render-template-string-dynamic
+language: python
+severity: error
+message: >-
+  Template compiled from a string built at runtime. Jinja renders whatever the
+  template text says, so an interpolated or concatenated template is
+  server-side template injection: the caller reaches object internals and from
+  there arbitrary execution. Keep the template a fixed literal and pass the
+  variable parts as render context.
+note: >-
+  Fires when render_template_string, Template or from_string receives a first
+  argument that is an f-string with an interpolation or a concatenation
+  involving a string literal. A template assembled into a variable one statement
+  earlier is not seen. Interpolating a value that is itself a trusted constant is
+  the routine dismissal, and it is still safer written as render context.
+utils:
+  runtime-built-string:
+    any:
+      - kind: string
+        has:
+          kind: interpolation
+      - kind: binary_operator
+        has:
+          stopBy: end
+          kind: string
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        any:
+          - kind: identifier
+            regex: '^(render_template_string|Template)$'
+          - kind: attribute
+            has:
+              field: attribute
+              regex: '^(render_template_string|Template|from_string)$'
+    - has:
+        field: arguments
+        has:
+          nthChild:
+            position: 1
+            ofRule:
+              not: {kind: comment}
+          matches: runtime-built-string

@@ -1,0 +1,13 @@
+id: py-ssl-unverified-context
+valid:
+- ctx = ssl.create_default_context()
+- ctx.check_hostname = True
+- ssl._create_default_https_context = ssl.create_default_context
+- ctx.verify_mode = ssl.CERT_REQUIRED
+- check_hostname = False
+- '# ctx.check_hostname = False'
+- text = 'ctx.check_hostname = False'
+invalid:
+- ctx = ssl._create_unverified_context()
+- ssl._create_default_https_context = ssl._create_unverified_context
+- ctx.check_hostname = False

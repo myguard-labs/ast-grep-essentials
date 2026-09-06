@@ -1,0 +1,14 @@
+id: py-render-template-string-dynamic
+valid:
+- render_template_string("<h1>Hello {{ name }}</h1>", name=name)
+- render_template("page.html", name=name)
+- Template("Hi {{ u }}").render(u=u)
+- env.get_template("page.html")
+- render_template_string(TEMPLATE, name=name)
+- '# render_template_string(f"{x}")'
+- text = 'render_template_string(f"{x}")'
+invalid:
+- render_template_string(f"<h1>Hello {name}</h1>")
+- render_template_string("Hi " + user_name)
+- jinja2.Template(f"{tpl}")
+- env.from_string("prefix" + tpl)

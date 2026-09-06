@@ -1,0 +1,50 @@
+id: py-cryptography-weak-primitives
+language: python
+severity: error
+message: >-
+  Broken cryptographic primitive selected. ECB leaks plaintext structure block
+  by block, PKCS1 v1.5 encryption padding is decryptable by a Bleichenbacher
+  oracle, RSA and DSA keys below 2048 bits are within reach of factoring, and
+  3DES, Blowfish, RC4, IDEA and CAST5 are retired. Use AES-GCM or ChaCha20-Poly1305
+  for encryption, OAEP for RSA, and 3072-bit or larger keys.
+note: >-
+  Fires on a modes.ECB construction, a padding.PKCS1v15 argument to an encrypt
+  call, a key_size of 512, 768 or 1024, and the retired algorithms constructors.
+  PKCS1 v1.5 for signature verification stays acceptable and is not matched here.
+  A primitive kept only to read data an old system wrote is the routine
+  dismissal, and it should not be used to write new data.
+utils:
+  retired-algorithm:
+    kind: attribute
+    all:
+      - has: {field: object, regex: '^algorithms$'}
+      - has: {field: attribute, regex: '^(TripleDES|Blowfish|ARC4|IDEA|CAST5)$'}
+rule:
+  any:
+    - kind: call
+      has:
+        field: function
+        kind: attribute
+        all:
+          - has: {field: object, regex: '^modes$'}
+          - has: {field: attribute, regex: '^ECB$'}
+    - kind: call
+      all:
+        - has:
+            field: function
+            kind: attribute
+            has: {field: attribute, regex: '^encrypt$'}
+        - has:
+            field: arguments
+            has:
+              stopBy: end
+              kind: attribute
+              all:
+                - has: {field: object, regex: '^padding$'}
+                - has: {field: attribute, regex: '^PKCS1v15$'}
+    - kind: keyword_argument
+      all:
+        - has: {field: name, regex: '^key_size$'}
+        - has: {field: value, kind: integer, regex: '^(512|768|1024)$'}
+    - kind: call
+      has: {field: function, matches: retired-algorithm}

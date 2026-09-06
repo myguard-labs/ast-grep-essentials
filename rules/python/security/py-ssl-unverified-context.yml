@@ -1,0 +1,32 @@
+id: py-ssl-unverified-context
+language: python
+severity: error
+message: >-
+  TLS verification disabled. An unverified context, or an assignment turning off
+  hostname checking, accepts any certificate, so anyone on the path presents
+  their own and reads and rewrites the traffic. Build the context with
+  ssl.create_default_context() and supply the trusted CA bundle explicitly if the
+  system store is wrong.
+note: >-
+  Fires on a call to the private ssl unverified-context helper, on an assignment
+  of that helper to the default HTTPS context hook, and on an assignment setting
+  check_hostname to False. A context weakened through a helper function or a
+  configuration flag is not seen. A test that talks to a local self-signed
+  fixture is the routine dismissal; pinning the fixture CA is still better.
+rule:
+  any:
+    - kind: call
+      has:
+        field: function
+        regex: '_create_unverified_context$'
+    - kind: assignment
+      all:
+        - has: {field: left, regex: '_create_default_https_context$'}
+        - has: {field: right, regex: '_create_unverified_context$'}
+    - kind: assignment
+      all:
+        - has:
+            field: left
+            kind: attribute
+            has: {field: attribute, regex: '^check_hostname$'}
+        - has: {field: right, regex: '^False$'}

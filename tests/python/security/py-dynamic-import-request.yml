@@ -1,0 +1,15 @@
+id: py-dynamic-import-request
+valid:
+- HANDLERS[request.json["action"]]
+- importlib.import_module("app.plugins.reports")
+- getattr(handlers, "run")
+- getattr(obj, name, None)
+- setattr(user, "email", request.json["email"])
+- importlib.import_module(f"app.plugins.{PLUGINS[name]}")
+- '# getattr(h, request.json["a"])'
+- text = 'getattr(h, request.json["a"])'
+invalid:
+- importlib.import_module(request.args["plugin"])
+- __import__(request.form["mod"])
+- getattr(handlers, request.json["action"])
+- setattr(user, request.form["field"], value)

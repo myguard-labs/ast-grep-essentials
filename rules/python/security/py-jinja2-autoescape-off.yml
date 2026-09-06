@@ -1,0 +1,45 @@
+id: py-jinja2-autoescape-off
+language: python
+severity: warning
+message: >-
+  Jinja Environment constructed without autoescaping. The default is off, so any
+  rendered variable holding markup is written into the page verbatim and becomes
+  stored or reflected cross-site scripting. Pass
+  autoescape=select_autoescape() for mixed templates, or autoescape=True when
+  every template in the environment is HTML.
+note: >-
+  Fires on an Environment or SandboxedEnvironment construction whose argument
+  list carries neither autoescape=True nor autoescape=select_autoescape(...).
+  An environment configured after construction by assigning to the attribute is
+  not seen. An environment that renders only non-markup output, such as
+  configuration files, SQL or e-mail text, is the routine dismissal.
+utils:
+  autoescape-enabled:
+    kind: keyword_argument
+    all:
+      - has: {field: name, regex: '^autoescape$'}
+      - has:
+          field: value
+          any:
+            - regex: '^True$'
+            - kind: call
+              has:
+                field: function
+                regex: 'select_autoescape$'
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        any:
+          - kind: identifier
+            regex: '^(Environment|SandboxedEnvironment)$'
+          - kind: attribute
+            has:
+              field: attribute
+              regex: '^(Environment|SandboxedEnvironment)$'
+    - not:
+        has:
+          field: arguments
+          has:
+            matches: autoescape-enabled

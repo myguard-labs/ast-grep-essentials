@@ -1,0 +1,16 @@
+id: py-django-queryset-request-kwargs
+valid:
+- User.objects.filter(is_active=True)
+- qs.order_by("-created_at")
+- qs.order_by(SORT_MAP.get(request.GET.get("sort"), "id"))
+- User.objects.filter(**cleaned)
+- qs.values("id", "name")
+- qs.count()
+- '# qs.filter(**request.GET.dict())'
+- text = 'qs.filter(**request.GET.dict())'
+invalid:
+- User.objects.filter(**request.GET.dict())
+- qs.annotate(**request.data)
+- qs.exclude(**request.POST)
+- qs.order_by(request.GET.get("sort"))
+- qs.values_list(request.GET["field"])

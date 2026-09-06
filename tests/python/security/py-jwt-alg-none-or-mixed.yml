@@ -1,0 +1,14 @@
+id: py-jwt-alg-none-or-mixed
+valid:
+- jwt.decode(tok, pub, algorithms=["RS256"])
+- jwt.decode(tok, key, algorithms=["HS256"])
+- jwt.decode(tok, pub, algorithms=["RS256", "RS512"])
+- jwt.encode(payload, key, algorithm="HS256")
+- jwt.decode(tok, pub, algorithms=ALLOWED_ALGS)
+- jwt.decode(tok, pub, algorithms=["ES256", "ES384"])
+- '# jwt.decode(tok, key, algorithms=["none"])'
+- text = 'jwt.decode(tok, key, algorithms=["none"])'
+invalid:
+- jwt.encode(payload, None, algorithm="none")
+- jwt.decode(tok, key, algorithms=["none"])
+- jwt.decode(tok, pub, algorithms=["RS256", "HS256"])

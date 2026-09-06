@@ -1,0 +1,28 @@
+id: py-flask-debug-true
+language: python
+severity: error
+message: >-
+  Flask application started with debug=True. The Werkzeug debugger exposes an
+  interactive console on any unhandled exception, which is remote code execution
+  once the PIN is guessed or read from the log. Drive the debug flag from the
+  environment and never enable it on a listening deployment.
+note: >-
+  Fires on a run call whose argument list contains a literal True for the debug
+  keyword, on any receiver. A debug flag read from configuration or the
+  environment is not matched. A script that only ever runs on a loopback
+  developer machine is the routine dismissal, and it still ships the flag in the
+  same file the deployment imports.
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        kind: attribute
+        has: {field: attribute, regex: '^run$'}
+    - has:
+        field: arguments
+        has:
+          kind: keyword_argument
+          all:
+            - has: {field: name, regex: '^debug$'}
+            - has: {field: value, regex: '^True$'}
