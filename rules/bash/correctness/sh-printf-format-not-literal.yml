@@ -1,0 +1,50 @@
+id: sh-printf-format-not-literal
+language: bash
+severity: warning
+message: >-
+  printf given an expanded value as its format string. Percent sequences in that
+  value are interpreted, so a stray percent sign produces wrong output or an
+  error, a backslash escape is expanded where the text was meant to be literal,
+  and a value an attacker influences can emit unintended characters. Use a
+  literal format and pass the value as an argument, as in printf with a percent
+  s conversion.
+note: >-
+  Matches printf whose first operand expands a variable or a command
+  substitution rather than being a literal format. An option such as -v is
+  skipped so its target and the following format are read correctly. A format
+  string held in a variable on purpose, for example a reusable table row layout,
+  is a known false positive.
+utils:
+  printf-option:
+    any:
+      - kind: word
+      - kind: string
+    regex: '^["'']?-v["'']?$'
+  expanding-operand:
+    any:
+      - kind: simple_expansion
+      - kind: expansion
+      - kind: command_substitution
+      - kind: string
+        has:
+          stopBy: end
+          any:
+            - kind: simple_expansion
+            - kind: expansion
+            - kind: command_substitution
+      - kind: concatenation
+        has:
+          stopBy: end
+          any:
+            - kind: simple_expansion
+            - kind: expansion
+            - kind: command_substitution
+rule:
+  kind: command
+  all:
+    - has: {field: name, kind: command_name, regex: '^["'']?printf["'']?$'}
+    - has:
+        all:
+          - matches: expanding-operand
+          - nthChild: 2
+          - not: {follows: {matches: printf-option}}

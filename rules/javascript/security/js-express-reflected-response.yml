@@ -1,0 +1,44 @@
+id: js-express-reflected-response
+language: javascript
+severity: error
+message: >-
+  Request data concatenated into a response body. Express sends a string body as
+  HTML by default, so markup in that value is parsed by the browser and script
+  in it runs in the application origin. Send structured data with res.json, or
+  HTML-escape the value before building the string.
+note: >-
+  Matches res.send, res.write and res.end whose first argument is a template
+  literal or a string concatenation containing a req.query, req.params,
+  req.body or req.headers access. A value routed through a local variable, or
+  an earlier Content-Type header that would make the body inert, is not visible
+  to this matcher. Escaping wrappers are not recognised, so an escaped
+  concatenation still matches.
+utils:
+  request-access:
+    kind: member_expression
+    regex: '^req(uest)?\s*\.\s*(query|params|body|headers)\b'
+  reflecting-string:
+    any:
+      - kind: template_string
+        has:
+          stopBy: end
+          matches: request-access
+      - kind: binary_expression
+        all:
+          - has: {field: operator, regex: '^\+$'}
+          - has:
+              stopBy: end
+              matches: request-access
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: member_expression
+        has: {field: property, regex: '^(send|write|end)$'}
+    - has:
+        stopBy: neighbor
+        kind: arguments
+        has:
+          nthChild: 1
+          matches: reflecting-string

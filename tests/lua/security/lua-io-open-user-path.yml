@@ -1,0 +1,15 @@
+id: lua-io-open-user-path
+valid:
+  - 'local f = io.open("/etc/app/config.json")'
+  - 'local mod = require("plugins.auth")'
+  - 'local mod = require("kong.plugins." .. name .. ".handler")'
+  - 'local f = io.open(root .. path, "r")'
+  - 'local f = fs.open(ngx.var.uri)'
+  - 'local text = "io.open(ngx.var.uri)"'
+  - '-- io.open(ngx.var.uri)'
+invalid:
+  - 'local f = io.open(root .. ngx.var.uri, "r")'
+  - 'local mod = require("plugins." .. ngx.var.arg_plugin)'
+  - 'for line in io.lines(ngx.var.arg_file) do end'
+  - 'os.remove(ngx.var.arg_path)'
+  - 'os.rename(ngx.req.get_uri_args()["from"], "/tmp/x")'

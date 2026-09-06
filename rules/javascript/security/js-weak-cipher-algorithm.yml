@@ -1,0 +1,40 @@
+id: js-weak-cipher-algorithm
+language: javascript
+severity: error
+message: >-
+  Broken or unauthenticated cipher configuration. createCipher and
+  createDecipher derive a key from the password with MD5 and use no
+  initialisation vector, and DES, RC4 and any ECB mode leak plaintext structure
+  and provide no integrity. Use createCipheriv with AES-256-GCM and a fresh
+  random IV.
+note: >-
+  Matches a createCipher or createDecipher call, which is the removed
+  password-based API, and a createCipheriv or createDecipheriv call whose
+  algorithm argument is a string literal naming an ECB mode, DES, 3DES, RC2,
+  RC4 or Blowfish. An algorithm name held in a variable is not matched, and the
+  rule does not check whether the IV is unique per message.
+rule:
+  kind: call_expression
+  any:
+    - has:
+        field: function
+        any:
+          - kind: identifier
+            regex: '^create(Cipher|Decipher)$'
+          - kind: member_expression
+            has: {field: property, regex: '^create(Cipher|Decipher)$'}
+    - all:
+        - has:
+            field: function
+            any:
+              - kind: identifier
+                regex: '^create(Cipher|Decipher)iv$'
+              - kind: member_expression
+                has: {field: property, regex: '^create(Cipher|Decipher)iv$'}
+        - has:
+            stopBy: neighbor
+            kind: arguments
+            has:
+              nthChild: 1
+              kind: string
+              regex: '(?i)^["''][^"'']*(ecb|des|rc2|rc4|bf|blowfish)[^"'']*["'']$'

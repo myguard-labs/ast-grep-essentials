@@ -1,0 +1,20 @@
+id: sh-predictable-temp-path
+valid:
+- TMP=$(mktemp)
+- TMPD=$(mktemp -d)
+- TMP="${TMPDIR:-/tmp}/app.$$"
+- TMP=/var/lib/app/work
+- 'echo "$data" > /var/lib/app/state'
+- mktemp -d -t app.XXXXXX
+- mktemp --tmpdir app.XXXXXX
+- echo "TMP=/tmp/install.$$"
+- '# TMP=/tmp/install.$$'
+invalid:
+- TMP=/tmp/install.$$
+- 'echo "$data" > /tmp/app.conf'
+- TMPFILE="/var/tmp/build.log"
+- 'cat /tmp/staged.json > /tmp/final.json'
+- f=$(mktemp -u)
+- mktemp --dry-run
+- mktemp "-u"
+- mktemp -du

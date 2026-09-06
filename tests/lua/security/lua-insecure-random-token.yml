@@ -1,0 +1,13 @@
+id: lua-insecure-random-token
+valid:
+  - 'local token = require("resty.string").to_hex(random.bytes(16))'
+  - 'local n = math.random(1, 10)'
+  - 'local jitter = math.random() * 100'
+  - 'backoff = math.random(1, 5)'
+  - 'local path = os.tmpdir()'
+  - 'local text = "local token = math.random()"'
+  - '-- local token = math.random()'
+invalid:
+  - 'local token = tostring(math.random(1e9))'
+  - 'session_id = ngx.md5(math.random() .. ngx.now())'
+  - 'local path = os.tmpname()'

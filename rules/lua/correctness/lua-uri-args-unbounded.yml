@@ -1,0 +1,23 @@
+id: lua-uri-args-unbounded
+language: lua
+severity: warning
+message: >-
+  Request argument or header table read with the limit set to zero, which means
+  unlimited. A request carrying a hundred thousand arguments then forces the
+  worker to build a table of that size before any handler logic runs, which
+  burns CPU and memory on every such request. Pass an explicit small maximum and
+  handle the truncated error it returns.
+note: >-
+  Matches ngx.req.get_uri_args, get_post_args and get_headers called with a
+  literal zero, which the module documents as unlimited. A call with no argument
+  is not matched, because the module applies a default of 100. A limit passed
+  through a variable is not matched either, and the matcher does not check that
+  the truncated return value is handled.
+rule:
+  kind: function_call
+  all:
+    - has: {field: name, regex: '^ngx\.req\.get_(uri_args|post_args|headers)$'}
+    - has:
+        stopBy: neighbor
+        kind: arguments
+        has: {nthChild: 1, kind: number, regex: '^0$'}

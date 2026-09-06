@@ -1,0 +1,52 @@
+id: sh-archive-extract-to-system-root
+language: bash
+severity: error
+message: >-
+  Archive unpacked straight over the system root, or with absolute paths and
+  archived ownership preserved. An entry naming an absolute path or a dot-dot
+  prefix then overwrites a file outside the intended tree, so an attacker who
+  controls the archive replaces a binary or a unit file and gains root. Extract
+  into a staging directory and install from there, with the no-absolute-names
+  and no-same-owner options.
+note: >-
+  Matches tar and cpio extraction into the filesystem root, tar run with
+  absolute-names or preserve-permissions, and a dpkg install of a package under
+  a shared temporary directory. It cannot see where the archive came from, so a
+  vendor-controlled tarball extracted this way matches too. Extraction into any
+  other directory is not reported, even though a malicious archive can still
+  escape it.
+utils:
+  argument-token:
+    any:
+      - kind: word
+      - kind: string
+      - kind: raw_string
+      - kind: concatenation
+  root-target:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?/["'']?$'
+      - follows:
+          matches: argument-token
+          regex: '^["'']?(-C|--directory)["'']?$'
+  unsafe-tar-option:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?(--absolute-names|-P|--preserve-permissions|--same-owner)["'']?$'
+rule:
+  kind: command
+  any:
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?(tar|bsdtar|cpio)["'']?$'}
+        - has: {matches: root-target}
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?(tar|bsdtar)["'']?$'}
+        - has: {matches: unsafe-tar-option}
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?dpkg["'']?$'}
+        - has:
+            matches: argument-token
+            regex: '^["'']?(-i|--install)["'']?$'
+        - has:
+            matches: argument-token
+            regex: '^["'']?/(var/)?tmp/'

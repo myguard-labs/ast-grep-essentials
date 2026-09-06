@@ -1,0 +1,34 @@
+id: java-jndi-lookup-dynamic
+language: java
+severity: error
+message: >-
+  JNDI name resolved from a non-literal value. A name an attacker influences can
+  point at an LDAP or RMI server that returns a remote reference, and resolving
+  it loads and runs attacker-supplied code in this process, which is the
+  Log4Shell mechanism. Resolve only fixed names, or map an identifier to a name
+  through an allowlist.
+note: >-
+  Matches a lookup or doLookup call on an InitialContext or InitialDirContext
+  construction, on an identifier named ctx, context, initialContext, jndiTemplate
+  or namingContext, and the Spring JndiLocatorDelegate and DataSourceLookup
+  getDataSource call, when the name argument is not a string literal. A name
+  loaded from a configuration constant looks non-literal and is reported; that
+  false positive is accepted because a reachable dynamic lookup is severe.
+utils:
+  jndi-receiver:
+    any:
+      - kind: object_creation_expression
+        has: {field: type, regex: '(InitialContext|InitialDirContext|JndiTemplate|JndiLocatorDelegate|JndiDataSourceLookup)$'}
+      - kind: identifier
+        regex: '(?i)^(ctx|context|initialContext|jndiTemplate|namingContext|jndiContext|dataSourceLookup)$'
+rule:
+  kind: method_invocation
+  all:
+    - has: {field: name, regex: '^(lookup|doLookup|getDataSource)$'}
+    - has: {field: object, matches: jndi-receiver}
+    - has:
+        stopBy: neighbor
+        kind: argument_list
+        has:
+          nthChild: 1
+          not: {kind: string_literal}

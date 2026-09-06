@@ -1,0 +1,16 @@
+id: sh-printf-format-not-literal
+valid:
+- printf '%s\n' "$MSG"
+- 'printf "%s: %d\n" "$name" "$count"'
+- printf -v out '%s' "$MSG"
+- echo "$MSG"
+- printf 'done\n'
+- log "$FMT" "$MSG"
+- echo "printf \"$MSG\n\""
+- '# printf "$MSG"'
+invalid:
+- printf "$MSG\n"
+- printf $FMT
+- printf "${TEMPLATE}" "$name"
+- printf "$(cat fmt.txt)"
+- '"printf" "$MSG"'

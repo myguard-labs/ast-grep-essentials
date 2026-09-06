@@ -1,0 +1,16 @@
+id: java-trust-all-tls
+valid:
+  - 'public void checkServerTrusted(X509Certificate[] c, String a) throws CertificateException { delegate.checkServerTrusted(c, a); }'
+  - 'public X509Certificate[] getAcceptedIssuers() { return trustStore.getIssuers(); }'
+  - 'public boolean verify(String host, SSLSession s) { return host.equals(expected); }'
+  - 'conn.setHostnameVerifier(strictVerifier);'
+  - 'SSLContext ctx = SSLContexts.custom().loadTrustMaterial(store, new DefaultHostnameVerifier()).build();'
+  - 'String note = "return true;";'
+  - '// public boolean verify(String h, SSLSession s) { return true; }'
+invalid:
+  - 'public void checkServerTrusted(X509Certificate[] c, String a) { }'
+  - 'public X509Certificate[] getAcceptedIssuers() { return null; }'
+  - 'public boolean verify(String host, SSLSession s) { return true; }'
+  - 'HttpsURLConnection.setDefaultHostnameVerifier((h, s) -> true);'
+  - 'SSLContexts.custom().loadTrustMaterial(null, new TrustAllStrategy()).build();'
+  - 'builder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);'

@@ -1,0 +1,31 @@
+id: java-format-string-not-literal
+language: java
+severity: warning
+message: >-
+  Format string supplied as a variable rather than a literal. Conversion
+  specifiers in that value are interpreted, so a stray percent sign throws
+  UnknownFormatConversionException at runtime, and a value an attacker
+  influences can read unintended arguments or emit newlines that forge log
+  records. Pass a literal format and put the variable in an argument slot.
+note: >-
+  Matches String.format, String.formatted, printf and format calls on a
+  PrintStream or writer receiver whose first argument is not a string literal,
+  and the java.util.Formatter locale-first overloads are not distinguished, so a
+  call that passes a Locale first is reported. A constant format string held in
+  a field is also reported, because the matcher cannot resolve it.
+rule:
+  kind: method_invocation
+  all:
+    - any:
+        - all:
+            - has: {field: name, regex: '^format$'}
+            - has: {field: object, regex: '^(java\.lang\.)?String$'}
+        - all:
+            - has: {field: name, regex: '^(printf|format)$'}
+            - has: {field: object, regex: '(?i)^(System\.(out|err)|out|err|writer|printWriter|response\.getWriter\(\))$'}
+    - has:
+        stopBy: neighbor
+        kind: argument_list
+        has:
+          nthChild: 1
+          not: {kind: string_literal}

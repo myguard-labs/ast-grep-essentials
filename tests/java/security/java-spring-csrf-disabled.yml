@@ -1,0 +1,14 @@
+id: java-spring-csrf-disabled
+valid:
+  - 'http.csrf(c -> c.ignoringRequestMatchers("/webhook"));'
+  - 'http.authorizeHttpRequests(a -> a.anyRequest().authenticated());'
+  - 'http.authorizeHttpRequests(a -> a.requestMatchers("/public/**").permitAll());'
+  - 'cache.disable();'
+  - 'http.cors(c -> c.disable());'
+  - 'String note = "http.csrf(c -> c.disable())";'
+  - '// http.csrf(c -> c.disable());'
+invalid:
+  - 'http.csrf(c -> c.disable());'
+  - 'http.csrf().disable();'
+  - 'http.authorizeHttpRequests(a -> a.anyRequest().permitAll());'
+  - 'http.authorizeHttpRequests(a -> a.requestMatchers("/**").permitAll());'

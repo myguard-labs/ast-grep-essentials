@@ -1,0 +1,16 @@
+id: java-sql-concat-query
+valid:
+  - 'PreparedStatement ps = conn.prepareStatement("SELECT * FROM u WHERE name=?");'
+  - 'em.createQuery("from User u where u.id=:id").setParameter("id", id);'
+  - 'stmt.executeQuery("SELECT 1" + " FROM dual");'
+  - 'stmt.executeQuery(sql);'
+  - 'log.info("query: " + sql);'
+  - 'jdbcTemplate.query("SELECT * FROM u WHERE id=?", mapper, id);'
+  - 'String note = "stmt.executeQuery(\"SELECT \" + name)";'
+  - '// stmt.executeQuery("SELECT " + name);'
+invalid:
+  - 'stmt.executeQuery("SELECT * FROM u WHERE name=''" + name + "''");'
+  - 'stmt.executeUpdate("DELETE FROM u WHERE id=" + request.getParameter("id"));'
+  - 'em.createQuery(String.format("from User u where u.id=%s", id));'
+  - 'em.createNativeQuery("select * from u where n=''%s''".formatted(name));'
+  - 'jdbcTemplate.queryForObject("SELECT c FROM t WHERE k=" + key, Integer.class);'

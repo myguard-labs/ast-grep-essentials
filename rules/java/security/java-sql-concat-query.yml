@@ -1,0 +1,54 @@
+id: java-sql-concat-query
+language: java
+severity: error
+message: >-
+  SQL or JPQL statement assembled by string concatenation or String.format. A
+  quote or a comment marker in the interpolated value ends the intended literal
+  and appends attacker-chosen SQL, which reads or rewrites the whole database.
+  Use a prepared statement with bind parameters, or setParameter on the JPA
+  query.
+note: >-
+  Matches executeQuery, execute, executeUpdate, executeLargeUpdate, addBatch,
+  createQuery, createNativeQuery, queryForObject, queryForList and the
+  JdbcTemplate query and update calls whose first argument is a concatenation
+  with at least one non-literal operand, a String.format call, or a formatted
+  call on a literal. A query built into a local variable first, and a bare
+  identifier argument, are not matched. Concatenation of two literals is
+  excluded.
+utils:
+  non-literal-operand:
+    any:
+      - kind: identifier
+      - kind: method_invocation
+      - kind: field_access
+      - kind: array_access
+  concat-with-variable:
+    kind: binary_expression
+    all:
+      - has: {field: operator, regex: '^\+$'}
+      - has:
+          stopBy: end
+          matches: non-literal-operand
+  format-call:
+    kind: method_invocation
+    any:
+      - all:
+          - has: {field: name, regex: '^format$'}
+          - has: {field: object, regex: '^(java\.lang\.)?String$'}
+      - all:
+          - has: {field: name, regex: '^formatted$'}
+          - has: {field: object, kind: string_literal}
+rule:
+  kind: method_invocation
+  all:
+    - has:
+        field: name
+        regex: '^(executeQuery|execute|executeUpdate|executeLargeUpdate|addBatch|createQuery|createNativeQuery|query|queryForObject|queryForList|queryForRowSet|update|batchUpdate)$'
+    - has:
+        stopBy: neighbor
+        kind: argument_list
+        has:
+          nthChild: 1
+          any:
+            - matches: concat-with-variable
+            - matches: format-call

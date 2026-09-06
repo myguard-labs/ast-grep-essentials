@@ -1,0 +1,31 @@
+id: lua-http-client-verify-disabled
+language: lua
+severity: error
+message: >-
+  TLS certificate verification turned off on an outbound request. With
+  ssl_verify false the client accepts any certificate, so a machine-in-the-middle
+  on the path reads the request, including any credential it carries, and
+  rewrites the response the worker then trusts. Point lua_ssl_trusted_certificate
+  at the right CA bundle and leave verification on.
+note: >-
+  Matches an ssl_verify field assigned false in a table constructor and an
+  ssl_verify false argument to a tcpsock sslhandshake call, where the false is
+  written literally. A value passed through a variable or a configuration lookup
+  is not matched. Development and test code is the usual reason this appears and
+  is not a reason to leave it in a deployed configuration.
+rule:
+  any:
+    - kind: field
+      all:
+        - has: {field: name, regex: '^ssl_verify$'}
+        - has: {field: value, kind: 'false'}
+    - kind: function_call
+      all:
+        - has:
+            field: name
+            kind: method_index_expression
+            has: {field: method, regex: '^sslhandshake$'}
+        - has:
+            stopBy: neighbor
+            kind: arguments
+            has: {nthChild: 3, kind: 'false'}

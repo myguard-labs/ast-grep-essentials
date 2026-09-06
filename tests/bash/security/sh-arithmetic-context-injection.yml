@@ -1,0 +1,16 @@
+id: sh-arithmetic-context-injection
+valid:
+- n=$(( count + 1 ))
+- n=$(( ${#items[@]} + 1 ))
+- let "n = count + 1"
+- expr "$count" + 1
+- 'case $1 in ""|*[!0-9]*) exit 2;; esac'
+- echo 'n=$(( $1 + 1 ))'
+- '# n=$(( $1 + 1 ))'
+invalid:
+- n=$(( $1 + 1 ))
+- n=$(( ${2} * 4 ))
+- let "n=$1"
+- expr $1 + 1
+- 'total=$(( $@ ))'
+- '"let" "n=$1"'

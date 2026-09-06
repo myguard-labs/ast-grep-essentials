@@ -1,0 +1,12 @@
+id: java-xml-factory-doctype-unset
+valid:
+  - 'class P { Document parse(InputStream in) throws Exception { DocumentBuilderFactory f = DocumentBuilderFactory.newInstance(); f.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true); return f.newDocumentBuilder().parse(in); } }'
+  - 'class P { void parse() throws Exception { XMLInputFactory f = XMLInputFactory.newInstance(); f.setProperty(XMLInputFactory.SUPPORT_DTD, false); } }'
+  - 'class P { void build() { JsonFactory f = JsonFactory.newInstance(); } }'
+  - 'class P { void build() { DocumentBuilderFactory f = DocumentBuilderFactory.newDefaultInstance(); } }'
+  - 'class P { String note = "DocumentBuilderFactory.newInstance()"; }'
+  - 'class P { void build() { /* DocumentBuilderFactory.newInstance(); */ } }'
+invalid:
+  - 'class P { Document parse(InputStream in) throws Exception { DocumentBuilderFactory f = DocumentBuilderFactory.newInstance(); return f.newDocumentBuilder().parse(in); } }'
+  - 'class P { void parse() throws Exception { SAXParserFactory f = SAXParserFactory.newInstance(); f.setNamespaceAware(true); } }'
+  - 'class P { void t() { TransformerFactory f = TransformerFactory.newInstance(); } }'

@@ -1,0 +1,44 @@
+id: lua-subrequest-user-uri
+language: lua
+severity: error
+message: >-
+  Subrequest URI built from a request value. The client then chooses which
+  internal location the worker calls, reaching endpoints that the external
+  server block never exposes, and a carriage return in the value can split the
+  subrequest. Build the URI from a fixed location and pass client data through
+  the args table, which the module encodes.
+note: >-
+  Matches ngx.location.capture whose first, URI argument is an ngx.var request
+  field, a headers or args lookup, or a concatenation containing one. The args
+  option table is not inspected, because the module escapes those values, and
+  capture_multi is not covered because its URIs sit inside a nested table
+  rather than in a first-argument slot. It cannot tell whether the internal location itself validates what it
+  receives.
+utils:
+  request-source:
+    any:
+      - kind: dot_index_expression
+        regex: '^ngx\s*\.\s*var\s*\.\s*(arg_|http_|request_uri|uri|args)'
+      - kind: bracket_index_expression
+        has:
+          field: table
+          stopBy: end
+          regex: '^ngx\s*\.\s*(var|req\s*\.\s*get_(headers|uri_args|post_args))'
+  request-derived:
+    any:
+      - matches: request-source
+      - kind: binary_expression
+        regex: '\.\.'
+        any:
+          - has: {field: left, matches: request-derived}
+          - has: {field: right, matches: request-derived}
+rule:
+  kind: function_call
+  all:
+    - has: {field: name, regex: '^ngx\.location\.capture$'}
+    - has:
+        stopBy: neighbor
+        kind: arguments
+        has:
+          nthChild: 1
+          matches: request-derived

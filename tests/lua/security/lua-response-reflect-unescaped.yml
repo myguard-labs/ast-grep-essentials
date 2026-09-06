@@ -1,0 +1,13 @@
+id: lua-response-reflect-unescaped
+valid:
+  - 'ngx.say(cjson.encode({ name = ngx.var.arg_name }))'
+  - 'ngx.say("hello")'
+  - 'ngx.header["Content-Type"] = "application/json"'
+  - 'ngx.header["X-Cache"] = ngx.var.upstream_http_x_cache'
+  - 'ngx.log(ngx.ERR, ngx.var.arg_name)'
+  - 'local text = "ngx.say(ngx.var.arg_name)"'
+  - '-- ngx.say(ngx.var.arg_name)'
+invalid:
+  - 'ngx.say("<p>Hello " .. ngx.var.arg_name .. "</p>")'
+  - 'ngx.print(ngx.req.get_uri_args()["q"])'
+  - 'ngx.header["X-Echo"] = ngx.var.http_x_forwarded_for'

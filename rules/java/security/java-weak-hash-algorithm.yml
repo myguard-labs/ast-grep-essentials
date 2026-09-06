@@ -1,0 +1,26 @@
+id: java-weak-hash-algorithm
+language: java
+severity: warning
+message: >-
+  Broken hash algorithm requested from the JCA. MD5 and SHA-1 have practical
+  collision attacks, so a digest used for a signature, an integrity check or a
+  stored credential no longer binds the input it claims to. Request SHA-256 or
+  SHA-3, and use PBKDF2, bcrypt or argon2 for passwords.
+note: >-
+  Matches MessageDigest.getInstance, Mac.getInstance and Signature.getInstance
+  whose algorithm argument is a string literal naming MD2, MD5 or SHA-1, with or
+  without the separating dash. An algorithm name held in a constant or read from
+  configuration is not matched. A checksum or cache key computed with MD5 is a
+  known benign use, which is why this is a warning.
+rule:
+  kind: method_invocation
+  all:
+    - has: {field: name, regex: '^getInstance$'}
+    - has: {field: object, regex: '^(javax\.crypto\.)?(MessageDigest|Mac|Signature)$'}
+    - has:
+        stopBy: neighbor
+        kind: argument_list
+        has:
+          nthChild: 1
+          kind: string_literal
+          regex: '(?i)^"(md2|md4|md5|sha-?1|hmacmd5|hmacsha1|md5with[a-z0-9]+|sha1with[a-z0-9]+)"$'

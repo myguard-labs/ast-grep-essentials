@@ -1,0 +1,12 @@
+id: java-cookie-missing-flags
+valid:
+  - 'response.addCookie(c);'
+  - 'response.addHeader("Set-Cookie", built);'
+  - 'ResponseCookie rc = ResponseCookie.from("s", id).httpOnly(true).secure(true).build();'
+  - 'ResponseCookie rc = ResponseCookie.from("s", id).httpOnly(true).build();'
+  - 'ResponseCookie rc = builder.from("s", id).build();'
+  - 'String note = "response.addCookie(new Cookie(\"s\", id))";'
+  - '// response.addCookie(new Cookie("s", id));'
+invalid:
+  - 'response.addCookie(new Cookie("session", id));'
+  - 'ResponseCookie rc = ResponseCookie.from("s", id).path("/").build();'

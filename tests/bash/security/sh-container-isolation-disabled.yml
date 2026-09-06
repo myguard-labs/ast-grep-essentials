@@ -1,0 +1,21 @@
+id: sh-container-isolation-disabled
+valid:
+- docker run --cap-drop ALL --read-only app
+- docker run --network bridge app
+- docker run -v /srv/data:/data app
+- docker build --network host .
+- podman run --security-opt seccomp=/etc/seccomp.json app
+- docker run --cap-add NET_BIND_SERVICE app
+- echo "docker run --privileged app"
+- '# docker run --privileged app'
+invalid:
+- docker run --privileged app
+- docker run --network=host app
+- docker run --pid host app
+- docker run --cap-add SYS_ADMIN app
+- docker run --security-opt seccomp=unconfined app
+- docker run -v /var/run/docker.sock:/var/run/docker.sock app
+- podman create --privileged app
+- '"docker" run --privileged app'
+- docker run "--privileged" app
+- nerdctl run --cap-add=ALL app

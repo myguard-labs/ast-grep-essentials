@@ -1,0 +1,49 @@
+id: lua-sql-string-concat
+language: lua
+severity: error
+message: >-
+  SQL statement assembled by concatenation or string.format before being sent to
+  the database. A quote in the interpolated value closes the intended literal and
+  the rest of it is parsed as SQL, which reads or rewrites the whole database.
+  Wrap every interpolated value in ngx.quote_sql_str, or use the parameterised
+  query form of the driver.
+note: >-
+  Matches a query, send_query or execute method call whose statement argument is
+  a concatenation or a string.format call, unless every interpolated part is
+  already wrapped in ngx.quote_sql_str or tonumber. Those two wrappers are
+  recognised by name only, so a locally defined function with the same name is
+  treated as safe. A statement built into a variable on an earlier line is not
+  matched.
+utils:
+  escaped-value:
+    kind: function_call
+    has:
+      field: name
+      regex: '(^|\.)(quote_sql_str|tonumber)$'
+  raw-interpolation:
+    all:
+      - not: {kind: string}
+      - not: {matches: escaped-value}
+  concat-with-raw:
+    kind: binary_expression
+    all:
+      - regex: '\.\.'
+      - any:
+          - has: {field: left, matches: raw-interpolation}
+          - has: {field: right, matches: raw-interpolation}
+rule:
+  kind: function_call
+  all:
+    - has:
+        field: name
+        kind: method_index_expression
+        has: {field: method, regex: '^(query|send_query|execute)$'}
+    - has:
+        stopBy: neighbor
+        kind: arguments
+        has:
+          nthChild: 1
+          any:
+            - matches: concat-with-raw
+            - kind: function_call
+              has: {field: name, regex: '^string\.format$'}

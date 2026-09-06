@@ -1,0 +1,24 @@
+id: sh-path-search-includes-cwd
+language: bash
+severity: error
+message: >-
+  Command search path includes the current directory. An empty element, a
+  leading or trailing colon, or an explicit dot makes the shell run a program
+  from whatever directory the script happens to be in, so an attacker who can
+  drop a file named like a common utility into a shared directory gets their
+  code executed with the script's privileges. List absolute directories only.
+note: >-
+  Matches a PATH assignment whose value has a dot element, a leading or trailing
+  colon, or an empty element between two colons, including the forms that
+  prepend to the existing PATH. An export, declare or typeset wraps the same
+  assignment node, so those forms are covered by the one matcher. It does not follow a PATH
+  assembled in another variable and assigned later, and it does not judge
+  whether the directories that are listed are themselves writable.
+utils:
+  unsafe-path-value:
+    regex: '^["'']?(\.(:|["'']?$)|:|.*:\s*["'']?$|.*::|.*:\.(:|["'']?$))'
+rule:
+  kind: variable_assignment
+  all:
+    - has: {field: name, regex: '^PATH$'}
+    - has: {field: value, matches: unsafe-path-value}

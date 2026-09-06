@@ -1,0 +1,46 @@
+id: java-spring-csrf-disabled
+language: java
+severity: warning
+message: >-
+  Spring Security CSRF protection switched off wholesale. Every state-changing
+  endpoint that authenticates with a cookie can then be driven from any other
+  site the victim visits, which transfers funds or changes credentials without
+  the victim acting. Disable CSRF only for a stateless token API, and scope the
+  exemption with ignoringRequestMatchers.
+note: >-
+  Matches a disable call on a csrf configurer method and a disable call written
+  inside a csrf customizer lambda, covering both the lambda and the deprecated
+  chained form, and a permitAll on anyRequest or on a catch-all
+  request matcher. It cannot see whether the same chain establishes a stateless
+  session policy, which makes disabling CSRF a defensible choice, so a
+  token-only API is a known false positive.
+utils:
+  csrf-configurer-call:
+    kind: method_invocation
+    has: {field: name, regex: '^csrf$'}
+rule:
+  kind: method_invocation
+  any:
+    - all:
+        - has: {field: name, regex: '^disable$'}
+        - any:
+            - has: {field: object, matches: csrf-configurer-call}
+            - inside:
+                stopBy: end
+                matches: csrf-configurer-call
+    - all:
+        - has: {field: name, regex: '^permitAll$'}
+        - has:
+            field: object
+            kind: method_invocation
+            any:
+              - has: {field: name, regex: '^anyRequest$'}
+              - all:
+                  - has: {field: name, regex: '^(requestMatchers|antMatchers|mvcMatchers)$'}
+                  - has:
+                      stopBy: neighbor
+                      kind: argument_list
+                      has:
+                        stopBy: end
+                        kind: string_literal
+                        regex: '^"/\*\*"$'

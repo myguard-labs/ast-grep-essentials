@@ -1,0 +1,16 @@
+id: sh-process-substitution-shell-input
+valid:
+- bash ./install.sh
+- bash -c 'systemctl restart app'
+- diff <(curl -sS https://example.test/a) <(curl -sS https://example.test/b)
+- bash <(cat local-install.sh)
+- python3 -c 'print(1)'
+- sha256sum -c tool.sha256
+- echo "bash <(curl -sS https://example.test/i.sh)"
+- '# bash <(curl -sS https://example.test/i.sh)'
+invalid:
+- bash <(curl -sS https://example.test/i.sh)
+- sh <(wget -qO- https://example.test/i.sh)
+- 'python3 -c "$(curl -sS https://example.test/i.py)"'
+- 'node -e "$(curl -sS https://example.test/i.js)"'
+- '"bash" <(curl -sS https://example.test/i.sh)'

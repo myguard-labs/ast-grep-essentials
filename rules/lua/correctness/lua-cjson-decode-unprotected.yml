@@ -1,0 +1,24 @@
+id: lua-cjson-decode-unprotected
+language: lua
+severity: warning
+message: >-
+  JSON decoded with the raising cjson API and no protected call around it.
+  Malformed input then throws a Lua error out of the handler, which becomes a 500
+  and, in an access-phase plugin whose error path is not covered, can let the
+  request through unauthenticated. Require cjson.safe, which returns nil and an
+  error, or wrap the decode in pcall.
+note: >-
+  Matches a cjson.decode or cjson.encode call that is not the function argument
+  of a pcall or xpcall. It cannot see whether cjson was required as cjson.safe at
+  the top of the file, because the call site looks identical, so a file using the
+  safe module is a false positive. An enclosing pcall several frames up is also
+  not seen.
+rule:
+  kind: function_call
+  all:
+    - has: {field: name, regex: '^cjson\.(decode|encode)$'}
+    - not:
+        inside:
+          stopBy: end
+          kind: function_call
+          has: {field: name, regex: '^x?pcall$'}

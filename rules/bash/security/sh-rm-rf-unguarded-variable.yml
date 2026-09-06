@@ -1,0 +1,51 @@
+id: sh-rm-rf-unguarded-variable
+language: bash
+severity: error
+message: >-
+  Recursive forced delete whose target comes from an unguarded expansion. If
+  that variable is empty the path collapses to the root or to the current
+  directory and the command deletes everything below it, and if it is unquoted a
+  space or a glob character in the value splits it into several unintended
+  targets. Use the colon-question expansion so an empty value aborts, and quote
+  the operand.
+note: >-
+  Matches rm with a recursive flag and a force flag, in any order or combined,
+  whose operand expands a variable without the colon-question guard. A guard
+  written as a separate test on an earlier line, and a set -u at the top of the
+  file, are not visible to this matcher, so a script that already checks the
+  variable is reported. A literal path operand is not matched.
+utils:
+  argument-token:
+    any:
+      - kind: word
+      - kind: string
+      - kind: raw_string
+      - kind: concatenation
+      - kind: simple_expansion
+      - kind: expansion
+  recursive-flag:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?(-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)["'']?$'
+  force-flag:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?(-[a-zA-Z]*f[a-zA-Z]*|--force)["'']?$'
+  bare-expansion:
+    any:
+      - kind: simple_expansion
+      - kind: expansion
+        not: {regex: ':\?'}
+  unguarded-expansion-operand:
+    all:
+      - matches: argument-token
+      - any:
+          - matches: bare-expansion
+          - has: {stopBy: end, matches: bare-expansion}
+rule:
+  kind: command
+  all:
+    - has: {field: name, kind: command_name, regex: '^["'']?rm["'']?$'}
+    - has: {matches: recursive-flag}
+    - has: {matches: force-flag}
+    - has: {matches: unguarded-expansion-operand}
