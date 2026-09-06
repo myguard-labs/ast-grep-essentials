@@ -1,5 +1,14 @@
 id: go-sql-sprintf
 valid:
+- |
+  package p
+  func f() { db.Query(/* query */ "SELECT ?", /* bound value */ fmt.Sprintf("%s", value)) }
+- |
+  package p
+  func f() { db.QueryContext(/* context */ withLabel(fmt.Sprintf("%s", value)), /* query */ "SELECT ?", /* bound value */ fmt.Sprintf("%s", value)) }
+- |
+  package p
+  func f() { db.QueryContext(ctx, /* query */ build(func() string { return fmt.Sprintf("SELECT %s", value) })) }
 - 'package p
 
   func f() { db.Query("SELECT ?", value) }'
@@ -26,6 +35,15 @@ valid:
 
   var text = "package p\nfunc f() { db.Query(fmt.Sprintf(\"SELECT %s\", value)) }"'
 invalid:
+- |
+  package p
+  func f() { db.Query(/* query */ fmt.Sprintf("SELECT %s", value)) }
+- |
+  package p
+  func f() { db.QueryContext(/* context */ ctx, fmt.Sprintf("SELECT %s", value)) }
+- |
+  package p
+  func f() { db.QueryContext(ctx, /* query */ fmt.Sprintf("SELECT %s", value)) }
 - 'package p
 
   func f() { db.Query(fmt.Sprintf("SELECT %s", value)) }'

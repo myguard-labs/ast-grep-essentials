@@ -23,6 +23,45 @@ note: >-
   inline script (python3 -c, perl -e) does not match: stdin is data there, not
   the code being run.
 utils:
+  argument-token:
+    any:
+      - kind: word
+      - kind: string
+      - kind: raw_string
+  curl-value-option:
+    matches: argument-token
+    regex: '^["'']?(?:-[sSfLvikN]*(?:A|b|c|C|d|D|e|E|F|H|K|m|o|P|Q|r|t|T|u|U|w|x|X|y|Y|z)|--(?:header|user-agent|referer|cookie|cookie-jar|data|data-raw|data-binary|data-urlencode|form|form-string|url|request|user|proxy|proxy-user|output|output-dir|config|cacert|capath|cert|key|resolve|connect-to|upload-file|write-out|dump-header|max-time|connect-timeout))["'']?$'
+  wget-value-option:
+    matches: argument-token
+    regex: '^["'']?(?:-(?:[bdqvFcNSxEkrKmpHL]|n[cdHpv])*(?:O|o|a|P|U|e|i|T|t|w|Q|A|B|D|I|R|X|l)|--(?:output-document|output-file|append-output|directory-prefix|user-agent|execute|input-file|timeout|tries|wait|quota|header|referer|user|password|post-data|post-file|load-cookies|save-cookies|ca-certificate|certificate|private-key))["'']?$'
+  curl-output-option:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?(?:-[sSfLvikN]*[oO].*|--output(?:=.*)?|--remote-name|--remote-name-all|--remote-header-name)["'']?$'
+      - not:
+          follows: {matches: curl-value-option}
+  curl-stdout-option:
+    all:
+      - matches: curl-output-option
+      - any:
+          - regex: '^["'']?(?:-[sSfLvikN]*o-|--output=-)["'']?$'
+          - all:
+              - regex: '^["'']?(?:-[sSfLvikN]*o|--output)["'']?$'
+              - precedes:
+                  matches: argument-token
+                  regex: '^["'']?-["'']?$'
+  wget-stdout-option:
+    all:
+      - matches: argument-token
+      - not:
+          follows: {matches: wget-value-option}
+      - any:
+          - regex: '^["'']?(?:-(?:[bdqvFcNSxEkrKmpHL]|n[cdHpv])*O-|--output-document=-)["'']?$'
+          - all:
+              - regex: '^["'']?(?:-(?:[bdqvFcNSxEkrKmpHL]|n[cdHpv])*O|--output-document)["'']?$'
+              - precedes:
+                  matches: argument-token
+                  regex: '^["'']?-["'']?$'
   interpreter:
     regex: '^["'']?(sh|bash|zsh|ksh|dash|python|python3|perl|ruby)["'']?$'
   stdin-marker:
@@ -35,23 +74,12 @@ utils:
       - all:
           - has: {field: name, regex: '^["'']?curl["'']?$'}
           - any:
-              # These output-option forms explicitly select stdout.
-              - regex: '(^|\s)(["'']?-[sSfLvikN]*o["'']?\s+["'']?-["'']?|["'']?-[sSfLvikN]*o-["'']?|["'']?--output["'']?\s+["'']?-["'']?|["'']?--output=-["'']?)(\s|$)'
+              - has: {matches: curl-stdout-option}
               - not:
-                  has:
-                    field: argument
-                    # curl short -o/-O forms and their common no-argument
-                    # prefixes, plus the equivalent long output-file options.
-                    regex: '^["'']?(?:-o.*|-O.*|-[sSfLvikN]*[oO].*|--output(?:=.*)?|--remote-name|--remote-name-all|--remote-header-name)["'']?$'
+                  has: {matches: curl-output-option}
       - all:
           - has: {field: name, regex: '^["'']?wget["'']?$'}
-          - any:
-              - has:
-                  field: argument
-                  regex: '^["'']?(?:-[A-Za-z]*O-|--output-document=-)["'']?$'
-              - all:
-                  - has: {field: argument, regex: '^["'']?(-O|--output-document)["'']?$'}
-                  - has: {field: argument, regex: '^["'']?-["'']?$'}
+          - has: {matches: wget-stdout-option}
   stdin-interpreter:
     kind: command
     any:

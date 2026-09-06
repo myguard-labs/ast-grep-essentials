@@ -1,5 +1,22 @@
 id: c-scanf-unbounded-string
 valid:
+- void f(void) { scanf((format("%s")), buf); }
+- 'void f(void) { scanf((flag ? "%s" : "%31s"), buf); }'
+- void f(void) { scanf(("%s" + offset), buf); }
+- void f(void) { scanf(("%31s"), "%s"); }
+- void f(void) { sscanf(("%s"), (("%31s")), buf); }
+- void f(void) { sscanf(/* input */ "%s", /* format */ ("%31s"), buf); }
+- void f(void) { scanf((("%" "%s")), buf); }
+- void f(void) { sscanf("%s", "%31s", buf); }
+- void f(void) { vsscanf("%s", "%31s", args); }
+- void f(void) { sscanf("%" "s", "%31s", buf); }
+- void f(void) { scanf("%31s", "%s"); }
+- void f(void) { scanf(/* "%s" */ "%31s", buf); }
+- void f(void) { fscanf(fp, /* "%s" */ "%31s", buf); }
+- void f(void) { vscanf("%31s", args); }
+- void f(void) { vfscanf(fp, "%31s", args); }
+- void f(void) { my_scanf("%s", buf); }
+- void f(void) { scanf(format("%s"), buf); }
 - void f(void) { sscanf(line, "%31s", buf); }
 - void f(void) { scanf("%d", &n); }
 - void f(void) { fscanf(fp, "%63[^\n]", buf); }
@@ -10,6 +27,20 @@ valid:
 - void f(void) { sscanf(line, "%" "%s", buf); }
 - void f(void) { sscanf(line, "%31" "s", buf); }
 invalid:
+# Minimum-arity snippets are syntax controls, not valid scanf API usage.
+- void f(void) { scanf("%s"); }
+- void f(void) { scanf(("%s"), buf); }
+- void f(void) { sscanf(input, ("%s"), buf); }
+- void f(void) { scanf((("%" "s")), buf); }
+- void f(void) { vscanf(/* format */ (("%s")), args); }
+- void f(void) { vfscanf(/* input */ fp, /* format */ (("%" "s")), args); }
+# Missing va_list is another minimum-arity syntax control.
+- void f(void) { vsscanf(line, "%s"); }
+- void f(void) { vscanf("%s", args); }
+- void f(void) { vfscanf(fp, "%s", args); }
+- void f(void) { vsscanf(line, "%s", args); }
+- void f(void) { scanf(/* format */ "%s", buf); }
+- void f(void) { sscanf(/* input */ line, /* format */ "%s", buf); }
 - void f(void) { scanf("%s", buf); }
 - void f(void) { sscanf(line, "%s", buf); }
 - void f(void) { fscanf(fp, "%d %s", &n, buf); }

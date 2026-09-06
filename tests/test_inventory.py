@@ -35,4 +35,9 @@ class InventoryTests(unittest.TestCase):
                     self.assertTrue(data[key])
                     self.assertTrue(all(isinstance(s, str) and s.strip() for s in data[key]))
                 self.assertFalse(set(data["valid"]) & set(data["invalid"]))
+                snapshot_path = ROOT / "tests" / "__snapshots__" / f"{rule['id']}-snapshot.yml"
+                snapshot = yaml.safe_load(snapshot_path.read_text())
+                self.assertIsInstance(snapshot, dict)
+                self.assertIsInstance(snapshot["snapshots"], dict)
+                self.assertEqual(set(snapshot["snapshots"]), set(data["invalid"]))
         self.assertEqual(expected, fixtures)

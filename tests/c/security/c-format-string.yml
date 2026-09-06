@@ -14,6 +14,13 @@ valid:
 - void f(void) { syslog(priority, "prefix " "%s", text); }
 - void f(void) { vsyslog(priority, "prefix " "%s", text); }
 invalid:
+# Minimal v* calls below deliberately omit va_list: these parseable but
+# API-arity-invalid snippets cover the existing minimal-arity matcher arms.
+- "void f(void) { vprintf(fmt); }"
+- "void f(void) { dprintf(fd, fmt); }"
+- "void f(void) { vfprintf(stream, fmt); }"
+- "void f(void) { syslog(priority, fmt); }"
+- "void f(void) { vsyslog(priority, fmt); }"
 - void f(void) { printf(fmt); }
 - void f(void) { printf((fmt), input); }
 - void f(void) { fprintf(stream, fmt); }

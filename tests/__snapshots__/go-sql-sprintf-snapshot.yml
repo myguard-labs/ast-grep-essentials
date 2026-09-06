@@ -180,6 +180,42 @@ snapshots:
       style: secondary
       start: 38
       end: 77
+  ? |
+    package p
+    func f() { db.Query(/* query */ fmt.Sprintf("SELECT %s", value)) }
+  : labels:
+    - source: db.Query(/* query */ fmt.Sprintf("SELECT %s", value))
+      style: primary
+      start: 21
+      end: 74
+    - source: Query
+      style: secondary
+      start: 24
+      end: 29
+    - source: db.Query
+      style: secondary
+      start: 21
+      end: 29
+    - source: fmt
+      style: secondary
+      start: 42
+      end: 45
+    - source: Sprintf
+      style: secondary
+      start: 46
+      end: 53
+    - source: fmt.Sprintf
+      style: secondary
+      start: 42
+      end: 53
+    - source: fmt.Sprintf("SELECT %s", value)
+      style: secondary
+      start: 42
+      end: 73
+    - source: (/* query */ fmt.Sprintf("SELECT %s", value))
+      style: secondary
+      start: 29
+      end: 74
   ? |-
     package p
     func f() { db.Query(fmt.Sprintf("SELECT %s", value)) }
@@ -216,6 +252,78 @@ snapshots:
       style: secondary
       start: 29
       end: 62
+  ? |
+    package p
+    func f() { db.QueryContext(/* context */ ctx, fmt.Sprintf("SELECT %s", value)) }
+  : labels:
+    - source: db.QueryContext(/* context */ ctx, fmt.Sprintf("SELECT %s", value))
+      style: primary
+      start: 21
+      end: 88
+    - source: QueryContext
+      style: secondary
+      start: 24
+      end: 36
+    - source: db.QueryContext
+      style: secondary
+      start: 21
+      end: 36
+    - source: fmt
+      style: secondary
+      start: 56
+      end: 59
+    - source: Sprintf
+      style: secondary
+      start: 60
+      end: 67
+    - source: fmt.Sprintf
+      style: secondary
+      start: 56
+      end: 67
+    - source: fmt.Sprintf("SELECT %s", value)
+      style: secondary
+      start: 56
+      end: 87
+    - source: (/* context */ ctx, fmt.Sprintf("SELECT %s", value))
+      style: secondary
+      start: 36
+      end: 88
+  ? |
+    package p
+    func f() { db.QueryContext(ctx, /* query */ fmt.Sprintf("SELECT %s", value)) }
+  : labels:
+    - source: db.QueryContext(ctx, /* query */ fmt.Sprintf("SELECT %s", value))
+      style: primary
+      start: 21
+      end: 86
+    - source: QueryContext
+      style: secondary
+      start: 24
+      end: 36
+    - source: db.QueryContext
+      style: secondary
+      start: 21
+      end: 36
+    - source: fmt
+      style: secondary
+      start: 54
+      end: 57
+    - source: Sprintf
+      style: secondary
+      start: 58
+      end: 65
+    - source: fmt.Sprintf
+      style: secondary
+      start: 54
+      end: 65
+    - source: fmt.Sprintf("SELECT %s", value)
+      style: secondary
+      start: 54
+      end: 85
+    - source: (ctx, /* query */ fmt.Sprintf("SELECT %s", value))
+      style: secondary
+      start: 36
+      end: 86
   ? |-
     package p
     func f() { db.QueryContext(ctx, strings.Join(parts, " ")) }

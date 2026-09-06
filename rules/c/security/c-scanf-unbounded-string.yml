@@ -14,21 +14,46 @@ note: >-
   buffer. %c and numeric conversions are unaffected.
 rule:
   kind: call_expression
-  all:
-    - has:
-        field: function
-        regex: '^(scanf|fscanf|sscanf|vscanf|vfscanf|vsscanf)$'
-    - has:
-        # Stop at a concatenated string so its child literals cannot turn a
-        # split escaped %% into a false positive.
-        stopBy: {kind: concatenated_string}
-        any:
-          - kind: string_literal
-            # A %s or %[ conversion with no width. An escaped %% is not a
-            # conversion and %*s suppresses assignment, so neither writes.
-            # POSIX's n$ argument selector is not a field width.
-            regex: '(?:^|[^%])(?:%%)*%(?:[1-9][0-9]*\$)?l?(s|\[)'
-          - kind: concatenated_string
-            # Treat adjacent literal boundaries as zero-width while retaining
-            # percent-pair parity across those boundaries.
-            regex: '(?:^"|[^%"](?:"\s*")*)(?:%(?:"\s*")*%(?:"\s*")*)*%(?:"\s*")*(?:[1-9](?:"\s*")*(?:[0-9](?:"\s*")*)*\$(?:"\s*")*)?l?(?:"\s*")*(s|\[)'
+  any:
+    - all:
+        - has:
+            field: function
+            regex: '^(scanf|vscanf)$'
+        - any:
+            # The contextual minimum-arity arm avoids C's single-argument
+            # type-pattern ambiguity; variadic patterns require the comma.
+            - pattern:
+                context: 'void probe(void) { $F($FORMAT); }'
+                selector: call_expression
+            - pattern: $F($FORMAT, $$$ARGS)
+    - all:
+        - has:
+            field: function
+            regex: '^(fscanf|sscanf|vfscanf|vsscanf)$'
+        - any:
+            - pattern: $F($INPUT, $FORMAT)
+            - pattern: $F($INPUT, $FORMAT, $$$ARGS)
+constraints:
+  FORMAT:
+    matches: format-argument
+utils:
+  format-argument:
+    any:
+      - matches: unsafe-literal
+      - kind: parenthesized_expression
+        has:
+          matches: unsafe-literal
+          # Follow only parentheses: a literal nested in a computed argument
+          # does not establish that argument's format.
+          stopBy: {not: {kind: parenthesized_expression}}
+  unsafe-literal:
+    any:
+      - kind: string_literal
+        # A %s or %[ conversion with no width. An escaped %% is not a
+        # conversion and %*s suppresses assignment, so neither writes.
+        # POSIX's n$ argument selector is not a field width.
+        regex: '(?:^|[^%])(?:%%)*%(?:[1-9][0-9]*\$)?l?(s|\[)'
+      - kind: concatenated_string
+        # Treat adjacent literal boundaries as zero-width while retaining
+        # percent-pair parity across those boundaries.
+        regex: '(?:^"|[^%"](?:"\s*")*)(?:%(?:"\s*")*%(?:"\s*")*)*%(?:"\s*")*(?:[1-9](?:"\s*")*(?:[0-9](?:"\s*")*)*\$(?:"\s*")*)?l?(?:"\s*")*(s|\[)'

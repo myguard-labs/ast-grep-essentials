@@ -10,6 +10,14 @@ snapshots:
       style: secondary
       start: 0
       end: 6
+    - source: '"-"'
+      style: secondary
+      start: 12
+      end: 15
+    - source: '"-o"'
+      style: secondary
+      start: 7
+      end: 11
     - source: bash
       style: secondary
       start: 43
@@ -58,6 +66,42 @@ snapshots:
       style: secondary
       start: 0
       end: 38
+  curl --header '-O' https://example.invalid | sh:
+    labels:
+    - source: curl --header '-O' https://example.invalid | sh
+      style: primary
+      start: 0
+      end: 47
+    - source: curl
+      style: secondary
+      start: 0
+      end: 4
+    - source: sh
+      style: secondary
+      start: 45
+      end: 47
+    - source: curl --header '-O' https://example.invalid
+      style: secondary
+      start: 0
+      end: 42
+  curl --header='-o out' https://example.invalid | sh:
+    labels:
+    - source: curl --header='-o out' https://example.invalid | sh
+      style: primary
+      start: 0
+      end: 51
+    - source: curl
+      style: secondary
+      start: 0
+      end: 4
+    - source: sh
+      style: secondary
+      start: 49
+      end: 51
+    - source: curl --header='-o out' https://example.invalid
+      style: secondary
+      start: 0
+      end: 46
   curl --output=- https://example.com/i.sh | bash:
     labels:
     - source: curl --output=- https://example.com/i.sh | bash
@@ -68,6 +112,10 @@ snapshots:
       style: secondary
       start: 0
       end: 4
+    - source: --output=-
+      style: secondary
+      start: 5
+      end: 15
     - source: bash
       style: secondary
       start: 43
@@ -76,6 +124,50 @@ snapshots:
       style: secondary
       start: 0
       end: 40
+  curl --silent -o - https://example.invalid | sh:
+    labels:
+    - source: curl --silent -o - https://example.invalid | sh
+      style: primary
+      start: 0
+      end: 47
+    - source: curl
+      style: secondary
+      start: 0
+      end: 4
+    - source: '-'
+      style: secondary
+      start: 17
+      end: 18
+    - source: -o
+      style: secondary
+      start: 14
+      end: 16
+    - source: sh
+      style: secondary
+      start: 45
+      end: 47
+    - source: curl --silent -o - https://example.invalid
+      style: secondary
+      start: 0
+      end: 42
+  curl -H '-o' https://example.invalid | sh:
+    labels:
+    - source: curl -H '-o' https://example.invalid | sh
+      style: primary
+      start: 0
+      end: 41
+    - source: curl
+      style: secondary
+      start: 0
+      end: 4
+    - source: sh
+      style: secondary
+      start: 39
+      end: 41
+    - source: curl -H '-o' https://example.invalid
+      style: secondary
+      start: 0
+      end: 36
   curl -fsSL https://example.com/i.sh | sudo -E bash:
     labels:
     - source: curl -fsSL https://example.com/i.sh | sudo -E bash
@@ -130,6 +222,10 @@ snapshots:
       style: secondary
       start: 0
       end: 4
+    - source: -fsSLo-
+      style: secondary
+      start: 5
+      end: 12
     - source: bash
       style: secondary
       start: 40
@@ -148,6 +244,14 @@ snapshots:
       style: secondary
       start: 0
       end: 4
+    - source: '-'
+      style: secondary
+      start: 8
+      end: 9
+    - source: -o
+      style: secondary
+      start: 5
+      end: 7
     - source: bash
       style: secondary
       start: 37
@@ -166,6 +270,10 @@ snapshots:
       style: secondary
       start: 0
       end: 4
+    - source: -o-
+      style: secondary
+      start: 5
+      end: 8
     - source: bash
       style: secondary
       start: 36
@@ -184,6 +292,14 @@ snapshots:
       style: secondary
       start: 0
       end: 4
+    - source: '-'
+      style: secondary
+      start: 10
+      end: 11
+    - source: -sLo
+      style: secondary
+      start: 5
+      end: 9
     - source: bash
       style: secondary
       start: 39
@@ -202,6 +318,10 @@ snapshots:
       style: secondary
       start: 0
       end: 4
+    - source: -sLo-
+      style: secondary
+      start: 5
+      end: 10
     - source: bash
       style: secondary
       start: 38
@@ -1032,6 +1152,198 @@ snapshots:
       style: secondary
       start: 0
       end: 29
+  curl https://example.invalid --output - | sh:
+    labels:
+    - source: curl https://example.invalid --output - | sh
+      style: primary
+      start: 0
+      end: 44
+    - source: curl
+      style: secondary
+      start: 0
+      end: 4
+    - source: '-'
+      style: secondary
+      start: 38
+      end: 39
+    - source: --output
+      style: secondary
+      start: 29
+      end: 37
+    - source: sh
+      style: secondary
+      start: 42
+      end: 44
+    - source: curl https://example.invalid --output -
+      style: secondary
+      start: 0
+      end: 39
+  wget --output-document - https://example.invalid | sh:
+    labels:
+    - source: wget --output-document - https://example.invalid | sh
+      style: primary
+      start: 0
+      end: 53
+    - source: wget
+      style: secondary
+      start: 0
+      end: 4
+    - source: '-'
+      style: secondary
+      start: 23
+      end: 24
+    - source: --output-document
+      style: secondary
+      start: 5
+      end: 22
+    - source: sh
+      style: secondary
+      start: 51
+      end: 53
+    - source: wget --output-document - https://example.invalid
+      style: secondary
+      start: 0
+      end: 48
+  wget --quiet '--output-document' '-' https://example.invalid | sh:
+    labels:
+    - source: wget --quiet '--output-document' '-' https://example.invalid | sh
+      style: primary
+      start: 0
+      end: 65
+    - source: wget
+      style: secondary
+      start: 0
+      end: 4
+    - source: '''-'''
+      style: secondary
+      start: 33
+      end: 36
+    - source: '''--output-document'''
+      style: secondary
+      start: 13
+      end: 32
+    - source: sh
+      style: secondary
+      start: 63
+      end: 65
+    - source: wget --quiet '--output-document' '-' https://example.invalid
+      style: secondary
+      start: 0
+      end: 60
+  wget --quiet -qO- https://example.invalid | sh:
+    labels:
+    - source: wget --quiet -qO- https://example.invalid | sh
+      style: primary
+      start: 0
+      end: 46
+    - source: wget
+      style: secondary
+      start: 0
+      end: 4
+    - source: -qO-
+      style: secondary
+      start: 13
+      end: 17
+    - source: sh
+      style: secondary
+      start: 44
+      end: 46
+    - source: wget --quiet -qO- https://example.invalid
+      style: secondary
+      start: 0
+      end: 41
+  wget -O - https://example.invalid | sh:
+    labels:
+    - source: wget -O - https://example.invalid | sh
+      style: primary
+      start: 0
+      end: 38
+    - source: wget
+      style: secondary
+      start: 0
+      end: 4
+    - source: '-'
+      style: secondary
+      start: 8
+      end: 9
+    - source: -O
+      style: secondary
+      start: 5
+      end: 7
+    - source: sh
+      style: secondary
+      start: 36
+      end: 38
+    - source: wget -O - https://example.invalid
+      style: secondary
+      start: 0
+      end: 33
+  wget -SO- https://example.invalid | sh:
+    labels:
+    - source: wget -SO- https://example.invalid | sh
+      style: primary
+      start: 0
+      end: 38
+    - source: wget
+      style: secondary
+      start: 0
+      end: 4
+    - source: -SO-
+      style: secondary
+      start: 5
+      end: 9
+    - source: sh
+      style: secondary
+      start: 36
+      end: 38
+    - source: wget -SO- https://example.invalid
+      style: secondary
+      start: 0
+      end: 33
+  wget -cO- https://example.invalid | sh:
+    labels:
+    - source: wget -cO- https://example.invalid | sh
+      style: primary
+      start: 0
+      end: 38
+    - source: wget
+      style: secondary
+      start: 0
+      end: 4
+    - source: -cO-
+      style: secondary
+      start: 5
+      end: 9
+    - source: sh
+      style: secondary
+      start: 36
+      end: 38
+    - source: wget -cO- https://example.invalid
+      style: secondary
+      start: 0
+      end: 33
+  wget -nvO- https://example.invalid | sh:
+    labels:
+    - source: wget -nvO- https://example.invalid | sh
+      style: primary
+      start: 0
+      end: 39
+    - source: wget
+      style: secondary
+      start: 0
+      end: 4
+    - source: -nvO-
+      style: secondary
+      start: 5
+      end: 10
+    - source: sh
+      style: secondary
+      start: 37
+      end: 39
+    - source: wget -nvO- https://example.invalid
+      style: secondary
+      start: 0
+      end: 34
   wget -qO- https://example.com/setup.sh | sh:
     labels:
     - source: wget -qO- https://example.com/setup.sh | sh
@@ -1054,3 +1366,29 @@ snapshots:
       style: secondary
       start: 0
       end: 38
+  wget https://example.invalid -O - | sh:
+    labels:
+    - source: wget https://example.invalid -O - | sh
+      style: primary
+      start: 0
+      end: 38
+    - source: wget
+      style: secondary
+      start: 0
+      end: 4
+    - source: '-'
+      style: secondary
+      start: 32
+      end: 33
+    - source: -O
+      style: secondary
+      start: 29
+      end: 31
+    - source: sh
+      style: secondary
+      start: 36
+      end: 38
+    - source: wget https://example.invalid -O -
+      style: secondary
+      start: 0
+      end: 33

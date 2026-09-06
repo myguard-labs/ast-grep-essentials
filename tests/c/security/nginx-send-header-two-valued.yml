@@ -13,6 +13,7 @@ valid:
 - void f(void) { rc = ngx_http_send_header(r); rc = normalize(rc); if (rc != NGX_OK) return NGX_ERROR; }
 - void f(void) { ngx_int_t rc = unrelated(r); if (rc != NGX_OK) return NGX_ERROR; }
 invalid:
+- "ngx_int_t f(void) { ngx_int_t rc = ngx_http_output_filter(r, in); if (rc != NGX_OK) { return NGX_ERROR; } return NGX_OK; }"
 - void f(void) { if (ngx_http_send_header(r) != NGX_OK) { return NGX_ERROR; } }
 - void f(void) { if (ngx_http_output_filter(r, chain) != NGX_OK) { return NGX_ERROR; } }
 - void f(void) { if (ngx_http_send_header(r) != NGX_OK) return NGX_ERROR; }

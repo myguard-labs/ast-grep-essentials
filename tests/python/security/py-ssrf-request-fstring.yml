@@ -1,5 +1,25 @@
 id: py-ssrf-request-fstring
 valid:
+- |
+  requests.post(
+      # URL
+      SAFE_URL,
+      # payload
+      data=f"payload={value}")
+- |
+  session.request(
+      # method
+      f"{method}",
+      # URL
+      SAFE_URL,
+      # payload
+      data=f"payload={value}")
+- |
+  urlopen(
+      # URL
+      SAFE_URL,
+      # payload
+      f"payload={value}")
 - requests.get(API_URL, timeout=5)
 - requests.get("https://api.example.com/v1/status")
 - requests.post(url, json=payload)
@@ -16,6 +36,22 @@ valid:
 - self.session.get(f"{base}/status")
 - requests.get("https://example.com" + "/status")
 invalid:
+- |
+  requests.get(
+      # URL
+      f"https://{host}/api")
+- |
+  urlopen(
+      # URL
+      f"https://{host}/api")
+- |
+  session.request(
+      # method
+      "GET", f"https://{host}/api")
+- |
+  session.request("GET",
+      # URL
+      f"https://{host}/api")
 - session.get(f"https://{host}/api")
 - requests.get(f"https://{host}/api")
 - requests . get(f"https://{host}/api")

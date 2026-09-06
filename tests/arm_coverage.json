@@ -1,0 +1,511 @@
+{
+  "baseline": "38d297323cbc30d15727ae1e3c389cd4bea73085",
+  "cases": [
+    {
+      "rule": "sh-tls-verify-disabled",
+      "original_path": "any/1/all/1/has/any",
+      "original_index": 2,
+      "classification": "missing-fixture",
+      "path": "any/1/all/1/has/any",
+      "index": 2,
+      "source": "wget '--no-check-certificate' https://example.test",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "sh-tls-verify-disabled",
+      "original_path": "any/2/all/1/has/any",
+      "original_index": 2,
+      "classification": "missing-fixture",
+      "path": "any/2/all/1/has/any",
+      "index": 2,
+      "source": "pip install '--trusted-host=example.test' package",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "c-duplicate-boolean-clause",
+      "original_path": "not/inside/any",
+      "original_index": 1,
+      "classification": "missing-fixture",
+      "path": "not/inside/any",
+      "index": 1,
+      "source": "#ifdef FOO\n#elif BAR || BAR\nint x;\n#endif\n",
+      "expected": 0,
+      "deleted_expected": 1
+    },
+    {
+      "rule": "c-duplicate-boolean-clause",
+      "original_path": "not/inside/any",
+      "original_index": 2,
+      "classification": "missing-fixture",
+      "path": "not/inside/any",
+      "index": 2,
+      "source": "void f(void) { int value = (x && x) gibberish }",
+      "expected": 0,
+      "deleted_expected": 1
+    },
+    {
+      "rule": "c-alloc-mul-overflow",
+      "original_path": "any",
+      "original_index": 5,
+      "classification": "missing-fixture",
+      "path": "any",
+      "index": 5,
+      "source": "void f(void) { p = ngx_palloc(pool, (n * size)); }",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "c-alloc-mul-overflow",
+      "original_path": "any",
+      "original_index": 6,
+      "classification": "missing-fixture",
+      "path": "any",
+      "index": 6,
+      "source": "void f(void) { p = ngx_pnalloc(pool, (n * size)); }",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "c-alloc-mul-overflow",
+      "original_path": "any",
+      "original_index": 7,
+      "classification": "missing-fixture",
+      "path": "any",
+      "index": 7,
+      "source": "void f(void) { p = ngx_pcalloc(pool, (n * size)); }",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "c-format-string",
+      "original_path": "any",
+      "original_index": 2,
+      "classification": "missing-fixture",
+      "path": "any",
+      "index": 2,
+      "source": "void f(void) { vprintf(fmt); }",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "c-format-string",
+      "original_path": "any",
+      "original_index": 6,
+      "classification": "missing-fixture",
+      "path": "any",
+      "index": 6,
+      "source": "void f(void) { dprintf(fd, fmt); }",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "c-format-string",
+      "original_path": "any",
+      "original_index": 8,
+      "classification": "missing-fixture",
+      "path": "any",
+      "index": 8,
+      "source": "void f(void) { vfprintf(stream, fmt); }",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "c-format-string",
+      "original_path": "any",
+      "original_index": 10,
+      "classification": "missing-fixture",
+      "path": "any",
+      "index": 10,
+      "source": "void f(void) { syslog(priority, fmt); }",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "c-format-string",
+      "original_path": "any",
+      "original_index": 12,
+      "classification": "missing-fixture",
+      "path": "any",
+      "index": 12,
+      "source": "void f(void) { vsyslog(priority, fmt); }",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "c-sizeof-wrong-operand",
+      "original_path": "any",
+      "original_index": 0,
+      "classification": "missing-fixture",
+      "path": "any",
+      "index": 0,
+      "source": "void f(void) { ngx_cpymem(dst, src, sizeof((\"abc\")) - 1); }",
+      "expected": 0,
+      "deleted_expected": 1
+    },
+    {
+      "rule": "c-sizeof-wrong-operand",
+      "original_path": "any",
+      "original_index": 1,
+      "classification": "missing-fixture",
+      "path": "any",
+      "index": 1,
+      "source": "void f(void) { ngx_memcpy(dst, src, sizeof((\"abc\")) - 1); }",
+      "expected": 0,
+      "deleted_expected": 1
+    },
+    {
+      "rule": "c-sizeof-wrong-operand",
+      "original_path": "any",
+      "original_index": 3,
+      "classification": "missing-fixture",
+      "path": "any",
+      "index": 3,
+      "source": "void f(void) { ngx_cpymem(dst, src, sizeof ptr - 1); }",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "c-sizeof-wrong-operand",
+      "original_path": "any",
+      "original_index": 4,
+      "classification": "missing-fixture",
+      "path": "any",
+      "index": 4,
+      "source": "void f(void) { ngx_memcpy(dst, src, sizeof ptr - 1); }",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "c-strncat-size-misuse",
+      "original_path": "any",
+      "original_index": 0,
+      "classification": "equivalent",
+      "reason": "A broad DST capture accepts the complete parenthesized destination node and the repeated capture enforces the same operand. The sizeof $DST forms also accept parenthesized operands."
+    },
+    {
+      "rule": "c-strncat-size-misuse",
+      "original_path": "any",
+      "original_index": 1,
+      "classification": "equivalent",
+      "reason": "A broad DST capture accepts the complete parenthesized destination node and the repeated capture enforces the same operand. The sizeof $DST forms also accept parenthesized operands."
+    },
+    {
+      "rule": "c-strncat-size-misuse",
+      "original_path": "any",
+      "original_index": 2,
+      "classification": "equivalent",
+      "reason": "A broad DST capture accepts the complete parenthesized destination node and the repeated capture enforces the same operand. The sizeof $DST forms also accept parenthesized operands."
+    },
+    {
+      "rule": "c-strncat-size-misuse",
+      "original_path": "any",
+      "original_index": 6,
+      "classification": "equivalent",
+      "reason": "A broad DST capture accepts the complete parenthesized destination node and the repeated capture enforces the same operand. The sizeof $DST forms also accept parenthesized operands."
+    },
+    {
+      "rule": "c-strncat-size-misuse",
+      "original_path": "any",
+      "original_index": 8,
+      "classification": "equivalent",
+      "reason": "A broad DST capture accepts the complete parenthesized destination node and the repeated capture enforces the same operand. The sizeof $DST forms also accept parenthesized operands."
+    },
+    {
+      "rule": "nginx-send-header-return-ignored",
+      "original_path": "any",
+      "original_index": 2,
+      "classification": "equivalent",
+      "reason": "The preceding $TYPE cast pattern accepts void and selects the same expression statement."
+    },
+    {
+      "rule": "nginx-send-header-two-valued",
+      "original_path": "any/2/all/0/follows/any",
+      "original_index": 3,
+      "classification": "missing-fixture",
+      "path": "any/2/all/0/follows/any",
+      "index": 3,
+      "source": "ngx_int_t f(void) { ngx_int_t rc = ngx_http_output_filter(r, in); if (rc != NGX_OK) { return NGX_ERROR; } return NGX_OK; }",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "go-defer-in-loop",
+      "original_path": "inside/stopBy/any",
+      "original_index": 1,
+      "classification": "equivalent",
+      "reason": "Function and method declarations are top-level in valid Go and cannot be nested inside a loop. Only function literals can intervene between a defer and an outer loop."
+    },
+    {
+      "rule": "go-defer-in-loop",
+      "original_path": "inside/stopBy/any",
+      "original_index": 2,
+      "classification": "equivalent",
+      "reason": "Function and method declarations are top-level in valid Go and cannot be nested inside a loop. Only function literals can intervene between a defer and an outer loop."
+    },
+    {
+      "rule": "go-unchecked-type-assertion",
+      "original_path": "not/any/0/inside/inside/any",
+      "original_index": 0,
+      "classification": "missing-fixture",
+      "path": "not/any/0/inside/inside/any",
+      "index": 0,
+      "source": "package p; func f() { value, ok = input.(string) }",
+      "expected": 0,
+      "deleted_expected": 1
+    },
+    {
+      "rule": "go-math-rand",
+      "original_path": "inside/any",
+      "original_index": 1,
+      "classification": "equivalent",
+      "reason": "Every string import under import_spec_list is already inside an import_spec; stopBy end reaches that mandatory wrapper."
+    },
+    {
+      "rule": "go-weak-hash-import",
+      "original_path": "inside/any",
+      "original_index": 1,
+      "classification": "equivalent",
+      "reason": "Every string import under import_spec_list is already inside an import_spec; stopBy end reaches that mandatory wrapper."
+    },
+    {
+      "rule": "php-echo-superglobal-xss",
+      "original_path": "any/0/all/2/any/0/all/1/inside/inside/inside/inside/any",
+      "original_index": 1,
+      "classification": "missing-fixture",
+      "path": "any/0/all/2/any/0/all/1/inside/inside/inside/inside/any",
+      "index": 1,
+      "source": "<?php print \"<a title='\" . htmlspecialchars($_GET[\"x\"], ENT_COMPAT);",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "php-echo-superglobal-xss",
+      "original_path": "any/0/all/2/any/1/all/1/inside/inside/inside/inside/any",
+      "original_index": 1,
+      "classification": "missing-fixture",
+      "path": "any/0/all/2/any/1/all/1/inside/inside/inside/inside/any",
+      "index": 1,
+      "source": "<?php print '<a title=\"' . htmlspecialchars($_GET[\"x\"], ENT_NOQUOTES);",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "php-file-inclusion-variable",
+      "original_path": "has/any",
+      "original_index": 1,
+      "classification": "missing-fixture",
+      "path": "has/any",
+      "index": 1,
+      "source": "<?php include_once $path;",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "php-file-inclusion-variable",
+      "original_path": "has/any",
+      "original_index": 2,
+      "classification": "missing-fixture",
+      "path": "has/any",
+      "index": 2,
+      "source": "<?php require $path;",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "php-file-inclusion-variable",
+      "original_path": "has/has/any",
+      "original_index": 2,
+      "classification": "missing-fixture",
+      "path": "has/has/any",
+      "index": 2,
+      "source": "<?php include (new PathProvider())->path();",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "php-file-inclusion-variable",
+      "original_path": "has/has/any",
+      "original_index": 3,
+      "classification": "missing-fixture",
+      "path": "has/has/any",
+      "index": 3,
+      "source": "<?php include path();",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "php-sql-string-interp",
+      "original_path": "all/1/any/0/all/1/has/has/all/2/has/stopBy/any",
+      "original_index": 0,
+      "classification": "missing-fixture",
+      "path": "all/1/any/0/all/1/has/has/all/2/has/stopBy/any",
+      "index": 0,
+      "source": "<?php query(function () { return \"SELECT $column\"; });",
+      "expected": 0,
+      "deleted_expected": 1
+    },
+    {
+      "rule": "php-sql-string-interp",
+      "original_path": "all/1/any/0/all/1/has/has/all/2/has/stopBy/any",
+      "original_index": 1,
+      "classification": "missing-fixture",
+      "path": "all/1/any/0/all/1/has/has/all/2/has/stopBy/any",
+      "index": 1,
+      "source": "<?php query(fn () => \"SELECT $column\");",
+      "expected": 0,
+      "deleted_expected": 1
+    },
+    {
+      "rule": "php-sql-string-interp",
+      "original_path": "all/1/any/1/all/1/has/has/all/2/has/stopBy/any",
+      "original_index": 0,
+      "classification": "missing-fixture",
+      "path": "all/1/any/1/all/1/has/has/all/2/has/stopBy/any",
+      "index": 0,
+      "source": "<?php mysqli_query($db, function () { return \"SELECT $column\"; });",
+      "expected": 0,
+      "deleted_expected": 1
+    },
+    {
+      "rule": "php-sql-string-interp",
+      "original_path": "all/1/any/1/all/1/has/has/all/2/has/stopBy/any",
+      "original_index": 1,
+      "classification": "missing-fixture",
+      "path": "all/1/any/1/all/1/has/has/all/2/has/stopBy/any",
+      "index": 1,
+      "source": "<?php mysqli_query($db, fn () => \"SELECT $column\");",
+      "expected": 0,
+      "deleted_expected": 1
+    },
+    {
+      "rule": "php-strcmp-loose-compare",
+      "original_path": "all/1/any",
+      "original_index": 1,
+      "classification": "missing-fixture",
+      "path": "all/1/any",
+      "index": 1,
+      "source": "<?php if (0 == strcmp($a, $b)) {}",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "py-mutable-default-arg",
+      "original_path": "has/any",
+      "original_index": 2,
+      "classification": "missing-fixture",
+      "path": "has/any",
+      "index": 2,
+      "source": "def f(values={1, 2}):\n    pass\n",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "py-raise-without-from",
+      "original_path": "all/4/not/inside/any",
+      "original_index": 1,
+      "classification": "equivalent",
+      "reason": "A valid Python lambda has an expression body and cannot contain a raise statement; function and class scope exclusions remain."
+    },
+    {
+      "rule": "py-raise-without-from",
+      "original_path": "all/4/not/inside/any",
+      "original_index": 2,
+      "classification": "missing-fixture",
+      "path": "all/4/not/inside/any",
+      "index": 1,
+      "source": "try:\n    work()\nexcept Exception:\n    class E:\n        raise ValueError()\n",
+      "expected": 0,
+      "deleted_expected": 1
+    },
+    {
+      "rule": "py-zip-without-strict",
+      "original_path": "all/2/has/any/0/has/nthChild/ofRule/not/any",
+      "original_index": 1,
+      "classification": "missing-fixture",
+      "path": "all/2/has/any/0/has/nthChild/ofRule/not/any",
+      "index": 1,
+      "source": "zip(items, **options)",
+      "expected": 0,
+      "deleted_expected": 1
+    },
+    {
+      "rule": "py-zip-without-strict",
+      "original_path": "all/2/has/any/0/has/nthChild/ofRule/not/any",
+      "original_index": 2,
+      "classification": "missing-fixture",
+      "path": "all/2/has/any/0/has/nthChild/ofRule/not/any",
+      "index": 2,
+      "source": "zip(items, # comment\n)",
+      "expected": 0,
+      "deleted_expected": 1
+    },
+    {
+      "rule": "py-jwt-decode-unverified",
+      "original_path": "all/1/not/follows/any",
+      "original_index": 0,
+      "classification": "weak-count-oracle",
+      "path": "all/1/not/follows/any",
+      "index": 0,
+      "source": "jwt.decode(token, key, verify=False, options={'verify_signature': False})",
+      "expected": 1,
+      "deleted_expected": 2
+    },
+    {
+      "rule": "py-jwt-decode-unverified",
+      "original_path": "all/1/not/follows/any",
+      "original_index": 1,
+      "classification": "weak-count-oracle",
+      "path": "all/1/not/follows/any",
+      "index": 1,
+      "source": "jwt.decode(token, key, options={'verify_signature': False}, verify=False)",
+      "expected": 1,
+      "deleted_expected": 2
+    },
+    {
+      "rule": "py-tarfile-extractall",
+      "original_path": "any/0/all/0/any",
+      "original_index": 1,
+      "classification": "missing-fixture",
+      "path": "any/0/all/0/any",
+      "index": 1,
+      "source": "tarfile.TarFile(path).extractall()",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "py-tarfile-extractall",
+      "original_path": "any/0/all/0/any",
+      "original_index": 2,
+      "classification": "missing-fixture",
+      "path": "any/0/all/0/any",
+      "index": 2,
+      "source": "tarfile.TarFile.open(path).extractall()",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "py-tarfile-extractall",
+      "original_path": "any/0/all/0/any",
+      "original_index": 4,
+      "classification": "missing-fixture",
+      "path": "any/0/all/0/any",
+      "index": 4,
+      "source": "(tarfile.TarFile(path)).extractall()",
+      "expected": 1,
+      "deleted_expected": 0
+    },
+    {
+      "rule": "py-tarfile-extractall",
+      "original_path": "any/0/all/0/any",
+      "original_index": 5,
+      "classification": "missing-fixture",
+      "path": "any/0/all/0/any",
+      "index": 5,
+      "source": "(tarfile.TarFile.open(path)).extractall()",
+      "expected": 1,
+      "deleted_expected": 0
+    }
+  ]
+}

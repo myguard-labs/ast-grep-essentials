@@ -33,7 +33,7 @@ npx ast-grep scan -c sgconfig.yml /path/to/source
 
 Consumers can add this checkout's `rules` directory to their `sgconfig.yml`
 `ruleDirs`; paths are relative to that config. Keep tests and `docs/candidates`
-out of rule discovery. Clone submodules with `git submodule update --init`.
+out of rule discovery.
 
 Warnings and information are advisory; error severity can fail a scan. Validate
 any promoted rule IDs and exercise a known positive before using a scan as a gate.

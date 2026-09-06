@@ -181,7 +181,9 @@ See <https://cwe.mitre.org/data/definitions/1435.html>.
   finding: ast-grep models no dataflow, so it cannot prove a later use. It is
   `info` severity because short-lived scopes legitimately free without
   clearing. Test and fuzz harnesses commonly have that shape; scope corpus
-  scans to production sources.
+  scans to production sources. A later plain reassignment suppresses this
+  advisory, except self-assignment with optional parentheses around the value.
+  This remains a syntactic check; it does not prove a replacement value is safe.
 
 ## Fourth batch
 
@@ -243,13 +245,22 @@ two rules cover only its code-level slice.
 
 - `sh-curl-pipe-shell` matches a stdout fetch to its rightward interpreter. A
   shell may be bare, use stdin-preserving options, or end in `-s`/`--`; Python,
-  Perl and Ruby require the explicit `-` stdin form. Quoted curl, wget,
+  Perl and Ruby may be bare or use the explicit `-` stdin form. Quoted curl, wget,
   interpreter and option tokens are recognized; quoted `sudo` is not.
   Arguments after explicit stdin selectors are argv and
   remain covered, while script-path and inline-script forms do not match. Curl
   must not select an output file;
   `-o -`, `-o-`, `--output=-`, and combined common-option forms such as `-sLo-`
-  explicitly select stdout. Wget must explicitly select stdout. `sudo` supports
+  explicitly select stdout. Output options are checked at every argument position;
+  separate `-o -` / `--output -` and wget `-O -` / `--output-document -`
+  require adjacent option and value tokens. Wget must explicitly select stdout.
+  Values following the listed common argument-taking curl/wget options are not
+  treated as output options. This is bounded syntax matching, not complete option
+  parsing: other value-taking options, ambiguous chains of option-shaped values,
+  `--` option termination, and multiple conflicting output selections are outside
+  the rule's precision claim. Short wget clusters recognize no-argument flags
+  before `O`, including `q`, `c`, `S` and `nv`; argument-taking flags consume
+  the remaining cluster (`-UO-` sets a user agent, not stdout). `sudo` supports
   any sequence or cluster of the no-argument `-E`, `-H`, `-n` and `-S` options;
   `-u root`, `-uroot`, `--user root`, and `--user=root` can be interleaved with
   them. User option values are not mistaken for commands, and `sudo tee` and
@@ -302,7 +313,9 @@ two rules cover only its code-level slice.
   interpreter floor and archive trust before dismissing. Found one true
   positive outside this repo, at tools/patch-management.py:36.
 - `c-scanf-unbounded-string` matches a `%s`, `%[`, `%ls` or `%l[` conversion
-  with no field width in the scanf family. An assignment-suppressed `%*s` and
+  with no field width in the scanf family. The format is the first argument of
+  `scanf`/`vscanf` and the second of `fscanf`/`sscanf`/`vfscanf`/`vsscanf`.
+  An assignment-suppressed `%*s` and
   an escaped `%%s` write nothing and do not match. Adjacent string literals are
   treated as one format, and POSIX `n$` selectors are not confused with field
   widths. It reads the format literal, so a format passed through a variable is
@@ -533,7 +546,8 @@ Each rule's `note` names the commit that motivated it.
 - `nginx-table-missing-sentinel` asks whether a sentinel appears anywhere in
   an initialised `ngx_conf_enum_t`, `ngx_conf_bitmask_t`,
   `ngx_command_t`, `ngx_http_variable_t` or `ngx_stream_variable_t` array,
-  at any depth so a preprocessor block cannot displace it, and accepts the
+  including later arrays in a comma-separated declaration. It checks at any depth
+  so a preprocessor block cannot displace the sentinel, and accepts the
   expanded `{ ngx_null_string, NULL, NULL, 0, 0, 0 }` form as well as the
   macro. It does not check whether the sentinel is last, so one in the middle
   passes even though the walker stops there. Position-based matching was

@@ -4,7 +4,8 @@ severity: warning
 message: >-
   SQL query expression contains fmt.Sprintf/Sprint or strings.Join and is
   passed to a Query/Exec/Prepare call. Review it as a SQL-injection candidate;
-  use placeholders ($1, ?) and pass values as separate arguments for binding.
+  use numbered dollar placeholders or question marks and pass values as separate
+  arguments for binding.
 note: >-
   Checks the query position, accounting for Context variants. Receiver types
   are unresolved, so Query/Exec on a prepared statement can still need review.
@@ -23,7 +24,10 @@ rule:
                 kind: argument_list
                 has:
                   all:
-                    - nthChild: 1
+                    - nthChild:
+                        position: 1
+                        ofRule:
+                          not: {kind: comment}
                     - matches: formatted-query
         - all:
             - has:
@@ -34,7 +38,10 @@ rule:
                 kind: argument_list
                 has:
                   all:
-                    - nthChild: 2
+                    - nthChild:
+                        position: 2
+                        ofRule:
+                          not: {kind: comment}
                     - matches: formatted-query
 utils:
   query-method:

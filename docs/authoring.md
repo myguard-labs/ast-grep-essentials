@@ -80,8 +80,27 @@ also protect match ranges and fixes. Confirm the positive fails when the
 matcher is removed or broken. [Testing](https://ast-grep.github.io/guide/test-rule.html).
 
 Snapshot files can retain cases that no longer exist in `invalid`; the fixture
-runner does not reject those orphan keys. During review, compare the snapshot
-keys explicitly with the current invalid fixtures.
+runner does not reject those orphan keys. The inventory gate requires snapshot
+keys to equal the current invalid fixtures.
+
+`tests/arm_coverage.json` records 50 alternatives whose deletion survived the
+fixture runner at revision `38d2973`. It preserves their original paths and
+indices: 39 now have distinguishing fixtures with exact diagnostic counts;
+11 redundant alternatives were removed with a structural explanation. Scope
+arguments about Go declaration boundaries and Python lambdas assume valid
+language syntax. The C parser-recovery exclusion remains and has an explicit
+malformed-source fixture.
+
+The normal test command enumerates every removable `any` arm beneath each
+current main `rule` matcher and runs its isolated fixture/snapshot suite. A
+survivor must have a distinguishing JSON count witness. Utilities are outside
+this deletion inventory. One known mutation removes the only binding for a
+constrained metavariable; its exact parse error is reported separately and
+never counted as a kill. Unexpected tool failures and invalid rules fail the
+gate. The command also checks each retained witness and its deleted count. Keep
+the current path/index aligned when editing alternatives; retain the original
+identity for attribution. The JWT witnesses explicitly require one diagnostic
+when both legacy keyword spellings occur, in either order.
 
 Exercise each alternative and supported API, including its argument positions.
 Inspect secondary labels as well as detection counts: nested `has` relations
@@ -93,6 +112,10 @@ Main messages and notes interpolate metavariables too. Avoid literal
 metavariable-shaped text such as a dollar-prefixed uppercase name in a
 diagnostic, or assert the emitted JSON text explicitly; snapshots do not store
 the main message or note.
+`tests/test_diagnostics.py` checks the first invalid fixture of every rule against
+its declared message, note and severity, with an explicit 80-rule count guard.
+Keep diagnostic prose literal; intentional interpolation requires a corresponding
+emitted-text contract instead of silently changing that equality check.
 
 Before adding a `fix`, establish that every match admits that rewrite. Preview
 it, inspect the diff, and test both replacement text and surrounding syntax.

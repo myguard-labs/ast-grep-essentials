@@ -30,6 +30,24 @@ snapshots:
       style: primary
       start: 15
       end: 23
+  void f(void) { free(p); p = (((p))); use(p); }:
+    labels:
+    - source: free(p);
+      style: primary
+      start: 15
+      end: 23
+  void f(void) { free(p); p = (p); use(p); }:
+    labels:
+    - source: free(p);
+      style: primary
+      start: 15
+      end: 23
+  void f(void) { free(p); p = p; use(p); }:
+    labels:
+    - source: free(p);
+      style: primary
+      start: 15
+      end: 23
   void f(void) { free(p); use(p); }:
     labels:
     - source: free(p);
@@ -54,6 +72,12 @@ snapshots:
       style: primary
       start: 15
       end: 40
+  void f(void) { ngx_free(p); p = (/* retained */ p); use(p); }:
+    labels:
+    - source: ngx_free(p);
+      style: primary
+      start: 15
+      end: 27
   void f(void) { ngx_free(tmp); log("done"); }:
     labels:
     - source: ngx_free(tmp);

@@ -1,5 +1,13 @@
 id: php-sql-string-interp
 valid:
+- <?php query(/* query */ "SELECT ?", /* bound value */ "$value");
+- <?php mysqli_execute_query(/* db */ $db, /* query */ "SELECT ?", /* bound value */ ["$value"]);
+- <?php query(/* query */ function () { return "SELECT $column"; });
+- <?php mysqli_query($db, /* query */ fn () => "SELECT $column");
+- "<?php query(function () { return \"SELECT $column\"; });"
+- "<?php query(fn () => \"SELECT $column\");"
+- "<?php mysqli_query($db, function () { return \"SELECT $column\"; });"
+- "<?php mysqli_query($db, fn () => \"SELECT $column\");"
 - <?php query("SELECT column");
 - <?php query($sql, $params);
 - <?php mysqli_execute_query($db, "SELECT ?", ["$value"]);
@@ -9,6 +17,9 @@ valid:
 - <?php /* <?php query("SELECT $column"); */
 - <?php $text = '<?php query("SELECT $column");';
 invalid:
+- <?php query(/* query */ "SELECT $column");
+- <?php mysqli_query(/* db */ $db, "SELECT $column");
+- <?php mysqli_query($db, /* query */ "SELECT $column");
 - <?php query("SELECT $column");
 - <?php QUERY("SELECT $column");
 - <?php mysqli_query($db, "SELECT $column");

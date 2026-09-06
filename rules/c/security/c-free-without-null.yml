@@ -22,6 +22,17 @@ utils:
         has:
           kind: assignment_expression
           pattern: $PTR = $_
+          not:
+            has:
+              field: right
+              any:
+                - pattern: $PTR
+                - kind: parenthesized_expression
+                  has:
+                    pattern: $PTR
+                    stopBy:
+                      not:
+                        kind: parenthesized_expression
 rule:
   any:
     # Put specific wrappers first: ast-grep's smart matching can otherwise let

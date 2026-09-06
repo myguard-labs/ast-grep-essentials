@@ -5,12 +5,51 @@ import subprocess
 import unittest
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[1]
 AST_GREP = ROOT / "node_modules" / ".bin" / "ast-grep"
 
 
 class DiagnosticTests(unittest.TestCase):
+    def test_all_rules_emit_declared_diagnostics(self):
+        rules = sorted((ROOT / "rules").rglob("*.yml"))
+        self.assertEqual(len(rules), 80, "update the explicit diagnostic inventory")
+        checked = 0
+        for path in rules:
+            with self.subTest(rule=path.stem):
+                declared = yaml.safe_load(path.read_text())
+                fixture = yaml.safe_load(
+                    (ROOT / "tests" / path.relative_to(ROOT / "rules")).read_text()
+                )
+                result = subprocess.run(
+                    [AST_GREP, "scan", "--rule", path, "--json=compact", "--stdin"],
+                    input=fixture["invalid"][0], text=True, capture_output=True,
+                    check=False, timeout=15,
+                )
+                self.assertIn(result.returncode, (0, 1), result.stderr)
+                findings = json.loads(result.stdout)
+                self.assertTrue(findings, "first invalid fixture must emit a finding")
+                finding = findings[0]
+                self.assertEqual(finding["ruleId"], declared["id"])
+                for field in ("message", "note", "severity"):
+                    self.assertEqual(finding[field], declared[field], field)
+                checked += 1
+        self.assertEqual(checked, 80)
+
     CASES = (
+        (
+            "php/security/php-extract-superglobal.yml",
+            "<?php extract($_POST);",
+            ("GET, POST, REQUEST, COOKIE or SERVER superglobal",),
+            ("(////)",),
+        ),
+        (
+            "go/security/go-sql-sprintf.yml",
+            'package p; func f() { db.Query(fmt.Sprintf("SELECT %s", column)) }',
+            ("numbered dollar placeholders or question marks",),
+            ("placeholders (, ?)",),
+        ),
         (
             "c/security/c-prctl-set-dumpable.yml",
             "void f(void) { prctl(PR_SET_DUMPABLE, 1L); }",

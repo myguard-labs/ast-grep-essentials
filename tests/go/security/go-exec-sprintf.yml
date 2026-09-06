@@ -1,5 +1,14 @@
 id: go-exec-sprintf
 valid:
+- |
+  package p
+  func f() { exec.CommandContext(/* context */ withLabel(fmt.Sprintf("%s", value)), "echo") }
+- |
+  package p
+  func f() { exec.CommandContext(/* context */ withLabel(fmt.Sprintf("%s", value)), /* executable */ "echo", /* argument */ value) }
+- |
+  package p
+  func f() { exec.Command(/* executable */ "echo", /* argument */ build(func() string { return fmt.Sprintf("%s", value) })) }
 - 'package p
 
   func f() { exec.Command("echo", value) }'
@@ -23,6 +32,21 @@ valid:
 
   var text = "package p\nfunc f() { exec.Command(\"echo\", fmt.Sprintf(\"%s\", value)) }"'
 invalid:
+- |
+  package p
+  func f() { exec.Command(/* executable */ fmt.Sprintf("%s", value)) }
+- |
+  package p
+  func f() { exec.Command("echo", /* argument */ fmt.Sprintf("%s", value)) }
+- |
+  package p
+  func f() { exec.CommandContext(/* context */ ctx, fmt.Sprintf("%s", value)) }
+- |
+  package p
+  func f() { exec.CommandContext(ctx, /* executable */ fmt.Sprintf("%s", value)) }
+- |
+  package p
+  func f() { exec.CommandContext(ctx, "echo", /* argument */ fmt.Sprintf("%s", value)) }
 - 'package p
 
   func f() { exec.Command("echo", fmt.Sprintf("%s", value)) }'

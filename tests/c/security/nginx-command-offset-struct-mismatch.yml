@@ -39,6 +39,12 @@ valid:
       "NGX_HTTP_LOC_CONF_OFFSET, offsetof(ngx_http_x_main_conf_t, dict_file), NULL },";
 invalid:
 - |
+  static ngx_command_t  ngx_stream_x_commands[] = {
+      { ngx_string("x"), NGX_STREAM_SRV_CONF|NGX_CONF_TAKE1, ngx_conf_set_num_slot,
+        NGX_STREAM_MAIN_CONF_OFFSET, offsetof(ngx_stream_x_srv_conf_t, n), NULL },
+      ngx_null_command
+  };
+- |
   static ngx_command_t  ngx_http_x_commands[] = {
       { ngx_string("x"), NGX_HTTP_SRV_CONF|NGX_CONF_TAKE1, /* c */ ngx_conf_set_str_slot,
         /* c */ NGX_HTTP_SRV_CONF_OFFSET, /* c */ offsetof(ngx_http_x_loc_conf_t, n), NULL },

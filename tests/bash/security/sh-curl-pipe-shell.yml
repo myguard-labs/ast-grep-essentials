@@ -1,5 +1,19 @@
 id: sh-curl-pipe-shell
 valid:
+- wget -UO- https://example.invalid | sh
+- wget -qUO- https://example.invalid | sh
+- curl -fsSL -o out https://example.invalid | sh
+- curl https://example.invalid -o out | sh
+- curl -fsSL --output=out https://example.invalid | sh
+- curl https://example.invalid -O | sh
+- curl -H '-o -' -o out https://example.invalid | sh
+- wget -O out - https://example.invalid | sh
+- wget --output-document out - https://example.invalid | sh
+- wget --header '-O' - https://example.invalid | sh
+- wget --header '-qO-' https://example.invalid | sh
+- wget --header='-qO-' https://example.invalid | sh
+- '# wget -O - https://example.invalid | sh'
+- echo 'wget -O - https://example.invalid | sh'
 - curl -sSL https://example.com/i.sh -o i.sh
 - curl -s https://example.com/data.json | jq .
 - wget https://example.com/f.tar.gz && sha256sum -c f.sha256
@@ -36,6 +50,19 @@ valid:
 - '"curl" "-o" /tmp/i.sh https://example.com/i.sh | bash'
 - '"wget" "-O" /tmp/i.sh https://example.com/i.sh | sh'
 invalid:
+- wget -cO- https://example.invalid | sh
+- wget -SO- https://example.invalid | sh
+- wget -nvO- https://example.invalid | sh
+- wget -O - https://example.invalid | sh
+- wget --output-document - https://example.invalid | sh
+- wget --quiet -qO- https://example.invalid | sh
+- wget https://example.invalid -O - | sh
+- wget --quiet '--output-document' '-' https://example.invalid | sh
+- curl -H '-o' https://example.invalid | sh
+- curl --header '-O' https://example.invalid | sh
+- curl --header='-o out' https://example.invalid | sh
+- curl --silent -o - https://example.invalid | sh
+- curl https://example.invalid --output - | sh
 - curl -sSL https://get.example.com/i.sh | bash
 - wget -qO- https://example.com/setup.sh | sh
 - curl https://example.com/get.py | python3

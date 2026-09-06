@@ -1,5 +1,10 @@
 id: py-mutable-default-arg
 valid:
+- 'def f(items: list | None = None): pass'
+- 'def f(items: tuple = ()): pass'
+- 'def f(items: frozenset = frozenset()): pass'
+- 'def f(items: list): pass'
+- 'def f(items: list = CONST): pass'
 - 'def f(items=None): pass'
 - 'def f(n=0, s="", t=()): pass'
 - 'def f(items): pass'
@@ -7,6 +12,15 @@ valid:
 - 'def f(x=frozenset()): pass'
 - '# def f(items=[]): pass'
 invalid:
+- 'def f(items: list = []): pass'
+- 'def f(opts: dict = {}): pass'
+- 'def f(seen: set = {1, 2}): pass'
+- 'def f(items: list = list()): pass'
+- 'def f(opts: dict = dict()): pass'
+- 'def f(seen: set = set()): pass'
+- |
+  def f(values={1, 2}):
+      pass
 - 'def f(items=[]): pass'
 - 'def f(opts={}): pass'
 - 'def f(seen=set()): pass'

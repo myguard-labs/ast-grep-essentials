@@ -40,6 +40,46 @@ snapshots:
       style: secondary
       start: 35
       end: 71
+  ? |
+    package p
+    func f() { exec.Command("echo", /* argument */ fmt.Sprintf("%s", value)) }
+  : labels:
+    - source: exec.Command("echo", /* argument */ fmt.Sprintf("%s", value))
+      style: primary
+      start: 21
+      end: 82
+    - source: exec
+      style: secondary
+      start: 21
+      end: 25
+    - source: Command
+      style: secondary
+      start: 26
+      end: 33
+    - source: exec.Command
+      style: secondary
+      start: 21
+      end: 33
+    - source: fmt
+      style: secondary
+      start: 57
+      end: 60
+    - source: Sprintf
+      style: secondary
+      start: 61
+      end: 68
+    - source: fmt.Sprintf
+      style: secondary
+      start: 57
+      end: 68
+    - source: fmt.Sprintf("%s", value)
+      style: secondary
+      start: 57
+      end: 81
+    - source: ("echo", /* argument */ fmt.Sprintf("%s", value))
+      style: secondary
+      start: 33
+      end: 82
   ? |-
     package p
     func f() { exec.Command("echo", fmt.Sprintf("%s", value)) }
@@ -80,6 +120,126 @@ snapshots:
       style: secondary
       start: 33
       end: 67
+  ? |
+    package p
+    func f() { exec.Command(/* executable */ fmt.Sprintf("%s", value)) }
+  : labels:
+    - source: exec.Command(/* executable */ fmt.Sprintf("%s", value))
+      style: primary
+      start: 21
+      end: 76
+    - source: exec
+      style: secondary
+      start: 21
+      end: 25
+    - source: Command
+      style: secondary
+      start: 26
+      end: 33
+    - source: exec.Command
+      style: secondary
+      start: 21
+      end: 33
+    - source: fmt
+      style: secondary
+      start: 51
+      end: 54
+    - source: Sprintf
+      style: secondary
+      start: 55
+      end: 62
+    - source: fmt.Sprintf
+      style: secondary
+      start: 51
+      end: 62
+    - source: fmt.Sprintf("%s", value)
+      style: secondary
+      start: 51
+      end: 75
+    - source: (/* executable */ fmt.Sprintf("%s", value))
+      style: secondary
+      start: 33
+      end: 76
+  ? |
+    package p
+    func f() { exec.CommandContext(/* context */ ctx, fmt.Sprintf("%s", value)) }
+  : labels:
+    - source: exec.CommandContext(/* context */ ctx, fmt.Sprintf("%s", value))
+      style: primary
+      start: 21
+      end: 85
+    - source: exec
+      style: secondary
+      start: 21
+      end: 25
+    - source: CommandContext
+      style: secondary
+      start: 26
+      end: 40
+    - source: exec.CommandContext
+      style: secondary
+      start: 21
+      end: 40
+    - source: fmt
+      style: secondary
+      start: 60
+      end: 63
+    - source: Sprintf
+      style: secondary
+      start: 64
+      end: 71
+    - source: fmt.Sprintf
+      style: secondary
+      start: 60
+      end: 71
+    - source: fmt.Sprintf("%s", value)
+      style: secondary
+      start: 60
+      end: 84
+    - source: (/* context */ ctx, fmt.Sprintf("%s", value))
+      style: secondary
+      start: 40
+      end: 85
+  ? |
+    package p
+    func f() { exec.CommandContext(ctx, "echo", /* argument */ fmt.Sprintf("%s", value)) }
+  : labels:
+    - source: exec.CommandContext(ctx, "echo", /* argument */ fmt.Sprintf("%s", value))
+      style: primary
+      start: 21
+      end: 94
+    - source: exec
+      style: secondary
+      start: 21
+      end: 25
+    - source: CommandContext
+      style: secondary
+      start: 26
+      end: 40
+    - source: exec.CommandContext
+      style: secondary
+      start: 21
+      end: 40
+    - source: fmt
+      style: secondary
+      start: 69
+      end: 72
+    - source: Sprintf
+      style: secondary
+      start: 73
+      end: 80
+    - source: fmt.Sprintf
+      style: secondary
+      start: 69
+      end: 80
+    - source: fmt.Sprintf("%s", value)
+      style: secondary
+      start: 69
+      end: 93
+    - source: (ctx, "echo", /* argument */ fmt.Sprintf("%s", value))
+      style: secondary
+      start: 40
+      end: 94
   ? |-
     package p
     func f() { exec.CommandContext(ctx, "echo", fmt.Sprintf("%s", value)) }
@@ -120,3 +280,43 @@ snapshots:
       style: secondary
       start: 40
       end: 79
+  ? |
+    package p
+    func f() { exec.CommandContext(ctx, /* executable */ fmt.Sprintf("%s", value)) }
+  : labels:
+    - source: exec.CommandContext(ctx, /* executable */ fmt.Sprintf("%s", value))
+      style: primary
+      start: 21
+      end: 88
+    - source: exec
+      style: secondary
+      start: 21
+      end: 25
+    - source: CommandContext
+      style: secondary
+      start: 26
+      end: 40
+    - source: exec.CommandContext
+      style: secondary
+      start: 21
+      end: 40
+    - source: fmt
+      style: secondary
+      start: 63
+      end: 66
+    - source: Sprintf
+      style: secondary
+      start: 67
+      end: 74
+    - source: fmt.Sprintf
+      style: secondary
+      start: 63
+      end: 74
+    - source: fmt.Sprintf("%s", value)
+      style: secondary
+      start: 63
+      end: 87
+    - source: (ctx, /* executable */ fmt.Sprintf("%s", value))
+      style: secondary
+      start: 40
+      end: 88

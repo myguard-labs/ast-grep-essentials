@@ -13,11 +13,8 @@ note: >-
   intentional, and an operand containing ++ or -- is skipped for the same
   reason: *cp++ == '/' && *cp++ == '/' advances the pointer twice on purpose. Preprocessor conditions and anything under a parse-error
   node are skipped: a continued #if line recovers into an ERROR subtree. That
-  ERROR exclusion is verified against real code rather than a fixture --
-  removing it produces a false positive on the multi-line directive at
-  nginx-cache-turbo-module src/ngx_http_cache_turbo_module.c:553, but the same
-  construct in an isolated snippet parses without an ERROR node, so no unit
-  fixture pins it.
+  ERROR exclusion also has a malformed declaration fixture whose recovered
+  binary expression would otherwise report.
   Operand text is compared as written, so the rule cannot tell a volatile or
   macro-expanded operand from a pure one; those remain review candidates
   rather than proven redundancy.

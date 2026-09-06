@@ -1,5 +1,11 @@
 id: c-duplicate-boolean-clause
 valid:
+- |
+  #ifdef FOO
+  #elif BAR || BAR
+  int x;
+  #endif
+- "void f(void) { int value = (x && x) gibberish }"
 - void f(void) { if (a || b) { x(); } }
 - void f(void) { if (a && b || a) { x(); } }
 - void f(void) { if (a || b || c || a) { x(); } }
@@ -20,9 +26,8 @@ valid:
       && NGX_HTTP_X_TEST
   int a;
   #endif
-# The ERROR exclusion has no unit fixture: an isolated continued #if parses
-# cleanly. Reproduce with the rule's ERROR clause removed against
-# labs/nginx-cache-turbo-module/src/ngx_http_cache_turbo_module.c:553.
+# The malformed `gibberish` fixture above exercises the ERROR exclusion;
+# an isolated continued #if can parse cleanly and is not that control.
 - |
   #if NGX_A && NGX_A
   int a;
