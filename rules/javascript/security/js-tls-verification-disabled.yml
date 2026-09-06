@@ -1,0 +1,37 @@
+id: js-tls-verification-disabled
+language: javascript
+severity: error
+message: >-
+  TLS certificate verification turned off. With rejectUnauthorized false, the
+  NODE_TLS_REJECT_UNAUTHORIZED environment override, or a checkServerIdentity
+  that returns nothing, any certificate is accepted, so a machine-in-the-middle
+  reads and rewrites the connection. Trust the private CA explicitly with the ca
+  option instead of disabling the check.
+note: >-
+  Matches the literal false value of a rejectUnauthorized property, an
+  assignment of "0" to process.env.NODE_TLS_REJECT_UNAUTHORIZED, and a
+  checkServerIdentity property whose function body is empty or returns
+  undefined. A value supplied through a variable or an environment lookup is not
+  matched, so a conditionally disabled check is missed. Test fixtures that
+  intentionally target a self-signed server also match.
+utils:
+  empty-verifier:
+    any:
+      - kind: arrow_function
+        has: {field: body, regex: '^(\{\s*\}|undefined|\{\s*return\s*(undefined\s*)?;?\s*\})$'}
+      - kind: function_expression
+        has: {field: body, regex: '^\{\s*(return\s*(undefined\s*)?;?\s*)?\}$'}
+rule:
+  any:
+    - kind: pair
+      all:
+        - has: {field: key, regex: '^["'']?rejectUnauthorized["'']?$'}
+        - has: {field: value, kind: 'false'}
+    - kind: assignment_expression
+      all:
+        - has: {field: left, regex: '^process\s*\.\s*env\s*\.\s*NODE_TLS_REJECT_UNAUTHORIZED$'}
+        - has: {field: right, regex: '^["'']0["'']$'}
+    - kind: pair
+      all:
+        - has: {field: key, regex: '^["'']?checkServerIdentity["'']?$'}
+        - has: {field: value, matches: empty-verifier}

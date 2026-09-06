@@ -1,0 +1,74 @@
+id: js-vm-sandbox-dynamic-source
+language: javascript
+severity: error
+message: >-
+  Non-literal source compiled by the vm module or by vm2, which is not a
+  security sandbox. Code run this way reaches host objects through prototype
+  and error paths, and vm2 was abandoned in 2023 with unfixed escapes, so a
+  string an attacker influences becomes full process control. Run untrusted code
+  in a separate process or in isolated-vm with a strict memory and time budget.
+note: >-
+  Matches vm.runInNewContext, vm.runInThisContext, vm.runInContext, vm.compileFunction,
+  new vm.Script, new VM/NodeVM and a run call on a VM instance, when the source
+  argument is an identifier, a property access, a call result, a concatenation
+  or an interpolated template. It cannot show that the string is
+  attacker-controlled, and a literal source is deliberately excluded even though
+  the vm module is still not an isolation boundary.
+utils:
+  dynamic-source:
+    any:
+      - kind: identifier
+      - kind: member_expression
+      - kind: subscript_expression
+      - kind: call_expression
+      - kind: await_expression
+      - kind: binary_expression
+      - kind: template_string
+        has: {kind: template_substitution}
+  vm-runner-name:
+    regex: '^(runInNewContext|runInThisContext|runInContext|compileFunction)$'
+rule:
+  any:
+    - kind: call_expression
+      all:
+        - has:
+            field: function
+            kind: member_expression
+            all:
+              - has: {field: object, regex: '^(vm|nodeVm)$'}
+              - has: {field: property, matches: vm-runner-name}
+        - has:
+            stopBy: neighbor
+            kind: arguments
+            has:
+              nthChild: 1
+              matches: dynamic-source
+    - kind: new_expression
+      all:
+        - has:
+            field: constructor
+            any:
+              - kind: identifier
+                regex: '^(VM|NodeVM)$'
+              - kind: member_expression
+                has: {field: property, regex: '^Script$'}
+        - has:
+            stopBy: neighbor
+            kind: arguments
+            has:
+              nthChild: 1
+              matches: dynamic-source
+    - kind: call_expression
+      all:
+        - has:
+            field: function
+            kind: member_expression
+            all:
+              - has: {field: object, kind: new_expression, regex: '^new\s+(VM|NodeVM)\b'}
+              - has: {field: property, regex: '^run$'}
+        - has:
+            stopBy: neighbor
+            kind: arguments
+            has:
+              nthChild: 1
+              matches: dynamic-source

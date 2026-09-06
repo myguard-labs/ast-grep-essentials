@@ -1,0 +1,31 @@
+id: js-weak-hash-algorithm
+language: javascript
+severity: warning
+message: >-
+  Broken hash algorithm selected. MD5 and SHA-1 both have practical collision
+  attacks, so a digest used for a signature, an integrity check or a password
+  derivation no longer binds the input it claims to. Use SHA-256 or better, and
+  a password hash such as scrypt or argon2 for credentials.
+note: >-
+  Matches a createHash or createHmac call whose algorithm argument is a string
+  literal naming MD5, SHA-1 or MD4, in any letter case and with or without the
+  separating dash. The rule cannot tell a security digest from a cache key or an
+  ETag, which is the common benign use and the reason this is a warning rather
+  than an error. An algorithm name held in a variable is not matched.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        any:
+          - kind: identifier
+            regex: '^create(Hash|Hmac)$'
+          - kind: member_expression
+            has: {field: property, regex: '^create(Hash|Hmac)$'}
+    - has:
+        stopBy: neighbor
+        kind: arguments
+        has:
+          nthChild: 1
+          kind: string
+          regex: '(?i)^["''](md5|md4|sha-?1)["'']$'

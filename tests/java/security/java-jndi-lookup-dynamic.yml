@@ -1,0 +1,15 @@
+id: java-jndi-lookup-dynamic
+valid:
+  - 'Object ds = ctx.lookup("java:comp/env/jdbc/app");'
+  - 'Object ds = new InitialContext().lookup("java:comp/env/jdbc/app");'
+  - 'Object ds = registry.lookup(name);'
+  - 'Object ds = ctx.resolve(name);'
+  - 'DataSource ds = dataSourceLookup.getDataSource("appDs");'
+  - 'String note = "ctx.lookup(name)";'
+  - '// ctx.lookup(name);'
+invalid:
+  - 'Object ds = new InitialContext().lookup(request.getParameter("ds"));'
+  - 'Object ds = ctx.lookup(name);'
+  - 'Object ds = jndiTemplate.lookup(prefix + suffix);'
+  - 'Object ds = InitialContext.doLookup(name);'
+  - 'DataSource ds = dataSourceLookup.getDataSource(dsName);'

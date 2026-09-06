@@ -1,0 +1,18 @@
+id: sh-rm-rf-unguarded-variable
+valid:
+- rm -rf "${BUILD_DIR:?}"/build
+- rm -rf ./build
+- rm -rf /var/cache/app
+- rm -f "$LOCKFILE"
+- rm -r "$CACHE_DIR"
+- rmdir "$EMPTY_DIR"
+- echo "rm -rf $BUILD_DIR"
+- '# rm -rf $BUILD_DIR'
+invalid:
+- rm -rf $BUILD_DIR
+- rm -fr "$PREFIX/"
+- rm -r -f "$1"
+- rm --recursive --force "$TARGET"
+- '"rm" -rf $BUILD_DIR'
+- rm "-rf" $BUILD_DIR
+- rm -rf "${BUILD_DIR}/data"

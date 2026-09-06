@@ -1,0 +1,40 @@
+id: sh-predictable-temp-path
+language: bash
+severity: error
+message: >-
+  Temporary file at a predictable path in a shared directory. Another local
+  account creates that name first as a symlink, and the script then writes
+  through it into a file the attacker chose, or reads content the attacker
+  planted. Create the file with mktemp, which returns a name that was created
+  atomically, and remove it in a trap.
+note: >-
+  Matches an assignment or a redirection target that is a literal path under
+  /tmp or /var/tmp, including the process-id suffix form, and an mktemp called
+  with the dry-run option, which prints a name without creating it. A path built
+  from a TMPDIR expansion or returned by a plain mktemp is not matched. Whether
+  the directory is really shared is not checked, so a private tmpfs mounted
+  there is still reported.
+utils:
+  argument-token:
+    any:
+      - kind: word
+      - kind: string
+      - kind: raw_string
+      - kind: concatenation
+  shared-tmp-path:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?/(var/)?tmp/[^"''\s]+["'']?$'
+rule:
+  any:
+    - kind: variable_assignment
+      has: {field: value, matches: shared-tmp-path}
+    - kind: file_redirect
+      has: {matches: shared-tmp-path}
+    - kind: command
+      all:
+        - has: {field: name, kind: command_name, regex: '^["'']?mktemp["'']?$'}
+        - has:
+            all:
+              - matches: argument-token
+              - regex: '^["'']?(-[dqtp]*u[dqtp]*|--dry-run)["'']?$'

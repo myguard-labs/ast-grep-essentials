@@ -1,0 +1,67 @@
+id: sh-host-hardening-disabled
+language: bash
+severity: error
+message: >-
+  Host-level security control switched off by the script. Putting SELinux in
+  permissive mode, stopping the firewall, flushing the packet filter to a
+  default accept policy, or clearing address-space randomisation and the ptrace
+  scope removes a mitigation for the whole machine, not just for this workload,
+  and nothing turns it back on afterwards. Fix the policy or the rule that is in
+  the way instead.
+note: >-
+  Matches setenforce with a zero or permissive argument, a firewall disable or
+  stop for ufw and firewalld, an iptables or nftables flush and a default accept
+  input policy, and a sysctl or proc write that clears randomize_va_space or
+  ptrace_scope. It reads literal tokens, so the same action performed through a
+  variable or a configuration management tool is missed, and a deliberate
+  temporary change in an interactive lab script still matches.
+utils:
+  argument-token:
+    any:
+      - kind: word
+      - kind: number
+      - kind: string
+      - kind: raw_string
+      - kind: concatenation
+  permissive-argument:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?(0|[Pp]ermissive)["'']?$'
+  disable-verb:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?(disable|stop)["'']?$'
+rule:
+  kind: command
+  any:
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?setenforce["'']?$'}
+        - has: {matches: permissive-argument}
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?(ufw|firewall-cmd|systemctl)["'']?$'}
+        - has: {matches: disable-verb}
+        - has:
+            matches: argument-token
+            regex: '^["'']?(ufw|firewalld|nftables|iptables|--zone=.*)["'']?$'
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?ufw["'']?$'}
+        - has: {matches: disable-verb}
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?(iptables|ip6tables|nft)["'']?$'}
+        - has:
+            matches: argument-token
+            regex: '^["'']?(-F|--flush|flush)["'']?$'
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?(iptables|ip6tables)["'']?$'}
+        - has:
+            matches: argument-token
+            regex: '^["'']?ACCEPT["'']?$'
+            follows:
+              stopBy: end
+              matches: argument-token
+              regex: '^["'']?(-P|--policy)["'']?$'
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?sysctl["'']?$'}
+        - has:
+            matches: argument-token
+            regex: '^["'']?(kernel\.randomize_va_space|kernel\.yama\.ptrace_scope)=0["'']?$'

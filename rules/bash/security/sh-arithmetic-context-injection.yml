@@ -1,0 +1,38 @@
+id: sh-arithmetic-context-injection
+language: bash
+severity: error
+message: >-
+  Positional or read-supplied value evaluated in an arithmetic context. The
+  shell recursively expands names inside an arithmetic expression and evaluates
+  an array subscript there, so a value such as a dollar-parenthesis command
+  substitution inside a subscript runs a command rather than producing a number.
+  Reject anything that is not digits with a case guard before doing arithmetic
+  on it.
+note: >-
+  Matches an arithmetic expansion and a let or expr command whose text expands a
+  positional parameter or the argument list. A case or a regex guard applied on
+  an earlier line is not visible, so a script that already validates the value is
+  reported. Arithmetic on a variable that came from somewhere other than the
+  positional parameters is not matched.
+utils:
+  positional-expansion:
+    regex: '\$\{?[0-9@*]'
+  argument-token:
+    any:
+      - kind: word
+      - kind: string
+      - kind: raw_string
+      - kind: simple_expansion
+      - kind: expansion
+      - kind: concatenation
+rule:
+  any:
+    - kind: arithmetic_expansion
+      matches: positional-expansion
+    - kind: command
+      all:
+        - has: {field: name, kind: command_name, regex: '^["'']?(let|expr)["'']?$'}
+        - has:
+            all:
+              - matches: argument-token
+              - matches: positional-expansion

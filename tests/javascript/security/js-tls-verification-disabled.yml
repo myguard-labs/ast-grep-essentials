@@ -1,0 +1,16 @@
+id: js-tls-verification-disabled
+valid:
+  - 'const agent = new https.Agent({ ca: caBundle });'
+  - 'const agent = new https.Agent({ rejectUnauthorized: true });'
+  - 'const opts = { rejectUnauthorized: strict };'
+  - 'process.env.NODE_TLS_REJECT_UNAUTHORIZED = "1";'
+  - 'process.env.OTHER_FLAG = "0";'
+  - 'const opts = { checkServerIdentity: tls.checkServerIdentity };'
+  - 'const opts = { checkServerIdentity: (h, c) => verify(h, c) };'
+  - 'const text = "rejectUnauthorized: false";'
+  - '// rejectUnauthorized: false'
+invalid:
+  - 'const agent = new https.Agent({ rejectUnauthorized: false });'
+  - 'process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";'
+  - 'const opts = { checkServerIdentity: () => undefined };'
+  - 'const opts = { checkServerIdentity: function () { return undefined; } };'

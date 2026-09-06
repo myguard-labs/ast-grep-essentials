@@ -1,0 +1,71 @@
+id: js-dom-html-sink
+language: javascript
+severity: error
+message: >-
+  HTML written to a DOM sink from a non-literal value. innerHTML, outerHTML,
+  document.write, insertAdjacentHTML and dangerouslySetInnerHTML parse their
+  input as markup, so a script attribute or an injected tag in that value runs
+  in the page origin. Assign textContent instead, or pass the value through a
+  sanitizer that returns HTML.
+note: >-
+  Matches assignment to an innerHTML or outerHTML property, a document.write or
+  document.writeln call, an insertAdjacentHTML call, and a JSX
+  dangerouslySetInnerHTML attribute, when the value is not a plain string
+  literal. Calls to DOMPurify.sanitize and sanitizeHtml are treated as safe by
+  name only. Provenance of the value is unknown, so trusted server-rendered
+  templates also match.
+utils:
+  string-literal:
+    any:
+      - kind: string
+      - kind: template_string
+        not: {has: {kind: template_substitution}}
+  sanitized:
+    kind: call_expression
+    has:
+      field: function
+      regex: '(?:^|\.)(sanitize|sanitizeHtml|escapeHtml)$'
+  unsafe-value:
+    all:
+      - not: {matches: string-literal}
+      - not: {matches: sanitized}
+rule:
+  any:
+    - kind: assignment_expression
+      all:
+        - has:
+            field: left
+            kind: member_expression
+            has: {field: property, regex: '^(innerHTML|outerHTML)$'}
+        - has: {field: right, matches: unsafe-value}
+    - kind: call_expression
+      all:
+        - has:
+            field: function
+            kind: member_expression
+            all:
+              - has: {field: object, regex: '^document$'}
+              - has: {field: property, regex: '^(write|writeln)$'}
+        - has:
+            stopBy: neighbor
+            kind: arguments
+            has: {nthChild: 1, matches: unsafe-value}
+    - kind: call_expression
+      all:
+        - has:
+            field: function
+            kind: member_expression
+            has: {field: property, regex: '^insertAdjacentHTML$'}
+        - has:
+            stopBy: neighbor
+            kind: arguments
+            has: {nthChild: 2, matches: unsafe-value}
+    - kind: jsx_attribute
+      all:
+        - has: {kind: property_identifier, regex: '^dangerouslySetInnerHTML$'}
+        - has:
+            stopBy: end
+            kind: pair
+            all:
+              - has: {field: key, regex: '^__html$'}
+              - has: {field: value, matches: unsafe-value}

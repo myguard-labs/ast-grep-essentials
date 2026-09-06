@@ -1,0 +1,44 @@
+id: lua-regex-user-pattern
+language: lua
+severity: error
+message: >-
+  Regular expression pattern taken from a request value. The client then chooses
+  the pattern the worker compiles, so a nested quantifier makes matching take
+  exponential time and stalls the worker for every request it serves, and in the
+  Lua pattern APIs it also changes what the match means. Keep patterns fixed and
+  select among them by an allowlisted key.
+note: >-
+  Matches ngx.re.match, find, gmatch, sub and gsub, and string.match, gmatch,
+  find and gsub, whose pattern argument is an ngx.var request field, a headers or
+  args lookup, or a concatenation containing one. A plain string.find with the
+  fourth argument true does no pattern matching, but this matcher does not check
+  that argument, so such a call is reported. A pattern drawn from configuration
+  is excluded because an ngx request token is required.
+utils:
+  request-source:
+    any:
+      - kind: dot_index_expression
+        regex: '^ngx\s*\.\s*var\s*\.\s*(arg_|http_)'
+      - kind: bracket_index_expression
+        has:
+          field: table
+          stopBy: end
+          regex: '^ngx\s*\.\s*(var|req\s*\.\s*get_(headers|uri_args|post_args))'
+  request-derived:
+    any:
+      - matches: request-source
+      - kind: binary_expression
+        regex: '\.\.'
+        any:
+          - has: {field: left, matches: request-derived}
+          - has: {field: right, matches: request-derived}
+rule:
+  kind: function_call
+  all:
+    - has:
+        field: name
+        regex: '^(ngx\.re\.(match|find|gmatch|sub|gsub)|string\.(match|gmatch|find|gsub))$'
+    - has:
+        stopBy: neighbor
+        kind: arguments
+        has: {nthChild: 2, matches: request-derived}

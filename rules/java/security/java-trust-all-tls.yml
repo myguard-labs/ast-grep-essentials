@@ -1,0 +1,55 @@
+id: java-trust-all-tls
+language: java
+severity: error
+message: >-
+  TLS peer validation replaced by a stub that accepts everything. An empty
+  checkServerTrusted, a getAcceptedIssuers that returns nothing, a hostname
+  verifier that always returns true, or one of the trust-all strategy classes
+  makes every certificate valid, so a machine-in-the-middle reads and rewrites
+  the connection. Validate against a trust store, and pin the private CA if the
+  peer uses one.
+note: >-
+  Matches a checkServerTrusted or checkClientTrusted method whose body contains
+  no statement, a getAcceptedIssuers that returns null or an empty array, a
+  verify method that returns the literal true, a lambda that returns true passed
+  to a hostname verifier setter, and uses of NoopHostnameVerifier, TrustAllStrategy
+  and TrustSelfSignedStrategy. A body that only logs is not empty and is missed,
+  and a stub confined to a test profile still matches.
+utils:
+  empty-body:
+    kind: block
+    not: {has: {stopBy: neighbor, any: [{kind: expression_statement}, {kind: local_variable_declaration}, {kind: if_statement}, {kind: return_statement}, {kind: throw_statement}, {kind: for_statement}, {kind: while_statement}, {kind: try_statement}]}}
+rule:
+  any:
+    - kind: method_declaration
+      all:
+        - has: {field: name, regex: '^check(Server|Client)Trusted$'}
+        - has: {field: body, matches: empty-body}
+    - kind: method_declaration
+      all:
+        - has: {field: name, regex: '^getAcceptedIssuers$'}
+        - has:
+            field: body
+            has:
+              stopBy: end
+              kind: return_statement
+              regex: '^return\s+(null|new\s+X509Certificate\s*\[\s*0\s*\])\s*;$'
+    - kind: method_declaration
+      all:
+        - has: {field: name, regex: '^verify$'}
+        - has:
+            field: body
+            has: {stopBy: end, kind: return_statement, regex: '^return\s+true\s*;$'}
+    - kind: method_invocation
+      all:
+        - has: {field: name, regex: '^set(Default)?HostnameVerifier$'}
+        - has:
+            stopBy: neighbor
+            kind: argument_list
+            has:
+              stopBy: end
+              kind: 'true'
+    - any:
+        - kind: identifier
+        - kind: type_identifier
+      regex: '^(NoopHostnameVerifier|TrustAllStrategy|TrustSelfSignedStrategy|ALLOW_ALL_HOSTNAME_VERIFIER)$'

@@ -1,0 +1,42 @@
+id: lua-io-open-user-path
+language: lua
+severity: error
+message: >-
+  Filesystem path or module name built from a request value. Dot-dot segments in
+  that value walk out of the intended directory, so the worker reads or deletes
+  any file its user can reach, and a dynamic require loads whatever module name
+  the client chooses from package.path. Map the request value through a fixed
+  table of allowed names instead of concatenating it into a path.
+note: >-
+  Matches io.open, io.lines, os.remove, os.rename and require whose path
+  argument is an ngx.var request field, a headers or args lookup, or a
+  concatenation containing one. A traversal check applied to the value on an
+  earlier line is not visible. Paths built only from configuration, including
+  the Kong plugin loader idiom, are excluded because the matcher requires an
+  ngx request token.
+utils:
+  request-source:
+    any:
+      - kind: dot_index_expression
+        regex: '^ngx\s*\.\s*var\s*\.\s*'
+      - kind: bracket_index_expression
+        has:
+          field: table
+          stopBy: end
+          regex: '^ngx\s*\.\s*(var|req\s*\.\s*get_(headers|uri_args|post_args))'
+  request-derived:
+    any:
+      - matches: request-source
+      - kind: binary_expression
+        regex: '\.\.'
+        any:
+          - has: {field: left, matches: request-derived}
+          - has: {field: right, matches: request-derived}
+rule:
+  kind: function_call
+  all:
+    - has: {field: name, regex: '^(io\.(open|lines)|os\.(remove|rename)|require)$'}
+    - has:
+        stopBy: neighbor
+        kind: arguments
+        has: {nthChild: 1, matches: request-derived}

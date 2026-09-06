@@ -1,0 +1,12 @@
+id: lua-subrequest-user-uri
+valid:
+  - 'local res = ngx.location.capture("/internal/health")'
+  - 'local res = ngx.location.capture("/proxy", { args = { u = ngx.var.arg_url } })'
+  - 'local res = ngx.location.capture(path)'
+  - 'local res = client.capture("/proxy?u=" .. ngx.var.arg_url)'
+  - 'local text = "ngx.location.capture(ngx.var.arg_url)"'
+  - '-- ngx.location.capture(ngx.var.arg_url)'
+invalid:
+  - 'local res = ngx.location.capture("/proxy?u=" .. ngx.var.arg_url)'
+  - 'local res = ngx.location.capture(ngx.var.request_uri)'
+  - 'local res = ngx.location.capture(ngx.req.get_uri_args()["next"])'

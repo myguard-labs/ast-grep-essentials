@@ -1,0 +1,37 @@
+id: lua-insecure-random-token
+language: lua
+severity: error
+message: >-
+  Security value derived from math.random or from os.tmpname. The Lua generator
+  is seeded per worker from the process id and the clock and its state is
+  recoverable from a few outputs, so an attacker predicts the next token or
+  session identifier; os.tmpname returns a name before creating the file, which
+  another local user can win. Use resty.random bytes with the strong flag, or
+  create the file with an exclusive open.
+note: >-
+  Matches an assignment or local declaration whose name contains token, secret,
+  nonce, session, otp, salt, key or csrf and whose value contains a math.random
+  call, and any call to os.tmpname. The name test is a heuristic: a security
+  value with a neutral name is missed, and a cosmetic identifier containing one
+  of these words is reported. A jitter or backoff value under a neutral name
+  does not match.
+utils:
+  security-name:
+    regex: '(?i)(token|secret|nonce|session|otp|salt|key|csrf|passw)'
+  math-random-value:
+    has:
+      stopBy: end
+      kind: function_call
+      has: {field: name, regex: '^math\.random$'}
+rule:
+  any:
+    - kind: variable_declaration
+      all:
+        - has: {stopBy: end, kind: identifier, matches: security-name}
+        - has: {stopBy: end, matches: math-random-value}
+    - kind: assignment_statement
+      all:
+        - has: {field: name, stopBy: end, matches: security-name}
+        - has: {field: value, stopBy: end, matches: math-random-value}
+    - kind: function_call
+      has: {field: name, regex: '^os\.tmpname$'}

@@ -1,0 +1,53 @@
+id: lua-response-reflect-unescaped
+language: lua
+severity: error
+message: >-
+  Request value written straight into the response body or into a response
+  header. In a body it is parsed as HTML by the browser, so injected markup runs
+  script in this origin; in a header a carriage return or newline in the value
+  splits the response and lets the attacker forge headers or a second body.
+  Encode the value for its destination, or emit it as JSON.
+note: >-
+  Matches ngx.say and ngx.print whose argument is an ngx.var request field, a
+  headers or args lookup, or a concatenation containing one, and an assignment
+  to an ngx.header field from the same sources. Values coming from
+  ngx.var.upstream_http_ fields are excluded because they originate upstream
+  rather than from the client. A content type set earlier that would make the
+  body inert is not visible to this matcher.
+utils:
+  request-source:
+    any:
+      - kind: dot_index_expression
+        regex: '^ngx\s*\.\s*var\s*\.\s*(arg_|http_|request_uri|args)'
+      - kind: bracket_index_expression
+        has:
+          field: table
+          stopBy: end
+          regex: '^ngx\s*\.\s*(var|req\s*\.\s*get_(headers|uri_args|post_args))'
+  request-derived:
+    any:
+      - matches: request-source
+      - kind: binary_expression
+        regex: '\.\.'
+        any:
+          - has: {field: left, matches: request-derived}
+          - has: {field: right, matches: request-derived}
+rule:
+  any:
+    - kind: function_call
+      all:
+        - has: {field: name, regex: '^ngx\.(say|print)$'}
+        - has:
+            stopBy: neighbor
+            kind: arguments
+            has: {nthChild: 1, matches: request-derived}
+    - kind: assignment_statement
+      all:
+        - has:
+            stopBy: end
+            kind: bracket_index_expression
+            has: {field: table, regex: '^ngx\s*\.\s*header$'}
+        - has:
+            field: value
+            stopBy: end
+            matches: request-derived

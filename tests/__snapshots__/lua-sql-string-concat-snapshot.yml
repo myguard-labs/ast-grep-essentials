@@ -1,0 +1,106 @@
+id: lua-sql-string-concat
+snapshots:
+  conn:execute("UPDATE t SET v = " .. value .. " WHERE k = 1"):
+    labels:
+    - source: conn:execute("UPDATE t SET v = " .. value .. " WHERE k = 1")
+      style: primary
+      start: 0
+      end: 60
+    - source: execute
+      style: secondary
+      start: 5
+      end: 12
+    - source: conn:execute
+      style: secondary
+      start: 0
+      end: 12
+    - source: value .. " WHERE k = 1"
+      style: secondary
+      start: 36
+      end: 59
+    - source: '"UPDATE t SET v = " .. value .. " WHERE k = 1"'
+      style: secondary
+      start: 13
+      end: 59
+    - source: ("UPDATE t SET v = " .. value .. " WHERE k = 1")
+      style: secondary
+      start: 12
+      end: 60
+  db:query(string.format("SELECT * FROM t WHERE n='%s'", name)):
+    labels:
+    - source: db:query(string.format("SELECT * FROM t WHERE n='%s'", name))
+      style: primary
+      start: 0
+      end: 61
+    - source: query
+      style: secondary
+      start: 3
+      end: 8
+    - source: db:query
+      style: secondary
+      start: 0
+      end: 8
+    - source: string.format
+      style: secondary
+      start: 9
+      end: 22
+    - source: string.format("SELECT * FROM t WHERE n='%s'", name)
+      style: secondary
+      start: 9
+      end: 60
+    - source: (string.format("SELECT * FROM t WHERE n='%s'", name))
+      style: secondary
+      start: 8
+      end: 61
+  local res = db:query("SELECT * FROM users WHERE id = " .. ngx.var.arg_id):
+    labels:
+    - source: db:query("SELECT * FROM users WHERE id = " .. ngx.var.arg_id)
+      style: primary
+      start: 12
+      end: 73
+    - source: query
+      style: secondary
+      start: 15
+      end: 20
+    - source: db:query
+      style: secondary
+      start: 12
+      end: 20
+    - source: ngx.var.arg_id
+      style: secondary
+      start: 58
+      end: 72
+    - source: '"SELECT * FROM users WHERE id = " .. ngx.var.arg_id'
+      style: secondary
+      start: 21
+      end: 72
+    - source: ("SELECT * FROM users WHERE id = " .. ngx.var.arg_id)
+      style: secondary
+      start: 20
+      end: 73
+  pg:send_query("DELETE FROM t WHERE k = " .. key):
+    labels:
+    - source: pg:send_query("DELETE FROM t WHERE k = " .. key)
+      style: primary
+      start: 0
+      end: 48
+    - source: send_query
+      style: secondary
+      start: 3
+      end: 13
+    - source: pg:send_query
+      style: secondary
+      start: 0
+      end: 13
+    - source: key
+      style: secondary
+      start: 44
+      end: 47
+    - source: '"DELETE FROM t WHERE k = " .. key'
+      style: secondary
+      start: 14
+      end: 47
+    - source: ("DELETE FROM t WHERE k = " .. key)
+      style: secondary
+      start: 13
+      end: 48

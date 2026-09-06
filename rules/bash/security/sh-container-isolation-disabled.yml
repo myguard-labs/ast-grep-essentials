@@ -1,0 +1,48 @@
+id: sh-container-isolation-disabled
+language: bash
+severity: error
+message: >-
+  Container started with its isolation from the host removed. A privileged
+  container, a mounted Docker socket, host networking or PID namespace, an
+  added SYS_ADMIN or ALL capability, and an unconfined seccomp or AppArmor
+  profile each give code inside the container a direct path to root on the host.
+  Grant the one capability or bind mount the workload actually needs.
+note: >-
+  Matches docker, podman and nerdctl run and create commands carrying the
+  privileged flag, a host network or PID mode, a SYS_ADMIN or ALL capability
+  addition, an unconfined security option, or a bind mount of the container
+  runtime socket. A test or lab script that needs a privileged container matches
+  as well; that is a reason to keep such scripts out of a deployment path rather
+  than to dismiss the finding. Options composed in a variable are not matched.
+utils:
+  argument-token:
+    any:
+      - kind: word
+      - kind: string
+      - kind: raw_string
+      - kind: concatenation
+  isolation-off-flag:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?(--privileged|--net(work)?=host|--pid=host|--ipc=host|--userns=host|--cap-add=?(SYS_ADMIN|ALL|all)|--security-opt=?(seccomp|apparmor)=unconfined|(/var/run|/run)/docker\.sock:.*)["'']?$'
+  isolation-off-value:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?(host|SYS_ADMIN|ALL|all|(seccomp|apparmor)=unconfined|(/var/run|/run)/docker\.sock:.*)["'']?$'
+      - follows:
+          matches: argument-token
+          regex: '^["'']?(--net|--network|--pid|--ipc|--userns|--cap-add|--security-opt|-v|--volume)["'']?$'
+rule:
+  kind: command
+  all:
+    - has:
+        field: name
+        kind: command_name
+        regex: '^["'']?(docker|podman|nerdctl)["'']?$'
+    - has:
+        matches: argument-token
+        regex: '^["'']?(run|create)["'']?$'
+    - has:
+        any:
+          - matches: isolation-off-flag
+          - matches: isolation-off-value
