@@ -9,6 +9,8 @@ message: >-
   end. Compare with < when a terminator follows, and reserve the last byte
   explicitly.
 note: >-
+  The sizeof operand is matched as an expression, so both sizeof(buf) and the
+  unparenthesized sizeof buf spelling are covered by the same pattern.
   This is advisory: the comparison alone is correct whenever the guarded branch
   copies exactly that many bytes and never terminates, which is a common and
   entirely valid shape. The matcher only reports the comparison in an if or
@@ -16,8 +18,8 @@ note: >-
   branch writes a terminator or indexes at the length is the reviewer's step.
 rule:
   any:
-    - pattern: $LEN <= sizeof($BUF)
-    - pattern: sizeof($BUF) >= $LEN
+    - pattern: $LEN <= sizeof $BUF
+    - pattern: sizeof $BUF >= $LEN
   inside:
     stopBy: end
     field: condition

@@ -8,12 +8,15 @@ message: >-
   with the process privileges. Use execFile or spawn with a fixed executable and
   an argument array, and do not enable the shell option.
 note: >-
-  Matches exec, execSync, spawn, spawnSync, execFile, execFileSync, fork and
-  their child_process member forms when the first argument is a template
-  literal containing a substitution or a binary concatenation. It does not
-  determine whether the interpolated value is attacker-controlled, and it does
-  not check whether the shell option is actually enabled on spawn. A fully
-  literal command string is excluded.
+  Matches exec and execSync and their child_process member forms when the first
+  argument is a template literal containing a substitution or a binary
+  concatenation. These are the only child_process APIs that run their argument
+  through a shell by default. execFile, spawn and their variants are excluded:
+  they take an executable and an argument array, which is the migration this
+  rule's message prescribes, and they reach a shell only when the shell option is
+  set, which this matcher does not inspect. fork resolves a module path and never
+  uses a shell. It does not determine whether the interpolated value is
+  attacker-controlled. A fully literal command string is excluded.
 utils:
   interpolated-command:
     any:
@@ -22,7 +25,7 @@ utils:
       - kind: binary_expression
         has: {field: operator, regex: '^\+$'}
   exec-name:
-    regex: '^(exec|execSync|execFile|execFileSync|spawn|spawnSync|fork)$'
+    regex: '^(exec|execSync)$'
 rule:
   kind: call_expression
   all:

@@ -12,7 +12,6 @@ rule makes is fixed by its fixtures, not by the linked page.
 - `c-memcmp-on-secret` — CWE-208
   <https://cwe.mitre.org/data/definitions/208.html>; OpenSSL `CRYPTO_memcmp`
   contract
-- `c-strncpy-no-terminator` — CWE-170
   <https://cwe.mitre.org/data/definitions/170.html>
 - `c-read-return-ignored` — CWE-252
   <https://cwe.mitre.org/data/definitions/252.html>

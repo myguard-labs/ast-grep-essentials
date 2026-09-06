@@ -7,6 +7,8 @@ valid:
   - 'u_char *f(ngx_pool_t *p, u_char *s, size_t len) { uintptr_t n = ngx_escape_uri(NULL, s, len, 0); u_char *d = ngx_pnalloc(p, len + 2 * n); (void) ngx_escape_uri(d, s, len, 0); return d; }'
   - 'void f(void) { /* n = ngx_escape_uri(NULL, s, len, 0); ngx_pnalloc(p, len + n); */ }'
   - 'const char *s = "ngx_pnalloc(p, len + n)";'
+  - 'void f(void) { n = ngx_escape_uri(NULL, s->data, s->len, NGX_ESCAPE_URI); p = ngx_pnalloc(pool, src->len + n + n); }'
+  - 'void f(void) { n = ngx_escape_uri(NULL, s->data, s->len, NGX_ESCAPE_URI); p = ngx_pnalloc(pool, src->len + 2 * n); }'
 invalid:
   - 'u_char *f(ngx_pool_t *p, u_char *s, size_t len) { uintptr_t n = ngx_escape_uri(NULL, s, len, 0); u_char *d = ngx_pnalloc(p, len + n); return d; }'
   - 'u_char *g(ngx_pool_t *p, u_char *s, size_t len) { uintptr_t n; n = ngx_escape_uri(NULL, s, len, 0); u_char *d = ngx_palloc(p, len + n); return d; }'

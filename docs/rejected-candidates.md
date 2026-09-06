@@ -1,9 +1,12 @@
 # Rejected candidates
 
-Candidates from the 2026 harvest that were researched and not shipped. Each
-needs information a syntactic matcher does not carry: dataflow, declared
-types, reachability, or cross-function state. They are recorded so the same
-ground is not re-mined.
+Candidates from the 2026 harvest that were researched and not shipped, with the
+reason each was rejected. Every entry needs information a syntactic matcher does
+not carry: dataflow, declared types, reachability, or cross-function state. They
+are recorded so the same ground is not re-mined. Entries are grouped by the
+language whose rules they would have joined.
+
+## c and nginx
 
 - `c-mktemp-tmpnam` — already shipped as `c-insecure-temp-name`, which matches
   the same four API names with the same call-name matcher.
@@ -48,8 +51,7 @@ shape.
 - `nginx-conf-string-injected-into-protocol` — requires knowing whether the
   value was validated earlier, which is dataflow across the parser.
 
-Candidates from the harvest that were not shipped, with the reason each was
-rejected. Every entry needs information the syntax tree does not carry.
+## go
 
 - **go-exec-arg-injection** (harvest 13): deciding whether an argument is
   option-injectable needs per-binary flag semantics and the position of a `--`
@@ -77,6 +79,8 @@ rejected. Every entry needs information the syntax tree does not carry.
   validates the algorithm via a shared helper is indistinguishable from one that
   skips the check, because the check may live behind any call. Only the
   unverified-parse and none-algorithm tier ships, as `go-jwt-unverified`.
+
+## php and wordpress
 
 - wp-delete-file-from-attached-meta (#11): needs the `get_post_meta(...,
   '_wp_attached_file')` result to flow through a variable into the delete sink;
@@ -108,8 +112,7 @@ rejected. Every entry needs information the syntax tree does not carry.
   strip_tags($_GET[...])`; verified by scanning that fixture with the existing
   rule.
 
-Each of these needs information a syntactic matcher does not have, and no
-precise syntactic sub-claim was left once the dataflow part was removed.
+## python
 
 - **6 py-flask-send-file-user-path** — the interesting form is
   `send_file(os.path.join(base, <user>))`; the direct `send_file(request...)`
@@ -133,10 +136,6 @@ precise syntactic sub-claim was left once the dataflow part was removed.
 - **38 py-socket-recv-unbounded** — the defect is a length read from the wire
   and used without an intervening bound check, which requires tracking the value
   across statements and into helper functions.
-
-One line of reason each. "Needs dataflow" means the claim cannot be reduced to a
-precise syntactic sub-claim without either unbounded false positives or a
-matcher that asserts more than syntax can show.
 
 ## javascript
 

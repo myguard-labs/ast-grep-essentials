@@ -6,13 +6,15 @@ message: >-
   administrator and escalate. Map the input through a fixed allowlist of roles
   the current user is permitted to grant before assigning it.
 note: >-
-  Matches a GET, POST, REQUEST or COOKIE superglobal inside the role argument of
-  set_role or add_role called on an object, or inside a 'role' entry of an array
-  literal passed to wp_update_user or wp_insert_user. Sanitizers such as
+  Matches a GET, POST, REQUEST or COOKIE superglobal inside the role argument
+  of set_role or add_role called on an object, or inside a 'role' entry of an
+  array literal passed to wp_update_user or wp_insert_user. Sanitizers such as
   sanitize_text_field and sanitize_key are transparent because they do not
   restrict the value to a known role. A prior in_array allowlist check, or a
-  role that arrives through a variable, is not visible. add_cap is out of scope:
-  it takes a capability name rather than a role name.
+  role that arrives through a variable, is not visible. add_cap is out of
+  scope: it takes a capability name rather than a role name. An allowlist
+  lookup that merely indexes a local map with request data is not matched: the
+  superglobal subscript must be the whole name expression.
 utils:
   request-superglobal:
     kind: variable_name
@@ -33,7 +35,17 @@ rule:
                 ofRule: {kind: argument}
               has:
                 stopBy: end
-                matches: request-superglobal
+                all:
+                  - matches: request-superglobal
+                  - not:
+                      inside:
+                        stopBy: end
+                        kind: subscript_expression
+                        has:
+                          nthChild: 2
+                          has:
+                            stopBy: end
+                            matches: request-superglobal
     - kind: array_element_initializer
       all:
         - has:

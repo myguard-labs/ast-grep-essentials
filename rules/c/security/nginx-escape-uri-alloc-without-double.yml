@@ -14,7 +14,9 @@ note: >-
   a length handler and a copy handler, which is how nginx itself is structured,
   is not seen. Only ngx_escape_uri needs the factor of two: ngx_escape_html and
   ngx_escape_json return the extra byte count already and are correctly used
-  with a bare addition, so they are excluded here.
+  with a bare addition, so they are excluded here. An already-doubled addend
+  written as n + n, 2 * n or n << 1 immediately left of the final addend is
+  excluded; a doubling spelled some other way is still reported.
 rule:
   kind: call_expression
   all:
@@ -24,7 +26,12 @@ rule:
         has:
           kind: binary_expression
           regex: '\+'
-          has: {field: right, kind: identifier, pattern: $N}
+          all:
+            - has: {field: right, kind: identifier, pattern: $N}
+            - not:
+                has:
+                  field: left
+                  regex: '(?:\+\s*\b\w+\s*$)|(?:2\s*\*)|(?:\*\s*2\s*$)|(?:<<\s*1\s*$)'
     - inside:
         kind: function_definition
         stopBy: end

@@ -14,7 +14,7 @@ AST_GREP = ROOT / "node_modules" / ".bin" / "ast-grep"
 class DiagnosticTests(unittest.TestCase):
     def test_all_rules_emit_declared_diagnostics(self):
         rules = sorted((ROOT / "rules").rglob("*.yml"))
-        self.assertEqual(len(rules), 241, "update the explicit diagnostic inventory")
+        self.assertEqual(len(rules), 240, "update the explicit diagnostic inventory")
         checked = 0
         for path in rules:
             with self.subTest(rule=path.stem):
@@ -35,7 +35,28 @@ class DiagnosticTests(unittest.TestCase):
                 for field in ("message", "note", "severity"):
                     self.assertEqual(finding[field], declared[field], field)
                 checked += 1
-        self.assertEqual(checked, 241)
+        self.assertEqual(checked, 240)
+
+    def test_no_error_rule_concedes_a_routine_dismissal(self):
+        """Error severity can fail a consumer's scan, so it is reserved for
+        near-zero-false-positive defects. A rule whose own note concedes that it
+        is routinely dismissed, or that it cannot establish its claim, is
+        advisory by definition and must carry severity warning."""
+        concessions = (
+            "routine dismissal",
+            "known false positive",
+            "is a false positive",
+        )
+        offenders = []
+        for path in sorted((ROOT / "rules").rglob("*.yml")):
+            declared = yaml.safe_load(path.read_text())
+            if declared.get("severity") != "error":
+                continue
+            note = declared.get("note") or ""
+            hit = next((c for c in concessions if c in note), None)
+            if hit is not None:
+                offenders.append(f"{declared['id']}: note concedes {hit!r}")
+        self.assertEqual(offenders, [], "demote these rules to severity warning")
 
     CASES = (
         (

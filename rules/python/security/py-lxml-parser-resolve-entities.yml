@@ -11,8 +11,11 @@ note: >-
   Fires on an XMLParser or ETCompatXMLParser construction, qualified or bare,
   whose argument list has no literal False for resolve_entities. It does not
   check where the parsed document comes from, and a parser reused only for
-  documents the deployment generated is the routine dismissal. Whether the name
-  resolves to lxml.etree or to another module is not determined.
+  documents the deployment generated is the routine dismissal. A receiver named
+  for the standard library ElementTree module is excluded, because
+  resolve_entities is not a parameter there and the advice would be a TypeError;
+  whether a bare or otherwise-qualified name resolves to lxml.etree is not
+  determined.
 rule:
   kind: call
   all:
@@ -22,9 +25,14 @@ rule:
           - kind: identifier
             regex: '^(XMLParser|ETCompatXMLParser)$'
           - kind: attribute
-            has:
-              field: attribute
-              regex: '^(XMLParser|ETCompatXMLParser)$'
+            all:
+              - has:
+                  field: attribute
+                  regex: '^(XMLParser|ETCompatXMLParser)$'
+              - not:
+                  has:
+                    field: object
+                    regex: '(?i)(^|\.)(ET|ElementTree|xml\.etree\.ElementTree|cElementTree)$'
     - not:
         has:
           field: arguments

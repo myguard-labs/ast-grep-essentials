@@ -7,6 +7,8 @@ valid:
   - 'void f(void) { /* if (len <= sizeof(buf)) {} */ }'
   - 'const char *s = "if (len <= sizeof(buf))";'
 invalid:
+  - 'int f(size_t len) { char buf[64]; if (len <= sizeof buf) { buf[len] = 0; } return 0; }'
+  - 'int f(size_t len) { char buf[64]; while (sizeof buf >= len) { len++; } return 0; }'
   - 'int f(const char *s, size_t len) { char buf[64]; if (len <= sizeof(buf)) { memcpy(buf, s, len); buf[len] = 0; return 0; } return -1; }'
   - 'int f(const char *s, size_t len) { char buf[64]; while (len <= sizeof(buf)) { len--; } return 0; }'
   - 'int f(const char *s, size_t len) { char buf[64]; if (sizeof(buf) >= len) { memcpy(buf, s, len); buf[len] = 0; return 0; } return -1; }'

@@ -9,7 +9,12 @@ message: >-
   subtle.ConstantTimeCompare, which always examine every byte.
 note: >-
   Fires when one side of the comparison is a Sum call, which is the shape of a
-  freshly computed MAC. A comparison over values an attacker cannot iterate
+  freshly computed MAC. A receiver named for a plain hash or checksum, such as
+  sha256, md5 or crc32, is excluded because an unkeyed digest compared for
+  corruption detection is not a security comparison; a keyed MAC held in a
+  variable named that way is then missed. A receiver under a neutral name such
+  as h carries no information either way, so an unkeyed integrity compare
+  written that way still matches and is the routine dismissal. A comparison over values an attacker cannot iterate
   against, or one guarded by strict rate limiting, is a weaker but real
   dismissal; a checksum used only for corruption detection is not a security
   comparison at all.
@@ -43,7 +48,15 @@ rule:
 utils:
   sum-call:
     kind: call_expression
-    has:
-      field: function
-      kind: selector_expression
-      has: {field: field, regex: '^Sum$'}
+    all:
+      - has:
+          field: function
+          kind: selector_expression
+          has: {field: field, regex: '^Sum$'}
+      - not:
+          has:
+            field: function
+            kind: selector_expression
+            has:
+              field: operand
+              regex: '(?i)^(sha1|sha256|sha512|sha224|sha384|md5|crc|crc32|crc64|checksum|fnv|adler|h256|hasher)$'

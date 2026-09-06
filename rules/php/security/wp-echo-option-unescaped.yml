@@ -12,7 +12,11 @@ note: >-
   inside esc_html, esc_attr, esc_url, esc_js, esc_textarea, wp_kses, wp_kses_post,
   absint, intval or number_format. It does not check that the chosen escaper suits
   the surrounding context, so esc_html on a value placed in an href still passes.
-  A value fetched in a preceding statement and echoed later is not seen.
+  A value fetched in a preceding statement and echoed later is not seen. The
+  list is deliberately output encoders plus numeric coercions: sanitize_text_field
+  sanitizes incoming text and does not encode for output, so a value it wraps
+  still matches, and a cast such as (int) is a syntax node rather than a call and
+  is not recognised either.
 utils:
   wp-escaper:
     kind: function_call_expression

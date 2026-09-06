@@ -1,6 +1,6 @@
 id: wp-wpdb-orderby-interpolation
 language: php
-severity: error
+severity: warning
 message: >-
   A variable is interpolated into an ORDER BY, GROUP BY or LIMIT clause of a
   wpdb query. Placeholders cannot be used for identifiers or sort directions, so
@@ -9,7 +9,10 @@ message: >-
 note: >-
   Regex-matches an interpolated variable directly after ORDER BY, GROUP BY,
   LIMIT or OFFSET in a SQL literal passed to a wpdb method. A braced interpolation of a
-  wpdb-owned table or prefix property in that position is excluded, but the rule cannot see
+  wpdb-owned table or prefix property in that position is excluded. Only an
+  interpolated double-quoted literal is inspected, so an ORDER BY clause built
+  by concatenating a single-quoted literal with a variable is not matched at
+  all. The rule cannot see the rule cannot see
   an allowlist applied to the variable in a preceding statement, so a query that
   already restricts the column to a fixed set still matches and is the routine
   dismissal after that check is confirmed.

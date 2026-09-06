@@ -7,14 +7,17 @@ message: >-
   take over the site. Use a fixed option name, or resolve the input through an
   allowlist of names the plugin owns.
 note: >-
-  Matches a GET, POST, REQUEST, COOKIE or FILES superglobal inside the option-name
-  argument of update_option, add_option, delete_option, update_site_option,
-  add_site_option or delete_site_option, and inside the second argument of
-  update_network_option, add_network_option or delete_network_option, which take
-  the network id first. Sanitizers around the name are
-  transparent because they restrict characters, not which option is written. A
-  name arriving through a variable or a foreach key is not seen, and the rule
-  says nothing about a literal option name written with a request-derived value.
+  Matches a GET, POST, REQUEST, COOKIE or FILES superglobal inside the
+  option-name argument of update_option, add_option, delete_option,
+  update_site_option, add_site_option or delete_site_option, and inside the
+  second argument of update_network_option, add_network_option or
+  delete_network_option, which take the network id first. Sanitizers around the
+  name are transparent because they restrict characters, not which option is
+  written. A name arriving through a variable or a foreach key is not seen, and
+  the rule says nothing about a literal option name written with a
+  request-derived value. An allowlist lookup that merely indexes a local map
+  with request data is not matched: the superglobal subscript must be the whole
+  name expression.
 utils:
   request-superglobal:
     kind: variable_name
@@ -35,7 +38,17 @@ rule:
                 ofRule: {kind: argument}
               has:
                 stopBy: end
-                matches: request-superglobal
+                all:
+                  - matches: request-superglobal
+                  - not:
+                      inside:
+                        stopBy: end
+                        kind: subscript_expression
+                        has:
+                          nthChild: 2
+                          has:
+                            stopBy: end
+                            matches: request-superglobal
     - all:
         - has:
             field: function
@@ -49,4 +62,14 @@ rule:
                 ofRule: {kind: argument}
               has:
                 stopBy: end
-                matches: request-superglobal
+                all:
+                  - matches: request-superglobal
+                  - not:
+                      inside:
+                        stopBy: end
+                        kind: subscript_expression
+                        has:
+                          nthChild: 2
+                          has:
+                            stopBy: end
+                            matches: request-superglobal

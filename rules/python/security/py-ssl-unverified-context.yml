@@ -1,6 +1,6 @@
 id: py-ssl-unverified-context
 language: python
-severity: error
+severity: warning
 message: >-
   TLS verification disabled. An unverified context, or an assignment turning off
   hostname checking, accepts any certificate, so anyone on the path presents
@@ -10,7 +10,10 @@ message: >-
 note: >-
   Fires on a call to the private ssl unverified-context helper, on an assignment
   of that helper to the default HTTPS context hook, and on an assignment setting
-  check_hostname to False. A context weakened through a helper function or a
+  check_hostname to False. The matcher cannot see which protocol the context was
+  built with: on a PROTOCOL_TLS_SERVER context check_hostname must be False,
+  because a server does not verify a hostname against itself, so that shape is a
+  false positive rather than a defect. A context weakened through a helper function or a
   configuration flag is not seen. A test that talks to a local self-signed
   fixture is the routine dismissal; pinning the fixture CA is still better.
 rule:

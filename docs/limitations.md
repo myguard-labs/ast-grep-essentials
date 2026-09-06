@@ -706,9 +706,18 @@ and the [Lua standard-library contract](https://www.lua.org/manual/5.4/manual.ht
 
 ## 2026 harvest: cross-language expansion
 
-151 rules mined from 2025-2026 advisories, CVEs and API contracts across eight
-languages. Per-rule evidence is in [sources](sources.md); candidates rejected
-during this harvest are in [rejected candidates](rejected-candidates.md).
+Rules mined from 2025-2026 advisories, CVEs and API contracts across eight
+languages, grouped below by language. Per-rule evidence is in
+[sources](sources.md); candidates rejected during this harvest are in
+[rejected candidates](rejected-candidates.md).
+
+One bullet per shipped rule. Each states what the matcher establishes
+syntactically and what it cannot see: every rule here is a single-file syntactic
+matcher, so none resolves a type, proves a value is attacker-reachable, or
+establishes that a guard runs on every path. Several therefore identify a review
+site rather than a proven defect.
+
+## c and nginx
 
 - `c-realloc-assign-same-pointer` matches the identifier text on both sides of
   the assignment. A program that aborts on allocation failure is unaffected, and
@@ -721,10 +730,6 @@ adjacent sibling statements. A wipe separated by other statements, or performed
 - `c-memcmp-on-secret` gates entirely on an identifier-name regex, so hash-table
   and configuration comparisons using one of those words are reported and key
   material in a neutrally named buffer is missed.
-- `c-strncpy-no-terminator` matches the destination identifier appearing both as
-  an argument and inside the `sizeof` bound. It does not look for a following
-  explicit terminator assignment, so a correctly terminated site still matches;
-  a bound given as a macro is not matched at all.
 - `c-read-return-ignored` matches an expression statement only. An explicit
   `(void)` cast parses as a cast expression and is exempt by construction.
   Whether the buffer is then used as if it had been filled is out of scope.
@@ -784,9 +789,7 @@ A
 tail `return` immediately after the finalize does not match, nor does a use in a
   different block.
 
-One bullet per rule, in the style of `docs/limitations.md`. All of these are
-syntactic matchers: none resolves a type, proves a value is attacker-reachable,
-or establishes that a guard runs on every path.
+## go
 
 - `go-template-html-cast` flags a typed-string conversion whose operand is not a
   string literal. It cannot see a sanitiser, so a value returned from
@@ -865,6 +868,8 @@ or establishes that a guard runs on every path.
 - `go-gob-decode-network` uses connection-shaped identifiers and `Body`/`Conn`
   field names as the network signal. A gob stream between trusted processes
   matches, and a limit applied to the reader elsewhere is not seen.
+
+## php and wordpress
 
 - `wp-rest-permission-return-true` recognizes the `__return_true` literal, an
   arrow function returning `true`, and a closure whose body is a single `return
@@ -975,9 +980,7 @@ or establishes that a guard runs on every path.
   used as a path matches and is the routine dismissal. A search string held in a
   variable is invisible.
 
-Each bullet states what the matcher establishes syntactically and what it cannot
-see. Syntax cannot prove taint, type, reachability or configuration precedence,
-so several of these rules identify a review site rather than a proven defect.
+## python
 
 - `py-torch-load-untrusted` sees only the absence of a literal
   `weights_only=True` in the argument list. A torch module imported under
@@ -1076,10 +1079,6 @@ policy held in a variable, or a custom class that auto-accepts, is not matched.
 - `py-dynamic-import-request` requires the request expression in the name
   position of the call. A name copied to a variable first, and a loop that
   spreads a request dictionary over `setattr`, are not seen.
-
-One bullet per shipped rule, in the style of `docs/limitations.md`. Every rule
-here is a syntactic matcher over a single file: it sees shapes, not types, taint
-or reachability.
 
 ## javascript
 

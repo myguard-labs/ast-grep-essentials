@@ -13,7 +13,10 @@ note: >-
   direct-operand position, so a value passed through a helper is not matched at
   all, whether or not that helper encodes for output. sanitize_text_field in
   particular sanitizes incoming text and performs no output encoding, so a value
-  it wraps is unsafe in an attribute and is missed here. The $atts naming is a shortcode convention rather than
+  it wraps is unsafe in an attribute and is missed here. The $args naming also
+  collides with WP_Widget::widget, whose $args carries theme-supplied
+  before_widget and after_widget markup that must be echoed unescaped; that
+  canonical body matches and is a false positive. The $atts naming is a shortcode convention rather than
   a guarantee, so a same-named array of trusted values is the routine dismissal.
   esc_attr around a value used in an href satisfies this rule but is still the
   wrong escaper for a URL.

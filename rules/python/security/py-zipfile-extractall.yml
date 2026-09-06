@@ -8,9 +8,12 @@ message: >-
   member list, reject names that escape the destination, cap the declared sizes,
   and extract members one at a time.
 note: >-
-  Fires on an extractall call on any receiver and on shutil.unpack_archive. The
-  matcher cannot tell a zip, tar or wheel receiver apart, nor whether the archive
-  came from a user. An archive the deployment produced and stores under a path no
+  Fires on an extractall call and on shutil.unpack_archive. A receiver named for
+  a tar archive is excluded because py-tarfile-extractall owns that case and
+  prescribes the tar-specific extraction filter; a tar receiver under any other
+  name still matches here and gets the generic advice. The matcher cannot
+  otherwise tell a zip, tar or wheel receiver apart, nor whether the archive came
+  from a user. An archive the deployment produced and stores under a path no
   caller controls is the routine dismissal.
 rule:
   kind: call
@@ -18,7 +21,9 @@ rule:
     field: function
     kind: attribute
     any:
-      - has: {field: attribute, regex: '^extractall$'}
+      - all:
+          - has: {field: attribute, regex: '^extractall$'}
+          - not: {has: {field: object, regex: '(?i)(^|\.)(tar|tarfile|tf|tgz)$'}}
       - all:
           - has: {field: object, regex: '^shutil$'}
           - has: {field: attribute, regex: '^unpack_archive$'}

@@ -8,11 +8,11 @@ valid:
 - 'package p; func f() { http.Redirect(w, r, r.FormValue("u"), 302) }'
 - 'package p; // http.Get(r.FormValue("u"))'
 - 'package p; var s = "http.Get(r.FormValue(\"u\"))"'
+- 'package p; func f() { u, _ := url.Parse(r.Header.Get("X-Target")) }'
 invalid:
 - 'package p; func f() { resp, _ := http.Get(r.FormValue("u")) }'
 - 'package p; func f() { resp, _ := http.Post(r.URL.Query().Get("u"), ct, body) }'
 - 'package p; func f() { resp, _ := http.Head(c.Query("u")) }'
 - 'package p; func f() { req, _ := http.NewRequest("GET", c.Param("u"), nil) }'
 - 'package p; func f() { req, _ := http.NewRequestWithContext(ctx, "GET", r.PostFormValue("u"), nil) }'
-- 'package p; func f() { u, _ := url.Parse(r.Header.Get("X-Target")) }'
 - 'package p; func f() { resp, _ := http.PostForm(r.FormValue("u"), vals) }'

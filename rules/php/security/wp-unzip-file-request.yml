@@ -8,7 +8,10 @@ message: >-
   generated directory, and reject entries whose resolved path escapes it.
 note: >-
   Matches a GET, POST, REQUEST, COOKIE or FILES superglobal in any argument of
-  unzip_file, or in the extractTo or extract argument of a method call. Even a
+  unzip_file, in an argument of an extractTo method call, or in an extract call
+  that also passes a PCLZIP_ option constant. A bare extract method with no
+  PclZip constant is not matched: the name is used by many unrelated parser and
+  DOM APIs and carries no archive semantics on its own. Even a
   fixed destination is unsafe when entry names are not filtered, so a match with
   a literal target still needs review rather than dismissal. An archive path held
   in a variable is not seen.
@@ -30,9 +33,16 @@ rule:
               matches: request-superglobal
     - kind: member_call_expression
       all:
-        - has:
-            field: name
-            regex: '(?i)^(extractTo|extract)$'
+        - any:
+            - has: {field: name, regex: '(?i)^extractTo$'}
+            - all:
+                - has: {field: name, regex: '(?i)^extract$'}
+                - has:
+                    field: arguments
+                    has:
+                      stopBy: end
+                      kind: name
+                      regex: '^PCLZIP_'
         - has:
             field: arguments
             has:
