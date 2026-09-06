@@ -703,3 +703,542 @@ and the [Lua standard-library contract](https://www.lua.org/manual/5.4/manual.ht
   matches, with nested methods, constructors, and lambdas treated as new scopes.
   Longer fluent chains, locally stored builders, aliases, wrappers, and
   executable trust require semantic review.
+
+## 2026 harvest: cross-language expansion
+
+151 rules mined from 2025-2026 advisories, CVEs and API contracts across eight
+languages. Per-rule evidence is in [sources](sources.md); candidates rejected
+during this harvest are in [rejected candidates](rejected-candidates.md).
+
+- `c-realloc-assign-same-pointer` matches the identifier text on both sides of
+  the assignment. A program that aborts on allocation failure is unaffected, and
+  a reallocation routed through a struct field or a differently named variable
+  is not matched.
+- `c-memset-before-free-secret` requires the zeroing call and the free to be
+adjacent sibling statements. A wipe separated by other statements, or performed
+  in a helper, is missed. Whether the buffer held key material is not visible to
+  syntax.
+- `c-memcmp-on-secret` gates entirely on an identifier-name regex, so hash-table
+  and configuration comparisons using one of those words are reported and key
+  material in a neutrally named buffer is missed.
+- `c-strncpy-no-terminator` matches the destination identifier appearing both as
+  an argument and inside the `sizeof` bound. It does not look for a following
+  explicit terminator assignment, so a correctly terminated site still matches;
+  a bound given as a macro is not matched at all.
+- `c-read-return-ignored` matches an expression statement only. An explicit
+  `(void)` cast parses as a cast expression and is exempt by construction.
+  Whether the buffer is then used as if it had been filled is out of scope.
+- `c-toctou-access-then-open` pairs the check and the action by first-argument
+  identifier text within one function definition, in either order. It cannot see
+whether the directory is attacker-writable, and misses paths rebuilt into
+another
+  variable.
+- `c-chroot-without-chdir` is a co-occurrence check inside one function. A
+  `chdir` performed by the caller reports here. It says nothing about
+  descriptors opened before the chroot or privileges not yet dropped.
+- `c-setuid-return-ignored` matches an expression statement; a `(void)` cast is
+  exempt. It does not check that `setgroups` and `setgid` preceded `setuid`.
+- `c-getenv-to-path-sink` requires the `getenv` call to appear inside the sink
+  call's own argument list, so the common shape of storing the value in a local
+  first is not matched. It cannot tell whether the process is privileged.
+- `c-rand-for-secret` gates on the name of the assignment target, so key
+  material flowing through a neutrally named intermediate is missed and a jitter
+  value named with one of those words is reported.
+- `c-off-by-one-le-sizeof` is advisory: the comparison is correct whenever the
+  guarded branch copies exactly that many bytes and writes no terminator. The
+matcher reports the comparison in an `if` or `while` condition and does not
+inspect
+  the guarded body.
+- `c-strtok-not-reentrant` is a call-name match. It does not prove that two
+  tokenisations can overlap; a single-threaded program with one call site is
+  unaffected in practice.
+- `nginx-str-data-passed-to-libc` matches a member named `data` in an argument
+  to a NUL-expecting function. It does not verify the struct is an `ngx_str_t`,
+  and buffers the module terminated itself are safe and still match.
+- `nginx-strlen-on-ngx-str-data` has the same `data`-member limitation; an
+  unrelated member of that name holding a terminated string is reported.
+- `nginx-slab-locked-without-lock` is intraprocedural. A helper genuinely only
+reached from a locked caller reports here unless its own name contains `locked`,
+which the rule treats as that declaration. A lock taken through a macro is
+invisible.
+- `nginx-shm-data-write-without-lock` is advisory co-occurrence. Functions whose
+  name ends in `init_zone` are excluded as one-shot setup; other one-shot setup
+  paths are not recognised, and a lock taken by the caller is invisible.
+- `nginx-escape-uri-alloc-without-double` requires both calls in one function
+  with the sizing result reaching the allocation through the same named
+  variable. The two-pass escape split across length and copy handlers, which is
+  nginx's own structure, is not seen. `ngx_escape_html` and `ngx_escape_json`
+  return the extra byte count already and are excluded.
+- `nginx-finalize-plus-return-rc` is advisory. It cannot tell whether the
+  enclosing function is a content handler, where the double finalize bites, or
+  an event callback, where the return value is discarded and the pattern is
+  harmless.
+- `nginx-init-returns-http-status` identifies the hook by name suffix, so a hook
+registered under another name is missed and an ordinary helper ending in one of
+those suffixes is reported. Only a literal `NGX_HTTP_` identifier in a `return`
+is
+  matched.
+- `nginx-use-after-finalize` does not model the reference count: a request whose
+count is still above one survives the finalize and the later access is correct.
+A
+tail `return` immediately after the finalize does not match, nor does a use in a
+  different block.
+
+One bullet per rule, in the style of `docs/limitations.md`. All of these are
+syntactic matchers: none resolves a type, proves a value is attacker-reachable,
+or establishes that a guard runs on every path.
+
+- `go-template-html-cast` flags a typed-string conversion whose operand is not a
+  string literal. It cannot see a sanitiser, so a value returned from
+  bluemonday or read from trusted configuration also matches; keep it advisory.
+- `go-template-parse-dynamic` recognizes a non-literal argument to a `Parse`
+  method on a template-named receiver. Template text read from an embedded
+  filesystem matches identically to attacker-supplied text. `ParseFiles` and
+  `ParseFS` are outside the matcher.
+- `go-text-template-response` is a file-level pairing of the `text/template` and
+  `net/http` imports, not a claim about any expression. A package that renders
+  text templates for mail or config while separately serving HTTP matches.
+- `go-file-open-request-path` requires the request accessor to be nested inside
+  the filesystem call or its join, in one expression. The variable-carried form
+  is not matched at all, and a containment check in a helper is invisible.
+  Joining onto a base directory does not clear the finding, because a parent
+  segment is still resolved relative to that base.
+- `go-path-check-string-match` fires on the substring test or single
+  replacement itself, with no view of the filesystem call it guards. It cannot
+  tell whether the check is the only guard, so a layered check matches.
+- `go-http-server-no-header-timeout` inspects the literal or the bare
+  `ListenAndServe` call. A timeout assigned to the server on a later statement
+  is not seen, and a loopback-only or proxied listener matches anyway.
+- `go-request-body-unbounded` searches the enclosing function declaration for a
+  `MaxBytesReader` or `LimitReader` call. A limit applied by middleware, or on a
+  reader built in another function, is invisible and produces a match.
+- `go-decompress-readall` requires the decompressing reader construction and the
+  full read to sit in one function declaration. A reader passed in as a
+  parameter is not matched. `io.Copy` to a file is a sibling shape not covered.
+- `go-exec-shell-c` requires a literal shell name and a literal command-string
+  flag in the argument positions before the command. A command assembled purely
+  from trusted constants in a variable still matches. It does not overlap
+  `go-exec-sprintf`, which keys on a formatted argument rather than a shell.
+- `go-http-request-url-ssrf` matches only a request accessor written directly as
+  the URL argument. Any validation performed on a named variable before the
+  fetch puts the call outside the matcher entirely.
+- `go-http-redirect-request-value` likewise covers the direct-argument form
+  only; the variable-carried redirect is not matched, whether or not it is
+  validated.
+- `go-mac-compare-variable-time` keys on a `Sum` call as one side of the
+  comparison. A MAC compared through an intermediate variable is missed, and a
+  non-security checksum comparison that happens to use `Sum` matches.
+- `go-aes-gcm-static-nonce` detects a byte-literal nonce, a `[]byte("...")`
+  conversion, and a `make` buffer never randomised inside the same function. A
+  nonce filled by a helper matches spuriously; a correct counter-derived nonce
+  maintained outside the function also matches.
+- `go-rsa-generatekey-small` reads an integer literal only. A size held in a
+  variable or a named constant is not decidable here.
+- `go-cipher-mode-weak` matches constructor names. It cannot see an
+  encrypt-then-MAC layer that supplies the missing integrity, and it flags
+  decrypt-only legacy paths equally.
+- `go-jwt-unverified` covers the unverified-parse entry points and the
+  none-algorithm constants by name. A key function that omits an algorithm check
+  is a separate, undecidable claim and is not attempted here.
+- `go-cookie-insecure-flags` reads keyed fields of one composite literal and
+  gates on a credential-looking name. Flags set field-by-field after
+  construction are missed; gin's positional `SetCookie` is not covered.
+- `go-cors-wildcard-credentials` requires both settings in one configuration
+  literal. A config assembled across statements, or the reflected-origin
+  middleware shape written as two `Header().Set` calls, is not matched.
+- `go-file-perm-world-writable` tests the numeric literal's other-write bit and
+  `os.ModePerm`. The process umask may clear that bit at runtime, and a mode
+  behind a named constant is not visible.
+- `go-tempfile-fixed-path` recognizes a literal path under a shared temporary
+  directory, or a literal name joined onto `os.TempDir`. A path built from
+  `TMPDIR` or another environment variable is missed.
+- `go-strconv-atoi-narrow-cast` requires the parse call to be the operand of the
+  conversion in one expression. The two-statement form is missed, and a
+  conversion whose input was already range-checked matches.
+- `go-unsafe-pointer-uintptr-arith` matches only when the arithmetic result is
+  stored, which is the shape `unsafe.Pointer` rule 3 forbids; the valid
+  single-expression form is correctly excluded. `go vet`'s unsafeptr check
+  overlaps part of this ground.
+- `go-xml-decoder-strict-off` matches the field assignment by name and does not
+  check the decoder's input. Go's XML decoder resolves no external entities, so
+  this is parser hardening rather than XXE.
+- `go-gob-decode-network` uses connection-shaped identifiers and `Body`/`Conn`
+  field names as the network signal. A gob stream between trusted processes
+  matches, and a limit applied to the reader elsewhere is not seen.
+
+- `wp-rest-permission-return-true` recognizes the `__return_true` literal, an
+  arrow function returning `true`, and a closure whose body is a single `return
+  true`. It cannot decide whether a route is meant to be public, and it does not
+  see a capability check performed inside the route callback instead of the
+  permission callback.
+- `wp-ajax-nopriv-registration` matches the hook-name literal only. It is an
+  inventory rule: it does not inspect the handler body, so a genuinely public
+  front-end endpoint matches. A hook name assembled from a variable is
+  invisible.
+- `wp-update-user-meta-request-key` sees a superglobal in the meta-key argument.
+  Sanitizer wrappers are treated as transparent because they restrict
+  characters, not which key is written. A key reaching the call through a
+  variable, a `foreach` key, or `WP_REST_Request::get_param()` escapes the rule.
+- `wp-update-user-role-request` covers `set_role`/`add_role`/`add_cap` arguments
+  and the `role` entry of a `wp_update_user`/`wp_insert_user` array literal. An
+  `in_array` allowlist applied in a preceding statement is invisible, so a
+  guarded assignment through a variable does not match and a guarded assignment
+  written inline does.
+- `wp-update-option-request-key` checks only the option-name position. A literal
+  option name written with a request-derived value is a different,
+  lower-severity class that needs the surrounding capability check to judge,
+  which syntax cannot see.
+- `wp-wpdb-prepare-quoted-placeholder` regex-matches the literal SQL text of the
+  first `prepare` argument. A query assembled in a variable before the call is
+  invisible, and a quoted percent sequence that is data rather than a
+  placeholder would match.
+- `wp-wpdb-orderby-interpolation` excludes the `{$wpdb->...}` identifier forms
+  but cannot see an allowlist applied to the interpolated variable in a
+  preceding statement, so a query that already restricts the column to a fixed
+  set still matches. Treat it as "confirm the allowlist", not as proof of
+  injection.
+- `wp-unlink-request-path` treats `sanitize_text_field`, `esc_attr` and
+  `wp_unslash` as transparent because none removes a traversal sequence. It does
+  not treat a `basename` wrapper as safe either, so a basename-guarded delete
+  matches and is the routine dismissal. A path assembled in a preceding
+  statement is invisible.
+- `wp-template-include-request` keys on superglobals and on subscripts of
+  `$atts`/`$attributes`, which is a shortcode naming convention rather than a
+  guarantee. A slug reaching the call through another variable is invisible. It
+  complements `php-file-inclusion-variable`, which covers `include`/`require`.
+- `wp-remote-request-user-url` treats `esc_url_raw` and `sanitize_url` as
+  transparent. A URL read from a REST request object or passed through a
+  variable is invisible, and `wp_safe_remote_*` is itself only a partial defence
+  against DNS rebinding, so the safe side is "reviewed", not "proven".
+- `wp-redirect-not-safe` treats `esc_url`/`esc_url_raw` as transparent. A
+  destination reaching the call through a variable, or one already filtered by
+  `wp_validate_redirect`, is invisible. It complements
+  `php-open-redirect-superglobal`, which matches the raw `header()` call and
+  does not see `wp_redirect`.
+- `wp-verify-nonce-result-discarded` matches only an expression statement whose
+  whole expression is the call. A result assigned to a variable and then never
+  branched on is not syntactically distinguishable from a legitimate use.
+- `wp-check-ajax-referer-nodie-unchecked` requires the third positional argument
+  to be the literal `false`. A stop argument supplied through a variable or as a
+  named argument escapes the rule.
+- `wp-maybe-unserialize-untrusted` excludes the legitimate
+  `get_option`/`get_post_meta`/`get_user_meta` sources. A payload that reaches
+  the call through a variable is invisible. `php-unserialize` covers the plain
+  `unserialize` function.
+- `wp-echo-option-unescaped` does not check that the chosen escaper suits the
+  surrounding context: `esc_html` around a value placed in an `href` satisfies
+  the rule but is still wrong. A value fetched in a preceding statement and
+  echoed later is invisible.
+- `wp-shortcode-atts-unescaped-output` keys on the `$atts`/`$args`/`$attributes`
+  naming convention, so a same-named array of trusted values is the routine
+  dismissal. `esc_attr` around a URL satisfies the rule but is the wrong escaper
+  for that context.
+- `wp-is-admin-as-authorization` matches only an `if` whose condition is
+  `is_admin()` and whose body is a single return, exit or die. Loading admin
+  assets behind such a guard is a legitimate use; the finding matters when the
+  code after the guard changes state. A capability check elsewhere in the
+  function is invisible.
+- `wp-unzip-file-request` matches a superglobal in the archive or destination
+  argument. Even a fixed destination is unsafe when entry names are not
+  filtered, so a match with a literal target needs review rather than dismissal;
+  an archive path held in a variable is invisible.
+- `php-create-function-call` matches by name. On PHP 8 the call is a fatal error
+  rather than a sink, which is the routine dismissal for dead legacy code that
+  still needs removing.
+- `php-dynamic-callable-from-request` requires the superglobal subscript to be
+  the whole callable expression, so an allowlist lookup that merely indexes a
+  local map with request data does not match. A callable assembled into a
+  variable in a preceding statement is invisible.
+- `php-preg-replace-eval-modifier` regex-matches the modifier letters after the
+  closing delimiter for the common delimiters only. A pattern assembled in a
+  variable is invisible. On PHP 7 and later the call fails instead of executing.
+- `php-libxml-entity-loading-enabled` sees only an explicit flag constant or a
+  literal `false`. A flag value computed in a variable is invisible, and on PHP
+  before 8.0 the unsafe behaviour was the default, so an unflagged parse there
+  is still vulnerable and this rule cannot prove it.
+- `php-secret-compare-not-hash-equals` keys on a secret-shaped superglobal
+  subscript key. It cannot tell how many attempts an attacker can make, so a
+  value compared once behind strict rate limiting is the routine dismissal.
+  `php-hash-loose-compare` covers the hash-function comparison shapes.
+- `php-mail-header-request` is position-based on the fourth argument of
+  `mail`/`wp_mail`. A direct `sanitize_email`/`filter_var` wrapper suppresses
+  the match; a check performed on a preceding line, or a header assembled in a
+  variable, is invisible.
+- `php-fetch-request-url` treats `esc_url_raw` and `filter_var` as transparent
+  because a well-formed URL can still name an internal host, and it does not
+  treat `basename` as safe. A target held in a variable is invisible.
+- `php-file-write-request-path` covers the write sinks other than
+  `move_uploaded_file`, which `php-upload-unvalidated-name` owns. An extension
+  allowlist applied earlier in the function is invisible.
+- `php-dotdot-strip-as-traversal-guard` does not check that the stripped value
+  reaches a filesystem call, so stripping dot sequences from data that is never
+  used as a path matches and is the routine dismissal. A search string held in a
+  variable is invisible.
+
+Each bullet states what the matcher establishes syntactically and what it cannot
+see. Syntax cannot prove taint, type, reachability or configuration precedence,
+so several of these rules identify a review site rather than a proven defect.
+
+- `py-torch-load-untrusted` sees only the absence of a literal
+  `weights_only=True` in the argument list. A torch module imported under
+  another name, and the keyword supplied through a dictionary splat or a
+  variable, are not resolved, and the trust level of the checkpoint path is
+  unknown.
+- `py-numpy-load-allow-pickle` requires the literal `True`. A flag held in a
+variable, folded from configuration, or splatted in, is invisible, and the rule
+  cannot tell whether the file is one the same program wrote.
+- `py-pickle-equivalent-loads` matches qualified module calls only. A loader
+  imported bare with `from dill import loads`, or bound to an alias, is not
+  resolved, and the rule reports the sink without any knowledge of the source.
+- `py-joblib-load` matches any receiver whose text ends in `joblib`, which
+  covers the `sklearn.externals.joblib` spelling but also an unrelated object
+  with that name. It has no view of where the model file came from.
+- `py-zipfile-extractall` matches `extractall` on any receiver, so a zip, tar,
+  wheel or an unrelated class with that method name are indistinguishable, and
+  the archive's provenance is unknown.
+- `py-lxml-parser-resolve-entities` cannot determine whether the constructor
+  belongs to `lxml.etree`, nor whether the parser is only ever used on documents
+  the deployment generated. It also does not see a parser configured after
+  construction by attribute assignment.
+- `py-stdlib-xml-parse` recognises modules by name, so a `defusedxml` module
+  bound to the short name `ET` is indistinguishable from the stdlib one; only an
+explicit `defusedxml.` prefix is excluded. Document provenance is not modelled.
+- `py-render-template-string-dynamic` requires the interpolation or
+  concatenation to appear in the call itself. A template assembled into a
+  variable one statement earlier, or loaded from a database, is not seen.
+- `py-jinja2-autoescape-off` reads the constructor arguments only. An
+  environment whose `autoescape` attribute is set afterwards is not seen, and a
+  legitimately non-markup environment (configuration, SQL, plain-text mail)
+  matches by design.
+- `py-flask-debug-true` matches `run(debug=True)` on any receiver and cannot
+  tell a development entry point from a module the deployment imports.
+- `py-flask-hardcoded-secret-key` requires a plain string literal. A key read
+  from the environment, or built by interpolation, is not matched, and the rule
+  cannot tell a test placeholder from a production fallback.
+- `py-django-debug-true` and `py-django-allowed-hosts-wildcard` see one module.
+  Split settings packages where a later module overrides the value, and values
+  derived from the environment, are outside the matcher's view.
+- `py-sql-string-build` requires the dynamic construction to occur in the call's
+  first argument. A statement built into a variable first is not seen, and an
+  interpolated identifier the program itself chose from a fixed set is a
+  legitimate match the rule cannot distinguish.
+- `py-django-queryset-request-kwargs` matches the method name, not the receiver
+  type, so any object with a `filter` or `values` method matches. A parameter
+  dictionary copied to a variable, and validation done there, are not seen.
+- `py-open-redirect-request` and `py-open-request-arg` require the request
+  expression to be the call's own first argument. Any validation performed on an
+  intermediate variable is invisible, and a framework-sanitised value still
+  matches when written inline.
+- `py-requests-no-timeout` sees only the `requests` module spelling. A session
+  with a mounted adapter carrying a timeout, an outer deadline, and a timeout
+  passed through a dictionary splat are all invisible.
+- `py-ssl-unverified-context` matches three specific spellings. A context
+  weakened inside a helper function or driven by a configuration flag is not
+  seen, and a test against a local self-signed fixture matches by design.
+- `py-paramiko-autoadd-policy` requires the policy to be named in the call. A
+policy held in a variable, or a custom class that auto-accepts, is not matched.
+- `py-jwt-alg-none-or-mixed` reads literal algorithm lists only. A list built
+  from configuration or a constant defined elsewhere is not seen, and a
+  same-family rollover pair is deliberately not matched.
+- `py-os-system-popen` requires the dynamic construction in the first argument.
+  A command built into a variable first is not seen, and a value already passed
+  through `shlex.quote` inside an f-string still matches.
+- `py-is-literal-compare` is pure syntax with no semantic limit worth noting; it
+  reports every `is` comparison against a literal of the listed kinds.
+- `py-world-writable-perms` reads octal literals. A mode computed from `stat`
+  constants, read from configuration, or masked at runtime is invisible; the
+  sticky-bit shared-directory mode is excluded by an explicit exception.
+- `py-cryptography-weak-primitives` matches constructor and keyword spellings.
+  PKCS1 v1.5 used for signature verification is deliberately excluded, and a
+  primitive kept only to read legacy data still matches.
+- `py-cors-wildcard-credentials` treats a missing origin setting as the library
+  default wildcard. Origins supplied from configuration, and a `resources`
+  mapping whose nested origins are wildcards, are outside the matcher's view.
+- `py-random-for-secret` is a name heuristic over the assignment target and
+  recognises the module by the literal `random` prefix, so an aliased import is
+  missed and a jitter value with a matching name is a false positive.
+  `random.SystemRandom` is excluded.
+- `py-secret-compare-equals` is a name and shape heuristic. A comparison of a
+  value that merely looks secret matches, and a comparison against a slow-KDF
+  password verifier result is not a timing problem despite matching.
+- `py-assert-for-auth` is a name heuristic over the assert condition's source
+  text. Asserts in test modules, which are never run under `-O`, match by design
+  and are normally excluded at the scanner by path.
+- `py-format-on-request-template` requires the request expression to be the
+  format receiver or the `Template` argument. A template loaded from a database
+  or an editable configuration file is the same defect and is not seen.
+- `py-weak-hash-for-password` is a name heuristic over the argument source text.
+  A checksum of a variable that happens to carry a matching name is a false
+  positive, and `usedforsecurity=False` is not modelled.
+- `py-ldap-xpath-filter-build` does not resolve the receiver type, so any
+  `search` method on any object matches when its argument is interpolated.
+  Whether the interpolated value is caller-controlled is unknown.
+- `py-dynamic-import-request` requires the request expression in the name
+  position of the call. A name copied to a variable first, and a loop that
+  spreads a request dictionary over `setattr`, are not seen.
+
+One bullet per shipped rule, in the style of `docs/limitations.md`. Every rule
+here is a syntactic matcher over a single file: it sees shapes, not types, taint
+or reachability.
+
+## javascript
+
+- `js-child-process-shell-interpolation` sees a template literal or a `+`
+  concatenation in the command slot of an `exec` family call. It cannot tell
+  whether the interpolated value was validated upstream, and it does not read
+  the `shell` option, so a `spawn` with an argv array and a concatenated
+  executable path still matches while a shell-enabled call built from a variable
+  does not.
+- `js-dom-html-sink` recognises `DOMPurify.sanitize`, `sanitizeHtml` and
+  `escapeHtml` by name only. A sanitizer under any other name, or one applied on
+  an earlier line, reads as an unsafe value; a locally defined function called
+  `sanitize` reads as safe.
+- `js-express-open-redirect` requires the `req.*` access to be a direct argument
+  of `res.redirect`. A value copied into a local variable, or checked against an
+  allowlist before the call, is invisible, and so is a redirect helper wrapping
+  the call.
+- `js-express-reflected-response` matches only a template or a concatenation in
+  the first argument. It cannot see a `Content-Type` set earlier that would make
+  the body inert, and it does not recognise escaping wrappers, so an escaped
+  concatenation still matches.
+- `js-tls-verification-disabled` matches only literal `false`, the literal
+  string `"0"` and an empty `checkServerIdentity`. A verification flag driven by
+  an environment lookup or a configuration value is missed in both directions.
+- `js-weak-hash-algorithm` cannot distinguish a security digest from a cache key
+  or an ETag, which is the dominant benign use of MD5; it is a warning for that
+  reason. An algorithm name held in a variable is not matched.
+- `js-weak-cipher-algorithm` reads the algorithm string literally. It does not
+  check IV uniqueness or key length, and a transformation assembled from
+  configuration is missed.
+- `js-jwt-algorithm-unpinned` looks only at the call site, so an options object
+  built in a variable is reported as unpinned even when it pins the algorithm.
+  `jwt.decode`, which never verifies, is deliberately out of scope.
+- `js-cors-credentials-wildcard` does not follow an `origin` callback function,
+  which can be safe or unsafe, and it does not correlate the two manual header
+  calls with one another; each is judged on its own shape.
+- `js-express-static-dotfiles` does not look at what the served directory
+  contains, so a purpose-built directory of dotfiles matches.
+- `js-vm-sandbox-dynamic-source` excludes a literal source even though the `vm`
+  module is not an isolation boundary for literals either. It cannot show that
+  the dynamic string is attacker-controlled.
+- `js-insecure-random-secret` is a name heuristic. A security value under a
+  neutral name is missed; a cosmetic identifier containing `key` or `session` is
+  reported.
+
+## java
+
+- `java-weak-hash-algorithm` matches string literals only. A constant or a
+  configured algorithm name is missed, and MD5 used as a checksum is a known
+  false positive, which is why it is a warning.
+- `java-weak-cipher-transformation` lists block ciphers explicitly on the ECB
+  arm, because `ECB` in an RSA transformation is a naming artefact. It cannot
+  see key length or IV reuse.
+- `java-native-deserialization-sink` is a call-site matcher: an
+`ObjectInputFilter` installed on a separate statement, or a `Yaml` built with a
+  `SafeConstructor` and stored in a variable, is not visible, so a filtered
+  stream still matches.
+- `java-sql-concat-query` requires at least one non-literal operand in the
+  concatenation. A query assembled into a local variable first, and a bare
+  identifier argument, are both invisible.
+- `java-jndi-lookup-dynamic` treats any non-literal name as dynamic, so a name
+  read from a configuration constant is reported. That false positive is
+  accepted because a reachable dynamic lookup is severe.
+- `java-expression-eval-dynamic` does not model a restricted SpEL evaluation
+  context, so a `SimpleEvaluationContext`-guarded parse matches. The receiver is
+  recognised by variable name for the parser and engine cases.
+- `java-trust-all-tls` treats a body containing any statement as non-empty, so a
+  stub that only logs is missed. A trust-all stub confined to a test profile
+  still matches.
+- `java-response-open-redirect` needs the request read in the argument itself.
+  An allowlist check on an earlier line, or a value carried through a local
+  variable, is invisible.
+- `java-cookie-missing-flags` matches an inline `Cookie` construction only; a
+  cookie configured through a variable and then added is missed. On the
+`ResponseCookie` arm a chain that sets one of the two flags is left alone, so a
+  chain missing only `secure` is not reported. Container-level cookie
+  configuration is invisible.
+- `java-xml-factory-doctype-unset` scopes the hardening search to the enclosing
+  method. A factory hardened in a helper, in a field initialiser, or by a
+  secure-processing wrapper is a false positive, which is why it is a warning.
+- `java-spring-csrf-disabled` cannot see whether the same chain sets a stateless
+session policy, which makes disabling CSRF defensible, so a token-only API is a
+  known false positive.
+- `java-format-string-not-literal` does not distinguish the locale-first
+  `Formatter` overloads, so a call passing a `Locale` first is reported, and a
+  constant format string held in a field is reported as non-literal.
+
+## lua
+
+- `lua-sql-string-concat` recognises `ngx.quote_sql_str` and `tonumber` by name
+only; a local function with either name reads as safe. A statement built into a
+  variable on an earlier line is not matched.
+- `lua-redirect-user-target` does not report an escaped value used as the whole
+  location, even though `ngx.escape_uri` only protects a value placed in a query
+  slot.
+- `lua-response-reflect-unescaped` excludes `ngx.var.upstream_http_*` because
+  those originate upstream, and it cannot see a content type set earlier that
+  would make the body inert.
+- `lua-subrequest-user-uri` inspects the first, URI argument only. The `args`
+  option table is deliberately not inspected because the module escapes it, and
+  `capture_multi` is not covered because its URIs sit in a nested table.
+- `lua-http-client-verify-disabled` matches a literal `false` only; a verify
+  flag passed through a variable or a configuration lookup is missed.
+- `lua-io-open-user-path` requires an `ngx` request token in the path, which
+  excludes the Kong plugin loader idiom but also misses a request value carried
+  through a local variable. A traversal check on an earlier line is invisible.
+- `lua-regex-user-pattern` does not check the fourth argument of `string.find`,
+  so a plain find with `true` is reported even though it does no pattern
+  matching.
+- `lua-uri-args-unbounded` matches a literal zero only. A no-argument call is
+  deliberately not matched because the module applies a default of 100, and a
+  limit passed in a variable is missed; the matcher does not check that the
+  `truncated` error is handled.
+- `lua-insecure-random-token` is a name heuristic on the assignment target. A
+security value under a neutral name is missed; a cosmetic identifier containing
+  one of the listed words is reported. The `os.tmpname` arm is precise.
+- `lua-cjson-decode-unprotected` cannot see whether `cjson` was required as
+  `cjson.safe` at the top of the file, because the call site looks identical, so
+  a file using the safe module is a false positive. An enclosing `pcall` several
+  frames up is also not seen.
+- `lua-exit-without-return` reports a bare terminating call even as the last
+  statement of a handler, where it behaves like a return in most phases. Which
+  phase the code runs in is not visible.
+
+## bash
+
+- `sh-world-writable-permissions` reads the mode as a literal token, so a mode
+passed in a variable is missed, and a wide mode on a private per-user directory
+  is still reported.
+- `sh-secret-on-command-line` decides that a value is a secret from the variable
+  name. A secret under a neutral name is missed, and a non-secret variable whose
+  name happens to contain `KEY` is reported.
+- `sh-predictable-temp-path` matches literal `/tmp` and `/var/tmp` paths and the
+  dry-run `mktemp`. A path built from a `TMPDIR` expansion is not matched, and
+  whether the directory is really shared is not checked.
+- `sh-rm-rf-unguarded-variable` cannot see a `set -u` at the top of the file or
+  a guard written as a separate test, so a script that already checks the
+  variable is reported.
+- `sh-container-isolation-disabled` matches literal flags and their separate
+  values. Options composed in a variable are missed, and a lab script that
+  legitimately needs a privileged container matches.
+- `sh-host-hardening-disabled` reads literal tokens, so the same action
+  performed through a variable or a configuration management tool is missed; a
+  deliberate temporary change in an interactive script still matches.
+- `sh-archive-extract-to-system-root` cannot see where the archive came from, so
+  a vendor tarball extracted into the root matches. Extraction into any other
+  directory is not reported, even though a malicious archive can escape it.
+- `sh-path-search-includes-cwd` does not follow a PATH assembled in another
+  variable and assigned later, and it does not judge whether the listed
+  directories are themselves writable.
+- `sh-remote-shell-string-interpolation` excludes the argv-after-double-dash
+  form for `ssh` and excludes a single-word interpolating operand such as the
+  host. It cannot tell whether the interpolated value is attacker-controlled,
+  and a value already quoted for the remote shell still matches.
+- `sh-process-substitution-shell-input` covers process substitution and here
+  strings, which `sh-curl-pipe-shell` does not reach because no pipeline is
+  involved. Vendor install instructions use this shape.
+- `sh-printf-format-not-literal` reports a format string held in a variable on
+  purpose, for example a reusable table row layout.
+- `sh-arithmetic-context-injection` cannot see a `case` or regex guard applied
+  on an earlier line, so a script that already validates the value is reported.
+  Arithmetic on a variable from a non-positional source is not matched.
