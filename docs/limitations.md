@@ -525,7 +525,7 @@ plus `not`/`inside` clauses is rejected with "Rule must have one positive
 matcher" — `kind` alone does not satisfy it. Adding a positive `has` fixes it.
 The `not: {has: {field: cause}}` spelling for excluding `raise ... from` also
 failed to compose; `not: {pattern: 'raise $EXC($$$ARGS) from $CAUSE'}` works
-and was verified against both forms on 0.45.2.
+and was verified against both forms on 0.45.3.
 
 The splat case was caught in review: `zip(*rows)` is a single `list_splat`
 argument that expands to many iterables, so the `nthChild: 2` clause alone
@@ -643,7 +643,7 @@ Each rule's `note` names the commit that motivated it.
 
 This batch covers every ast-grep-supported programming language measured in the
 first-party corpus: Bash, C, Go, Java, JavaScript, Lua, PHP, and Python. Perl is
-the material exception: 0.45.2 rejects it as an unsupported built-in language.
+the material exception: 0.45.3 rejects it as an unsupported built-in language.
 Upstream custom-language support requires a platform-specific tree-sitter
 shared library and is experimental, so parsing Perl as Bash or another language
 would create false confidence. Perl remains assigned to a Perl-native analyzer

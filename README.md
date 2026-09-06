@@ -4,7 +4,7 @@ Handcrafted [ast-grep](https://ast-grep.github.io/) rules for Bash, C/nginx, Go,
 Java, JavaScript, Lua, PHP, and Python. Security and correctness checks identify
 code that needs review; a match alone does not establish a vulnerability.
 
-Perl is also present in the MyGuard corpus, but ast-grep 0.45.2 has no built-in
+Perl is also present in the MyGuard corpus, but ast-grep 0.45.3 has no built-in
 Perl parser. [Custom-language support](https://ast-grep.github.io/advanced/custom-language.html)
 requires a separately compiled, platform-specific tree-sitter shared library
 and remains experimental upstream, so Perl files are deliberately not parsed

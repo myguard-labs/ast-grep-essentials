@@ -1,6 +1,6 @@
 # Authoring rules
 
-Checked against ast-grep 0.45.2 on 2026-09-04. The linked upstream pages are
+Checked against ast-grep 0.45.3 on 2026-09-06. The linked upstream pages are
 living references; the lockfile and fixtures define this repository's baseline.
 
 ## Define the claim
@@ -48,7 +48,7 @@ global utilities require consumer `utilDirs` wiring.
 Constrain the operand named in the diagnostic, not every descendant of its
 enclosing call. Add near misses with a similar function name, an unrelated
 argument, and the same expression outside the intended control-flow position.
-Regexes search node text; anchor them when an exact name is intended. On 0.45.2,
+Regexes search node text; anchor them when an exact name is intended. On 0.45.3,
 a PHP positional-argument capture can be an `argument` node wrapping the
 expression, so verify its shape before applying a `kind` constraint.
 
@@ -134,3 +134,7 @@ findings with exit zero. A misspelled `--error=<id>` may also exit zero; validat
 IDs and test a positive control. `languageGlobs` changes parser selection, so
 verify existing native rules still run after overrides.
 [Scan CLI](https://ast-grep.github.io/reference/cli/scan.html).
+
+On 0.45.3, `ast-grep-ignore` must be the first alphabetic text in a comment to
+act as a suppression directive. A prose mention later in a comment no longer
+suppresses a finding or produces an unused-suppression diagnostic.
