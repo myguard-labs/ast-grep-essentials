@@ -1,0 +1,19 @@
+id: go-template-html-cast
+valid:
+- 'package p; func f() { t.Execute(w, template.HTML("<b>static</b>")) }'
+- 'package p; func f() { t.Execute(w, template.HTML(`<b>static</b>`)) }'
+- 'package p; func f() { t.Execute(w, r.FormValue("bio")) }'
+- 'package p; func f() { x := template.Template{} }'
+- 'package p; func f() { y := mytemplate.HTML(bio) }'
+- 'package p; func f() { y := template.HTMLEscapeString(bio) }'
+- 'package p; // t.Execute(w, template.HTML(bio))'
+- 'package p; var s = "template.HTML(bio)"'
+invalid:
+- 'package p; func f() { t.Execute(w, template.HTML(r.FormValue("bio"))) }'
+- 'package p; func f() { x := template.JS(payload) }'
+- 'package p; func f() { x := template.URL(next) }'
+- 'package p; func f() { x := template.HTMLAttr(attr) }'
+- 'package p; func f() { x := template.CSS(style) }'
+- 'package p; func f() { x := template.Srcset(src) }'
+- 'package p; func f() { x := template.JSStr(js) }'
+- 'package p; func f() { x := template.HTML(a + b) }'

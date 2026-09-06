@@ -1,0 +1,32 @@
+id: go-path-check-string-match
+language: go
+severity: warning
+message: >-
+  Path traversal guarded by a substring test or a single string replacement.
+  Neither survives contact with the encodings a real path takes: a backslash
+  separator, a percent-encoded dot, or a nested sequence that reassembles into
+  a parent segment after one pass of stripping. Ask filepath.IsLocal whether
+  the segment stays inside the directory, or resolve it and compare with
+  filepath.Rel.
+note: >-
+  Fires on the check itself, not on any filesystem call, so it cannot tell
+  whether this is the only guard on the path. A substring test used for
+  telemetry or for a message, or one layered on top of a real containment
+  check, is a legitimate dismissal.
+rule:
+  kind: call_expression
+  any:
+    - all:
+        - has: {field: function, regex: '^strings\.(Contains|HasPrefix|HasSuffix|Index)$'}
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              regex: '^["`](\.\.|\.\./|\.\.\\\\)["`]$'
+    - all:
+        - has: {field: function, regex: '^strings\.(Replace|ReplaceAll|Trim|TrimLeft)$'}
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              regex: '^["`]\.\.["`]$'

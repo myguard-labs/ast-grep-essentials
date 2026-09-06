@@ -1,0 +1,35 @@
+id: go-xml-decoder-strict-off
+language: go
+severity: warning
+message: >-
+  XML decoder relaxed with Strict disabled or with HTML entity expansion
+  enabled. Non-strict mode accepts mismatched tags and undefined entities, so
+  the structure the parser reports can differ from what another parser sees on
+  the same bytes, and an entity table invites expansion the caller did not
+  budget for. Leave Strict at its default and reject malformed documents.
+note: >-
+  Fires on the field assignment by name. Go's XML decoder never resolves
+  external entities, so this is a parser-hardening finding rather than an XXE
+  one; relaxed parsing of a trusted legacy document format is a legitimate
+  dismissal. It does not check where the decoder's input comes from.
+rule:
+  kind: assignment_statement
+  any:
+    - all:
+        - has:
+            kind: expression_list
+            has:
+              kind: selector_expression
+              has: {field: field, regex: '^Strict$'}
+        - has: {kind: expression_list, regex: '^false$'}
+    - all:
+        - has:
+            kind: expression_list
+            has:
+              kind: selector_expression
+              has: {field: field, regex: '^Entity$'}
+        - has:
+            kind: expression_list
+            has:
+              kind: selector_expression
+              regex: '^xml\.HTMLEntity$'

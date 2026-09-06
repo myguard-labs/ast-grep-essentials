@@ -1,0 +1,73 @@
+id: go-file-open-request-path
+language: go
+severity: error
+message: >-
+  Filesystem path taken directly from the request, either as the whole path or
+  as a segment joined onto a base directory. A value containing parent
+  directory segments walks out of the intended directory, so the handler reads,
+  writes or deletes arbitrary files the process can reach. Reject the segment
+  unless filepath.IsLocal accepts it, or open it through os.OpenRoot so the
+  kernel enforces containment.
+note: >-
+  Fires only when the request accessor is nested inside the filesystem call or
+  the join in one expression. A path assigned to a variable and validated on a
+  later line does not match at all, and joining onto a base does not confine the
+  result because a parent segment is still resolved relative to that base. It
+  cannot see a containment check that lives in a helper function.
+rule:
+  kind: call_expression
+  all:
+    - matches: file-sink
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          stopBy: end
+          matches: request-accessor
+utils:
+  file-sink:
+    any:
+      - has:
+          field: function
+          regex: '^os\.(ReadFile|Open|OpenFile|Create|Remove|RemoveAll|WriteFile|Stat|Lstat|Mkdir|MkdirAll|Rename|Symlink|Truncate|Chmod|Chown)$'
+      - has:
+          field: function
+          regex: '^ioutil\.(ReadFile|WriteFile)$'
+      - has:
+          field: function
+          regex: '^http\.ServeFile$'
+      - all:
+          - has: {field: function, regex: '^(filepath|path)\.Join$'}
+          - inside:
+              stopBy: end
+              kind: call_expression
+              has:
+                field: function
+                regex: '^(os\.|ioutil\.|http\.ServeFile)'
+  request-accessor:
+    any:
+      - kind: call_expression
+        has:
+          field: function
+          kind: selector_expression
+          regex: '\.(FormValue|PostFormValue|Param|QueryParam|DefaultQuery|PathValue)$'
+      - all:
+          - kind: call_expression
+          - has:
+              field: function
+              kind: selector_expression
+              has: {field: field, regex: '^Query$'}
+          - has:
+              field: arguments
+              kind: argument_list
+              has:
+                nthChild: {position: 1, ofRule: {not: {kind: comment}}}
+      - kind: call_expression
+        has:
+          field: function
+          kind: selector_expression
+          all:
+            - has: {field: field, regex: '^Get$'}
+            - has: {field: operand, regex: 'Query\(\)$|^r\.Header$'}
+      - kind: selector_expression
+        regex: '^[A-Za-z_][A-Za-z0-9_]*\.URL\.Path$'

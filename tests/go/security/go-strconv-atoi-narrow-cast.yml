@@ -1,0 +1,15 @@
+id: go-strconv-atoi-narrow-cast
+valid:
+- 'package p; func f() { n, _ := strconv.Atoi(s); _ = int64(n) }'
+- 'package p; func f() { n := int32(other) }'
+- 'package p; func f() { n, _ := strconv.Atoi(s); _ = n }'
+- 'package p; func f() { v, _ := strconv.ParseInt(s, 10, 32); _ = v }'
+- 'package p; func f() { n := int32(myparse.Atoi(s)) }'
+- 'package p; // int32(strconv.Atoi(s))'
+- 'package p; var s2 = "int32(strconv.Atoi(s))"'
+invalid:
+- 'package p; func f() { n := int32(strconv.Atoi(s)) }'
+- 'package p; func f() { n := int16(strconv.Atoi(s)) }'
+- 'package p; func f() { n := uint8(strconv.ParseInt(s, 10, 64)) }'
+- 'package p; func f() { n := uint32(strconv.ParseUint(s, 10, 64)) }'
+- 'package p; func f() { n := byte(strconv.Atoi(s)) }'

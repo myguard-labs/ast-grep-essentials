@@ -1,0 +1,30 @@
+id: go-template-html-cast
+language: go
+severity: warning
+message: >-
+  Conversion to a html/template typed string (HTML, JS, URL, HTMLAttr, CSS,
+  Srcset, JSStr) with a non-literal operand. These types tell html/template the
+  value is already safe, so contextual escaping is skipped for it and any
+  attacker-controlled substring becomes markup or script. Pass the plain string
+  and let the template escape it, or sanitise with a HTML sanitiser before the
+  conversion.
+note: >-
+  Fires on the conversion syntax alone. It cannot tell whether the operand was
+  already sanitised, so a value returned from a sanitiser or read from trusted
+  configuration is a legitimate dismissal; recording which sanitiser ran is the
+  routine check. String and raw-string literal operands do not match.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^template\.(HTML|JS|URL|HTMLAttr|CSS|Srcset|JSStr)$'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          nthChild: {position: 1, ofRule: {not: {kind: comment}}}
+          not:
+            any:
+              - kind: interpreted_string_literal
+              - kind: raw_string_literal

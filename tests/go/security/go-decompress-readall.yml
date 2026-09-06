@@ -1,0 +1,60 @@
+id: go-decompress-readall
+valid:
+- |
+  package p
+  func inflate(f *os.File) ([]byte, error) {
+    gz, err := gzip.NewReader(f)
+    if err != nil { return nil, err }
+    return io.ReadAll(io.LimitReader(gz, 64<<20))
+  }
+- |
+  package p
+  func inflate(f *os.File) ([]byte, error) {
+    return io.ReadAll(f)
+  }
+- |
+  package p
+  func inflate(f *os.File) ([]byte, error) {
+    gz, _ := gzip.NewReader(f)
+    return io.Copy(dst, gz)
+  }
+- |
+  package p
+  func inflate(f *os.File) ([]byte, error) {
+    gz, _ := mygzip.NewReader(f)
+    return io.ReadAll(gz)
+  }
+- 'package p; // gzip.NewReader(f); io.ReadAll(gz)'
+- 'package p; var s = "gzip.NewReader(f) io.ReadAll(gz)"'
+invalid:
+- |
+  package p
+  func inflate(f *os.File) ([]byte, error) {
+    gz, err := gzip.NewReader(f)
+    if err != nil { return nil, err }
+    return io.ReadAll(gz)
+  }
+- |
+  package p
+  func inflate(f *os.File) ([]byte, error) {
+    zr, _ := zlib.NewReader(f)
+    return io.ReadAll(zr)
+  }
+- |
+  package p
+  func inflate(f *os.File) ([]byte, error) {
+    fr := flate.NewReader(f)
+    return ioutil.ReadAll(fr)
+  }
+- |
+  package p
+  func untar(f *os.File) ([]byte, error) {
+    tr := tar.NewReader(f)
+    return io.ReadAll(tr)
+  }
+- |
+  package p
+  func inflate(f *os.File) ([]byte, error) {
+    zr, _ := zstd.NewReader(f)
+    return io.ReadAll(zr)
+  }

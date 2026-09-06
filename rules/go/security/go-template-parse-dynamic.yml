@@ -1,0 +1,38 @@
+id: go-template-parse-dynamic
+language: go
+severity: error
+message: >-
+  Template text parsed from a non-literal value. Whoever supplies that text
+  controls the template language itself, and a Go template can call methods on
+  the data it is given, so a crafted template reads fields and invokes methods
+  the handler never intended to expose. Keep template text in literals or
+  embedded files and pass user data as template parameters instead.
+note: >-
+  Fires when the argument to Parse is not a string literal. Template text read
+  from an embedded filesystem or a trusted asset bundle also matches and is the
+  routine dismissal; what matters is whether an untrusted party can influence
+  that text. ParseFiles and ParseFS are not covered by this matcher.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: selector_expression
+        has: {field: field, regex: '^Parse$'}
+    - has:
+        field: function
+        kind: selector_expression
+        has:
+          field: operand
+          stopBy: end
+          regex: '(^|\.)(template|Template)'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          all:
+            - nthChild: {position: 1, ofRule: {not: {kind: comment}}}
+            - not:
+                any:
+                  - kind: interpreted_string_literal
+                  - kind: raw_string_literal

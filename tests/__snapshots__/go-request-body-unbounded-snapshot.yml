@@ -1,0 +1,162 @@
+id: go-request-body-unbounded
+snapshots:
+  ? |
+    package p
+    func fetch() {
+      resp, _ := client.Get(u)
+      b, _ := io.ReadAll(resp.Body)
+      _ = b
+    }
+  : labels:
+    - source: io.ReadAll(resp.Body)
+      style: primary
+      start: 62
+      end: 83
+    - source: io.ReadAll
+      style: secondary
+      start: 62
+      end: 72
+    - source: Body
+      style: secondary
+      start: 78
+      end: 82
+    - source: resp.Body
+      style: secondary
+      start: 73
+      end: 82
+    - source: (resp.Body)
+      style: secondary
+      start: 72
+      end: 83
+  ? |
+    package p
+    func h(w http.ResponseWriter, r *http.Request) {
+      b, _ := io.ReadAll(r.Body)
+      _ = b
+    }
+  : labels:
+    - source: io.ReadAll(r.Body)
+      style: primary
+      start: 69
+      end: 87
+    - source: io.ReadAll
+      style: secondary
+      start: 69
+      end: 79
+    - source: Body
+      style: secondary
+      start: 82
+      end: 86
+    - source: r.Body
+      style: secondary
+      start: 80
+      end: 86
+    - source: (r.Body)
+      style: secondary
+      start: 79
+      end: 87
+  ? |
+    package p
+    func h(w http.ResponseWriter, r *http.Request) {
+      b, _ := ioutil.ReadAll(r.Body)
+      _ = b
+    }
+  : labels:
+    - source: ioutil.ReadAll(r.Body)
+      style: primary
+      start: 69
+      end: 91
+    - source: ioutil.ReadAll
+      style: secondary
+      start: 69
+      end: 83
+    - source: Body
+      style: secondary
+      start: 86
+      end: 90
+    - source: r.Body
+      style: secondary
+      start: 84
+      end: 90
+    - source: (r.Body)
+      style: secondary
+      start: 83
+      end: 91
+  ? |
+    package p
+    func h(w http.ResponseWriter, r *http.Request) {
+      json.NewDecoder(r.Body).Decode(&v)
+    }
+  : labels:
+    - source: json.NewDecoder(r.Body)
+      style: primary
+      start: 61
+      end: 84
+    - source: json.NewDecoder
+      style: secondary
+      start: 61
+      end: 76
+    - source: Body
+      style: secondary
+      start: 79
+      end: 83
+    - source: r.Body
+      style: secondary
+      start: 77
+      end: 83
+    - source: (r.Body)
+      style: secondary
+      start: 76
+      end: 84
+  ? |
+    package p
+    func h(w http.ResponseWriter, r *http.Request) {
+      xml.NewDecoder(r.Body).Decode(&v)
+    }
+  : labels:
+    - source: xml.NewDecoder(r.Body)
+      style: primary
+      start: 61
+      end: 83
+    - source: xml.NewDecoder
+      style: secondary
+      start: 61
+      end: 75
+    - source: Body
+      style: secondary
+      start: 78
+      end: 82
+    - source: r.Body
+      style: secondary
+      start: 76
+      end: 82
+    - source: (r.Body)
+      style: secondary
+      start: 75
+      end: 83
+  ? |
+    package p
+    func h(w http.ResponseWriter, r *http.Request) {
+      yaml.NewDecoder(r.Body).Decode(&v)
+    }
+  : labels:
+    - source: yaml.NewDecoder(r.Body)
+      style: primary
+      start: 61
+      end: 84
+    - source: yaml.NewDecoder
+      style: secondary
+      start: 61
+      end: 76
+    - source: Body
+      style: secondary
+      start: 79
+      end: 83
+    - source: r.Body
+      style: secondary
+      start: 77
+      end: 83
+    - source: (r.Body)
+      style: secondary
+      start: 76
+      end: 84

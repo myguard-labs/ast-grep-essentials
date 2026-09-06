@@ -1,0 +1,31 @@
+id: go-text-template-response
+language: go
+severity: warning
+message: >-
+  text/template used in a file that also serves HTTP responses. text/template
+  performs no contextual escaping, so any value interpolated into markup is
+  written through verbatim and becomes script in the browser. Import
+  html/template for anything rendered as a page; it escapes per context and
+  understands attribute, script and URL positions.
+note: >-
+  This is a file-level pairing of two imports, not a taint claim. A package
+  that legitimately renders text/template output for email bodies,
+  configuration files or generated code while separately serving HTTP is the
+  routine dismissal; confirm what the template output is written to.
+rule:
+  kind: interpreted_string_literal
+  regex: '^"text/template"$'
+  all:
+    - inside:
+        stopBy: end
+        kind: import_spec
+    - inside:
+        stopBy: end
+        kind: source_file
+        has:
+          stopBy: end
+          kind: import_spec
+          has:
+            stopBy: end
+            kind: interpreted_string_literal
+            regex: '^"net/http"$'

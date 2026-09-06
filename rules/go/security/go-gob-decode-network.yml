@@ -1,0 +1,36 @@
+id: go-gob-decode-network
+language: go
+severity: warning
+message: >-
+  gob stream decoded from a network source. The gob package is documented as
+  not hardened against adversarial input: a crafted stream drives large
+  allocations from small messages, and decoding into an interface value lets
+  the sender pick which registered concrete type is constructed. Bound the
+  reader with io.LimitReader and decode into a concrete struct rather than an
+  interface.
+note: >-
+  Fires when the decoder is built over a connection or a Body field. A gob
+  stream exchanged only between processes inside one trust boundary is a
+  legitimate dismissal, though the allocation behaviour still applies to a
+  corrupted stream. A limit applied to the reader elsewhere is not visible.
+rule:
+  kind: call_expression
+  all:
+    - has: {field: function, regex: '^gob\.NewDecoder$'}
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          any:
+            - kind: identifier
+              regex: '^(c|conn|nc|sock|socket)$'
+            - kind: selector_expression
+              has: {field: field, regex: '^(Body|Conn)$'}
+    - not:
+        has:
+          field: arguments
+          kind: argument_list
+          has:
+            stopBy: end
+            kind: call_expression
+            has: {field: function, regex: 'LimitReader$'}

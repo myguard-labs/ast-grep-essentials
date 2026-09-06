@@ -1,0 +1,39 @@
+id: go-decompress-readall
+language: go
+severity: warning
+message: >-
+  Decompressed stream read fully into memory with no size limit. Compression
+  ratios of a thousand to one are easy to construct, so a small archive expands
+  to gigabytes and exhausts memory before the read returns. Wrap the
+  decompressing reader in io.LimitReader with a ceiling derived from the
+  expected content, and treat hitting that ceiling as a rejected input.
+note: >-
+  Fires when the decompressing reader is constructed and read to completion in
+  the same function. A limit imposed on the underlying source before
+  decompression does not bound the expanded output, so it does not clear this
+  finding; a reader built in another function is not visible to this matcher.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^(io|ioutil)\.ReadAll$'
+    - not:
+        has:
+          field: arguments
+          kind: argument_list
+          has:
+            stopBy: end
+            kind: call_expression
+            has:
+              field: function
+              regex: 'LimitReader$'
+    - inside:
+        stopBy: end
+        kind: function_declaration
+        has:
+          stopBy: end
+          kind: call_expression
+          has:
+            field: function
+            regex: '^(gzip|zlib|flate|zstd|bzip2|lzw|snappy|tar|xz)\.New(Reader|ReaderLevel)?$'

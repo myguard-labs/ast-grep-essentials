@@ -1,0 +1,23 @@
+id: go-jwt-unverified
+language: go
+severity: error
+message: >-
+  JWT decoded without signature verification, or with the none algorithm
+  enabled. ParseUnverified returns claims from a token nobody authenticated, so
+  anyone can mint one with any subject or role by editing the payload. Use Parse
+  or ParseWithClaims with a key function, and restrict accepted algorithms with
+  jwt.WithValidMethods.
+note: >-
+  Fires on the unverified parse entry points and on the none-signature
+  constants by name. It cannot see what the claims are subsequently used for,
+  so decoding a token purely to read a non-security field such as an issuer
+  hint before real verification is a legitimate dismissal, as is a test that
+  deliberately constructs an unsigned token. A verified parse does not match.
+rule:
+  any:
+    - kind: call_expression
+      has:
+        field: function
+        regex: '\.ParseUnverified$'
+    - kind: selector_expression
+      regex: '^jwt\.(SigningMethodNone|UnsafeAllowNoneSignatureType)$'

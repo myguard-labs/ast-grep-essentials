@@ -1,0 +1,71 @@
+id: go-exec-shell-c
+language: go
+severity: error
+message: >-
+  exec.Command or exec.CommandContext invokes a shell with a command-string
+  flag, and the command string is not a literal. Everything the shell reads is
+  parsed for metacharacters, so any interpolated value can start a new command
+  with a semicolon, a pipe or a backtick. Run the target program directly with
+  its arguments as separate argv entries instead of building a shell string.
+note: >-
+  Fires when the executable is a shell name and the following argument is the
+  command-string flag, and the command string is not a string literal. It
+  cannot tell whether the interpolated value is attacker-reachable, so a
+  command assembled only from trusted constants is a legitimate dismissal.
+  A literal command string does not match, and neither does direct argv
+  execution without a shell.
+rule:
+  kind: call_expression
+  any:
+    - all:
+        - has: {field: function, regex: '^exec\.Command$'}
+        - has:
+            field: arguments
+            kind: argument_list
+            all:
+              - has:
+                  all:
+                    - nthChild: {position: 1, ofRule: {not: {kind: comment}}}
+                    - matches: shell-name
+              - has:
+                  all:
+                    - nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+                    - matches: command-flag
+              - has:
+                  all:
+                    - nthChild: {position: 3, ofRule: {not: {kind: comment}}}
+                    - matches: not-literal
+    - all:
+        - has: {field: function, regex: '^exec\.CommandContext$'}
+        - has:
+            field: arguments
+            kind: argument_list
+            all:
+              - has:
+                  all:
+                    - nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+                    - matches: shell-name
+              - has:
+                  all:
+                    - nthChild: {position: 3, ofRule: {not: {kind: comment}}}
+                    - matches: command-flag
+              - has:
+                  all:
+                    - nthChild: {position: 4, ofRule: {not: {kind: comment}}}
+                    - matches: not-literal
+utils:
+  shell-name:
+    any:
+      - kind: interpreted_string_literal
+      - kind: raw_string_literal
+    regex: '^["`](/usr/bin/|/bin/)?(sh|bash|zsh|ksh|dash|cmd|cmd\.exe|powershell|pwsh)["`]$'
+  command-flag:
+    any:
+      - kind: interpreted_string_literal
+      - kind: raw_string_literal
+    regex: '^["`](-c|-Command|/c|/C)["`]$'
+  not-literal:
+    not:
+      any:
+        - kind: interpreted_string_literal
+        - kind: raw_string_literal

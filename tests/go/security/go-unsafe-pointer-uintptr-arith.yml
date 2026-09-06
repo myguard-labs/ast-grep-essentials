@@ -1,0 +1,19 @@
+id: go-unsafe-pointer-uintptr-arith
+valid:
+- 'package p; func f(p *byte, n uintptr) *byte { return (*byte)(unsafe.Add(unsafe.Pointer(p), n)) }'
+- 'package p; func f(p *byte, n uintptr) *byte { return (*byte)(unsafe.Pointer(uintptr(unsafe.Pointer(p)) + n)) }'
+- 'package p; func f(p *byte) uintptr { return uintptr(unsafe.Pointer(p)) }'
+- 'package p; func f(a, b uintptr) uintptr { x := a + b; return x }'
+- 'package p; func f(p *byte) { u := uintptr(unsafe.Pointer(p)) }'
+- 'package p; // u := uintptr(unsafe.Pointer(p)) + n'
+- 'package p; var s = "u := uintptr(unsafe.Pointer(p)) + n"'
+invalid:
+- 'package p; func f(p *byte, n uintptr) { u := uintptr(unsafe.Pointer(p)) + n; _ = u }'
+- 'package p; func f(p *byte, n uintptr) { var u uintptr = uintptr(unsafe.Pointer(p)) + n; _ = u }'
+- |
+  package p
+  func f(p *byte, n uintptr) {
+    var u uintptr
+    u = uintptr(unsafe.Pointer(p)) + n
+    _ = u
+  }

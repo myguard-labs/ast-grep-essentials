@@ -1,0 +1,41 @@
+id: go-request-body-unbounded
+language: go
+severity: warning
+message: >-
+  Request body consumed without a size limit. io.ReadAll buffers the whole body
+  in memory and a streaming decoder keeps allocating as it reads, so a client
+  that sends a body larger than available memory takes the process down with a
+  single request. Wrap the body in http.MaxBytesReader, which also returns a
+  413 to the client, or read through io.LimitReader.
+note: >-
+  Fires when the read or the decoder is handed a Body field and no
+  MaxBytesReader or LimitReader call appears anywhere in the enclosing
+  function. A limit applied by middleware such as http.MaxBytesHandler, or on a
+  wrapper constructed in another function, is not visible here and is the
+  routine dismissal.
+rule:
+  kind: call_expression
+  all:
+    - any:
+        - has:
+            field: function
+            regex: '^(io|ioutil)\.ReadAll$'
+        - has:
+            field: function
+            regex: '^(json|xml|yaml|toml|gob)\.NewDecoder$'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          kind: selector_expression
+          has: {field: field, regex: '^Body$'}
+    - not:
+        inside:
+          stopBy: end
+          kind: function_declaration
+          has:
+            stopBy: end
+            kind: call_expression
+            has:
+              field: function
+              regex: '(MaxBytesReader|LimitReader)$'

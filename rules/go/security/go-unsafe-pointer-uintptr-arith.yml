@@ -1,0 +1,35 @@
+id: go-unsafe-pointer-uintptr-arith
+language: go
+severity: error
+message: >-
+  Pointer arithmetic performed through a uintptr held in a variable. A uintptr
+  is an integer, not a reference, so the garbage collector may move or free the
+  object while the value is stored, leaving the address pointing at unrelated
+  memory or at nothing. Use unsafe.Add, which keeps the operand a pointer for
+  the whole computation.
+note: >-
+  Fires when the conversion, the arithmetic and the assignment are one
+  statement, which is the shape unsafe.Pointer rule 3 forbids. The single
+  expression form, where the arithmetic result is converted straight back to a
+  pointer without being stored, is valid and does not match. Vet's unsafeptr
+  check covers part of the same ground.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        kind: call_expression
+        all:
+          - has: {field: function, regex: '^uintptr$'}
+          - has:
+              field: arguments
+              kind: argument_list
+              has:
+                stopBy: end
+                kind: call_expression
+                has: {field: function, regex: '^unsafe\.Pointer$'}
+    - inside:
+        stopBy: end
+        any:
+          - kind: short_var_declaration
+          - kind: assignment_statement
+          - kind: var_spec

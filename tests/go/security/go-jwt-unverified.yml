@@ -1,0 +1,15 @@
+id: go-jwt-unverified
+valid:
+- 'package p; func f() { t, err := jwt.Parse(tok, keyFunc) }'
+- 'package p; func f() { t, err := jwt.ParseWithClaims(tok, &c, keyFunc) }'
+- 'package p; func f() { m := jwt.SigningMethodHS256 }'
+- 'package p; func f() { m := jwt.SigningMethodRS256 }'
+- 'package p; func f() { x := other.SigningMethodNone }'
+- 'package p; func f() { p.ParseUnverifiedThing(tok) }'
+- 'package p; // jwt.ParseUnverified(tok, claims)'
+- 'package p; var s = "jwt.ParseUnverified(tok, claims)"'
+invalid:
+- 'package p; func f() { t, _, err := parser.ParseUnverified(tok, claims) }'
+- 'package p; func f() { t, _, err := jwt.NewParser().ParseUnverified(tok, jwt.MapClaims{}) }'
+- 'package p; func f() { m := jwt.SigningMethodNone }'
+- 'package p; func f() { s, _ := token.SignedString(jwt.UnsafeAllowNoneSignatureType) }'

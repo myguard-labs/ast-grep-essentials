@@ -1,0 +1,47 @@
+id: go-cookie-insecure-flags
+language: go
+severity: warning
+message: >-
+  Session or authentication cookie constructed without HttpOnly and Secure set.
+  Without HttpOnly any injected script can read the cookie and exfiltrate the
+  session; without Secure the browser also sends it over plaintext HTTP where a
+  network attacker captures it. Set HttpOnly, Secure and an explicit SameSite
+  mode on every credential cookie.
+note: >-
+  Fires on a cookie literal whose name looks like a credential and which is
+  missing one of the two flags in that literal. Flags assigned to the value on
+  a later statement are not visible to this matcher, and a cookie deliberately
+  read by client-side script, or one scoped to a plain-HTTP development host,
+  is a legitimate dismissal.
+rule:
+  kind: composite_literal
+  all:
+    - has: {field: type, regex: '^http\.Cookie$'}
+    - has:
+        field: body
+        kind: literal_value
+        has:
+          kind: keyed_element
+          all:
+            - has: {nthChild: 1, regex: '^Name$'}
+            - has:
+                nthChild: 2
+                regex: '(?i)^["`].*(session|token|auth|jwt|sid|login|remember).*["`]$'
+    - not:
+        all:
+          - has:
+              field: body
+              kind: literal_value
+              has:
+                kind: keyed_element
+                all:
+                  - has: {nthChild: 1, regex: '^HttpOnly$'}
+                  - has: {nthChild: 2, regex: '^true$'}
+          - has:
+              field: body
+              kind: literal_value
+              has:
+                kind: keyed_element
+                all:
+                  - has: {nthChild: 1, regex: '^Secure$'}
+                  - has: {nthChild: 2, regex: '^true$'}

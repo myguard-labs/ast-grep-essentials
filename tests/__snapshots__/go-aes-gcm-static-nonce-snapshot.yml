@@ -1,0 +1,92 @@
+id: go-aes-gcm-static-nonce
+snapshots:
+  ? |
+    package p
+    func enc(g cipher.AEAD, pt []byte) []byte {
+      return g.Seal(nil, make([]byte, 12), pt, nil)
+    }
+  : labels:
+    - source: g.Seal(nil, make([]byte, 12), pt, nil)
+      style: primary
+      start: 63
+      end: 101
+    - source: Seal
+      style: secondary
+      start: 65
+      end: 69
+    - source: g.Seal
+      style: secondary
+      start: 63
+      end: 69
+    - source: make
+      style: secondary
+      start: 75
+      end: 79
+    - source: make([]byte, 12)
+      style: secondary
+      start: 75
+      end: 91
+    - source: (nil, make([]byte, 12), pt, nil)
+      style: secondary
+      start: 69
+      end: 101
+  ? |
+    package p
+    func enc(g cipher.AEAD, pt []byte) []byte { return g.Seal(nil, []byte("fixednonce12"), pt, nil) }
+  : labels:
+    - source: g.Seal(nil, []byte("fixednonce12"), pt, nil)
+      style: primary
+      start: 61
+      end: 105
+    - source: Seal
+      style: secondary
+      start: 63
+      end: 67
+    - source: g.Seal
+      style: secondary
+      start: 61
+      end: 67
+    - source: '[]byte'
+      style: secondary
+      start: 73
+      end: 79
+    - source: '"fixednonce12"'
+      style: secondary
+      start: 80
+      end: 94
+    - source: '[]byte("fixednonce12")'
+      style: secondary
+      start: 73
+      end: 95
+    - source: (nil, []byte("fixednonce12"), pt, nil)
+      style: secondary
+      start: 67
+      end: 105
+  ? |
+    package p
+    func enc(g cipher.AEAD, pt []byte) []byte { return g.Seal(nil, []byte{1, 2, 3}, pt, nil) }
+  : labels:
+    - source: g.Seal(nil, []byte{1, 2, 3}, pt, nil)
+      style: primary
+      start: 61
+      end: 98
+    - source: Seal
+      style: secondary
+      start: 63
+      end: 67
+    - source: g.Seal
+      style: secondary
+      start: 61
+      end: 67
+    - source: '[]byte'
+      style: secondary
+      start: 73
+      end: 79
+    - source: '[]byte{1, 2, 3}'
+      style: secondary
+      start: 73
+      end: 88
+    - source: (nil, []byte{1, 2, 3}, pt, nil)
+      style: secondary
+      start: 67
+      end: 98

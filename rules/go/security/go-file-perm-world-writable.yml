@@ -1,0 +1,30 @@
+id: go-file-perm-world-writable
+language: go
+severity: warning
+message: >-
+  File or directory created with a permission literal that grants write access
+  to every local user, or with os.ModePerm. Any account on the host can then
+  replace the contents, so a configuration file, a script or a database read
+  back by this process becomes an injection point. Use 0600 for private data
+  and 0644 or 0755 when other users only need to read.
+note: >-
+  Fires on the numeric literal in the mode argument when its other-write bit is
+  set, and on os.ModePerm by name. The process umask can clear that bit at
+  runtime, and a deliberately shared spool directory is a legitimate dismissal;
+  a mode held in a named constant declared elsewhere is not visible here.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^(os|ioutil)\.(WriteFile|OpenFile|Mkdir|MkdirAll|Chmod)$'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          any:
+            - all:
+                - kind: int_literal
+                - regex: '^0o?[0-7]*[2367]$'
+            - kind: selector_expression
+              regex: '^os\.ModePerm$'
