@@ -8,15 +8,17 @@ message: >-
   SHA-3, and use PBKDF2, bcrypt or argon2 for passwords.
 note: >-
   Matches MessageDigest.getInstance, Mac.getInstance and Signature.getInstance
-  whose algorithm argument is a string literal naming MD2, MD5 or SHA-1, with or
-  without the separating dash. An algorithm name held in a constant or read from
+  whose algorithm argument is a string literal naming MD2, MD4, MD5 or SHA-1,
+  with or without the separating dash, and the HmacMD5, HmacSHA1, MD5with and
+  SHA1with composite names. The receiver may carry a java.security or
+  javax.crypto package prefix. An algorithm name held in a constant or read from
   configuration is not matched. A checksum or cache key computed with MD5 is a
   known benign use, which is why this is a warning.
 rule:
   kind: method_invocation
   all:
     - has: {field: name, regex: '^getInstance$'}
-    - has: {field: object, regex: '^(javax\.crypto\.)?(MessageDigest|Mac|Signature)$'}
+    - has: {field: object, regex: '^(java\.security\.|javax\.crypto\.)?(MessageDigest|Mac|Signature)$'}
     - has:
         stopBy: neighbor
         kind: argument_list

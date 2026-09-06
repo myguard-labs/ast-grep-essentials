@@ -8,8 +8,8 @@ message: >-
   fixed allowlist and cast the limit to an integer.
 note: >-
   Regex-matches an interpolated variable directly after ORDER BY, GROUP BY,
-  LIMIT or OFFSET in a SQL literal passed to a wpdb method. The wpdb-owned
-  {$wpdb->prefix} and {$wpdb->posts} forms are excluded, but the rule cannot see
+  LIMIT or OFFSET in a SQL literal passed to a wpdb method. A braced interpolation of a
+  wpdb-owned table or prefix property in that position is excluded, but the rule cannot see
   an allowlist applied to the variable in a preceding statement, so a query that
   already restricts the column to a fixed set still matches and is the routine
   dismissal after that check is confirmed.
@@ -29,4 +29,7 @@ rule:
         has:
           stopBy: end
           kind: encapsed_string
-          regex: '(?is)\b(ORDER\s+BY|GROUP\s+BY|LIMIT|OFFSET)\b[^"$]{0,40}\{?\$([A-Za-ce-z_]|w[A-Za-oq-z_]|wp[A-Za-ce-z_]|wpd[A-Za-ac-z_])'
+          all:
+            - regex: '(?is)\b(ORDER\s+BY|GROUP\s+BY|LIMIT|OFFSET)\b[^"$]{0,40}\{?\$'
+            - not:
+                regex: '(?is)\b(ORDER\s+BY|GROUP\s+BY|LIMIT|OFFSET)\b[^"$]{0,40}\{\$wpdb->(prefix|posts|comments|users|postmeta|commentmeta|usermeta|terms|term_taxonomy|term_relationships|options|links)\}'

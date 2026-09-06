@@ -3,24 +3,20 @@ language: java
 severity: error
 message: >-
   Untrusted-capable deserialization sink. Java native deserialization, XMLDecoder,
-  XStream and SnakeYAML all instantiate arbitrary classes named in the input, and
-  a gadget chain in any library on the classpath turns that into remote code
-  execution before the application ever inspects the result. Parse a fixed data
-  format instead, or install a strict allowlist filter.
+  XStream and Jackson default typing all instantiate arbitrary classes named in
+  the input, and a gadget chain in any library on the classpath turns that into
+  remote code execution before the application ever inspects the result. Parse a
+  fixed data format instead, install a strict allowlist filter, or replace
+  default typing with explicit JsonSubTypes declarations.
 note: >-
-  Matches readObject on an ObjectInputStream construction, readObject on an
-  XMLDecoder construction, fromXML on an XStream construction, a
-  load or loadAll call on a SnakeYAML Yaml constructed with no arguments, and
-  the enableDefaultTyping and activateDefaultTyping calls that switch Jackson
-  polymorphic typing on. A serialization filter installed on a separate
-  statement, or a Yaml built with SafeConstructor, is not seen by this call-site
-  matcher, so a filtered stream also matches.
-utils:
-  no-arg-yaml:
-    kind: object_creation_expression
-    all:
-      - has: {field: type, regex: '^(org\.yaml\.snakeyaml\.)?Yaml$'}
-      - has: {field: arguments, regex: '^\(\s*\)$'}
+  Matches readObject on an ObjectInputStream or XMLDecoder construction, fromXML
+  on an XStream construction, and the enableDefaultTyping and
+  activateDefaultTyping calls that switch Jackson polymorphic typing on. The
+  type name is anchored, so the allowlist-filtered ValidatingObjectInputStream
+  from commons-io is not matched. SnakeYAML is out of scope: a no-argument Yaml
+  is safe on SnakeYAML 2.x and the version cannot be seen at the call site. A
+  serialization filter installed on a separate statement is not seen by this
+  call-site matcher, so a filtered stream also matches.
 rule:
   kind: method_invocation
   any:
@@ -29,14 +25,11 @@ rule:
         - has:
             field: object
             kind: object_creation_expression
-            has: {field: type, regex: '(ObjectInputStream|XMLDecoder)$'}
+            has: {field: type, regex: '(^|\.)(ObjectInputStream|XMLDecoder)$'}
     - all:
         - has: {field: name, regex: '^fromXML$'}
         - has:
             field: object
             kind: object_creation_expression
             has: {field: type, regex: '(^|\.)XStream$'}
-    - all:
-        - has: {field: name, regex: '^(load|loadAll)$'}
-        - has: {field: object, matches: no-arg-yaml}
     - has: {field: name, regex: '^(enableDefaultTyping|activateDefaultTyping)$'}

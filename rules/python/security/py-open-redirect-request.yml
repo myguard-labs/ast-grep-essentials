@@ -9,7 +9,8 @@ message: >-
   name the router resolves.
 note: >-
   Fires when redirect, HttpResponseRedirect or RedirectResponse receives a first
-  argument that reads through a request object, including args, GET, POST, form,
+  argument, or a location, to, url or redirect_to keyword argument, that reads
+  through a request object, including args, GET, POST, form,
   query_params, headers, data and json. A target copied into a variable first,
   and any validation performed on that variable, is not seen. A redirect whose
   value the framework already constrained to a path is the routine dismissal.
@@ -48,9 +49,15 @@ rule:
               regex: '^(redirect|HttpResponseRedirect|RedirectResponse)$'
     - has:
         field: arguments
-        has:
-          nthChild:
-            position: 1
-            ofRule:
-              not: {kind: comment}
-          matches: request-derived
+        any:
+          - has:
+              nthChild:
+                position: 1
+                ofRule:
+                  not: {kind: comment}
+              matches: request-derived
+          - has:
+              kind: keyword_argument
+              all:
+                - has: {field: name, regex: '^(location|to|url|redirect_to)$'}
+                - has: {field: value, matches: request-derived}

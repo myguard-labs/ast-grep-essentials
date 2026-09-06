@@ -9,7 +9,8 @@ message: >-
 note: >-
   Regex-matches the modifier letters after the closing delimiter of a literal
   pattern in the first argument of preg_replace, for the common delimiters
-  slash, hash, tilde, bang, percent, brace and parenthesis. A
+  slash, hash, tilde, bang, percent, brace and parenthesis, allowing a
+  backslash-escaped delimiter inside the pattern body. A
   pattern assembled in a variable is not seen. On PHP 7 and later the call fails
   instead of executing, which is the routine dismissal for legacy code that still
   needs the modifier removed.
@@ -31,4 +32,4 @@ rule:
             any:
               - kind: string
               - kind: encapsed_string
-            regex: '^["\x27](/[^/]*/|#[^#]*#|~[^~]*~|![^!]*!|%[^%]*%|\{.*\}|\(.*\))[imsxuADSUXJ]*e[imsxuADSUXJ]*["\x27]$'
+            regex: '^["\x27](/(?:\\.|[^/])*/|#(?:\\.|[^#])*#|~(?:\\.|[^~])*~|!(?:\\.|[^!])*!|%(?:\\.|[^%])*%|\{.*\}|\(.*\))[imsxuADSUXJ]*e[imsxuADSUXJ]*["\x27]$'

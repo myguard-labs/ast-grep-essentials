@@ -8,9 +8,10 @@ message: >-
   wp_safe_redirect, which restricts the destination to the site host and the
   allowed_redirect_hosts filter.
 note: >-
-  Matches a GET, POST, REQUEST or COOKIE superglobal anywhere inside an argument
-  of wp_redirect. esc_url_raw and esc_url wrappers are transparent because they
-  do not restrict the host. A destination that reaches the call through a
+  Matches a GET, POST, REQUEST or COOKIE superglobal anywhere inside the first
+  argument of wp_redirect. Request data in the status or x_redirect_by argument
+  cannot set the target and is not matched. esc_url_raw and esc_url wrappers are
+  transparent because they do not restrict the host. A destination that reaches the call through a
   variable, or one already checked against wp_validate_redirect, is not seen.
   It complements php-open-redirect-superglobal, which covers the raw header call.
 utils:
@@ -26,5 +27,10 @@ rule:
     - has:
         field: arguments
         has:
-          stopBy: end
-          matches: request-superglobal
+          kind: argument
+          nthChild:
+            position: 1
+            ofRule: {kind: argument}
+          has:
+            stopBy: end
+            matches: request-superglobal

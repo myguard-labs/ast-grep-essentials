@@ -11,8 +11,9 @@ message: >-
   fstat/fchmod/fchown/openat family instead of re-resolving the path.
 note: >-
   The pairing is by identifier text only: the check and the action must pass the
-  same variable as their first argument somewhere in the same function
-  definition, in any order and with any statements between them. It cannot see
+  same variable as their first argument, and the check must appear in an earlier
+  statement of the same block than the statement holding the action, with any
+  statements between them. It cannot see
   whether the directory is attacker-writable, which is what decides
   exploitability, and it misses paths rebuilt into a different variable. A check
   used only to produce a nicer error message before an action that validates
@@ -27,13 +28,14 @@ rule:
         field: arguments
         has: {kind: identifier, pattern: $PATH}
     - inside:
-        kind: function_definition
         stopBy: end
-        has:
+        follows:
           stopBy: end
-          kind: call_expression
-          all:
-            - has: {field: function, regex: '^(access|stat|lstat|euidaccess|eaccess)$'}
-            - has:
-                field: arguments
-                has: {kind: identifier, pattern: $PATH}
+          has:
+            stopBy: end
+            kind: call_expression
+            all:
+              - has: {field: function, regex: '^(access|stat|lstat|euidaccess|eaccess)$'}
+              - has:
+                  field: arguments
+                  has: {kind: identifier, pattern: $PATH}

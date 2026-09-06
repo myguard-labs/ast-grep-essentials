@@ -11,7 +11,8 @@ note: >-
   body only returns, dies, or calls wp_die or exit. Loading admin assets behind
   such a guard is a legitimate use and the routine dismissal; the finding matters
   when the code after the guard changes state. A capability check performed
-  elsewhere in the function is not seen.
+  elsewhere in the function is not seen. A nonce check in the same condition
+  does not suppress the match: a nonce proves request intent, not capability.
 rule:
   kind: if_statement
   all:
@@ -30,7 +31,7 @@ rule:
                 kind: function_call_expression
                 has:
                   field: function
-                  regex: '(?i)^\\?(current_user_can|current_user_can_for_blog|user_can|is_super_admin|check_admin_referer|wp_verify_nonce|check_ajax_referer)$'
+                  regex: '(?i)^\\?(current_user_can|current_user_can_for_blog|user_can|is_super_admin)$'
     - has:
         field: body
         kind: compound_statement

@@ -7,6 +7,7 @@ valid:
   - 'int f(const char *path) { struct stat st; my_access(path, 4); return my_open(path, 1); }'
   - 'void f(void) { /* if (access(path, 4)) return -1; open(path, 1); */ }'
   - 'const char *s = "access(path, W_OK); open(path, O_WRONLY);";'
+  - 'int f(const char *path) { unlink(path); struct stat st; return stat(path, &st); }'
 invalid:
   - 'int f(const char *path) { if (access(path, 2) != 0) { return -1; } return open(path, 1); }'
   - 'FILE *f(const char *path) { struct stat st; if (stat(path, &st) != 0) { return 0; } return fopen(path, "w"); }'

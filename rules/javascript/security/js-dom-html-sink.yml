@@ -8,8 +8,8 @@ message: >-
   in the page origin. Assign textContent instead, or pass the value through a
   sanitizer that returns HTML.
 note: >-
-  Matches assignment to an innerHTML or outerHTML property, a document.write or
-  document.writeln call, an insertAdjacentHTML call, and a JSX
+  Matches plain and compound assignment to an innerHTML or outerHTML property, a
+  document.write or document.writeln call, an insertAdjacentHTML call, and a JSX
   dangerouslySetInnerHTML attribute, when the value is not a plain string
   literal. Calls to DOMPurify.sanitize and sanitizeHtml are treated as safe by
   name only. Provenance of the value is unknown, so trusted server-rendered
@@ -31,8 +31,10 @@ utils:
       - not: {matches: sanitized}
 rule:
   any:
-    - kind: assignment_expression
-      all:
+    - all:
+        - any:
+            - kind: assignment_expression
+            - kind: augmented_assignment_expression
         - has:
             field: left
             kind: member_expression

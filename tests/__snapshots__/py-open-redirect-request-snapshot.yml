@@ -26,10 +26,10 @@ snapshots:
       style: secondary
       start: 21
       end: 44
-    - source: request.GET.get("next")
+    - source: (request.GET.get("next"))
       style: secondary
-      start: 21
-      end: 44
+      start: 20
+      end: 45
   RedirectResponse(request.query_params["to"]):
     labels:
     - source: RedirectResponse(request.query_params["to"])
@@ -52,10 +52,10 @@ snapshots:
       style: secondary
       start: 17
       end: 43
-    - source: request.query_params["to"]
+    - source: (request.query_params["to"])
       style: secondary
-      start: 17
-      end: 43
+      start: 16
+      end: 44
   flask.redirect(request.form["next"]):
     labels:
     - source: flask.redirect(request.form["next"])
@@ -82,10 +82,44 @@ snapshots:
       style: secondary
       start: 15
       end: 35
-    - source: request.form["next"]
+    - source: (request.form["next"])
       style: secondary
-      start: 15
-      end: 35
+      start: 14
+      end: 36
+  redirect(location=request.args["next"]):
+    labels:
+    - source: redirect(location=request.args["next"])
+      style: primary
+      start: 0
+      end: 39
+    - source: redirect
+      style: secondary
+      start: 0
+      end: 8
+    - source: location
+      style: secondary
+      start: 9
+      end: 17
+    - source: request
+      style: secondary
+      start: 18
+      end: 25
+    - source: request.args
+      style: secondary
+      start: 18
+      end: 30
+    - source: request.args["next"]
+      style: secondary
+      start: 18
+      end: 38
+    - source: location=request.args["next"]
+      style: secondary
+      start: 9
+      end: 38
+    - source: (location=request.args["next"])
+      style: secondary
+      start: 8
+      end: 39
   redirect(request.args.get("next", "/")):
     labels:
     - source: redirect(request.args.get("next", "/"))
@@ -112,10 +146,10 @@ snapshots:
       style: secondary
       start: 9
       end: 38
-    - source: request.args.get("next", "/")
+    - source: (request.args.get("next", "/"))
       style: secondary
-      start: 9
-      end: 38
+      start: 8
+      end: 39
   redirect(request.args["next"]):
     labels:
     - source: redirect(request.args["next"])
@@ -138,7 +172,7 @@ snapshots:
       style: secondary
       start: 9
       end: 29
-    - source: request.args["next"]
+    - source: (request.args["next"])
       style: secondary
-      start: 9
-      end: 29
+      start: 8
+      end: 30

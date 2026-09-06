@@ -8,8 +8,10 @@ message: >-
   a local path resolve it with realpath and require the intended base prefix.
 note: >-
   Matches a GET, POST, REQUEST or COOKIE superglobal inside the target argument of
-  file_get_contents, fopen, readfile, copy, getimagesize, curl_init or
-  file, or inside the value argument of a curl_setopt call setting CURLOPT_URL.
+  file_get_contents, fopen, readfile, copy, getimagesize, curl_init, file,
+  simplexml_load_file or md5_file, or inside the value argument of a curl_setopt
+  call setting CURLOPT_URL. Request data in a CURLOPT_POSTFIELDS body or a
+  CURLOPT_FILE output stream is not a fetch target and is not matched.
   esc_url_raw and filter_var FILTER_VALIDATE_URL wrappers are transparent because
   a well-formed URL can still name an internal host. A basename wrapper does not
   suppress the match either, and a target held in a variable is not seen.
@@ -47,7 +49,7 @@ rule:
                 ofRule: {kind: argument}
               has:
                 kind: name
-                regex: '^CURLOPT_(URL|POSTFIELDS|FILE)$'
+                regex: '^CURLOPT_URL$'
         - has:
             field: arguments
             has:

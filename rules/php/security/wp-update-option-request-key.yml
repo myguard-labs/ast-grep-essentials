@@ -9,7 +9,9 @@ message: >-
 note: >-
   Matches a GET, POST, REQUEST, COOKIE or FILES superglobal inside the option-name
   argument of update_option, add_option, delete_option, update_site_option,
-  add_site_option or delete_site_option. Sanitizers around the name are
+  add_site_option or delete_site_option, and inside the second argument of
+  update_network_option, add_network_option or delete_network_option, which take
+  the network id first. Sanitizers around the name are
   transparent because they restrict characters, not which option is written. A
   name arriving through a variable or a foreach key is not seen, and the rule
   says nothing about a literal option name written with a request-derived value.
@@ -19,17 +21,32 @@ utils:
     regex: '^\$_(GET|POST|REQUEST|COOKIE|FILES)$'
 rule:
   kind: function_call_expression
-  all:
-    - has:
-        field: function
-        regex: '(?i)^\\?(update_option|add_option|delete_option|update_site_option|add_site_option|delete_site_option|update_network_option|delete_network_option)$'
-    - has:
-        field: arguments
-        has:
-          kind: argument
-          nthChild:
-            position: 1
-            ofRule: {kind: argument}
-          has:
-            stopBy: end
-            matches: request-superglobal
+  any:
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?(update_option|add_option|delete_option|update_site_option|add_site_option|delete_site_option)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 1
+                ofRule: {kind: argument}
+              has:
+                stopBy: end
+                matches: request-superglobal
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?(update_network_option|add_network_option|delete_network_option)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 2
+                ofRule: {kind: argument}
+              has:
+                stopBy: end
+                matches: request-superglobal

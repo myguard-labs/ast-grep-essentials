@@ -1,15 +1,20 @@
 id: js-jwt-algorithm-unpinned
 language: javascript
-severity: error
+severity: warning
 message: >-
   JWT accepted without pinning the signature algorithm, or with the none
-  algorithm permitted. A token whose header names none is then treated as
-  signed, and an RSA public key can be replayed as an HMAC secret, so any caller
-  can mint an administrator token. Pass an algorithms option listing exactly the
-  algorithm the issuer uses.
+  algorithm listed. Listing none lets a token that carries no signature verify.
+  Leaving the algorithms option out is a hardening gap rather than a bypass on
+  its own: jsonwebtoken v9 rejects none by default, but the verifier still
+  accepts every algorithm the key type allows, which is what makes an RSA public
+  key replayable as an HMAC secret on older versions and under mixed key
+  handling. Pass an algorithms option listing exactly the algorithm the issuer
+  uses.
 note: >-
   Matches a jwt.verify call that has no algorithms option, and any algorithms
-  array that contains the string none. It looks only at the call site, so an
+  array that contains the string none. The missing-option arm reports a
+  hardening gap, not a demonstrated bypass; the none arm is the concrete defect.
+  It looks only at the call site, so an
   options object built in a variable is reported as unpinned even when it does
   pin the algorithm. It does not cover jwt.decode, which never verifies at all.
 utils:

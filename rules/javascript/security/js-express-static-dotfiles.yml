@@ -7,9 +7,9 @@ message: >-
   and the full source history. Leave the dotfiles option at its default of
   ignore, or set it to deny.
 note: >-
-  Matches a dotfiles option whose value is the string allow in an
-  express.static or serveStatic options object, and an index option set to true
-  in the same APIs, which turns on directory listing. It does not check what the
+  Matches a dotfiles option whose value is the string allow in an express.static
+  or serveStatic options object. An index option is not matched: it selects an
+  index file rather than enabling a directory listing. It does not check what the
   served directory actually contains, so a purpose-built directory of dotfiles
   also matches.
 utils:
@@ -19,19 +19,16 @@ utils:
       field: function
       any:
         - kind: identifier
-          regex: '^(serveStatic|static)$'
+          regex: '^serveStatic$'
         - kind: member_expression
-          has: {field: property, regex: '^static$'}
+          all:
+            - has: {field: property, regex: '^static$'}
+            - has: {field: object, regex: '(^|\.)express$'}
 rule:
   kind: pair
   all:
     - inside:
         stopBy: end
         matches: static-call
-    - any:
-        - all:
-            - has: {field: key, regex: '^["'']?dotfiles["'']?$'}
-            - has: {field: value, kind: string, regex: '(?i)^["'']allow["'']$'}
-        - all:
-            - has: {field: key, regex: '^["'']?index["'']?$'}
-            - has: {field: value, kind: 'true'}
+    - has: {field: key, regex: '^["'']?dotfiles["'']?$'}
+    - has: {field: value, kind: string, regex: '(?i)^["'']allow["'']$'}

@@ -11,7 +11,8 @@ note: >-
   literal passed to wp_update_user or wp_insert_user. Sanitizers such as
   sanitize_text_field and sanitize_key are transparent because they do not
   restrict the value to a known role. A prior in_array allowlist check, or a
-  role that arrives through a variable, is not visible.
+  role that arrives through a variable, is not visible. add_cap is out of scope:
+  it takes a capability name rather than a role name.
 utils:
   request-superglobal:
     kind: variable_name
@@ -22,7 +23,7 @@ rule:
       all:
         - has:
             field: name
-            regex: '(?i)^(set_role|add_role|add_cap)$'
+            regex: '(?i)^(set_role|add_role)$'
         - has:
             field: arguments
             has:

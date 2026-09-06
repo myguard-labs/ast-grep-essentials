@@ -8,8 +8,9 @@ message: >-
   anything absent from that map.
 note: >-
   Matches a GET, POST, REQUEST or COOKIE superglobal in the callable argument of
-  call_user_func, call_user_func_array, array_map, array_filter, usort or uasort,
-  in a class name after new, or as the callee of a direct call. The superglobal
+  call_user_func, call_user_func_array, array_map, register_shutdown_function or
+  forward_static_call, in the second argument of array_filter, usort, uasort or
+  uksort, in a class name after new, or as the callee of a direct call. The superglobal
   subscript must be the whole callable expression, so an allowlist lookup that
   merely indexes a local map with request data does not match. A callable
   assembled into a variable in a preceding statement is not seen, and a
@@ -36,13 +37,28 @@ rule:
       all:
         - has:
             field: function
-            regex: '(?i)^\\?(call_user_func|call_user_func_array|array_map|array_filter|usort|uasort|uksort|register_shutdown_function|forward_static_call)$'
+            regex: '(?i)^\\?(call_user_func|call_user_func_array|array_map|register_shutdown_function|forward_static_call)$'
         - has:
             field: arguments
             has:
               kind: argument
               nthChild:
                 position: 1
+                ofRule: {kind: argument}
+              has:
+                nthChild: 1
+                matches: request-value
+    - kind: function_call_expression
+      all:
+        - has:
+            field: function
+            regex: '(?i)^\\?(array_filter|usort|uasort|uksort)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 2
                 ofRule: {kind: argument}
               has:
                 nthChild: 1

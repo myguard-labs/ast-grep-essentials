@@ -8,8 +8,9 @@ message: >-
   caller who has it forges tokens. Pin exactly one algorithm on both encode and
   decode.
 note: >-
-  Fires on an algorithms list or an algorithm keyword containing the string none,
-  and on an algorithms list containing both an HS entry and an RS, ES or PS
+  Fires on an algorithms or algorithm keyword argument of a jwt.encode,
+  jwt.decode, jwt_encode or jwt_decode call whose value is the string none or a
+  list containing it, and on such a list containing both an HS entry and an RS, ES or PS
   entry. A list assembled from configuration or a constant defined elsewhere is
   not seen. A deliberate rollover window that accepts two algorithms of the same
   family is not matched and is the routine dismissal for two-entry lists.
@@ -23,10 +24,22 @@ utils:
   alg-asymmetric:
     kind: string
     regex: '^["''](RS|ES|PS)(256|384|512)["'']$'
+  jwt-call:
+    kind: call
+    has:
+      field: function
+      any:
+        - kind: attribute
+          all:
+            - has: {field: attribute, regex: '^(encode|decode)$'}
+            - has: {field: object, regex: '(^|\.)jwt$'}
+        - kind: identifier
+          regex: '^(jwt_encode|jwt_decode)$'
 rule:
   kind: keyword_argument
   all:
     - has: {field: name, regex: '^algorithms?$'}
+    - inside: {stopBy: end, matches: jwt-call}
     - has:
         field: value
         any:
