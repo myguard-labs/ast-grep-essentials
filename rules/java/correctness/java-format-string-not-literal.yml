@@ -9,11 +9,12 @@ message: >-
   records. Pass a literal format and put the variable in an argument slot.
 note: >-
   Matches String.format, String.formatted, printf and format calls on a
-  PrintStream or writer receiver whose first argument is not a string literal,
-  When the first argument is a Locale constant or a variable named locale, the
-  second argument is inspected instead, so the locale-first overloads are handled
-  rather than reported. A constant format string held in
-  a field is also reported, because the matcher cannot resolve it.
+  PrintStream or writer receiver whose first argument is not a string literal.
+  When the first argument is a Locale constant or a variable whose name ends in
+  loc or locale, the second argument is inspected instead. A locale-first
+  overload whose Locale argument is named anything else is still reported, which
+  is a known false positive. A constant format string held in a field is also
+  reported, because the matcher cannot resolve it.
 rule:
   kind: method_invocation
   all:
@@ -32,14 +33,14 @@ rule:
               - not:
                   has:
                     nthChild: 1
-                    regex: '(^|\.)(Locale\.[A-Z_]+|locale)$'
+                    regex: '(?i)(^|\.)(Locale\.[A-Z_]+|[a-z0-9_]*loc(ale)?)$'
               - has:
                   nthChild: 1
                   not: {kind: string_literal}
           - all:
               - has:
                   nthChild: 1
-                  regex: '(^|\.)(Locale\.[A-Z_]+|locale)$'
+                  regex: '(?i)(^|\.)(Locale\.[A-Z_]+|[a-z0-9_]*loc(ale)?)$'
               - has:
                   nthChild: 2
                   not: {kind: string_literal}
