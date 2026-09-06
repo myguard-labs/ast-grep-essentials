@@ -1,0 +1,32 @@
+id: wp-check-ajax-referer-nodie-unchecked
+language: php
+severity: error
+message: >-
+  check_ajax_referer is called with the stop argument set to false, which makes
+  it return instead of dying, and its result is discarded because the call is a
+  bare statement. A forged AJAX request runs the handler. Branch on the return
+  value, or drop the false so the function terminates the request itself.
+note: >-
+  Matches only an expression statement whose whole expression is the call and
+  whose third positional argument is the literal false. A stop argument supplied
+  through a variable or a named argument, or a result assigned and then ignored,
+  is not matched. The two-argument form dies on failure and is correct.
+rule:
+  kind: expression_statement
+  has:
+    nthChild: 1
+    kind: function_call_expression
+    all:
+      - has:
+          field: function
+          regex: '(?i)^\\?check_ajax_referer$'
+      - has:
+          field: arguments
+          has:
+            kind: argument
+            nthChild:
+              position: 3
+              ofRule: {kind: argument}
+            has:
+              kind: boolean
+              regex: '(?i)^false$'

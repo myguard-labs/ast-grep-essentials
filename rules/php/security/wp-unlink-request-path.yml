@@ -1,0 +1,31 @@
+id: wp-unlink-request-path
+language: php
+severity: error
+message: >-
+  A file-deletion call builds its path from request data, so path traversal in
+  that value deletes any file the web user owns; deleting wp-config.php puts the
+  site back into the installer and hands it to the attacker. Resolve the path
+  with realpath and require it to start with the intended base directory before
+  deleting.
+note: >-
+  Matches a GET, POST, REQUEST, COOKIE or FILES superglobal anywhere inside an
+  argument of unlink, rmdir, wp_delete_file or wp_delete_file_from_directory.
+  sanitize_text_field, esc_attr and wp_unslash wrappers are transparent because
+  none of them removes a traversal sequence; a basename call around the value is
+  not treated as safe by this rule either, so a basename-guarded delete is the
+  routine dismissal. A path assembled in a preceding statement is not seen.
+utils:
+  request-superglobal:
+    kind: variable_name
+    regex: '^\$_(GET|POST|REQUEST|COOKIE|FILES)$'
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?(unlink|rmdir|wp_delete_file|wp_delete_file_from_directory)$'
+    - has:
+        field: arguments
+        has:
+          stopBy: end
+          matches: request-superglobal

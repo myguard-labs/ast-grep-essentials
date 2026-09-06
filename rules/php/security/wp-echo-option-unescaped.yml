@@ -1,0 +1,36 @@
+id: wp-echo-option-unescaped
+language: php
+severity: warning
+message: >-
+  A stored WordPress value is echoed without an escaping function, so any markup
+  saved into that option or meta field runs as script in the visitor's browser.
+  Wrap the value for its output context with esc_html, esc_attr, esc_url or
+  wp_kses_post.
+note: >-
+  Matches an echo or print whose statement contains a get_option, get_site_option,
+  get_post_meta, get_user_meta, get_term_meta or get_theme_mod call that is not
+  inside esc_html, esc_attr, esc_url, esc_js, esc_textarea, wp_kses, wp_kses_post,
+  absint, intval or number_format. It does not check that the chosen escaper suits
+  the surrounding context, so esc_html on a value placed in an href still passes.
+  A value fetched in a preceding statement and echoed later is not seen.
+utils:
+  wp-escaper:
+    kind: function_call_expression
+    has:
+      field: function
+      regex: '(?i)^\\?(esc_html|esc_attr|esc_url|esc_js|esc_textarea|esc_html__|esc_attr__|esc_html_e|esc_attr_e|wp_kses|wp_kses_post|wp_kses_data|absint|intval|number_format|sanitize_hex_color)$'
+rule:
+  all:
+    - any:
+        - kind: echo_statement
+        - kind: print_intrinsic
+    - has:
+        stopBy: end
+        kind: function_call_expression
+        has:
+          field: function
+          regex: '(?i)^\\?(get_option|get_site_option|get_network_option|get_post_meta|get_user_meta|get_term_meta|get_theme_mod)$'
+        not:
+          inside:
+            stopBy: end
+            matches: wp-escaper

@@ -1,0 +1,60 @@
+id: php-fetch-request-url
+language: php
+severity: error
+message: >-
+  A fetch or stream-open call takes its target from request data, so a caller can
+  read local files through the file and php wrappers or reach internal services
+  and cloud metadata endpoints. Restrict the value to an allowlisted host, or for
+  a local path resolve it with realpath and require the intended base prefix.
+note: >-
+  Matches a GET, POST, REQUEST or COOKIE superglobal inside the target argument of
+  file_get_contents, fopen, readfile, copy, getimagesize, curl_init or
+  file, or inside the value argument of a curl_setopt call setting CURLOPT_URL.
+  esc_url_raw and filter_var FILTER_VALIDATE_URL wrappers are transparent because
+  a well-formed URL can still name an internal host. A basename wrapper does not
+  suppress the match either, and a target held in a variable is not seen.
+utils:
+  request-superglobal:
+    kind: variable_name
+    regex: '^\$_(GET|POST|REQUEST|COOKIE)$'
+rule:
+  kind: function_call_expression
+  any:
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?(file_get_contents|fopen|readfile|copy|getimagesize|curl_init|file|simplexml_load_file|md5_file)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 1
+                ofRule: {kind: argument}
+              has:
+                stopBy: end
+                matches: request-superglobal
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?curl_setopt$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 2
+                ofRule: {kind: argument}
+              has:
+                kind: name
+                regex: '^CURLOPT_(URL|POSTFIELDS|FILE)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 3
+                ofRule: {kind: argument}
+              has:
+                stopBy: end
+                matches: request-superglobal

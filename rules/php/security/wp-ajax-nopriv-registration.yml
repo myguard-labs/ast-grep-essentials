@@ -1,0 +1,32 @@
+id: wp-ajax-nopriv-registration
+language: php
+severity: warning
+message: >-
+  An add_action call registers a wp_ajax_nopriv_ hook, which exposes the handler
+  to unauthenticated visitors over admin-ajax.php. Confirm the handler performs
+  its own authorization; a nonce alone is not an access check because nonces are
+  routinely printed into public pages.
+note: >-
+  Matches the hook-name literal only: the first argument of add_action or
+  add_filter beginning with wp_ajax_nopriv_. It is an inventory rule and does
+  not inspect the handler body, so a genuinely public front-end endpoint that
+  reads nothing privileged is the routine dismissal. A hook name assembled from
+  a variable is not seen.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?(add_action|add_filter)$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          nthChild:
+            position: 1
+            ofRule: {kind: argument}
+          has:
+            any:
+              - kind: string
+              - kind: encapsed_string
+            regex: '^["\x27]wp_ajax_nopriv_'

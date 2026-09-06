@@ -1,0 +1,58 @@
+id: wp-update-user-meta-request-key
+language: php
+severity: error
+message: >-
+  A user-meta write takes its meta key straight from request data, so a caller
+  can name wp_capabilities and grant itself the administrator role. Accept only
+  keys from a fixed allowlist and never derive the key from input.
+note: >-
+  Matches a GET, POST, REQUEST, COOKIE or FILES superglobal appearing inside the
+  meta-key argument of update_user_meta, add_user_meta, or update_metadata /
+  add_metadata called with a literal 'user' object type. Wrapper sanitizers such
+  as sanitize_key or sanitize_text_field are treated as transparent because they
+  restrict characters, not which key is written. A key that reaches the call
+  through a variable, a foreach key, or a REST request accessor is not seen.
+utils:
+  request-superglobal:
+    kind: variable_name
+    regex: '^\$_(GET|POST|REQUEST|COOKIE|FILES)$'
+rule:
+  kind: function_call_expression
+  any:
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?(update_user_meta|add_user_meta)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 2
+                ofRule: {kind: argument}
+              has:
+                stopBy: end
+                matches: request-superglobal
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?(update_metadata|add_metadata)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 1
+                ofRule: {kind: argument}
+              has:
+                regex: '^["\x27]user["\x27]$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 3
+                ofRule: {kind: argument}
+              has:
+                stopBy: end
+                matches: request-superglobal

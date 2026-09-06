@@ -1,0 +1,16 @@
+id: wp-update-user-role-request
+valid:
+- "<?php $user->set_role( $role );"
+- "<?php $user->set_role( 'subscriber' );"
+- "<?php $user->set_name( $_POST['role'] );"
+- "<?php wp_update_user( array( 'ID' => $id, 'role' => 'subscriber' ) );"
+- "<?php wp_update_user( array( 'ID' => $_POST['role'], 'role' => 'subscriber' ) );"
+- "<?php $a = array( 'role' => $_POST['role'] );"
+- "<?php /* $user->set_role( $_POST['role'] ); */"
+- "<?php $s = '$user->set_role( $_POST[role] )';"
+invalid:
+- "<?php $user->set_role( $_POST['role'] );"
+- "<?php $user->add_role( $_REQUEST['r'] );"
+- "<?php $user->add_cap( $_GET['cap'] );"
+- "<?php wp_update_user( array( 'ID' => $user_id, 'role' => sanitize_text_field( $_REQUEST['role'] ) ) );"
+- "<?php wp_insert_user( array( 'user_login' => $l, 'role' => $_POST['role'] ) );"

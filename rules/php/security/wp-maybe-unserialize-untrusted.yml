@@ -1,0 +1,35 @@
+id: wp-maybe-unserialize-untrusted
+language: php
+severity: error
+message: >-
+  maybe_unserialize is applied to request data or to a remote HTTP response body,
+  so an attacker supplies a serialized payload and PHP instantiates classes and
+  runs their destructors and wakeup hooks. Transport this data as JSON, or verify
+  it with a keyed signature before deserializing.
+note: >-
+  Matches a GET, POST, REQUEST, COOKIE or FILES superglobal, or a
+  wp_remote_retrieve_body call, inside an argument of maybe_unserialize. A
+  base64_decode or wp_unslash wrapper is transparent. The legitimate sources
+  get_option, get_post_meta and get_user_meta do not match, and a payload that
+  reaches the call through a variable is not seen. php-unserialize covers the
+  plain unserialize function.
+utils:
+  untrusted-source:
+    any:
+      - kind: variable_name
+        regex: '^\$_(GET|POST|REQUEST|COOKIE|FILES)$'
+      - kind: function_call_expression
+        has:
+          field: function
+          regex: '(?i)^\\?wp_remote_retrieve_body$'
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?maybe_unserialize$'
+    - has:
+        field: arguments
+        has:
+          stopBy: end
+          matches: untrusted-source

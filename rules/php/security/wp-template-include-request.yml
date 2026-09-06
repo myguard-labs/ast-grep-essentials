@@ -1,0 +1,36 @@
+id: wp-template-include-request
+language: php
+severity: error
+message: >-
+  A template-loading call builds its path from request data or from shortcode
+  attributes, so a caller chooses which PHP file the site executes; combined with
+  a media upload this becomes remote code execution. Resolve the requested name
+  through a fixed allowlist of template slugs.
+note: >-
+  Matches a GET, POST, REQUEST or COOKIE superglobal, or a subscript of a
+  variable named $atts or $attributes, inside an argument of get_template_part,
+  locate_template, load_template or get_extended_template_part. The $atts name is
+  a shortcode convention rather than a guarantee, and a slug that reaches the
+  call through another variable is not seen. It complements
+  php-file-inclusion-variable, which covers include and require.
+utils:
+  request-source:
+    any:
+      - kind: variable_name
+        regex: '^\$_(GET|POST|REQUEST|COOKIE)$'
+      - kind: subscript_expression
+        has:
+          nthChild: 1
+          kind: variable_name
+          regex: '(?i)^\$(atts|attributes|shortcode_atts)$'
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?(get_template_part|locate_template|load_template|get_extended_template_part)$'
+    - has:
+        field: arguments
+        has:
+          stopBy: end
+          matches: request-source

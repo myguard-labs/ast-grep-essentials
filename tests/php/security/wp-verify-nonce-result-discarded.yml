@@ -1,0 +1,12 @@
+id: wp-verify-nonce-result-discarded
+valid:
+- "<?php if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'save' ) ) { wp_die( 'bad nonce' ); }"
+- "<?php $ok = wp_verify_nonce( $_POST['_wpnonce'], 'save' );"
+- "<?php return wp_verify_nonce( $n, 'save' );"
+- "<?php wp_create_nonce( 'save' );"
+- "<?php check_admin_referer( 'save' );"
+- "<?php /* wp_verify_nonce( $_POST['_wpnonce'], 'save' ); */"
+- "<?php $s = \"wp_verify_nonce( \\$n, 'save' );\";"
+invalid:
+- "<?php wp_verify_nonce( $_POST['_wpnonce'], 'myplugin_save' );"
+- "<?php \\WP_VERIFY_NONCE( $n, 'save' );"

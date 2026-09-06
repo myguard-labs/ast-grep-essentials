@@ -1,0 +1,30 @@
+id: wp-redirect-not-safe
+language: php
+severity: error
+message: >-
+  wp_redirect sends its argument as the Location header without validating the
+  host, and here the target comes from request data, so an attacker can bounce
+  visitors to a phishing site that looks like it came from this one. Use
+  wp_safe_redirect, which restricts the destination to the site host and the
+  allowed_redirect_hosts filter.
+note: >-
+  Matches a GET, POST, REQUEST or COOKIE superglobal anywhere inside an argument
+  of wp_redirect. esc_url_raw and esc_url wrappers are transparent because they
+  do not restrict the host. A destination that reaches the call through a
+  variable, or one already checked against wp_validate_redirect, is not seen.
+  It complements php-open-redirect-superglobal, which covers the raw header call.
+utils:
+  request-superglobal:
+    kind: variable_name
+    regex: '^\$_(GET|POST|REQUEST|COOKIE)$'
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?wp_redirect$'
+    - has:
+        field: arguments
+        has:
+          stopBy: end
+          matches: request-superglobal

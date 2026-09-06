@@ -1,0 +1,40 @@
+id: wp-unzip-file-request
+language: php
+severity: error
+message: >-
+  An archive extraction reads its source or its destination from request data, so
+  a caller supplies both the entries and where they land and can drop a PHP file
+  into the webroot. Extract only archives the site itself produced, into a
+  generated directory, and reject entries whose resolved path escapes it.
+note: >-
+  Matches a GET, POST, REQUEST, COOKIE or FILES superglobal in any argument of
+  unzip_file, or in the extractTo or extract argument of a method call. Even a
+  fixed destination is unsafe when entry names are not filtered, so a match with
+  a literal target still needs review rather than dismissal. An archive path held
+  in a variable is not seen.
+utils:
+  request-superglobal:
+    kind: variable_name
+    regex: '^\$_(GET|POST|REQUEST|COOKIE|FILES)$'
+rule:
+  any:
+    - kind: function_call_expression
+      all:
+        - has:
+            field: function
+            regex: '(?i)^\\?unzip_file$'
+        - has:
+            field: arguments
+            has:
+              stopBy: end
+              matches: request-superglobal
+    - kind: member_call_expression
+      all:
+        - has:
+            field: name
+            regex: '(?i)^(extractTo|extract)$'
+        - has:
+            field: arguments
+            has:
+              stopBy: end
+              matches: request-superglobal

@@ -1,0 +1,12 @@
+id: wp-wpdb-prepare-quoted-placeholder
+valid:
+- "<?php $row = $wpdb->get_row( $wpdb->prepare( \"SELECT * FROM t WHERE email = %s\", $email ) );"
+- "<?php $row = $wpdb->prepare( 'SELECT * FROM t WHERE id = %d', $id );"
+- "<?php $row = $wpdb->query( \"SELECT * FROM t WHERE e = '%s'\" );"
+- "<?php $row = $stmt->prepare( \"SELECT * FROM t WHERE e = '%s'\" );"
+- "<?php /* $wpdb->prepare( \"SELECT e = '%s'\", $e ); */"
+- "<?php $s = \"prepare SELECT e = '%s'\";"
+invalid:
+- "<?php $row = $wpdb->get_row( $wpdb->prepare( \"SELECT * FROM t WHERE email = '%s'\", $email ) );"
+- "<?php $row = $wpdb->prepare( 'SELECT * FROM t WHERE id = \"%d\"', $id );"
+- "<?php $row = $mydb->prepare( \"SELECT * FROM t WHERE n = '%1\\$s'\", $n );"

@@ -1,0 +1,52 @@
+id: wp-is-admin-as-authorization
+language: php
+severity: warning
+message: >-
+  is_admin only reports that the request targets the admin area, not that the
+  caller is an administrator, and it is true for every logged-in user reaching
+  admin-ajax.php. Using it as the sole guard before a privileged action
+  authorizes subscribers. Check a capability with current_user_can instead.
+note: >-
+  Matches an if statement whose condition is is_admin, or its negation, and whose
+  body only returns, dies, or calls wp_die or exit. Loading admin assets behind
+  such a guard is a legitimate use and the routine dismissal; the finding matters
+  when the code after the guard changes state. A capability check performed
+  elsewhere in the function is not seen.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        field: condition
+        all:
+          - has:
+              stopBy: end
+              kind: function_call_expression
+              has:
+                field: function
+                regex: '(?i)^\\?is_admin$'
+          - not:
+              has:
+                stopBy: end
+                kind: function_call_expression
+                has:
+                  field: function
+                  regex: '(?i)^\\?(current_user_can|current_user_can_for_blog|user_can|is_super_admin|check_admin_referer|wp_verify_nonce|check_ajax_referer)$'
+    - has:
+        field: body
+        kind: compound_statement
+        all:
+          - has:
+              nthChild: 1
+              any:
+                - kind: return_statement
+                - kind: exit_statement
+                - all:
+                    - kind: expression_statement
+                    - has:
+                        kind: function_call_expression
+                        has:
+                          field: function
+                          regex: '(?i)^\\?(wp_die|die|exit|wp_send_json_error)$'
+          - not:
+              has:
+                nthChild: 2

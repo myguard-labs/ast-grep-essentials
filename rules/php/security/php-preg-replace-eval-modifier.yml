@@ -1,0 +1,34 @@
+id: php-preg-replace-eval-modifier
+language: php
+severity: error
+message: >-
+  A preg_replace pattern carries the e modifier, which makes PHP evaluate the
+  replacement string as code with the captured groups substituted into it, so any
+  attacker-influenced subject becomes code execution. The modifier was removed in
+  PHP 7.0; use preg_replace_callback.
+note: >-
+  Regex-matches the modifier letters after the closing delimiter of a literal
+  pattern in the first argument of preg_replace, for the common delimiters
+  slash, hash, tilde, bang, percent, brace and parenthesis. A
+  pattern assembled in a variable is not seen. On PHP 7 and later the call fails
+  instead of executing, which is the routine dismissal for legacy code that still
+  needs the modifier removed.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?preg_replace$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          nthChild:
+            position: 1
+            ofRule: {kind: argument}
+          has:
+            stopBy: end
+            any:
+              - kind: string
+              - kind: encapsed_string
+            regex: '^["\x27](/[^/]*/|#[^#]*#|~[^~]*~|![^!]*!|%[^%]*%|\{.*\}|\(.*\))[imsxuADSUXJ]*e[imsxuADSUXJ]*["\x27]$'

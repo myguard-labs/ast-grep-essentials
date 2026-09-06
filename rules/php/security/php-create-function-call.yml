@@ -1,0 +1,18 @@
+id: php-create-function-call
+language: php
+severity: error
+message: >-
+  create_function compiles its body string with eval, so any request-derived
+  fragment in that string is remote code execution; the function was removed in
+  PHP 8.0 and the call is a fatal error there. Replace it with a closure or an
+  arrow function.
+note: >-
+  Matches the call by name, including a leading namespace separator and any
+  letter case. A same-named method or namespaced userland function would also
+  match; on PHP 8 the call cannot run at all, which is the routine dismissal for
+  dead legacy code that still needs removing.
+rule:
+  kind: function_call_expression
+  has:
+    field: function
+    regex: '(?i)^\\?create_function$'

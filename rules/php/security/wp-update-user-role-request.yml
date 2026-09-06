@@ -1,0 +1,51 @@
+id: wp-update-user-role-request
+language: php
+severity: error
+message: >-
+  A role assignment takes its role name from request data, so a caller can name
+  administrator and escalate. Map the input through a fixed allowlist of roles
+  the current user is permitted to grant before assigning it.
+note: >-
+  Matches a GET, POST, REQUEST or COOKIE superglobal inside the role argument of
+  set_role or add_role called on an object, or inside a 'role' entry of an array
+  literal passed to wp_update_user or wp_insert_user. Sanitizers such as
+  sanitize_text_field and sanitize_key are transparent because they do not
+  restrict the value to a known role. A prior in_array allowlist check, or a
+  role that arrives through a variable, is not visible.
+utils:
+  request-superglobal:
+    kind: variable_name
+    regex: '^\$_(GET|POST|REQUEST|COOKIE)$'
+rule:
+  any:
+    - kind: member_call_expression
+      all:
+        - has:
+            field: name
+            regex: '(?i)^(set_role|add_role|add_cap)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 1
+                ofRule: {kind: argument}
+              has:
+                stopBy: end
+                matches: request-superglobal
+    - kind: array_element_initializer
+      all:
+        - has:
+            nthChild: 1
+            regex: '^["\x27]role["\x27]$'
+        - has:
+            nthChild: 2
+            has:
+              stopBy: end
+              matches: request-superglobal
+        - inside:
+            stopBy: end
+            kind: function_call_expression
+            has:
+              field: function
+              regex: '(?i)^\\?(wp_update_user|wp_insert_user)$'

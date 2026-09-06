@@ -1,0 +1,57 @@
+id: php-dynamic-callable-from-request
+language: php
+severity: error
+message: >-
+  Request data is used as a callable, so the caller chooses which function the
+  application runs and reaches every reachable function in the process. Dispatch
+  through a fixed map from an input token to an internal handler name and reject
+  anything absent from that map.
+note: >-
+  Matches a GET, POST, REQUEST or COOKIE superglobal in the callable argument of
+  call_user_func, call_user_func_array, array_map, array_filter, usort or uasort,
+  in a class name after new, or as the callee of a direct call. The superglobal
+  subscript must be the whole callable expression, so an allowlist lookup that
+  merely indexes a local map with request data does not match. A callable
+  assembled into a variable in a preceding statement is not seen, and a
+  superglobal in a non-callable argument of the same function does not match.
+utils:
+  request-superglobal:
+    kind: variable_name
+    regex: '^\$_(GET|POST|REQUEST|COOKIE)$'
+  request-value:
+    any:
+      - matches: request-superglobal
+      - kind: subscript_expression
+        has:
+          nthChild: 1
+          any:
+            - matches: request-superglobal
+            - kind: subscript_expression
+              has:
+                nthChild: 1
+                matches: request-superglobal
+rule:
+  any:
+    - kind: function_call_expression
+      all:
+        - has:
+            field: function
+            regex: '(?i)^\\?(call_user_func|call_user_func_array|array_map|array_filter|usort|uasort|uksort|register_shutdown_function|forward_static_call)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 1
+                ofRule: {kind: argument}
+              has:
+                nthChild: 1
+                matches: request-value
+    - kind: function_call_expression
+      has:
+        field: function
+        matches: request-value
+    - kind: object_creation_expression
+      has:
+        nthChild: 1
+        matches: request-value

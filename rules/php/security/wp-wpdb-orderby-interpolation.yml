@@ -1,0 +1,32 @@
+id: wp-wpdb-orderby-interpolation
+language: php
+severity: error
+message: >-
+  A variable is interpolated into an ORDER BY, GROUP BY or LIMIT clause of a
+  wpdb query. Placeholders cannot be used for identifiers or sort directions, so
+  prepare offers no protection here. Resolve the column and direction through a
+  fixed allowlist and cast the limit to an integer.
+note: >-
+  Regex-matches an interpolated variable directly after ORDER BY, GROUP BY,
+  LIMIT or OFFSET in a SQL literal passed to a wpdb method. The wpdb-owned
+  {$wpdb->prefix} and {$wpdb->posts} forms are excluded, but the rule cannot see
+  an allowlist applied to the variable in a preceding statement, so a query that
+  already restricts the column to a fixed set still matches and is the routine
+  dismissal after that check is confirmed.
+rule:
+  kind: member_call_expression
+  all:
+    - has:
+        field: name
+        regex: '(?i)^(prepare|query|get_var|get_row|get_col|get_results)$'
+    - has:
+        field: object
+        kind: variable_name
+        regex: '(?i)^\$[a-z_][a-z0-9_]*db$'
+    - has:
+        field: arguments
+        stopBy: end
+        has:
+          stopBy: end
+          kind: encapsed_string
+          regex: '(?is)\b(ORDER\s+BY|GROUP\s+BY|LIMIT|OFFSET)\b[^"$]{0,40}\{?\$([A-Za-ce-z_]|w[A-Za-oq-z_]|wp[A-Za-ce-z_]|wpd[A-Za-ac-z_])'
