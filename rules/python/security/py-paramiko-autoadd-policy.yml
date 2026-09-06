@@ -1,0 +1,37 @@
+id: py-paramiko-autoadd-policy
+language: python
+severity: error
+message: >-
+  SSH client set to accept unknown host keys. AutoAddPolicy and WarningPolicy
+  trust whatever key answers on the first connection, so anyone able to redirect
+  the TCP session reads the credentials and the commands sent over it. Load the
+  known-hosts file and leave the missing-key policy at RejectPolicy.
+note: >-
+  Fires on a set_missing_host_key_policy call whose argument names AutoAddPolicy
+  or WarningPolicy, qualified or bare, as a class or an instance. A policy
+  stored in a variable first, or a custom policy class that auto-accepts, is not
+  seen. A throwaway lab host whose key is pinned by other means is the routine
+  dismissal.
+utils:
+  unsafe-policy-name:
+    regex: '(^|\.)(AutoAddPolicy|WarningPolicy)$'
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        kind: attribute
+        has: {field: attribute, regex: '^set_missing_host_key_policy$'}
+    - has:
+        field: arguments
+        has:
+          nthChild:
+            position: 1
+            ofRule:
+              not: {kind: comment}
+          any:
+            - matches: unsafe-policy-name
+            - kind: call
+              has:
+                field: function
+                matches: unsafe-policy-name

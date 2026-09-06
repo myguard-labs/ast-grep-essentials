@@ -1,0 +1,15 @@
+id: py-cryptography-weak-primitives
+valid:
+- Cipher(algorithms.AES(k), modes.GCM(iv))
+- pub.encrypt(msg, padding.OAEP(mgf=mgf, algorithm=h, label=None))
+- rsa.generate_private_key(public_exponent=65537, key_size=3072)
+- pub.verify(sig, msg, padding.PKCS1v15(), hashes.SHA256())
+- Cipher(algorithms.ChaCha20(k, n), None)
+- key_size = 1024
+- '# modes.ECB()'
+- text = 'modes.ECB()'
+invalid:
+- Cipher(algorithms.AES(k), modes.ECB())
+- ct = pub.encrypt(msg, padding.PKCS1v15())
+- rsa.generate_private_key(public_exponent=65537, key_size=1024)
+- Cipher(algorithms.TripleDES(k), modes.CBC(iv))

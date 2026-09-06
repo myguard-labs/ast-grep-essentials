@@ -1,0 +1,56 @@
+id: py-open-redirect-request
+language: python
+severity: error
+message: >-
+  Redirect target taken straight from the incoming request. A caller who sets the
+  parameter sends the victim to any origin while the link still starts on this
+  site, which is how credential-phishing and OAuth token theft chains begin.
+  Validate the target against an allowlist of paths or hosts, or redirect to a
+  name the router resolves.
+note: >-
+  Fires when redirect, HttpResponseRedirect or RedirectResponse receives a first
+  argument that reads through a request object, including args, GET, POST, form,
+  query_params, headers, data and json. A target copied into a variable first,
+  and any validation performed on that variable, is not seen. A redirect whose
+  value the framework already constrained to a path is the routine dismissal.
+utils:
+  request-root:
+    any:
+      - kind: identifier
+        regex: '^request$'
+      - kind: attribute
+        has:
+          field: object
+          matches: request-root
+      - kind: subscript
+        has:
+          field: value
+          matches: request-root
+      - kind: call
+        has:
+          field: function
+          matches: request-root
+  request-derived:
+    all:
+      - matches: request-root
+      - not: {kind: identifier}
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        any:
+          - kind: identifier
+            regex: '^(redirect|HttpResponseRedirect|RedirectResponse)$'
+          - kind: attribute
+            has:
+              field: attribute
+              regex: '^(redirect|HttpResponseRedirect|RedirectResponse)$'
+    - has:
+        field: arguments
+        has:
+          nthChild:
+            position: 1
+            ofRule:
+              not: {kind: comment}
+          matches: request-derived

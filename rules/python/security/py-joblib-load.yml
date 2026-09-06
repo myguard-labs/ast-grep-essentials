@@ -1,0 +1,23 @@
+id: py-joblib-load
+language: python
+severity: warning
+message: >-
+  joblib load reads a pickle stream, so a crafted model file executes arbitrary
+  code when it is loaded. Restrict these files to artifacts the deployment built
+  itself, verify them with a signature or digest before loading, or move to a
+  format that carries no Python objects such as safetensors or ONNX.
+note: >-
+  Fires on a joblib load call, including the sklearn.externals.joblib spelling.
+  It reports the sink only: the matcher cannot see where the file came from, so
+  a literal path under a directory no user can write is the routine dismissal.
+  An import-time alias of joblib is not resolved.
+rule:
+  kind: call
+  has:
+    field: function
+    kind: attribute
+    all:
+      - has:
+          field: object
+          regex: 'joblib$'
+      - has: {field: attribute, regex: '^load$'}

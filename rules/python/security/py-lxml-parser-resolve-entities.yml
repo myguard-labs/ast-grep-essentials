@@ -1,0 +1,35 @@
+id: py-lxml-parser-resolve-entities
+language: python
+severity: warning
+message: >-
+  lxml XMLParser constructed without resolve_entities=False still expands
+  declared entities, so untrusted XML can read local files through an external
+  entity or exhaust memory with a billion-laughs expansion. Construct it with
+  resolve_entities=False, no_network=True and load_dtd=False, or parse with
+  defusedxml.
+note: >-
+  Fires on an XMLParser or ETCompatXMLParser construction, qualified or bare,
+  whose argument list has no literal False for resolve_entities. It does not
+  check where the parsed document comes from, and a parser reused only for
+  documents the deployment generated is the routine dismissal. Whether the name
+  resolves to lxml.etree or to another module is not determined.
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        any:
+          - kind: identifier
+            regex: '^(XMLParser|ETCompatXMLParser)$'
+          - kind: attribute
+            has:
+              field: attribute
+              regex: '^(XMLParser|ETCompatXMLParser)$'
+    - not:
+        has:
+          field: arguments
+          has:
+            kind: keyword_argument
+            all:
+              - has: {field: name, regex: '^resolve_entities$'}
+              - has: {field: value, regex: '^False$'}

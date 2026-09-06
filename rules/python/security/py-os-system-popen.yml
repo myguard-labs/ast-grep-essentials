@@ -1,0 +1,55 @@
+id: py-os-system-popen
+language: python
+severity: error
+message: >-
+  Shell command assembled at runtime. os.system, os.popen and the subprocess
+  getoutput helpers always run their argument through a shell, so a semicolon or
+  a backtick anywhere in the interpolated value runs a second command with the
+  process's privileges. Build an argument list and call subprocess.run without a
+  shell.
+note: >-
+  Fires on os.system, os.popen, subprocess.getoutput, subprocess.getstatusoutput
+  or commands.getoutput whose first argument is an f-string with an
+  interpolation, a concatenation or a percent expression involving a string
+  literal, or a format call on a string literal. A command built into a variable
+  first is not seen, and a value passed through shlex.quote is still matched.
+  Interpolating only a value the program itself produced is the routine
+  dismissal.
+utils:
+  runtime-built-command:
+    any:
+      - kind: string
+        has:
+          kind: interpolation
+      - kind: binary_operator
+        has:
+          stopBy: end
+          kind: string
+      - kind: call
+        has:
+          field: function
+          kind: attribute
+          all:
+            - has: {field: object, kind: string}
+            - has: {field: attribute, regex: '^format$'}
+  shell-sink:
+    kind: attribute
+    any:
+      - all:
+          - has: {field: object, regex: '^os$'}
+          - has: {field: attribute, regex: '^(system|popen)$'}
+      - all:
+          - has: {field: object, regex: '^(subprocess|commands)$'}
+          - has: {field: attribute, regex: '^get(output|statusoutput)$'}
+rule:
+  kind: call
+  all:
+    - has: {field: function, matches: shell-sink}
+    - has:
+        field: arguments
+        has:
+          nthChild:
+            position: 1
+            ofRule:
+              not: {kind: comment}
+          matches: runtime-built-command

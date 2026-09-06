@@ -1,0 +1,31 @@
+id: py-requests-no-timeout
+language: python
+severity: warning
+message: >-
+  HTTP call through requests with no timeout. The library waits forever by
+  default, so one unresponsive peer pins a worker thread until the process is
+  restarted, and a handful of them stop the service. Pass an explicit timeout,
+  as a connect and read pair when the two differ.
+note: >-
+  Fires on a requests module call to get, post, put, patch, delete, head,
+  options or request whose argument list has no timeout keyword. A timeout
+  supplied through a dictionary splat, a Session with a mounted adapter, or an
+  outer deadline is not seen. A call inside a task that a supervisor already
+  bounds is the routine dismissal.
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        kind: attribute
+        all:
+          - has: {field: object, regex: '^requests$'}
+          - has:
+              field: attribute
+              regex: '^(get|post|put|patch|delete|head|options|request)$'
+    - not:
+        has:
+          field: arguments
+          has:
+            kind: keyword_argument
+            has: {field: name, regex: '^timeout$'}

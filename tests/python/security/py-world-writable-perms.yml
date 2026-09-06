@@ -1,0 +1,17 @@
+id: py-world-writable-perms
+valid:
+- os.chmod(path, 0o750)
+- os.makedirs(d, mode=0o700, exist_ok=True)
+- os.mkdir(d, 0o755)
+- os.umask(0o077)
+- os.chmod(path, 0o1777)
+- os.chmod(path, mode)
+- os.chown(path, 0, 0)
+- '# os.chmod(path, 0o777)'
+- text = 'os.chmod(path, 0o777)'
+invalid:
+- os.chmod(path, 0o777)
+- os.chmod(path, 0o666)
+- os.makedirs(d, mode=0o777, exist_ok=True)
+- p.chmod(0o646)
+- os.umask(0)
