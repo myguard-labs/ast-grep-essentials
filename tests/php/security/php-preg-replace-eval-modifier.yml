@@ -1,0 +1,11 @@
+id: php-preg-replace-eval-modifier
+valid:
+- "<?php $out = preg_replace_callback( '/\\[(\\w+)\\]/', 'do_tag_cb', $_POST['content'] );"
+- "<?php $out = preg_replace( '/\\[(\\w+)\\]/', 'x', $c );"
+- "<?php $out = preg_replace( '/a/imsu', 'x', $c );"
+- "<?php $out = preg_replace( $pattern, 'x', $c );"
+- "<?php $p = '/\\[(\\w+)\\]/e';"
+- "<?php /* preg_replace( '/x/e', 'y', $z ); */"
+invalid:
+- "<?php $out = preg_replace( '/\\[(\\w+)\\]/e', 'do_tag(\"$1\")', $_POST['content'] );"
+- "<?php $out = preg_replace( \"#a(b)#ie\", 'f(\"$1\")', $c );"

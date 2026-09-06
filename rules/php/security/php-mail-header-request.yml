@@ -1,0 +1,44 @@
+id: php-mail-header-request
+language: php
+severity: error
+message: >-
+  Request data is placed in a mail header argument. A newline in that value ends
+  the header and starts another, so an attacker adds Bcc or To recipients and
+  turns the form into a spam relay or an exfiltration channel. Validate the
+  address with filter_var FILTER_VALIDATE_EMAIL or is_email and reject any value
+  containing a line break.
+note: >-
+  Matches a GET, POST, REQUEST or COOKIE superglobal inside the additional-headers
+  argument of mail or wp_mail, which is the fourth positional argument of both.
+  A direct sanitize_email or filter_var wrapper around the value suppresses the
+  match; a check performed on a preceding line, or a header assembled in a
+  variable, is not seen.
+utils:
+  request-superglobal:
+    kind: variable_name
+    regex: '^\$_(GET|POST|REQUEST|COOKIE)$'
+  email-validator:
+    kind: function_call_expression
+    has:
+      field: function
+      regex: '(?i)^\\?(sanitize_email|filter_var|is_email)$'
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?(mail|wp_mail)$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          nthChild:
+            position: 4
+            ofRule: {kind: argument}
+          has:
+            stopBy: end
+            matches: request-superglobal
+            not:
+              inside:
+                stopBy: end
+                matches: email-validator

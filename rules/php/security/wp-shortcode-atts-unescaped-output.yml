@@ -1,0 +1,43 @@
+id: wp-shortcode-atts-unescaped-output
+language: php
+severity: warning
+message: >-
+  A shortcode or block attribute is concatenated into returned or echoed HTML
+  without escaping, so a contributor who can save a shortcode stores script that
+  runs for every reader. Escape each attribute for its context with esc_attr,
+  esc_url or esc_html before building the markup.
+note: >-
+  Matches a subscript of a variable named $atts, $attributes or $args that is a
+  direct operand of a string concatenation inside a return or echo, with no
+  esc_ or wp_kses wrapper. The $atts naming is a shortcode convention rather than
+  a guarantee, so a same-named array of trusted values is the routine dismissal.
+  esc_attr around a value used in an href satisfies this rule but is still the
+  wrong escaper for a URL.
+utils:
+  wp-escaper:
+    kind: function_call_expression
+    has:
+      field: function
+      regex: '(?i)^\\?(esc_html|esc_attr|esc_url|esc_js|esc_textarea|wp_kses|wp_kses_post|wp_kses_data|absint|intval|sanitize_text_field|sanitize_hex_color)$'
+rule:
+  kind: subscript_expression
+  all:
+    - has:
+        nthChild: 1
+        kind: variable_name
+        regex: '(?i)^\$(atts|attributes|args)$'
+    - inside:
+        kind: binary_expression
+        has:
+          field: operator
+          regex: '^\.$'
+    - not:
+        inside:
+          stopBy: end
+          matches: wp-escaper
+    - inside:
+        stopBy: end
+        any:
+          - kind: return_statement
+          - kind: echo_statement
+          - kind: print_intrinsic

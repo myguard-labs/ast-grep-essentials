@@ -1,0 +1,73 @@
+id: php-file-write-request-path
+language: php
+severity: error
+message: >-
+  A file-write call takes its destination from request data, so the caller chooses
+  where the bytes land; a path ending in .php under the document root is a
+  webshell on the next request. Generate the stored name yourself, keep it inside
+  a directory you resolve with realpath, and store uploads outside the webroot.
+note: >-
+  Matches a GET, POST, REQUEST, COOKIE or FILES superglobal in the destination
+  argument of file_put_contents, mkdir or touch, in the second argument of copy
+  or rename, or in the first argument of fopen opened with a literal write or
+  append mode. An extension allowlist applied earlier in the function is not
+  seen. php-upload-unvalidated-name covers move_uploaded_file with the
+  client-supplied upload name.
+utils:
+  request-superglobal:
+    kind: variable_name
+    regex: '^\$_(GET|POST|REQUEST|COOKIE|FILES)$'
+rule:
+  kind: function_call_expression
+  any:
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?(file_put_contents|mkdir|touch)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 1
+                ofRule: {kind: argument}
+              has:
+                stopBy: end
+                matches: request-superglobal
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?(copy|rename|link|symlink)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 2
+                ofRule: {kind: argument}
+              has:
+                stopBy: end
+                matches: request-superglobal
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?fopen$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 1
+                ofRule: {kind: argument}
+              has:
+                stopBy: end
+                matches: request-superglobal
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 2
+                ofRule: {kind: argument}
+              has:
+                regex: '^["\x27][wax]'

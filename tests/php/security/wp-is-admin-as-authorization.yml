@@ -1,0 +1,13 @@
+id: wp-is-admin-as-authorization
+valid:
+- "<?php if ( ! current_user_can( 'manage_options' ) ) { return; }"
+- "<?php if ( is_admin() ) { wp_enqueue_style( 'a' ); }"
+- "<?php if ( ! is_admin() && ! current_user_can( 'manage_options' ) ) { return; }"
+- "<?php if ( ! is_admin() ) { do_something(); return; }"
+- "<?php $x = is_admin();"
+- "<?php /* if ( ! is_admin() ) { return; } */"
+- "<?php $s = 'if ( ! is_admin() ) { return; }';"
+invalid:
+- "<?php function f() { if ( ! is_admin() ) { return; } delete_option( 'myplugin_settings' ); }"
+- "<?php if ( ! is_admin() ) { wp_die( 'nope' ); }"
+- "<?php if ( is_admin() ) { exit; }"

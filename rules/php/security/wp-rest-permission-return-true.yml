@@ -1,0 +1,57 @@
+id: wp-rest-permission-return-true
+language: php
+severity: warning
+message: >-
+  A register_rest_route call declares permission_callback as __return_true, so
+  the route answers every unauthenticated request. Replace it with a callback
+  that checks a capability or a signed token, and keep __return_true only for
+  data that is genuinely public.
+note: >-
+  Matches the literal string __return_true, an inline closure or arrow function
+  whose whole body is `return true`, in the permission_callback entry of an
+  array argument to register_rest_route. It does not judge whether the route is
+  meant to be public, and it does not see a capability check performed inside
+  the route callback instead. A deliberately public read-only endpoint is the
+  routine dismissal.
+utils:
+  always-true-callback:
+    any:
+      - any:
+          - kind: string
+          - kind: encapsed_string
+        regex: '^["\x27]__return_true["\x27]$'
+      - kind: arrow_function
+        has:
+          field: body
+          kind: boolean
+          regex: '(?i)^true$'
+      - kind: anonymous_function
+        has:
+          field: body
+          kind: compound_statement
+          all:
+            - has:
+                kind: return_statement
+                has:
+                  kind: boolean
+                  regex: '(?i)^true$'
+            - not:
+                has:
+                  any:
+                    - kind: if_statement
+                    - kind: expression_statement
+rule:
+  kind: array_element_initializer
+  all:
+    - has:
+        nthChild: 1
+        regex: '^["\x27]permission_callback["\x27]$'
+    - has:
+        nthChild: 2
+        matches: always-true-callback
+    - inside:
+        stopBy: end
+        kind: function_call_expression
+        has:
+          field: function
+          regex: '(?i)^\\?register_rest_route$'

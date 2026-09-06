@@ -1,0 +1,14 @@
+id: wp-shortcode-atts-unescaped-output
+valid:
+- "<?php function f( $atts ) { return '<a href=\"' . esc_url( $atts['url'] ) . '\">' . esc_html( $atts['label'] ) . '</a>'; }"
+- "<?php function f( $atts ) { $u = $atts['url']; return $u; }"
+- "<?php function f( $atts ) { return $atts['label']; }"
+- "<?php function f( $data ) { return '<b>' . $data['label'] . '</b>'; }"
+- "<?php $html = '<b>' . $atts['label'] . '</b>';"
+- "<?php /* return '<b>' . $atts['label'] . '</b>'; */"
+- "<?php $s = \"return '<b>' . \\$atts['label'];\";"
+invalid:
+- "<?php function f( $atts ) { return '<a href=\"' . $atts['url'] . '\">x</a>'; }"
+- "<?php function f( $args ) { echo '<b>' . $args['label'] . '</b>'; }"
+- "<?php function f( $attributes ) { return '<i>' . $attributes['t'] . '</i>'; }"
+- "<?php function f( $atts ) { print '<b>' . $atts['n'] . '</b>'; }"

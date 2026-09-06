@@ -1,0 +1,13 @@
+id: php-dotdot-strip-as-traversal-guard
+valid:
+- "<?php $real = realpath( $base . '/' . $_GET['file'] );"
+- "<?php $file = basename( $_GET['file'] );"
+- "<?php $x = str_replace( '/', '-', $_GET['file'] );"
+- "<?php $x = str_replace( $needle, '', $s );"
+- "<?php $x = strtr( '../', '', $s );"
+- "<?php /* str_replace( '../', '', $_GET['file'] ); */"
+- "<?php $s = \"str_replace( '../', '', \\$x )\";"
+invalid:
+- "<?php $file = str_replace( '../', '', $_GET['file'] );"
+- "<?php $file = str_ireplace( array( '..', '..\\\\' ), '', $p );"
+- "<?php $file = preg_replace( '#\\.\\./#', '', $p );"

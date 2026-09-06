@@ -1,0 +1,46 @@
+id: php-libxml-entity-loading-enabled
+language: php
+severity: error
+message: >-
+  An XML parse is given LIBXML_NOENT or LIBXML_DTDLOAD, or entity loading is
+  re-enabled with libxml_disable_entity_loader(false). That reverses the safe
+  libxml default and lets a document declare external entities, reading local
+  files and reaching internal services. Drop the flag; use LIBXML_NONET when a
+  DTD really must be processed.
+note: >-
+  Matches the LIBXML_NOENT or LIBXML_DTDLOAD constant name in any argument of
+  simplexml_load_string, simplexml_load_file, DOMDocument loadXML or load, or
+  XMLReader, and matches libxml_disable_entity_loader with a literal false. A
+  flag value computed in a variable is not seen, and on PHP versions before 8.0
+  the unsafe behaviour was the default, so an unflagged parse there is still
+  vulnerable and this rule cannot prove it.
+rule:
+  any:
+    - all:
+        - any:
+            - kind: function_call_expression
+            - kind: member_call_expression
+        - any:
+            - has:
+                field: function
+                regex: '(?i)^\\?(simplexml_load_string|simplexml_load_file|libxml_set_external_entity_loader)$'
+            - has:
+                field: name
+                regex: '(?i)^(loadXML|loadHTML|load|XML)$'
+        - has:
+            field: arguments
+            has:
+              stopBy: end
+              kind: name
+              regex: '^LIBXML_(NOENT|DTDLOAD)$'
+    - kind: function_call_expression
+      all:
+        - has:
+            field: function
+            regex: '(?i)^\\?libxml_disable_entity_loader$'
+        - has:
+            field: arguments
+            has:
+              stopBy: end
+              kind: boolean
+              regex: '(?i)^false$'

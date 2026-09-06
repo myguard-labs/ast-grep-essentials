@@ -1,0 +1,14 @@
+id: wp-rest-permission-return-true
+valid:
+- "<?php register_rest_route( 'p/v1', '/x', array( 'permission_callback' => function () { return current_user_can( 'manage_options' ); } ) );"
+- "<?php register_rest_route( 'p/v1', '/x', array( 'permission_callback' => 'myplugin_check_cap' ) );"
+- "<?php register_rest_route( 'p/v1', '/x', array( 'callback' => '__return_true' ) );"
+- "<?php add_filter( 'x', '__return_true' );"
+- "<?php $a = array( 'permission_callback' => '__return_true' );"
+- "<?php /* register_rest_route( 'p/v1', '/x', array( 'permission_callback' => '__return_true' ) ); */"
+- "<?php $s = 'register_rest_route permission_callback __return_true';"
+- "<?php register_rest_route( 'p/v1', '/x', array( 'permission_callback' => function () { if ( $a ) { return true; } return false; } ) );"
+invalid:
+- "<?php register_rest_route( 'p/v1', '/x', array( 'permission_callback' => '__return_true' ) );"
+- "<?php register_rest_route( 'p/v1', '/x', array( 'permission_callback' => fn() => true ) );"
+- "<?php register_rest_route( 'p/v1', '/x', array( 'permission_callback' => function () { return true; } ) );"

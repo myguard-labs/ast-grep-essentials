@@ -1,0 +1,35 @@
+id: wp-remote-request-user-url
+language: php
+severity: error
+message: >-
+  An HTTP fetch takes its URL from request data, so a caller can point the site
+  at internal services, cloud metadata endpoints or file scheme targets. Use the
+  wp_safe_remote_ family, which rejects private address ranges and redirects into
+  them, and restrict the host to an allowlist.
+note: >-
+  Matches a GET, POST, REQUEST or COOKIE superglobal inside the URL argument of
+  wp_remote_get, wp_remote_post, wp_remote_head or wp_remote_request. esc_url_raw
+  and sanitize_url wrappers are transparent because they normalize a URL without
+  restricting its destination. A URL read from a REST request object or passed
+  through a variable is not seen, and wp_safe_remote_ is itself only a partial
+  defence against DNS rebinding.
+utils:
+  request-superglobal:
+    kind: variable_name
+    regex: '^\$_(GET|POST|REQUEST|COOKIE)$'
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?wp_remote_(get|post|head|request)$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          nthChild:
+            position: 1
+            ofRule: {kind: argument}
+          has:
+            stopBy: end
+            matches: request-superglobal

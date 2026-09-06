@@ -1,0 +1,15 @@
+id: wp-echo-option-unescaped
+valid:
+- "<?php echo wp_kses_post( get_option( 'myplugin_footer_text' ) );"
+- "<?php echo '<input value=\"' . esc_attr( get_post_meta( $post->ID, 'mp_title', true ) ) . '\">';"
+- "<?php echo esc_html( get_theme_mod( 'tagline' ) );"
+- "<?php $v = get_option( 'myplugin_footer_text' );"
+- "<?php echo esc_html( $title );"
+- "<?php echo absint( get_option( 'count' ) );"
+- "<?php /* echo get_option( 'myplugin_footer_text' ); */"
+- "<?php $s = \"echo get_option( 'x' );\";"
+invalid:
+- "<?php echo get_option( 'myplugin_footer_text' );"
+- "<?php echo '<input value=\"' . get_post_meta( $post->ID, 'mp_title', true ) . '\">';"
+- "<?php print get_user_meta( $uid, 'bio', true );"
+- "<?php echo get_theme_mod( 'footer_html' );"
