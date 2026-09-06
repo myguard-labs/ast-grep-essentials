@@ -1,0 +1,17 @@
+id: c-read-return-ignored
+valid:
+  - 'int f(int fd) { char b[64]; ssize_t n = read(fd, b, sizeof(b)); if (n <= 0) { return -1; } return b[0]; }'
+  - 'int f(int fd) { char b[64]; (void) read(fd, b, sizeof(b)); return 0; }'
+  - 'int f(int fd) { char b[64]; if (read(fd, b, sizeof(b)) < 0) { return -1; } return 0; }'
+  - 'int f(int fd) { char b[64]; my_read(fd, b, sizeof(b)); return 0; }'
+  - 'void f(void) { /* read(fd, b, sizeof(b)); */ }'
+  - 'const char *s = "read(fd, b, n);";'
+invalid:
+  - 'int f(int fd) { char b[64]; read(fd, b, sizeof(b)); return b[0]; }'
+  - 'int f(int s) { char b[64]; recv(s, b, sizeof(b), 0); return b[0]; }'
+  - 'int f(int fd) { char b[64]; pread(fd, b, sizeof(b), 0); return b[0]; }'
+  - 'int f(FILE *fp) { char b[64]; fread(b, 1, sizeof(b), fp); return b[0]; }'
+  - 'int f(int fd, struct iovec *v) { readv(fd, v, 2); return 0; }'
+  - 'int f(int s) { char b[64]; recvfrom(s, b, sizeof(b), 0, 0, 0); return b[0]; }'
+  - 'int f(int s, struct msghdr *m) { recvmsg(s, m, 0); return 0; }'
+  - 'int f(int fd) { char b[64]; pread64(fd, b, sizeof(b), 0); return b[0]; }'

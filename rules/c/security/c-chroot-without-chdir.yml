@@ -1,0 +1,26 @@
+id: c-chroot-without-chdir
+language: c
+severity: warning
+message: >-
+  chroot called in a function that contains no chdir. chroot changes the root
+  directory but leaves the working directory where it was, and a working
+  directory outside the new root is a documented escape: relative traversal from
+  it walks straight back out of the jail. Call chdir("/") immediately after
+  chroot, or chdir into the target and chroot(".").
+note: >-
+  The check is co-occurrence of the two call names inside one function
+  definition, in either order, so a chdir performed by the caller or by a helper
+  is not seen and reports here. It also says nothing about the other half of a
+  correct jail: descriptors opened before the chroot, and privileges not yet
+  dropped, both defeat it while this rule stays silent.
+rule:
+  kind: call_expression
+  has: {field: function, regex: '^chroot$'}
+  inside:
+    kind: function_definition
+    stopBy: end
+    not:
+      has:
+        stopBy: end
+        kind: call_expression
+        has: {field: function, regex: '^(chdir|fchdir)$'}

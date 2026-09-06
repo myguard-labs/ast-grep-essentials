@@ -1,0 +1,19 @@
+id: c-strtok-not-reentrant
+language: c
+severity: warning
+message: >-
+  strtok keeps its parse position in a single process-wide static. Two
+  tokenisations that interleave, whether across threads, across an nginx thread
+  pool, or simply because a function called from inside the loop also
+  tokenises, silently corrupt each other's state and return tokens from the
+  wrong string. Use strtok_r with a caller-owned save pointer, or scan with
+  strcspn/strchr.
+note: >-
+  A direct call-name match. It does not attempt to prove that two tokenisations
+  can actually overlap, so a single-threaded program with exactly one call site
+  is unaffected in practice; the hazard is that library code cannot know it is
+  the only caller. strtok_r and strtok_s are the intended replacements and are
+  not matched.
+rule:
+  kind: call_expression
+  has: {field: function, regex: '^strtok$'}

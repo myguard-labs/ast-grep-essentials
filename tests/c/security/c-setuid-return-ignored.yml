@@ -1,0 +1,19 @@
+id: c-setuid-return-ignored
+valid:
+  - 'int f(uid_t u) { if (setuid(u) != 0) { return -1; } return 0; }'
+  - 'int f(uid_t u) { int rc = setuid(u); return rc; }'
+  - 'int f(uid_t u) { (void) setuid(u); return 0; }'
+  - 'int f(uid_t u) { my_setuid(u); return 0; }'
+  - 'void f(void) { /* setuid(u); */ }'
+  - 'const char *s = "setuid(u);";'
+invalid:
+  - 'void f(uid_t u) { setuid(u); }'
+  - 'void f(uid_t u) { seteuid(u); }'
+  - 'void f(gid_t g) { setgid(g); }'
+  - 'void f(gid_t g) { setegid(g); }'
+  - 'void f(gid_t *g) { setgroups(1, g); }'
+  - 'void f(const char *u, gid_t g) { initgroups(u, g); }'
+  - 'void f(uid_t u) { setresuid(u, u, u); }'
+  - 'void f(gid_t g) { setresgid(g, g, g); }'
+  - 'void f(uid_t u) { setreuid(u, u); }'
+  - 'void f(gid_t g) { setregid(g, g); }'

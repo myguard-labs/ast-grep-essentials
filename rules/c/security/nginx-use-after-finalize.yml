@@ -1,0 +1,27 @@
+id: nginx-use-after-finalize
+language: c
+severity: warning
+message: >-
+  The request is dereferenced after ngx_http_finalize_request was called on it.
+  Finalizing drops the reference this code path held, and when it was the last
+  one the request pool is destroyed immediately, so the structure this later
+  statement reads through is freed memory. The connection's log pointer is the
+  usual casualty because error logging is what follows the finalize. Save
+  anything still needed into a local before finalizing, and make the finalize
+  call the last use of the request.
+note: >-
+  A match means a later sibling statement in the same block reaches through the
+  finalized request pointer. It does not model the reference count: a request
+  whose count is still above one survives the finalize and the later access is
+  correct, which is the routine dismissal in asynchronous handlers. A tail
+  return immediately after the finalize does not match, and neither does a use
+  in a different block.
+rule:
+  kind: expression_statement
+  pattern: ngx_http_finalize_request($R, $$$ARGS);
+  precedes:
+    stopBy: end
+    has:
+      stopBy: end
+      kind: field_expression
+      has: {field: argument, kind: identifier, pattern: $R}

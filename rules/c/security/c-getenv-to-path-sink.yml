@@ -1,0 +1,29 @@
+id: c-getenv-to-path-sink
+language: c
+severity: warning
+message: >-
+  getenv result passed directly into a path, loader or command sink. The
+  environment is inherited from whoever started the process, so in anything
+  setuid, setgid or launched by a less-trusted parent this hands the caller the
+  file that gets opened, the library that gets loaded or the command line that
+  gets run. Validate the value against an allowlist, reject anything containing
+  a separator when only a bare name is expected, and ignore the variable
+  entirely when the real and effective ids differ.
+note: >-
+  The match requires the getenv call to appear inside the sink call's own
+  argument list, which is exact but narrow: a value stored in a local first, the
+  common shape, is not matched. It also cannot tell whether the process is
+  privileged, and a plain CLI tool reading its own configuration path from the
+  environment is behaving correctly and should be dismissed.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^(open|fopen|freopen|execl|execlp|execle|execv|execvp|execvpe|system|popen|dlopen|dlmopen|chdir|chroot|unlink|creat)$'
+    - has:
+        field: arguments
+        has:
+          stopBy: end
+          kind: call_expression
+          has: {field: function, regex: '^(getenv|secure_getenv)$'}

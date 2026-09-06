@@ -1,0 +1,114 @@
+id: c-read-return-ignored
+snapshots:
+  int f(FILE *fp) { char b[64]; fread(b, 1, sizeof(b), fp); return b[0]; }:
+    labels:
+    - source: fread(b, 1, sizeof(b), fp);
+      style: primary
+      start: 30
+      end: 57
+    - source: fread
+      style: secondary
+      start: 30
+      end: 35
+    - source: fread(b, 1, sizeof(b), fp)
+      style: secondary
+      start: 30
+      end: 56
+  int f(int fd) { char b[64]; pread(fd, b, sizeof(b), 0); return b[0]; }:
+    labels:
+    - source: pread(fd, b, sizeof(b), 0);
+      style: primary
+      start: 28
+      end: 55
+    - source: pread
+      style: secondary
+      start: 28
+      end: 33
+    - source: pread(fd, b, sizeof(b), 0)
+      style: secondary
+      start: 28
+      end: 54
+  int f(int fd) { char b[64]; pread64(fd, b, sizeof(b), 0); return b[0]; }:
+    labels:
+    - source: pread64(fd, b, sizeof(b), 0);
+      style: primary
+      start: 28
+      end: 57
+    - source: pread64
+      style: secondary
+      start: 28
+      end: 35
+    - source: pread64(fd, b, sizeof(b), 0)
+      style: secondary
+      start: 28
+      end: 56
+  int f(int fd) { char b[64]; read(fd, b, sizeof(b)); return b[0]; }:
+    labels:
+    - source: read(fd, b, sizeof(b));
+      style: primary
+      start: 28
+      end: 51
+    - source: read
+      style: secondary
+      start: 28
+      end: 32
+    - source: read(fd, b, sizeof(b))
+      style: secondary
+      start: 28
+      end: 50
+  int f(int fd, struct iovec *v) { readv(fd, v, 2); return 0; }:
+    labels:
+    - source: readv(fd, v, 2);
+      style: primary
+      start: 33
+      end: 49
+    - source: readv
+      style: secondary
+      start: 33
+      end: 38
+    - source: readv(fd, v, 2)
+      style: secondary
+      start: 33
+      end: 48
+  int f(int s) { char b[64]; recv(s, b, sizeof(b), 0); return b[0]; }:
+    labels:
+    - source: recv(s, b, sizeof(b), 0);
+      style: primary
+      start: 27
+      end: 52
+    - source: recv
+      style: secondary
+      start: 27
+      end: 31
+    - source: recv(s, b, sizeof(b), 0)
+      style: secondary
+      start: 27
+      end: 51
+  int f(int s) { char b[64]; recvfrom(s, b, sizeof(b), 0, 0, 0); return b[0]; }:
+    labels:
+    - source: recvfrom(s, b, sizeof(b), 0, 0, 0);
+      style: primary
+      start: 27
+      end: 62
+    - source: recvfrom
+      style: secondary
+      start: 27
+      end: 35
+    - source: recvfrom(s, b, sizeof(b), 0, 0, 0)
+      style: secondary
+      start: 27
+      end: 61
+  int f(int s, struct msghdr *m) { recvmsg(s, m, 0); return 0; }:
+    labels:
+    - source: recvmsg(s, m, 0);
+      style: primary
+      start: 33
+      end: 50
+    - source: recvmsg
+      style: secondary
+      start: 33
+      end: 40
+    - source: recvmsg(s, m, 0)
+      style: secondary
+      start: 33
+      end: 49

@@ -1,0 +1,39 @@
+id: c-toctou-access-then-open
+language: c
+severity: warning
+message: >-
+  A filesystem check and a filesystem action name the same path variable inside
+  one function. Nothing binds the name to the same file across the two calls:
+  an attacker who can create or replace an entry in the directory swaps a
+  symlink between them, so the check passes on a harmless target and the action
+  lands on one the process should not touch. Operate on a descriptor obtained
+  once, with O_NOFOLLOW where the target must not be a link, and use the
+  fstat/fchmod/fchown/openat family instead of re-resolving the path.
+note: >-
+  The pairing is by identifier text only: the check and the action must pass the
+  same variable as their first argument somewhere in the same function
+  definition, in any order and with any statements between them. It cannot see
+  whether the directory is attacker-writable, which is what decides
+  exploitability, and it misses paths rebuilt into a different variable. A check
+  used only to produce a nicer error message before an action that validates
+  again is the routine dismissal.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^(open|fopen|freopen|rename|unlink|chmod|chown|creat|truncate|mkdir|rmdir)$'
+    - has:
+        field: arguments
+        has: {kind: identifier, pattern: $PATH}
+    - inside:
+        kind: function_definition
+        stopBy: end
+        has:
+          stopBy: end
+          kind: call_expression
+          all:
+            - has: {field: function, regex: '^(access|stat|lstat|euidaccess|eaccess)$'}
+            - has:
+                field: arguments
+                has: {kind: identifier, pattern: $PATH}

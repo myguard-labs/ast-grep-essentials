@@ -1,0 +1,29 @@
+id: c-strncpy-no-terminator
+language: c
+severity: warning
+message: >-
+  strncpy bounded by the full sizeof of its destination. strncpy writes no
+  terminating NUL when the source is at least as long as the bound, so a
+  maximum-length source fills the array edge to edge and every later strlen,
+  printf or strcmp on it reads past the end. Copy sizeof(dst) - 1 bytes and set
+  the last element to '\0', or use a bounded API that always terminates.
+note: >-
+  The match is the syntactic pair of a destination identifier and a sizeof of
+  that same identifier as the length argument; it does not look for a following
+  explicit terminator assignment, so a site that immediately writes
+  dst[sizeof(dst) - 1] = 0 still matches and is a valid dismissal. A bound given
+  as a macro or a separately computed length is not matched at all.
+rule:
+  kind: call_expression
+  all:
+    - has: {field: function, regex: '^strncpy$'}
+    - has:
+        field: arguments
+        has:
+          kind: sizeof_expression
+          has:
+            kind: parenthesized_expression
+            has: {kind: identifier, pattern: $D}
+    - has:
+        field: arguments
+        has: {kind: identifier, pattern: $D}

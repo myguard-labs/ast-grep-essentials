@@ -1,0 +1,13 @@
+id: nginx-slab-locked-without-lock
+valid:
+  - 'void *f(ngx_slab_pool_t *sp, size_t n) { void *p; ngx_shmtx_lock(&sp->mutex); p = ngx_slab_alloc_locked(sp, n); ngx_shmtx_unlock(&sp->mutex); return p; }'
+  - 'void *my_alloc_locked(ngx_slab_pool_t *sp, size_t n) { return ngx_slab_alloc_locked(sp, n); }'
+  - 'void *f(ngx_slab_pool_t *sp, size_t n) { return ngx_slab_alloc(sp, n); }'
+  - 'void *f(ngx_slab_pool_t *sp, size_t n) { return ngx_slab_calloc(sp, n); }'
+  - 'void f(ngx_slab_pool_t *sp, void *p) { ngx_shmtx_lock(&sp->mutex); ngx_slab_free_locked(sp, p); ngx_shmtx_unlock(&sp->mutex); }'
+  - 'void f(void) { /* ngx_slab_alloc_locked(sp, n); */ }'
+  - 'const char *s = "ngx_slab_alloc_locked(sp, n)";'
+invalid:
+  - 'void *f(ngx_slab_pool_t *sp, size_t n) { return ngx_slab_alloc_locked(sp, n); }'
+  - 'void *g(ngx_slab_pool_t *sp, size_t n) { return ngx_slab_calloc_locked(sp, n); }'
+  - 'void h(ngx_slab_pool_t *sp, void *p) { ngx_slab_free_locked(sp, p); }'

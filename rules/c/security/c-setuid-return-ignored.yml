@@ -1,0 +1,23 @@
+id: c-setuid-return-ignored
+language: c
+severity: error
+message: >-
+  Return value of a privilege-dropping call discarded by using the call as a
+  bare statement. setuid and its relatives fail for reachable reasons, most
+  notably RLIMIT_NPROC being exhausted by the target user, and on failure the
+  process keeps every privilege it had. Code that then proceeds as unprivileged
+  runs attacker-reachable work as root. Test the result and abort the process
+  when the drop fails.
+note: >-
+  A match means the call is an expression statement whose value is neither
+  assigned, returned nor tested. An explicit (void) cast parses as a cast
+  expression and is not matched. The rule does not check ordering, so it says
+  nothing about whether setgroups and setgid ran before setuid, which is a
+  separate and equally load-bearing requirement.
+rule:
+  kind: expression_statement
+  has:
+    kind: call_expression
+    has:
+      field: function
+      regex: '^(setuid|seteuid|setgid|setegid|setgroups|initgroups|setresuid|setresgid|setreuid|setregid)$'

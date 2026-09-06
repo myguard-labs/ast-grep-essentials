@@ -1,0 +1,19 @@
+id: c-realloc-assign-same-pointer
+language: c
+severity: warning
+message: >-
+  realloc/reallocarray result assigned back over the pointer that was passed in.
+  When the reallocation fails the function returns NULL and the original block
+  is still allocated, so this assignment overwrites the only reference to it:
+  the old memory leaks and every later use of the variable dereferences NULL.
+  Assign into a fresh temporary, test it for NULL, and only then store it back.
+note: >-
+  The match is purely syntactic: the same identifier text appears as the
+  assignment target and as the first realloc argument. It does not check
+  whether the caller aborts on allocation failure, which is the one shape that
+  makes this idiom defensible; a program that exits on OOM can be dismissed.
+  Reallocation through a different variable or a struct field is not matched.
+rule:
+  any:
+    - pattern: $P = realloc($P, $$$ARGS)
+    - pattern: $P = reallocarray($P, $$$ARGS)

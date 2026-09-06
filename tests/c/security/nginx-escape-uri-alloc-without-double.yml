@@ -1,0 +1,12 @@
+id: nginx-escape-uri-alloc-without-double
+valid:
+  - 'u_char *f(ngx_pool_t *p, u_char *s, size_t len) { uintptr_t n = ngx_escape_uri(NULL, s, len, 0); u_char *d = ngx_pnalloc(p, len + 2 * n); return d; }'
+  - 'u_char *f(ngx_pool_t *p, u_char *s, size_t len) { uintptr_t n = ngx_escape_html(NULL, s, len); u_char *d = ngx_pnalloc(p, len + n); return d; }'
+  - 'u_char *f(ngx_pool_t *p, u_char *s, size_t len) { uintptr_t n = ngx_escape_uri(s, s, len, 0); u_char *d = ngx_pnalloc(p, len + n); return d; }'
+  - 'u_char *f(ngx_pool_t *p, size_t len, uintptr_t n) { return ngx_pnalloc(p, len + n); }'
+  - 'u_char *f(ngx_pool_t *p, u_char *s, size_t len) { uintptr_t n = ngx_escape_uri(NULL, s, len, 0); u_char *d = ngx_pnalloc(p, len + 2 * n); (void) ngx_escape_uri(d, s, len, 0); return d; }'
+  - 'void f(void) { /* n = ngx_escape_uri(NULL, s, len, 0); ngx_pnalloc(p, len + n); */ }'
+  - 'const char *s = "ngx_pnalloc(p, len + n)";'
+invalid:
+  - 'u_char *f(ngx_pool_t *p, u_char *s, size_t len) { uintptr_t n = ngx_escape_uri(NULL, s, len, 0); u_char *d = ngx_pnalloc(p, len + n); return d; }'
+  - 'u_char *g(ngx_pool_t *p, u_char *s, size_t len) { uintptr_t n; n = ngx_escape_uri(NULL, s, len, 0); u_char *d = ngx_palloc(p, len + n); return d; }'

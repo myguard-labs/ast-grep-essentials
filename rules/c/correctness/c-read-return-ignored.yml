@@ -1,0 +1,25 @@
+id: c-read-return-ignored
+language: c
+severity: warning
+message: >-
+  Return value of a read-family call discarded by using the call as a bare
+  statement. These functions return the number of bytes actually transferred,
+  which is routinely smaller than the requested count on pipes, sockets and
+  signal interruption, and is negative on error. Code that ignores it then
+  parses whatever the buffer happened to contain, which on the error path is
+  uninitialised stack. Capture the count, treat a negative result as failure,
+  and loop until the required number of bytes has arrived.
+note: >-
+  A match means the call is an expression statement whose value is neither
+  assigned, returned nor tested. An explicit (void) cast parses as a cast
+  expression and is deliberately not matched, so a site that documents the
+  discard that way is already exempt. Whether the buffer is later used as if it
+  had been filled is beyond syntax; a genuinely best-effort drain of bytes
+  nobody reads is the legitimate dismissal.
+rule:
+  kind: expression_statement
+  has:
+    kind: call_expression
+    has:
+      field: function
+      regex: '^(read|recv|pread|fread|readv|recvfrom|recvmsg|pread64)$'

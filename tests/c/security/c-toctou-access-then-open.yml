@@ -1,0 +1,22 @@
+id: c-toctou-access-then-open
+valid:
+  - 'int f(const char *path) { return open(path, 1); }'
+  - 'int f(const char *path) { struct stat st; if (stat(path, &st) != 0) { return -1; } return st.st_size; }'
+  - 'int f(const char *path, const char *other) { struct stat st; if (stat(other, &st) != 0) { return -1; } return open(path, 1); }'
+  - 'int f(int fd) { struct stat st; if (fstat(fd, &st) != 0) { return -1; } return fchmod(fd, 0600); }'
+  - 'int f(const char *path) { struct stat st; my_access(path, 4); return my_open(path, 1); }'
+  - 'void f(void) { /* if (access(path, 4)) return -1; open(path, 1); */ }'
+  - 'const char *s = "access(path, W_OK); open(path, O_WRONLY);";'
+invalid:
+  - 'int f(const char *path) { if (access(path, 2) != 0) { return -1; } return open(path, 1); }'
+  - 'FILE *f(const char *path) { struct stat st; if (stat(path, &st) != 0) { return 0; } return fopen(path, "w"); }'
+  - 'int f(const char *path) { struct stat st; if (lstat(path, &st) != 0) { return -1; } return unlink(path); }'
+  - 'int f(const char *path, const char *to) { if (access(path, 4) != 0) { return -1; } return rename(path, to); }'
+  - 'int f(const char *path) { if (access(path, 2) != 0) { return -1; } return chmod(path, 0600); }'
+  - 'int f(const char *path) { if (access(path, 2) != 0) { return -1; } return chown(path, 0, 0); }'
+  - 'int f(const char *path) { if (access(path, 2) != 0) { return -1; } return creat(path, 0600); }'
+  - 'int f(const char *path) { if (access(path, 2) != 0) { return -1; } return truncate(path, 0); }'
+  - 'int f(const char *path) { if (access(path, 2) != 0) { return -1; } return mkdir(path, 0700); }'
+  - 'int f(const char *path) { if (access(path, 2) != 0) { return -1; } return rmdir(path); }'
+  - 'FILE *f(const char *path, FILE *o) { struct stat st; if (euidaccess(path, 4) != 0) { return 0; } return freopen(path, "w", o); }'
+  - 'int f(const char *path) { if (eaccess(path, 2) != 0) { return -1; } return unlink(path); }'

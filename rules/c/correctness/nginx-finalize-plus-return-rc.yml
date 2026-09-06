@@ -1,0 +1,24 @@
+id: nginx-finalize-plus-return-rc
+language: c
+severity: warning
+message: >-
+  The same status is both handed to ngx_http_finalize_request and returned. A
+  content handler's return value is itself finalized by the core, so this
+  finalizes the request twice: r->main->count is decremented once too often, the
+  request is freed while another reference still expects it to be live, and the
+  connection is reused under the old request's pointers. Either finalize and
+  return NGX_DONE, or skip the explicit finalize and just return the status.
+note: >-
+  Advisory. The rule only sees that a finalize call is followed, as a later
+  sibling in the same block, by a return of the same identifier. It cannot tell
+  whether the enclosing function is a content handler, where the double
+  finalize bites, or a callback invoked by the event loop, where the return
+  value is discarded and the pattern is harmless. Confirm how the function is
+  registered before acting.
+rule:
+  kind: expression_statement
+  pattern: ngx_http_finalize_request($R, $RC);
+  precedes:
+    stopBy: end
+    kind: return_statement
+    has: {kind: identifier, pattern: $RC}
