@@ -638,3 +638,68 @@ Each rule's `note` names the commit that motivated it.
   `data` block only when the size is non-zero at runtime
   (`core/ngx_palloc.c`); the rule cannot evaluate the expression, so a macro
   or variable that happens to be zero still matches.
+
+## Cross-language security expansion
+
+This batch covers every ast-grep-supported programming language measured in the
+first-party corpus: Bash, C, Go, Java, JavaScript, Lua, PHP, and Python. Perl is
+the material exception: 0.45.2 rejects it as an unsupported built-in language.
+Upstream custom-language support requires a platform-specific tree-sitter
+shared library and is experimental, so parsing Perl as Bash or another language
+would create false confidence. Perl remains assigned to a Perl-native analyzer
+until that parser build and every consumer config are portable and tested.
+The module config maps both `.php` and `.phtml` to PHP. `ruleDirs` imports do
+not inherit `languageGlobs`, so each consumer config must repeat that mapping;
+the module's discovery test proves its own config rather than every consumer.
+The API claims below were checked against the
+[ast-grep language list](https://ast-grep.github.io/reference/languages.html),
+[Linux temporary-file documentation](https://man7.org/linux/man-pages/man3/tmpnam.3.html),
+[Python security guidance](https://docs.python.org/3/library/security_warnings.html),
+[Go TLS contract](https://pkg.go.dev/crypto/tls#Config),
+[PHP header contract](https://www.php.net/manual/en/function.header.php),
+[Bash eval contract](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html),
+and the [Lua standard-library contract](https://www.lua.org/manual/5.4/manual.html#6.9).
+
+- `c-insecure-temp-name` and `py-tempfile-mktemp` inventory APIs that choose a
+  name without atomically creating the file. They do not prove that the caller
+  later opens the path unsafely. C wrappers, function pointers, Python import
+  aliases, and the bare `from tempfile import mktemp` spelling are missed.
+- `py-ssl-cert-none` matches the direct qualified assignment, but cannot infer
+  the receiver type or client/server role. On a client it disables server
+  certificate validation; on a server it can mean that client certificates are
+  not requested. Alias imports, helper methods, and configuration dataflow are
+  outside the matcher.
+- `php-open-redirect-superglobal` sees request superglobals only while they are
+  syntactically inside the first positional Location-header argument or the
+  named `header:` argument. A value validated and stored earlier is invisible,
+  as is an unsafe value stored earlier, so both directions require review.
+  Encoding a URL does not establish an allowed origin and deliberately does not
+  suppress the finding.
+- `sh-eval-expansion` flags reparsing of parameter and command substitutions.
+  It cannot decide whether their values are trusted. Direct, `builtin eval`,
+  and `command eval` forms match; aliases, other wrappers, and text that only
+  expands into another expansion are missed.
+  `sh-ssh-host-key-check-disabled` binds the literal disabling option to direct
+  or `command`-prefixed ssh/scp/sftp commands before the remote-command region;
+  config files, arrays, variables, and other wrappers are not resolved. Its
+  conservative operand boundary can miss the option after another option's
+  separate value. `accept-new` is outside its stricter literal claim.
+- `go-tls-min-version` recognizes the named SSLv3, TLS 1.0, and TLS 1.1
+  constants in the nearest `tls.Config` literal. Numeric values, aliases,
+  computed constants, and later assignments are missed. The Go default and
+  TLS 1.2/1.3 remain negative controls.
+- `js-dynamic-code-execution` inventories non-empty direct eval and Function
+  calls, whether Function is invoked with or without `new`. A fixed literal
+  still matches; symbol shadowing can false-positive, while aliases, indirect
+  eval, and member calls are missed.
+- `lua-execution-sink` inventories direct shell/process and chunk-loading APIs.
+  It cannot distinguish trusted fixed input or local functions shadowing the
+  global names. `os.execute()` without a command only checks for shell support
+  and is excluded.
+- `java-process-exec` inventories direct Runtime execution and a ProcessBuilder
+  started immediately or after one chained configuration call. These Java APIs
+  do not themselves invoke a shell, so separate fixed arguments can be safe.
+  A direct start on a typed ProcessBuilder method or constructor parameter also
+  matches, with nested methods, constructors, and lambdas treated as new scopes.
+  Longer fluent chains, locally stored builders, aliases, wrappers, and
+  executable trust require semantic review.

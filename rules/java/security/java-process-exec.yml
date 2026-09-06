@@ -1,0 +1,74 @@
+id: java-process-exec
+language: java
+severity: warning
+message: >-
+  External process execution through Runtime.exec or ProcessBuilder. Review
+  executable selection and every argument boundary; never compose a shell
+  command from untrusted text. Prefer a fixed executable and separate arguments,
+  and avoid invoking a shell unless shell syntax is required.
+note: >-
+  Candidate inventory of Runtime.getRuntime().exec(...) and a new
+  ProcessBuilder(...).start(), directly or after one chained configuration
+  call. Java does not invoke a shell automatically for these APIs, so a fixed
+  executable and separate arguments may be safe. A direct start on a method or
+  constructor parameter declared as ProcessBuilder is also included. Longer
+  fluent chains, aliases, wrappers, locally stored ProcessBuilder instances,
+  and subclasses are not resolved.
+utils:
+  process-builder-type:
+    regex: '(?s)^(?:java(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*\.(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*lang(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*\.(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*)?ProcessBuilder$'
+  process-builder-construction:
+    kind: object_creation_expression
+    has:
+      field: type
+      matches: process-builder-type
+rule:
+  any:
+    - kind: method_invocation
+      all:
+        - has: {field: name, regex: '^exec$'}
+        - has:
+            field: object
+            regex: '(?s)^(?:java(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*\.(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*lang(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*\.(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*)?Runtime(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*\.(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*getRuntime(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*\((?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*\)$'
+    - kind: method_invocation
+      all:
+        - has: {field: name, regex: '^start$'}
+        - has:
+            field: object
+            matches: process-builder-construction
+    - kind: method_invocation
+      all:
+        - has: {field: name, regex: '^start$'}
+        - has:
+            field: object
+            kind: method_invocation
+            has:
+              field: object
+              matches: process-builder-construction
+    - pattern: $BUILDER.start()
+      all:
+        - inside:
+            stopBy:
+              any:
+                - kind: method_declaration
+                - kind: constructor_declaration
+                - kind: lambda_expression
+            any:
+              - kind: method_declaration
+                has:
+                  field: parameters
+                  kind: formal_parameters
+                  has:
+                    kind: formal_parameter
+                    all:
+                      - has: {field: type, matches: process-builder-type}
+                      - has: {field: name, pattern: $BUILDER}
+              - kind: constructor_declaration
+                has:
+                  field: parameters
+                  kind: formal_parameters
+                  has:
+                    kind: formal_parameter
+                    all:
+                      - has: {field: type, matches: process-builder-type}
+                      - has: {field: name, pattern: $BUILDER}

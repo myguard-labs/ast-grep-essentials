@@ -1,0 +1,18 @@
+id: c-insecure-temp-name
+language: c
+severity: warning
+message: >-
+  Insecure temporary-name API (mktemp/tmpnam/tmpnam_r/tempnam). The returned
+  pathname is not created atomically, so another process can create it or
+  replace it with a symlink before it is opened. Use mkstemp/mkostemp or
+  tmpfile, and keep the returned descriptor instead of reopening the path.
+note: >-
+  Candidate inventory of direct calls to the listed libc APIs. Wrappers and
+  function-pointer aliases are not resolved. A later open with O_CREAT|O_EXCL
+  can close the creation race, but generating a name separately remains
+  unnecessary and deserves review.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: '^(mktemp|tmpnam|tmpnam_r|tempnam)$'

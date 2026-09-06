@@ -1,0 +1,27 @@
+id: php-open-redirect-superglobal
+valid:
+  - '<?php header("Location: /account");'
+  - '<?php header("Location: " . $validatedPath);'
+  - '<?php header(header: "Location: " . $validatedPath);'
+  - '<?php header("X-Next: " . $_GET["next"]);'
+  - '<?php log_value($_GET["next"]); header("Location: /safe");'
+  - '<?php redirect("Location: " . $_GET["next"]);'
+  - '<?php // header("Location: " . $_GET["next"]);'
+  - '<?php $s = ''header("Location: " . $_GET["next"])'';'
+invalid:
+  - '<?php header("Location: " . $_GET["next"]);'
+  - '<?php \header(''location: '' . $_POST[''return_to'']);'
+  - '<?php header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);'
+  - '<?php header("Location: {$_REQUEST[''target'']}", true, 302);'
+  - '<?php header(("Location: " . $_COOKIE["return_to"]));'
+  - '<?php header(response_code: 302, header: "Location: " . $_GET["next"]);'
+  - '<?php header(header /* direct */ : "Location: " . $_GET["next"]);'
+  - |
+    <?php header(header // direct
+      : "Location: " . $_GET["next"]);
+  - |
+    <?php header((// direct
+      "Location: " . $_GET["next"]));
+  - |
+    <?php header((# direct
+      "Location: " . $_GET["next"]));

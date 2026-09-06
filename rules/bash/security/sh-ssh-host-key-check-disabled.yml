@@ -1,0 +1,84 @@
+id: sh-ssh-host-key-check-disabled
+language: bash
+severity: error
+message: >-
+  SSH host-key verification is disabled with StrictHostKeyChecking=no. A
+  machine-in-the-middle can impersonate the server and capture credentials or
+  replace transferred data. Pin the host key in a managed known_hosts file and
+  keep strict checking enabled.
+note: >-
+  Matches -o StrictHostKeyChecking=no and the joined -oStrictHostKeyChecking=no
+  form in the client-option region of direct or `command`-prefixed ssh, scp, or
+  sftp commands, including quoted option tokens. Options following `--`, or
+  immediately following an ordinary operand, are excluded so remote-command
+  data is not mistaken for a client setting. This conservative boundary can
+  miss an option after another option's separate value. It does not resolve
+  other wrappers, aliases, config files, or options supplied through
+  arrays/variables. `accept-new` is not matched: it has first-contact risk but
+  rejects changed keys and is a different policy decision.
+utils:
+  argument-token:
+    any:
+      - kind: word
+      - kind: string
+      - kind: raw_string
+  unsafe-setting:
+    matches: argument-token
+    regex: (?i)^["']?StrictHostKeyChecking\s*=\s*no["']?$
+  ordinary-operand:
+    matches: argument-token
+    regex: ^["']?[^-'"].*$
+  option-barrier:
+    matches: argument-token
+    regex: ^["']?--["']?$
+  unsafe-option-shape:
+    all:
+      - matches: argument-token
+      - any:
+          - regex: (?i)^["']?-oStrictHostKeyChecking\s*=\s*no["']?$
+          - all:
+              - regex: ^["']?-o["']?$
+              - precedes: {matches: unsafe-setting}
+  unsafe-option:
+    all:
+      - matches: unsafe-option-shape
+      - not: {follows: {matches: ordinary-operand}}
+      - not:
+          follows:
+            stopBy: end
+            matches: option-barrier
+  wrapped-client:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?(ssh|scp|sftp)["'']?$'
+      - any:
+          - follows:
+              kind: command_name
+              regex: '^["'']?command["'']?$'
+          - follows:
+              matches: option-barrier
+              follows:
+                kind: command_name
+                regex: '^["'']?command["'']?$'
+  wrapped-unsafe-option:
+    all:
+      - matches: unsafe-option-shape
+      - not:
+          follows:
+            stopBy: {matches: wrapped-client}
+            matches: option-barrier
+      - follows:
+          stopBy:
+            all:
+              - matches: ordinary-operand
+              - not: {matches: wrapped-client}
+          matches: wrapped-client
+rule:
+  kind: command
+  any:
+    - all:
+        - has:
+            field: name
+            regex: ^["']?(ssh|scp|sftp)["']?$
+        - has: {matches: unsafe-option}
+    - has: {matches: wrapped-unsafe-option}

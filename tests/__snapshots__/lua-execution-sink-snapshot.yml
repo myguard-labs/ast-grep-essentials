@@ -1,0 +1,100 @@
+id: lua-execution-sink
+snapshots:
+  dofile(path):
+    labels:
+    - source: dofile(path)
+      style: primary
+      start: 0
+      end: 12
+    - source: dofile
+      style: secondary
+      start: 0
+      end: 6
+    - source: (path)
+      style: secondary
+      start: 6
+      end: 12
+  local chunk = load(source):
+    labels:
+    - source: load(source)
+      style: primary
+      start: 14
+      end: 26
+    - source: load
+      style: secondary
+      start: 14
+      end: 18
+    - source: (source)
+      style: secondary
+      start: 18
+      end: 26
+  local chunk = loadstring(source):
+    labels:
+    - source: loadstring(source)
+      style: primary
+      start: 14
+      end: 32
+    - source: loadstring
+      style: secondary
+      start: 14
+      end: 24
+    - source: (source)
+      style: secondary
+      start: 24
+      end: 32
+  local pipe = io.popen("mail " .. recipient, "w"):
+    labels:
+    - source: io.popen("mail " .. recipient, "w")
+      style: primary
+      start: 13
+      end: 48
+    - source: io.popen
+      style: secondary
+      start: 13
+      end: 21
+    - source: ("mail " .. recipient, "w")
+      style: secondary
+      start: 21
+      end: 48
+  os --[=[direct]=] . execute(command):
+    labels:
+    - source: os --[=[direct]=] . execute(command)
+      style: primary
+      start: 0
+      end: 36
+    - source: os --[=[direct]=] . execute
+      style: secondary
+      start: 0
+      end: 27
+    - source: (command)
+      style: secondary
+      start: 27
+      end: 36
+  os --[[direct]] . execute(command):
+    labels:
+    - source: os --[[direct]] . execute(command)
+      style: primary
+      start: 0
+      end: 34
+    - source: os --[[direct]] . execute
+      style: secondary
+      start: 0
+      end: 25
+    - source: (command)
+      style: secondary
+      start: 25
+      end: 34
+  os.execute(command):
+    labels:
+    - source: os.execute(command)
+      style: primary
+      start: 0
+      end: 19
+    - source: os.execute
+      style: secondary
+      start: 0
+      end: 10
+    - source: (command)
+      style: secondary
+      start: 10
+      end: 19

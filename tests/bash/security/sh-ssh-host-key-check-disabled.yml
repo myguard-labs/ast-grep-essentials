@@ -1,0 +1,23 @@
+id: sh-ssh-host-key-check-disabled
+valid:
+  - 'ssh -o StrictHostKeyChecking=yes host'
+  - 'ssh -o StrictHostKeyChecking=accept-new host'
+  - 'ssh -o UserKnownHostsFile=/tmp/known_hosts host'
+  - 'ssh -o ConnectTimeout=5 host'
+  - 'wrapper -o StrictHostKeyChecking=no host'
+  - 'ssh -- host printf %s -o StrictHostKeyChecking=no'
+  - 'ssh host printf ''%s\n'' ''-oStrictHostKeyChecking=no'''
+  - 'command scp -- -oStrictHostKeyChecking=no host:/tmp/'
+  - 'printf ''ssh -o StrictHostKeyChecking=no host'''
+  - '# ssh -o StrictHostKeyChecking=no host'
+invalid:
+  - 'ssh -o StrictHostKeyChecking=no host'
+  - 'scp -oStrictHostKeyChecking=no file host:/tmp/'
+  - 'sftp "-o" "StrictHostKeyChecking=no" host'
+  - '''ssh'' ''-oStrictHostKeyChecking=no'' host'
+  - 'ssh -o strictHOSTkeychecking=NO host'
+  - 'ssh -v -o StrictHostKeyChecking=no host'
+  - 'command ssh -o StrictHostKeyChecking=no host'
+  - 'command ssh -v -o StrictHostKeyChecking=no host'
+  - 'command scp -q -o StrictHostKeyChecking=no file host:/tmp/'
+  - 'command -- ssh -o StrictHostKeyChecking=no host'

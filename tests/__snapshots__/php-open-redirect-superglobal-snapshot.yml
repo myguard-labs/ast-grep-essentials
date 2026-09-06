@@ -1,0 +1,258 @@
+id: php-open-redirect-superglobal
+snapshots:
+  '<?php \header(''location: '' . $_POST[''return_to'']);':
+    labels:
+    - source: '\header(''location: '' . $_POST[''return_to''])'
+      style: primary
+      start: 6
+      end: 49
+    - source: \header
+      style: secondary
+      start: 6
+      end: 13
+    - source: $_POST
+      style: secondary
+      start: 29
+      end: 35
+    - source: '''location: '' . $_POST[''return_to'']'
+      style: secondary
+      start: 14
+      end: 48
+    - source: '(''location: '' . $_POST[''return_to''])'
+      style: secondary
+      start: 13
+      end: 49
+  '<?php header("Location: " . $_GET["next"]);':
+    labels:
+    - source: 'header("Location: " . $_GET["next"])'
+      style: primary
+      start: 6
+      end: 42
+    - source: header
+      style: secondary
+      start: 6
+      end: 12
+    - source: $_GET
+      style: secondary
+      start: 28
+      end: 33
+    - source: '"Location: " . $_GET["next"]'
+      style: secondary
+      start: 13
+      end: 41
+    - source: '("Location: " . $_GET["next"])'
+      style: secondary
+      start: 12
+      end: 42
+  '<?php header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);':
+    labels:
+    - source: 'header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"])'
+      style: primary
+      start: 6
+      end: 84
+    - source: header
+      style: secondary
+      start: 6
+      end: 12
+    - source: $_SERVER
+      style: secondary
+      start: 36
+      end: 44
+    - source: '"Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]'
+      style: secondary
+      start: 13
+      end: 83
+    - source: '("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"])'
+      style: secondary
+      start: 12
+      end: 84
+  '<?php header("Location: {$_REQUEST[''target'']}", true, 302);':
+    labels:
+    - source: 'header("Location: {$_REQUEST[''target'']}", true, 302)'
+      style: primary
+      start: 6
+      end: 58
+    - source: header
+      style: secondary
+      start: 6
+      end: 12
+    - source: $_REQUEST
+      style: secondary
+      start: 25
+      end: 34
+    - source: '"Location: {$_REQUEST[''target'']}"'
+      style: secondary
+      start: 13
+      end: 46
+    - source: '("Location: {$_REQUEST[''target'']}", true, 302)'
+      style: secondary
+      start: 12
+      end: 58
+  '<?php header(("Location: " . $_COOKIE["return_to"]));':
+    labels:
+    - source: 'header(("Location: " . $_COOKIE["return_to"]))'
+      style: primary
+      start: 6
+      end: 52
+    - source: header
+      style: secondary
+      start: 6
+      end: 12
+    - source: $_COOKIE
+      style: secondary
+      start: 29
+      end: 37
+    - source: '("Location: " . $_COOKIE["return_to"])'
+      style: secondary
+      start: 13
+      end: 51
+    - source: '(("Location: " . $_COOKIE["return_to"]))'
+      style: secondary
+      start: 12
+      end: 52
+  ? |
+    <?php header((# direct
+      "Location: " . $_GET["next"]));
+  : labels:
+    - source: |-
+        header((# direct
+          "Location: " . $_GET["next"]))
+      style: primary
+      start: 6
+      end: 55
+    - source: header
+      style: secondary
+      start: 6
+      end: 12
+    - source: $_GET
+      style: secondary
+      start: 40
+      end: 45
+    - source: |-
+        (# direct
+          "Location: " . $_GET["next"])
+      style: secondary
+      start: 13
+      end: 54
+    - source: |-
+        ((# direct
+          "Location: " . $_GET["next"]))
+      style: secondary
+      start: 12
+      end: 55
+  ? |
+    <?php header((// direct
+      "Location: " . $_GET["next"]));
+  : labels:
+    - source: |-
+        header((// direct
+          "Location: " . $_GET["next"]))
+      style: primary
+      start: 6
+      end: 56
+    - source: header
+      style: secondary
+      start: 6
+      end: 12
+    - source: $_GET
+      style: secondary
+      start: 41
+      end: 46
+    - source: |-
+        (// direct
+          "Location: " . $_GET["next"])
+      style: secondary
+      start: 13
+      end: 55
+    - source: |-
+        ((// direct
+          "Location: " . $_GET["next"]))
+      style: secondary
+      start: 12
+      end: 56
+  '<?php header(header /* direct */ : "Location: " . $_GET["next"]);':
+    labels:
+    - source: 'header(header /* direct */ : "Location: " . $_GET["next"])'
+      style: primary
+      start: 6
+      end: 64
+    - source: header
+      style: secondary
+      start: 6
+      end: 12
+    - source: header
+      style: secondary
+      start: 13
+      end: 19
+    - source: $_GET
+      style: secondary
+      start: 50
+      end: 55
+    - source: 'header /* direct */ : "Location: " . $_GET["next"]'
+      style: secondary
+      start: 13
+      end: 63
+    - source: '(header /* direct */ : "Location: " . $_GET["next"])'
+      style: secondary
+      start: 12
+      end: 64
+  ? |
+    <?php header(header // direct
+      : "Location: " . $_GET["next"]);
+  : labels:
+    - source: |-
+        header(header // direct
+          : "Location: " . $_GET["next"])
+      style: primary
+      start: 6
+      end: 63
+    - source: header
+      style: secondary
+      start: 6
+      end: 12
+    - source: header
+      style: secondary
+      start: 13
+      end: 19
+    - source: $_GET
+      style: secondary
+      start: 49
+      end: 54
+    - source: |-
+        header // direct
+          : "Location: " . $_GET["next"]
+      style: secondary
+      start: 13
+      end: 62
+    - source: |-
+        (header // direct
+          : "Location: " . $_GET["next"])
+      style: secondary
+      start: 12
+      end: 63
+  '<?php header(response_code: 302, header: "Location: " . $_GET["next"]);':
+    labels:
+    - source: 'header(response_code: 302, header: "Location: " . $_GET["next"])'
+      style: primary
+      start: 6
+      end: 70
+    - source: header
+      style: secondary
+      start: 6
+      end: 12
+    - source: header
+      style: secondary
+      start: 33
+      end: 39
+    - source: $_GET
+      style: secondary
+      start: 56
+      end: 61
+    - source: 'header: "Location: " . $_GET["next"]'
+      style: secondary
+      start: 33
+      end: 69
+    - source: '(response_code: 302, header: "Location: " . $_GET["next"])'
+      style: secondary
+      start: 12
+      end: 70

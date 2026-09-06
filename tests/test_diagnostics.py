@@ -14,7 +14,7 @@ AST_GREP = ROOT / "node_modules" / ".bin" / "ast-grep"
 class DiagnosticTests(unittest.TestCase):
     def test_all_rules_emit_declared_diagnostics(self):
         rules = sorted((ROOT / "rules").rglob("*.yml"))
-        self.assertEqual(len(rules), 80, "update the explicit diagnostic inventory")
+        self.assertEqual(len(rules), 90, "update the explicit diagnostic inventory")
         checked = 0
         for path in rules:
             with self.subTest(rule=path.stem):
@@ -35,7 +35,7 @@ class DiagnosticTests(unittest.TestCase):
                 for field in ("message", "note", "severity"):
                     self.assertEqual(finding[field], declared[field], field)
                 checked += 1
-        self.assertEqual(checked, 80)
+        self.assertEqual(checked, 90)
 
     CASES = (
         (

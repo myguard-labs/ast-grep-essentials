@@ -1,0 +1,27 @@
+id: go-tls-min-version
+language: go
+severity: error
+message: >-
+  tls.Config sets MinVersion to an obsolete floor using VersionSSL30,
+  VersionTLS10, or VersionTLS11. Go no longer implements SSLv3, but each
+  setting permits TLS versions below 1.2. Remove the override to use Go's
+  secure default, or set MinVersion to tls.VersionTLS12 or tls.VersionTLS13.
+note: >-
+  Matches the named legacy constants only when MinVersion is inside the nearest
+  tls.Config composite literal. Numeric values, aliases, computed constants,
+  post-construction assignments, and configuration callbacks are not resolved.
+  A tightly isolated compatibility endpoint still needs an explicit risk and
+  network-boundary review.
+rule:
+  kind: keyed_element
+  all:
+    - has: {field: key, regex: '^MinVersion$'}
+    - has:
+        field: value
+        regex: '(?s)^(?:\s|[()]|/\*.*?\*/|//[^\n]*(?:\n|$))*tls(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*\.(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*Version(?:SSL30|TLS10|TLS11)(?:\s|[()]|/\*.*?\*/|//[^\n]*(?:\n|$))*$'
+    - inside:
+        kind: composite_literal
+        stopBy: {kind: composite_literal}
+        has:
+          field: type
+          regex: '(?s)^tls(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*\.(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$))*Config$'

@@ -1,0 +1,38 @@
+id: py-ssl-cert-none
+language: python
+severity: warning
+message: >-
+  SSLContext.verify_mode is set to ssl.CERT_NONE, disabling peer-certificate
+  validation. For TLS clients use ssl.create_default_context or
+  PROTOCOL_TLS_CLIENT and keep hostname checking enabled; add a private CA to
+  the trust store instead of disabling verification.
+note: >-
+  Matches a direct assignment of ssl.CERT_NONE to any receiver's verify_mode.
+  Syntax cannot identify the receiver type or whether this is a client or a
+  server requesting optional client certificates. Test-only local clients and
+  intentionally unauthenticated server-side client-certificate policy are
+  routine dismissals. Aliased constants and assignments through helper methods
+  are missed.
+rule:
+  kind: assignment
+  all:
+    - has:
+        field: left
+        kind: attribute
+        has: {field: attribute, regex: '^verify_mode$'}
+    - has:
+        field: right
+        any:
+          - kind: attribute
+            all:
+              - has: {field: object, regex: '^ssl$'}
+              - has: {field: attribute, regex: '^CERT_NONE$'}
+          - kind: parenthesized_expression
+            all:
+              - regex: '(?s)^(?:\s|[()]|#[^\n]*(?:\n|$))*ssl\.CERT_NONE(?:\s|[()]|#[^\n]*(?:\n|$))*$'
+              - has:
+                  stopBy: end
+                  kind: attribute
+                  all:
+                    - has: {field: object, regex: '^ssl$'}
+                    - has: {field: attribute, regex: '^CERT_NONE$'}

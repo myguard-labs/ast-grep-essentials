@@ -1,0 +1,17 @@
+id: go-tls-min-version
+valid:
+  - 'package p; var c = tls.Config{MinVersion: tls.VersionTLS12}'
+  - 'package p; var c = tls.Config{MinVersion: tls.VersionTLS13}'
+  - 'package p; var c = tls.Config{}'
+  - 'package p; var c = other.Config{MinVersion: tls.VersionTLS10}'
+  - 'package p; var c = tls.Config{MaxVersion: tls.VersionTLS10}'
+  - 'package p; const s = "tls.Config{MinVersion: tls.VersionTLS10}"'
+invalid:
+  - 'package p; var c = tls.Config{MinVersion: tls.VersionTLS10}'
+  - 'package p; var c = tls.Config{MinVersion: tls.VersionTLS11}'
+  - 'package p; var c = tls.Config{MinVersion: tls.VersionSSL30}'
+  - |
+    package p
+    var c = tls.Config{MinVersion: (/* compatibility */ tls.VersionTLS10)}
+  - 'package p; var c = tls. /* compatibility */ Config{MinVersion: tls.VersionTLS10}'
+  - 'package p; var c = tls.Config{MinVersion: tls. /* legacy */ VersionTLS10}'

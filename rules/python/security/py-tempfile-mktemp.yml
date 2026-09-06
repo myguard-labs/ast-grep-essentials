@@ -1,0 +1,21 @@
+id: py-tempfile-mktemp
+language: python
+severity: warning
+message: >-
+  tempfile.mktemp returns a name without creating the file, leaving a race in
+  which another process can create the path or replace it with a symlink. Use
+  NamedTemporaryFile, TemporaryFile, mkstemp, or TemporaryDirectory so creation
+  is atomic.
+note: >-
+  Matches the qualified tempfile.mktemp spelling. Import aliases and
+  `from tempfile import mktemp` are not resolved. The finding is about the gap
+  between choosing and opening the name; merely checking that the path does not
+  exist does not close that race.
+rule:
+  kind: call
+  has:
+    field: function
+    kind: attribute
+    all:
+      - has: {field: object, regex: '^tempfile$'}
+      - has: {field: attribute, regex: '^mktemp$'}

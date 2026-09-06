@@ -1,0 +1,24 @@
+id: lua-execution-sink
+language: lua
+severity: warning
+message: >-
+  Lua execution sink (os.execute/io.popen/load/loadstring/dofile). The process
+  APIs pass a command to the operating-system shell, while the load APIs parse
+  code. Keep untrusted data out of the command or chunk; prefer fixed argv-capable
+  process APIs and format-specific data parsers.
+note: >-
+  Candidate inventory of direct, non-empty calls to the listed global APIs.
+  Fixed commands and trusted embedded chunks still match. The rule does not
+  resolve aliases, wrappers, local functions shadowing these names, or method
+  calls on other objects. os.execute() with no command only probes for a shell
+  and is excluded.
+rule:
+  kind: function_call
+  all:
+    - has:
+        field: name
+        regex: '(?s)^(?:os(?:\s|--\[=*\[.*?\]=*\]|--[^\n]*(?:\n|$))*\.(?:\s|--\[=*\[.*?\]=*\]|--[^\n]*(?:\n|$))*execute|io(?:\s|--\[=*\[.*?\]=*\]|--[^\n]*(?:\n|$))*\.(?:\s|--\[=*\[.*?\]=*\]|--[^\n]*(?:\n|$))*popen|load|loadstring|dofile)$'
+    - has:
+        field: arguments
+        not:
+          regex: '(?s)^\(\s*(?:(?:--\[=*\[.*?\]=*\]|--[^\n]*(?:\n|$))\s*)*\)$'

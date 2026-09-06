@@ -1,0 +1,20 @@
+id: lua-execution-sink
+valid:
+  - 'local value = json.decode(text)'
+  - 'loader.load(chunk)'
+  - 'execute(command)'
+  - 'os.execute()'
+  - 'os.execute(--[[no command]])'
+  - 'os.execute(--[=[no command]=])'
+  - "os.execute(-- no command\n)"
+  - 'load(--[[no source]])'
+  - 'local text = "os.execute(command)"'
+  - '-- io.popen(command)'
+invalid:
+  - 'os.execute(command)'
+  - 'os --[[direct]] . execute(command)'
+  - 'os --[=[direct]=] . execute(command)'
+  - 'local pipe = io.popen("mail " .. recipient, "w")'
+  - 'local chunk = load(source)'
+  - 'local chunk = loadstring(source)'
+  - 'dofile(path)'

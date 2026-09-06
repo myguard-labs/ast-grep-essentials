@@ -1,0 +1,30 @@
+id: js-dynamic-code-execution
+language: javascript
+severity: warning
+message: >-
+  Dynamic JavaScript execution through eval or the Function constructor. If
+  any part of the source is attacker-controlled it executes with the caller's
+  privileges and can become XSS or server-side code execution. Use JSON.parse,
+  a data parser, or an allowlisted operation map instead of evaluating source.
+note: >-
+  Candidate inventory of direct, non-empty eval(...) and Function(...) calls,
+  with or without `new`. Literal source still matches because it weakens
+  Content Security Policy and is difficult to audit. Aliases, indirect eval,
+  member calls, and shadowed local bindings are not resolved; a locally defined
+  eval or Function can therefore false-positive.
+rule:
+  any:
+    - kind: call_expression
+      all:
+        - has: {field: function, kind: identifier, regex: '^(eval|Function)$'}
+        - has:
+            field: arguments
+            not:
+              regex: '(?s)^\(\s*(?:(?:/\*.*?\*/|//[^\n]*(?:\n|$))\s*)*\)$'
+    - kind: new_expression
+      all:
+        - has: {field: constructor, kind: identifier, regex: '^Function$'}
+        - has:
+            field: arguments
+            not:
+              regex: '(?s)^\(\s*(?:(?:/\*.*?\*/|//[^\n]*(?:\n|$))\s*)*\)$'

@@ -1,0 +1,20 @@
+id: sh-eval-expansion
+valid:
+  - 'eval ''printf "%s\\n" fixed'''
+  - 'printf ''%s\\n'' "$value"'
+  - 'evaluate "$value"'
+  - 'builtin printf eval "$value"'
+  - '# eval "$value"'
+  - 'text=''eval "$value"'''
+invalid:
+  - 'eval "$command"'
+  - 'eval "${prefix}_value=1"'
+  - 'eval "$(build_command)"'
+  - 'eval "$@"'
+  - 'builtin eval "$value"'
+  - 'builtin -- eval "$value"'
+  - 'builtin "eval" "$value"'
+  - 'builtin ''eval'' "$value"'
+  - 'command eval "$value"'
+  - 'MODE=x builtin eval "$value"'
+  - '"eval" "$value"'

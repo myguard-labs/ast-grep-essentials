@@ -1,0 +1,43 @@
+id: php-open-redirect-superglobal
+language: php
+severity: error
+message: >-
+  Request data flows directly into a Location response header, creating an open
+  redirect when an attacker supplies an absolute or scheme-relative URL. Map a
+  fixed identifier to an allowlisted local path, or parse and enforce the
+  destination scheme and host before calling header.
+note: >-
+  Matches a GET, POST, REQUEST, COOKIE, or SERVER superglobal inside the first
+  positional argument, or the named `header:` argument, of a direct
+  header("Location: ...") call. It does not follow values stored in variables,
+  resolve wrapper functions, or prove that validation is absent elsewhere.
+  Inline encoding is not an origin allowlist and does not suppress the finding.
+  A deliberately trusted Host header or framework-level redirect policy needs
+  manual verification.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?header$'
+    - has:
+        kind: arguments
+        has:
+          kind: argument
+          all:
+            - any:
+                - all:
+                    - nthChild:
+                        position: 1
+                        ofRule: {not: {kind: comment}}
+                    - not: {regex: '^\s*header\s*:'}
+                    - regex: '(?is)^(?:\s|[()]|/\*.*?\*/|//[^\n]*(?:\n|$)|#[^\n]*(?:\n|$))*["'']location\s*:'
+                - all:
+                    - has:
+                        field: name
+                        regex: '(?is)^header(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$)|#[^\n]*(?:\n|$))*$'
+                    - regex: '(?is)^\s*header(?:\s|/\*.*?\*/|//[^\n]*(?:\n|$)|#[^\n]*(?:\n|$))*:\s*(?:\s|[()]|/\*.*?\*/)*["'']location\s*:'
+            - has:
+                stopBy: end
+                kind: variable_name
+                regex: '^\$_(GET|POST|REQUEST|COOKIE|SERVER)$'
