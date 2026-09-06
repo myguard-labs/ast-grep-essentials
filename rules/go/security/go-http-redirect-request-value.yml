@@ -1,0 +1,48 @@
+id: go-http-redirect-request-value
+language: go
+severity: error
+message: >-
+  Redirect target read directly from the request. An attacker who controls the
+  parameter chooses the destination, so the application sends its own users to
+  a site of the attacker's choosing with the referrer and any trust the
+  redirect implies. Parse the target, require an empty host and a single
+  leading slash, or map the parameter through an allow-list of known paths.
+note: >-
+  Fires when the request accessor is the redirect target argument itself. It
+  cannot see validation performed on a value assigned to a variable first, so
+  the variable-carried form does not match at all; a redirect to a checked
+  constant path is the safe shape. A leading-slash test alone is not a
+  sufficient guard because a protocol-relative target also begins with a slash.
+rule:
+  kind: call_expression
+  any:
+    - all:
+        - has: {field: function, regex: '^http\.Redirect$'}
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              all:
+                - nthChild: {position: 3, ofRule: {not: {kind: comment}}}
+                - matches: request-accessor
+    - all:
+        - has:
+            field: function
+            kind: selector_expression
+            all:
+              - has: {field: field, regex: '^Redirect$'}
+              - not: {has: {field: operand, regex: '^http$'}}
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              all:
+                - nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+                - matches: request-accessor
+utils:
+  request-accessor:
+    kind: call_expression
+    has:
+      field: function
+      kind: selector_expression
+      regex: '\.(FormValue|PostFormValue|Query|Param|QueryParam|DefaultQuery|PathValue|Get)$'

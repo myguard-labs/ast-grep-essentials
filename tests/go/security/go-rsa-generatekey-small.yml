@@ -1,0 +1,17 @@
+id: go-rsa-generatekey-small
+valid:
+- 'package p; func f() { rsa.GenerateKey(rand.Reader, 2048) }'
+- 'package p; func f() { rsa.GenerateKey(rand.Reader, 3072) }'
+- 'package p; func f() { rsa.GenerateKey(rand.Reader, 4096) }'
+- 'package p; func f() { rsa.GenerateKey(rand.Reader, bits) }'
+- 'package p; func f() { rsa.GenerateMultiPrimeKey(rand.Reader, 3, 1024) }'
+- 'package p; func f() { myrsa.GenerateKey(rand.Reader, 1024) }'
+- 'package p; func f() { ecdsa.GenerateKey(elliptic.P256(), rand.Reader) }'
+- 'package p; // rsa.GenerateKey(rand.Reader, 1024)'
+- 'package p; var s = "rsa.GenerateKey(rand.Reader, 1024)"'
+invalid:
+- 'package p; func f() { rsa.GenerateKey(rand.Reader, 1024) }'
+- 'package p; func f() { rsa.GenerateKey(rand.Reader, 512) }'
+- 'package p; func f() { rsa.GenerateKey(rand.Reader, 768) }'
+- 'package p; func f() { rsa.GenerateKey(rand.Reader, 1536) }'
+- 'package p; func f() { rsa.GenerateKey(r, 2047) }'

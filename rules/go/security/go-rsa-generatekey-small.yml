@@ -1,0 +1,25 @@
+id: go-rsa-generatekey-small
+language: go
+severity: error
+message: >-
+  RSA key generated with a modulus below 2048 bits. Factoring a 1024-bit
+  modulus is within reach of a well-resourced attacker and smaller sizes are
+  broken outright, so signatures made with this key can be forged and data
+  encrypted to it recovered. Generate at least 2048 bits, or use an elliptic
+  curve key with crypto/ecdsa or crypto/ed25519.
+note: >-
+  Fires only on an integer literal size argument; a size held in a variable or
+  a constant declared elsewhere is not visible here. A deliberately small key
+  in a test fixture or an interoperability shim for legacy hardware is a
+  legitimate dismissal. Go 1.24 rejects sizes below 1024 at runtime.
+rule:
+  kind: call_expression
+  all:
+    - has: {field: function, regex: '^rsa\.GenerateKey$'}
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+          kind: int_literal
+          regex: '^([0-9]{1,3}|1[0-9]{3}|20[0-3][0-9]|204[0-7])$'

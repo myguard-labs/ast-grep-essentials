@@ -1,0 +1,48 @@
+id: go-tempfile-fixed-path
+language: go
+severity: warning
+message: >-
+  Fixed filename in a world-writable temporary directory. Any local user can
+  pre-create that name as a symlink pointing anywhere the process can write, so
+  the open follows it and clobbers the target, and the name is also predictable
+  enough to let an attacker read or replace the contents between operations.
+  Use os.CreateTemp or os.MkdirTemp, which generate an unpredictable name and
+  fail rather than reuse an existing one.
+note: >-
+  Fires on a literal path under a shared temporary directory and on a literal
+  name joined onto os.TempDir. A private directory the process created with
+  restrictive permissions earlier is a legitimate dismissal, and a path built
+  from an environment variable is not visible to this matcher.
+rule:
+  any:
+    - kind: call_expression
+      all:
+        - has:
+            field: function
+            regex: '^(os|ioutil)\.(Create|OpenFile|WriteFile|Mkdir|MkdirAll|Remove)$'
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              any:
+                - kind: interpreted_string_literal
+                - kind: raw_string_literal
+              regex: '^["`]/(var/)?tmp/'
+    - kind: call_expression
+      all:
+        - has: {field: function, regex: '^(filepath|path)\.Join$'}
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              kind: call_expression
+              has: {field: function, regex: '^os\.TempDir$'}
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              all:
+                - any:
+                    - kind: interpreted_string_literal
+                    - kind: raw_string_literal
+                - not: {regex: '\$|%[sdvq]'}

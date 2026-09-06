@@ -1,0 +1,24 @@
+id: go-cipher-mode-weak
+language: go
+severity: warning
+message: >-
+  Unauthenticated or obsolete cipher construction. CBC, CFB and OFB provide no
+  integrity, so an attacker can flip plaintext bits or run a padding oracle
+  against the ciphertext, and DES, Triple DES and RC4 are broken as primitives.
+  Use cipher.NewGCM for an authenticated mode, or an AEAD such as
+  chacha20poly1305.
+note: >-
+  Fires on the constructor name. It cannot see an encrypt-then-MAC layer added
+  around the stream, so a construction that authenticates the ciphertext
+  separately with HMAC is a legitimate dismissal, as is decrypt-only code kept
+  for reading legacy data. crypto/des and crypto/rc4 have no safe mode.
+rule:
+  any:
+    - kind: call_expression
+      has:
+        field: function
+        regex: '^cipher\.New(CBCEncrypter|CBCDecrypter|CFBEncrypter|CFBDecrypter|OFB)$'
+    - kind: call_expression
+      has:
+        field: function
+        regex: '^(des\.NewCipher|des\.NewTripleDESCipher|rc4\.NewCipher)$'

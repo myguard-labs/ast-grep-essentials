@@ -1,0 +1,21 @@
+id: go-exec-shell-c
+valid:
+- 'package p; func f() { exec.Command("sh", "-c", "ls -la /tmp") }'
+- 'package p; func f() { exec.Command("sh", "-c", `ls -la /tmp`) }'
+- 'package p; func f() { exec.CommandContext(ctx, "bash", "-c", "ls /tmp") }'
+- 'package p; func f() { exec.Command("convert", r.FormValue("f")) }'
+- 'package p; func f() { exec.Command("sh", "-x", script) }'
+- 'package p; func f() { exec.Command("mytool", "-c", script) }'
+- 'package p; func f() { exec.CommandContext(ctx, "convert", arg) }'
+- 'package p; func f() { myexec.Command("sh", "-c", script) }'
+- 'package p; func f() { exec.Commander("sh", "-c", script) }'
+- 'package p; func f() { exec.Command("sh", "-c") }'
+- 'package p; // exec.Command("sh", "-c", script)'
+- 'package p; var s = "exec.Command(\"sh\", \"-c\", script)"'
+invalid:
+- 'package p; func f() { exec.Command("sh", "-c", "convert "+r.FormValue("f")) }'
+- 'package p; func f() { exec.Command("/bin/bash", "-c", script) }'
+- 'package p; func f() { exec.Command("cmd", "/C", script) }'
+- 'package p; func f() { exec.Command("powershell", "-Command", script) }'
+- 'package p; func f() { exec.CommandContext(ctx, "sh", "-c", "convert "+name) }'
+- 'package p; func f() { exec.CommandContext(ctx, "/bin/sh", "-c", strings.Join(parts, " ")) }'

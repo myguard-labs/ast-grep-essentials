@@ -1,0 +1,18 @@
+id: go-cookie-insecure-flags
+valid:
+- 'package p; func f() { http.SetCookie(w, &http.Cookie{Name: "session", Value: v, HttpOnly: true, Secure: true, SameSite: http.SameSiteLaxMode}) }'
+- 'package p; func f() { http.SetCookie(w, &http.Cookie{Name: "auth_token", Value: v, Secure: true, HttpOnly: true}) }'
+- 'package p; func f() { http.SetCookie(w, &http.Cookie{Name: "theme", Value: v}) }'
+- 'package p; func f() { http.SetCookie(w, &http.Cookie{Name: "locale", Value: v}) }'
+- 'package p; func f() { c := &mypkg.Cookie{Name: "session"} }'
+- 'package p; func f() { c := http.Cookie{Value: "session"} }'
+- 'package p; // http.Cookie{Name: "session", Value: v}'
+- 'package p; var s = "http.Cookie{Name: \"session\", Value: v}"'
+invalid:
+- 'package p; func f() { http.SetCookie(w, &http.Cookie{Name: "session", Value: "abc"}) }'
+- 'package p; func f() { http.SetCookie(w, &http.Cookie{Name: "session", Value: v, HttpOnly: true}) }'
+- 'package p; func f() { http.SetCookie(w, &http.Cookie{Name: "session", Value: v, Secure: true}) }'
+- 'package p; func f() { c := http.Cookie{Name: "auth_token", Value: v, HttpOnly: false, Secure: true} }'
+- 'package p; func f() { c := http.Cookie{Name: "jwt", Value: v} }'
+- 'package p; func f() { c := http.Cookie{Name: "SID", Value: v} }'
+- 'package p; func f() { c := http.Cookie{Name: "remember_me", Value: v} }'

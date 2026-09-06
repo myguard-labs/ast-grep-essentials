@@ -1,0 +1,49 @@
+id: go-mac-compare-variable-time
+language: go
+severity: warning
+message: >-
+  Message authentication code compared with a variable-time equality. bytes.Equal
+  and the equality operators stop at the first differing byte, so response
+  timing reveals how many leading bytes of a guess were right and an attacker
+  recovers a valid tag byte by byte. Compare with hmac.Equal or
+  subtle.ConstantTimeCompare, which always examine every byte.
+note: >-
+  Fires when one side of the comparison is a Sum call, which is the shape of a
+  freshly computed MAC. A comparison over values an attacker cannot iterate
+  against, or one guarded by strict rate limiting, is a weaker but real
+  dismissal; a checksum used only for corruption detection is not a security
+  comparison at all.
+rule:
+  any:
+    - kind: call_expression
+      all:
+        - has:
+            field: function
+            regex: '^(bytes\.Equal|bytes\.EqualFold|strings\.EqualFold|reflect\.DeepEqual)$'
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              stopBy: end
+              matches: sum-call
+    - kind: binary_expression
+      all:
+        - regex: '(==|!=)'
+        - has:
+            stopBy: end
+            all:
+              - matches: sum-call
+              - not:
+                  inside:
+                    stopBy: end
+                    kind: call_expression
+                    has:
+                      field: function
+                      regex: '^(hmac\.Equal|subtle\.ConstantTimeCompare)$'
+utils:
+  sum-call:
+    kind: call_expression
+    has:
+      field: function
+      kind: selector_expression
+      has: {field: field, regex: '^Sum$'}

@@ -1,0 +1,66 @@
+id: go-request-body-unbounded
+valid:
+- |
+  package p
+  func h(w http.ResponseWriter, r *http.Request) {
+    r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
+    b, _ := io.ReadAll(r.Body)
+    _ = b
+  }
+- |
+  package p
+  func h(w http.ResponseWriter, r *http.Request) {
+    b, _ := io.ReadAll(io.LimitReader(r.Body, 1<<20))
+    _ = b
+  }
+- |
+  package p
+  func h(w http.ResponseWriter, r *http.Request) {
+    json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<20)).Decode(&v)
+  }
+- |
+  package p
+  func h() { b, _ := io.ReadAll(f) }
+- |
+  package p
+  func h() { json.NewDecoder(f).Decode(&v) }
+- |
+  package p
+  func h() { b, _ := myio.ReadAll(r.Body) }
+- 'package p; // io.ReadAll(r.Body)'
+- 'package p; var s = "io.ReadAll(r.Body)"'
+invalid:
+- |
+  package p
+  func h(w http.ResponseWriter, r *http.Request) {
+    b, _ := io.ReadAll(r.Body)
+    _ = b
+  }
+- |
+  package p
+  func h(w http.ResponseWriter, r *http.Request) {
+    b, _ := ioutil.ReadAll(r.Body)
+    _ = b
+  }
+- |
+  package p
+  func fetch() {
+    resp, _ := client.Get(u)
+    b, _ := io.ReadAll(resp.Body)
+    _ = b
+  }
+- |
+  package p
+  func h(w http.ResponseWriter, r *http.Request) {
+    json.NewDecoder(r.Body).Decode(&v)
+  }
+- |
+  package p
+  func h(w http.ResponseWriter, r *http.Request) {
+    xml.NewDecoder(r.Body).Decode(&v)
+  }
+- |
+  package p
+  func h(w http.ResponseWriter, r *http.Request) {
+    yaml.NewDecoder(r.Body).Decode(&v)
+  }

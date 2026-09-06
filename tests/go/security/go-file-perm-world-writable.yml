@@ -1,0 +1,20 @@
+id: go-file-perm-world-writable
+valid:
+- 'package p; func f() { os.WriteFile(q, b, 0600) }'
+- 'package p; func f() { os.MkdirAll(d, 0755) }'
+- 'package p; func f() { os.WriteFile(q, b, 0644) }'
+- 'package p; func f() { os.WriteFile(q, b, perm) }'
+- 'package p; func f() { os.WriteFile(q, b, os.ModeDir) }'
+- 'package p; func f() { myos.WriteFile(q, b, 0777) }'
+- 'package p; func f() { os.ReadFile(q) }'
+- 'package p; // os.WriteFile(q, b, 0777)'
+- 'package p; var s = "os.WriteFile(q, b, 0777)"'
+invalid:
+- 'package p; func f() { os.WriteFile(q, b, 0777) }'
+- 'package p; func f() { os.WriteFile(q, b, 0666) }'
+- 'package p; func f() { os.MkdirAll(d, 0o777) }'
+- 'package p; func f() { os.Chmod(q, 0757) }'
+- 'package p; func f() { os.OpenFile(q, os.O_CREATE, 0662) }'
+- 'package p; func f() { os.Mkdir(d, 0723) }'
+- 'package p; func f() { os.WriteFile(q, b, os.ModePerm) }'
+- 'package p; func f() { ioutil.WriteFile(q, b, 0777) }'

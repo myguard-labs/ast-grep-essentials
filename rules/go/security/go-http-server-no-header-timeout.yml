@@ -1,0 +1,34 @@
+id: go-http-server-no-header-timeout
+language: go
+severity: warning
+message: >-
+  HTTP server started without a header read deadline, either as a Server
+  literal that sets neither ReadHeaderTimeout nor ReadTimeout, or as a bare
+  ListenAndServe which uses a zero-value Server. A client that opens
+  connections and dribbles header bytes holds each one open indefinitely, so a
+  handful of hosts exhaust the listener. Set ReadHeaderTimeout, and normally
+  ReadTimeout, WriteTimeout and IdleTimeout as well.
+note: >-
+  Fires on the construction site. A timeout assigned to the server value on a
+  later statement is not visible to this matcher, and a listener that only ever
+  serves a loopback socket or sits behind a proxy that already bounds header
+  reads is a legitimate dismissal.
+rule:
+  any:
+    - kind: composite_literal
+      all:
+        - has:
+            field: type
+            regex: '^http\.Server$'
+        - not:
+            has:
+              field: body
+              has:
+                kind: keyed_element
+                has:
+                  field: key
+                  regex: '^(ReadHeaderTimeout|ReadTimeout)$'
+    - kind: call_expression
+      has:
+        field: function
+        regex: '^http\.ListenAndServe(TLS)?$'

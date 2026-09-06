@@ -1,0 +1,49 @@
+id: go-aes-gcm-static-nonce
+language: go
+severity: error
+message: >-
+  AEAD sealed with a nonce that is a fixed byte literal or a zero-filled buffer.
+  Reusing a nonce under one key destroys GCM entirely: the keystream repeats so
+  two ciphertexts XOR to the plaintexts, and the authentication key can be
+  recovered, letting an attacker forge messages. Fill the nonce from
+  crypto/rand for every Seal, or derive it from a counter that never repeats.
+note: >-
+  Fires when the nonce argument of Seal is a byte-slice literal or a make call
+  whose buffer is never randomised inside the same function. A nonce filled by
+  a helper the matcher cannot see, or a genuine never-repeating counter
+  maintained outside this function, is a legitimate dismissal.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: selector_expression
+        has: {field: field, regex: '^Seal$'}
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          all:
+            - nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+            - any:
+                - kind: composite_literal
+                  has: {field: type, kind: slice_type}
+                - kind: type_conversion_expression
+                  all:
+                    - has: {field: type, kind: slice_type}
+                    - has:
+                        field: operand
+                        regex: '^["`]'
+                - all:
+                    - kind: call_expression
+                    - has: {field: function, regex: '^make$'}
+                    - not:
+                        inside:
+                          stopBy: end
+                          kind: function_declaration
+                          has:
+                            stopBy: end
+                            kind: call_expression
+                            has:
+                              field: function
+                              regex: '^(rand\.Read|io\.ReadFull)$'

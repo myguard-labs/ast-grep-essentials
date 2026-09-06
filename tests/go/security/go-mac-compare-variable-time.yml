@@ -1,0 +1,17 @@
+id: go-mac-compare-variable-time
+valid:
+- 'package p; func f() bool { return hmac.Equal(m.Sum(nil), sig) }'
+- 'package p; func f() bool { return subtle.ConstantTimeCompare(m.Sum(nil), sig) == 1 }'
+- 'package p; func f() bool { return bytes.Equal(a, b) }'
+- 'package p; func f() bool { return a == b }'
+- 'package p; func f() { x := m.Sum(nil) }'
+- 'package p; func f() bool { return bytes.Equal(m.Total(nil), sig) }'
+- 'package p; // bytes.Equal(m.Sum(nil), sig)'
+- 'package p; var s = "bytes.Equal(m.Sum(nil), sig)"'
+invalid:
+- 'package p; func f() bool { return bytes.Equal(m.Sum(nil), sig) }'
+- 'package p; func f() bool { return bytes.EqualFold(m.Sum(nil), sig) }'
+- 'package p; func f() bool { return reflect.DeepEqual(m.Sum(nil), sig) }'
+- 'package p; func f() bool { return strings.EqualFold(hex.EncodeToString(m.Sum(nil)), sig) }'
+- 'package p; func f() bool { return hex.EncodeToString(m.Sum(nil)) == sig }'
+- 'package p; func f() bool { return sig != hex.EncodeToString(m.Sum(nil)) }'

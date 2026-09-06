@@ -1,0 +1,20 @@
+id: go-path-check-string-match
+valid:
+- 'package p; func f() bool { return filepath.IsLocal(q) }'
+- 'package p; func f() { rel, err := filepath.Rel(base, q) }'
+- 'package p; func f() bool { return strings.Contains(q, "/") }'
+- 'package p; func f() bool { return strings.HasPrefix(q, "/api") }'
+- 'package p; func f() { s := strings.ReplaceAll(q, "//", "/") }'
+- 'package p; func f() bool { return mystrings.Contains(q, "..") }'
+- 'package p; // strings.Contains(q, "..")'
+- 'package p; var s = "strings.Contains(q, \"..\")"'
+invalid:
+- 'package p; func f() bool { return strings.Contains(q, "..") }'
+- 'package p; func f() bool { return strings.HasPrefix(q, "..") }'
+- 'package p; func f() bool { return strings.HasSuffix(q, "..") }'
+- 'package p; func f() int { return strings.Index(q, "../") }'
+- 'package p; func f() { s := strings.ReplaceAll(q, "..", "") }'
+- 'package p; func f() { s := strings.Replace(q, "..", "", -1) }'
+- 'package p; func f() { s := strings.Trim(q, "..") }'
+- 'package p; func f() { s := strings.TrimLeft(q, "..") }'
+- 'package p; func f() { s := strings.ReplaceAll(q, `..`, "") }'

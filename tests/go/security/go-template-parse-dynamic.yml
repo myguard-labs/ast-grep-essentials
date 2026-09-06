@@ -1,0 +1,15 @@
+id: go-template-parse-dynamic
+valid:
+- 'package p; func f() { t, _ := template.New("u").Parse(`Hello {{.Name}}`) }'
+- 'package p; func f() { t, _ := template.New("u").Parse("Hello") }'
+- 'package p; func f() { t := template.Must(template.New("x").Parse("<h1>{{.N}}</h1>")) }'
+- 'package p; func f() { u, _ := url.Parse(target) }'
+- 'package p; func f() { n, _ := strconv.Parse(s) }'
+- 'package p; func f() { t, _ := template.ParseFiles(name) }'
+- 'package p; // template.New("u").Parse(r.FormValue("tpl"))'
+- 'package p; var s = "template.New(\"u\").Parse(tpl)"'
+invalid:
+- 'package p; func f() { t, _ := template.New("u").Parse(r.FormValue("tpl")) }'
+- 'package p; func f() { t, _ := template.New("u").Parse(tpl) }'
+- 'package p; func f() { t := template.Must(template.New("u").Parse(string(b))) }'
+- 'package p; func f() { t, _ := template.New("u").Parse(a + b) }'

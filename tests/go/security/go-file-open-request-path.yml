@@ -1,0 +1,21 @@
+id: go-file-open-request-path
+valid:
+- 'package p; func f() { b, _ := os.ReadFile(cfg.TemplatePath) }'
+- 'package p; func f() { b, _ := os.ReadFile(filepath.Join("/data", "static.txt")) }'
+- 'package p; func f() { http.ServeFile(w, r, "/srv/index.html") }'
+- 'package p; func f() { name := r.PathValue("name"); _ = name }'
+- 'package p; func f() { log.Println(r.FormValue("path")) }'
+- 'package p; func f() { p := filepath.Join("/data", r.PathValue("n")); _ = p }'
+- 'package p; func f() { db.Query(r.FormValue("q")) }'
+- 'package p; func f() { myos.ReadFile(r.FormValue("path")) }'
+- 'package p; // os.ReadFile(r.FormValue("path"))'
+- 'package p; var s = "os.ReadFile(r.FormValue(\"path\"))"'
+invalid:
+- 'package p; func f() { b, _ := os.ReadFile(r.FormValue("path")) }'
+- 'package p; func f() { f, _ := os.Open(r.URL.Query().Get("f")) }'
+- 'package p; func f() { os.Remove(c.Param("id")) }'
+- 'package p; func f() { b, _ := ioutil.ReadFile(r.PostFormValue("p")) }'
+- 'package p; func f() { http.ServeFile(w, r, r.URL.Path) }'
+- 'package p; func f() { b, _ := os.ReadFile(filepath.Join("/data", r.PathValue("name"))) }'
+- 'package p; func f() { http.ServeFile(w, r, filepath.Join("/srv", r.URL.Query().Get("f"))) }'
+- 'package p; func f() { b, _ := os.ReadFile(path.Join("/data", c.Query("n"))) }'
