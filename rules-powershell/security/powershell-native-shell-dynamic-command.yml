@@ -1,0 +1,133 @@
+id: powershell-native-shell-dynamic-command
+language: powershell
+severity: error
+message: >-
+  A command string that is not a constant is being handed to a native shell
+  through one of its execution switches: cmd's /c or /k, or the -Command,
+  -EncodedCommand or an unambiguous abbreviation of either on powershell or
+  pwsh. The value passed there is not an argument the child process receives as
+  data -- it is a script the child parses and executes, so every metacharacter
+  it contains is live. An attacker who influences the value chooses the commands
+  that run, with the caller's privileges and in a process PowerShell's own
+  transcription, module logging and constrained language mode do not cover
+  (CWE-78, CWE-88). Quoting the interpolation does not help: cmd's own parsing
+  of &, |, ^ and %VAR% happens after PowerShell has finished expanding the
+  string, and PowerShell's quoting cannot reach into the child's parser. Invoke
+  the target program directly and pass each value as its own argument -- through
+  the call operator, Start-Process -ArgumentList, or an argument array -- so the
+  value stays data and never reaches a shell parser.
+note: >-
+  Matches a command whose name is cmd, powershell or pwsh, with or without a
+  .exe suffix, in any casing, and whose COMMAND-STRING argument is dynamic. The
+  command-string argument is the element that directly follows an execution
+  switch across a command_argument_sep: cmd's /c or /k, which the parser reports
+  as a generic_token rather than a parameter, or -Command or -EncodedCommand on
+  the PowerShell hosts, together with the abbreviations those hosts document
+  (-c through -command, and -e, -ec, -enc through -encodedcommand). It is
+  dynamic when it contains a variable, a subexpression, or a parenthesised
+  command invocation. The test applies to that argument alone, so a variable
+  bound to some other switch does not match: powershell -File $script runs a
+  script file whose path is data, and powershell -ExecutionPolicy $p sets a
+  policy, and neither decides an executed command string. These are the host
+  executable's own switch table, not cmdlet parameters bound by prefix
+  resolution: about_Pwsh documents `-EncodedCommand | -e | -ec`, so -e and -ec
+  are execution switches and are matched. -ex is excluded because it belongs to
+  `-ExecutionPolicy | -ex | -ep`, and there is no -Encoding host switch. A
+  parenthesised invocation counts because its OUTPUT becomes the command
+  string. A SCRIPT BLOCK argument never counts, whatever it contains: a script
+  block passed to -Command is not interpolated by the parent -- the child
+  receives fixed script text and evaluates any variable in its own scope, where
+  the parent's binding does not exist -- so powershell -Command { Get-Date } and
+  pwsh -Command { Get-Item $path } alike are script text fully determined by the
+  source under review. Only a STRING argument interpolates in the parent, which
+  is what powershell -Command "Get-Item $path" matches on. The residual is that
+  this rule reports no script block at all; a caller who BUILDS one at runtime
+  does so through [scriptblock]::Create, which
+  powershell-dynamic-scriptblock-api reports. It
+  deliberately does not match a constant command string -- cmd /c "dir",
+  powershell -Command 'Get-Date' -- which runs fixed text, and it does not match
+  direct argument passing such as cmd /c dir $path, where the variable is an
+  argument to the invoked program rather than part of the parsed command string.
+  The rule performs no taint tracking and does not claim the value is
+  attacker-controlled; the executed text is simply not determined by the source
+  under review. Where the value really is a hardcoded constant the finding still
+  stands, because the correct edit is to invoke the program directly with
+  separate arguments rather than to keep a second shell parser on the path.
+rule:
+  kind: command
+  all:
+    - has:
+        field: command_name
+        regex: '(?i)^(cmd|cmd\.exe|powershell|powershell\.exe|pwsh|pwsh\.exe)$'
+    # `command_elements` is flat, so the value of a switch is not its child but
+    # the sibling that follows it across a `command_argument_sep`. cmd's /c and
+    # /k are not parameters at all -- the parser reports them as generic_token,
+    # because a leading slash is not PowerShell parameter syntax -- so both
+    # forms have to be named explicitly.
+    - has:
+        field: command_elements
+        has:
+          all:
+            - follows:
+                kind: command_argument_sep
+                follows:
+                  any:
+                    - kind: generic_token
+                      regex: '^/[ckCK]$'
+                    # Spelled out rather than written as a nested-optional
+                    # regex, so the boundary stays reviewable. These are the
+                    # host executable's own switches, not cmdlet parameters
+                    # bound by prefix resolution: about_Pwsh documents
+                    # `-Command | -c` and `-EncodedCommand | -e | -ec`, so -e
+                    # and -ec are named abbreviations of -EncodedCommand. -ex
+                    # is absent on purpose -- it belongs to
+                    # `-ExecutionPolicy | -ex | -ep`, which decides no command
+                    # string -- and there is no -Encoding host switch at all.
+                    - kind: command_parameter
+                      regex: '(?i)^-(c|co|com|comm|comma|comman|command|e|ec|enc|enco|encod|encode|encoded|encodedc|encodedco|encodedcom|encodedcomm|encodedcomma|encodedcomman|encodedcommand)$'
+            # The dynamic test does not apply to a SCRIPT BLOCK argument. A
+            # script block bound to -Command is NOT interpolated by the parent:
+            # the child receives fixed script text and evaluates any variable in
+            # its OWN scope, where the parent's binding does not exist. Verified
+            # on pwsh 7:
+            #   $path = "PARENT-VALUE"; pwsh -Command { Write-Output "[$path]" }
+            #   -> child prints "[]"
+            # while the STRING form interpolates in the parent and prints
+            # "[PARENT-VALUE]". A subexpression inside the block behaves the
+            # same. So a script-block argument is script text fully determined by
+            # the source under review, and reporting it -- with or without
+            # variables inside -- is a false positive. The argument element is a
+            # `unary_expression` whose direct child is `script_block_expression`
+            # for exactly this shape, so excluding that child is the honest
+            # structural discriminator; it also stops `variable` and
+            # `sub_expression` from reaching inside the block under `stopBy:
+            # end`. A caller who BUILDS a block at runtime does so through
+            # [scriptblock]::Create, which powershell-dynamic-scriptblock-api
+            # reports.
+            - not:
+                has:
+                  kind: script_block_expression
+            # As in the Add-Type rule, matching the inner kinds rather than the
+            # enclosing string node is what keeps a constant command string out:
+            # a non-interpolating double-quoted string and a single-quoted
+            # string carry neither a variable nor a subexpression.
+            - has:
+                stopBy: end
+                any:
+                  - kind: variable
+                  - kind: sub_expression
+                  # A bare `command` under `stopBy: end` is NOT a dynamic
+                  # value: it also matches the ordinary command nodes making up
+                  # the statements inside a script block. This alternative
+                  # exists for a PARENTHESISED INVOCATION whose OUTPUT becomes
+                  # the command string, as in `cmd /c (Get-Payload)`, and the
+                  # grammar marks exactly that: such a command sits under a
+                  # `parenthesized_expression`. Anchoring to that ancestor keeps
+                  # the alternative honest independently of the script-block
+                  # exclusion above. `$( ... )` needs no entry here because the
+                  # parser gives it its own `sub_expression` node, matched
+                  # above.
+                  - kind: command
+                    inside:
+                      stopBy: end
+                      kind: parenthesized_expression

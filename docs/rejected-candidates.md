@@ -258,3 +258,25 @@ pipeline-shape claim whose safe variants are numerous, and `read -r` is already
   trade-off is worth a rule; the shape also belongs to process-launch auditing
   of a host command line rather than to a PowerShell-source lens, since the
   encoded payload is opaque to this parser either way.
+- `powershell-add-type-constant-variable-resolution` — an extension to
+  `powershell-add-type-dynamic-source` that would suppress the finding when the
+  variable in the source argument is provably assigned a literal earlier in the
+  same scope. Probed by hand over the shapes a bounded same-scope proof would
+  have to survive: `$code = 'public class X {}'` followed by a `foreach` body
+  that reassigns `$code`; an assignment before a function call that could
+  rebind the name through `Set-Variable -Scope 1`; and a dot-sourced file
+  supplying the assignment. A syntax-only matcher sees none of the three, so
+  every candidate proof was heuristic rather than sound, and each one
+  suppresses a genuine finding whenever the rebinding sits outside its window.
+  Suppression that is wrong in the unsafe direction is worse than no
+  suppression at all for a security lens, so the extension is not shipped; the
+  gap is documented in `limitations.md` instead.
+- `powershell-cmd-argument-passing` — a rule for `cmd /c dir $path`, where a
+  variable follows the invoked program rather than being part of a quoted
+  command string. Probed against the same corpus as
+  `powershell-native-shell-dynamic-command`: the shape is ordinary argument
+  passing, which is the remedy the shipped rule's message recommends, and
+  reporting it would make the recommended fix itself a finding. The residual
+  risk — the invoked program re-parsing its own argument — is a property of
+  that program, not of the PowerShell source, and a PowerShell-source lens
+  cannot distinguish `dir` from a wrapper that re-invokes a shell.

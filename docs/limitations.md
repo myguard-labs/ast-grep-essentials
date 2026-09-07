@@ -1363,6 +1363,100 @@ rejected and is recorded in `rejected-candidates.md`.
   finding. Only `Create` is type-anchored, to the `ScriptBlock` type literal,
   because an unanchored `Create` matched unrelated factories such as
   `[Regex]::Create` in probing.
+- **No variable-constant resolution.** No PowerShell rule tracks that a variable
+  was assigned a literal earlier in the same scope, so
+  `$code = 'public class X {}'; Add-Type -TypeDefinition $code` matches
+  `powershell-add-type-dynamic-source` exactly as an attacker-fed `$code` does.
+  This was considered and deliberately left out for PSH-04: a sound same-scope
+  proof would have to establish that no intervening statement, loop iteration,
+  function call, dot-sourced file or scope-crossing assignment rebinds the name,
+  and a syntax-only matcher cannot establish any of that. A heuristic that
+  looked only for a nearby literal assignment would suppress real findings
+  whenever a later reassignment sits outside its window, which is the wrong
+  direction for a security lens. The rules therefore report the shape, and the
+  recommended remedy — a literal definition with the varying data passed as an
+  argument — is correct whether or not the value is currently constant.
+- `powershell-add-type-dynamic-source` does not model which of Add-Type's
+  parameter sets is actually in effect. It selects the source argument
+  syntactically: the value bound to `-TypeDefinition`, `-MemberDefinition`,
+  `-Path` or `-LiteralPath`, or the positional argument that follows no
+  parameter. A
+  command that mixes parameter sets in a way PowerShell would reject at runtime
+  is judged on that syntax alone.
+- `powershell-add-type-dynamic-source` cannot tell a dynamic `-Path` that names
+  a **source file** from one that names a **prebuilt DLL**. `-Path` and
+  `-LiteralPath` accept both, and Add-Type picks the compiler from the file
+  extension, which is not knowable when the path is a variable. The rule reports
+  the dynamic path either way: the DLL case is still an assembly loaded into the
+  session by a runtime-decided value, and the remedy — a literal path, or the
+  value validated against an allowlist — is correct for both. `-AssemblyName` is
+  excluded because it can only name a prebuilt assembly.
+- `powershell-add-type-dynamic-source` accepts the unambiguous parameter
+  prefixes PowerShell itself binds (`-T` through `-TypeDefinition`, `-M`
+  through `-MemberDefinition`, `-Pat` through `-Path`, `-Li` through
+  `-LiteralPath`, plus `-LP`) by enumerating them. `-M` is unambiguous because
+  `MemberDefinition` is the only Add-Type parameter, common parameters
+  included, that starts with M. Prefixes PowerShell would reject as ambiguous
+  are not matched: `-P` and `-Pa` are ambiguous between `-Path` and
+  `-PassThru`, and `-La` resolves to `-Language`. `-N` prefixes are not matched
+  either: `-Name` and `-Namespace` name the generated class rather than the
+  compiled member text, so a variable bound to one decides no code. The
+  `PSPath` alias of `-LiteralPath` is not covered, because its own prefixes
+  collide with `-PassThru` at `-P`.
+- `powershell-add-type-dynamic-source` does **not** match source accepted
+  positionally after a named parameter, such as `Add-Type -PassThru $code` or
+  `Add-Type -IgnoreWarnings $code`, where PowerShell binds `$code` positionally
+  to `-TypeDefinition` because the preceding parameter is a switch that consumes
+  no value. This is refused by design, for the same reason as the
+  `PSH-IEX-POS` positional-argument boundary recorded for the Invoke-Expression
+  rules: `command_elements` is flat, so an argument that
+  follows a switch parameter and an argument that is a real parameter's value
+  are the same shape to the matcher. Distinguishing them would require a
+  per-parameter arity model — knowing that `-PassThru` and `-IgnoreWarnings` are
+  switches while `-Language` and `-OutputAssembly` take a value — which a
+  syntax-only matcher does not have and which would have to be maintained per
+  cmdlet. The rule therefore treats an argument following any parameter as that
+  parameter's value.
+- Both `powershell-native-shell-dynamic-command` and
+  `powershell-add-type-dynamic-source` treat **any script block** bound to the
+  sink argument as constant, whether or not it contains variables. A script
+  block passed to `-Command` is fixed script text evaluated in the child's own
+  scope -- the parent does not interpolate it. On pwsh 7,
+  `$path = "PARENT-VALUE"; pwsh -Command { Write-Output "[$path]" }` prints
+  `[]`, while the string form
+  `pwsh -Command "Write-Output '[$path]'"` prints `[PARENT-VALUE]`; a `$( ... )`
+  inside the block behaves like the bare variable. So `pwsh -Command { Get-Date
+  }`, `pwsh -Command { Get-Item $path }` and
+  `Add-Type -TypeDefinition { public class X { $body } }` are all determined by
+  the source under review and none is reported. Only a **string** argument
+  interpolates in the parent, and that is where these rules find their dynamic
+  content. Implemented by excluding an argument whose direct child is
+  `script_block_expression`, so the `variable` and `sub_expression`
+  alternatives cannot reach inside a block under `stopBy: end`; the `command`
+  alternative that catches a producing invocation (`cmd /c (Get-Payload)`,
+  `Add-Type -TypeDefinition (Get-Content src.cs)`) stays anchored to a
+  `parenthesized_expression` ancestor. Two residuals follow: these rules report
+  no script block at all -- a caller who builds one dynamically does so through
+  `[ScriptBlock]::Create`, which `powershell-dynamic-scriptblock-api` reports --
+  and a producing invocation reached without parentheses, were the grammar to
+  admit one, would be missed.
+- `powershell-native-shell-dynamic-command` matches the invoked shell by
+  command name only. `& $exe /c $cmd`, a full path such as
+  `C:\Windows\System32\cmd.exe /c $cmd`, and a shell reached through
+  `Start-Process -FilePath cmd -ArgumentList "/c $x"` all carry the same risk
+  and none of them matches, because the name is not a literal `cmd`, `pwsh` or
+  `powershell` token in the `command_name` field. It also treats
+  `cmd /c dir $path` as argument passing rather than a command string, which is
+  correct for the common case but wrong where the invoked program itself
+  re-parses its argument.
+- `powershell-native-shell-dynamic-command` enumerates the PowerShell hosts'
+  own documented switch abbreviations, not cmdlet parameter prefixes. The hosts
+  do not use cmdlet binding for their own command line: `about_Pwsh` documents
+  `-Command | -c` and `-EncodedCommand | -e | -ec`, so `-e` and `-ec` select an
+  executed command string and are matched, while `-ex` and `-ep` belong to
+  `-ExecutionPolicy` and are not. There is no `-Encoding` host switch. The
+  enumeration is fixed text, so a switch abbreviation a future host version
+  adds is not matched until the rule is updated.
 - Aliases are matched by name, not resolved. A script that does
   `Set-Alias run Invoke-Expression` and then calls `run $cmd` is not matched,
   and conversely a user-defined `iex` alias pointing somewhere harmless is.

@@ -464,3 +464,24 @@ fixed by its fixtures.
   which carries `InvokeScript`, `NewScriptBlock` and the `ExpandString` that
   evaluates embedded subexpressions rather than merely formatting
   <https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.commandinvocationintrinsics>
+- `powershell-add-type-dynamic-source` — CWE-94, CWE-95; Microsoft `Add-Type`
+  reference, which documents the `-TypeDefinition` parameter set as compiling
+  supplied source with the C# compiler and loading the result into the current
+  session, and the separate `-Path`/`-LiteralPath`/`-AssemblyName` sets that
+  load an existing artefact instead
+  <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/add-type?view=powershell-7.5>;
+  Microsoft's constrained-language-mode documentation, which records that
+  `Add-Type` is blocked under that mode precisely because a compiled assembly
+  can call arbitrary APIs outside PowerShell's own controls
+  <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes?view=powershell-7.5>
+- `powershell-native-shell-dynamic-command` — CWE-78, CWE-88; `cmd.exe`
+  reference for the `/c` and `/k` switches, which take the remainder as a
+  command line cmd parses itself
+  <https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/cmd>;
+  the `powershell.exe` and `pwsh` command-line references for `-Command` and
+  `-EncodedCommand`, and for the prefix-resolution rule that makes `-c` and
+  `-enc` unambiguous while `-e` is not
+  <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_pwsh?view=powershell-7.5>;
+  Microsoft guidance on passing arguments to native commands as separate
+  arguments rather than as a shell string
+  <https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/native-commands-arguments?view=powershell-7.5>

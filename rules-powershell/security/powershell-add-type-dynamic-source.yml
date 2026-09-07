@@ -1,0 +1,186 @@
+id: powershell-add-type-dynamic-source
+language: powershell
+severity: error
+message: >-
+  Add-Type is compiling source that is not selected by a constant: either the
+  type definition itself contains a variable, a subexpression or the output of
+  a command invocation, or the MEMBER definition bound to -MemberDefinition
+  does, or the source FILE named by -Path/-LiteralPath is. All three forms
+  compile. Add-Type invokes the C# compiler at runtime on whatever text
+  that argument resolves to, or on the contents of whatever file the path
+  resolves to, and loads the resulting assembly into the current session, so
+  the code that executes is decided by a value produced at runtime rather than
+  by the source under review. An attacker who influences that value
+  -- through a parameter, an environment variable, a file, a registry read or an
+  HTTP response -- chooses the C# that is compiled and run, in-process and with
+  the caller's privileges, and the loaded assembly can call any Win32 API
+  directly, bypassing PowerShell's own logging, constrained language mode and
+  execution policy (CWE-94, CWE-95). String interpolation is not escaping: there
+  is no quoting context in PowerShell source that makes an injected brace,
+  statement or using-directive inert once it reaches the C# compiler. The same applies to a source
+  path: -Path and -LiteralPath do not load a prebuilt assembly when they are
+  given a source file -- Add-Type reads the named .cs or .vb file and compiles
+  it, choosing the compiler from the extension -- so a runtime-decided path
+  chooses the C# that is compiled and run just as a runtime-decided definition
+  does. Compile a fixed type definition from a literal or a verbatim
+  here-string and pass the variable data to the compiled type as an argument;
+  where the source genuinely lives in a file, name that file with a literal
+  path or validate the value against an allowlist of known source files before
+  binding it. Better still, use an existing .NET API so no compiler is on the
+  path at all.
+note: >-
+  Matches an Add-Type command, in any casing, whose SOURCE argument is dynamic.
+  Add-Type has three ways of naming source: the text bound to -TypeDefinition
+  (or the positional argument that follows no parameter at all), the member text
+  bound to -MemberDefinition, and the source FILE bound to -Path or
+  -LiteralPath. All are compiled. Microsoft documents -MemberDefinition as
+  specifying "new properties or methods for the class", for which Add-Type
+  "generates the template code that's required to support the properties or
+  methods" -- the P/Invoke idiom, used with -Name and -Namespace -- so the
+  supplied member text is compiled into a type that is loaded and callable, and
+  a dynamic value bound to it decides compiled code exactly as -TypeDefinition
+  does. Microsoft documents -Path
+  as "the path to source code files or assembly DLL files" and states that when
+  source files are submitted Add-Type "compiles the code in the files and
+  creates an in-memory assembly", choosing the compiler from the file
+  extension; -LiteralPath is the same parameter without wildcard expansion. So a
+  dynamic value bound to -Path or -LiteralPath decides which C# gets compiled
+  and executed, which is the same risk class as a dynamic definition, and it is
+  reported. An argument is dynamic when it contains a variable, a subexpression,
+  or a parenthesised command invocation whose output becomes the argument. An
+  expandable here-string counts as dynamic only when it actually interpolates
+  something, because the parser gives a purely literal one no variable child.
+  The parenthesised invocation counts because its OUTPUT becomes the compiled
+  text. A SCRIPT BLOCK argument never counts, whatever it contains: a script
+  block is not interpolated where it is written -- it carries fixed script text,
+  and any variable inside it is resolved wherever the block is later evaluated,
+  not by the caller binding it -- so neither
+  Add-Type -TypeDefinition { public class X {} } nor
+  Add-Type -TypeDefinition { public class X { $body } } is reported. Only a
+  STRING argument interpolates at the binding site, which is what
+  Add-Type -TypeDefinition "public class X { $body }" matches on. The residual
+  is that this rule reports no script block at all; a caller who BUILDS one at
+  runtime does so through [scriptblock]::Create, which
+  powershell-dynamic-scriptblock-api reports.
+  The test applies to those arguments alone. A CONSTANT path -- Add-Type -Path
+  C:\src\Thing.cs -- names a fixed file under review and is not reported.
+  -AssemblyName is excluded in every form, dynamic or not: it names a prebuilt
+  assembly resolved through .NET assembly binding, so no compiler is on its
+  path and a variable bound to it decides no compiled code. -ReferencedAssemblies
+  is excluded for the same reason -- it references assemblies the compilation
+  links against rather than the text being compiled. Parameter names are matched
+  through the unambiguous abbreviations PowerShell itself resolves, enumerated
+  in the rule. It does not match a wholly constant definition either -- a
+  single-quoted string, a non-interpolating double-quoted string, or a verbatim
+  here-string -- which is the supported way to use this cmdlet. The rule
+  performs no taint tracking and does not claim the value is
+  attacker-controlled; it does not need to, because the compiled text is not
+  determined by the source text under review. Where the value really is a
+  hardcoded constant assembled from variables the finding still stands, because
+  the correct edit is to make the definition literal, or the path literal, and
+  pass the varying data as an argument to the compiled type.
+rule:
+  kind: command
+  all:
+    - has:
+        field: command_name
+        regex: '(?i)^Add-Type$'
+    # `command_elements` is flat: a parameter's value is not a child of the
+    # parameter, it is the sibling that follows it across a
+    # `command_argument_sep`. Selecting "the source argument" therefore means
+    # selecting a direct child of `command_elements` that either follows no
+    # `command_parameter` at all (the positional source form) or follows one of
+    # the parameters that names compiled source across that separator. Those are
+    # -TypeDefinition, which carries the text, -MemberDefinition, which carries
+    # member text Add-Type wraps in generated class scaffolding and compiles,
+    # and -Path/-LiteralPath, which name a source file Add-Type reads and
+    # compiles. -AssemblyName and
+    # -ReferencedAssemblies are absent on purpose: they name prebuilt assemblies,
+    # so in `Add-Type -AssemblyName $asm` the variable follows a parameter that
+    # is neither in the list nor absent, and nothing here matches it.
+    - has:
+        field: command_elements
+        has:
+          all:
+            - any:
+                - not:
+                    follows:
+                      stopBy: end
+                      kind: command_parameter
+                - follows:
+                    kind: command_argument_sep
+                    follows:
+                      kind: command_parameter
+                      # Spelled out rather than written as a nested-optional
+                      # regex, the same way the native-shell rule enumerates
+                      # -c/-command: PowerShell binds any prefix that resolves
+                      # to exactly one parameter, and an enumeration makes the
+                      # boundary reviewable. Add-Type's full parameter set is
+                      # TypeDefinition, Name, MemberDefinition, Namespace,
+                      # UsingNamespace, Language, ReferencedAssemblies,
+                      # OutputAssembly, OutputType, PassThru, IgnoreWarnings,
+                      # CompilerOptions, Path, LiteralPath, AssemblyName, plus
+                      # the common parameters. From that set:
+                      #   -T is already unambiguous -- TypeDefinition is the
+                      #     only parameter, common ones included, that starts
+                      #     with T -- so the enumeration runs from -T.
+                      #   -M is already unambiguous -- MemberDefinition is the
+                      #     only parameter, common ones included, that starts
+                      #     with M -- so that enumeration runs from -M.
+                      #   -P and -Pa are AMBIGUOUS between Path and PassThru,
+                      #     so the Path enumeration starts at -Pat.
+                      #   -L is ambiguous between LiteralPath and Language, and
+                      #     -La resolves to Language, so the LiteralPath
+                      #     enumeration starts at -Li.
+                      # PowerShell also accepts LiteralPath's declared aliases
+                      # PSPath and LP; -LP is listed, while -PS.. is left out
+                      # because PSPath's own prefixes collide with PassThru at
+                      # -P and the alias is vanishingly rare in real scripts.
+                      regex: '(?i)^-(t|ty|typ|type|typed|typede|typedef|typedefi|typedefin|typedefini|typedefinit|typedefiniti|typedefinitio|typedefinition|m|me|mem|memb|membe|member|memberd|memberde|memberdef|memberdefi|memberdefin|memberdefini|memberdefinit|memberdefiniti|memberdefinitio|memberdefinition|pat|path|li|lit|lite|liter|litera|literal|literalp|literalpa|literalpat|literalpath|lp)$'
+            # The dynamic test does not apply to a SCRIPT BLOCK argument. A
+            # script block bound to -Command is NOT interpolated by the parent:
+            # the child receives fixed script text and evaluates any variable in
+            # its OWN scope, where the parent's binding does not exist. Verified
+            # on pwsh 7:
+            #   $path = "PARENT-VALUE"; pwsh -Command { Write-Output "[$path]" }
+            #   -> child prints "[]"
+            # while the STRING form interpolates in the parent and prints
+            # "[PARENT-VALUE]". A subexpression inside the block behaves the
+            # same. So a script-block argument is script text fully determined by
+            # the source under review, and reporting it -- with or without
+            # variables inside -- is a false positive. The argument element is a
+            # `unary_expression` whose direct child is `script_block_expression`
+            # for exactly this shape, so excluding that child is the honest
+            # structural discriminator; it also stops `variable` and
+            # `sub_expression` from reaching inside the block under `stopBy:
+            # end`. A caller who BUILDS a block at runtime does so through
+            # [scriptblock]::Create, which powershell-dynamic-scriptblock-api
+            # reports.
+            - not:
+                has:
+                  kind: script_block_expression
+            # Matching `variable` and `sub_expression` rather than the enclosing
+            # string node is what keeps constant arguments out: a
+            # non-interpolating double-quoted string, a single-quoted string, a
+            # verbatim here-string and a bare constant path such as
+            # `C:\src\Thing.cs` all parse without either child, while an
+            # expandable here-string that really interpolates carries a
+            # `variable`. `command` covers `Add-Type -TypeDefinition (Get-Content
+            # src.cs)`, whose output becomes the compiled text but which contains
+            # neither of the other two kinds.
+            - has:
+                stopBy: end
+                any:
+                  - kind: variable
+                  - kind: sub_expression
+                  # `command` is anchored to a `parenthesized_expression`
+                  # ancestor for the same reason as in the native-shell rule.
+                  # It exists for `Add-Type -TypeDefinition (Get-Content
+                  # src.cs)`, whose OUTPUT becomes the compiled text; unanchored
+                  # under `stopBy: end` it also matches every ordinary command
+                  # node inside a script block. The anchor keeps the alternative
+                  # honest independently of the script-block exclusion above.
+                  - kind: command
+                    inside:
+                      stopBy: end
+                      kind: parenthesized_expression

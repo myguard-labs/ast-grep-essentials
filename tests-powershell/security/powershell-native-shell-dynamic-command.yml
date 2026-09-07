@@ -1,0 +1,112 @@
+id: powershell-native-shell-dynamic-command
+valid:
+# Constant command strings. This is the exclusion a false positive would live
+# in: the executed text is fixed, so there is nothing to inject into.
+- 'cmd /c "dir"'
+- 'cmd.exe /c "dir C:\Windows"'
+- 'cmd /c dir'
+- "powershell -Command 'Get-Date'"
+- 'powershell -Command "Get-Date"'
+- 'pwsh -c "Get-Date"'
+- 'powershell.exe -NoProfile -Command "Get-Date"'
+- 'powershell -EncodedCommand RwBlAHQALQBEAGEAdABlAA=='
+# Direct argument passing: the variable is an argument to the invoked program,
+# not part of a string the shell parses as a command line.
+- 'cmd /c dir $path'
+- 'cmd /c type $file'
+# Variables bound to switches that are not execution switches. -File names a
+# script whose path is data; -ExecutionPolicy sets a policy. Neither decides an
+# executed command string.
+- 'powershell -File $script'
+- 'powershell -ExecutionPolicy $policy -File script.ps1'
+- 'powershell -WindowStyle $style -Command "Get-Date"'
+- 'pwsh -WorkingDirectory $dir -c "Get-Date"'
+# -ex abbreviates -ExecutionPolicy, not -EncodedCommand: about_Pwsh documents
+# the hosts' own switch table as `-EncodedCommand | -e | -ec` and
+# `-ExecutionPolicy | -ex | -ep`. -ex sets a policy and decides no command
+# string, so it must stay out. There is no -Encoding host switch at all, so a
+# variable bound to that spelling binds nothing executable either.
+- 'powershell -ex $policy -File script.ps1'
+- 'powershell -ex Bypass -Command "dir"'
+- 'pwsh -ex $p -c "Get-Date"'
+- 'powershell -ep $policy -File script.ps1'
+- 'powershell -Encoding $enc'
+# A constant encoded command through the short spellings stays out too: the
+# executed text is fixed.
+- 'powershell -e RwBlAHQALQBEAGEAdABlAA=='
+- 'pwsh -ec RwBlAHQALQBEAGEAdABlAA=='
+# A SCRIPT BLOCK bound to an execution switch, with or without variables in it.
+# The parent does NOT interpolate a script-block argument: the child receives
+# fixed script text and evaluates any variable in its OWN scope. Verified on
+# pwsh 7 --
+#   $path = "PARENT-VALUE"; pwsh -Command { Write-Output "[$path]" }  -> "[]"
+#   $path = "PARENT-VALUE"; pwsh -Command "Write-Output '[$path]'"
+#                                                       -> "[PARENT-VALUE]"
+# -- and a `$( ... )` inside the block behaves the same as a bare variable. So
+# the executed text is fully determined by the source under review in every one
+# of these, and reporting any of them is a false positive. The script-block form
+# is also what this rule's message recommends over a built-up string.
+- 'pwsh -Command { Get-Date }'
+- 'powershell -Command { Get-ChildItem }'
+- 'cmd /c { dir }'
+- 'pwsh -c { Get-Date; Get-Location }'
+- 'pwsh -Command { Get-Item $path }'
+- 'powershell -Command { Remove-Item $target }'
+- 'pwsh -c { Get-Item $($n.Name) }'
+# The safe alternative the message recommends: arguments passed as data.
+- 'Start-Process -FilePath cmd -ArgumentList $args'
+- '& $exe $arg1 $arg2'
+- 'Start-Process -FilePath $exe -ArgumentList @($a, $b)'
+# A different program whose name merely begins with a matched one.
+- 'cmdkey /list $target'
+- 'powershell_ise $file'
+- 'pwshx -c $cmd'
+# Sink shape only in a comment or a string.
+- '# cmd /c $cmd'
+- '$s = "cmd /c $cmd"'
+- "$s = 'powershell -Command $cmd'"
+# Parser-error control.
+- 'cmd /c $cmd {'
+invalid:
+# cmd, both switches, both name spellings, both casings of the switch.
+- 'cmd /c $cmd'
+- 'cmd.exe /c $cmd'
+- 'cmd /k $cmd'
+- 'cmd /C $cmd'
+- 'CMD.EXE /C $cmd'
+# Interpolated command strings rather than bare variables.
+- 'cmd /c "dir $path"'
+- 'cmd.exe /c "del $($target.FullName)"'
+- 'cmd /c "$env:PAYLOAD"'
+# A parenthesised expression built at runtime. `(Get-Content cmdline.txt)` is
+# the positive the anchored `command` alternative exists for: the invocation's
+# OUTPUT becomes the command string. It is what separates a producing
+# invocation from the literal statements inside a script block above.
+- 'cmd /c ("dir " + $p)'
+- 'cmd /c (Get-Content cmdline.txt)'
+- 'pwsh -Command (Get-Payload)'
+- 'powershell -EncodedCommand (Get-Blob)'
+# The PowerShell hosts, full switch names and unambiguous abbreviations.
+- 'powershell -Command $c'
+- 'powershell.exe -Command $c'
+- 'pwsh -Command $c'
+- 'pwsh -c "$x"'
+- 'powershell -com $c'
+- 'POWERSHELL -COMMAND $c'
+- 'powershell.exe -EncodedCommand $enc'
+- 'powershell -enc $enc'
+- 'pwsh -encodedcommand $enc'
+# The documented one- and two-letter abbreviations of -EncodedCommand. These
+# are host switches, not cmdlet parameter prefixes, so they are unambiguous.
+- 'powershell -e $x'
+- 'powershell.exe -e $enc'
+- 'pwsh -e $x'
+- 'powershell -ec $x'
+- 'pwsh -ec $enc'
+- 'POWERSHELL -E $enc'
+# The execution switch after other switches: the selection is positional
+# relative to the switch, not to the start of the command line.
+- 'powershell -NoProfile -Command "Get-Date; $x"'
+- 'powershell -NoProfile -ExecutionPolicy Bypass -Command $c'
+# Splatting into the command-string slot.
+- 'cmd /c @splat'
