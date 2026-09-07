@@ -334,3 +334,40 @@ pipeline-shape claim whose safe variants are numerous, and `read -r` is already
   risk — the invoked program re-parsing its own argument — is a property of
   that program, not of the PowerShell source, and a PowerShell-source lens
   cannot distinguish `dir` from a wrapper that re-invokes a shell.
+- `powershell-splatted-transport-bypass` — the splat half of the
+  transport-verification candidate, intended to flag
+  `$p = @{ SkipCertificateCheck = $true }` followed by
+  `Invoke-WebRequest @p`. Rejected as unmatchable rather than undesirable.
+  Splatting binds parameters exclusively through the `@variable` form, and the
+  grammar confirms it: `New-PSSessionOption @opts` parses to a `command` whose
+  only element is a `variable` node whose text is `@opts`, carrying no key
+  names at all. The hashtable holding the unsafe key is a separate statement,
+  and joining the two requires following an assignment through whatever
+  reassignments, function boundaries and dot-sourced files sit between them —
+  the same unsound same-scope proof already rejected for
+  `powershell-add-type-constant-variable-resolution`. The inline form
+  `Invoke-RestMethod @{ SkipCertificateCheck = $true }` *is* syntactically
+  visible, but it is not a splat: `@{ ... }` in argument position is a
+  hashtable *value* bound to a parameter (`-Body`, or positionally to `-Uri`),
+  so PowerShell never reads `SkipCertificateCheck` as a parameter name there
+  and a rule matching it would report a key that binds nothing. The packet's
+  "splats only when the unsafe key is syntactically visible" condition is
+  therefore never satisfiable for this shape, and no splat matcher ships.
+- `powershell-invoke-webrequest-skip-header-validation` — the neighbouring
+  `-SkipHeaderValidation` switch, considered while establishing the
+  `-SkipCertificateCheck` prefix boundary. Rejected because it disables a
+  client-side sanity check on header *formatting*, not a transport trust
+  decision: it lets a caller send a header value the .NET client would
+  otherwise refuse. That is a request-splitting concern whose severity depends
+  entirely on whether the header value is attacker-influenced, which this lens
+  cannot establish, and bundling it into a certificate-validation rule would
+  put a transport-trust message on code that makes no trust decision.
+  `-SkipHttpErrorCheck` was rejected on the same reading: it only stops the
+  cmdlet throwing on a 4xx/5xx status.
+- `powershell-pssession-option-no-compression` — the remaining
+  `New-PSSessionOption -No*` switches, `-NoCompression` and
+  `-NoMachineProfile`. Rejected as performance and profile settings that
+  disable no verification; they are named here because they are the reason the
+  shipped rule's `-NoEncryption` boundary starts at `-NoE`: the binder rejects
+  `-No` as ambiguous between all three, verified by binding each prefix against
+  the full Windows parameter set.

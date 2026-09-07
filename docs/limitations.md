@@ -1482,3 +1482,30 @@ rejected and is recorded in `rejected-candidates.md`.
 - The rules see one file. Dot-sourcing, module imports and remoting
   (`Invoke-Command -ScriptBlock`) carry script text across file boundaries that
   no rule in this pack follows.
+- `powershell-web-request-certificate-check-skipped` and
+  `powershell-pssession-option-transport-check-skipped` report the shape, not
+  the risk. Neither resolves the URL or computer name to a host, so neither can
+  tell a bypass aimed at an isolated lab VM or a first-boot appliance from one
+  aimed at a production endpoint. That is why both are `warning` rather than
+  `error`: the switches have a legitimate use, and the reader decides.
+- Neither rule follows the value across a statement boundary. A splat is out of
+  reach entirely: `@variable` is the only splatting form, so the call site
+  carries a variable and no key names, and the hashtable holding the unsafe key
+  is a separate statement — see `rejected-candidates.md` for the probe. The
+  inline `@{ ... }` argument form is visible but binds no parameter, so it is
+  correctly not matched. `New-PSSessionOption -SkipCACheck` is likewise reported
+  at its construction site; the rule does not follow the resulting option object
+  to the `New-PSSession` or `Invoke-Command -SessionOption` that consumes it, so
+  an option object built and then never used is still reported.
+- The colon-bound switch value is judged syntactically. `-SkipCertificateCheck:$false`
+  is excluded because the source fixes it off, and a colon-bound *variable*
+  (`-SkipCertificateCheck:$lab`) is reported because the source does not. A
+  variable that is provably `$false` at every reachable assignment is therefore
+  a false positive the rule accepts, for the same reason the Add-Type
+  constant-resolution extension was rejected: a same-scope proof is heuristic,
+  and suppressing on a wrong one errs in the unsafe direction.
+- `-SkipRevocationCheck` and `-NoEncryption` do not exist on the Linux build of
+  PowerShell 7's `New-PSSessionOption`, which is WSMan-backed on Windows only.
+  Their unambiguous prefixes were established by binding each candidate against
+  the full Windows parameter set rather than against the host's live cmdlet, and
+  a script carrying them is reported wherever it is scanned.

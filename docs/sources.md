@@ -494,3 +494,28 @@ fixed by its fixtures.
   `-m` through `-membername` all reach `-MemberName` while no other
   `ForEach-Object` or common parameter begins with `m`
   <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parameters?view=powershell-7.5>
+- `powershell-web-request-certificate-check-skipped` — CWE-295; the
+  `Invoke-WebRequest` reference, which documents `-SkipCertificateCheck` as
+  allowing invalid certificates including expired, self-signed and
+  name-mismatched ones and states plainly that using it is not secure
+  <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest?view=powershell-7.5>;
+  the `Invoke-RestMethod` reference for the identical parameter
+  <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-restmethod?view=powershell-7.5>;
+  `about_Parameters` for binding by unambiguous prefix, which is why the rule
+  starts at `-SkipC` and not `-Skip`, the latter being ambiguous with
+  `-SkipHeaderValidation` and `-SkipHttpErrorCheck`
+  <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parameters?view=powershell-7.5>
+- `powershell-pssession-option-transport-check-skipped` — CWE-295, CWE-319; the
+  `New-PSSessionOption` reference, which documents `-SkipCACheck`,
+  `-SkipCNCheck` and `-SkipRevocationCheck` as HTTPS certificate-validation
+  bypasses usable only when the remote machine is trusted by other means, and
+  `-NoEncryption` as turning off the per-message encryption WinRM applies on
+  the HTTP transport -- a separate protection, not a certificate check, and
+  one that does not apply to an HTTPS session
+  <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/new-pssessionoption?view=powershell-7.5>;
+  `about_Remote_Requirements` for the HTTPS transport the three certificate
+  checks protect
+  <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_remote_requirements?view=powershell-7.5>;
+  `about_Remote_Troubleshooting` for WinRM's default refusal of unencrypted
+  HTTP traffic, which `-NoEncryption` is what overrides
+  <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_remote_troubleshooting?view=powershell-7.5>

@@ -1,0 +1,87 @@
+id: powershell-pssession-option-transport-check-skipped
+language: powershell
+severity: warning
+message: >-
+  This PSSession option object turns off a WinRM transport protection. A
+  remoting session is a shell, so whatever is removed here is removed from a
+  channel that carries privileged commands and returns results the caller
+  acts on. Two distinct protections are involved. The three -Skip*Check
+  switches weaken certificate validation on the HTTPS transport: -SkipCACheck
+  accepts a certificate from any issuer, -SkipCNCheck accepts one issued for
+  a different host, and -SkipRevocationCheck accepts one the issuer has
+  already revoked, so the channel stays encrypted but stops proving which
+  machine is on the other end (CWE-295). Fix those by enrolling the endpoint
+  from a CA the client trusts and connecting by the name the certificate
+  covers. -NoEncryption is a different defect: it applies to the HTTP
+  transport, where WinRM does not use TLS at all and instead encrypts each
+  message under the authentication protocol's session key, and it turns that
+  message encryption off so the session travels in cleartext (CWE-319). It
+  has no effect on an HTTPS session. Fix it by removing the switch so message
+  encryption is required, or by moving the session to HTTPS. Microsoft
+  documents all four as usable only where the remote machine is already
+  trusted by other means.
+note: >-
+  Advisory rather than error: an isolated lab, a build agent talking to a
+  short-lived VM, or an appliance whose certificate is self-signed by design
+  can pass these switches deliberately, and the rule cannot see which host
+  the resulting session connects to. It reports that the code under review
+  constructs an option object with a transport check disabled, not that doing
+  so is wrong here.
+  Matches New-PSSessionOption, in any casing, carrying -SkipCACheck,
+  -SkipCNCheck, -SkipRevocationCheck or -NoEncryption. The parameter regexes
+  cover each unambiguous prefix, verified against the binder rather than
+  assumed: -SkipC is rejected as ambiguous between -SkipCACheck and
+  -SkipCNCheck, so those two start at -SkipCA and -SkipCN; -SkipR reaches
+  -SkipRevocationCheck uniquely; -No is ambiguous with -NoCompression and
+  -NoMachineProfile, so -NoEncryption starts at -NoE. -SkipRevocationCheck and
+  -NoEncryption exist on the WSMan-backed Windows parameter set and not on the
+  Linux build of PowerShell 7, which is why their prefixes are established
+  against the full Windows parameter list; a script carrying them is a Windows
+  remoting script and the rule reports it wherever it is scanned.
+  A switch bound through a colon carries its value as the sibling after a
+  command_argument_sep whose text is that colon, so -SkipCACheck:$false is
+  excluded as an explicit re-enable while the bare switch, :$true, and a
+  colon-bound variable are matched. The exclusion demands the bound value be
+  the $false literal in its entirety, so an expression that merely contains
+  one and evaluates to true, such as -SkipCACheck:(-not $false), is reported.
+  The four switches are reported by one rule because they share a shape --
+  a New-PSSessionOption switch that removes a WinRM transport protection --
+  and a single construction site typically carries several of them. The
+  message keeps the certificate-validation and message-encryption cases
+  separate, because their remedies differ and -NoEncryption is not a
+  certificate concern.
+  Other New-PSSessionOption parameters are not matched: -NoCompression and
+  -NoMachineProfile are performance and profile settings, and the timeout and
+  redirection parameters decide no trust question. The rule does not follow
+  the option object to the New-PSSession or Invoke-Command that consumes it,
+  and a variable splat is out of reach, as documented in limitations.md.
+rule:
+  kind: command
+  all:
+    - has:
+        field: command_name
+        regex: '(?i)^New-PSSessionOption$'
+    - has:
+        field: command_elements
+        has:
+          all:
+            # Spelled out per parameter rather than as one nested-optional
+            # regex so each boundary stays reviewable, and because the four
+            # parameters do not share a common safe prefix: `-SkipC` is
+            # ambiguous and `-No` is ambiguous, so the shortest binding form
+            # differs for each.
+            - kind: command_parameter
+              regex: '(?i)^-(SkipCA|SkipCAC|SkipCACh|SkipCAChe|SkipCAChec|SkipCACheck|SkipCN|SkipCNC|SkipCNCh|SkipCNChe|SkipCNChec|SkipCNCheck|SkipR|SkipRe|SkipRev|SkipRevo|SkipRevoc|SkipRevoca|SkipRevocat|SkipRevocati|SkipRevocatio|SkipRevocation|SkipRevocationC|SkipRevocationCh|SkipRevocationChe|SkipRevocationChec|SkipRevocationCheck|NoE|NoEn|NoEnc|NoEncr|NoEncry|NoEncryp|NoEncrypt|NoEncrypti|NoEncryptio|NoEncryption)$'
+            # `-SkipCACheck` and `-SkipCACheck:$false` produce an identical
+            # `command_parameter` node; the separator carrying the colon is the
+            # only thing that distinguishes the explicit disable.
+            - not:
+                precedes:
+                  kind: command_argument_sep
+                  regex: '^:$'
+                  precedes:
+                    regex: '(?i)^\$false$'
+                    has:
+                      stopBy: end
+                      kind: variable
+                      regex: '(?i)^\$false$'

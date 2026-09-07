@@ -1,0 +1,48 @@
+id: powershell-pssession-option-transport-check-skipped
+valid:
+- 'New-PSSessionOption'
+- 'New-PSSessionOption -IdleTimeout 3600000'
+- '$o = New-PSSessionOption -OperationTimeout 60000 -MaxConnectionRetryCount 3'
+# Explicitly re-enabling a check is the safe form.
+- 'New-PSSessionOption -SkipCACheck:$false'
+- 'New-PSSessionOption -SkipCNCheck:$false -SkipCACheck:$false'
+- 'New-PSSessionOption -NoEncryption:$false'
+- 'New-PSSessionOption -SkipCA:$false'
+# Parameters that decide no trust question, including the other -No* switches
+# whose prefixes deliberately stay out of the -NoE boundary.
+- 'New-PSSessionOption -NoCompression'
+- 'New-PSSessionOption -NoMachineProfile'
+- 'New-PSSessionOption -NoCompression -NoMachineProfile -Culture $c'
+- 'New-PSSessionOption -MaximumRedirection 2 -IncludePortInSPN'
+# A different cmdlet carrying a similarly named switch.
+- 'Connect-WSMan -ComputerName $h -SessionOption $o'
+- 'Set-Item WSMan:\localhost\Client\TrustedHosts -Value $h'
+- 'New-PSSession -ComputerName $h -UseSSL -SessionOption $o'
+# The switch only in a comment or a string.
+- '# New-PSSessionOption -SkipCACheck'
+- '$doc = "New-PSSessionOption -SkipCACheck -SkipCNCheck"'
+# A variable splat leaves nothing unsafe at the call site.
+- 'New-PSSessionOption @options'
+- '$p = @{ SkipCACheck = $true }; New-PSSessionOption @p'
+# Parser-error control.
+- 'New-PSSessionOption -SkipCACheck ($x'
+invalid:
+# Each of the four switches, bare.
+- 'New-PSSessionOption -SkipCACheck'
+- 'New-PSSessionOption -SkipCNCheck'
+- 'New-PSSessionOption -SkipRevocationCheck'
+- 'New-PSSessionOption -NoEncryption'
+# The idiomatic combination, and casing.
+- '$o = New-PSSessionOption -SkipCACheck -SkipCNCheck -SkipRevocationCheck'
+- 'new-pssessionoption -skipcacheck'
+# Every unambiguous prefix binds.
+- 'New-PSSessionOption -SkipCA'
+- 'New-PSSessionOption -SkipCN'
+- 'New-PSSessionOption -SkipR'
+- 'New-PSSessionOption -NoE'
+# An explicit true, and a value the source does not fix to false.
+- 'New-PSSessionOption -SkipCACheck:$true'
+- 'New-PSSessionOption -NoEncryption:$lab'
+# An expression containing $false but evaluating to true is not a re-enable.
+- 'New-PSSessionOption -SkipCACheck:(-not $false)'
+- 'New-PSSessionOption -SkipCNCheck:(!$false)'

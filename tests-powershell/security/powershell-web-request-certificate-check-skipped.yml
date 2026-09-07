@@ -1,0 +1,52 @@
+id: powershell-web-request-certificate-check-skipped
+valid:
+- 'Invoke-WebRequest -Uri $u'
+- 'Invoke-RestMethod -Uri $u -Method Post -Body $b'
+- 'iwr $u -OutFile $dest'
+# Explicitly re-enabling validation is the safe form and must not be reported.
+- 'Invoke-WebRequest -Uri $u -SkipCertificateCheck:$false'
+- 'Invoke-RestMethod -Uri $u -SkipCertificateCheck:$false'
+- 'Invoke-WebRequest -Uri $u -SkipC:$false'
+# Neighbouring Skip* parameters disable no certificate validation.
+- 'Invoke-WebRequest -Uri $u -SkipHeaderValidation'
+- 'Invoke-WebRequest -Uri $u -SkipHttpErrorCheck'
+- 'Invoke-RestMethod -Uri $u -SkipHeaderValidation -SkipHttpErrorCheck'
+# Pinning a certificate is the fix, not the defect.
+- 'Invoke-WebRequest -Uri $u -Certificate $cert'
+- 'Invoke-WebRequest -Uri $u -SslProtocol Tls12'
+# A different cmdlet that happens to take a similar switch.
+- 'Invoke-Command -ComputerName $h -ScriptBlock { Get-Date }'
+- 'Send-MailMessage -UseSsl -To $t'
+# The switch only in a comment or a string.
+- '# Invoke-WebRequest -Uri $u -SkipCertificateCheck'
+- '$doc = "Invoke-WebRequest -Uri $u -SkipCertificateCheck"'
+# A variable splat hides the key: nothing unsafe is syntactically visible.
+- 'Invoke-WebRequest @params'
+- 'Invoke-RestMethod @opts -Uri $u'
+# Splatting requires the @variable form, so the unsafe key is never
+# syntactically present at the call site even when the hashtable is a literal
+# one statement earlier.
+- '$p = @{ Uri = $u; SkipCertificateCheck = $true }; Invoke-WebRequest @p'
+# Parser-error control.
+- 'Invoke-WebRequest -Uri ($u -SkipCertificateCheck'
+invalid:
+# The bare switch means $true.
+- 'Invoke-WebRequest -Uri $u -SkipCertificateCheck'
+- 'Invoke-RestMethod -Uri $u -SkipCertificateCheck'
+- 'Invoke-WebRequest -SkipCertificateCheck -Uri $u'
+# Aliases and casing.
+- 'iwr $u -SkipCertificateCheck'
+- 'irm $u -SkipCertificateCheck'
+- 'invoke-webrequest -Uri $u -skipcertificatecheck'
+# Every unambiguous prefix binds to -SkipCertificateCheck.
+- 'Invoke-WebRequest -Uri $u -SkipC'
+- 'Invoke-WebRequest -Uri $u -SkipCert'
+# An explicit true, and a value the source does not fix to false.
+- 'Invoke-WebRequest -Uri $u -SkipCertificateCheck:$true'
+- 'Invoke-WebRequest -Uri $u -SkipCertificateCheck:$lab'
+# Credentials posted over an unauthenticated channel.
+- 'Invoke-RestMethod -Uri $u -Method Post -Body $creds -SkipCertificateCheck'
+# An expression that merely CONTAINS $false but evaluates to true still
+# disables validation; only the bare $false literal is the safe re-enable.
+- 'Invoke-WebRequest -Uri $u -SkipCertificateCheck:(-not $false)'
+- 'Invoke-RestMethod -Uri $u -SkipCertificateCheck:(!$false)'

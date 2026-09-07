@@ -1,0 +1,77 @@
+id: powershell-web-request-certificate-check-skipped
+language: powershell
+severity: warning
+message: >-
+  This web request disables TLS certificate validation. -SkipCertificateCheck
+  makes Invoke-WebRequest and Invoke-RestMethod accept any certificate the
+  peer presents -- expired, self-signed, revoked, or issued for a different
+  host -- so the connection is encrypted but unauthenticated, and anyone able
+  to sit on the path can terminate it, read every byte, and rewrite the
+  response (CWE-295). That matters most for exactly the traffic that tends to
+  carry the switch: credentials posted to an API, and scripts or installers
+  downloaded and then executed, where a substituted response becomes code
+  execution on the caller. Microsoft's own documentation calls the parameter
+  insecure and says it should not be used against production infrastructure.
+  Fix the trust problem instead of bypassing it: install the issuing CA into
+  the machine's trust store, request the URL under a name the certificate
+  actually covers, or renew the expired certificate. If the target really is
+  a throwaway lab host, keep the switch out of the shared code path and scope
+  it to that host.
+note: >-
+  Advisory rather than error: an isolated test system, a first-boot appliance
+  with a self-signed certificate, or a bootstrap that has to run before its
+  CA is installed can use this switch deliberately, and the rule cannot see
+  which host the URL resolves to. It reports that the code under review turns
+  certificate validation off, not that doing so is wrong here.
+  Matches Invoke-WebRequest and Invoke-RestMethod -- under those names or
+  their iwr and irm aliases, in any casing -- carrying a -SkipCertificateCheck
+  parameter. The parameter regex covers -SkipC through the full spelling:
+  PowerShell binds by unambiguous prefix, and -SkipC is the shortest prefix
+  that reaches it, verified against the real binder, which rejects -Skip as
+  ambiguous between -SkipCertificateCheck, -SkipHeaderValidation and
+  -SkipHttpErrorCheck. Those two neighbours are not matched; neither disables
+  certificate validation.
+  A switch takes an explicit value through a colon, and the grammar records
+  that colon as the command_argument_sep between the parameter and its value,
+  so the two forms are distinguishable even though the command_parameter node
+  text is identical. -SkipCertificateCheck:$false re-enables validation and is
+  excluded; -SkipCertificateCheck:$true is matched, as is the bare switch,
+  which means $true. A colon-bound variable such as -SkipCertificateCheck:$lab
+  is also matched, because the source does not fix it to $false.
+  The exclusion requires the bound value to be the $false literal in its
+  entirety, not merely to contain one somewhere in its subtree:
+  -SkipCertificateCheck:(-not $false) evaluates to true and is reported.
+  The rule performs no reachability analysis and does not establish that the
+  request crosses an untrusted network. A splat is not matched at all:
+  splatting binds parameters through the @variable form, so the call site
+  carries only that variable and the unsafe key lives in a hashtable assigned
+  elsewhere. That is a separate statement the matcher cannot join to the call,
+  as documented in limitations.md.
+rule:
+  kind: command
+  all:
+    - has:
+        field: command_name
+        regex: '(?i)^(Invoke-WebRequest|Invoke-RestMethod|iwr|irm)$'
+    - has:
+        field: command_elements
+        has:
+          all:
+            - kind: command_parameter
+              regex: '(?i)^-(SkipC|SkipCe|SkipCer|SkipCert|SkipCerti|SkipCertif|SkipCertifi|SkipCertific|SkipCertifica|SkipCertificat|SkipCertificate|SkipCertificateC|SkipCertificateCh|SkipCertificateChe|SkipCertificateChec|SkipCertificateCheck)$'
+            # A switch bound through a colon carries its value as the sibling
+            # after a `command_argument_sep` whose text is that colon, rather
+            # than the ordinary whitespace separator. `-SkipCertificateCheck`
+            # and `-SkipCertificateCheck:$false` produce an identical
+            # `command_parameter` node, so the separator is the only thing that
+            # tells the explicit disable apart from the bare switch.
+            - not:
+                precedes:
+                  kind: command_argument_sep
+                  regex: '^:$'
+                  precedes:
+                    regex: '(?i)^\$false$'
+                    has:
+                      stopBy: end
+                      kind: variable
+                      regex: '(?i)^\$false$'
