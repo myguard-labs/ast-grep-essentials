@@ -34,6 +34,26 @@ note: >-
   finding still stands, because the correct edit is to invoke the command
   directly and delete Invoke-Expression rather than to keep an interpreter on
   the path.
+
+  `command_elements` is flat, so a positional code argument that follows a
+  switch parameter (`-Verbose $cmd`) is indistinguishable by tree shape from a
+  real parameter value that follows a value-taking parameter (-ErrorVariable
+  $e) without an arity model. The rule closes that gap for the bounded set of
+  PowerShell common parameters that take no value (switches):
+  -Verbose, -Debug, -WhatIf, -Confirm. A positional dynamic argument
+  immediately following one of those switch names is still the code argument
+  and matches. Value-taking common parameters (-ErrorAction, -ErrorVariable,
+  -WarningAction, -WarningVariable, -InformationAction, -InformationVariable,
+  -OutVariable, -OutBuffer, -PipelineVariable) are deliberately excluded from
+  this list, so the token immediately after one of those still resolves as
+  that parameter's own value and does not match; a further alternative below
+  matches the argument one position past THAT value instead, since it is the
+  code argument (`-ErrorVariable $e $cmd`). A colon-bound switch value
+  (-Verbose:$verbose) is unaffected: the colon parses as part of the
+  argument-separator token between the parameter and its value -- the same
+  sibling shape as a positional code argument after that switch -- so the
+  switch alternative additionally requires that separator to be whitespace,
+  not a colon, to keep the colon-bound form excluded.
 rule:
   kind: command
   all:
@@ -60,6 +80,46 @@ rule:
                 follows:
                   kind: command_parameter
                   regex: '(?i)^-Command$'
+            # A positional code argument that immediately follows one of the
+            # value-less common parameters (switches): the switch itself binds
+            # no value, so this argument is still the code argument, e.g.
+            # `Invoke-Expression -Verbose $cmd`. Value-taking common
+            # parameters (-ErrorVariable, -ErrorAction, ...) are intentionally
+            # absent from this regex: the argument right after one of those is
+            # that parameter's own value, not the code argument, and must keep
+            # falling through to the exclusion above.
+            - follows:
+                kind: command_argument_sep
+                # A colon-bound switch value (-Verbose:$verbose) parses the
+                # colon itself into this separator token, which is otherwise
+                # whitespace for a positional argument. Requiring whitespace
+                # here is what keeps the colon-bound form excluded: without
+                # it, `-Verbose:$verbose` is structurally identical to
+                # `-Verbose $cmd` and would wrongly match.
+                regex: '^\s+$'
+                follows:
+                  kind: command_parameter
+                  regex: '(?i)^-(Verbose|Debug|WhatIf|Confirm)$'
+            # A positional code argument that follows a value-taking common
+            # parameter's OWN value, e.g. `Invoke-Expression -ErrorVariable $e
+            # $cmd`: $e is -ErrorVariable's value (excluded above by the
+            # general "follows a command_parameter" test) and $cmd is one
+            # position further along, still the code argument. Anchored to
+            # the same bounded value-taking name list as the switch
+            # exclusion above, so this cannot widen to match a switch's own
+            # value (switches take none) or an unrecognised parameter.
+            - follows:
+                kind: command_argument_sep
+                follows:
+                  any:
+                    - kind: variable
+                    - kind: sub_expression
+                    - kind: unary_expression
+                  follows:
+                    kind: command_argument_sep
+                    follows:
+                      kind: command_parameter
+                      regex: '(?i)^-(ErrorAction|ErrorVariable|WarningAction|WarningVariable|InformationAction|InformationVariable|OutVariable|OutBuffer|PipelineVariable)$'
           # Matching `variable` and `sub_expression` rather than the enclosing
           # expandable_string_literal is what keeps `iex "literal"` out: a
           # double-quoted string with nothing to interpolate has neither child.

@@ -12,6 +12,17 @@ valid:
 - "Invoke-Expression 'Get-Date' -Verbose:$verbose"
 - "iex 'Get-Date' -ErrorVariable $e"
 - "Invoke-Expression -Command 'Get-Date' -ErrorAction:$ea"
+# A colon-bound switch value: the colon parses into the argument-separator
+# token, so the variable has the same sibling shape as a value-taking
+# parameter's value and is excluded on that general test, not by name.
+- 'Invoke-Expression -Verbose:$verbose'
+- 'Invoke-Expression -ErrorAction:$ea'
+# A value-taking common parameter followed by its own value: that value is
+# the parameter's argument, not the code argument, even though it sits
+# immediately after a command_parameter the same way a switch's positional
+# code argument does. Regression for the false positive the switch-name
+# fix must not reinstate.
+- 'Invoke-Expression -ErrorVariable $e'
 # Direct invocation without Invoke-Expression: the preserve case.
 - 'Get-Date'
 - '& $command'
@@ -64,3 +75,14 @@ invalid:
 # A dynamic code argument alongside a variable-valued common parameter: the
 # code argument still decides, so this must match.
 - 'Invoke-Expression $cmd -Verbose:$verbose'
+# A positional code argument that follows a value-less common parameter
+# (switch): the switch binds no value, so this is still the code argument.
+# Regression for the false negative found against the built grammar.
+- 'Invoke-Expression -Verbose $cmd'
+- 'Invoke-Expression -Debug $cmd'
+- 'Invoke-Expression -WhatIf $cmd'
+- 'Invoke-Expression -Confirm $cmd'
+# The value-taking parameter's own value ($e) is not the code argument, but
+# the positional argument that follows it ($cmd) still is.
+- 'Invoke-Expression -ErrorVariable $e $cmd'
+- 'Invoke-Expression -ErrorVariable:$e $cmd'
