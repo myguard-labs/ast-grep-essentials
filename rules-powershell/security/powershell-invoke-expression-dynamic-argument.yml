@@ -1,0 +1,83 @@
+id: powershell-invoke-expression-dynamic-argument
+language: powershell
+severity: error
+message: >-
+  Invoke-Expression is called on an argument that is not a constant: a variable,
+  a splatted hashtable, a parenthesised expression, or a double-quoted string
+  containing an interpolated variable or subexpression. Every one of those
+  resolves at runtime, so the text PowerShell parses as code is decided by
+  whatever fed that value — a parameter, an environment variable, a file, a
+  registry read, or an HTTP response — and an attacker who influences it chooses
+  the code that runs, not merely the data it operates on (CWE-94, CWE-95).
+  String interpolation is not escaping: there is no quoting context in
+  PowerShell source that makes an injected semicolon, backtick or subexpression
+  inert. Call the command directly and pass the value as a parameter, use the
+  call operator on a known command name, or use a parameterised API, so the
+  value stays data.
+note: >-
+  Matches an Invoke-Expression or iex command, in any casing, under the alias or
+  the full cmdlet name, whose CODE argument is dynamic. The code argument is the
+  positional one, or the value bound to -Command; it is dynamic when it contains
+  a variable, a subexpression, a splatted argument, or a parenthesised command
+  invocation whose output is parsed as code. The test applies to that argument
+  alone: a variable bound to some other parameter, such as -Verbose:$verbose or
+  -ErrorVariable $e, does not decide the executed text and does not match on its
+  own. It deliberately does not match a wholly constant code argument — a
+  single-quoted verbatim string, or a double-quoted string with no
+  interpolation — which is pointless but not an injection risk, and it does not
+  match a piped pipeline stage, which powershell-invoke-expression-piped-input
+  reports instead, so the two rules never double-report one site. The rule
+  performs no taint tracking and does not claim the value is attacker-
+  controlled. It does not need to: the argument is resolved at runtime and then
+  parsed as PowerShell source, so the executing code is not determined by the
+  source text under review. Where the value really is a hardcoded constant the
+  finding still stands, because the correct edit is to invoke the command
+  directly and delete Invoke-Expression rather than to keep an interpreter on
+  the path.
+rule:
+  kind: command
+  all:
+    - has:
+        field: command_name
+        regex: '(?i)^(iex|Invoke-Expression)$'
+    # The dynamic-input test applies to the CODE argument only, not to every
+    # element on the command line. `Invoke-Expression 'Get-Date' -Verbose:$v`
+    # executes a constant; the variable binds a common parameter. Searching all
+    # elements reported that as an injection, so the argument is selected first:
+    # a direct child of `command_elements` that either follows no
+    # `command_parameter` at all (the positional code argument) or follows the
+    # `-Command` parameter across its separator.
+    - has:
+        field: command_elements
+        has:
+          any:
+            - not:
+                follows:
+                  stopBy: end
+                  kind: command_parameter
+            - follows:
+                kind: command_argument_sep
+                follows:
+                  kind: command_parameter
+                  regex: '(?i)^-Command$'
+          # Matching `variable` and `sub_expression` rather than the enclosing
+          # expandable_string_literal is what keeps `iex "literal"` out: a
+          # double-quoted string with nothing to interpolate has neither child.
+          # A splatted `@args` also parses as a `variable`. `command` covers a
+          # parenthesised command invocation -- `iex (Get-Content payload.txt)`
+          # -- whose output is parsed as code but which contains neither of the
+          # other two kinds.
+          has:
+            stopBy: end
+            any:
+              - kind: variable
+              - kind: sub_expression
+              - kind: command
+    # Piped input is the other rule's shape; excluding it here keeps each site
+    # to one finding and keeps the two severities meaningful.
+    - not:
+        follows:
+          stopBy: end
+          any:
+            - kind: command
+            - kind: unary_expression

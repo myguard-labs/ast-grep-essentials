@@ -509,6 +509,103 @@ class TestNativeScanUnaffected(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         json.loads(result.stdout)
 
+    def test_every_powershell_rule_has_distinguishing_fixtures(self):
+        """The native inventory gate globs rules/, so it never sees this pack.
+
+        Without an equivalent gate here a PowerShell rule could ship with no
+        fixture file at all and `ast-grep test` would report success, because
+        it only runs the fixtures that exist.
+        """
+        rules = sorted((ROOT / "rules-powershell").rglob("*.yml"))
+        self.assertTrue(rules, "empty PowerShell ruleset")
+        fixture_root = ROOT / "tests-powershell"
+        fixtures = {
+            p for p in fixture_root.rglob("*.yml")
+            if "__snapshots__" not in p.parts
+        }
+        ids = set()
+        expected = set()
+        for path in rules:
+            with self.subTest(rule=path.name):
+                rule = yaml.safe_load(path.read_text())
+                relative = path.relative_to(ROOT / "rules-powershell")
+                self.assertEqual(rule["language"], "powershell")
+                self.assertEqual(path.stem, rule["id"])
+                self.assertTrue(rule["id"].startswith("powershell-"))
+                self.assertNotIn(rule["id"], ids)
+                ids.add(rule["id"])
+                fixture = fixture_root / relative
+                expected.add(fixture)
+                self.assertTrue(fixture.is_file(), f"missing {fixture}")
+                data = yaml.safe_load(fixture.read_text())
+                self.assertEqual(data["id"], rule["id"])
+                for key in ("valid", "invalid"):
+                    self.assertIsInstance(data[key], list)
+                    self.assertTrue(data[key])
+                    self.assertTrue(
+                        all(isinstance(s, str) and s.strip() for s in data[key])
+                    )
+                self.assertFalse(set(data["valid"]) & set(data["invalid"]))
+                snapshot = yaml.safe_load(
+                    (fixture_root / "__snapshots__"
+                     / f"{rule['id']}-snapshot.yml").read_text()
+                )
+                self.assertEqual(set(snapshot["snapshots"]), set(data["invalid"]))
+        self.assertEqual(expected, fixtures)
+
+    @requires_parser
+    def test_powershell_rules_emit_their_declared_diagnostics(self):
+        """Mirror of tests/test_diagnostics.py for the opt-in pack.
+
+        A rule whose emitted message drifts from its declared one is a
+        documentation defect that no fixture assertion catches, because
+        snapshots pin ranges and labels, not diagnostic prose.
+        """
+        for path in sorted((ROOT / "rules-powershell").rglob("*.yml")):
+            with self.subTest(rule=path.stem):
+                declared = yaml.safe_load(path.read_text())
+                fixture = yaml.safe_load(
+                    (ROOT / "tests-powershell"
+                     / path.relative_to(ROOT / "rules-powershell")).read_text()
+                )
+                result = subprocess.run(
+                    [str(AST_GREP), "scan", "-c", str(PSH_CONFIG),
+                     "--rule", str(path), "--json=compact", "--stdin"],
+                    input=fixture["invalid"][0], text=True, capture_output=True,
+                    check=False, timeout=15, cwd=ROOT,
+                )
+                self.assertIn(result.returncode, (0, 1), result.stderr)
+                findings = json.loads(result.stdout)
+                self.assertTrue(findings, "first invalid fixture must match")
+                finding = findings[0]
+                self.assertEqual(finding["ruleId"], declared["id"])
+                for field in ("message", "note", "severity"):
+                    self.assertEqual(finding[field], declared[field], field)
+
+    def test_no_error_powershell_rule_concedes_a_routine_dismissal(self):
+        """Same policy as the native pack: an advisory rule is a warning.
+
+        Error severity can fail a consumer's scan, so a rule whose own note
+        admits it is routinely dismissed must not carry it.
+        """
+        concessions = (
+            "routine dismissal",
+            "known false positive",
+            "is a false positive",
+            "legitimate dismissal",
+            "false positive is accepted",
+        )
+        offenders = []
+        for path in sorted((ROOT / "rules-powershell").rglob("*.yml")):
+            declared = yaml.safe_load(path.read_text())
+            if declared.get("severity") != "error":
+                continue
+            note = declared.get("note") or ""
+            hit = next((c for c in concessions if c in note), None)
+            if hit is not None:
+                offenders.append(f"{declared['id']}: note concedes {hit!r}")
+        self.assertEqual(offenders, [], "demote these rules to severity warning")
+
     def test_powershell_rules_are_not_in_the_native_rule_dir(self):
         """Native discovery counts stay untouched by the PowerShell pack."""
         native_langs = {p.name for p in (ROOT / "rules").iterdir() if p.is_dir()}

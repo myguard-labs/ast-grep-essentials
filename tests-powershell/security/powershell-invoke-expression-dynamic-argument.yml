@@ -1,0 +1,66 @@
+id: powershell-invoke-expression-dynamic-argument
+valid:
+# Constant argument: verbatim single-quoted, and non-interpolating double-quoted.
+- "Invoke-Expression 'Get-Date'"
+- 'Invoke-Expression "Get-Date"'
+- "iex 'Get-Date'"
+- "IEX 'Get-Date'"
+- "Invoke-Expression -Command 'Get-Date'"
+# A constant code argument with a variable-valued common parameter. The
+# variable controls -Verbose/-ErrorVariable, not the executed text, so this is
+# not an injection site. Regression for the false positive that reported it.
+- "Invoke-Expression 'Get-Date' -Verbose:$verbose"
+- "iex 'Get-Date' -ErrorVariable $e"
+- "Invoke-Expression -Command 'Get-Date' -ErrorAction:$ea"
+# Direct invocation without Invoke-Expression: the preserve case.
+- 'Get-Date'
+- '& $command'
+- 'Start-Process -FilePath $exe -ArgumentList $args'
+# Downloaded or read but never executed.
+- '$data = Invoke-WebRequest http://example.test'
+- '$text = Get-Content payload.txt'
+# Piped input belongs to powershell-invoke-expression-piped-input.
+- 'Get-Content payload.txt | iex'
+- 'Invoke-WebRequest http://example.test | Invoke-Expression'
+# A piped sink that ALSO carries a dynamic argument: it satisfies this rule's
+# argument clause, so only the not-piped exclusion keeps it out. Without that
+# clause the site would be reported twice, once by each rule.
+- 'Get-Content $path | Invoke-Expression $extra'
+- 'Invoke-WebRequest $u | iex "$suffix"'
+# Sink name only in a comment or a string.
+- '# iex $cmd'
+- '$s = "iex $cmd"'
+- "$s = 'Invoke-Expression $cmd'"
+# A different cmdlet whose name merely contains the alias.
+- 'Invoke-Expressionist $cmd'
+- 'iexplore $url'
+# Parser-error control.
+- 'Invoke-Expression $cmd {'
+invalid:
+# Bare variable, alias and full name, several casings.
+- 'Invoke-Expression $cmd'
+- 'iex $cmd'
+- 'IEX $cmd'
+- 'invoke-expression $cmd'
+# Named parameter rather than positional.
+- 'Invoke-Expression -Command $cmd'
+- 'iex -Command $cmd'
+# Splatted arguments.
+- 'Invoke-Expression @splat'
+# Interpolated double-quoted string: variable, subexpression, env var.
+- 'Invoke-Expression "Get-Item $path"'
+- 'iex "Get-Item $($env:TEMP)"'
+- 'Invoke-Expression "$env:PAYLOAD"'
+# Parenthesised expression evaluated at runtime.
+- 'iex ($prefix + $suffix)'
+# Concatenation via a subexpression.
+- 'Invoke-Expression $(Get-Payload)'
+# A parenthesised command invocation whose output is parsed as code. It carries
+# neither a variable nor a subexpression, and the piped rule does not cover this
+# unpiped form, so before the code-argument clause nothing reported this site.
+- 'Invoke-Expression (Get-Content payload.txt)'
+- 'iex (Invoke-WebRequest http://example.test)'
+- 'Invoke-Expression -Command (Get-Content payload.txt)'
+# A dynamic code argument alongside a variable-valued common parameter: the
+# code argument still decides, so this must match.
+- 'Invoke-Expression $cmd -Verbose:$verbose'

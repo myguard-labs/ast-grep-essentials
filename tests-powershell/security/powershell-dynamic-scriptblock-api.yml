@@ -1,0 +1,40 @@
+id: powershell-dynamic-scriptblock-api
+valid:
+# Literal script block and direct invocation: the preserve cases.
+- '$sb = { Get-Date }'
+- '& $sb'
+- '$ps.AddCommand("Get-Date")'
+- "$ps.AddCommand('Get-Process').AddParameter('Name', $n)"
+- 'Start-Job -ScriptBlock { Get-Date }'
+# Unanchored Create on an unrelated type must not match.
+- '[Regex]::Create($pattern)'
+- '[System.Guid]::NewGuid()'
+- '$obj.CreateThing($x)'
+- '$builder.CreateInstance()'
+# Method names only in a comment or a string.
+- '# $ps.AddScript($s)'
+- '$doc = "$ps.AddScript($s)"'
+- "$doc = '[ScriptBlock]::Create($s)'"
+# Similar but distinct member names.
+- '$ps.AddScriptFile($path)'
+- '$x.ExpandStringSafely($s)'
+# Parser-error control.
+- '$ps.AddScript($s'
+invalid:
+# ScriptBlock::Create, short and fully-qualified, both casings.
+- '[ScriptBlock]::Create($s)'
+- '[scriptblock]::Create($s)'
+- "[ScriptBlock]::Create('Get-Date')"
+- '[System.Management.Automation.ScriptBlock]::Create($s)'
+# Script-text sinks on any receiver.
+- '$ps.AddScript($s)'
+- '$ps.addscript($s)'
+- '$ExecutionContext.InvokeCommand.InvokeScript($s)'
+# InvokeScript is a CommandInvocationIntrinsics method, but the matcher is
+# receiver-agnostic by design, so an aliased intrinsics object matches too.
+- '$intrinsics.InvokeScript($s)'
+- '$runspace.CreateNestedPipeline($cmd, $true)'
+- '$ExecutionContext.InvokeCommand.NewScriptBlock($s)'
+- '$ExecutionContext.InvokeCommand.ExpandString($s)'
+# Chained builder call.
+- '$ps.AddScript($s).Invoke()'

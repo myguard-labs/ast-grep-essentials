@@ -229,3 +229,32 @@ pipeline-shape claim whose safe variants are numerous, and `read -r` is already
   `mkdir` alone adds nothing the shipped action list does not carry. Recorded
   here rather than shipped; the shipped rule's `stopBy: end` cross-function
   reach is a separate finding, filed in `issues.md`.
+
+## powershell
+
+- `powershell-invoke-expression-constant-argument` — a rule for
+  `Invoke-Expression` on a wholly constant argument (single-quoted verbatim
+  string, or a double-quoted string with nothing to interpolate). Probed with a
+  matcher that inverted the dynamic-input clause of
+  `powershell-invoke-expression-dynamic-argument`: over
+  `Invoke-Expression 'Get-Date'`, `Invoke-Expression "Get-ChildItem C:\"` and
+  `iex 'Set-Location C:\temp'` it produced three findings, all on code whose
+  executed text is fixed by the source and therefore carries no injection risk
+  at all. The shape is a style defect — the interpreter is pointless — not a
+  security one, and shipping it would put a security-pack finding on inert code
+  while adding no precision to the two rules that report genuinely dynamic
+  input. The distinction is instead documented in the dynamic-argument rule's
+  own note, so a reader who hits that rule learns why the constant form is out
+  of shape.
+- `powershell-encodedcommand-invocation` — a rule for
+  `powershell.exe -EncodedCommand <base64>`. Probed with a matcher over
+  `command_parameter` values beginning `-Enc`: it matched
+  `powershell.exe -EncodedCommand $b64` and `pwsh -enc $payload` as intended,
+  but also `Get-Item -Encoding utf8 x`, because PowerShell resolves parameters
+  by unambiguous prefix and `-Encoding` shares one with `-EncodedCommand`.
+  Tightening the regex to the full `-EncodedCommand` spelling would then miss
+  every abbreviated form (`-enc`, `-e`) that real droppers actually use, which
+  is the entire population the rule exists to catch. Neither end of that
+  trade-off is worth a rule; the shape also belongs to process-launch auditing
+  of a host command line rather than to a PowerShell-source lens, since the
+  encoded payload is opaque to this parser either way.

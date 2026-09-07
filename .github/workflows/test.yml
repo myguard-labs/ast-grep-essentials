@@ -13,3 +13,30 @@ jobs:
       - run: npm ci
       - run: python3 -m pip install -r requirements-dev.txt
       - run: npm test
+
+  # The PowerShell pack runs as its own job on purpose.
+  #
+  # Its parser is compiled from a pinned upstream tarball, so the job needs
+  # network access at build time. Folding that into the `test` job would make a
+  # transient GitHub/network failure red-flag all 248 native-language rules,
+  # which have no such dependency. As a separate required job it still fails
+  # the build when a PowerShell rule regresses -- `npm run test:powershell`
+  # exits non-zero on any fixture or snapshot mismatch -- while an outage is
+  # attributable to the one job that actually depends on the network.
+  #
+  # The build step is not `continue-on-error`: a parser that cannot be built is
+  # a red job, never a silently skipped suite, because a skipped PowerShell
+  # scan and a clean one are indistinguishable in the output.
+  powershell:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5
+        with:
+          persist-credentials: false
+      - run: npm ci
+      - run: python3 -m pip install -r requirements-dev.txt
+      - name: Build the pinned PowerShell tree-sitter grammar
+        run: tools/powershell/build-grammar.sh
+      - name: PowerShell rule fixtures and parser controls
+        run: npm run test:powershell

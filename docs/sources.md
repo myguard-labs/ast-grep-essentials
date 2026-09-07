@@ -450,3 +450,17 @@ fixed by its fixtures.
   <https://github.com/jvoisin/snuffleupagus/blob/master/doc/source/features.rst#mail-related-injections>;
   RIPS research on the sendmail `-X` and `-C` argument-injection chain
   <https://www.ripstech.com/php-security-calendar-2017/>
+- `powershell-invoke-expression-piped-input`,
+  `powershell-invoke-expression-dynamic-argument`,
+  `powershell-dynamic-scriptblock-api` — CWE-94, CWE-95; Microsoft PowerShell
+  guidance "Avoid using Invoke-Expression", which states the cmdlet's injection
+  risk and gives the direct-invocation and parameter-binding alternatives the
+  rules recommend
+  <https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/avoid-using-invoke-expression?view=powershell-7.5>;
+  `[ScriptBlock]::Create` and `InvokeCommand.NewScriptBlock` as string-to-code
+  compilers
+  <https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.scriptblock.create>;
+  `CommandInvocationIntrinsics`, reached as `$ExecutionContext.InvokeCommand`,
+  which carries `InvokeScript`, `NewScriptBlock` and the `ExpandString` that
+  evaluates embedded subexpressions rather than merely formatting
+  <https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.commandinvocationintrinsics>

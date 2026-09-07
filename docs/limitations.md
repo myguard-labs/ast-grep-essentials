@@ -1335,3 +1335,37 @@ rejected and is recorded in `rejected-candidates.md`.
   `sgconfig.yml` because ast-grep aborts an entire scan when a registered custom
   language cannot be loaded, which would break all native-language rules for
   consumers that never built the parser.
+
+## powershell
+
+- Every PowerShell rule is a **single-file syntactic matcher with no taint
+  tracking**. `powershell-invoke-expression-dynamic-argument` reports that the
+  argument reaching the interpreter is resolved at runtime; it does not and
+  cannot establish that the value is attacker-influenced. Where the variable
+  provably holds a hardcoded constant the finding still stands, because the
+  remedy — invoke the command directly and delete `Invoke-Expression` — is the
+  same either way, but it is not evidence of an exploitable injection.
+- `powershell-invoke-expression-piped-input` decides trust from pipeline shape
+  alone. It cannot tell `Invoke-WebRequest $attackerUrl | iex` from a pipeline
+  whose upstream stage is a local, non-writable, fully trusted generator; both
+  match. Conversely it sees only one statement, so a download assigned to a
+  variable on one line and `iex`-ed on the next is **not** matched by this rule
+  — the dynamic-argument rule catches the second line, but the connection
+  between the two is invisible to the matcher.
+- `powershell-dynamic-scriptblock-api` reports **sink presence only** and never
+  inspects the argument, which is why it is a warning while the two
+  `Invoke-Expression` rules are errors. `[ScriptBlock]::Create('Get-Date')` on a
+  wholly constant string matches exactly as `[ScriptBlock]::Create($fromWeb)`
+  does.
+- Receiver types are unresolved, so `AddScript`, `InvokeScript`,
+  `CreateNestedPipeline`, `NewScriptBlock` and `ExpandString` match on **any**
+  receiver. A user-defined class with a method of one of those names is a
+  finding. Only `Create` is type-anchored, to the `ScriptBlock` type literal,
+  because an unanchored `Create` matched unrelated factories such as
+  `[Regex]::Create` in probing.
+- Aliases are matched by name, not resolved. A script that does
+  `Set-Alias run Invoke-Expression` and then calls `run $cmd` is not matched,
+  and conversely a user-defined `iex` alias pointing somewhere harmless is.
+- The rules see one file. Dot-sourcing, module imports and remoting
+  (`Invoke-Command -ScriptBlock`) carry script text across file boundaries that
+  no rule in this pack follows.

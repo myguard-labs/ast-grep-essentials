@@ -1,0 +1,51 @@
+id: powershell-invoke-expression-piped-input
+language: powershell
+severity: error
+message: >-
+  The output of a preceding command is piped straight into Invoke-Expression, so
+  whatever that command produced is parsed and run as PowerShell source. This is
+  the canonical download-and-execute shape: Invoke-WebRequest, Invoke-RestMethod
+  or WebClient.DownloadString piped to iex hands full script execution to whoever
+  controls the endpoint, the DNS answer, or any TLS-terminating proxy on the
+  path, and Get-Content piped to iex does the same for whoever can write the
+  file (CWE-94, CWE-95). Nothing about the transport authenticates the payload,
+  and a single altered byte becomes attacker-chosen code in the caller's session
+  and privileges. Fetch to a variable or file, validate or verify it, and invoke
+  the resulting operation directly — a command, a parameterised call, or a
+  signed script — instead of parsing text back into code.
+note: >-
+  Matches an Invoke-Expression or iex command, in any casing, that appears as a
+  non-first stage of a pipeline whose preceding stage is a command or an
+  expression invocation. It covers the alias and the full cmdlet name equally.
+  It does not match a download or file read that is assigned or written to disk
+  without being executed, a direct invocation of a command without
+  Invoke-Expression, or the cmdlet name occurring inside a comment or a string,
+  none of which parse as a pipeline stage. The shape itself is the defect: the
+  text reaching the interpreter is produced at runtime by another command, so
+  the code that executes is never fixed by the source. That holds whatever the
+  upstream stage is, which is why this carries error severity rather than
+  identifying a site for review — the remedy is to stop parsing the output as
+  code, not to argue that this particular producer is trustworthy today.
+
+rule:
+  kind: command
+  all:
+    # Anchor on the sink command itself so the finding points at the iex stage
+    # rather than the whole pipeline.
+    - has:
+        field: command_name
+        regex: '(?i)^(iex|Invoke-Expression)$'
+    # A pipeline_chain is the parent of every stage; requiring it anchors the
+    # match to a real pipeline and contributes the secondary label that the
+    # snapshot baseline pins.
+    - inside:
+        kind: pipeline_chain
+    # stopBy: end because command_argument_sep and the pipe token sit between
+    # sibling stages, so the immediate previous sibling is not the upstream
+    # command. unary_expression covers method-call stages such as
+    # (New-Object Net.WebClient).DownloadString($u) | iex.
+    - follows:
+        stopBy: end
+        any:
+          - kind: command
+          - kind: unary_expression

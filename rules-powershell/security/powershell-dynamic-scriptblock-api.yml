@@ -1,0 +1,49 @@
+id: powershell-dynamic-scriptblock-api
+language: powershell
+severity: warning
+message: >-
+  A PowerShell API that compiles or evaluates text as code is called here.
+  [ScriptBlock]::Create, InvokeCommand.NewScriptBlock and PowerShell.AddScript
+  parse a string into an executable script block; InvokeCommand.InvokeScript
+  and Runspace.CreateNestedPipeline run script text in the caller's session; and
+  InvokeCommand.ExpandString performs PowerShell string interpolation on its
+  argument, which evaluates any $(...) subexpression the string contains and is
+  therefore an evaluator rather than a formatter. Each is the same class of sink
+  as Invoke-Expression and carries the same consequence when the text is not
+  fully under the program's control: an attacker who influences it chooses the
+  code that runs (CWE-94, CWE-95). Build the operation from a known command and
+  bound parameters rather than from text, and if a script block is genuinely
+  required, construct it as a literal { } block closed over variables instead of
+  compiling a string.
+note: >-
+  Matches an invocation of Create on a ScriptBlock type literal — short or
+  fully-qualified, in any casing — or of InvokeScript, CreateNestedPipeline,
+  AddScript, NewScriptBlock or ExpandString on any receiver. Anchoring Create to
+  the ScriptBlock type is deliberate: an unanchored Create matches unrelated
+  factory methods such as [Regex]::Create. The rule reports the presence of a
+  dynamic-execution sink and performs no taint tracking, so it does not
+  establish that the argument is attacker-influenced; the argument is not
+  inspected at all, which is why this is a warning while the Invoke-Expression
+  rules that do observe dynamic input are errors. It does not match a literal
+  { } script block, the call operator on a command name, AddCommand with bound
+  parameters, or the method names occurring in a comment or a string. A call
+  whose argument is a constant assembled entirely from program text is the
+  routine dismissal.
+rule:
+  kind: invocation_expression
+  any:
+    # `constraints:` are scoped per `any` alternative in this engine, so each
+    # alternative is written self-contained rather than sharing a metavariable.
+    - all:
+        - has:
+            kind: member_name
+            regex: '(?i)^Create$'
+        - has:
+            kind: type_literal
+            has:
+              stopBy: end
+              kind: type_identifier
+              regex: '(?i)^(System\.Management\.Automation\.)?ScriptBlock$'
+    - has:
+        kind: member_name
+        regex: '(?i)^(InvokeScript|CreateNestedPipeline|AddScript|NewScriptBlock|ExpandString)$'
