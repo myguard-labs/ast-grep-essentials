@@ -40,6 +40,10 @@ repo="$(read_lock_or_refuse repository)"
 tag="$(read_lock_or_refuse tag)"
 commit="$(read_lock_or_refuse commit)"
 symbol="$(read_lock_or_refuse symbol)"
+# The include dir is part of the gate, not just a compiler flag: everything
+# the archive ships under it is checksummed below, and -I points at the same
+# path, so the verified header set and the searched header set are one set.
+include_dir="$(read_lock_or_refuse includeDir)"
 
 # Library extension per platform. ast-grep resolves the library through the
 # host dynamic loader, so the suffix must be the platform-native one.
@@ -71,6 +75,8 @@ try:
     grammar = lock["grammar"]
     sources = grammar["sources"]
     digests = grammar["sourceSha256"]
+    include_dir = grammar["includeDir"]
+    headers = grammar["headerSha256"]
 except (OSError, ValueError, KeyError, TypeError) as exc:
     raise SystemExit("unreadable lockfile: %s" % exc)
 
@@ -78,6 +84,10 @@ if not isinstance(sources, list) or not sources:
     raise SystemExit("sources must be a non-empty list")
 if not isinstance(digests, dict) or not digests:
     raise SystemExit("sourceSha256 must be a non-empty object")
+if not isinstance(include_dir, str) or not include_dir:
+    raise SystemExit("includeDir must be a non-empty string")
+if not isinstance(headers, dict) or not headers:
+    raise SystemExit("headerSha256 must be a non-empty object")
 
 # The verified set and the compiled set must be the same set, in both
 # directions. A digest with no corresponding source verifies a file nobody
@@ -97,7 +107,24 @@ for name in sources:
         raise SystemExit("sourceSha256[%s] is not a sha256 digest" % name)
     if name.startswith("/") or ".." in name.split("/"):
         raise SystemExit("source path escapes the archive: %s" % name)
-    print(name + "|" + digest)
+    print("c|" + name + "|" + digest)
+
+# Headers are compiled in just as surely as the C sources: scanner.c includes
+# tree_sitter/parser.h, and the compiler searches the include dir for it. An
+# unverified header rewrites what the verified sources mean, so it gets the
+# same digest treatment -- same path checks, same digest shape, and below, the
+# same "the archive is the authority" set comparison.
+prefix = include_dir.rstrip("/") + "/"
+for name in sorted(headers):
+    digest = headers[name]
+    if not isinstance(digest, str) or len(digest) != 64:
+        raise SystemExit("headerSha256[%s] is not a sha256 digest" % name)
+    if name.startswith("/") or ".." in name.split("/"):
+        raise SystemExit("header path escapes the archive: %s" % name)
+    if not name.startswith(prefix):
+        raise SystemExit("headerSha256[%s] is outside the include dir %s"
+                         % (name, include_dir))
+    print("h|" + name + "|" + digest)
 ' "$lock")"; then
   echo "error: cannot read pinned checksums from $lock" >&2
   echo "refusing to build an unverified parser" >&2
@@ -141,10 +168,19 @@ sha_of() {
 # still compile scanner.c unverified -- and scanner.c is the hand-written
 # external lexer, the part of a Tree-sitter grammar most worth tampering with.
 compile_inputs=()
-while IFS='|' read -r rel want; do
+verified_headers=()
+while IFS='|' read -r kind rel want; do
   [ -n "$rel" ] || continue
+  case "$kind" in
+    c) what=source ;;
+    h) what=header ;;
+    *) echo "error: unknown checksum record kind '$kind'" >&2
+       echo "refusing to build an unverified parser" >&2
+       exit 1 ;;
+  esac
   if [ ! -f "$src/$rel" ]; then
-    echo "error: pinned source $rel missing from upstream archive" >&2
+    echo "error: pinned $what $rel missing from upstream archive" >&2
+    echo "refusing to build an unverified parser" >&2
     exit 1
   fi
   got="$(sha_of "$src/$rel")"
@@ -156,13 +192,23 @@ while IFS='|' read -r rel want; do
     exit 1
   fi
   echo "    ok $rel"
-  compile_inputs+=("$src/$rel")
+  if [ "$kind" = c ]; then
+    compile_inputs+=("$src/$rel")
+  else
+    verified_headers+=("$rel")
+  fi
 done <<EOF_CHECKSUMS
 $checksums
 EOF_CHECKSUMS
 
 if [ "${#compile_inputs[@]}" -eq 0 ]; then
   echo "error: no sources were verified" >&2
+  echo "refusing to build an unverified parser" >&2
+  exit 1
+fi
+
+if [ "${#verified_headers[@]}" -eq 0 ]; then
+  echo "error: no headers were verified" >&2
   echo "refusing to build an unverified parser" >&2
   exit 1
 fi
@@ -190,10 +236,28 @@ if [ "$shipped" != "$declared" ]; then
   exit 1
 fi
 
+# The same invariant for headers, for the same reason.
+#
+# The compiler is handed -I "$src/$include_dir", so every header the archive
+# ships under that directory is reachable from an #include in a verified source
+# -- scanner.c includes tree_sitter/parser.h. Checksumming only the C files
+# leaves the headers, which decide what those C files mean, entirely
+# unverified. A shipped header with no digest is compiled without being
+# checked; a digest for a header the archive does not ship verifies nothing.
+shipped_headers="$(cd "$src" && find "$include_dir" -name '*.h' | LC_ALL=C sort)"
+declared_headers="$(printf '%s\n' "${verified_headers[@]}" | LC_ALL=C sort)"
+if [ "$shipped_headers" != "$declared_headers" ]; then
+  echo "error: pinned headers do not match the headers in the archive" >&2
+  echo "  archive ships: $(echo "$shipped_headers" | tr '\n' ' ')" >&2
+  echo "  lockfile pins: $(echo "$declared_headers" | tr '\n' ' ')" >&2
+  echo "refusing to build an unverified parser" >&2
+  exit 1
+fi
+
 echo "==> compiling $out"
 cc_bin="${CC:-cc}"
 "$cc_bin" -shared -fPIC -O2 \
-  -I "$src/src" \
+  -I "$src/$include_dir" \
   -o "$out" \
   "${compile_inputs[@]}"
 

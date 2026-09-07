@@ -384,6 +384,160 @@ class TestChecksumGateFailsClosed(unittest.TestCase):
         )
 
 
+class TestHeaderChecksumGateFailsClosed(TestChecksumGateFailsClosed):
+    """Headers get the same treatment as the C sources, for the same reason.
+
+    The compiler is handed `-I "$src/$includeDir"`, so every header the archive
+    ships under that directory is reachable from an #include in a verified
+    source -- scanner.c includes tree_sitter/parser.h. Checksumming only
+    parser.c and scanner.c left the headers, which decide what those sources
+    mean, entirely unverified while every pinned digest still passed. A
+    substituted parser.h can redefine the ABI structs the generated parser is
+    built against; the sources would verify byte-for-byte and the library would
+    still be a different parser.
+
+    These reuse `run_with_lock` / `assert_refused` and stay offline: like the
+    source-side controls, each must be rejected before the script fetches.
+    """
+
+    def test_missing_headerSha256_aborts(self):
+        lock = self.valid_lock()
+        del lock["grammar"]["headerSha256"]
+        self.assert_refused(self.run_with_lock(lock), "headerSha256 removed",
+                            "unreadable lockfile")
+
+    def test_empty_headerSha256_aborts(self):
+        lock = self.valid_lock()
+        lock["grammar"]["headerSha256"] = {}
+        self.assert_refused(self.run_with_lock(lock), "an empty header map",
+                            "headerSha256 must be a non-empty object")
+
+    def test_wrong_typed_headerSha256_aborts(self):
+        lock = self.valid_lock()
+        lock["grammar"]["headerSha256"] = ["src/tree_sitter/parser.h"]
+        self.assert_refused(self.run_with_lock(lock),
+                            "a list instead of a header map",
+                            "headerSha256 must be a non-empty object")
+
+    def test_malformed_header_digest_aborts(self):
+        lock = self.valid_lock()
+        lock["grammar"]["headerSha256"]["src/tree_sitter/parser.h"] = "nope"
+        self.assert_refused(self.run_with_lock(lock),
+                            "a malformed header digest",
+                            "is not a sha256 digest")
+
+    def test_header_outside_the_include_dir_aborts(self):
+        """A digest outside includeDir verifies a file -I never searches."""
+        lock = self.valid_lock()
+        lock["grammar"]["headerSha256"]["elsewhere/evil.h"] = "0" * 64
+        self.assert_refused(self.run_with_lock(lock),
+                            "a header outside the include dir",
+                            "is outside the include dir")
+
+    def test_missing_includeDir_aborts(self):
+        lock = self.valid_lock()
+        del lock["grammar"]["includeDir"]
+        self.assert_refused(self.run_with_lock(lock), "includeDir removed",
+                            "unreadable lockfile")
+
+    def test_wrong_typed_includeDir_aborts(self):
+        lock = self.valid_lock()
+        lock["grammar"]["includeDir"] = ""
+        self.assert_refused(self.run_with_lock(lock), "an empty includeDir",
+                            "includeDir must be a non-empty string")
+
+
+class TestHeaderSetMatchesArchive(unittest.TestCase):
+    """The archive is the authority for headers too.
+
+    Lockfile-internal consistency is not enough: a lockfile can agree with
+    itself and still leave a shipped header unverified, or pin a header the
+    archive does not ship. Both need the extracted archive to detect, so these
+    controls need the network -- guarded by the same fetch-failure skip the
+    C-source control uses, so a DNS failure cannot masquerade as a pass.
+
+    The tampered-header control is here as well. The script extracts to its own
+    mktemp dir, so rather than performing surgery on the extraction we doctor
+    the lockfile's digest to a wrong-but-well-formed value: from the gate's
+    perspective "the digest does not match the file on disk" is exactly the
+    condition a tampered header produces.
+    """
+
+    def run_with_lock(self, lock):
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, ignore_errors=True)
+        tools = tmp / "tools" / "powershell"
+        tools.mkdir(parents=True)
+        shutil.copy(BUILD_SCRIPT, tools / BUILD_SCRIPT.name)
+        (tools / "grammar.lock.json").write_text(json.dumps(lock))
+        out = tmp / "out.so"
+        result = subprocess.run(
+            [str(tools / BUILD_SCRIPT.name), str(out)],
+            capture_output=True, text=True, check=False, timeout=600,
+        )
+        if "==> fetching" in result.stdout and result.returncode != 0 \
+                and "refusing to build" not in result.stderr:
+            self.skipTest(f"could not fetch the grammar: {result.stderr[:200]}")
+        return result, out
+
+    def valid_lock(self):
+        return json.loads((BUILD_SCRIPT.parent / "grammar.lock.json").read_text())
+
+    def assert_refused(self, result, out, because, diagnostic):
+        self.assertNotEqual(
+            result.returncode, 0,
+            f"build exited 0 with {because}; an unverified header reached the "
+            f"compiler.\nstdout: {result.stdout}\nstderr: {result.stderr}",
+        )
+        self.assertNotIn(
+            "==> compiling", result.stdout,
+            f"build reached the compile step with {because}",
+        )
+        self.assertIn(
+            diagnostic, result.stderr,
+            f"expected the {because} rejection to say {diagnostic!r}; without "
+            "this assertion the control would also pass on a network or "
+            f"interpreter failure.\nstderr: {result.stderr}",
+        )
+        self.assertFalse(out.exists(), "an unverified library was produced")
+
+    def test_tampered_header_aborts_before_compiling(self):
+        """The done criterion: a header that does not match its pin is fatal.
+
+        Equivalent to a modified header in the extracted archive -- the gate
+        compares a digest against the bytes on disk and cannot tell which side
+        moved.
+        """
+        lock = self.valid_lock()
+        lock["grammar"]["headerSha256"]["src/tree_sitter/parser.h"] = "0" * 64
+        result, out = self.run_with_lock(lock)
+        self.assert_refused(
+            result, out, "a tampered tree_sitter/parser.h",
+            "checksum mismatch for src/tree_sitter/parser.h",
+        )
+        self.assertIn("refusing to build an unverified parser", result.stderr)
+
+    def test_lockfile_omitting_a_shipped_header_aborts(self):
+        """A shipped header with no digest is compiled in unverified."""
+        lock = self.valid_lock()
+        lock["grammar"]["headerSha256"].pop("src/tree_sitter/parser.h")
+        result, out = self.run_with_lock(lock)
+        self.assert_refused(
+            result, out, "parser.h dropped from the lockfile",
+            "pinned headers do not match the headers in the archive",
+        )
+
+    def test_digest_for_a_header_the_archive_does_not_ship_aborts(self):
+        """A digest with no shipped header verifies nothing."""
+        lock = self.valid_lock()
+        lock["grammar"]["headerSha256"]["src/tree_sitter/ghost.h"] = "0" * 64
+        result, out = self.run_with_lock(lock)
+        self.assert_refused(
+            result, out, "a digest for a header the archive does not ship",
+            "pinned header src/tree_sitter/ghost.h missing from upstream archive",
+        )
+
+
 class TestCompiledSetMatchesVerifiedSet(unittest.TestCase):
     """Every C source the archive ships must be verified and compiled.
 

@@ -52,3 +52,10 @@ any promoted rule IDs and exercise a known positive before using a scan as a gat
 
 See [authoring](docs/authoring.md), [limitations](docs/limitations.md),
 [sources](docs/sources.md) and [rejected candidates](docs/rejected-candidates.md).
+
+## Related reading
+
+[The MyGuard AI coding workflow](https://deb.myguard.nl/articles/ai-coding-workflow-memory-skills-review/)
+describes how this rule pack is authored and reviewed: fixture pairs and near
+misses, the discovery check that keeps a rule reachable, how severity is chosen,
+and the semantic limits that decide which candidates are rejected outright.
