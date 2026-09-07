@@ -1,0 +1,56 @@
+id: php-ini-set-security-option
+valid:
+# PHP_INI_SYSTEM options: the call fails and changes nothing.
+- <?php ini_set("disable_functions", "");
+- <?php ini_set("disable_classes", "");
+# Narrowing open_basedir at runtime is supported and is not a weakening.
+- <?php ini_set("memory_limit", "256M");
+- <?php ini_set("max_execution_time", "30");
+- <?php ini_set("date.timezone", "UTC");
+- <?php ini_set("open_basedir_extra", "/tmp");
+- <?php ini_set("$prefix.open_basedir", "/tmp");
+# A trailing interpolation makes the option name dynamic; the constant
+# prefix does not establish which option is being set.
+- <?php ini_set("open_basedir{$suffix}", "/tmp");
+# Enabling the assertion options is hardening; the defect is turning them off.
+- <?php ini_set("assert.active", 1);
+# Single-quoted spellings are a different node kind than double-quoted ones.
+- <?php ini_set('assert.active', 'true');
+# Named arguments may be reordered; the exemption resolves them by name.
+- '<?php ini_set(value: 1, option: "assert.active");'
+# A boolean literal is its own node kind, neither string nor integer.
+- <?php ini_set("assert.active", true);
+# A double-quoted enabling value is encapsed_string, not string.
+- <?php ini_set("assert.active", "on");
+- <?php ini_set("zend.assertions", "1");
+- <?php ini_set("zend.assertions", 1);
+# The unquoted boolean casts to 1 and does enable assertions.
+- <?php ini_set("zend.assertions", true);
+# PHP boolean literals are case-insensitive.
+- <?php ini_set("zend.assertions", TRUE);
+# Named-argument and single-quoted spellings of the same exemption.
+- '<?php ini_set(value: 1, option: "zend.assertions");'
+- <?php ini_set('zend.assertions', '1');
+- <?php ini_set("open_basedir$suffix", "/tmp");
+- <?php ini_set($option, "/tmp");
+- <?php ini_get("open_basedir");
+- <?php my_ini_set("open_basedir", "/");
+- <?php // ini_set("open_basedir", "/");
+- <?php $s = "ini_set('open_basedir', '/');";
+invalid:
+# Disabling assertions succeeds when they were enabled at startup, which is
+# exactly the configuration where they were doing work.
+- <?php ini_set("zend.assertions", "0");
+# zend.assertions parses as an integer: these strings evaluate to 0 and
+# DISABLE assertions, unlike the boolean assert.active directive.
+- <?php ini_set("zend.assertions", "on");
+- <?php ini_set("zend.assertions", "true");
+# The quoted string is not a boolean: it still parses to 0.
+- <?php ini_set("zend.assertions", "TRUE");
+- '<?php ini_set(value: 0, option: "zend.assertions");'
+- <?php ini_set("open_basedir", "..");
+- <?php ini_set('include_path', '/tmp');
+- <?php ini_set("assert.active", 0);
+- <?php INI_SET("open_basedir", "/");
+- <?php \ini_set("open_basedir", "/");
+- '<?php ini_set(varname: "open_basedir", newvalue: "/");'

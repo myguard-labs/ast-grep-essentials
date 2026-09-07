@@ -1,0 +1,68 @@
+id: php-include-stream-wrapper
+language: php
+severity: error
+message: >-
+  include/require of a stream-wrapper URL rather than a filesystem path. The
+  interpreter executes whatever the wrapper yields: php://input replays the raw
+  request body as code, data:// executes an inline payload, php://filter
+  transforms a resource the include then runs, expect:// runs the string as a
+  command, and http:// or https:// fetches the
+  body from a host the local process does not control (CWE-98, CWE-829).
+  Include a filesystem path resolved against a fixed base directory, and
+  restrict the wrappers the deployment allows with allow_url_include off.
+note: >-
+  Matches a literal included path whose scheme is php, data, expect, http or
+  https, in both the bare and the parenthesized form, including the interpolated
+  form where the scheme is still literal. php://memory and php://temp are
+  excluded: each open returns a fresh empty stream, so the include executes
+  nothing and a payload written through a different handle is not visible to it.
+  A plain relative or absolute filesystem path does not match, and neither does
+  a path stored in a variable — the variable form is the separate shipped
+  php-file-inclusion-variable. phar:// and ftp:// are deliberately outside the
+  shape: a build step that includes from its own phar, and a deployment that
+  includes from a controlled ftp mirror, are real benign uses, so those two
+  schemes would make this an advisory rule rather than the near-zero-false-positive
+  claim its error severity carries. An option-name or scheme assembled from a
+  variable is likewise not visible here.
+rule:
+  all:
+    - any:
+        - kind: include_expression
+        - kind: include_once_expression
+        - kind: require_expression
+        - kind: require_once_expression
+    # The operand is a direct child in the bare `include "..."` form and sits
+    # one level down inside a parenthesized_expression in `include("...")`.
+    # Both are spelled out rather than walked: an unbounded stopBy would let a
+    # literal anywhere in a larger expression satisfy the include. The regex is
+    # anchored to the literal's own first text node so a scheme appearing inside
+    # a longer interpolated path does not match.
+    - any:
+        - has:
+            any:
+              - kind: string
+              - kind: encapsed_string
+            has:
+              kind: string_content
+              nthChild: 1
+              all:
+                - regex: '(?i)^(php|data|expect|https?)://'
+                # php://memory and php://temp start empty on every open, so
+                # including one executes nothing: a payload written through a
+                # different handle is not visible to this stream.
+                - not: {regex: '(?i)^php://(memory|temp)'}
+        - has:
+            kind: parenthesized_expression
+            has:
+              any:
+                - kind: string
+                - kind: encapsed_string
+              has:
+                kind: string_content
+                nthChild: 1
+                all:
+                  - regex: '(?i)^(php|data|expect|https?)://'
+                  # php://memory and php://temp start empty on every open, so
+                  # including one executes nothing: a payload written through a
+                  # different handle is not visible to this stream.
+                  - not: {regex: '(?i)^php://(memory|temp)'}

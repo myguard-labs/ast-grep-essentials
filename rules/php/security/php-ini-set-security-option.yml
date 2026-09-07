@@ -1,0 +1,136 @@
+id: php-ini-set-security-option
+language: php
+severity: warning
+message: >-
+  ini_set rewrites a php.ini option that is itself a security control. Widening
+  open_basedir or include_path at runtime relaxes the filesystem and code-loading
+  restrictions the deployment relies on — the published open_basedir escape walks
+  the setting up to "/" with repeated ini_set and chdir, then reads any file on
+  the host — and turning off assert.active disables assertion-based checks the
+  code still treats as enforced (CWE-15, CWE-693). Pin these in php.ini or the
+  FPM pool, where the application cannot reach them.
+note: >-
+  Matches only a literal option name of open_basedir, include_path or
+  assert.active, given positionally or through the option/varname named
+  argument. These are the security-relevant options ini_set can actually change:
+  disable_functions, disable_classes and zend.assertions are PHP_INI_SYSTEM, so
+  a call naming them fails and changes nothing, and reporting it would describe
+  a control change that did not happen. Setting assert.active to a literal 1, on, true or a
+  boolean is hardening and is excluded, because it is a boolean directive.
+  zend.assertions parses as an integer, so only a literal 1 or the boolean true
+  is exempt there: the strings "on" and "true" evaluate to 0 and disable
+  assertions, which is the defect rather than a dismissal. A dynamic value is
+  still reported for either option, because nothing establishes the direction. Ordinary runtime tuning —
+  memory_limit, max_execution_time, error_reporting, date.timezone — is outside
+  the shape, and so is an option name assembled from a variable or concatenation,
+  which is the bypass this shape cannot see. ini_get, which only reads, does not
+  match. Narrowing open_basedir at runtime is supported by PHP and is a
+  legitimate dismissal; the finding marks a security control the application can
+  still rewrite, not proof that it was weakened.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?ini_set$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          all:
+            - any:
+                - all:
+                    - nthChild: 1
+                    - not: {has: {field: name, kind: name}}
+                - has: {field: name, kind: name, regex: '^(option|varname)$'}
+            # Anchor the regex to the WHOLE literal, quotes included, so an
+            # interpolated suffix such as "open_basedir{$s}" cannot satisfy it.
+            # A subtree match on string_content would accept any literal that
+            # merely STARTS with the option name.
+            - has:
+                any:
+                  - kind: string
+                  - kind: encapsed_string
+                regex: '(?i)^[''"](open_basedir|include_path|assert\.active|zend\.assertions)[''"]$'
+    # Enabling the assertion options is hardening, not a weakening: the defect
+    # this rule names is turning them OFF. Anchored to a literal enabling value,
+    # so a dynamic or non-literal value stays reportable.
+    - not:
+        all:
+          # assert.active is a boolean directive: it accepts 1, on and true
+          # as enabling, so all three are hardening.
+          - has:
+              field: arguments
+              has:
+                kind: argument
+                all:
+                  # Positionally, or through the option/varname named argument,
+                  # mirroring the positive side of the rule.
+                  - any:
+                      - all:
+                          - nthChild: 1
+                          - not: {has: {field: name, kind: name}}
+                      - has: {field: name, kind: name, regex: '^(option|varname)$'}
+                  - has:
+                      any:
+                        - kind: string
+                        - kind: encapsed_string
+                      regex: '(?i)^[''"](assert\.active)[''"]$'
+          - has:
+              field: arguments
+              has:
+                kind: argument
+                all:
+                  - any:
+                      - all:
+                          - nthChild: 2
+                          - not: {has: {field: name, kind: name}}
+                      - has: {field: name, kind: name, regex: '^(value|newvalue)$'}
+                  - has:
+                      any:
+                        - kind: string
+                        - kind: encapsed_string
+                        - kind: integer
+                        - kind: boolean
+                      regex: '(?i)^[''"]?(1|on|true)[''"]?$'
+    - not:
+        all:
+          # zend.assertions parses as an INTEGER, so only 1 enables it. The
+          # STRINGS "on" and "true" evaluate to 0 and DISABLE assertions,
+          # verified by probe, so they stay reportable rather than being
+          # exempted alongside assert.active. The unquoted boolean true is
+          # exempt because it casts to 1 and does enable them.
+          - has:
+              field: arguments
+              has:
+                kind: argument
+                all:
+                  # Positionally, or through the option/varname named argument,
+                  # mirroring the positive side of the rule.
+                  - any:
+                      - all:
+                          - nthChild: 1
+                          - not: {has: {field: name, kind: name}}
+                      - has: {field: name, kind: name, regex: '^(option|varname)$'}
+                  - has:
+                      any:
+                        - kind: string
+                        - kind: encapsed_string
+                      regex: '(?i)^[''"](zend\.assertions)[''"]$'
+          - has:
+              field: arguments
+              has:
+                kind: argument
+                all:
+                  - any:
+                      - all:
+                          - nthChild: 2
+                          - not: {has: {field: name, kind: name}}
+                      - has: {field: name, kind: name, regex: '^(value|newvalue)$'}
+                  - has:
+                      any:
+                        - kind: string
+                        - kind: encapsed_string
+                        - kind: integer
+                        - kind: boolean
+                      regex: '^([''"]?1[''"]?|(?i:true))$'

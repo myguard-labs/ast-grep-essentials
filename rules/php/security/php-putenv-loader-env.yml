@@ -1,0 +1,64 @@
+id: php-putenv-loader-env
+language: php
+severity: error
+message: >-
+  putenv sets a dynamic-loader or locale-conversion environment variable.
+  LD_PRELOAD and LD_LIBRARY_PATH make the loader map an attacker-chosen shared
+  object into every process the request later spawns, and GCONV_PATH makes
+  iconv load an attacker-chosen conversion module; each turns a file write plus
+  any subprocess into arbitrary native code execution and is the standard escape
+  from disable_functions (CWE-426, CWE-427). Never let request-reachable code
+  reach putenv for these names; set loader paths in the service unit or the
+  FPM pool configuration instead.
+note: >-
+  Matches only a literal first argument whose assignment names LD_PRELOAD,
+  LD_LIBRARY_PATH, LD_AUDIT, LD_DEBUG_OUTPUT or GCONV_PATH, positionally or
+  through the assignment/setting named argument. An unrelated variable such as
+  TZ or PATH_INFO does not match, and neither does a name assembled at runtime
+  from a variable or concatenation — that spelling is the bypass this shape
+  cannot see, and it is a limitation, not a dismissal. PHP itself restricts
+  putenv when safe_mode-era protected-variable lists apply, but no such list is
+  in force by default.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?putenv$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          all:
+            - any:
+                - all:
+                    - nthChild: 1
+                    - not: {has: {field: name, kind: name}}
+                - has: {field: name, kind: name, regex: '^(assignment|setting)$'}
+            # Inspect the literal's first text node so an unrelated
+            # named-argument label or a wider expression's tail cannot satisfy
+            # the regex; nthChild pins the name to the start of the literal, so
+            # "$x/LD_PRELOAD=" does not match.
+            - has:
+                any:
+                  - kind: string
+                  - kind: encapsed_string
+                has:
+                  kind: string_content
+                  nthChild: 1
+                  # Case-SENSITIVE: Unix environment names are, so
+                  # "ld_preload=" names an unrelated variable the loader ignores.
+                  # The (?i) on the function name above stays: PHP function
+                  # names are case-insensitive.
+                  regex: '^(LD_PRELOAD|LD_LIBRARY_PATH|LD_AUDIT|LD_DEBUG_OUTPUT|GCONV_PATH)='
+            # An assignment with nothing after the "=" CLEARS the variable,
+            # which is environment sanitization before spawning a subprocess,
+            # not a loader injection. Anchored to the whole literal so an
+            # interpolated value still matches: "LD_PRELOAD={$x}" is the payload
+            # case and must keep firing.
+            - not:
+                has:
+                  any:
+                    - kind: string
+                    - kind: encapsed_string
+                  regex: '^[''"](LD_PRELOAD|LD_LIBRARY_PATH|LD_AUDIT|LD_DEBUG_OUTPUT|GCONV_PATH)=[''"]$'

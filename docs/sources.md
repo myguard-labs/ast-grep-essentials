@@ -539,3 +539,40 @@ fixed by its fixtures.
   `about_Remote_Troubleshooting` for WinRM's default refusal of unencrypted
   HTTP traffic, which `-NoEncryption` is what overrides
   <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_remote_troubleshooting?view=powershell-7.5>
+
+### Round 3 (broad pass over the shipped rulesets)
+
+Round 3 swept the PHP-side virtual-patching configuration rather than the C
+source: the shipped default ruleset and the ecosystem rulesets distributed with
+it. Each rule below is motivated by a `sp.disable_function` directive whose
+claim is a *literal* argument value, which is the sub-class a syntactic matcher
+can state; the runtime-value directives around them are recorded as rejections
+in [rejected-candidates.md](rejected-candidates.md).
+
+- `php-putenv-loader-env` — CWE-426, CWE-427; Snuffleupagus
+  `config/default.rules`, the `putenv` block ("Since it's now burned, we might
+  as well mitigate it publicly") dropping `LD_` and `GCONV_` assignments; the
+  November 2019 `GCONV_PATH` disable_functions bypass it cites
+  <https://gist.github.com/LoadLow/90b60bd5535d6c3927bb24d5f9955b80>;
+  `ld.so(8)` on `LD_PRELOAD`, `LD_LIBRARY_PATH` and `LD_AUDIT`
+  <https://man7.org/linux/man-pages/man8/ld.so.8.html>; PHP `putenv`
+  <https://www.php.net/manual/en/function.putenv.php>
+- `php-ini-set-security-option` — CWE-15, CWE-693; Snuffleupagus
+  `config/default.rules`, the "Prevent runtime modification of interesting
+  things" block and the separate `open_basedir` block, whose comment records the
+  published escape
+  (`ini_set('open_basedir','..'); chdir('..'); …; file_get_contents('/etc/passwd')`)
+  and non-public variants using the same vector; PHP `ini_set` and the
+  `PHP_INI_*` changeability modes
+  <https://www.php.net/manual/en/function.ini-set.php>,
+  <https://www.php.net/manual/en/configuration.changes.modes.php>;
+  `open_basedir` documentation on its non-security-boundary status
+  <https://www.php.net/manual/en/ini.core.php#ini.open-basedir>
+- `php-include-stream-wrapper` — CWE-98, CWE-829; Snuffleupagus
+  `config/suhosin.rules`, which drops `require`/`include` of
+  `^php://(stdin|stdout|stderr|input|output|memory|temp)` and of traversal
+  paths, together with the `sp.wrappers_whitelist.list("file,php,phar")`
+  directive in `config/default.rules` establishing that a deployment is expected
+  to restrict wrappers explicitly; PHP supported protocols and wrappers
+  <https://www.php.net/manual/en/wrappers.php>; `allow_url_include`
+  <https://www.php.net/manual/en/filesystem.configuration.php#ini.allow-url-include>

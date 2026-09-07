@@ -1,0 +1,31 @@
+id: php-putenv-loader-env
+valid:
+# Clearing the variable is environment sanitization before spawning a
+# subprocess: no shared object is supplied.
+- <?php putenv("LD_PRELOAD=");
+- <?php putenv("LD_AUDIT=");
+- <?php putenv('LD_PRELOAD=');
+# Unix environment names are case-sensitive: this names an unrelated variable.
+- <?php putenv("ld_library_path=/opt/app");
+- <?php putenv("Ld_Preload=/tmp/x.so");
+- <?php putenv("TZ=UTC");
+- <?php putenv("MY_LD_PRELOAD=/tmp/x.so");
+- <?php putenv("PATH_INFO=/x");
+- <?php putenv("$prefix/LD_PRELOAD=/tmp/x.so");
+- <?php putenv($assignment);
+- <?php putenv("LD_PRELOAD" . "=" . $so);
+- <?php getenv("LD_PRELOAD");
+- <?php my_putenv("LD_PRELOAD=/tmp/x.so");
+- <?php // putenv("LD_PRELOAD=/tmp/x.so");
+- <?php $s = "putenv('LD_PRELOAD=/tmp/x.so');";
+invalid:
+- <?php putenv("LD_PRELOAD=/tmp/x.so");
+- <?php putenv('GCONV_PATH=/tmp/gconv');
+- <?php putenv("LD_LIBRARY_PATH=/tmp");
+- <?php putenv("LD_AUDIT=/tmp/a.so");
+- <?php putenv("LD_DEBUG_OUTPUT=/tmp/out");
+- <?php putenv("LD_PRELOAD=$so");
+- <?php PUTENV("LD_PRELOAD=/tmp/x.so");
+- <?php \putenv("LD_PRELOAD=/tmp/x.so");
+- '<?php putenv(assignment: "LD_LIBRARY_PATH=/tmp");'
+- '<?php putenv(setting: "GCONV_PATH=/tmp/gconv");'

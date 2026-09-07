@@ -285,6 +285,73 @@ pipeline-shape claim whose safe variants are numerous, and `read -r` is already
   Duplicating an existing diagnostic's precision is a drop under the SNUF-02
   precedent.
 
+### Round 3 (broad pass)
+
+Sources swept: the shipped default ruleset `config/default.rules`, the
+ecosystem rulesets `config/suhosin.rules`, `config/rips.rules`,
+`config/detect_dangerous_extensions.rules`, and the CVE/exploit references those
+rules cite. The retained rules are `php-putenv-loader-env`,
+`php-ini-set-security-option` and `php-include-stream-wrapper`.
+
+- `php-function-exists-recon` — from the "Detect some backdoors via environment
+  recon" block of `config/default.rules`, which drops
+  `function_exists("system")` and `is_callable("exec")` for the whole execution
+  family. Snuffleupagus can afford this because it acts at request time on a
+  hardened deployment where the block is a tripwire whose false positives cost a
+  log line; a static rule reports the same shape on every capability probe in
+  ordinary code. `function_exists('exec')` before choosing between `exec` and a
+  library fallback is the standard portable spelling, and it is
+  indistinguishable from a webshell's probe by syntax alone — the deciding fact
+  is what the surrounding branch then does, which is dataflow. Probed over a
+  four-case control holding a webshell probe, a portable capability check
+  guarding a library fallback, a `function_exists` on an unrelated extension
+  function, and an `is_callable` on a `$this` method: the shape produced two
+  findings, the probe and the legitimate fallback. Dropped as an unfixable
+  false-positive rate at any useful severity.
+- `php-curl-setopt-sslengine` — from
+  `sp.disable_function.function("curl_setopt").param("option").value("10089")`,
+  added for <https://github.com/php/php-src/issues/22035>. The claim reduces to
+  a single literal option constant on a single function, which the shipped
+  `php-curl-ssl-verification-disabled` already reaches with the identical
+  `curl_setopt` positional/named-argument scaffolding; adding a third constant
+  to that rule's existing alternative would be the whole change. A separate rule
+  emitting a second diagnostic on the same `curl_setopt` call with no added
+  precision is a drop under the SNUF-02 precedent, and the option itself is a
+  legitimate client-certificate engine selector, so it does not belong inside a
+  rule whose message states that verification is off.
+- `php-session-cookie-params-insecure` — from `sp.auto_cookie_secure` and the
+  `sp.cookie.name("PHPSESSID").samesite("lax")` default. The shipped
+  `php-insecure-cookie-flags` covers `setcookie`/`setrawcookie`, and
+  `session_set_cookie_params` is genuinely uncovered, but the two call shapes
+  differ in a way that defeats the same claim: `session_set_cookie_params`
+  legitimately omits the flags because `session.cookie_secure` and
+  `session.cookie_httponly` are set in php.ini, which is the *recommended*
+  deployment. Absence of an argument therefore carries no information, and the
+  only sub-claim that survives is an explicitly passed `false`, which is a
+  one-line shape already better served by the ini audit. Probed over a
+  three-case control — explicit `false`, omitted flags with php.ini expected to
+  carry them, and the array form with `'secure' => true` — the omission arm
+  reported the correct php.ini-configured deployment. Dropped: the informative
+  half is the configuration file, not the call site.
+- `php-rips-filename-scoped-patches` — the whole of `config/rips.rules` and the
+  application-specific `spip`, `typo3` and `xenforo` rulesets. Every rule there
+  is a virtual patch keyed on `filename_r(...)` plus a specific function in a
+  specific released version of a specific application; the security claim is
+  entirely "this file, in this product, at this version", carried by the
+  `filename` predicate and not by any syntax the matcher would see. Reduced to
+  the syntax alone, each becomes a match on an ordinary call such as `substr`,
+  `define` or `save_module`. Dropped: these are deployment configuration for a
+  runtime WAF, not a rule family, and the pack has no version-pinning
+  vocabulary to express them.
+- `php-mail-header-newline-literal` — from
+  `sp.disable_function.function("mail").param("to").value_r("\\n")` in
+  `config/suhosin.rules`. The value the rule inspects is the *runtime* argument,
+  which is the injected header; a literal newline written into a constant `To:`
+  argument in source is a typo, not an attack, and the request-derived case is
+  already the shipped `php-mail-header-request`. Dropped: reading argument
+  values at runtime is exactly the capability a syntactic matcher does not have,
+  and this is the clearest instance of the round 1 lesson in the sweep.
+
 ## powershell
 
 - `powershell-invoke-expression-constant-argument` — a rule for
