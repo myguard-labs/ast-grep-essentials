@@ -1309,3 +1309,29 @@ rejected and is recorded in `rejected-candidates.md`.
   outside the shape; a value assembled in an
   earlier statement and passed by variable matches without the matcher knowing
   whether it is attacker-steered.
+
+## PowerShell parser
+
+- The PowerShell grammar (Wharflab `v0.38.1`) still produces an `ERROR` node for
+  the bare `--` end-of-options separator, as in `git log -- path/to/file`. A
+  command invocation containing `--` is not reliably matchable, so PowerShell
+  rules must not claim coverage of that shape. `./path` and `--flag=value`, the
+  other two known ecosystem failure points, parse cleanly. Selection evidence and
+  per-corpus error counts: [powershell-parser.md](powershell-parser.md).
+- Expression-shaped PowerShell patterns do not work as bare patterns. At
+  statement position Tree-sitter parses `$A -gt 1` as a *command* named `$A`
+  with `-gt` as a command parameter, not as a comparison. Rules targeting
+  expressions need an explicit `kind:` anchor; command-shaped patterns are
+  unaffected.
+- PowerShell support is **verified only on `x86_64-unknown-linux-gnu`**.
+  `sgconfig.powershell.yml` declares `libraryPath` entries for macOS and Windows
+  target triples and the build script emits the right suffix for each, but no
+  artifact has been built or loaded on those platforms. An unmapped or
+  unloadable target fails closed (non-zero exit, no findings emitted) rather
+  than reporting a clean scan, and the test suite fails rather than skipping
+  when a built artifact does not match the running host.
+- PowerShell scanning is opt-in through `sgconfig.powershell.yml` and requires
+  `tools/powershell/build-grammar.sh` to have run. It is deliberately kept out of
+  `sgconfig.yml` because ast-grep aborts an entire scan when a registered custom
+  language cannot be loaded, which would break all native-language rules for
+  consumers that never built the parser.

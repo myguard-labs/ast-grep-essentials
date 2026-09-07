@@ -1,0 +1,48 @@
+# Opt-in ast-grep configuration for the PowerShell rule pack.
+#
+# PowerShell needs a compiled Tree-sitter grammar that ast-grep loads as a
+# dynamic library. That library is built, not vendored, so it is absent until
+# `tools/powershell/build-grammar.sh` has run.
+#
+# It lives in its own config rather than in sgconfig.yml on purpose. ast-grep
+# aborts the entire scan when a registered custom language cannot be loaded --
+# it does not skip just that language. Registering PowerShell in the main
+# config would therefore turn a missing optional parser into a total failure of
+# all 248 native-language rules for every consumer that never asked for
+# PowerShell. Keeping it separate means the default scan is unaffected, while a
+# PowerShell scan that cannot load its parser still fails closed rather than
+# silently reporting zero findings.
+#
+#   tools/powershell/build-grammar.sh
+#   ast-grep scan -c sgconfig.powershell.yml <path>
+ruleDirs:
+  - rules-powershell
+customLanguages:
+  powershell:
+    # Keyed by Rust target triple, which ast-grep resolves against its own
+    # host target. The build script writes the platform-native suffix
+    # (.so/.dylib/.dll), so a single hardcoded path would build one artifact
+    # and look for another on macOS and Windows.
+    #
+    # A target absent from this map fails closed -- ast-grep reports "Cannot
+    # load custom language library" and exits non-zero, rather than scanning
+    # zero files and reporting success. Adding a platform means adding its
+    # triple here; only x86_64-unknown-linux-gnu is verified in CI.
+    libraryPath:
+      x86_64-unknown-linux-gnu: build/powershell/powershell.so
+      aarch64-unknown-linux-gnu: build/powershell/powershell.so
+      aarch64-apple-darwin: build/powershell/powershell.dylib
+      x86_64-apple-darwin: build/powershell/powershell.dylib
+      x86_64-pc-windows-msvc: build/powershell/powershell.dll
+      aarch64-pc-windows-msvc: build/powershell/powershell.dll
+    extensions:
+      - ps1
+      - psm1
+      - psd1
+    # `$` is ordinary variable syntax in PowerShell, so ast-grep needs a
+    # different metavariable sigil. `µ` is not valid in a PowerShell variable
+    # name or command token, so it cannot collide with real source text the way
+    # `_` would -- `$_` is the pipeline variable and appears constantly.
+    expandoChar: 'µ'
+testConfigs:
+  - testDir: tests-powershell
