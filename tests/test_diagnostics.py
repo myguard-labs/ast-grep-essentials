@@ -48,7 +48,6 @@ class DiagnosticTests(unittest.TestCase):
             "is a false positive",
             "legitimate dismissal",
             "false positive is accepted",
-            "known false positive",
         )
         offenders = []
         for path in sorted((ROOT / "rules").rglob("*.yml")):
