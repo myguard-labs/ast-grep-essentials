@@ -215,3 +215,17 @@ pipeline-shape claim whose safe variants are numerous, and `read -r` is already
   window with metavariable reuse across commands; the process-substitution and
   here-string forms shipped as `sh-process-substitution-shell-input`, and the
   archive forms as `sh-archive-extract-to-system-root`.
+
+## Snuffleupagus history harvest
+
+- `c-stat-then-mkdir-toctou` — the exact paired-call shape is already shipped.
+  `c-toctou-access-then-open` lists `stat`, `lstat` and `access` as the check
+  and `mkdir` among its actions, and matches the same-variable pairing in one
+  block. A probe over `if (stat(p, &st) != 0) { mkdir(p, 0700); }` and its
+  brace-free variant produced one finding each from the existing rule, so a
+  second rule would emit a duplicate diagnostic on identical code with no added
+  precision. Broadening beyond the exact shape — to `access`, `open` or `creat`
+  sinks — was the same ground the shipped rule already holds, and narrowing to
+  `mkdir` alone adds nothing the shipped action list does not carry. Recorded
+  here rather than shipped; the shipped rule's `stopBy: end` cross-function
+  reach is a separate finding, filed in `issues.md`.

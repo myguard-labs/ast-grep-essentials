@@ -1,0 +1,41 @@
+id: php-chmod-world-writable
+language: php
+severity: warning
+message: >-
+  chmod grants write permission to every account on the host. Mode 0666 or 0777
+  lets any local user — including another tenant on shared hosting and any
+  process a different web application runs — rewrite the file, and 0777 also
+  makes it executable, so a config file becomes an injection point and a script
+  directory becomes a webshell drop (CWE-732). Grant write access through group
+  ownership instead, and keep the world bits clear.
+note: >-
+  Matches only a literal mode of 0666 or 0777, in octal, PHP 8.1 explicit-octal
+  or decimal (438, 511) spelling, supplied positionally or as the permissions
+  named argument. A mode computed at runtime, read from configuration, or built
+  with a bitmask is outside the shape, and so are 0664/0775 group-writable modes.
+  Whether world-writable is the intent is semantic, so this rule identifies a
+  site for review rather than proving a defect; a genuinely shared spool
+  directory, or a path on a single-tenant host with no other local accounts, is
+  the routine dismissal.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?chmod$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          any:
+            # chmod($path, 0777)
+            - all:
+                - nthChild: 2
+                - regex: '^(0[oO]?666|0[oO]?777|438|511)$'
+            # chmod(permissions: 0777, filename: $path)
+            - all:
+                - has: {field: name, kind: name, regex: '^permissions$'}
+                # Inspect the value node, not the argument text: a regex over
+                # the whole argument can be satisfied by a tail such as the
+                # final branch of a ternary.
+                - has: {kind: integer, regex: '^(0[oO]?666|0[oO]?777|438|511)$'}

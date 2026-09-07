@@ -1,0 +1,81 @@
+id: c-snprintf-size-missing-nul
+language: c
+severity: warning
+message: >-
+  A buffer is allocated with the exact length a measuring snprintf(NULL, 0, ...)
+  returned, without the extra byte for the terminating NUL. snprintf reports the
+  number of characters it would have written excluding the terminator, so the
+  following formatting call either truncates the last character or, with an
+  unbounded writer such as sprintf, writes one byte past the end of the
+  allocation (CWE-193, CWE-787). Allocate the measured length plus one.
+note: >-
+  The pairing is by identifier text inside one enclosing block: the same
+  variable must receive the value of an snprintf or vsnprintf whose first
+  argument is NULL and whose second is the literal 0, and then appear as a bare
+  identifier argument of the allocation. Any arithmetic on the size at the
+  allocation site — n + 1, (size_t)n + 1, 1 + n — takes the site out of scope,
+  which is the intended near miss. So does any other binding of that name in the
+  block — a size corrected on a later line with an assignment or an increment, or
+  an unrelated variable of the same name in a sibling scope — because identifier
+  text alone cannot say which binding the allocation reads. The measured name
+  must also occupy the size position, which is the first argument of every
+  allocator listed. It cannot see a length rebuilt into a different
+  variable, or an allocator wrapper that adds the byte itself; a wrapper that
+  reserves the terminator is the routine dismissal.
+utils:
+  measuring-snprintf:
+    kind: call_expression
+    all:
+      - has:
+          field: function
+          regex: '^v?snprintf$'
+      - has:
+          field: arguments
+          all:
+            - has: {kind: 'null', nthChild: 1}
+            - has: {kind: number_literal, nthChild: 2, regex: '^0$'}
+  sized-by-measuring-snprintf:
+    any:
+      - kind: init_declarator
+        all:
+          - has: {field: declarator, kind: identifier, pattern: $LEN}
+          - has: {field: value, matches: measuring-snprintf}
+      - kind: assignment_expression
+        all:
+          - has: {field: left, kind: identifier, pattern: $LEN}
+          - has: {field: right, matches: measuring-snprintf}
+  # Any other binding of the same name in the block: a corrected size, or an
+  # unrelated variable of the same name in a sibling scope.
+  len-rebound:
+    any:
+      - kind: init_declarator
+        all:
+          - has: {field: declarator, stopBy: end, kind: identifier, pattern: $LEN}
+          - not: {has: {field: value, matches: measuring-snprintf}}
+      - kind: assignment_expression
+        all:
+          - has: {field: left, kind: identifier, pattern: $LEN}
+          - not: {has: {field: right, matches: measuring-snprintf}}
+      # ++n / n++ reserves the terminator just as n = n + 1 does.
+      - kind: update_expression
+        has: {field: argument, kind: identifier, pattern: $LEN}
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^(malloc|emalloc|pemalloc|xmalloc|alloca)$'
+    - has:
+        field: arguments
+        has: {kind: identifier, pattern: $LEN, nthChild: 1}
+    - inside:
+        stopBy: end
+        kind: compound_statement
+        all:
+          - has:
+              stopBy: end
+              matches: sized-by-measuring-snprintf
+          - not:
+              has:
+                stopBy: end
+                matches: len-rebound

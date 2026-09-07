@@ -1,0 +1,35 @@
+id: c-getenv-result-to-format-s
+language: c
+severity: warning
+message: >-
+  A getenv result is handed straight to a printf-family call whose format
+  contains a %s conversion. getenv returns NULL when the variable is unset, and
+  passing NULL to %s is undefined behaviour — glibc prints "(null)" but other
+  C libraries dereference it and crash the process (CWE-476). Store the result,
+  test it for NULL, and substitute a default before formatting.
+note: >-
+  The shape requires the getenv or secure_getenv call to be a direct argument of
+  the formatting call and a literal format string in the same argument list to
+  contain a %s conversion. A result stored in a variable and tested, a result
+  wrapped in a ternary default, and a result consumed by another call such as
+  atoi are all outside the shape. Argument positions are not counted, so a
+  format that mixes %s with another conversion still matches even when the
+  getenv value feeds the other one; a variable the process itself sets earlier,
+  or a %s fed by a different argument, is the routine dismissal.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^(printf|fprintf|sprintf|snprintf|vsnprintf|asprintf|dprintf|syslog)$'
+    - has:
+        field: arguments
+        all:
+          - has:
+              kind: string_literal
+              regex: '%[-+ #0-9.*]*s'
+          - has:
+              kind: call_expression
+              has:
+                field: function
+                regex: '^(getenv|secure_getenv)$'

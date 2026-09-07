@@ -1,0 +1,17 @@
+id: c-strtok-r-first-call-null
+valid:
+  - 'void f(char *in) { char *save; char *t = strtok_r(in, ",", &save); }'
+  - 'void f(char *in) { char *save = NULL; char *t = strtok_r(in, ",", &save); }'
+  - 'void f(char *in) { char *save = in; char *t = strtok_r(in, ",", &save); }'
+  - 'void f(char *in) { char *save = in; char *t = strtok_r(in, ",", &save); while ((t = strtok_r(NULL, ",", &save))) { use(t); } }'
+  - 'void f(char *in) { char *save; char *t = strtok_r(in, ",", &save); while ((t = strtok_r(NULL, ",", &save))) { use(t); } }'
+  - 'void f(char *in) { char *save = in; char *t = strtok_r(NULL, ",", save); }'
+  - 'void f(char *in, char *other) { char *save = in; char *t = strtok_r(NULL, ",", &other); }'
+  - 'void f(char *in) { char *save = in; char *t = strtok(NULL, ","); }'
+  - 'void f(char *in) { char *t = strtok_r(NULL, ",", &save); }'
+  - 'void f(char *in) { /* char *save = in; char *t = strtok_r(NULL, ",", &save); */ }'
+  - 'const char *s = "char *save = in; strtok_r(NULL, \",\", &save);";'
+invalid:
+  - 'void f(char *in) { char *save = in; char *t = strtok_r(NULL, ",", &save); }'
+  - 'void f(char *in) { char *save; save = in; char *t = strtok_r(NULL, ",", &save); }'
+  - 'void f(char *in) { char *save = in; for (char *t = strtok_r(NULL, ";", &save); t; t = strtok_r(NULL, ";", &save)) { use(t); } }'

@@ -1,0 +1,53 @@
+id: php-mail-dynamic-additional-params
+language: php
+severity: error
+message: >-
+  The fifth argument of mail() is built at runtime. PHP passes that string to
+  the sendmail binary as command-line options, so a value an attacker can steer
+  adds arguments of their choosing — historically -X to write an arbitrary file
+  under the web root, or -C to load an attacker-controlled configuration —
+  turning a contact form into remote code execution (CWE-88, CWE-78). Pass a
+  fixed literal, or omit the argument and set the envelope sender in php.ini.
+note: >-
+  Matches a fifth positional argument, or an additional_params named argument,
+  whose value is a variable, a property or array access, a call, a concatenation,
+  or a double-quoted string or heredoc that interpolates. A call omitting the argument and a
+  wholly static literal are outside the shape. escapeshellarg on the value still
+  matches, deliberately: it quotes the string as one argument but does nothing
+  about the leading dash, so an injected -X or -C survives it.
+utils:
+  dynamic-params:
+    any:
+      - kind: variable_name
+      - kind: binary_expression
+      - kind: function_call_expression
+      - kind: member_call_expression
+      - kind: member_access_expression
+      - kind: subscript_expression
+      - kind: conditional_expression
+      - all:
+          - kind: encapsed_string
+          - has: {stopBy: end, kind: variable_name}
+      - all:
+          - kind: heredoc
+          - has: {stopBy: end, kind: variable_name}
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?(mail|mb_send_mail)$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          any:
+            # mail($to, $subject, $message, $headers, <dynamic>)
+            - all:
+                - nthChild: 5
+                - has: {matches: dynamic-params}
+                - not: {has: {field: name, kind: name}}
+            # mail(..., additional_params: <dynamic>)
+            - all:
+                - has: {field: name, kind: name, regex: '^additional_params$'}
+                - has: {matches: dynamic-params}

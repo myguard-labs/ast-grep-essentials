@@ -1,0 +1,288 @@
+id: c-getenv-result-to-format-s
+snapshots:
+  void f(char **b) { asprintf(b, "%s", getenv("X")); }:
+    labels:
+    - source: asprintf(b, "%s", getenv("X"))
+      style: primary
+      start: 19
+      end: 49
+    - source: asprintf
+      style: secondary
+      start: 19
+      end: 27
+    - source: '"%s"'
+      style: secondary
+      start: 31
+      end: 35
+    - source: getenv
+      style: secondary
+      start: 37
+      end: 43
+    - source: getenv("X")
+      style: secondary
+      start: 37
+      end: 48
+    - source: (b, "%s", getenv("X"))
+      style: secondary
+      start: 27
+      end: 49
+  void f(char *b) { sprintf(b, "%s", getenv("X")); }:
+    labels:
+    - source: sprintf(b, "%s", getenv("X"))
+      style: primary
+      start: 18
+      end: 47
+    - source: sprintf
+      style: secondary
+      start: 18
+      end: 25
+    - source: '"%s"'
+      style: secondary
+      start: 29
+      end: 33
+    - source: getenv
+      style: secondary
+      start: 35
+      end: 41
+    - source: getenv("X")
+      style: secondary
+      start: 35
+      end: 46
+    - source: (b, "%s", getenv("X"))
+      style: secondary
+      start: 25
+      end: 47
+  void f(char *b, size_t n) { snprintf(b, n, "%s", getenv("X")); }:
+    labels:
+    - source: snprintf(b, n, "%s", getenv("X"))
+      style: primary
+      start: 28
+      end: 61
+    - source: snprintf
+      style: secondary
+      start: 28
+      end: 36
+    - source: '"%s"'
+      style: secondary
+      start: 43
+      end: 47
+    - source: getenv
+      style: secondary
+      start: 49
+      end: 55
+    - source: getenv("X")
+      style: secondary
+      start: 49
+      end: 60
+    - source: (b, n, "%s", getenv("X"))
+      style: secondary
+      start: 36
+      end: 61
+  void f(int fd) { dprintf(fd, "%s", getenv("X")); }:
+    labels:
+    - source: dprintf(fd, "%s", getenv("X"))
+      style: primary
+      start: 17
+      end: 47
+    - source: dprintf
+      style: secondary
+      start: 17
+      end: 24
+    - source: '"%s"'
+      style: secondary
+      start: 29
+      end: 33
+    - source: getenv
+      style: secondary
+      start: 35
+      end: 41
+    - source: getenv("X")
+      style: secondary
+      start: 35
+      end: 46
+    - source: (fd, "%s", getenv("X"))
+      style: secondary
+      start: 24
+      end: 47
+  void f(int n) { printf("count=%d and %s\n", n, getenv("X")); }:
+    labels:
+    - source: printf("count=%d and %s\n", n, getenv("X"))
+      style: primary
+      start: 16
+      end: 59
+    - source: printf
+      style: secondary
+      start: 16
+      end: 22
+    - source: '"count=%d and %s\n"'
+      style: secondary
+      start: 23
+      end: 42
+    - source: getenv
+      style: secondary
+      start: 47
+      end: 53
+    - source: getenv("X")
+      style: secondary
+      start: 47
+      end: 58
+    - source: ("count=%d and %s\n", n, getenv("X"))
+      style: secondary
+      start: 22
+      end: 59
+  void f(void) { fprintf(stderr, "path=%s\n", getenv("PATH")); }:
+    labels:
+    - source: fprintf(stderr, "path=%s\n", getenv("PATH"))
+      style: primary
+      start: 15
+      end: 59
+    - source: fprintf
+      style: secondary
+      start: 15
+      end: 22
+    - source: '"path=%s\n"'
+      style: secondary
+      start: 31
+      end: 42
+    - source: getenv
+      style: secondary
+      start: 44
+      end: 50
+    - source: getenv("PATH")
+      style: secondary
+      start: 44
+      end: 58
+    - source: (stderr, "path=%s\n", getenv("PATH"))
+      style: secondary
+      start: 22
+      end: 59
+  void f(void) { printf("%-20s|", getenv("X")); }:
+    labels:
+    - source: printf("%-20s|", getenv("X"))
+      style: primary
+      start: 15
+      end: 44
+    - source: printf
+      style: secondary
+      start: 15
+      end: 21
+    - source: '"%-20s|"'
+      style: secondary
+      start: 22
+      end: 30
+    - source: getenv
+      style: secondary
+      start: 32
+      end: 38
+    - source: getenv("X")
+      style: secondary
+      start: 32
+      end: 43
+    - source: ("%-20s|", getenv("X"))
+      style: secondary
+      start: 21
+      end: 44
+  void f(void) { printf("%.8s", getenv("X")); }:
+    labels:
+    - source: printf("%.8s", getenv("X"))
+      style: primary
+      start: 15
+      end: 42
+    - source: printf
+      style: secondary
+      start: 15
+      end: 21
+    - source: '"%.8s"'
+      style: secondary
+      start: 22
+      end: 28
+    - source: getenv
+      style: secondary
+      start: 30
+      end: 36
+    - source: getenv("X")
+      style: secondary
+      start: 30
+      end: 41
+    - source: ("%.8s", getenv("X"))
+      style: secondary
+      start: 21
+      end: 42
+  void f(void) { printf("%s", secure_getenv("X")); }:
+    labels:
+    - source: printf("%s", secure_getenv("X"))
+      style: primary
+      start: 15
+      end: 47
+    - source: printf
+      style: secondary
+      start: 15
+      end: 21
+    - source: '"%s"'
+      style: secondary
+      start: 22
+      end: 26
+    - source: secure_getenv
+      style: secondary
+      start: 28
+      end: 41
+    - source: secure_getenv("X")
+      style: secondary
+      start: 28
+      end: 46
+    - source: ("%s", secure_getenv("X"))
+      style: secondary
+      start: 21
+      end: 47
+  void f(void) { printf("%s\n", getenv("HOME")); }:
+    labels:
+    - source: printf("%s\n", getenv("HOME"))
+      style: primary
+      start: 15
+      end: 45
+    - source: printf
+      style: secondary
+      start: 15
+      end: 21
+    - source: '"%s\n"'
+      style: secondary
+      start: 22
+      end: 28
+    - source: getenv
+      style: secondary
+      start: 30
+      end: 36
+    - source: getenv("HOME")
+      style: secondary
+      start: 30
+      end: 44
+    - source: ("%s\n", getenv("HOME"))
+      style: secondary
+      start: 21
+      end: 45
+  void f(void) { syslog(LOG_INFO, "%s", getenv("X")); }:
+    labels:
+    - source: syslog(LOG_INFO, "%s", getenv("X"))
+      style: primary
+      start: 15
+      end: 50
+    - source: syslog
+      style: secondary
+      start: 15
+      end: 21
+    - source: '"%s"'
+      style: secondary
+      start: 32
+      end: 36
+    - source: getenv
+      style: secondary
+      start: 38
+      end: 44
+    - source: getenv("X")
+      style: secondary
+      start: 38
+      end: 49
+    - source: (LOG_INFO, "%s", getenv("X"))
+      style: secondary
+      start: 21
+      end: 50

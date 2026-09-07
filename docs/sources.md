@@ -408,3 +408,45 @@ Rule id -> CVE, advisory or normative documentation the claim rests on.
 - `sh-arithmetic-context-injection` — CWE-78; bash manual on arithmetic
   evaluation recursively expanding names and evaluating array subscripts;
   published bash arithmetic-injection write-ups (2023-2025)
+
+## Snuffleupagus history harvest
+
+Motive commits and hardening documentation from the Snuffleupagus PHP hardening
+module <https://github.com/jvoisin/snuffleupagus>, filtered from its 2017-2026
+commit history. The upstream commit is the motive; the claim each rule makes is
+fixed by its fixtures.
+
+- `c-snprintf-size-missing-nul` — CWE-193, CWE-787; Snuffleupagus
+  <https://github.com/jvoisin/snuffleupagus/commit/ca16e62>; `printf(3)` on the
+  return value excluding the terminating null byte
+  <https://man7.org/linux/man-pages/man3/printf.3.html>
+- `c-zend-allocator-family-mismatch` — CWE-762, CWE-590; Snuffleupagus
+  <https://github.com/jvoisin/snuffleupagus/commit/238c363>; PHP Internals Book
+  on the Zend memory manager, request versus persistent allocators
+  <https://www.phpinternalsbook.com/php7/memory_management/zend_memory_manager.html>;
+  `Zend/zend_alloc.h`
+  <https://github.com/php/php-src/blob/master/Zend/zend_alloc.h>
+- `c-strtok-r-first-call-null` — CWE-665, CWE-628; Snuffleupagus
+  <https://github.com/jvoisin/snuffleupagus/commit/6bd0baf>; `strtok_r(3)` on
+  the NULL continuation mode
+  <https://man7.org/linux/man-pages/man3/strtok.3.html>
+- `c-getenv-result-to-format-s` — CWE-476; Snuffleupagus
+  <https://github.com/jvoisin/snuffleupagus/commit/314b101>; `getenv(3)`
+  returning NULL for an unset variable
+  <https://man7.org/linux/man-pages/man3/getenv.3.html>; C17 §7.21.6.1 making a
+  null pointer argument to `%s` undefined
+- `php-curl-ssl-verification-disabled` — CWE-295; Snuffleupagus
+  <https://github.com/jvoisin/snuffleupagus/commit/cddd306>; libcurl
+  `CURLOPT_SSL_VERIFYPEER` and `CURLOPT_SSL_VERIFYHOST` documentation
+  <https://curl.se/libcurl/c/CURLOPT_SSL_VERIFYHOST.html>
+- `php-loose-array-membership` — CWE-697, CWE-1025; Snuffleupagus
+  <https://github.com/jvoisin/snuffleupagus/commit/e43b127> and
+  <https://github.com/jvoisin/snuffleupagus/commit/2950b59>; PHP comparison
+  juggling tables <https://www.php.net/manual/en/types.comparisons.php>
+- `php-chmod-world-writable` — CWE-732; Snuffleupagus default policy
+  <https://github.com/jvoisin/snuffleupagus/blob/master/config/default.rules>
+- `php-mail-dynamic-additional-params` — CWE-88, CWE-78; Snuffleupagus mail
+  hardening
+  <https://github.com/jvoisin/snuffleupagus/blob/master/doc/source/features.rst#mail-related-injections>;
+  RIPS research on the sendmail `-X` and `-C` argument-injection chain
+  <https://www.ripstech.com/php-security-calendar-2017/>

@@ -1,0 +1,132 @@
+id: c-zend-allocator-family-mismatch
+language: c
+severity: warning
+message: >-
+  A pointer obtained from one allocator family is released by the other. The
+  Zend request allocator (emalloc/ecalloc/erealloc/estrdup) and the libc
+  allocator (malloc/calloc/realloc/strdup) keep separate metadata, so handing a
+  Zend-owned block to free(), or a libc-owned block to efree(),
+  corrupts the heap the releasing allocator manages (CWE-762, CWE-590). Release
+  each block with the counterpart of the call that produced it.
+note: >-
+  The pairing is by identifier text inside one enclosing block: the same
+  variable must be initialized or assigned directly from a recognized allocator
+  call, then appear as a bare identifier argument of the mismatched release.
+  Allocator wrappers with other names, ownership handed to another function, and
+  a release in a different function are all outside the shape. A block that binds
+  the same name to both families — a pointer reused across an emalloc and a
+  malloc, or two sibling scopes each declaring their own p — is deliberately not
+  judged, because identifier text alone cannot say which allocation a given
+  release belongs to. A rebinding from anything that is not a recognized
+  allocator — p = NULL, p = other, p = helper(...), or an inner scope shadowing
+  the name with its own declaration — likewise ends the chain and is not judged.
+  The allocation must also appear in an earlier statement than the release: an
+  allocation made after a release does not own the block that release read. A project whose emalloc is a macro over
+  malloc, or one that deliberately transfers ownership between the two heaps, is
+  the routine dismissal.
+utils:
+  zend-alloc-call:
+    kind: call_expression
+    has:
+      field: function
+      regex: '^(emalloc|ecalloc|erealloc|estrdup|estrndup|safe_emalloc)$'
+  libc-alloc-call:
+    kind: call_expression
+    has:
+      field: function
+      regex: '^(malloc|calloc|realloc|strdup|strndup)$'
+  bound-to-zend-alloc:
+    any:
+      - kind: init_declarator
+        all:
+          - has: {field: declarator, stopBy: end, kind: identifier, pattern: $P}
+          - has: {field: value, matches: zend-alloc-call}
+      - kind: assignment_expression
+        all:
+          - has: {field: left, kind: identifier, pattern: $P}
+          - has: {field: right, matches: zend-alloc-call}
+  # A rebinding from anything that is not a recognized allocator ends the
+  # ownership chain: p = NULL, p = other, p = helper(...) all leave the block
+  # with no allocation this release can be paired against.
+  rebound-from-non-allocator:
+    any:
+      # An inner scope shadowing the name with its own declaration: identifier
+      # text can no longer say which binding a release reads.
+      - kind: init_declarator
+        all:
+          - has: {field: declarator, stopBy: end, kind: identifier, pattern: $P}
+          - not: {has: {field: value, matches: zend-alloc-call}}
+          - not: {has: {field: value, matches: libc-alloc-call}}
+      - kind: assignment_expression
+        all:
+          - has: {field: left, kind: identifier, pattern: $P}
+          - not: {has: {field: right, matches: zend-alloc-call}}
+          - not: {has: {field: right, matches: libc-alloc-call}}
+      - kind: update_expression
+        has: {field: argument, kind: identifier, pattern: $P}
+  bound-to-libc-alloc:
+    any:
+      - kind: init_declarator
+        all:
+          - has: {field: declarator, stopBy: end, kind: identifier, pattern: $P}
+          - has: {field: value, matches: libc-alloc-call}
+      - kind: assignment_expression
+        all:
+          - has: {field: left, kind: identifier, pattern: $P}
+          - has: {field: right, matches: libc-alloc-call}
+rule:
+  kind: call_expression
+  any:
+    # Zend-owned block released by libc free().
+    - all:
+        - has: {field: function, regex: '^free$'}
+        - has:
+            field: arguments
+            has: {kind: identifier, pattern: $P}
+        - inside:
+            stopBy: end
+            kind: compound_statement
+            all:
+              # Both families bound to this name in one block: the pairing is
+              # ambiguous, so decline rather than guess.
+              - not:
+                  has:
+                    stopBy: end
+                    matches: bound-to-libc-alloc
+              - not:
+                  has:
+                    stopBy: end
+                    matches: rebound-from-non-allocator
+        # The allocation must precede the release; a later one does not own it.
+        - inside:
+            stopBy: end
+            follows:
+              stopBy: end
+              has:
+                stopBy: end
+                matches: bound-to-zend-alloc
+    # libc-owned block released by the Zend allocator.
+    - all:
+        - has: {field: function, regex: '^efree$'}
+        - has:
+            field: arguments
+            has: {kind: identifier, pattern: $P}
+        - inside:
+            stopBy: end
+            kind: compound_statement
+            all:
+              - not:
+                  has:
+                    stopBy: end
+                    matches: bound-to-zend-alloc
+              - not:
+                  has:
+                    stopBy: end
+                    matches: rebound-from-non-allocator
+        - inside:
+            stopBy: end
+            follows:
+              stopBy: end
+              has:
+                stopBy: end
+                matches: bound-to-libc-alloc

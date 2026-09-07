@@ -113,7 +113,8 @@ metavariable-shaped text such as a dollar-prefixed uppercase name in a
 diagnostic, or assert the emitted JSON text explicitly; snapshots do not store
 the main message or note.
 `tests/test_diagnostics.py` checks the first invalid fixture of every rule against
-its declared message, note and severity, with an explicit 90-rule count guard.
+its declared message, note and severity, with an explicit rule-count guard that
+must be updated whenever a rule is added or removed.
 Keep diagnostic prose literal; intentional interpolation requires a corresponding
 emitted-text contract instead of silently changing that equality check.
 

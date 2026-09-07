@@ -1,0 +1,68 @@
+id: c-strtok-r-first-call-null
+language: c
+severity: warning
+message: >-
+  The only strtok_r call on this save pointer passes NULL as the string, while
+  the save pointer is merely initialized from the unparsed input. NULL selects
+  the continuation mode, in which strtok_r resumes from whatever the save
+  pointer already holds instead of starting a fresh tokenization, so the first
+  token is taken from an unowned state rather than from the input (CWE-665,
+  CWE-628). Pass the string itself to the first call and NULL only to the
+  subsequent ones.
+note: >-
+  The shape requires all of it in one enclosing block: the save pointer is
+  initialized or assigned from a bare identifier, it is passed by address as the
+  third argument, the first argument is the literal NULL, and no other strtok_r
+  call in that block passes a non-NULL first argument with the same save
+  pointer. A correct first call anywhere in the block therefore suppresses every
+  continuation call, which is the intended near miss. It cannot see a first call
+  made in another function or behind a helper, so a split parse loop is the
+  routine dismissal.
+utils:
+  saveptr-from-input:
+    any:
+      - kind: init_declarator
+        all:
+          - has: {field: declarator, stopBy: end, kind: identifier, pattern: $SAVE}
+          - has: {field: value, kind: identifier}
+      - kind: assignment_expression
+        all:
+          - has: {field: left, kind: identifier, pattern: $SAVE}
+          - has: {field: right, kind: identifier}
+  strtok-r-with-string:
+    kind: call_expression
+    all:
+      - has: {field: function, regex: '^strtok_r$'}
+      - has:
+          field: arguments
+          all:
+            - not: {has: {kind: 'null', nthChild: 1}}
+            - has:
+                kind: pointer_expression
+                nthChild: 3
+                has: {kind: identifier, pattern: $SAVE}
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^strtok_r$'
+    - has:
+        field: arguments
+        all:
+          - has: {kind: 'null', nthChild: 1}
+          - has:
+              kind: pointer_expression
+              nthChild: 3
+              has: {kind: identifier, pattern: $SAVE}
+    - inside:
+        stopBy: end
+        kind: compound_statement
+        all:
+          - has:
+              stopBy: end
+              matches: saveptr-from-input
+          - not:
+              has:
+                stopBy: end
+                matches: strtok-r-with-string

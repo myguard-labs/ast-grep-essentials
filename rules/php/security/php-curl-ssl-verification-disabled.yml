@@ -1,0 +1,67 @@
+id: php-curl-ssl-verification-disabled
+language: php
+severity: error
+message: >-
+  cURL certificate verification is turned off. With CURLOPT_SSL_VERIFYPEER
+  false the client accepts any certificate chain, and with CURLOPT_SSL_VERIFYHOST
+  0 it accepts a valid certificate issued for any other name, so an attacker on
+  the path presents their own certificate and reads or rewrites the whole
+  session (CWE-295). Leave verification on and fix the trust store with
+  CURLOPT_CAINFO or CURLOPT_CAPATH instead.
+note: >-
+  Matches a literal false, 0, "0" or '0' supplied to CURLOPT_SSL_VERIFYPEER or
+  CURLOPT_SSL_VERIFYHOST, either as the third positional argument of curl_setopt
+  or as an element of the options array given directly as curl_setopt_array's
+  second positional or options named argument. The safe values — true and 1 for
+  the peer option, 2 for the host option — do not match, and neither does a
+  value computed at runtime, a constant name in quotes, an array nested in
+  another option's value, nor an options array built in a separate statement and
+  passed by variable. CURLOPT_SSL_VERIFYHOST set to 1 is left outside the shape
+  because libcurl 7.66.0 and later treats it exactly like 2; only the 7.28.1 to
+  7.65.3 range rejected it, and neither behaviour weakens verification.
+rule:
+  any:
+    # curl_setopt($ch, CURLOPT_SSL_VERIFY*, false|0)
+    - kind: function_call_expression
+      all:
+        - has:
+            field: function
+            regex: '(?i)^\\?curl_setopt$'
+        - has:
+            field: arguments
+            all:
+              - has:
+                  kind: argument
+                  nthChild: 2
+                  regex: '(?i)^CURLOPT_SSL_VERIFY(PEER|HOST)$'
+              - has:
+                  kind: argument
+                  nthChild: 3
+                  regex: '(?i)^(false|0|"0"|''0'')$'
+    # curl_setopt_array($ch, [CURLOPT_SSL_VERIFY* => false|0, ...])
+    - kind: array_element_initializer
+      all:
+        - has:
+            nthChild: {position: 1, ofRule: {not: {kind: comment}}}
+            regex: '(?i)^CURLOPT_SSL_VERIFY(PEER|HOST)$'
+        - has:
+            nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+            regex: '(?i)^(false|0|"0"|''0'')$'
+        - inside:
+            stopBy: neighbor
+            kind: array_creation_expression
+            inside:
+              stopBy: neighbor
+              kind: argument
+              any:
+                - nthChild: 2
+                - has: {field: name, kind: name, regex: '^options$'}
+              inside:
+                stopBy: neighbor
+                kind: arguments
+                inside:
+                  stopBy: neighbor
+                  kind: function_call_expression
+                  has:
+                    field: function
+                    regex: '(?i)^\\?curl_setopt_array$'

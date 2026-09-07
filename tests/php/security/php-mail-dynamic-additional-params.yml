@@ -1,0 +1,29 @@
+id: php-mail-dynamic-additional-params
+valid:
+- '<?php mail($to, $s, $m, $h);'
+- '<?php mail($to, $s, $m);'
+- '<?php mail($to, $s, $m, $h, "-fbounce@example.test");'
+- "<?php mail($to, $s, $m, $h, '-fbounce@example.test');"
+- '<?php mail($to, $s, $m, $h, "");'
+- '<?php mb_send_mail($to, $s, $m, $h, "-fbounce@example.test");'
+- '<?php mail(to: $to, subject: $s, message: $m, additional_params: "-fx@example.test");'
+- "<?php mail($to, $s, $m, $h, <<<'T'\n-fbounce@example.test\nT);"
+- '<?php my_mail($to, $s, $m, $h, $p);'
+- '<?php mail_log($p);'
+- '<?php // mail($to, $s, $m, $h, $p);'
+- '<?php $s = "mail($to, $s, $m, $h, $p);";'
+invalid:
+- '<?php mail($to, $s, $m, $h, $p);'
+- '<?php mail($to, $s, $m, $h, "-f" . $from);'
+- '<?php mail($to, $s, $m, $h, "-f$from");'
+- '<?php mail($to, $s, $m, $h, escapeshellarg($p));'
+- '<?php mail($to, $s, $m, $h, $_GET["p"]);'
+- '<?php mail($to, $s, $m, $h, $this->params);'
+- '<?php mail($to, $s, $m, $h, $cfg->sender());'
+- '<?php mail($to, $s, $m, $h, $ok ? $a : $b);'
+- '<?php MAIL($to, $s, $m, $h, $p);'
+- '<?php \mail($to, $s, $m, $h, $p);'
+- '<?php mb_send_mail($to, $s, $m, $h, $p);'
+- '<?php mail(to: $to, subject: $s, message: $m, additional_params: $p);'
+- '<?php mail(additional_params: $p, to: $to, subject: $s, message: $m);'
+- "<?php mail($to, $s, $m, $h, <<<T\n-f$from\nT);"

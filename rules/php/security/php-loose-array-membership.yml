@@ -1,0 +1,83 @@
+id: php-loose-array-membership
+language: php
+severity: warning
+message: >-
+  An array membership test runs in loose mode. Without strict comparison PHP
+  applies juggling rules, so a string needle can equal a numeric element, "abc"
+  can equal 0 on older engines, and null can equal an empty string — an attacker
+  who controls the needle picks a value that satisfies the check without being
+  in the list, which turns an allowlist into a bypass (CWE-697, CWE-1025). Pass
+  true as the strict argument.
+note: >-
+  Matches in_array and array_search with no third argument, or with one that is
+  neither the literal true nor the literal 1, and array_keys when a search value
+  is supplied without one of those. The strict parameter is declared bool, so 1
+  coerces to true and is accepted. array_keys is judged only when a search value
+  is actually supplied — a second positional argument, or a named filter_value —
+  so a one-argument call and a call passing only other options by name compare
+  nothing and are outside the shape, as is a strict argument given by name. A strictness
+  flag computed at runtime matches because the matcher cannot read its value.
+  A haystack of uniform, non-attacker-controlled values where juggling cannot
+  change the answer is the routine dismissal.
+utils:
+  # Only a literal true or 1 as the WHOLE value suppresses. A ternary, a
+  # variable or a call is not a literal, and its false branch may be reachable.
+  literal-true:
+    any:
+      - kind: boolean
+        regex: '(?i)^true$'
+      - kind: integer
+        regex: '^1$'
+  strict-positional-true:
+    kind: argument
+    all:
+      - nthChild: 3
+      - not: {has: {field: name, kind: name}}
+      - has: {matches: literal-true}
+      - not: {has: {not: {matches: literal-true}}}
+  strict-named-true:
+    kind: argument
+    all:
+      - has:
+          field: name
+          kind: name
+          regex: '^strict$'
+      - has: {matches: literal-true}
+  not-strict:
+    all:
+      - not:
+          has:
+            field: arguments
+            has:
+              matches: strict-positional-true
+      - not:
+          has:
+            field: arguments
+            has:
+              matches: strict-named-true
+rule:
+  kind: function_call_expression
+  any:
+    # in_array()/array_search() always compare, so any non-strict call matches.
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?(in_array|array_search)$'
+        - matches: not-strict
+    # array_keys() compares only when a search value is supplied.
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?array_keys$'
+        # A comparison happens only when a search value is actually supplied:
+        # the second positional argument, or a named filter_value.
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              any:
+                - all:
+                    - nthChild: 2
+                    - not: {has: {field: name, kind: name}}
+                - has: {field: name, kind: name, regex: '^filter_value$'}
+        - matches: not-strict
