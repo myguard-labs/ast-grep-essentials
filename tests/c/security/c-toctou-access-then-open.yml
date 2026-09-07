@@ -8,8 +8,10 @@ valid:
   - 'void f(void) { /* if (access(path, 4)) return -1; open(path, 1); */ }'
   - 'const char *s = "access(path, W_OK); open(path, O_WRONLY);";'
   - 'int f(const char *path) { unlink(path); struct stat st; return stat(path, &st); }'
+  - 'void checker(const char *p) { if (access(p, 2) != 0) { return; } } void unrelated_maker(const char *p) { mkdir(p, 0755); }'
 invalid:
   - 'int f(const char *path) { if (access(path, 2) != 0) { return -1; } return open(path, 1); }'
+  - 'int f(const char *path) { if (access(path, 2) != 0) { return -1; } for (int i = 0; i < 3; i++) { log_attempt(i); if (i == 1) { return open(path, 1); } } return -1; }'
   - 'FILE *f(const char *path) { struct stat st; if (stat(path, &st) != 0) { return 0; } return fopen(path, "w"); }'
   - 'int f(const char *path) { struct stat st; if (lstat(path, &st) != 0) { return -1; } return unlink(path); }'
   - 'int f(const char *path, const char *to) { if (access(path, 4) != 0) { return -1; } return rename(path, to); }'

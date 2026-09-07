@@ -18,6 +18,14 @@ snapshots:
       style: secondary
       start: 97
       end: 101
+    - source: FILE *f(const char *path) { struct stat st; if (stat(path, &st) != 0) { return 0; } return fopen(path, "w"); }
+      style: secondary
+      start: 0
+      end: 110
+    - source: FILE *f(const char *path) { struct stat st; if (stat(path, &st) != 0) { return 0; } return fopen(path, "w"); }
+      style: secondary
+      start: 0
+      end: 110
     - source: stat
       style: secondary
       start: 48
@@ -34,14 +42,14 @@ snapshots:
       style: secondary
       start: 48
       end: 63
-    - source: stat(path, &st)
+    - source: if (stat(path, &st) != 0) { return 0; }
       style: secondary
-      start: 48
-      end: 63
-    - source: stat(path, &st)
+      start: 44
+      end: 83
+    - source: return fopen(path, "w");
       style: secondary
-      start: 48
-      end: 63
+      start: 84
+      end: 108
   FILE *f(const char *path, FILE *o) { struct stat st; if (euidaccess(path, 4) != 0) { return 0; } return freopen(path, "w", o); }:
     labels:
     - source: freopen(path, "w", o)
@@ -60,6 +68,14 @@ snapshots:
       style: secondary
       start: 112
       end: 116
+    - source: FILE *f(const char *path, FILE *o) { struct stat st; if (euidaccess(path, 4) != 0) { return 0; } return freopen(path, "w", o); }
+      style: secondary
+      start: 0
+      end: 128
+    - source: FILE *f(const char *path, FILE *o) { struct stat st; if (euidaccess(path, 4) != 0) { return 0; } return freopen(path, "w", o); }
+      style: secondary
+      start: 0
+      end: 128
     - source: euidaccess
       style: secondary
       start: 57
@@ -76,14 +92,64 @@ snapshots:
       style: secondary
       start: 57
       end: 76
-    - source: euidaccess(path, 4)
+    - source: if (euidaccess(path, 4) != 0) { return 0; }
       style: secondary
-      start: 57
-      end: 76
-    - source: euidaccess(path, 4)
+      start: 53
+      end: 96
+    - source: return freopen(path, "w", o);
       style: secondary
-      start: 57
-      end: 76
+      start: 97
+      end: 126
+  ? int f(const char *path) { if (access(path, 2) != 0) { return -1; } for (int i = 0; i < 3; i++) { log_attempt(i); if (i == 1) { return open(path, 1); } } return -1; }
+  : labels:
+    - source: open(path, 1)
+      style: primary
+      start: 134
+      end: 147
+    - source: open
+      style: secondary
+      start: 134
+      end: 138
+    - source: path
+      style: secondary
+      start: 139
+      end: 143
+    - source: path
+      style: secondary
+      start: 139
+      end: 143
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } for (int i = 0; i < 3; i++) { log_attempt(i); if (i == 1) { return open(path, 1); } } return -1; }
+      style: secondary
+      start: 0
+      end: 165
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } for (int i = 0; i < 3; i++) { log_attempt(i); if (i == 1) { return open(path, 1); } } return -1; }
+      style: secondary
+      start: 0
+      end: 165
+    - source: access
+      style: secondary
+      start: 30
+      end: 36
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: if (access(path, 2) != 0) { return -1; }
+      style: secondary
+      start: 26
+      end: 66
+    - source: for (int i = 0; i < 3; i++) { log_attempt(i); if (i == 1) { return open(path, 1); } }
+      style: secondary
+      start: 67
+      end: 152
   int f(const char *path) { if (access(path, 2) != 0) { return -1; } return chmod(path, 0600); }:
     labels:
     - source: chmod(path, 0600)
@@ -102,6 +168,14 @@ snapshots:
       style: secondary
       start: 80
       end: 84
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return chmod(path, 0600); }
+      style: secondary
+      start: 0
+      end: 94
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return chmod(path, 0600); }
+      style: secondary
+      start: 0
+      end: 94
     - source: access
       style: secondary
       start: 30
@@ -118,14 +192,14 @@ snapshots:
       style: secondary
       start: 30
       end: 45
-    - source: access(path, 2)
+    - source: if (access(path, 2) != 0) { return -1; }
       style: secondary
-      start: 30
-      end: 45
-    - source: access(path, 2)
+      start: 26
+      end: 66
+    - source: return chmod(path, 0600);
       style: secondary
-      start: 30
-      end: 45
+      start: 67
+      end: 92
   int f(const char *path) { if (access(path, 2) != 0) { return -1; } return chown(path, 0, 0); }:
     labels:
     - source: chown(path, 0, 0)
@@ -144,6 +218,14 @@ snapshots:
       style: secondary
       start: 80
       end: 84
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return chown(path, 0, 0); }
+      style: secondary
+      start: 0
+      end: 94
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return chown(path, 0, 0); }
+      style: secondary
+      start: 0
+      end: 94
     - source: access
       style: secondary
       start: 30
@@ -160,14 +242,14 @@ snapshots:
       style: secondary
       start: 30
       end: 45
-    - source: access(path, 2)
+    - source: if (access(path, 2) != 0) { return -1; }
       style: secondary
-      start: 30
-      end: 45
-    - source: access(path, 2)
+      start: 26
+      end: 66
+    - source: return chown(path, 0, 0);
       style: secondary
-      start: 30
-      end: 45
+      start: 67
+      end: 92
   int f(const char *path) { if (access(path, 2) != 0) { return -1; } return creat(path, 0600); }:
     labels:
     - source: creat(path, 0600)
@@ -186,6 +268,14 @@ snapshots:
       style: secondary
       start: 80
       end: 84
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return creat(path, 0600); }
+      style: secondary
+      start: 0
+      end: 94
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return creat(path, 0600); }
+      style: secondary
+      start: 0
+      end: 94
     - source: access
       style: secondary
       start: 30
@@ -202,14 +292,14 @@ snapshots:
       style: secondary
       start: 30
       end: 45
-    - source: access(path, 2)
+    - source: if (access(path, 2) != 0) { return -1; }
       style: secondary
-      start: 30
-      end: 45
-    - source: access(path, 2)
+      start: 26
+      end: 66
+    - source: return creat(path, 0600);
       style: secondary
-      start: 30
-      end: 45
+      start: 67
+      end: 92
   int f(const char *path) { if (access(path, 2) != 0) { return -1; } return mkdir(path, 0700); }:
     labels:
     - source: mkdir(path, 0700)
@@ -228,6 +318,14 @@ snapshots:
       style: secondary
       start: 80
       end: 84
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return mkdir(path, 0700); }
+      style: secondary
+      start: 0
+      end: 94
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return mkdir(path, 0700); }
+      style: secondary
+      start: 0
+      end: 94
     - source: access
       style: secondary
       start: 30
@@ -244,14 +342,14 @@ snapshots:
       style: secondary
       start: 30
       end: 45
-    - source: access(path, 2)
+    - source: if (access(path, 2) != 0) { return -1; }
       style: secondary
-      start: 30
-      end: 45
-    - source: access(path, 2)
+      start: 26
+      end: 66
+    - source: return mkdir(path, 0700);
       style: secondary
-      start: 30
-      end: 45
+      start: 67
+      end: 92
   int f(const char *path) { if (access(path, 2) != 0) { return -1; } return open(path, 1); }:
     labels:
     - source: open(path, 1)
@@ -270,6 +368,14 @@ snapshots:
       style: secondary
       start: 79
       end: 83
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return open(path, 1); }
+      style: secondary
+      start: 0
+      end: 90
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return open(path, 1); }
+      style: secondary
+      start: 0
+      end: 90
     - source: access
       style: secondary
       start: 30
@@ -286,14 +392,14 @@ snapshots:
       style: secondary
       start: 30
       end: 45
-    - source: access(path, 2)
+    - source: if (access(path, 2) != 0) { return -1; }
       style: secondary
-      start: 30
-      end: 45
-    - source: access(path, 2)
+      start: 26
+      end: 66
+    - source: return open(path, 1);
       style: secondary
-      start: 30
-      end: 45
+      start: 67
+      end: 88
   int f(const char *path) { if (access(path, 2) != 0) { return -1; } return rmdir(path); }:
     labels:
     - source: rmdir(path)
@@ -312,6 +418,14 @@ snapshots:
       style: secondary
       start: 80
       end: 84
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return rmdir(path); }
+      style: secondary
+      start: 0
+      end: 88
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return rmdir(path); }
+      style: secondary
+      start: 0
+      end: 88
     - source: access
       style: secondary
       start: 30
@@ -328,14 +442,14 @@ snapshots:
       style: secondary
       start: 30
       end: 45
-    - source: access(path, 2)
+    - source: if (access(path, 2) != 0) { return -1; }
       style: secondary
-      start: 30
-      end: 45
-    - source: access(path, 2)
+      start: 26
+      end: 66
+    - source: return rmdir(path);
       style: secondary
-      start: 30
-      end: 45
+      start: 67
+      end: 86
   int f(const char *path) { if (access(path, 2) != 0) { return -1; } return truncate(path, 0); }:
     labels:
     - source: truncate(path, 0)
@@ -354,6 +468,14 @@ snapshots:
       style: secondary
       start: 83
       end: 87
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return truncate(path, 0); }
+      style: secondary
+      start: 0
+      end: 94
+    - source: int f(const char *path) { if (access(path, 2) != 0) { return -1; } return truncate(path, 0); }
+      style: secondary
+      start: 0
+      end: 94
     - source: access
       style: secondary
       start: 30
@@ -370,14 +492,14 @@ snapshots:
       style: secondary
       start: 30
       end: 45
-    - source: access(path, 2)
+    - source: if (access(path, 2) != 0) { return -1; }
       style: secondary
-      start: 30
-      end: 45
-    - source: access(path, 2)
+      start: 26
+      end: 66
+    - source: return truncate(path, 0);
       style: secondary
-      start: 30
-      end: 45
+      start: 67
+      end: 92
   int f(const char *path) { if (eaccess(path, 2) != 0) { return -1; } return unlink(path); }:
     labels:
     - source: unlink(path)
@@ -396,6 +518,14 @@ snapshots:
       style: secondary
       start: 82
       end: 86
+    - source: int f(const char *path) { if (eaccess(path, 2) != 0) { return -1; } return unlink(path); }
+      style: secondary
+      start: 0
+      end: 90
+    - source: int f(const char *path) { if (eaccess(path, 2) != 0) { return -1; } return unlink(path); }
+      style: secondary
+      start: 0
+      end: 90
     - source: eaccess
       style: secondary
       start: 30
@@ -412,14 +542,14 @@ snapshots:
       style: secondary
       start: 30
       end: 46
-    - source: eaccess(path, 2)
+    - source: if (eaccess(path, 2) != 0) { return -1; }
       style: secondary
-      start: 30
-      end: 46
-    - source: eaccess(path, 2)
+      start: 26
+      end: 67
+    - source: return unlink(path);
       style: secondary
-      start: 30
-      end: 46
+      start: 68
+      end: 88
   int f(const char *path) { struct stat st; if (lstat(path, &st) != 0) { return -1; } return unlink(path); }:
     labels:
     - source: unlink(path)
@@ -438,6 +568,14 @@ snapshots:
       style: secondary
       start: 98
       end: 102
+    - source: int f(const char *path) { struct stat st; if (lstat(path, &st) != 0) { return -1; } return unlink(path); }
+      style: secondary
+      start: 0
+      end: 106
+    - source: int f(const char *path) { struct stat st; if (lstat(path, &st) != 0) { return -1; } return unlink(path); }
+      style: secondary
+      start: 0
+      end: 106
     - source: lstat
       style: secondary
       start: 46
@@ -454,14 +592,14 @@ snapshots:
       style: secondary
       start: 46
       end: 62
-    - source: lstat(path, &st)
+    - source: if (lstat(path, &st) != 0) { return -1; }
       style: secondary
-      start: 46
-      end: 62
-    - source: lstat(path, &st)
+      start: 42
+      end: 83
+    - source: return unlink(path);
       style: secondary
-      start: 46
-      end: 62
+      start: 84
+      end: 104
   int f(const char *path, const char *to) { if (access(path, 4) != 0) { return -1; } return rename(path, to); }:
     labels:
     - source: rename(path, to)
@@ -480,6 +618,14 @@ snapshots:
       style: secondary
       start: 97
       end: 101
+    - source: int f(const char *path, const char *to) { if (access(path, 4) != 0) { return -1; } return rename(path, to); }
+      style: secondary
+      start: 0
+      end: 109
+    - source: int f(const char *path, const char *to) { if (access(path, 4) != 0) { return -1; } return rename(path, to); }
+      style: secondary
+      start: 0
+      end: 109
     - source: access
       style: secondary
       start: 46
@@ -496,11 +642,11 @@ snapshots:
       style: secondary
       start: 46
       end: 61
-    - source: access(path, 4)
+    - source: if (access(path, 4) != 0) { return -1; }
       style: secondary
-      start: 46
-      end: 61
-    - source: access(path, 4)
+      start: 42
+      end: 82
+    - source: return rename(path, to);
       style: secondary
-      start: 46
-      end: 61
+      start: 83
+      end: 107
