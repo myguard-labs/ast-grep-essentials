@@ -271,6 +271,60 @@ pipeline-shape claim whose safe variants are numerous, and `read -r` is already
   Suppression that is wrong in the unsafe direction is worse than no
   suppression at all for a security lens, so the extension is not shipped; the
   gap is documented in `limitations.md` instead.
+- `powershell-foreach-object-dynamic-process` — the `-Process` half of the
+  InjectionHunter dynamic-dispatch candidate, for `ForEach-Object -Process
+  $body`. Rejected on the parameter's own binding contract: `-Process` is typed
+  `[scriptblock]` and refuses a string outright — `@("a") | ForEach-Object
+  -Process "Write-Output hi"` raises `ParameterBindingException`, and an
+  explicit `[string]` cast fails the same way with "Cannot convert ... of type
+  System.String". So a variable bound there already holds a compiled script
+  block, and passing one is the idiomatic way to parameterise a pipeline
+  (`function Invoke-Each { param([scriptblock]$Body) $items | ForEach-Object
+  -Process $Body }`). The only way to reach `-Process` from text is
+  `[scriptblock]::Create`, which `powershell-dynamic-scriptblock-api` already
+  reports, so the rule would add no coverage and fire on correct code.
+- `powershell-foreach-object-positional-member` — the same candidate's
+  positional form, `$objs | ForEach-Object $v`. Rejected because the shape is
+  type-dependent, not syntactic: verified on pwsh 7 that a *string* in that
+  position binds to `-MemberName` and dispatches (`$v = "GetType"` prints
+  `String`), while a *script block* in the identical position binds to
+  `-Process` and runs as a pipeline body (`$v = { $_.ToUpper() }` prints `A`).
+  The matcher cannot read which, so the rule would either miss the sink or
+  report every parameterised pipeline. Only the explicitly named `-MemberName`
+  form is unambiguous, and that ships as
+  `powershell-foreach-object-dynamic-member`.
+- `powershell-dynamic-member-access` — a rule for a non-constant property or
+  method name, `$o.$prop` and `$o.$name($arg)`. The grammar does expose it
+  cleanly: `member_name` holds the variable, so a matcher is easy to write.
+  Probed over the shapes it would meet, and every one is the language's normal
+  reflection idiom rather than a defect: `foreach ($k in $hash.Keys) { $obj.$k
+  }`, `$row.$columnName`, `$config.$env:COMPUTERNAME`, `$props | ForEach-Object
+  { $obj.$_ }`. The invocation half is no better — `$handlers[$k].$method()` and
+  `foreach ($t in $tests) { $suite.$t() }` are a dispatch table and a test
+  runner, which is precisely what the syntax exists for. Separating an
+  attacker-chosen name from a table lookup needs the name's origin, which is
+  dataflow. Naked dynamic access is also not an execution sink on its own:
+  `$o.$prop` reads a property. The dispatch-sink residue — a cmdlet that
+  *invokes* the named member — ships instead as
+  `powershell-foreach-object-dynamic-member`.
+- `powershell-hand-rolled-quote-escape` — a rule for hand-rolled escaping such
+  as `$v -replace "'", "''"`, on the theory that
+  `[System.Management.Automation.Language.CodeGeneration]::EscapeSingleQuotedStringContent`
+  is the correct API. Rejected twice over. First, the shape is not a defect:
+  doubling `'` for a single-quoted PowerShell string is exactly what
+  `EscapeSingleQuotedStringContent` does, so the hand-rolled form is *correct*,
+  and a rule cannot claim otherwise without knowing the destination grammar.
+  Second, `-replace` is one `comparison_expression` kind used for all string
+  rewriting, and a probe could not separate the escaping intent from ordinary
+  correct code — `$field -replace '"', '""'` (CSV quoting), `$name -replace
+  "[^a-zA-Z0-9]", "_"` (slug sanitising) and `$p -replace '\\', '/'` (path
+  normalising) are indistinguishable from it. The defect only exists once the
+  result reaches an interpreter, and that sink is a separate statement joined by
+  a variable. Verified redundant: scanning `Invoke-Expression ("Get-Item '" +
+  ($p -replace "'","''") + "'")` and the two-statement `$cmd = ...` /
+  `Invoke-Expression $cmd` form with the shipped pack already reports both
+  through `powershell-invoke-expression-dynamic-argument`, so the escaping
+  expression adds no finding the pack does not already make.
 - `powershell-cmd-argument-passing` — a rule for `cmd /c dir $path`, where a
   variable follows the invoked program rather than being part of a quoted
   command string. Probed against the same corpus as

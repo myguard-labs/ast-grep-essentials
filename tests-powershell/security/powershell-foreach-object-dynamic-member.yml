@@ -1,0 +1,61 @@
+id: powershell-foreach-object-dynamic-member
+valid:
+# A literal member name is fixed by the source: the preserve case.
+- '$objs | ForEach-Object -MemberName Trim'
+- "$objs | ForEach-Object -MemberName 'Trim'"
+- '$objs | ForEach-Object -MemberName "Trim"'
+- '$objs | ForEach-Object -MemberName Trim -ArgumentList $chars'
+- '$objs | ForEach-Object -m Trim'
+# A script block bound to -MemberName is not interpolated into a name by the
+# parent: the cmdlet coerces the block to a string and looks for a member of
+# that name, so the variables inside it never choose a member. Excluding it
+# structurally is what stops the dynamic test descending into the block.
+- '$objs | ForEach-Object -MemberName { $_.$dynamic }'
+- '$objs | ForEach-Object -m { $_.$dynamic }'
+# Script-block ForEach-Object, the ordinary form, whatever it contains.
+- '$objs | ForEach-Object { $_.Name }'
+- '$objs | ForEach-Object -Process { $_.$method }'
+- '$objs | ForEach-Object -Process { & $tool $arg }'
+- '$objs | ForEach-Object -Begin { $n = 0 } -Process { $n++ } -End { $n }'
+# -Process refuses a string, so a variable bound there is already a compiled
+# script block; passing one is the idiomatic way to parameterise a pipeline.
+- '$objs | ForEach-Object -Process $body'
+- '$objs | ForEach-Object -Process $sb -ArgumentList $args'
+# A positional argument binds to -MemberName for a string and to -Process for
+# a script block, so the same text is a sink or safe iteration depending on a
+# runtime type. Excluded on purpose.
+- '$objs | ForEach-Object $action'
+- '$objs | ForEach-Object $sb'
+# Parameters that decide no dispatch.
+- '$objs | ForEach-Object -MemberName Trim -ErrorAction $pref'
+- '$objs | ForEach-Object -Parallel { $_.Name } -ThrottleLimit $n'
+# The foreach STATEMENT is a different node kind, not a command.
+- 'foreach ($x in $list) { $x.$m }'
+# Dynamic member access with no dispatch cmdlet is not this rule's shape.
+- '$obj.$columnName'
+- '$suite.$t()'
+# Other cmdlets that take a -MemberName-like parameter.
+- '$objs | Select-Object -Property $name'
+- '$objs | Where-Object -Property $p -EQ $v'
+# The cmdlet name only in a comment or a string.
+- '# $objs | ForEach-Object -MemberName $method'
+- '$doc = "$objs | ForEach-Object -MemberName $method"'
+# Parser-error control.
+- '$objs | ForEach-Object -MemberName ($method'
+invalid:
+# A variable chooses the member that executes.
+- '$objs | ForEach-Object -MemberName $method'
+- '$objs | foreach -MemberName $method'
+- '$objs | % -MemberName $method'
+- '$objs | ForEach-Object -membername $method'
+# Every unambiguous prefix binds to -MemberName.
+- '$objs | ForEach-Object -m $method'
+- '$objs | ForEach-Object -mem $method'
+- '$objs | ForEach-Object -member $method'
+# An interpolating string assembles the name at runtime.
+- '$objs | ForEach-Object -MemberName "$prefix$suffix"'
+# A subexpression and a parenthesised invocation both produce it.
+- '$objs | ForEach-Object -MemberName $($m)'
+- '$objs | ForEach-Object -MemberName (Get-MemberName)'
+# The argument list is attacker-supplied alongside the name.
+- '$objs | ForEach-Object -MemberName $method -ArgumentList $userArgs'

@@ -485,3 +485,12 @@ fixed by its fixtures.
   Microsoft guidance on passing arguments to native commands as separate
   arguments rather than as a shell string
   <https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/native-commands-arguments?view=powershell-7.5>
+- `powershell-foreach-object-dynamic-member` — CWE-94, CWE-470; PowerShell
+  `InjectionHunter` dynamic-dispatch lens; the `ForEach-Object` reference for
+  the `-MemberName` parameter set, which resolves the supplied name against
+  each pipeline object and invokes the member with `-ArgumentList`
+  <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/foreach-object?view=powershell-7.5>;
+  `about_Parameters` for binding by unambiguous prefix, which is what makes
+  `-m` through `-membername` all reach `-MemberName` while no other
+  `ForEach-Object` or common parameter begins with `m`
+  <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parameters?view=powershell-7.5>

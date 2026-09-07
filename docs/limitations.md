@@ -1417,6 +1417,25 @@ rejected and is recorded in `rejected-candidates.md`.
   syntax-only matcher does not have and which would have to be maintained per
   cmdlet. The rule therefore treats an argument following any parameter as that
   parameter's value.
+- `powershell-foreach-object-dynamic-member` matches only the **explicitly
+  named** `-MemberName` parameter, never the positional form
+  `$objs | ForEach-Object $v`. The positional shape is genuinely a dispatch
+  sink when `$v` is a string — verified on pwsh 7, where `$v = "GetType"` makes
+  `@("a") | ForEach-Object $v` invoke the member and report `String` — but the
+  identical source text with `$v = { $_.ToUpper() }` binds to `-Process`
+  instead and runs as an ordinary pipeline body. Which one happens is decided
+  by the runtime type of the value, not by anything in the source, so the
+  matcher cannot separate the sink from the idiom and the positional form is
+  refused rather than reported. The named form has no such ambiguity in either
+  direction: `-Process` rejects a string with a `ParameterBindingException`,
+  and `-MemberName` treats whatever it receives as a member name.
+- `powershell-foreach-object-dynamic-member` reports the dynamic member name
+  and does not model **which member could be reached**. It cannot tell a name
+  drawn from a small internal allowlist from one taken off the wire, because
+  the origin of the value is dataflow. The finding stands either way: the
+  remedy — an explicit map from accepted input to a fixed member, so the set of
+  members that can execute is written in the source — is correct whether or not
+  the current value happens to be safe.
 - Both `powershell-native-shell-dynamic-command` and
   `powershell-add-type-dynamic-source` treat **any script block** bound to the
   sink argument as constant, whether or not it contains variables. A script

@@ -1,0 +1,105 @@
+id: powershell-foreach-object-dynamic-member
+language: powershell
+severity: error
+message: >-
+  ForEach-Object is being asked to invoke a member whose name is not a
+  constant. The -MemberName parameter is not a projection over data: the
+  cmdlet resolves the name against every object that reaches it and calls
+  the member it finds, passing whatever -ArgumentList holds. So the value
+  bound there chooses which method executes, and an attacker who influences
+  it chooses the code that runs with the caller's privileges -- the same
+  class of defect as building a command string and handing it to an
+  interpreter (CWE-94, CWE-470). The reachable surface is not limited to the
+  members the author had in mind: every public method of every type that
+  flows down the pipeline is a candidate, so a name such as GetType opens
+  reflection onto the whole runtime. Dispatch on a value you do not control
+  through an explicit map from accepted input to a fixed member, or branch on
+  it with a switch, so the set of members that can execute is written in the
+  source rather than supplied at runtime.
+note: >-
+  Matches a ForEach-Object command -- under that name or its foreach and %
+  aliases, in any casing -- whose -MemberName argument is dynamic. The
+  argument is the element following the parameter across a
+  command_argument_sep, because command_elements is flat and a parameter's
+  value is its sibling rather than its child. It is dynamic when it contains
+  a variable, a subexpression, or a parenthesised invocation whose output
+  becomes the name. The parameter regex covers -m through -membername:
+  PowerShell binds by unambiguous prefix and no other ForEach-Object
+  parameter, including the common parameters, begins with m, so every one of
+  those prefixes reaches -MemberName and none of them is shared with a
+  different parameter. This is the distinction that kept the -EncodedCommand
+  candidate out, where -Enc collides with -Encoding.
+  The rule is deliberately anchored to the explicitly named parameter. A
+  POSITIONAL argument is excluded even though a string in that position also
+  binds to -MemberName, because a script block in the same position binds to
+  -Process instead: `$objs | ForEach-Object $v` invokes the member named by
+  $v when $v is a string and runs $v as a pipeline body when it is a script
+  block, so the identical source text is a dispatch sink or ordinary
+  parameterised iteration depending on a runtime type the matcher cannot
+  read. -Process itself is likewise not matched: it refuses a string
+  outright, so a variable bound there already holds a compiled script block,
+  and passing one is the idiomatic way to parameterise a pipeline. Building a
+  script block from text requires [scriptblock]::Create, which
+  powershell-dynamic-scriptblock-api reports. A literal member name --
+  ForEach-Object -MemberName Trim, or the same name quoted -- is not matched,
+  because the member that executes is then fixed by the source. A script
+  block argument is excluded structurally rather than by inspecting its
+  contents, so a variable used inside one does not make the enclosing call
+  dynamic. The rule performs no taint tracking and does not establish that
+  the name is attacker-influenced; it establishes that the executed member is
+  not determined by the source under review.
+rule:
+  kind: command
+  all:
+    - has:
+        field: command_name
+        regex: '(?i)^(ForEach-Object|foreach|%)$'
+    # `command_elements` is flat, so the value bound to `-MemberName` is not a
+    # child of the parameter node but the sibling that follows it across a
+    # `command_argument_sep` -- the same shape the native-shell rule relies on.
+    - has:
+        field: command_elements
+        has:
+          all:
+            - follows:
+                kind: command_argument_sep
+                follows:
+                  # Spelled out rather than written as a nested-optional regex
+                  # so the boundary stays reviewable. Every prefix from -m to
+                  # the full spelling binds to -MemberName: verified against
+                  # `(Get-Command ForEach-Object).Parameters`, where no other
+                  # parameter -- neither the cmdlet's own nor a common one --
+                  # starts with `m`. That is the difference from the rejected
+                  # -EncodedCommand candidate, whose short forms collide with
+                  # -Encoding.
+                  kind: command_parameter
+                  regex: '(?i)^-(m|me|mem|memb|membe|member|membern|memberna|membernam|membername)$'
+            # A script-block argument is excluded structurally. Under
+            # `stopBy: end` the dynamic test below would otherwise descend into
+            # a literal `{ ... }` block and match an ordinary variable in the
+            # statements inside it, reporting a call whose member name is not
+            # dynamic at all.
+            - not:
+                has:
+                  kind: script_block_expression
+            # Matching the inner kinds rather than the enclosing string node is
+            # what keeps a constant member name out: a single-quoted string and
+            # a non-interpolating double-quoted string carry neither a variable
+            # nor a subexpression, while `"$prefix$suffix"` carries both.
+            - has:
+                stopBy: end
+                any:
+                  - kind: variable
+                  - kind: sub_expression
+                  # A bare `command` under `stopBy: end` is not by itself a
+                  # dynamic value -- it also matches the ordinary command nodes
+                  # inside a script block. This alternative exists for a
+                  # PARENTHESISED invocation whose OUTPUT becomes the member
+                  # name, as in `-MemberName (Get-Method)`, and the grammar
+                  # marks exactly that shape with a `parenthesized_expression`
+                  # ancestor. `$( ... )` needs no entry because the parser gives
+                  # it its own `sub_expression` node, matched above.
+                  - kind: command
+                    inside:
+                      stopBy: end
+                      kind: parenthesized_expression
