@@ -485,6 +485,16 @@ fixed by its fixtures.
   Microsoft guidance on passing arguments to native commands as separate
   arguments rather than as a shell string
   <https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/native-commands-arguments?view=powershell-7.5>
+- `powershell-native-shell-nested-shell-argument` — CWE-78, CWE-88; the same
+  `cmd.exe`, `powershell.exe` and `pwsh` command-line references as
+  `powershell-native-shell-dynamic-command`, read for the complementary
+  property: `/c` and `/k` take the remainder of the line as a command line cmd
+  parses itself, and `-Command` takes the remainder as a script the host
+  parses, so when the program invoked in that slot is itself one of those
+  shells the remaining arguments are parsed a second time rather than delivered
+  as argv data
+  <https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/cmd>;
+  <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_pwsh>
 - `powershell-foreach-object-dynamic-member` — CWE-94, CWE-470; PowerShell
   `InjectionHunter` dynamic-dispatch lens; the `ForEach-Object` reference for
   the `-MemberName` parameter set, which resolves the supplied name against

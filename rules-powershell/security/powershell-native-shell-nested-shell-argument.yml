@@ -1,0 +1,206 @@
+id: powershell-native-shell-nested-shell-argument
+language: powershell
+severity: error
+message: >-
+  A native shell is being asked to run a SECOND shell, and a value that is not
+  a constant sits in that second shell's command line. cmd parses everything
+  after /c or /k as one command line, and the PowerShell hosts parse everything
+  after -Command as one script; the invoked program here is itself cmd,
+  powershell or pwsh, so whatever follows it is parsed again by a shell rather
+  than delivered to a program as argv data. Separate-argument passing is only
+  safe while the callee treats its arguments as data -- a shell does not, so
+  the usual remedy does not apply, and every metacharacter in the value is live
+  in at least one of the two parsers (CWE-78, CWE-88). Quoting does not help:
+  PowerShell's quoting is consumed before the outer shell parses, and the outer
+  shell's quoting is consumed before the inner one does. Drop the wrapper and
+  invoke the real target program directly, passing each value as its own
+  argument through the call operator, Start-Process -ArgumentList, or an
+  argument array.
+note: >-
+  Matches a command whose name is cmd, powershell or pwsh, with or without a
+  .exe suffix, in any casing, where the argument DIRECTLY following an
+  execution switch -- cmd's /c or /k, or -Command, -EncodedCommand or a
+  documented abbreviation on the PowerShell hosts -- is itself the name of one
+  of those same shells, and some LATER argument is dynamic. It is dynamic when
+  it contains a variable, a subexpression, or a parenthesised invocation whose
+  output becomes the value. This is the deliberately bounded complement to
+  powershell-native-shell-dynamic-command, which inspects only the argument in
+  the command-string slot. A dynamic value in a later argument is normally
+  ordinary separate-argument passing -- cmd /c dir $path hands $path to dir as
+  data, and that is precisely the remedy both rules recommend, so reporting it
+  would make the recommended fix a finding. The discriminator is the CALLEE: a
+  PowerShell-source lens cannot tell whether an arbitrary program re-invokes a
+  shell, but when the invoked program is itself a known re-parsing shell that
+  is knowable from the source alone, and the trailing value demonstrably
+  reaches a second shell parser. The callee anchor is IMMEDIATE by design: the
+  nested shell must be the program the execution switch invokes, so
+  cmd /c wrapper.bat cmd /c $x is out -- what wrapper.bat does with its
+  arguments is not determined by this source. That bound holds under repeated
+  shell tokens too, because the matched execution switch is itself anchored to
+  the outer command's switch slot: command_elements is flat, so without that
+  anchor a later /c cmd pair could stand in for the outer one and
+  cmd /c wrapper.bat cmd /c cmd /c $x would match on the SECOND pair. Once a
+  bare token occupies the invoked-program slot, every switch after it belongs
+  to that program's command line. A bare token that is merely the VALUE of a
+  preceding value-consuming host option does not occupy that slot: the guard
+  carries an explicit table of the documented value-taking options from
+  about_Pwsh and about_PowerShell_exe (-ExecutionPolicy, -ConfigurationName,
+  -ConfigurationFile, -CustomPipeName, -WorkingDirectory, -SettingsFile,
+  -InputFormat, -OutputFormat, -WindowStyle, -PSConsoleFile, -Version, with the
+  7.x abbreviations), so
+  powershell -ExecutionPolicy Bypass -Command cmd /c $x is reported. The
+  payload-consuming switches -Command, -EncodedCommand, -EncodedArguments,
+  -CommandWithArgs and -File are excluded from that table on purpose: what
+  follows them belongs to the payload, not to the host, so a bare token after
+  one of them must still close the slot. The outer switch table is also narrower than
+  the sibling's: it carries /c, /k and -Command with its abbreviations, but not
+  the -EncodedCommand spellings, because that switch consumes a base64-encoded
+  script and can never be followed by a literal shell name and its arguments.
+  -EncodedCommand on the NESTED shell is unaffected and still reported. A script-block argument is
+  excluded for the same reason as in the sibling rule: the parent does not
+  interpolate it. A constant nested invocation such as cmd /c cmd /c dir stays
+  out because there is no value the source under review fails to determine, and
+  a non-shell callee such as cmd /c git log $ref stays out because git does not
+  re-parse its arguments as a command line. Where the value really is a
+  hardcoded constant reaching a variable-free path the finding still stands,
+  because the correct edit is to remove the second shell rather than to keep
+  two parsers on the path.
+rule:
+  kind: command
+  all:
+    - has:
+        field: command_name
+        regex: '(?i)^(cmd|cmd\.exe|powershell|powershell\.exe|pwsh|pwsh\.exe)$'
+    # `command_elements` is flat: an execution switch, the program it invokes
+    # and that program's own arguments are all SIBLINGS separated by
+    # `command_argument_sep`, not a nested subtree. So the chain below reads
+    # backwards from a dynamic argument: it follows a separator, which follows
+    # the nested shell's name, which follows a separator, which follows the
+    # execution switch. `stopBy: end` appears only on the outermost hop, which
+    # lets the dynamic value sit anywhere AFTER the nested shell name; every
+    # inner hop is immediate, which is what pins the nested shell to the slot
+    # the execution switch invokes.
+    - has:
+        field: command_elements
+        has:
+          all:
+            # Same script-block exclusion as the sibling rule, and
+            # non-recursive for the same reason: the parent does not
+            # interpolate a script-block argument, so the child evaluates any
+            # variable inside it in its own scope where the parent's binding
+            # does not exist. The argument element is a `unary_expression`
+            # whose direct child is `script_block_expression`, so excluding
+            # that child is the structural discriminator and it also stops
+            # `variable` and `sub_expression` from reaching inside the block
+            # under `stopBy: end`.
+            - not:
+                has:
+                  kind: script_block_expression
+            # Identical dynamic test to the sibling rule, including the
+            # `parenthesized_expression` anchor on the `command` alternative: a
+            # bare `command` under `stopBy: end` also matches the ordinary
+            # statements inside a literal script block, so the ancestor anchor
+            # is what keeps that alternative to a producing invocation whose
+            # OUTPUT becomes the value.
+            - has:
+                stopBy: end
+                any:
+                  - kind: variable
+                  - kind: sub_expression
+                  - kind: command
+                    inside:
+                      stopBy: end
+                      kind: parenthesized_expression
+            - follows:
+                stopBy: end
+                kind: command_argument_sep
+                follows:
+                  # The nested shell as the INVOKED PROGRAM. The parser reports
+                  # it as a generic_token, not a command_name, because only the
+                  # outer command has a command_name field.
+                  kind: generic_token
+                  regex: '(?i)^(cmd|cmd\.exe|powershell|powershell\.exe|pwsh|pwsh\.exe)$'
+                  follows:
+                    kind: command_argument_sep
+                    follows:
+                      all:
+                        - any:
+                            # cmd's /c and /k are generic_token, not
+                            # parameters: a leading slash is not PowerShell
+                            # parameter syntax.
+                            - kind: generic_token
+                              regex: '^/[ckCK]$'
+                            # The host command-string switches, spelled out
+                            # rather than nested-optional so the boundary stays
+                            # reviewable. -ex is absent on purpose (it
+                            # abbreviates -ExecutionPolicy), and there is no
+                            # -Encoding host switch. The -EncodedCommand
+                            # spellings the sibling rule carries are absent
+                            # here by construction: that switch consumes a
+                            # base64-encoded script, so a literal shell name
+                            # and its arguments can never follow it. Accepting
+                            # it on the OUTER anchor would only admit shapes
+                            # that cannot occur.
+                            - kind: command_parameter
+                              regex: '(?i)^-(c|co|com|comm|comma|comman|command)$'
+                        # Anchor the execution switch to the OUTER command's
+                        # own switch slot. `command_elements` is flat, so
+                        # without this a repeated `/c cmd` pair later in the
+                        # line satisfies the chain even though the program the
+                        # outer switch actually invokes is something else:
+                        # `cmd /c wrapper.bat cmd /c cmd /c $x` matched the
+                        # SECOND pair. Everything preceding a genuine outer
+                        # execution switch is a switch itself; the first bare
+                        # token is the invoked program, and any execution
+                        # switch after it belongs to that program's command
+                        # line, not to the outer shell's.
+                        - not:
+                            follows:
+                              stopBy: end
+                              not:
+                                any:
+                                  - kind: command_argument_sep
+                                  - kind: command_parameter
+                                  - kind: generic_token
+                                    regex: '^[-/]'
+                                  # A bare token that is the VALUE of a
+                                  # preceding value-taking host option is not
+                                  # the invoked program, so it must not close
+                                  # the switch slot. `Bypass` in
+                                  # `powershell -ExecutionPolicy Bypass
+                                  # -Command cmd /c $x` is such a value, and
+                                  # without this alternative that common
+                                  # malicious shape was a false negative. The
+                                  # table below is the documented
+                                  # value-consuming host options from
+                                  # about_Pwsh (7.x) and about_PowerShell_exe
+                                  # (5.1), spelled out rather than written as
+                                  # a nested-optional regex so the boundary
+                                  # stays reviewable, and restricted to
+                                  # options that consume an OPTION VALUE.
+                                  # -Command, -EncodedCommand,
+                                  # -EncodedArguments, -CommandWithArgs and
+                                  # -File are excluded on purpose: they
+                                  # consume a script or command payload, after
+                                  # which the rest of the line belongs to that
+                                  # payload rather than to the host, so a bare
+                                  # token following one of them must keep
+                                  # closing the slot.
+                                  - kind: generic_token
+                                    follows:
+                                      kind: command_argument_sep
+                                      follows:
+                                        kind: command_parameter
+                                        # 7.x abbreviations come from the
+                                        # about_Pwsh headings (-ex|-ep,
+                                        # -inp|-if, -o|-of, -w, -wd|-wo,
+                                        # -config, -settings); 5.1 documents
+                                        # no abbreviations. -Version is
+                                        # listed because 5.1 documents it as
+                                        # taking a version value, even though
+                                        # 7.x makes it a pure switch; the
+                                        # permissive reading only affects
+                                        # `powershell -Version <token>`, where
+                                        # 7.x ignores everything after it
+                                        # anyway.
+                                        regex: '(?i)^-(executionpolicy|ex|ep|configurationname|config|configurationfile|custompipename|workingdirectory|wd|wo|settingsfile|settings|inputformat|inp|if|outputformat|of|o|windowstyle|w|psconsolefile|version)$'

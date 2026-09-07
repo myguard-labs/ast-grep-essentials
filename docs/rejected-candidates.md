@@ -334,6 +334,26 @@ pipeline-shape claim whose safe variants are numerous, and `read -r` is already
   risk — the invoked program re-parsing its own argument — is a property of
   that program, not of the PowerShell source, and a PowerShell-source lens
   cannot distinguish `dir` from a wrapper that re-invokes a shell.
+  The general shape has now been raised and refuted three times, twice by
+  review of `powershell-native-shell-dynamic-command` (PR #14, rounds 1 and 2)
+  and once again on the same grounds during the follow-up sweep. The premise is
+  correct each time — cmd genuinely parses its whole remaining command line —
+  but the conclusion does not follow, because the value only becomes live if
+  the callee re-parses it, and for the overwhelmingly common callee it does
+  not. Reporting the general shape would report the very remedy both native
+  shell rules recommend.
+  **A bounded subset of it did ship**, as
+  `powershell-native-shell-nested-shell-argument`. The discriminator is the
+  CALLEE, which is the one part of the residual risk a PowerShell-source lens
+  can decide: when the program the execution switch invokes is itself `cmd`,
+  `powershell` or `pwsh`, a trailing dynamic value demonstrably reaches a
+  second shell parser, and that is knowable from the source alone. So
+  `cmd /c cmd /c $x` and `cmd /c powershell -Command $x` are reported while
+  `cmd /c dir $path` and `cmd /c git log $ref` remain out, and the callee
+  anchor is immediate — `cmd /c wrapper.bat cmd /c $x` stays out, because what
+  `wrapper.bat` does with its arguments is exactly the undecidable part. That
+  bound is what separates the shipped rule from this rejected general shape;
+  the rejection stands for everything outside it.
 - `powershell-splatted-transport-bypass` — the splat half of the
   transport-verification candidate, intended to flag
   `$p = @{ SkipCertificateCheck = $true }` followed by

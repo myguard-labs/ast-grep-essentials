@@ -1467,7 +1467,63 @@ rejected and is recorded in `rejected-candidates.md`.
   `powershell` token in the `command_name` field. It also treats
   `cmd /c dir $path` as argument passing rather than a command string, which is
   correct for the common case but wrong where the invoked program itself
-  re-parses its argument.
+  re-parses its argument. The decidable part of that residual is covered by
+  `powershell-native-shell-nested-shell-argument`; the rest stays uncovered on
+  purpose.
+- `powershell-native-shell-nested-shell-argument` is bounded by its CALLEE
+  anchor, and the anchor is immediate. It reports a trailing dynamic value only
+  when the program the execution switch invokes is literally `cmd`,
+  `powershell` or `pwsh` (with or without `.exe`, any casing) in the slot
+  directly after that switch. So `cmd /c cmd /c $x` is reported, while
+  `cmd /c wrapper.bat cmd /c $x` is not: whether `wrapper.bat` passes its
+  arguments on to a shell is a property of that program, not of the PowerShell
+  source, and that is precisely the undecidable residual the general
+  `cmd /c dir $path` candidate was rejected for. The same name-only matching
+  limitation as its sibling applies to the nested position too — a full path
+  such as `cmd /c C:\Windows\System32\cmd.exe /c $x`, or a nested shell
+  reached through a call operator, carries the same risk and is not matched.
+  A dynamic value that PRECEDES the nested shell name (`cmd /c $x cmd /c dir`)
+  is also out: there the shell name is data in the outer command line rather
+  than the program a second parser runs. The immediate-callee bound holds under
+  repeated shell tokens as well: the matched execution switch is anchored to the
+  outer command's own switch slot, so once a bare token has taken the
+  invoked-program slot every later switch belongs to that program's command line
+  and cannot stand in for the outer one. `cmd /c wrapper.bat cmd /c cmd /c $x`
+  and `cmd /c wrapper.bat powershell -Command cmd /c $x` therefore stay out for
+  the same reason the single-wrapper form does.
+- That switch-slot guard distinguishes an invoked program from an OPTION VALUE
+  by an explicit table of the value-consuming host options documented in
+  `about_Pwsh` (7.x) and `about_PowerShell_exe` (5.1): `-ExecutionPolicy`,
+  `-ConfigurationName`, `-ConfigurationFile`, `-CustomPipeName`,
+  `-WorkingDirectory`, `-SettingsFile`, `-InputFormat`, `-OutputFormat`,
+  `-WindowStyle`, `-PSConsoleFile` and `-Version`, together with the
+  abbreviations the 7.x page documents (`-ex`, `-ep`, `-config`, `-settings`,
+  `-inp`, `-if`, `-of`, `-o`, `-w`, `-wd`, `-wo`). A bare token immediately
+  following one of these is that option's value and does not close the outer
+  switch slot, so `powershell -ExecutionPolicy Bypass -Command cmd /c $x` — one
+  of the most common shapes in real malicious invocations — is reported rather
+  than silently dropped. The value reading applies even when the value is
+  itself a shell name (`powershell -WorkingDirectory cmd -Command cmd /c $x`
+  reports), because reading a shell-shaped option value as an invoked program
+  would hand every attacker a one-token bypass. The payload-consuming switches
+  `-Command`, `-EncodedCommand`, `-EncodedArguments`, `-CommandWithArgs` and
+  `-File` are deliberately absent from the table: everything after them belongs
+  to the payload rather than to the host, so a bare token there still closes
+  the slot and keeps `cmd /c wrapper.bat powershell -Command cmd /c $x` out.
+  `-Version` is listed because 5.1 documents it as taking a version value,
+  though 7.x makes it a pure switch that ignores the rest of the line. The
+  table is fixed text, so a value-taking switch a future host version adds is
+  not covered until it is added here.
+- The OUTER anchor of `powershell-native-shell-nested-shell-argument` accepts
+  only the command-string switches — `/c`, `/k` and `-Command` with its
+  documented abbreviations — and deliberately omits the `-EncodedCommand`
+  spellings its sibling carries. `-EncodedCommand` consumes a single
+  base64-encoded script, so a literal shell name followed by its own arguments
+  can never occupy the slot after it; admitting the switch on the outer anchor
+  would only match shapes that cannot occur. `-EncodedCommand` on the NESTED
+  shell is unaffected and still reported (`cmd /c pwsh -EncodedCommand $enc`),
+  because there the outer switch is `/c` and the encoded switch belongs to the
+  second parser.
 - `powershell-native-shell-dynamic-command` enumerates the PowerShell hosts'
   own documented switch abbreviations, not cmdlet parameter prefixes. The hosts
   do not use cmdlet binding for their own command line: `about_Pwsh` documents
