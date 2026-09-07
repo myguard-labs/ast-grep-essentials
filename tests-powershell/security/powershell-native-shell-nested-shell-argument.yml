@@ -70,6 +70,20 @@ valid:
 # and stays a positive, below.)
 - 'powershell.exe -EncodedCommand cmd /k $x'
 - 'pwsh -EncodedCommand cmd /c $x'
+# A QUOTED option value that is itself a shell name must still be read as the
+# option's value, not as the invoked program -- the same near-miss as the
+# unquoted `powershell -WorkingDirectory cmd -Command cmd /c $x` case above,
+# now with the value quoted. Without the `unary_expression` structural match
+# staying scoped to the option-value slot, a quoted shell-shaped value could
+# be misread as occupying the invoked-program slot instead, which would make
+# `-Command dir $x` (an ordinary, non-shell callee) close on the wrong token
+# and produce a false positive here.
+- 'powershell -WorkingDirectory "cmd" -Command dir $x'
+- "powershell -ExecutionPolicy 'cmd' -Command dir $x"
+# A QUOTED option value followed by a payload switch (-File) rather than
+# -Command: there is no nested shell at all, constant or dynamic, so this must
+# stay negative regardless of quoting.
+- 'powershell -ExecutionPolicy "Bypass" -File script.ps1 $x'
 invalid:
 # Nested cmd, both switches, both name spellings, both casings.
 - 'cmd /c cmd /c $x'
@@ -104,6 +118,17 @@ invalid:
 # every attacker who picks a shell-shaped value, so the value reading is both
 # the correct one and the conservative one.
 - 'powershell -WorkingDirectory cmd -Command cmd /c $x'
+# The same value-taking-option shapes with the value QUOTED. PowerShell's
+# `-ExecutionPolicy "Bypass"` and `-ExecutionPolicy 'Bypass'` are ordinary
+# syntax for the identical value as the bare `Bypass` above, so quoting it must
+# not close the outer switch slot either. This was a false negative: the guard
+# above originally only recognised a bare `generic_token` as an option value,
+# so a quoted value fell through and was read as the invoked program, closing
+# the slot and hiding the nested shell.
+- 'powershell -ExecutionPolicy "Bypass" -Command cmd /c $x'
+- "powershell -ExecutionPolicy 'Bypass' -Command cmd /c $x"
+- 'pwsh -WorkingDirectory "C:\Temp" -c pwsh -c $x'
+- 'pwsh -WorkingDirectory ''C:\Temp'' -c pwsh -c $x'
 # The dynamic value anywhere after the nested shell name, not only directly
 # after it: the outer shell parses the whole remaining line either way.
 - 'cmd /c cmd /c dir $path'

@@ -41,9 +41,12 @@ note: >-
   anchor a later /c cmd pair could stand in for the outer one and
   cmd /c wrapper.bat cmd /c cmd /c $x would match on the SECOND pair. Once a
   bare token occupies the invoked-program slot, every switch after it belongs
-  to that program's command line. A bare token that is merely the VALUE of a
-  preceding value-consuming host option does not occupy that slot: the guard
-  carries an explicit table of the documented value-taking options from
+  to that program's command line. A bare or QUOTED token that is merely the
+  VALUE of a preceding value-consuming host option does not occupy that slot
+  either -- powershell -ExecutionPolicy "Bypass" -Command cmd /c $x and the
+  single-quoted spelling are ordinary syntax for the same value, so quoting it
+  must not reopen the false negative: the guard carries an explicit table of
+  the documented value-taking options from
   about_Pwsh and about_PowerShell_exe (-ExecutionPolicy, -ConfigurationName,
   -ConfigurationFile, -CustomPipeName, -WorkingDirectory, -SettingsFile,
   -InputFormat, -OutputFormat, -WindowStyle, -PSConsoleFile, -Version, with the
@@ -185,8 +188,41 @@ rule:
                                   # which the rest of the line belongs to that
                                   # payload rather than to the host, so a bare
                                   # token following one of them must keep
-                                  # closing the slot.
+                                  # closing the slot. The option value can
+                                  # also be a QUOTED string --
+                                  # `-ExecutionPolicy "Bypass"` and
+                                  # `-ExecutionPolicy 'Bypass'` are both
+                                  # ordinary PowerShell syntax for the same
+                                  # value -- so a quoted value in this slot
+                                  # must be excluded on the same footing as
+                                  # the bare `generic_token`, or quoting the
+                                  # value alone reopened the false negative
+                                  # this guard exists to close. The parser
+                                  # wraps a quoted argument in the same
+                                  # `unary_expression` sibling it uses for
+                                  # `$x` (see the dynamic-value check above),
+                                  # with `string_literal` (single quotes) or
+                                  # `expandable_string_literal` (double
+                                  # quotes) as its direct child, so the
+                                  # `has` below is the structural match for a
+                                  # quoted option value, not a shortcut. This
+                                  # does not make the value the invoked
+                                  # program: only a bare token in the NEXT
+                                  # slot (matched by the sibling
+                                  # `generic_token` alternative above, which
+                                  # this one does not touch) is read as the
+                                  # nested shell's name.
                                   - kind: generic_token
+                                    follows:
+                                      kind: command_argument_sep
+                                      follows:
+                                        kind: command_parameter
+                                        regex: '(?i)^-(executionpolicy|ex|ep|configurationname|config|configurationfile|custompipename|workingdirectory|wd|wo|settingsfile|settings|inputformat|inp|if|outputformat|of|o|windowstyle|w|psconsolefile|version)$'
+                                  - kind: unary_expression
+                                    has:
+                                      any:
+                                        - kind: string_literal
+                                        - kind: expandable_string_literal
                                     follows:
                                       kind: command_argument_sep
                                       follows:
