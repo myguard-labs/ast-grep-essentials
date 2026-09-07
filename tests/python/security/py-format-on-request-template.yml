@@ -1,0 +1,14 @@
+id: py-format-on-request-template
+valid:
+- '"Hello {user.name}".format(user=current_user)'
+- TEMPLATES[key].format(user=current_user)
+- Template("Hi $name").substitute(name=name)
+- request.args["tpl"]
+- '"{}-{}".format(a, b)'
+- '''# request.args["tpl"].format(u=u)'''
+- 'text = ''request.args["tpl"].format(u=u)'''
+invalid:
+- request.args["tpl"].format(user=current_user)
+- request.form.get("t").format_map(env)
+- Template(request.form["t"]).substitute(env=os.environ)
+- string.Template(request.json["tpl"])

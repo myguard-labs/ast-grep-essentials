@@ -1,0 +1,48 @@
+id: go-aes-gcm-static-nonce
+valid:
+- |
+  package p
+  func enc(g cipher.AEAD, pt []byte) []byte {
+    nonce := make([]byte, g.NonceSize())
+    if _, err := io.ReadFull(rand.Reader, nonce); err != nil { return nil }
+    return g.Seal(nonce, nonce, pt, nil)
+  }
+- |
+  package p
+  func enc(g cipher.AEAD, pt []byte) []byte {
+    nonce := make([]byte, 12)
+    rand.Read(nonce)
+    return g.Seal(nil, nonce, pt, nil)
+  }
+- |
+  package p
+  func enc(g cipher.AEAD, pt, nonce []byte) []byte { return g.Seal(nil, nonce, pt, nil) }
+- |
+  package p
+  func f(g cipher.AEAD) { g.Open(nil, nonce, ct, nil) }
+- 'package p; // g.Seal(nil, []byte{0}, pt, nil)'
+- 'package p; var s = "g.Seal(nil, []byte{0}, pt, nil)"'
+invalid:
+- |
+  package p
+  func enc(g cipher.AEAD, pt []byte) []byte {
+    n := make([]byte, 12)
+    return g.Seal(nil, n, pt, nil)
+  }
+- |
+  package p
+  func enc(g cipher.AEAD, pt, other []byte) []byte {
+    rand.Read(other)
+    return g.Seal(nil, make([]byte, 12), pt, nil)
+  }
+- |
+  package p
+  func enc(g cipher.AEAD, pt []byte) []byte { return g.Seal(nil, []byte{1, 2, 3}, pt, nil) }
+- |
+  package p
+  func enc(g cipher.AEAD, pt []byte) []byte { return g.Seal(nil, []byte("fixednonce12"), pt, nil) }
+- |
+  package p
+  func enc(g cipher.AEAD, pt []byte) []byte {
+    return g.Seal(nil, make([]byte, 12), pt, nil)
+  }

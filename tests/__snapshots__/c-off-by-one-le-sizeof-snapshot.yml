@@ -1,0 +1,62 @@
+id: c-off-by-one-le-sizeof
+snapshots:
+  ? int f(const char *s, size_t len) { char buf[64]; if (len <= sizeof(buf)) { memcpy(buf, s, len); buf[len] = 0; return 0; } return -1; }
+  : labels:
+    - source: len <= sizeof(buf)
+      style: primary
+      start: 53
+      end: 71
+    - source: if (len <= sizeof(buf)) { memcpy(buf, s, len); buf[len] = 0; return 0; }
+      style: secondary
+      start: 49
+      end: 121
+  ? int f(const char *s, size_t len) { char buf[64]; if (sizeof(buf) >= len) { memcpy(buf, s, len); buf[len] = 0; return 0; } return -1; }
+  : labels:
+    - source: sizeof(buf) >= len
+      style: primary
+      start: 53
+      end: 71
+    - source: if (sizeof(buf) >= len) { memcpy(buf, s, len); buf[len] = 0; return 0; }
+      style: secondary
+      start: 49
+      end: 121
+  int f(const char *s, size_t len) { char buf[64]; while (len <= sizeof(buf)) { len--; } return 0; }:
+    labels:
+    - source: len <= sizeof(buf)
+      style: primary
+      start: 56
+      end: 74
+    - source: while (len <= sizeof(buf)) { len--; }
+      style: secondary
+      start: 49
+      end: 86
+  int f(size_t len) { char buf[64]; if (len <= sizeof buf) { buf[len] = 0; } return 0; }:
+    labels:
+    - source: len <= sizeof buf
+      style: primary
+      start: 38
+      end: 55
+    - source: if (len <= sizeof buf) { buf[len] = 0; }
+      style: secondary
+      start: 34
+      end: 74
+  int f(size_t len) { char buf[64]; while (sizeof buf >= len) { len++; } return 0; }:
+    labels:
+    - source: sizeof buf >= len
+      style: primary
+      start: 41
+      end: 58
+    - source: while (sizeof buf >= len) { len++; }
+      style: secondary
+      start: 34
+      end: 70
+  int f(size_t len) { char buf[64]; while (sizeof(buf) >= len) { len++; } return 0; }:
+    labels:
+    - source: sizeof(buf) >= len
+      style: primary
+      start: 41
+      end: 59
+    - source: while (sizeof(buf) >= len) { len++; }
+      style: secondary
+      start: 34
+      end: 71

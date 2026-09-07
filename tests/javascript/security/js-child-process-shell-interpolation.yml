@@ -1,0 +1,20 @@
+id: js-child-process-shell-interpolation
+valid:
+  - 'exec("git status", cb);'
+  - 'execFile("convert", [name, "out.png"], cb);'
+  - 'run(`convert ${name}`);'
+  - 'exec(cmd, cb);'
+  - 'child_process.execSync("ls -la");'
+  - 'const text = "exec(`rm ${dir}`)";'
+  - '// exec(`rm ${dir}`);'
+  - 'exec(cb, `convert ${name}`);'
+  - 'child_process.spawn(`sh -c ${cmd}`, opts);'
+  - 'spawnSync("ls " + dir, { shell: true });'
+  - 'execFile(`bin/${tool}`, args);'
+  - 'execFileSync("bin/" + tool, args);'
+  - 'fork(`workers/${name}.js`);'
+invalid:
+  - 'child_process.exec(`sh -c ${cmd}`);'
+  - 'execSync(`tar xf ${archive}`);'
+  - 'exec(`convert ${req.query.file} out.png`, cb);'
+  - 'execSync("tar xf " + archive);'

@@ -1,0 +1,51 @@
+id: nginx-escape-uri-alloc-without-double
+language: c
+severity: error
+message: >-
+  Buffer for an escaped URI is sized as the source length plus the escape count,
+  without doubling that count. ngx_escape_uri in sizing mode returns how many
+  characters need escaping, and each of those becomes three bytes on output, so
+  the buffer must be len plus twice the count. Allocating len plus the count
+  leaves two bytes short per escaped character and the copy pass writes past the
+  allocation. Use the len + 2 * n form.
+note: >-
+  The two calls must be in the same function and the sizing result must reach
+  the allocation through the same named variable; a two-pass escape split across
+  a length handler and a copy handler, which is how nginx itself is structured,
+  is not seen. Only ngx_escape_uri needs the factor of two: ngx_escape_html and
+  ngx_escape_json return the extra byte count already and are correctly used
+  with a bare addition, so they are excluded here. An already-doubled addend
+  written as n + n, 2 * n or n << 1 immediately left of the final addend is
+  excluded; a doubling spelled some other way is still reported.
+rule:
+  kind: call_expression
+  all:
+    - has: {field: function, regex: '^ngx_p(n)?alloc$'}
+    - has:
+        field: arguments
+        has:
+          kind: binary_expression
+          regex: '\+'
+          all:
+            - has: {field: right, kind: identifier, pattern: $N}
+            - not:
+                has:
+                  field: left
+                  regex: '(?:\+\s*\b\w+\s*$)|(?:2\s*\*)|(?:\*\s*2\s*$)|(?:<<\s*1\s*$)'
+    - inside:
+        kind: function_definition
+        stopBy: end
+        has:
+          stopBy: end
+          any:
+            - pattern: $N = $SIZE
+            - kind: init_declarator
+              all:
+                - has: {field: declarator, kind: identifier, pattern: $N}
+                - has: {field: value, pattern: $SIZE}
+constraints:
+  SIZE:
+    kind: call_expression
+    all:
+      - has: {field: function, regex: '^ngx_escape_uri$'}
+      - has: {field: arguments, has: {kind: "null"}}

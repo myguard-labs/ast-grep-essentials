@@ -1,0 +1,13 @@
+id: lua-exit-without-return
+valid:
+  - 'if not ok then return ngx.exit(ngx.HTTP_FORBIDDEN) end'
+  - 'return ngx.redirect("/login")'
+  - 'return ngx.exec("@fallback")'
+  - 'local code = wrap(ngx.exit)'
+  - 'local status = handler.exit(403)'
+  - 'local text = "ngx.exit(403)"'
+  - '-- ngx.exit(403)'
+invalid:
+  - 'if not ok then ngx.exit(ngx.HTTP_FORBIDDEN) end'
+  - 'ngx.redirect("/login")'
+  - 'ngx.exec("@fallback")'

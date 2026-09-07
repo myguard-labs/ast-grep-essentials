@@ -1,0 +1,66 @@
+id: sh-remote-shell-string-interpolation
+language: bash
+severity: error
+message: >-
+  Command string for a second shell built by interpolating a variable. The
+  remote or nested shell reparses the whole string, so a semicolon, a backtick
+  or a dollar-parenthesis in the value starts a command of the attacker's
+  choosing on the other side. Pass the command as separate arguments after a
+  double dash, and let the remote side receive the value as an argument rather
+  than as shell text.
+note: >-
+  Matches ssh whose remote-command argument is a quoted multi-word string
+  containing a parameter expansion or a command substitution, and sh, bash,
+  dash carrying such a string in the -c form, and docker, podman or kubectl exec
+  whose interpolating operand is a multi-word string rather than a container or
+  pod name.
+  An ssh invocation that passes its command as argv after a double dash is
+  excluded, and so is a single-word interpolating operand such as the host. It cannot tell whether the interpolated
+  value is attacker-controlled, and a value that has already been quoted for the
+  remote shell still matches. A fully literal command string is excluded.
+utils:
+  interpolating-string:
+    kind: string
+    has:
+      stopBy: end
+      any:
+        - kind: simple_expansion
+        - kind: expansion
+        - kind: command_substitution
+  argument-token:
+    any:
+      - kind: word
+      - kind: string
+      - kind: raw_string
+      - kind: concatenation
+  option-barrier:
+    matches: argument-token
+    regex: '^["'']?--["'']?$'
+  dash-c-option:
+    matches: argument-token
+    regex: '^["'']?-c["'']?$'
+  exec-verb:
+    matches: argument-token
+    regex: '^["'']?exec["'']?$'
+  ssh-command-string:
+    all:
+      - matches: interpolating-string
+      - regex: '\s'
+      - follows:
+          stopBy: end
+          matches: argument-token
+rule:
+  kind: command
+  any:
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?ssh["'']?$'}
+        - not: {has: {matches: option-barrier}}
+        - has: {matches: ssh-command-string}
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?(sh|bash|dash|zsh|ksh)["'']?$'}
+        - has: {matches: dash-c-option}
+        - has: {matches: interpolating-string}
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?(docker|kubectl|podman)["'']?$'}
+        - has: {matches: exec-verb}
+        - has: {matches: ssh-command-string}

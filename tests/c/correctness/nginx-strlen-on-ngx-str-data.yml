@@ -1,0 +1,12 @@
+id: nginx-strlen-on-ngx-str-data
+valid:
+  - 'size_t f(ngx_str_t *s) { return s->len; }'
+  - 'size_t f(ngx_str_t s) { return s.len; }'
+  - 'size_t f(const char *p) { return ngx_strlen(p); }'
+  - 'size_t f(ngx_str_t *s) { return my_strlen(s->data); }'
+  - 'size_t f(ngx_str_t *s) { return strlen(s->name); }'
+  - 'void f(void) { /* ngx_strlen(s->data); */ }'
+  - 'const char *s = "ngx_strlen(s->data)";'
+invalid:
+  - 'size_t f(ngx_str_t *s) { return ngx_strlen(s->data); }'
+  - 'size_t f(ngx_str_t s) { return strlen((char *) s.data); }'

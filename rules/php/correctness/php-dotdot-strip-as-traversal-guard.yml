@@ -1,0 +1,32 @@
+id: php-dotdot-strip-as-traversal-guard
+language: php
+severity: warning
+message: >-
+  Path traversal is being defended by stripping dot-dot sequences from the string.
+  A single non-recursive replacement is bypassed by nested input such as
+  ....// , which leaves ../ behind after the inner match is removed. Take
+  basename of the value, or resolve it with realpath and require the intended
+  base directory prefix.
+note: >-
+  Matches a literal dot-dot search string, plain or backslash-escaped for a
+  regular expression, with or without a trailing separator, in the first argument
+  of str_replace, str_ireplace or preg_replace. It does not
+  check that the result reaches a filesystem call, so stripping dots from data
+  that is never used as a path matches and is the routine dismissal. A search
+  string held in a variable is not seen.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?(str_replace|str_ireplace|preg_replace)$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          nthChild:
+            position: 1
+            ofRule: {kind: argument}
+          has:
+            stopBy: end
+            regex: '^["\x27][^"\x27]*\\?\.\\?\.'

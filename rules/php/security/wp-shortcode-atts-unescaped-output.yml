@@ -1,0 +1,58 @@
+id: wp-shortcode-atts-unescaped-output
+language: php
+severity: warning
+message: >-
+  A shortcode or block attribute is concatenated into returned or echoed HTML
+  without escaping, so a contributor who can save a shortcode stores script that
+  runs for every reader. Escape each attribute for its context with esc_attr,
+  esc_url or esc_html before building the markup.
+note: >-
+  Matches a subscript of a variable named $atts, $attributes or $args that is a
+  direct operand of a string concatenation inside a return or echo, with no
+  esc_ or wp_kses wrapper. Any call wrapping the subscript takes it out of the
+  direct-operand position, so a value passed through a helper is not matched at
+  all, whether or not that helper encodes for output. sanitize_text_field is deliberately not in the escaper list, because it
+  sanitizes incoming text and performs no output encoding, so a value it wraps
+  is still unsafe in an attribute; it is missed here only because wrapping moves
+  the subscript out of the direct-operand position. The $args naming also
+  collides with WP_Widget::widget, whose $args carries theme-supplied wrapper
+  markup that must be echoed unescaped; the before_widget, after_widget,
+  before_title and after_title keys are excluded for that reason, though only
+  as literals: the same key reached through a variable subscript still matches. Interpolation is not a concatenation, so markup built as
+  "<a href='{$atts['url']}'>" is not matched at all.
+  The $atts naming is a shortcode convention rather than
+  a guarantee, so a same-named array of trusted values is the routine dismissal.
+  esc_attr around a value used in an href satisfies this rule but is still the
+  wrong escaper for a URL.
+utils:
+  wp-escaper:
+    kind: function_call_expression
+    has:
+      field: function
+      regex: '(?i)^\\?(esc_html|esc_attr|esc_url|esc_js|esc_textarea|wp_kses|wp_kses_post|wp_kses_data|absint|intval|sanitize_hex_color)$'
+rule:
+  kind: subscript_expression
+  all:
+    - has:
+        nthChild: 1
+        kind: variable_name
+        regex: '^\$(atts|attributes|args)$'
+    - not:
+        has:
+          nthChild: 2
+          regex: '^["\x27](before_widget|after_widget|before_title|after_title)["\x27]$'
+    - inside:
+        kind: binary_expression
+        has:
+          field: operator
+          regex: '^\.$'
+    - not:
+        inside:
+          stopBy: end
+          matches: wp-escaper
+    - inside:
+        stopBy: end
+        any:
+          - kind: return_statement
+          - kind: echo_statement
+          - kind: print_intrinsic

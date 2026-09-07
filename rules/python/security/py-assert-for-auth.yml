@@ -1,0 +1,19 @@
+id: py-assert-for-auth
+language: python
+severity: warning
+message: >-
+  Authorization check written as an assert. Python removes assert statements
+  entirely under -O, and many container images run the interpreter that way, so
+  the check silently disappears and every caller passes. Raise the framework's
+  permission error from an explicit if instead.
+note: >-
+  Fires on an assert whose condition text mentions admin, staff, authenticated,
+  permission, authorization, a role, an owner or a login. It is a name
+  heuristic over the condition source, so an assert in a test module, which the
+  test runner never runs optimised, is the routine dismissal. Excluding test
+  paths at the scanner is the usual way to silence those.
+rule:
+  kind: assert_statement
+  has:
+    nthChild: 1
+    regex: '(?i)(is_admin|is_staff|is_superuser|is_authenticated|has_perm|permission|authoriz|is_allowed|\brole\b|is_owner|logged_in|current_user)'

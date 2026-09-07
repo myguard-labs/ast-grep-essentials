@@ -1,0 +1,16 @@
+id: nginx-init-returns-http-status
+valid:
+  - 'ngx_int_t my_init_process(ngx_cycle_t *c) { if (c->connection_n == 0) { return NGX_ERROR; } return NGX_OK; }'
+  - 'char *my_merge_loc_conf(ngx_conf_t *cf, void *p, void *c) { return NGX_CONF_ERROR; }'
+  - 'ngx_int_t my_handler(ngx_http_request_t *r) { return NGX_HTTP_INTERNAL_SERVER_ERROR; }'
+  - 'ngx_int_t my_init_process(ngx_cycle_t *c) { return NGX_HTTP_OK_LOOKALIKE_helper(c); }'
+  - 'ngx_int_t my_content_phase(ngx_http_request_t *r) { return NGX_HTTP_NOT_FOUND; }'
+  - 'void f(void) { /* my_init_process: return NGX_HTTP_NOT_FOUND; */ }'
+  - 'const char *s = "return NGX_HTTP_NOT_FOUND;";'
+invalid:
+  - 'ngx_int_t my_init_process(ngx_cycle_t *c) { if (c->connection_n == 0) { return NGX_HTTP_INTERNAL_SERVER_ERROR; } return NGX_OK; }'
+  - 'ngx_int_t my_postconfiguration(ngx_conf_t *cf) { return NGX_HTTP_NOT_FOUND; }'
+  - 'char *my_merge_loc_conf(ngx_conf_t *cf, void *p, void *c) { return NGX_HTTP_BAD_REQUEST; }'
+  - 'void *my_create_loc_conf(ngx_conf_t *cf) { return NGX_HTTP_FORBIDDEN; }'
+  - 'ngx_int_t my_init_module(ngx_cycle_t *c) { return NGX_HTTP_SERVICE_UNAVAILABLE; }'
+  - 'ngx_int_t my_init_zone(ngx_shm_zone_t *z, void *o) { return NGX_HTTP_CONFLICT; }'

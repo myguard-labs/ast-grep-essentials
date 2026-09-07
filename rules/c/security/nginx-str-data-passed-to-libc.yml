@@ -1,0 +1,29 @@
+id: nginx-str-data-passed-to-libc
+language: c
+severity: warning
+message: >-
+  A .data member is passed to a function that expects a NUL-terminated string.
+  ngx_str_t carries its length separately and nginx does not terminate the
+  buffers it hands out from the request: header values, URI and args all point
+  into the parse buffer, where the byte after the value is the next header. The
+  callee therefore reads past the value until it happens to find a zero, so the
+  comparison, lookup or connection uses attacker-chosen trailing bytes. Copy
+  len bytes into a pnalloc of len + 1, terminate it, and pass that.
+note: >-
+  The match is the field name data in an argument to one of the listed
+  NUL-expecting functions; it does not check that the struct is an ngx_str_t,
+  so any member called data reports here. Buffers that nginx does terminate,
+  notably a path built by ngx_conf_full_name and anything copied by the module
+  itself with an explicit trailing zero, are safe and are the routine dismissal.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^(strcmp|strncmp|strchr|strrchr|strstr|strcpy|atoi|atol|strtol|strtoul|strtoll|open|fopen|stat|lstat|access|unlink|getaddrinfo|gethostbyname|inet_pton|inet_addr|inet_aton|SSL_set_tlsext_host_name|X509_check_host|X509_check_email|system|printf)$'
+    - has:
+        field: arguments
+        has:
+          stopBy: end
+          kind: field_expression
+          has: {field: field, regex: '^data$'}

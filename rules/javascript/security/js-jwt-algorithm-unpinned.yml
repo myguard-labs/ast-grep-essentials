@@ -1,0 +1,46 @@
+id: js-jwt-algorithm-unpinned
+language: javascript
+severity: warning
+message: >-
+  JWT accepted without pinning the signature algorithm, or with the none
+  algorithm listed. Listing none lets a token that carries no signature verify.
+  Leaving the algorithms option out is a hardening gap rather than a bypass on
+  its own: jsonwebtoken v9 rejects none by default, but the verifier still
+  accepts every algorithm the key type allows, which is what makes an RSA public
+  key replayable as an HMAC secret on older versions and under mixed key
+  handling. Pass an algorithms option listing exactly the algorithm the issuer
+  uses.
+note: >-
+  Matches a jwt.verify call that has no algorithms option, and any algorithms
+  array that contains the string none. The missing-option arm reports a
+  hardening gap, not a demonstrated bypass; the none arm is the concrete defect.
+  It looks only at the call site, so an
+  options object built in a variable is reported as unpinned even when it does
+  pin the algorithm. It does not cover jwt.decode, which never verifies at all.
+utils:
+  algorithms-option:
+    kind: pair
+    has: {field: key, regex: '^["'']?algorithms["'']?$'}
+  jwt-verify-call:
+    kind: call_expression
+    all:
+      - has:
+          field: function
+          kind: member_expression
+          all:
+            - has: {field: object, regex: '^(jwt|jsonwebtoken|jwtLib)$'}
+            - has: {field: property, regex: '^verify$'}
+rule:
+  any:
+    - matches: jwt-verify-call
+      not:
+        has:
+          stopBy: end
+          matches: algorithms-option
+    - kind: pair
+      all:
+        - matches: algorithms-option
+        - has:
+            stopBy: end
+            kind: string
+            regex: '(?i)^["'']none["'']$'

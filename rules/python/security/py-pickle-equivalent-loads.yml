@@ -1,0 +1,33 @@
+id: py-pickle-equivalent-loads
+language: python
+severity: warning
+message: >-
+  Deserializer that reconstructs arbitrary Python objects. marshal, dill,
+  cloudpickle, jsonpickle and shelve are all pickle-equivalent, so any input a
+  caller can influence becomes code execution. Use json for data interchange, or
+  a schema-validated format, and keep these loaders for files the process itself
+  produced.
+note: >-
+  Fires on a qualified call to marshal load or loads, dill load or loads,
+  cloudpickle load or loads, jsonpickle decode, or shelve open. A loader
+  imported bare with from-import, or reached through an alias, is not resolved.
+  A file the same deployment wrote under a path no user controls is the routine
+  dismissal.
+utils:
+  pickle-equivalent-call:
+    kind: attribute
+    any:
+      - all:
+          - has: {field: object, regex: '^(marshal|dill|cloudpickle)$'}
+          - has: {field: attribute, regex: '^loads?$'}
+      - all:
+          - has: {field: object, regex: '^jsonpickle$'}
+          - has: {field: attribute, regex: '^decode$'}
+      - all:
+          - has: {field: object, regex: '^shelve$'}
+          - has: {field: attribute, regex: '^open$'}
+rule:
+  kind: call
+  has:
+    field: function
+    matches: pickle-equivalent-call

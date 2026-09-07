@@ -1,0 +1,11 @@
+id: nginx-finalize-plus-return-rc
+valid:
+  - 'ngx_int_t f(ngx_http_request_t *r, ngx_int_t rc) { ngx_http_finalize_request(r, rc); return NGX_DONE; }'
+  - 'ngx_int_t f(ngx_http_request_t *r, ngx_chain_t *out) { return ngx_http_output_filter(r, out); }'
+  - 'ngx_int_t f(ngx_http_request_t *r, ngx_int_t rc, ngx_int_t other) { ngx_http_finalize_request(r, rc); return other; }'
+  - 'ngx_int_t f(ngx_http_request_t *r, ngx_int_t rc) { my_finalize_request(r, rc); return rc; }'
+  - 'void f(void) { /* ngx_http_finalize_request(r, rc); return rc; */ }'
+  - 'const char *s = "ngx_http_finalize_request(r, rc); return rc;";'
+invalid:
+  - 'ngx_int_t f(ngx_http_request_t *r, ngx_int_t rc) { ngx_http_finalize_request(r, rc); return rc; }'
+  - 'ngx_int_t g(ngx_http_request_t *r, ngx_chain_t *out) { ngx_int_t rc = ngx_http_output_filter(r, out); ngx_http_finalize_request(r, rc); return rc; }'

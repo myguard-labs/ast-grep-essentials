@@ -1,0 +1,75 @@
+id: wp-update-option-request-key
+language: php
+severity: error
+message: >-
+  An option write or delete takes its option name from request data, so a caller
+  can target core options such as users_can_register, default_role or siteurl and
+  take over the site. Use a fixed option name, or resolve the input through an
+  allowlist of names the plugin owns.
+note: >-
+  Matches a GET, POST, REQUEST, COOKIE or FILES superglobal inside the
+  option-name argument of update_option, add_option, delete_option,
+  update_site_option, add_site_option or delete_site_option, and inside the
+  second argument of update_network_option, add_network_option or
+  delete_network_option, which take the network id first. Sanitizers around the
+  name are transparent because they restrict characters, not which option is
+  written. A name arriving through a variable or a foreach key is not seen, and
+  the rule says nothing about a literal option name written with a
+  request-derived value. An allowlist lookup that merely indexes a local map
+  with request data is not matched: the superglobal subscript must be the whole
+  name expression.
+utils:
+  request-superglobal:
+    kind: variable_name
+    regex: '^\$_(GET|POST|REQUEST|COOKIE|FILES)$'
+rule:
+  kind: function_call_expression
+  any:
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?(update_option|add_option|delete_option|update_site_option|add_site_option|delete_site_option)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 1
+                ofRule: {kind: argument}
+              has:
+                stopBy: end
+                all:
+                  - matches: request-superglobal
+                  - not:
+                      inside:
+                        stopBy: end
+                        kind: subscript_expression
+                        has:
+                          nthChild: 2
+                          has:
+                            stopBy: end
+                            matches: request-superglobal
+    - all:
+        - has:
+            field: function
+            regex: '(?i)^\\?(update_network_option|add_network_option|delete_network_option)$'
+        - has:
+            field: arguments
+            has:
+              kind: argument
+              nthChild:
+                position: 2
+                ofRule: {kind: argument}
+              has:
+                stopBy: end
+                all:
+                  - matches: request-superglobal
+                  - not:
+                      inside:
+                        stopBy: end
+                        kind: subscript_expression
+                        has:
+                          nthChild: 2
+                          has:
+                            stopBy: end
+                            matches: request-superglobal

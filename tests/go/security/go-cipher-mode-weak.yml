@@ -1,0 +1,19 @@
+id: go-cipher-mode-weak
+valid:
+- 'package p; func f() { g, _ := cipher.NewGCM(b) }'
+- 'package p; func f() { g, _ := cipher.NewGCMWithNonceSize(b, 12) }'
+- 'package p; func f() { b, _ := aes.NewCipher(key) }'
+- 'package p; func f() { a, _ := chacha20poly1305.New(key) }'
+- 'package p; func f() { s := mycipher.NewCFBEncrypter(b, iv) }'
+- 'package p; func f() { s := cipher.NewCTR(b, iv) }'
+- 'package p; // cipher.NewCFBEncrypter(b, iv)'
+- 'package p; var s = "cipher.NewCFBEncrypter(b, iv)"'
+invalid:
+- 'package p; func f() { s := cipher.NewCFBEncrypter(b, iv) }'
+- 'package p; func f() { s := cipher.NewCFBDecrypter(b, iv) }'
+- 'package p; func f() { s := cipher.NewOFB(b, iv) }'
+- 'package p; func f() { m := cipher.NewCBCEncrypter(b, iv) }'
+- 'package p; func f() { m := cipher.NewCBCDecrypter(b, iv) }'
+- 'package p; func f() { c, _ := des.NewCipher(key) }'
+- 'package p; func f() { c, _ := des.NewTripleDESCipher(key) }'
+- 'package p; func f() { c, _ := rc4.NewCipher(key) }'

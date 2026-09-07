@@ -1,0 +1,31 @@
+id: py-torch-load-untrusted
+language: python
+severity: warning
+message: >-
+  torch.load() without weights_only=True unpickles the checkpoint, so a crafted
+  model file executes arbitrary code as soon as it is loaded. Pass
+  weights_only=True, or load safetensors instead, and pin torch 2.6 or newer
+  where the weights_only path itself was hardened (CVE-2025-32434).
+note: >-
+  Fires on a torch.load call whose argument list has no literal True for the
+  weights_only keyword. A torch module imported under another name, or the
+  keyword supplied through a dictionary splat, is not resolved. Loading a
+  checkpoint the deployment built and stores itself is the routine dismissal;
+  any file that arrives from a hub, a user upload or a shared cache is not.
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        kind: attribute
+        all:
+          - has: {field: object, regex: '^torch$'}
+          - has: {field: attribute, regex: '^load$'}
+    - not:
+        has:
+          field: arguments
+          has:
+            kind: keyword_argument
+            all:
+              - has: {field: name, regex: '^weights_only$'}
+              - has: {field: value, regex: '^True$'}

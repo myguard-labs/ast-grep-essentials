@@ -1,0 +1,41 @@
+id: nginx-slab-locked-without-lock
+language: c
+severity: warning
+message: >-
+  A _locked slab allocator is called in a function that never takes the shared
+  memory mutex. The _locked suffix is the API's statement that the caller
+  already holds the zone's ngx_shmtx: these variants skip locking entirely, so
+  calling one unlocked lets two workers mutate the same free lists at once and
+  corrupts the slab arena for every process attached to the zone. Wrap the call
+  in ngx_shmtx_lock and ngx_shmtx_unlock on the pool's mutex, or use the
+  unsuffixed variant which locks for you.
+note: >-
+  The check is intraprocedural: it reports when no ngx_shmtx_lock call appears
+  anywhere in the same function definition. A helper that documents its
+  precondition and is genuinely only reached from a locked caller is a correct
+  design and reports here unless its own name contains locked, which the rule
+  treats as that declaration. It cannot see a lock taken through a macro or a
+  wrapper of another name.
+utils:
+  fn-name-not-locked:
+    kind: function_declarator
+    has:
+      field: declarator
+      kind: identifier
+      not: {regex: locked}
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: '^ngx_slab_(alloc|calloc|free)_locked$'
+  inside:
+    kind: function_definition
+    stopBy: end
+    not:
+      has:
+        stopBy: end
+        kind: call_expression
+        has: {field: function, regex: '^ngx_shmtx_lock$'}
+    has:
+      stopBy: end
+      matches: fn-name-not-locked

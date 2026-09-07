@@ -1,0 +1,12 @@
+id: wp-redirect-not-safe
+valid:
+- "<?php wp_safe_redirect( $_GET['redirect_to'] ); exit;"
+- "<?php wp_redirect( home_url( '/thank-you/' ) ); exit;"
+- "<?php wp_redirect( wp_validate_redirect( $target, home_url() ) );"
+- "<?php $url = $_GET['redirect_to'];"
+- "<?php /* wp_redirect( $_GET['redirect_to'] ); */"
+- "<?php $s = 'wp_redirect( $_GET[redirect_to] )';"
+- "<?php wp_redirect( home_url( '/x/' ), $_GET['code'] );"
+invalid:
+- "<?php wp_redirect( $_GET['redirect_to'] );"
+- "<?php wp_redirect( esc_url_raw( $_REQUEST['return'] ), 302 ); exit;"

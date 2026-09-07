@@ -1,0 +1,48 @@
+id: java-response-open-redirect
+language: java
+severity: error
+message: >-
+  Redirect target taken directly from the request. An attacker who controls that
+  parameter sends the victim from a trusted host to a site of their choosing,
+  which makes phishing credible and can leak a token carried in the referring
+  URL. Redirect to a fixed path, or map the value through an allowlist first.
+note: >-
+  Matches sendRedirect and a Spring controller return of the redirect prefix
+  concatenated with something, when the value comes from getParameter, getHeader
+  or a concatenation containing one. A value copied to a local variable before
+  the call, or validated against an allowlist, is not visible to this matcher.
+utils:
+  request-read:
+    kind: method_invocation
+    all:
+      - has: {field: name, regex: '^(getParameter|getHeader|getQueryString|getPathInfo)$'}
+      - has: {field: object, regex: '(?i)^(request|req|httpRequest|servletRequest)$'}
+  request-derived:
+    any:
+      - matches: request-read
+      - kind: binary_expression
+        all:
+          - has: {field: operator, regex: '^\+$'}
+          - has: {stopBy: end, matches: request-read}
+  redirect-prefix-concat:
+    kind: binary_expression
+    all:
+      - has: {field: operator, regex: '^\+$'}
+      - has:
+          nthChild: 1
+          kind: string_literal
+          regex: '(?i)^"redirect:[^"]*"$'
+      - has:
+          nthChild: 2
+          matches: request-derived
+rule:
+  any:
+    - kind: method_invocation
+      all:
+        - has: {field: name, regex: '^sendRedirect$'}
+        - has:
+            stopBy: neighbor
+            kind: argument_list
+            has: {nthChild: 1, matches: request-derived}
+    - kind: return_statement
+      has: {matches: redirect-prefix-concat}

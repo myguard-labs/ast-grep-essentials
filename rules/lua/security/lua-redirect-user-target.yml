@@ -1,0 +1,43 @@
+id: lua-redirect-user-target
+language: lua
+severity: error
+message: >-
+  Redirect location built from a request value. An attacker who controls that
+  query argument or header sends the victim from this host to a site of their
+  choosing, which makes a phishing page look legitimate and can leak the
+  referring URL. Redirect to a fixed path, or resolve the value through an
+  allowlist before using it.
+note: >-
+  Matches ngx.redirect and ngx.exec whose location argument is an ngx.var
+  request field, an ngx.req.get_headers or get_uri_args lookup, or a
+  concatenation containing one. An ngx.escape_uri wrapper does not suppress the
+  match: escaping only protects a value placed in a query slot, so an escaped
+  value used as the location is still an open redirect.
+utils:
+  request-source:
+    any:
+      - kind: dot_index_expression
+        regex: '^ngx\s*\.\s*var\s*\.\s*(arg_|http_|request_uri|uri|args)'
+      - kind: bracket_index_expression
+        has:
+          field: table
+          stopBy: end
+          regex: '^ngx\s*\.\s*(var|req\s*\.\s*get_(headers|uri_args|post_args))'
+      - kind: function_call
+        has: {field: name, regex: '^ngx\.req\.get_(headers|uri_args|post_args)$'}
+  request-derived:
+    any:
+      - matches: request-source
+      - kind: binary_expression
+        regex: '\.\.'
+        any:
+          - has: {field: left, matches: request-derived}
+          - has: {field: right, matches: request-derived}
+rule:
+  kind: function_call
+  all:
+    - has: {field: name, regex: '^ngx\.(redirect|exec)$'}
+    - has:
+        stopBy: neighbor
+        kind: arguments
+        has: {nthChild: 1, matches: request-derived}

@@ -1,0 +1,22 @@
+id: go-http-server-no-header-timeout
+language: go
+severity: warning
+message: >-
+  HTTP server started with http.ListenAndServe, which builds a zero-value
+  http.Server and therefore has no header read deadline. A client that opens
+  connections and dribbles header bytes holds each one open indefinitely, so a
+  handful of hosts exhaust the listener. Construct an http.Server with
+  ReadHeaderTimeout set, and normally ReadTimeout, WriteTimeout and IdleTimeout
+  as well, then call its ListenAndServe method.
+note: >-
+  Fires on the package-level ListenAndServe and ListenAndServeTLS helpers only.
+  An http.Server composite literal with missing or non-positive timeouts is the
+  subject of go-http-no-timeout, which resolves zero and negative values; this
+  rule deliberately does not duplicate it. A listener that only ever serves a
+  loopback socket or sits behind a proxy that already bounds header reads is a
+  legitimate dismissal.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: '^http\.ListenAndServe(TLS)?$'

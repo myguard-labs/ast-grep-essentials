@@ -1,0 +1,14 @@
+id: go-gob-decode-network
+valid:
+- 'package p; func f(c net.Conn) { gob.NewDecoder(io.LimitReader(c, 1<<20)).Decode(&msg) }'
+- 'package p; func f(f *os.File) { gob.NewDecoder(f).Decode(&msg) }'
+- 'package p; func f(b *bytes.Buffer) { gob.NewDecoder(b).Decode(&msg) }'
+- 'package p; func f(c net.Conn) { json.NewDecoder(c).Decode(&msg) }'
+- 'package p; func f(c net.Conn) { mygob.NewDecoder(c).Decode(&msg) }'
+- 'package p; // gob.NewDecoder(c).Decode(&v)'
+- 'package p; var s = "gob.NewDecoder(c).Decode(&v)"'
+invalid:
+- 'package p; func f(c net.Conn) { var v any; gob.NewDecoder(c).Decode(&v) }'
+- 'package p; func f(conn net.Conn) { gob.NewDecoder(conn).Decode(&msg) }'
+- 'package p; func h(w http.ResponseWriter, r *http.Request) { gob.NewDecoder(r.Body).Decode(&msg) }'
+- 'package p; func f(s *session) { gob.NewDecoder(s.Conn).Decode(&msg) }'

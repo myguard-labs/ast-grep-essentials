@@ -1,0 +1,27 @@
+id: sh-host-hardening-disabled
+valid:
+- setenforce 1
+- setenforce Enforcing
+- ufw allow 443/tcp
+- ufw enable
+- systemctl start firewalld
+- systemctl disable bluetooth
+- iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+- iptables -P INPUT DROP
+- sysctl -w kernel.randomize_va_space=2
+- nft list ruleset
+- echo "setenforce 0"
+- '# ufw disable'
+invalid:
+- setenforce 0
+- setenforce permissive
+- ufw disable
+- systemctl stop firewalld
+- iptables -F
+- nft flush ruleset
+- iptables -P INPUT ACCEPT
+- sysctl -w kernel.randomize_va_space=0
+- sysctl -w kernel.yama.ptrace_scope=0
+- '"setenforce" 0'
+- setenforce "0"
+- ufw "disable"

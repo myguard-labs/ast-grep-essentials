@@ -1,0 +1,47 @@
+id: py-world-writable-perms
+language: python
+severity: warning
+message: >-
+  File or directory mode grants write access to group or other. Any local
+  account can then replace the contents, which turns a data file into a code or
+  configuration injection point and a directory into a place to plant symlinks.
+  Grant the owner what it needs and leave group and other without the write bit.
+note: >-
+  Fires on chmod, mkdir and makedirs when the mode is an octal literal whose
+  group or other digit carries the write bit, and on umask with a zero argument.
+  The sticky-bit shared-directory mode is excluded. A mode computed from stat
+  constants or read from configuration is not seen. A path inside a private
+  per-process directory is the routine dismissal.
+utils:
+  group-or-other-writable:
+    kind: integer
+    all:
+      - regex: '^0[oO]?[0-7]*[2367][0-7]?$'
+      - not:
+          regex: '^0o?1777$'
+  writable-mode-argument:
+    any:
+      - matches: group-or-other-writable
+      - kind: keyword_argument
+        all:
+          - has: {field: name, regex: '^mode$'}
+          - has: {field: value, matches: group-or-other-writable}
+rule:
+  any:
+    - kind: call
+      all:
+        - has:
+            field: function
+            regex: '(^|\.)(chmod|mkdir|makedirs)$'
+        - has:
+            stopBy: end
+            matches: writable-mode-argument
+    - kind: call
+      all:
+        - has:
+            field: function
+            regex: '(^|\.)umask$'
+        - has:
+            stopBy: end
+            kind: integer
+            regex: '^0([oO]0*)?$'

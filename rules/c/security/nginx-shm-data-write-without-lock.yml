@@ -1,0 +1,55 @@
+id: nginx-shm-data-write-without-lock
+language: c
+severity: warning
+message: >-
+  A shared-zone field reached through an sh member is written in a function that
+  never takes the zone's mutex. Every nginx worker maps the same shared memory,
+  so a read-modify-write of a counter or a link of a node into the shared tree
+  races against the other workers: counters drift and, when the structure is a
+  tree or a queue, a torn update corrupts it for all of them until reload. Hold
+  ngx_shmtx_lock across the update, or use the ngx_atomic operations for a plain
+  counter.
+note: >-
+  Advisory. The check is co-occurrence: a write through an sh member in a
+  function containing no ngx_shmtx_lock call. Zone initialisation runs once
+  before workers fork and needs no lock, so functions whose name ends in
+  init_zone are excluded; the same reasoning exempts other one-shot setup paths
+  that this rule cannot recognise. A lock taken by the caller, or through a
+  wrapper, is invisible here.
+utils:
+  fn-name-not-init-zone:
+    kind: function_declarator
+    has:
+      field: declarator
+      kind: identifier
+      not: {regex: 'init_zone$'}
+  sh-field-write:
+    any:
+      - kind: assignment_expression
+        has:
+          field: left
+          has:
+            stopBy: end
+            kind: field_expression
+            has: {field: field, regex: '^sh$'}
+      - kind: update_expression
+        has:
+          stopBy: end
+          kind: field_expression
+          has:
+            stopBy: end
+            kind: field_expression
+            has: {field: field, regex: '^sh$'}
+rule:
+  matches: sh-field-write
+  inside:
+    kind: function_definition
+    stopBy: end
+    not:
+      has:
+        stopBy: end
+        kind: call_expression
+        has: {field: function, regex: '^ngx_shmtx_lock$'}
+    has:
+      stopBy: end
+      matches: fn-name-not-init-zone

@@ -1,0 +1,28 @@
+id: c-off-by-one-le-sizeof
+language: c
+severity: warning
+message: >-
+  Length guard admits a length equal to the full sizeof of the buffer. A guard
+  written with <= lets the length reach the array's element count, which is one
+  past the last valid index, so any code in the guarded branch that writes a
+  terminator at that index, or reads one element beyond the copy, runs off the
+  end. Compare with < when a terminator follows, and reserve the last byte
+  explicitly.
+note: >-
+  The sizeof operand is matched as an expression, so both sizeof(buf) and the
+  unparenthesized sizeof buf spelling are covered by the same pattern.
+  This is advisory: the comparison alone is correct whenever the guarded branch
+  copies exactly that many bytes and never terminates, which is a common and
+  entirely valid shape. The matcher only reports the comparison in an if or
+  while condition and does not inspect the guarded body, so confirming that the
+  branch writes a terminator or indexes at the length is the reviewer's step.
+rule:
+  any:
+    - pattern: $LEN <= sizeof $BUF
+    - pattern: sizeof $BUF >= $LEN
+  inside:
+    stopBy: end
+    field: condition
+    any:
+      - kind: if_statement
+      - kind: while_statement

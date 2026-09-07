@@ -1,0 +1,154 @@
+id: go-http-request-url-ssrf
+snapshots:
+  package p; func f() { req, _ := http.NewRequest("GET", c.Param("u"), nil) }:
+    labels:
+    - source: http.NewRequest("GET", c.Param("u"), nil)
+      style: primary
+      start: 32
+      end: 73
+    - source: http.NewRequest
+      style: secondary
+      start: 32
+      end: 47
+    - source: c.Param
+      style: secondary
+      start: 55
+      end: 62
+    - source: c.Param("u")
+      style: secondary
+      start: 55
+      end: 67
+    - source: ("GET", c.Param("u"), nil)
+      style: secondary
+      start: 47
+      end: 73
+  package p; func f() { req, _ := http.NewRequestWithContext(ctx, "GET", r.PostFormValue("u"), nil) }:
+    labels:
+    - source: http.NewRequestWithContext(ctx, "GET", r.PostFormValue("u"), nil)
+      style: primary
+      start: 32
+      end: 97
+    - source: http.NewRequestWithContext
+      style: secondary
+      start: 32
+      end: 58
+    - source: r.PostFormValue
+      style: secondary
+      start: 71
+      end: 86
+    - source: r.PostFormValue("u")
+      style: secondary
+      start: 71
+      end: 91
+    - source: (ctx, "GET", r.PostFormValue("u"), nil)
+      style: secondary
+      start: 58
+      end: 97
+  package p; func f() { resp, _ := http.Get(r.FormValue("u")) }:
+    labels:
+    - source: http.Get(r.FormValue("u"))
+      style: primary
+      start: 33
+      end: 59
+    - source: http.Get
+      style: secondary
+      start: 33
+      end: 41
+    - source: r.FormValue
+      style: secondary
+      start: 42
+      end: 53
+    - source: r.FormValue("u")
+      style: secondary
+      start: 42
+      end: 58
+    - source: (r.FormValue("u"))
+      style: secondary
+      start: 41
+      end: 59
+  package p; func f() { resp, _ := http.Head(c.Query("u")) }:
+    labels:
+    - source: http.Head(c.Query("u"))
+      style: primary
+      start: 33
+      end: 56
+    - source: http.Head
+      style: secondary
+      start: 33
+      end: 42
+    - source: Query
+      style: secondary
+      start: 45
+      end: 50
+    - source: c.Query
+      style: secondary
+      start: 43
+      end: 50
+    - source: '"u"'
+      style: secondary
+      start: 51
+      end: 54
+    - source: ("u")
+      style: secondary
+      start: 50
+      end: 55
+    - source: c.Query("u")
+      style: secondary
+      start: 43
+      end: 55
+    - source: (c.Query("u"))
+      style: secondary
+      start: 42
+      end: 56
+  package p; func f() { resp, _ := http.Post(r.URL.Query().Get("u"), ct, body) }:
+    labels:
+    - source: http.Post(r.URL.Query().Get("u"), ct, body)
+      style: primary
+      start: 33
+      end: 76
+    - source: http.Post
+      style: secondary
+      start: 33
+      end: 42
+    - source: Get
+      style: secondary
+      start: 57
+      end: 60
+    - source: r.URL.Query()
+      style: secondary
+      start: 43
+      end: 56
+    - source: r.URL.Query().Get
+      style: secondary
+      start: 43
+      end: 60
+    - source: r.URL.Query().Get("u")
+      style: secondary
+      start: 43
+      end: 65
+    - source: (r.URL.Query().Get("u"), ct, body)
+      style: secondary
+      start: 42
+      end: 76
+  package p; func f() { resp, _ := http.PostForm(r.FormValue("u"), vals) }:
+    labels:
+    - source: http.PostForm(r.FormValue("u"), vals)
+      style: primary
+      start: 33
+      end: 70
+    - source: http.PostForm
+      style: secondary
+      start: 33
+      end: 46
+    - source: r.FormValue
+      style: secondary
+      start: 47
+      end: 58
+    - source: r.FormValue("u")
+      style: secondary
+      start: 47
+      end: 63
+    - source: (r.FormValue("u"), vals)
+      style: secondary
+      start: 46
+      end: 70

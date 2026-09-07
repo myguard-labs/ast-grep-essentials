@@ -1,0 +1,44 @@
+id: java-expression-eval-dynamic
+language: java
+severity: error
+message: >-
+  Expression or script evaluated from a non-literal string. SpEL, OGNL, MVEL and
+  the script engine all reach arbitrary Java types from expression syntax, so a
+  value an attacker influences becomes remote code execution with the
+  application's privileges. Evaluate only fixed expressions, and select
+  behaviour through an allowlisted operation map.
+note: >-
+  Matches parseExpression on a SpEL parser, Ognl.getValue and Ognl.parseExpression,
+  MVEL.eval and MVEL.evalToString, and eval on a script engine receiver, when
+  the expression argument is not a string literal. It cannot prove the value is
+  attacker-controlled, and it does not model a restricted SpEL evaluation
+  context, so a SimpleEvaluationContext-guarded parse also matches.
+utils:
+  eval-receiver:
+    any:
+      - kind: identifier
+        regex: '(?i)^(parser|expressionParser|spelParser|engine|scriptEngine|jsEngine|nashorn)$'
+      - kind: object_creation_expression
+        has: {field: type, regex: '(SpelExpressionParser|ScriptEngineManager)$'}
+rule:
+  kind: method_invocation
+  all:
+    - has:
+        stopBy: neighbor
+        kind: argument_list
+        has:
+          nthChild: 1
+          not: {kind: string_literal}
+    - any:
+        - all:
+            - has: {field: name, regex: '^(parseExpression|parseRaw)$'}
+            - has: {field: object, matches: eval-receiver}
+        - all:
+            - has: {field: name, regex: '^eval$'}
+            - has: {field: object, matches: eval-receiver}
+        - all:
+            - has: {field: name, regex: '^(getValue|parseExpression|setValue)$'}
+            - has: {field: object, regex: '^(ognl\.)?Ognl$'}
+        - all:
+            - has: {field: name, regex: '^(eval|evalToString|executeExpression)$'}
+            - has: {field: object, regex: '^(org\.mvel2\.)?MVEL$'}

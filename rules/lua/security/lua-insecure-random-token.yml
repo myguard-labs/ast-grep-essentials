@@ -1,0 +1,46 @@
+id: lua-insecure-random-token
+language: lua
+severity: error
+message: >-
+  Security value derived from math.random or from os.tmpname. The Lua generator
+  is seeded per worker from the process id and the clock and its state is
+  recoverable from a few outputs, so an attacker predicts the next token or
+  session identifier; os.tmpname returns a name before creating the file, which
+  another local user can win. Use resty.random bytes with the strong flag, or
+  create the file with an exclusive open.
+note: >-
+  Matches an assignment or local declaration whose name contains token, secret,
+  nonce, session, otp, salt, csrf or passw, or carries key as a whole
+  underscore-separated word at the end of the name, or in one of the compound
+  key names such as api_key and signing_key, and whose value contains a math.random call, and any call to
+  os.tmpname. A name that merely ends in the letters key, such as monkey, is not
+  matched. The name test is a heuristic: a security
+  value with a neutral name is missed, and a cosmetic identifier containing one
+  of these words is reported. A jitter or backoff value under a neutral name
+  does not match.
+utils:
+  security-name:
+    regex: '(?i)(token|secret|nonce|session|otp|salt|csrf|passw|(^|_)keys?$|(^|_)(api|apikey|hmac|signing|secret|priv|pub|enc|dec|master|session)_?keys?$)'
+  math-random-call:
+    kind: function_call
+    has: {field: name, regex: '^math\.random$'}
+  math-random-value:
+    any:
+      - matches: math-random-call
+      - has: {stopBy: end, matches: math-random-call}
+rule:
+  any:
+    - kind: variable_declaration
+      all:
+        - has: {stopBy: end, kind: identifier, matches: security-name}
+        - has: {stopBy: end, matches: math-random-value}
+    - kind: assignment_statement
+      all:
+        - has:
+            kind: variable_list
+            has: {stopBy: end, kind: identifier, matches: security-name}
+        - has:
+            kind: expression_list
+            has: {stopBy: end, matches: math-random-value}
+    - kind: function_call
+      has: {field: name, regex: '^os\.tmpname$'}

@@ -1,0 +1,12 @@
+id: c-chroot-without-chdir
+valid:
+  - 'int f(const char *d) { if (chroot(d) != 0) { return -1; } if (chdir("/") != 0) { return -1; } return 0; }'
+  - 'int f(const char *d) { if (chdir(d) != 0) { return -1; } return chroot("."); }'
+  - 'int f(const char *d, int fd) { if (chroot(d) != 0) { return -1; } return fchdir(fd); }'
+  - 'int f(const char *d) { return my_chroot(d); }'
+  - 'int f(const char *d) { return chdir(d); }'
+  - 'void f(void) { /* chroot(d); */ }'
+  - 'const char *s = "chroot(dir);";'
+invalid:
+  - 'int f(const char *d) { if (chroot(d) != 0) { return -1; } return 0; }'
+  - 'int f(const char *d) { chroot(d); return 0; }'

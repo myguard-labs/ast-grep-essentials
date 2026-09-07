@@ -1,0 +1,20 @@
+id: sh-archive-extract-to-system-root
+valid:
+- tar -C /srv/staging -xzf tool.tgz
+- tar xzf tool.tgz
+- tar --no-same-owner -C /opt/app -xzf tool.tgz
+- dpkg -i /srv/packages/app.deb
+- dpkg -L app
+- cpio -id < archive.cpio
+- echo "tar -C / -xzf $ARCHIVE"
+- '# tar -C / -xzf archive.tgz'
+invalid:
+- tar -C / -xzf tool.tgz
+- tar --directory / -xzf tool.tgz
+- tar --absolute-names -xzf tool.tgz
+- tar -xPf tool.tgz --preserve-permissions
+- dpkg -i /tmp/pkg.deb
+- cpio -C / -id
+- '"tar" -C / -xzf tool.tgz'
+- tar -C "/" -xzf tool.tgz
+- tar "--absolute-names" -xzf tool.tgz

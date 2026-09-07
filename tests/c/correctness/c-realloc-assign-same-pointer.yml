@@ -1,0 +1,12 @@
+id: c-realloc-assign-same-pointer
+valid:
+  - 'int f(char **b, size_t n) { char *t = realloc(*b, n); if (t == NULL) { return -1; } *b = t; return 0; }'
+  - 'int f(char *p, size_t n) { char *q = realloc(p, n); return q != NULL; }'
+  - 'int f(char *p, size_t n) { p = my_realloc(p, n); return p != NULL; }'
+  - 'int f(char *p, size_t n) { char *t = reallocarray(p, n, 4); return t != NULL; }'
+  - 'void f(void) { /* p = realloc(p, n); */ }'
+  - 'const char *s = "p = realloc(p, n);";'
+invalid:
+  - 'int f(char *p, size_t n) { p = realloc(p, n); return p != NULL; }'
+  - 'int f(char **b, size_t n) { *b = realloc(*b, n); return *b != NULL; }'
+  - 'int f(char *p, size_t n) { p = reallocarray(p, n, 4); return p != NULL; }'

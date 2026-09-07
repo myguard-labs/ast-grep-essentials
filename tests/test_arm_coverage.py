@@ -60,10 +60,8 @@ class ArmCoverageTests(unittest.TestCase):
         cases = json.loads((ROOT / "tests/arm_coverage.json").read_text())["cases"]
         witnesses = {(case["rule"], case["path"], case["index"]): case
                      for case in cases if case["classification"] != "equivalent"}
-        # Removing the only CONDITION binder cannot produce an executable rule.
-        # Keep this specific invalid mutation visible; it is not a test kill.
-        invalid = {("nginx-send-header-two-valued", "any", 2):
-                   "Undefined meta var `CONDITION` used in `constraints`."}
+        # Every matcher arm must parse on its own and be killed by a fixture.
+        invalid = {}
         seen_invalid = set()
         tested = fixture_kills = count_kills = 0
         for rule_path in sorted((ROOT / "rules").rglob("*.yml")):

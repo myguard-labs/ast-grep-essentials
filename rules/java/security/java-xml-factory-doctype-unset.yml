@@ -1,0 +1,36 @@
+id: java-xml-factory-doctype-unset
+language: java
+severity: warning
+message: >-
+  XML parser factory created without disabling DOCTYPE processing. The JAXP
+  defaults resolve external entities, so a document can read local files or make
+  the server issue requests on the attacker's behalf, and an entity expansion
+  bomb exhausts memory. Set the disallow-doctype-decl feature to true, or turn
+  off external general and parameter entities.
+note: >-
+  Matches a newInstance call on DocumentBuilderFactory, SAXParserFactory,
+  XMLInputFactory, TransformerFactory, SchemaFactory or XMLReaderFactory whose
+  enclosing method body contains no setFeature, setProperty or setAttribute call
+  naming a DOCTYPE, external-entity or ACCESS_EXTERNAL setting. A factory
+  hardened in a helper method, in a field initialiser, or by a secure-processing
+  wrapper is a false positive; that is why the finding is a warning.
+utils:
+  hardening-call:
+    kind: method_invocation
+    all:
+      - has: {field: name, regex: '^(setFeature|setProperty|setAttribute|setXIncludeAware|setExpandEntityReferences)$'}
+      - regex: '(?i)(doctype|external-general-entities|external-parameter-entities|ACCESS_EXTERNAL|SUPPORT_DTD|IS_SUPPORTING_EXTERNAL_ENTITIES|FEATURE_SECURE_PROCESSING|load-external-dtd)'
+rule:
+  kind: method_invocation
+  all:
+    - has: {field: name, regex: '^newInstance$'}
+    - has:
+        field: object
+        regex: '(^|\.)(DocumentBuilderFactory|SAXParserFactory|XMLInputFactory|TransformerFactory|SchemaFactory|XMLReaderFactory)$'
+    - inside:
+        stopBy: end
+        kind: method_declaration
+        not:
+          has:
+            stopBy: end
+            matches: hardening-call

@@ -1,0 +1,15 @@
+id: wp-wpdb-orderby-interpolation
+valid:
+- "<?php $rows = $wpdb->get_results( $wpdb->prepare( \"SELECT * FROM {$wpdb->prefix}m WHERE p = %d ORDER BY name DESC\", $plan ) );"
+- "<?php $rows = $wpdb->get_results( \"SELECT * FROM {$wpdb->posts} ORDER BY post_date LIMIT 10\" );"
+- "<?php $rows = $wpdb->get_results( 'SELECT * FROM t ORDER BY $orderby' );"
+- "<?php $rows = $other->get_results( \"SELECT * FROM t ORDER BY {$orderby}\" );"
+- "<?php $rows = $wpdb->get_results( \"SELECT {$col} FROM t WHERE a = 1\" );"
+- "<?php /* $wpdb->get_results( \"SELECT * FROM t ORDER BY {$orderby}\" ); */"
+- "<?php $rows = $wpdb->get_results( \"SELECT * FROM t ORDER BY {$wpdb->posts}.post_date\" );"
+- "<?php $rows = $wpdb->get_results( \"SELECT * FROM t ORDER BY {$wpdb->prefix}posts.id\" );"
+invalid:
+- "<?php $rows = $wpdb->get_results( $wpdb->prepare( \"SELECT * FROM {$wpdb->prefix}members WHERE plan = %d ORDER BY {$orderby} {$order}\", $plan ) );"
+- "<?php $rows = $wpdb->query( \"SELECT * FROM t LIMIT $limit\" );"
+- "<?php $v = $wpdb->get_var( \"SELECT id FROM t GROUP BY {$group}\" );"
+- "<?php $v = $wpdb->get_col( \"SELECT id FROM t ORDER BY id OFFSET $off\" );"

@@ -1,0 +1,56 @@
+id: py-django-queryset-request-kwargs
+language: python
+severity: warning
+message: >-
+  Query built from request parameters expanded as keyword arguments or used as
+  an ordering field. The caller then chooses the lookup, so related tables and
+  fields the view never meant to expose are readable, and a crafted alias reaches
+  the SQL text itself. Map the accepted parameters to a fixed set of field names
+  before building the query.
+note: >-
+  Fires on a dictionary splat of a request-derived expression into filter,
+  exclude, order_by, values, values_list, annotate, aggregate, alias or extra,
+  and on a request-derived first argument to any of those nine methods. A
+  parameter dictionary
+  copied into a variable first, and any validation done there, is not seen. A
+  serializer that already restricted the keys is the routine dismissal.
+utils:
+  request-root:
+    any:
+      - kind: identifier
+        regex: '^request$'
+      - kind: attribute
+        has:
+          field: object
+          matches: request-root
+      - kind: subscript
+        has:
+          field: value
+          matches: request-root
+      - kind: call
+        has:
+          field: function
+          matches: request-root
+  queryset-method:
+    kind: attribute
+    has:
+      field: attribute
+      regex: '^(filter|exclude|order_by|values|values_list|annotate|aggregate|alias|extra)$'
+rule:
+  kind: call
+  all:
+    - has: {field: function, matches: queryset-method}
+    - has:
+        field: arguments
+        any:
+          - has:
+              kind: dictionary_splat
+              has: {matches: request-root}
+          - has:
+              nthChild:
+                position: 1
+                ofRule:
+                  not: {kind: comment}
+              all:
+                - matches: request-root
+                - not: {kind: identifier}

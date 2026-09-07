@@ -1,0 +1,39 @@
+id: js-express-open-redirect
+language: javascript
+severity: error
+message: >-
+  Redirect target taken directly from the request. An attacker who controls that
+  parameter sends the victim to a site of their choosing from a link on a
+  trusted origin, which enables credible phishing and can leak the referring URL
+  or a token in the query string. Redirect to a fixed path, or resolve the value
+  against an allowlist before using it.
+note: >-
+  Matches a res.redirect call whose location argument is a request property
+  access such as req.query, req.params or req.body, or a template literal that
+  substitutes one, in both the one-argument and status-plus-location forms. A
+  value copied into a local variable first, or validated against an allowlist
+  before the call, is not visible to this matcher.
+utils:
+  request-access:
+    kind: member_expression
+    regex: '^req(uest)?\s*\.\s*(query|params|body|headers)\b'
+  request-derived:
+    any:
+      - matches: request-access
+      - kind: template_string
+        has:
+          stopBy: end
+          matches: request-access
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: member_expression
+        has: {field: property, regex: '^redirect$'}
+    - has:
+        stopBy: neighbor
+        kind: arguments
+        has:
+          stopBy: neighbor
+          matches: request-derived

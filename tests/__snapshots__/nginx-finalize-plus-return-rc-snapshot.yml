@@ -1,0 +1,30 @@
+id: nginx-finalize-plus-return-rc
+snapshots:
+  ngx_int_t f(ngx_http_request_t *r, ngx_int_t rc) { ngx_http_finalize_request(r, rc); return rc; }:
+    labels:
+    - source: ngx_http_finalize_request(r, rc);
+      style: primary
+      start: 51
+      end: 84
+    - source: rc
+      style: secondary
+      start: 92
+      end: 94
+    - source: return rc;
+      style: secondary
+      start: 85
+      end: 95
+  ? ngx_int_t g(ngx_http_request_t *r, ngx_chain_t *out) { ngx_int_t rc = ngx_http_output_filter(r, out); ngx_http_finalize_request(r, rc); return rc; }
+  : labels:
+    - source: ngx_http_finalize_request(r, rc);
+      style: primary
+      start: 102
+      end: 135
+    - source: rc
+      style: secondary
+      start: 143
+      end: 145
+    - source: return rc;
+      style: secondary
+      start: 136
+      end: 146

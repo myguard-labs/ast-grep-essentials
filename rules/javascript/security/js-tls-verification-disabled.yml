@@ -1,0 +1,40 @@
+id: js-tls-verification-disabled
+language: javascript
+severity: error
+message: >-
+  TLS peer verification weakened. With rejectUnauthorized false or the
+  NODE_TLS_REJECT_UNAUTHORIZED environment override any certificate is accepted;
+  a checkServerIdentity that returns nothing keeps chain validation but drops the
+  hostname check, so any certificate the trust store accepts is honoured for any
+  host. Either way a machine-in-the-middle can read and rewrite the connection.
+  For the first two, trust the private CA explicitly with the ca option instead
+  of disabling the check; for checkServerIdentity, call tls.checkServerIdentity
+  or remove the override.
+note: >-
+  Matches the literal false value of a rejectUnauthorized property, an
+  assignment of "0" to process.env.NODE_TLS_REJECT_UNAUTHORIZED, and a
+  checkServerIdentity property whose function body is empty or returns
+  undefined. A value supplied through a variable or an environment lookup is not
+  matched, so a conditionally disabled check is missed. Test fixtures that
+  intentionally target a self-signed server also match.
+utils:
+  empty-verifier:
+    any:
+      - kind: arrow_function
+        has: {field: body, regex: '^(\{\s*\}|undefined|\{\s*return\s*(undefined\s*)?;?\s*\})$'}
+      - kind: function_expression
+        has: {field: body, regex: '^\{\s*(return\s*(undefined\s*)?;?\s*)?\}$'}
+rule:
+  any:
+    - kind: pair
+      all:
+        - has: {field: key, regex: '^["'']?rejectUnauthorized["'']?$'}
+        - has: {field: value, kind: 'false'}
+    - kind: assignment_expression
+      all:
+        - has: {field: left, regex: '^process\s*\.\s*env\s*\.\s*NODE_TLS_REJECT_UNAUTHORIZED$'}
+        - has: {field: right, regex: '^["'']0["'']$'}
+    - kind: pair
+      all:
+        - has: {field: key, regex: '^["'']?checkServerIdentity["'']?$'}
+        - has: {field: value, matches: empty-verifier}

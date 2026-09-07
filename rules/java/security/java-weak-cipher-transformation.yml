@@ -1,0 +1,29 @@
+id: java-weak-cipher-transformation
+language: java
+severity: error
+message: >-
+  Broken or unauthenticated cipher transformation. A bare algorithm name selects
+  ECB in the SunJCE provider, and ECB leaks plaintext structure block by block,
+  while DES, 3DES, RC2 and RC4 are broken outright and PKCS1v1.5 RSA encryption
+  is padding-oracle prone. Request AES/GCM/NoPadding with a fresh random IV, or
+  RSA with OAEP.
+note: >-
+  Matches Cipher.getInstance whose transformation argument is a string literal
+  that names no mode at all, selects ECB for a block cipher, or names DES,
+  DESede, RC2, RC4, ARCFOUR or Blowfish, or RSA with PKCS1Padding. The ECB arm
+  lists block ciphers explicitly, because ECB in an RSA transformation is a
+  naming artefact rather than a mode. A transformation held in a constant or read
+  from configuration is not matched, and the rule does not check IV uniqueness
+  or key length.
+rule:
+  kind: method_invocation
+  all:
+    - has: {field: name, regex: '^getInstance$'}
+    - has: {field: object, regex: '^(javax\.crypto\.)?Cipher$'}
+    - has:
+        stopBy: neighbor
+        kind: argument_list
+        has:
+          nthChild: 1
+          kind: string_literal
+          regex: '(?i)^"(?:[a-z0-9]+|(?:aes|des|desede|tripledes|rc2|rc4|arcfour|blowfish|aeswrap|camellia|seed|idea)/ECB/[^"]*|(?:des|desede|tripledes|rc2|rc4|arcfour|blowfish)/[^"]*|rsa/[^"]*/pkcs1padding)"$'

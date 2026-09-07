@@ -1,0 +1,19 @@
+id: nginx-str-data-passed-to-libc
+valid:
+  - 'ngx_int_t f(ngx_pool_t *p, ngx_str_t *h, SSL *ssl) { char *c = ngx_pnalloc(p, h->len + 1); if (c == 0) { return -1; } ngx_memcpy(c, h->data, h->len); c[h->len] = 0; SSL_set_tlsext_host_name(ssl, c); return 0; }'
+  - 'ngx_int_t f(ngx_str_t *a, ngx_str_t *b) { return ngx_strncmp(a->data, b->data, a->len); }'
+  - 'size_t f(ngx_str_t *s) { return s->len; }'
+  - 'int f(ngx_str_t *s) { return my_strlen(s->data); }'
+  - 'int f(ngx_str_t *s) { return strcmp(s->name, "x"); }'
+  - 'size_t f(ngx_str_t *s) { return strlen((char *) s->data); }'
+  - 'void f(void) { /* strcmp(s->data, x); */ }'
+  - 'const char *s = "strcmp(s->data, x)";'
+invalid:
+  - 'ngx_int_t f(ngx_str_t *h, SSL *ssl) { SSL_set_tlsext_host_name(ssl, (char *) h->data); return 0; }'
+  - 'int f(ngx_str_t h) { return atoi((char *) h.data); }'
+  - 'int f(ngx_str_t *s) { return strcmp((char *) s->data, "x"); }'
+  - 'int f(ngx_str_t *s) { return open((char *) s->data, 0); }'
+  - 'int f(ngx_str_t *s) { return X509_check_host(0, (char *) s->data, 0, 0, 0); }'
+  - 'long f(ngx_str_t *s) { return strtol((char *) s->data, 0, 10); }'
+  - 'int f(ngx_str_t *s, struct addrinfo **r) { return getaddrinfo((char *) s->data, 0, 0, r); }'
+  - 'int f(ngx_str_t *s, struct in_addr *a) { return inet_pton(2, (char *) s->data, a); }'

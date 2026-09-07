@@ -1,0 +1,15 @@
+id: py-ldap-xpath-filter-build
+valid:
+- conn.search(BASE, "(objectClass=person)")
+- tree.xpath("//u[@n=$n]", n=name)
+- conn.search_s(BASE, SCOPE, FILTER)
+- 'tree.xpath("//user")'
+- re.search(pattern, text)
+- conn.searching(f"{x}")
+- '# tree.xpath(f"//u[@n=''{n}'']")'
+- 'text = ''tree.xpath(f"//u")'''
+invalid:
+- conn.search(BASE, f"(uid={username})")
+- conn.search_s(BASE, SCOPE, "(cn=%s)" % name)
+- 'tree.xpath("//u[@n=''%s'']" % name)'
+- 'tree.xpath(f"//user[@name=''{n}'']")'

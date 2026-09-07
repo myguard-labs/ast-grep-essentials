@@ -1,0 +1,23 @@
+id: js-dom-html-sink
+valid:
+  - 'el.textContent = userInput;'
+  - 'el.innerHTML = "<b>static</b>";'
+  - 'el.innerHTML = `<b>static</b>`;'
+  - 'el.innerHTML = DOMPurify.sanitize(post.body);'
+  - 'document.write("<hr>");'
+  - 'document.writeIt(value);'
+  - 'el.insertAdjacentHTML("beforeend", "<hr>");'
+  - 'el.insertAdjacentHTML(position, "<hr>");'
+  - 'const text = "el.innerHTML = value";'
+  - '// el.innerHTML = value;'
+  - 'const a = <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(body) }} />;'
+  - 'const b = <div title={body} />;'
+invalid:
+  - 'el.innerHTML += userInput;'
+  - 'el.outerHTML += buildRow(item);'
+  - 'el.innerHTML = location.hash.slice(1);'
+  - 'el.outerHTML = markup;'
+  - 'document.write(params.get("q"));'
+  - 'document.writeln(row);'
+  - 'el.insertAdjacentHTML("beforeend", markup);'
+  - 'const c = <div dangerouslySetInnerHTML={{ __html: post.body }} />;'

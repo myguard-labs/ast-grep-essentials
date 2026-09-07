@@ -1,0 +1,506 @@
+id: c-toctou-access-then-open
+snapshots:
+  FILE *f(const char *path) { struct stat st; if (stat(path, &st) != 0) { return 0; } return fopen(path, "w"); }:
+    labels:
+    - source: fopen(path, "w")
+      style: primary
+      start: 91
+      end: 107
+    - source: fopen
+      style: secondary
+      start: 91
+      end: 96
+    - source: path
+      style: secondary
+      start: 97
+      end: 101
+    - source: path
+      style: secondary
+      start: 97
+      end: 101
+    - source: stat
+      style: secondary
+      start: 48
+      end: 52
+    - source: path
+      style: secondary
+      start: 53
+      end: 57
+    - source: path
+      style: secondary
+      start: 53
+      end: 57
+    - source: stat(path, &st)
+      style: secondary
+      start: 48
+      end: 63
+    - source: stat(path, &st)
+      style: secondary
+      start: 48
+      end: 63
+    - source: stat(path, &st)
+      style: secondary
+      start: 48
+      end: 63
+  FILE *f(const char *path, FILE *o) { struct stat st; if (euidaccess(path, 4) != 0) { return 0; } return freopen(path, "w", o); }:
+    labels:
+    - source: freopen(path, "w", o)
+      style: primary
+      start: 104
+      end: 125
+    - source: freopen
+      style: secondary
+      start: 104
+      end: 111
+    - source: path
+      style: secondary
+      start: 112
+      end: 116
+    - source: path
+      style: secondary
+      start: 112
+      end: 116
+    - source: euidaccess
+      style: secondary
+      start: 57
+      end: 67
+    - source: path
+      style: secondary
+      start: 68
+      end: 72
+    - source: path
+      style: secondary
+      start: 68
+      end: 72
+    - source: euidaccess(path, 4)
+      style: secondary
+      start: 57
+      end: 76
+    - source: euidaccess(path, 4)
+      style: secondary
+      start: 57
+      end: 76
+    - source: euidaccess(path, 4)
+      style: secondary
+      start: 57
+      end: 76
+  int f(const char *path) { if (access(path, 2) != 0) { return -1; } return chmod(path, 0600); }:
+    labels:
+    - source: chmod(path, 0600)
+      style: primary
+      start: 74
+      end: 91
+    - source: chmod
+      style: secondary
+      start: 74
+      end: 79
+    - source: path
+      style: secondary
+      start: 80
+      end: 84
+    - source: path
+      style: secondary
+      start: 80
+      end: 84
+    - source: access
+      style: secondary
+      start: 30
+      end: 36
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+  int f(const char *path) { if (access(path, 2) != 0) { return -1; } return chown(path, 0, 0); }:
+    labels:
+    - source: chown(path, 0, 0)
+      style: primary
+      start: 74
+      end: 91
+    - source: chown
+      style: secondary
+      start: 74
+      end: 79
+    - source: path
+      style: secondary
+      start: 80
+      end: 84
+    - source: path
+      style: secondary
+      start: 80
+      end: 84
+    - source: access
+      style: secondary
+      start: 30
+      end: 36
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+  int f(const char *path) { if (access(path, 2) != 0) { return -1; } return creat(path, 0600); }:
+    labels:
+    - source: creat(path, 0600)
+      style: primary
+      start: 74
+      end: 91
+    - source: creat
+      style: secondary
+      start: 74
+      end: 79
+    - source: path
+      style: secondary
+      start: 80
+      end: 84
+    - source: path
+      style: secondary
+      start: 80
+      end: 84
+    - source: access
+      style: secondary
+      start: 30
+      end: 36
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+  int f(const char *path) { if (access(path, 2) != 0) { return -1; } return mkdir(path, 0700); }:
+    labels:
+    - source: mkdir(path, 0700)
+      style: primary
+      start: 74
+      end: 91
+    - source: mkdir
+      style: secondary
+      start: 74
+      end: 79
+    - source: path
+      style: secondary
+      start: 80
+      end: 84
+    - source: path
+      style: secondary
+      start: 80
+      end: 84
+    - source: access
+      style: secondary
+      start: 30
+      end: 36
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+  int f(const char *path) { if (access(path, 2) != 0) { return -1; } return open(path, 1); }:
+    labels:
+    - source: open(path, 1)
+      style: primary
+      start: 74
+      end: 87
+    - source: open
+      style: secondary
+      start: 74
+      end: 78
+    - source: path
+      style: secondary
+      start: 79
+      end: 83
+    - source: path
+      style: secondary
+      start: 79
+      end: 83
+    - source: access
+      style: secondary
+      start: 30
+      end: 36
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+  int f(const char *path) { if (access(path, 2) != 0) { return -1; } return rmdir(path); }:
+    labels:
+    - source: rmdir(path)
+      style: primary
+      start: 74
+      end: 85
+    - source: rmdir
+      style: secondary
+      start: 74
+      end: 79
+    - source: path
+      style: secondary
+      start: 80
+      end: 84
+    - source: path
+      style: secondary
+      start: 80
+      end: 84
+    - source: access
+      style: secondary
+      start: 30
+      end: 36
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+  int f(const char *path) { if (access(path, 2) != 0) { return -1; } return truncate(path, 0); }:
+    labels:
+    - source: truncate(path, 0)
+      style: primary
+      start: 74
+      end: 91
+    - source: truncate
+      style: secondary
+      start: 74
+      end: 82
+    - source: path
+      style: secondary
+      start: 83
+      end: 87
+    - source: path
+      style: secondary
+      start: 83
+      end: 87
+    - source: access
+      style: secondary
+      start: 30
+      end: 36
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: path
+      style: secondary
+      start: 37
+      end: 41
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+    - source: access(path, 2)
+      style: secondary
+      start: 30
+      end: 45
+  int f(const char *path) { if (eaccess(path, 2) != 0) { return -1; } return unlink(path); }:
+    labels:
+    - source: unlink(path)
+      style: primary
+      start: 75
+      end: 87
+    - source: unlink
+      style: secondary
+      start: 75
+      end: 81
+    - source: path
+      style: secondary
+      start: 82
+      end: 86
+    - source: path
+      style: secondary
+      start: 82
+      end: 86
+    - source: eaccess
+      style: secondary
+      start: 30
+      end: 37
+    - source: path
+      style: secondary
+      start: 38
+      end: 42
+    - source: path
+      style: secondary
+      start: 38
+      end: 42
+    - source: eaccess(path, 2)
+      style: secondary
+      start: 30
+      end: 46
+    - source: eaccess(path, 2)
+      style: secondary
+      start: 30
+      end: 46
+    - source: eaccess(path, 2)
+      style: secondary
+      start: 30
+      end: 46
+  int f(const char *path) { struct stat st; if (lstat(path, &st) != 0) { return -1; } return unlink(path); }:
+    labels:
+    - source: unlink(path)
+      style: primary
+      start: 91
+      end: 103
+    - source: unlink
+      style: secondary
+      start: 91
+      end: 97
+    - source: path
+      style: secondary
+      start: 98
+      end: 102
+    - source: path
+      style: secondary
+      start: 98
+      end: 102
+    - source: lstat
+      style: secondary
+      start: 46
+      end: 51
+    - source: path
+      style: secondary
+      start: 52
+      end: 56
+    - source: path
+      style: secondary
+      start: 52
+      end: 56
+    - source: lstat(path, &st)
+      style: secondary
+      start: 46
+      end: 62
+    - source: lstat(path, &st)
+      style: secondary
+      start: 46
+      end: 62
+    - source: lstat(path, &st)
+      style: secondary
+      start: 46
+      end: 62
+  int f(const char *path, const char *to) { if (access(path, 4) != 0) { return -1; } return rename(path, to); }:
+    labels:
+    - source: rename(path, to)
+      style: primary
+      start: 90
+      end: 106
+    - source: rename
+      style: secondary
+      start: 90
+      end: 96
+    - source: path
+      style: secondary
+      start: 97
+      end: 101
+    - source: path
+      style: secondary
+      start: 97
+      end: 101
+    - source: access
+      style: secondary
+      start: 46
+      end: 52
+    - source: path
+      style: secondary
+      start: 53
+      end: 57
+    - source: path
+      style: secondary
+      start: 53
+      end: 57
+    - source: access(path, 4)
+      style: secondary
+      start: 46
+      end: 61
+    - source: access(path, 4)
+      style: secondary
+      start: 46
+      end: 61
+    - source: access(path, 4)
+      style: secondary
+      start: 46
+      end: 61

@@ -1,0 +1,21 @@
+id: py-django-debug-true
+language: python
+severity: warning
+message: >-
+  Django DEBUG set to a literal True at module level. Debug responses render the
+  full traceback, the local variables of every frame and the settings module, so
+  database credentials and the signing key are handed to anyone who triggers an
+  error. Read the flag from the environment and keep production at False.
+note: >-
+  Fires on a module-level assignment of the bare name DEBUG to a literal True.
+  A flag read from the environment or a call is not matched, and the matcher
+  does not know whether this module is the one a deployment loads. A settings
+  module used only by the local development server is the routine dismissal.
+rule:
+  kind: assignment
+  all:
+    - has: {field: left, kind: identifier, regex: '^DEBUG$'}
+    - has: {field: right, regex: '^True$'}
+    - inside:
+        kind: expression_statement
+        inside: {kind: module}

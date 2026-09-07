@@ -1,0 +1,15 @@
+id: php-dynamic-callable-from-request
+valid:
+- "<?php $handlers = array( 'export' => 'mp_export' ); if ( isset( $handlers[ $_GET['step'] ] ) ) { call_user_func( $handlers[ $_GET['step'] ] ); }"
+- "<?php call_user_func( 'mp_export', $_POST['args'] );"
+- "<?php array_map( 'trim', $_POST['names'] );"
+- "<?php new MyHandler( $_POST['class'] );"
+- "<?php $result = $handler( $data );"
+- "<?php /* call_user_func( $_POST['action'] ); */"
+- "<?php $s = \"call_user_func( \\$_POST['action'] )\";"
+- "<?php usort( $_GET['rows'], 'strcmp' );"
+invalid:
+- "<?php call_user_func( $_POST['action'], $_POST['args'] );"
+- "<?php $result = $_REQUEST['callback']( $data );"
+- "<?php $obj = new $_GET['class']();"
+- "<?php usort( $rows, $_GET['cmp'] );"

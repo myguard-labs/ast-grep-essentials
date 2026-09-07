@@ -1,0 +1,13 @@
+id: nginx-shm-data-write-without-lock
+valid:
+  - 'ngx_int_t f(my_ctx_t *ctx, ngx_uint_t n) { ngx_shmtx_lock(&ctx->shpool->mutex); ctx->sh->hits += n; ngx_shmtx_unlock(&ctx->shpool->mutex); return 0; }'
+  - 'ngx_int_t my_init_zone(ngx_shm_zone_t *z, void *old) { my_ctx_t *ctx = z->data; ctx->sh->hits = 0; return 0; }'
+  - 'ngx_uint_t f(my_ctx_t *ctx) { return ctx->sh->hits; }'
+  - 'ngx_int_t f(my_ctx_t *ctx, ngx_uint_t n) { ctx->local->hits += n; return 0; }'
+  - 'ngx_int_t f(my_ctx_t *ctx, ngx_uint_t n) { ngx_atomic_fetch_add(ctx->counter, n); return 0; }'
+  - 'void f(void) { /* ctx->sh->hits++; */ }'
+  - 'const char *s = "ctx->sh->hits++;";'
+invalid:
+  - 'ngx_int_t f(my_ctx_t *ctx, ngx_uint_t n) { ctx->sh->hits += n; return 0; }'
+  - 'ngx_int_t g(my_ctx_t *ctx) { ctx->sh->hits++; return 0; }'
+  - 'ngx_int_t h(my_ctx_t *ctx) { ctx->sh->head = 0; return 0; }'

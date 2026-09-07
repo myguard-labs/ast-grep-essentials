@@ -1,0 +1,44 @@
+id: js-child-process-shell-interpolation
+language: javascript
+severity: error
+message: >-
+  Shell command built by string interpolation or concatenation and handed to a
+  child_process API that runs it through a shell. Any metacharacter in the
+  interpolated value (a semicolon, a backtick, $(...)) starts a second command
+  with the process privileges. Use execFile or spawn with a fixed executable and
+  an argument array, and do not enable the shell option.
+note: >-
+  Matches exec and execSync and their child_process member forms when the first
+  argument is a template literal containing a substitution or a binary
+  concatenation. These are the only child_process APIs that run their argument
+  through a shell by default. execFile, spawn and their variants are excluded:
+  they take an executable and an argument array, which is the migration this
+  rule's message prescribes, and they reach a shell only when the shell option is
+  set, which this matcher does not inspect. fork resolves a module path and never
+  uses a shell. It does not determine whether the interpolated value is
+  attacker-controlled. A fully literal command string is excluded.
+utils:
+  interpolated-command:
+    any:
+      - kind: template_string
+        has: {kind: template_substitution}
+      - kind: binary_expression
+        has: {field: operator, regex: '^\+$'}
+  exec-name:
+    regex: '^(exec|execSync)$'
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        any:
+          - kind: identifier
+            matches: exec-name
+          - kind: member_expression
+            has: {field: property, matches: exec-name}
+    - has:
+        stopBy: neighbor
+        kind: arguments
+        has:
+          nthChild: 1
+          matches: interpolated-command

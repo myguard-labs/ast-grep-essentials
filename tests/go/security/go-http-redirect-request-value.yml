@@ -1,0 +1,16 @@
+id: go-http-redirect-request-value
+valid:
+- 'package p; func f() { http.Redirect(w, r, "/home", http.StatusFound) }'
+- 'package p; func f() { http.Redirect(w, r, next, http.StatusFound) }'
+- 'package p; func f() { c.Redirect(302, "/home") }'
+- 'package p; func f() { http.Redirect(w, r.FormValue("x"), "/home", 302) }'
+- 'package p; func f() { http.NotFound(w, r) }'
+- 'package p; func f() { log.Println(r.FormValue("next")) }'
+- 'package p; // http.Redirect(w, r, r.FormValue("next"), 302)'
+- 'package p; var s = "http.Redirect(w, r, r.FormValue(\"next\"), 302)"'
+invalid:
+- 'package p; func f() { http.Redirect(w, r, r.FormValue("next"), http.StatusFound) }'
+- 'package p; func f() { http.Redirect(w, r, r.URL.Query().Get("next"), 302) }'
+- 'package p; func f() { http.Redirect(w, r, r.Header.Get("Referer"), 302) }'
+- 'package p; func f() { c.Redirect(302, c.Query("next")) }'
+- 'package p; func f() { c.Redirect(302, c.Param("to")) }'

@@ -1,0 +1,12 @@
+id: php-mail-header-request
+valid:
+- "<?php wp_mail( $admin, 'Contact', $msg, array( 'Reply-To: ' . $from ) );"
+- "<?php wp_mail( $admin, 'Contact', $msg, array( 'Reply-To: ' . sanitize_email( $_POST['email'] ) ) );"
+- "<?php mail( $to, $_POST['subject'], $msg );"
+- "<?php mail( $to, 's', $msg, 'From: noreply@example.com' );"
+- "<?php $h = 'From: ' . $_POST['email'];"
+- "<?php /* mail( $to, 's', $m, 'From: ' . $_POST['email'] ); */"
+- "<?php $s = \"mail( \\$to, 's', \\$m, 'From: ' . \\$_POST['email'] )\";"
+invalid:
+- "<?php mail( $to, $_POST['subject'], $msg, 'From: ' . $_POST['email'] );"
+- "<?php wp_mail( $admin, 'Contact', $msg, array( 'Reply-To: ' . $_REQUEST['email'] ) );"

@@ -1,0 +1,25 @@
+id: nginx-strlen-on-ngx-str-data
+language: c
+severity: warning
+message: >-
+  strlen applied to a .data member whose length is already carried alongside it.
+  In the ngx_str_t convention the len field is the authority: the buffer is not
+  terminated, so this scan either walks past the value into the next header or,
+  where a terminator does happen to follow, silently disagrees with len for any
+  value containing an embedded zero. Use the len field.
+note: >-
+  Matches strlen and ngx_strlen applied to a member named data; it does not
+  verify that the struct is an ngx_str_t, so an unrelated member of that name
+  holding a genuinely terminated string reports here and is a valid dismissal.
+  A length recomputed on a buffer the module terminated itself is redundant
+  rather than wrong.
+rule:
+  kind: call_expression
+  all:
+    - has: {field: function, regex: '^(strlen|ngx_strlen)$'}
+    - has:
+        field: arguments
+        has:
+          stopBy: end
+          kind: field_expression
+          has: {field: field, regex: '^data$'}

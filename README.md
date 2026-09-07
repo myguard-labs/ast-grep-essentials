@@ -16,7 +16,8 @@ platform.
 
 - `rules/<language>/<category>/`: active YAML rules; nginx rules use `c`.
 - `tests/<language>/<category>/`: matching `valid` and `invalid` fixtures.
-- `docs/`: authoring guidance and excluded candidates with rejection evidence.
+- `docs/`: authoring guidance, detection limits, per-rule source evidence, and
+  excluded candidates with rejection evidence.
 
 Rule IDs are stable across directory changes. Third-party packs are maintained
 separately by consumers and are not bundled here.
@@ -49,4 +50,5 @@ the PHP parser.
 Warnings and information are advisory; error severity can fail a scan. Validate
 any promoted rule IDs and exercise a known positive before using a scan as a gate.
 
-See [authoring](docs/authoring.md) and [limitations](docs/limitations.md).
+See [authoring](docs/authoring.md), [limitations](docs/limitations.md),
+[sources](docs/sources.md) and [rejected candidates](docs/rejected-candidates.md).

@@ -1,0 +1,22 @@
+id: sh-remote-shell-string-interpolation
+valid:
+- ssh "$HOST" -- rm -rf -- "$DIR"
+- ssh deploy@host "systemctl restart app"
+- bash -c 'systemctl restart app'
+- bash ./deploy.sh "$DIR"
+- docker exec app /usr/bin/reload
+- kubectl exec pod -- ls /srv
+- rsync -a "$SRC" "$HOST:$DST"
+- echo "ssh $HOST \"rm -rf $DIR\""
+- '# ssh "$HOST" "rm -rf $DIR"'
+- "docker exec \"$C\" cmd"
+- "kubectl exec \"$POD\" -- cat /etc/passwd"
+invalid:
+- ssh "$HOST" "rm -rf $DIR"
+- ssh deploy@host "systemctl restart $SERVICE"
+- bash -c "install $PKG"
+- sh -c "$USER_CMD"
+- docker exec app sh -c "rm $F"
+- kubectl exec pod -- sh -c "cat $FILE"
+- '"ssh" host "restart $SERVICE"'
+- ssh host "restart $(cat name)"

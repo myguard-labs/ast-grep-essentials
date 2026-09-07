@@ -1,0 +1,35 @@
+id: nginx-init-returns-http-status
+language: c
+severity: warning
+message: >-
+  A configuration or initialisation callback returns an NGX_HTTP_ status code.
+  These hooks are contracted to return NGX_OK, NGX_ERROR, or for the
+  configuration slots NGX_CONF_OK and NGX_CONF_ERROR. An HTTP status is a small
+  positive integer with no meaning in that contract, so depending on the caller
+  it either aborts startup with a nonsensical reason or is accepted as success
+  and the module runs with the state it just failed to build. Return NGX_ERROR
+  or NGX_CONF_ERROR.
+note: >-
+  The function is identified by the name suffix its role conventionally carries,
+  so a hook registered under a different name is missed and an ordinary helper
+  that happens to end in one of those suffixes and legitimately produces an HTTP
+  status reports here. Only a literal NGX_HTTP_ identifier in a return statement
+  is matched; a status held in a variable is not.
+utils:
+  init-like-name:
+    kind: function_declarator
+    has:
+      field: declarator
+      kind: identifier
+      regex: '(_init|_init_module|_init_process|_init_worker|_init_zone|_postconfiguration|_preconfiguration|_create_conf|_merge_conf|_init_main_conf|_create_main_conf|_create_srv_conf|_create_loc_conf|_merge_srv_conf|_merge_loc_conf)$'
+rule:
+  kind: return_statement
+  has:
+    kind: identifier
+    regex: '^NGX_HTTP_[A-Z_0-9]+$'
+  inside:
+    kind: function_definition
+    stopBy: end
+    has:
+      stopBy: end
+      matches: init-like-name

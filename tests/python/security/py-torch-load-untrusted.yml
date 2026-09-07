@@ -1,0 +1,15 @@
+id: py-torch-load-untrusted
+valid:
+- torch.load(path, weights_only=True)
+- torch.load(path, map_location="cpu", weights_only=True)
+- load_file(path)
+- safetensors.torch.load_file(path)
+- torch.save(model, path)
+- nottorch.load(path)
+- '# torch.load(path)'
+- text = 'torch.load(path)'
+invalid:
+- torch.load(path)
+- torch.load(path, map_location="cpu")
+- torch.load(path, weights_only=False)
+- torch.load(path, weights_only=flag)

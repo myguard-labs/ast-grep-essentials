@@ -1,0 +1,50 @@
+id: go-http-request-url-ssrf
+language: go
+severity: error
+message: >-
+  Outbound HTTP request whose URL comes straight from the incoming request. The
+  server then fetches whatever the caller names, including link-local metadata
+  endpoints and services bound to loopback that no external client can reach,
+  and returns or acts on the response. Resolve the host first and reject
+  loopback, link-local and private ranges, or restrict fetches to an
+  allow-listed set of hosts.
+note: >-
+  Fires when the request accessor is the URL argument itself. url.Parse is not
+  matched: parsing a URL issues no request, and it is the first step of a
+  validating guard as often as of a fetch. A value assigned
+  to a variable and validated before the fetch does not match at all. Note that
+  a scheme or prefix test alone is not a sufficient guard, because it does not
+  constrain which host the resolved name points at.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^(http\.Get|http\.Post|http\.PostForm|http\.Head|http\.NewRequest|http\.NewRequestWithContext)$'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          stopBy: end
+          kind: call_expression
+          any:
+            - has:
+                field: function
+                kind: selector_expression
+                regex: '\.(FormValue|PostFormValue|Param|QueryParam|DefaultQuery|PathValue)$'
+            - has:
+                field: function
+                kind: selector_expression
+                all:
+                  - has: {field: field, regex: '^Get$'}
+                  - has: {field: operand, regex: 'Query\(\)$|Header$'}
+            - all:
+                - has:
+                    field: function
+                    kind: selector_expression
+                    has: {field: field, regex: '^Query$'}
+                - has:
+                    field: arguments
+                    kind: argument_list
+                    has:
+                      nthChild: {position: 1, ofRule: {not: {kind: comment}}}

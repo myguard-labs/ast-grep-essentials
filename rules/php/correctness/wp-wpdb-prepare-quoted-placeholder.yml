@@ -1,0 +1,37 @@
+id: wp-wpdb-prepare-quoted-placeholder
+language: php
+severity: warning
+message: >-
+  A placeholder inside the SQL passed to wpdb::prepare is wrapped in quotes.
+  prepare already quotes and escapes string placeholders, and since WordPress
+  4.8.3 it strips the surrounding quotes and adds its own, so the extra quotes
+  are misleading rather than protective. Remove them and leave the bare
+  placeholder.
+note: >-
+  Regex-matches a quoted %s, %d, %f or %i placeholder, with or without an
+  argument number or padding specifier, in the first argument of a prepare call
+  on a wpdb-like object. It reads the literal SQL text only, so a query
+  assembled in a variable before the call is not seen, and a quoted percent
+  sequence inside data rather than a placeholder position would match.
+rule:
+  kind: member_call_expression
+  all:
+    - has:
+        field: name
+        regex: '(?i)^prepare$'
+    - has:
+        field: object
+        kind: variable_name
+        regex: '(?i)^\$[a-z_][a-z0-9_]*db$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          nthChild:
+            position: 1
+            ofRule: {kind: argument}
+          has:
+            any:
+              - kind: string
+              - kind: encapsed_string
+            regex: "(?i)(\x27%[0-9]*\\\\?\\$?[-'0-9]*[sdfi]\x27|\"%[0-9]*\\\\?\\$?[-'0-9]*[sdfi]\")"

@@ -1,0 +1,31 @@
+id: sh-process-substitution-shell-input
+language: bash
+severity: error
+message: >-
+  Interpreter fed a downloaded script through process substitution or a here
+  string. The fetched bytes run with no chance to inspect or verify them, so a
+  compromised host, a hijacked DNS answer or a machine-in-the-middle gets
+  arbitrary code execution, and a truncated download runs half a script. Fetch
+  to a file, verify a published checksum or signature, then run it.
+note: >-
+  Matches sh, bash, python and their relatives given a process substitution or a
+  here string whose content runs curl, wget or fetch, in the argument position
+  and after -c, which the pipe-into-shell rule does not cover because no pipeline
+  is involved. Vendor install instructions use this shape; that is the reason to
+  pin and verify locally rather than a reason to dismiss it.
+utils:
+  fetching-substitution:
+    any:
+      - kind: process_substitution
+      - kind: command_substitution
+    regex: '(?:^|[\s(<])(curl|wget|fetch)\s'
+rule:
+  kind: command
+  all:
+    - has:
+        field: name
+        kind: command_name
+        regex: '^["'']?(sh|bash|zsh|ksh|dash|python|python3|perl|ruby|node)["'']?$'
+    - has:
+        stopBy: end
+        matches: fetching-substitution

@@ -1,0 +1,13 @@
+id: lua-cjson-decode-unprotected
+valid:
+  - 'local ok, body = pcall(cjson.decode, data)'
+  - 'local ok, body = pcall(function() return cjson.decode(data) end)'
+  - 'local ok, body = xpcall(function() return cjson.decode(data) end, handler)'
+  - 'local body = safe.decode(data)'
+  - 'local body = json.decode(data)'
+  - 'local text = "cjson.decode(data)"'
+  - '-- cjson.decode(data)'
+invalid:
+  - 'local body = cjson.decode(ngx.req.get_body_data())'
+  - 'local claims = cjson.decode(ngx.decode_base64(parts[2]))'
+  - 'ngx.say(cjson.encode(result))'

@@ -1,0 +1,44 @@
+id: sh-world-writable-permissions
+language: bash
+severity: error
+message: >-
+  Filesystem permissions opened to every local account. A mode of 777 or 666, an
+  o+w or a+w symbolic mode, or a umask of 000 lets any unprivileged user on the
+  host rewrite the files, so a script, a configuration file or a binary in that
+  tree is replaced and later runs as whoever executes it. Grant the owner and
+  one group the access they need and nothing wider.
+note: >-
+  Matches a chmod whose mode operand is 777, 666, 646, 622, 707 or a symbolic
+  mode granting write to others or to all, and a umask of 000, 0000, 00 or 0.
+  The mode is read as a literal token, so a mode passed in a variable is missed,
+  and a chmod on a private per-user directory where the wide mode is harmless is
+  still reported. Option values of chmod options that take an argument are not
+  treated as the mode.
+utils:
+  argument-token:
+    any:
+      - kind: word
+      - kind: number
+      - kind: string
+      - kind: raw_string
+  chmod-value-option:
+    matches: argument-token
+    regex: '^["'']?--reference["'']?$'
+  wide-mode:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?(0?(777|666|646|622|707|766|676)|[ugoa]*[ao][ugoa]*[-+=][rwxXst]*w[rwxXst]*|o[-+=][rwxXst]*w[rwxXst]*)["'']?$'
+      - not: {follows: {matches: chmod-value-option}}
+  wide-umask:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?0{1,4}["'']?$'
+rule:
+  kind: command
+  any:
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?chmod["'']?$'}
+        - has: {matches: wide-mode}
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?umask["'']?$'}
+        - has: {matches: wide-umask}

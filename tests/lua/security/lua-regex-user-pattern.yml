@@ -1,0 +1,15 @@
+id: lua-regex-user-pattern
+valid:
+  - 'local m = ngx.re.match(body, [[^\d+$]], "jo")'
+  - 'local m = ngx.re.match(ngx.var.arg_q, [[^\d+$]], "jo")'
+  - 'if string.find(path, "%.lua$") then end'
+  - 'local m = re.match(body, ngx.var.arg_pattern)'
+  - 'local m = ngx.re.match(body, pattern, "jo")'
+  - 'local text = "ngx.re.match(body, ngx.var.arg_pattern)"'
+  - '-- ngx.re.match(body, ngx.var.arg_pattern)'
+invalid:
+  - 'local m = ngx.re.match(body, ngx.var.arg_pattern, "jo")'
+  - 'local m = ngx.re.find(body, ngx.req.get_uri_args()["p"])'
+  - 'local s = ngx.re.gsub(body, ngx.var.http_x_pattern, "")'
+  - 'if string.find(path, ngx.var.arg_q) then end'
+  - 'local s = string.gsub(body, "^" .. ngx.var.arg_prefix, "")'

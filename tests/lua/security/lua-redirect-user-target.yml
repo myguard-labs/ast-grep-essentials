@@ -1,0 +1,14 @@
+id: lua-redirect-user-target
+valid:
+  - 'return ngx.redirect("/login", 302)'
+  - 'return ngx.exec("@fallback")'
+  - 'return ngx.redirect("/login?next=" .. ngx.escape_uri(ngx.var.arg_next))'
+  - 'return ngx.redirect(target)'
+  - 'router.redirect(ngx.var.arg_redirect)'
+  - 'local text = "ngx.redirect(ngx.var.arg_redirect)"'
+  - '-- ngx.redirect(ngx.var.arg_redirect)'
+invalid:
+  - 'return ngx.redirect(ngx.var.arg_redirect)'
+  - 'return ngx.redirect(ngx.req.get_headers()["referer"])'
+  - 'return ngx.exec(ngx.var.arg_next)'
+  - 'return ngx.redirect("/go?u=" .. ngx.var.http_referer)'

@@ -1,0 +1,15 @@
+id: go-http-server-no-header-timeout
+valid:
+- 'package p; func f() { s := &http.Server{Addr: ":8080", ReadHeaderTimeout: 5 * time.Second} }'
+- 'package p; func f() { s := &http.Server{Addr: ":8080", ReadTimeout: 5 * time.Second} }'
+- 'package p; func f() { s := &http.Server{ReadHeaderTimeout: d, Handler: h} }'
+- 'package p; func f() { s := &myhttp.Server{Addr: ":8080"} }'
+- 'package p; func f() { c := &http.Client{Timeout: d} }'
+- 'package p; func f() { s.ListenAndServe() }'
+- 'package p; func f() { http.Handle("/x", h) }'
+- 'package p; // http.ListenAndServe(":8080", nil)'
+- 'package p; var s = "http.ListenAndServe(\":8080\", nil)"'
+- 'package p; func f() { s := &http.Server{Addr: ":8080", Handler: nil} }'
+invalid:
+- 'package p; func f() { http.ListenAndServe(":8080", nil) }'
+- 'package p; func f() { http.ListenAndServeTLS(":443", c, k, nil) }'

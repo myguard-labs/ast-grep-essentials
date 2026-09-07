@@ -1,0 +1,15 @@
+id: lua-sql-string-concat
+valid:
+  - 'local res = db:query("SELECT * FROM users WHERE id = " .. ngx.quote_sql_str(ngx.var.arg_id))'
+  - 'local res = db:query("SELECT * FROM users WHERE id = " .. tonumber(id))'
+  - 'local res = db:query("SELECT * FROM users")'
+  - 'local res = db:query(sql, args)'
+  - 'local res = db.query("SELECT * FROM t WHERE n = " .. name)'
+  - 'local res = http:request("GET /x?q=" .. q)'
+  - 'local text = "db:query(\"SELECT \" .. id)"'
+  - '-- db:query("SELECT " .. id)'
+invalid:
+  - 'local res = db:query("SELECT * FROM users WHERE id = " .. ngx.var.arg_id)'
+  - 'db:query(string.format("SELECT * FROM t WHERE n=''%s''", name))'
+  - 'pg:send_query("DELETE FROM t WHERE k = " .. key)'
+  - 'conn:execute("UPDATE t SET v = " .. value .. " WHERE k = 1")'

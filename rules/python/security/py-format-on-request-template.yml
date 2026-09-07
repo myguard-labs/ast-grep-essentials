@@ -1,0 +1,57 @@
+id: py-format-on-request-template
+language: python
+severity: warning
+message: >-
+  Format template taken from the incoming request. Python format specifications
+  can walk attributes and indexes, so a caller who supplies the template reads
+  object internals and reaches module globals, which exposes configuration and
+  secrets. Keep the template a fixed literal and let the caller supply only the
+  values.
+note: >-
+  Fires when a format or format_map call is made on a request-derived expression,
+  and when string.Template is constructed from one. A template loaded from a
+  database or a configuration file the caller can edit is the same defect and is
+  not seen here. A template drawn from a fixed catalogue by key is the routine
+  dismissal.
+utils:
+  request-root:
+    any:
+      - kind: identifier
+        regex: '^request$'
+      - kind: attribute
+        has:
+          field: object
+          matches: request-root
+      - kind: subscript
+        has:
+          field: value
+          matches: request-root
+      - kind: call
+        has:
+          field: function
+          matches: request-root
+  request-derived:
+    all:
+      - matches: request-root
+      - not: {kind: identifier}
+rule:
+  kind: call
+  any:
+    - has:
+        field: function
+        kind: attribute
+        all:
+          - has: {field: object, matches: request-derived}
+          - has: {field: attribute, regex: '^format(_map)?$'}
+    - all:
+        - has:
+            field: function
+            regex: '(^|\.)Template$'
+        - has:
+            field: arguments
+            has:
+              nthChild:
+                position: 1
+                ofRule:
+                  not: {kind: comment}
+              matches: request-derived

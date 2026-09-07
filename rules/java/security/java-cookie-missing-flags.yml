@@ -1,0 +1,50 @@
+id: java-cookie-missing-flags
+language: java
+severity: warning
+message: >-
+  Session cookie added to the response without HttpOnly and Secure. Without
+  HttpOnly any cross-site script reads the cookie value, and without Secure the
+  browser sends it over plain HTTP where a network attacker captures it. Call
+  setHttpOnly(true) and setSecure(true), or build the cookie with the
+  ResponseCookie httpOnly and secure builders.
+note: >-
+  Matches an addCookie call whose argument is a Cookie constructed inline, and a
+  ResponseCookie.from builder chain that sets neither httpOnly nor secure to
+  true; a chain that sets one of the two is left alone, so a chain missing only
+  the second flag is not reported. A cookie configured through a separate variable and then added is
+  not matched, and flags set globally through a servlet container configuration
+  or a session cookie config are invisible to this matcher.
+utils:
+  flag-set-true:
+    kind: method_invocation
+    all:
+      - has: {field: name, regex: '^(httpOnly|secure)$'}
+      - has: {field: arguments, regex: '^\(\s*true\s*\)$'}
+rule:
+  any:
+    - kind: method_invocation
+      all:
+        - has: {field: name, regex: '^addCookie$'}
+        - has:
+            stopBy: neighbor
+            kind: argument_list
+            has:
+              nthChild: 1
+              kind: object_creation_expression
+              has: {field: type, regex: '(^|\.)Cookie$'}
+    - kind: method_invocation
+      all:
+        - has: {field: name, regex: '^build$'}
+        - has:
+            field: object
+            stopBy: end
+            has:
+              stopBy: end
+              kind: method_invocation
+              all:
+                - has: {field: name, regex: '^from$'}
+                - has: {field: object, regex: '(^|\.)ResponseCookie$'}
+        - not:
+            has:
+              stopBy: end
+              matches: flag-set-true

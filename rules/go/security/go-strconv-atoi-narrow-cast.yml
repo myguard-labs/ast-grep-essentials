@@ -1,0 +1,31 @@
+id: go-strconv-atoi-narrow-cast
+language: go
+severity: warning
+message: >-
+  Parsed integer narrowed by a conversion that silently discards the high bits.
+  Go truncates rather than failing, so a value outside the destination range
+  wraps and can arrive negative or tiny; used as a length, an index or an
+  allocation size that becomes an out-of-range access or an unintended
+  allocation. Parse with ParseInt at the destination bit size and check the
+  error, or range-check before converting.
+note: >-
+  Fires when the parse call is the operand of the conversion in one expression.
+  A value parsed on one line and converted on another does not match, and a
+  conversion whose input was already range-checked is a legitimate dismissal.
+  A conversion widening to a larger type does not match.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: identifier
+        regex: '^(int8|int16|int32|uint8|uint16|uint32|byte|rune)$'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          stopBy: end
+          kind: call_expression
+          has:
+            field: function
+            regex: '^strconv\.(Atoi|ParseInt|ParseUint)$'

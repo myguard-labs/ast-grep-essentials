@@ -1,0 +1,25 @@
+id: sh-world-writable-permissions
+valid:
+- chmod 750 /var/lib/app
+- chmod 0644 /etc/app.conf
+- chmod u+w /var/lib/app
+- chmod g+rw /var/lib/app
+- chmod --reference 777 /var/lib/app
+- chmod --reference=/etc/app.conf /var/lib/app
+- umask 027
+- umask 0022
+- install -d -m 0750 -o app -g app /var/lib/app
+- setfacl -m o::rwx /var/lib/app
+- echo "chmod 777 /var/www"
+- '# chmod 777 /var/www'
+invalid:
+- chmod -R 777 /var/www
+- chmod 666 /etc/app.conf
+- chmod o+w /var/lib/app
+- chmod a+rwx /var/lib/app
+- umask 000
+- umask 0
+- '"chmod" 777 /var/www'
+- chmod "777" /var/www
+- chmod "-R" 777 /var/www
+- chmod 0777 /var/www

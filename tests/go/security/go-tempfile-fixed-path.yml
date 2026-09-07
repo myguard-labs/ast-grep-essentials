@@ -1,0 +1,20 @@
+id: go-tempfile-fixed-path
+valid:
+- 'package p; func f() { f, err := os.CreateTemp("", "app-*.lock") }'
+- 'package p; func f() { d, err := os.MkdirTemp("", "app") }'
+- 'package p; func f() { os.WriteFile("/srv/app.lock", b, 0600) }'
+- 'package p; func f() { os.WriteFile("/var/lib/app.lock", b, 0600) }'
+- 'package p; func f() { os.Create(tmpPath) }'
+- 'package p; func f() { p := filepath.Join(os.TempDir(), name) }'
+- 'package p; func f() { p := filepath.Join(baseDir, "app.lock") }'
+- 'package p; func f() { log.Println("/tmp/app.lock") }'
+- 'package p; // os.Create("/tmp/app.lock")'
+- 'package p; var s = "os.Create(\"/tmp/app.lock\")"'
+invalid:
+- 'package p; func f() { os.WriteFile("/tmp/app.lock", b, 0644) }'
+- 'package p; func f() { f, _ := os.Create("/tmp/out.dat") }'
+- 'package p; func f() { os.OpenFile("/var/tmp/state", os.O_RDWR, 0600) }'
+- 'package p; func f() { os.MkdirAll("/tmp/appcache", 0755) }'
+- 'package p; func f() { f, _ := os.Create(`/tmp/raw.dat`) }'
+- 'package p; func f() { p := filepath.Join(os.TempDir(), "app.lock") }'
+- 'package p; func f() { p := path.Join(os.TempDir(), `app.sock`) }'

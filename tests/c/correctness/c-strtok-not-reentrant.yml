@@ -1,0 +1,11 @@
+id: c-strtok-not-reentrant
+valid:
+  - 'int f(char *s) { char *save; char *t = strtok_r(s, ",", &save); return t != 0; }'
+  - 'int f(char *s) { char *ctx; char *t = strtok_s(s, ",", &ctx); return t != 0; }'
+  - 'int f(char *s) { return (int) strcspn(s, ","); }'
+  - 'int f(char *s) { char *t = my_strtok(s, ","); return t != 0; }'
+  - 'void f(void) { /* strtok(s, ","); */ }'
+  - 'const char *s = "strtok(s, \",\")";'
+invalid:
+  - 'void f(char *s) { strtok(s, " "); }'
+  - 'int f(char *s) { char *t = strtok(s, ","); return t != 0; }'

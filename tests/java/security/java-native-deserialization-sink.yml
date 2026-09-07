@@ -1,0 +1,18 @@
+id: java-native-deserialization-sink
+valid:
+  - 'Object o = mapper.readValue(body, Config.class);'
+  - 'Object cfg = new Yaml(new SafeConstructor(new LoaderOptions())).load(body);'
+  - 'Object o = decoder.readObject();'
+  - 'Object o = stream.fromXML(body);'
+  - 'mapper.setDefaultTyping(null);'
+  - 'String note = "new ObjectInputStream(in).readObject()";'
+  - '// new ObjectInputStream(in).readObject();'
+  - 'Object o = new ValidatingObjectInputStream(in).readObject();'
+  - 'Object cfg = new Yaml().load(body);'
+invalid:
+  - 'Object o = new ObjectInputStream(request.getInputStream()).readObject();'
+  - 'Object o = new XMLDecoder(in).readObject();'
+  - 'Object o = new XStream().fromXML(body);'
+  - 'Object o = new java.io.ObjectInputStream(in).readObject();'
+  - 'mapper.enableDefaultTyping();'
+  - 'mapper.activateDefaultTyping(ptv);'
