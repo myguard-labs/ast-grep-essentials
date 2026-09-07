@@ -1,0 +1,61 @@
+id: powershell-broken-hash-algorithm-type
+valid:
+# A hash type passed as CONSTRUCTOR DATA is not the type being constructed.
+- New-Object System.Text.StringBuilder -ArgumentList System.Security.Cryptography.MD5
+- New-Object -TypeName System.Text.StringBuilder -ArgumentList Security.Cryptography.SHA1
+# The SHA-2 family is the fix, not the defect.
+- '[System.Security.Cryptography.SHA256]::Create()'
+- '[System.Security.Cryptography.SHA384]::Create()'
+- '[System.Security.Cryptography.SHA512]::Create()'
+- '[System.Security.Cryptography.SHA256Managed]::new()'
+- 'New-Object System.Security.Cryptography.SHA256Managed'
+# HMAC is a keyed construction: its security does not rest on the collision
+# resistance of the underlying hash, so these are not broken.
+- '[System.Security.Cryptography.HMACMD5]::new()'
+- '[System.Security.Cryptography.HMACSHA1]::new()'
+- 'New-Object System.Security.Cryptography.HMACSHA1'
+# Near-miss type names that merely start with a broken algorithm name.
+- '[System.Security.Cryptography.MD5Digest]::Create()'
+- '[System.Security.Cryptography.SHA1Hasher]::new()'
+- 'New-Object System.Security.Cryptography.MD5Digest'
+# A different namespace that happens to end in the same identifier.
+- '[Contoso.Hashing.MD5]::Create()'
+- '[System.Security.Cryptography.Aes]::Create()'
+# New-Object constructing something unrelated.
+- 'New-Object System.Collections.ArrayList'
+- 'New-Object psobject -Property @{ Name = ''MD5'' }'
+# The key derivation function that replaces a bare hash for passwords.
+- 'New-Object System.Security.Cryptography.Rfc2898DeriveBytes($p, $salt)'
+# The cmdlet form belongs to PSScriptAnalyzer and is deliberately not
+# double-reported here.
+- 'Get-FileHash -Path $p -Algorithm MD5'
+# The type name only in a comment or a string.
+- '# [System.Security.Cryptography.MD5]::Create()'
+- '$doc = "[System.Security.Cryptography.MD5]::Create()"'
+- '$doc = ''[System.Security.Cryptography.SHA1]::Create()'''
+- 'Write-Output "use [System.Security.Cryptography.MD5] only for legacy data"'
+# A quoted type name is indistinguishable from data and is not matched.
+- 'New-Object -TypeName "System.Security.Cryptography.MD5CryptoServiceProvider"'
+# An algorithm reached through a variable is a dataflow fact, not syntax.
+- '$alg = ''MD5''; Get-FileHash -Path $p -Algorithm $alg'
+# Parser-error control.
+- 'function Broken { param('
+invalid:
+# Arm 1: the type literal, in both namespace spellings and every variant.
+- '[System.Security.Cryptography.MD5]::Create()'
+- '[System.Security.Cryptography.SHA1]::Create()'
+- '[Security.Cryptography.MD5]::Create()'
+- '[Security.Cryptography.SHA1Managed]::new()'
+- '[System.Security.Cryptography.MD5CryptoServiceProvider]::new()'
+- '[System.Security.Cryptography.SHA1CryptoServiceProvider]::new()'
+# The static one-shot API takes no instance, so the literal is the whole use.
+- '$d = [System.Security.Cryptography.MD5]::HashData($bytes)'
+# A bare type reference still selects the algorithm.
+- '$algorithm = [System.Security.Cryptography.SHA1]'
+# Casing is not significant in a .NET type name.
+- '[system.security.cryptography.md5]::Create()'
+# Arm 2: New-Object naming the same types.
+- 'New-Object System.Security.Cryptography.MD5CryptoServiceProvider'
+- 'New-Object Security.Cryptography.SHA1Managed'
+- 'New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider'
+- 'New-Object system.security.cryptography.sha1managed'

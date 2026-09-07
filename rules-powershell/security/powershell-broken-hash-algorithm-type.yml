@@ -1,0 +1,93 @@
+id: powershell-broken-hash-algorithm-type
+language: powershell
+severity: warning
+message: >-
+  This code selects MD5 or SHA-1, both of which are broken for any use that
+  depends on collision resistance (CWE-327, CWE-328). Practical chosen-prefix
+  collisions exist for both -- MD5 since 2004 and SHA-1 since the 2017
+  SHAttered and 2020 SHA-1 is a Shambles results -- so an attacker who
+  controls part of the input can produce a second, different input with the
+  same digest. Anywhere the digest stands in for identity, that is a forgery:
+  signing or certificate paths, integrity manifests and update checks,
+  deduplication keys that decide whether a file is already trusted, and
+  password or token derivation. Use SHA-256 or SHA-384 instead
+  ([System.Security.Cryptography.SHA256]), and for passwords use a purpose-built
+  key-derivation function such as Rfc2898DeriveBytes rather than any bare hash.
+  If the digest is genuinely non-security-relevant -- a cache key or a
+  checksum against accidental corruption, never against a motivated party --
+  say so at the call site so the next reader does not have to re-derive it.
+note: >-
+  Advisory rather than error: MD5 and SHA-1 remain legitimate for
+  interoperability with a fixed external protocol that specifies them, for
+  reading legacy data whose digests were computed years ago, and for
+  non-adversarial checksums. The rule reports that a broken algorithm was
+  selected, not that this particular use is exploitable, because whether the
+  digest carries a security decision is a property of the surrounding program
+  that syntax cannot read.
+  This rule covers the .NET cryptography types, which is the half of the
+  problem PSScriptAnalyzer does not check. Its PSAvoidUsingBrokenHashAlgorithms
+  rule is scoped to the -Algorithm parameter of the Get-FileHash cmdlet and
+  reports nothing for the type-literal and New-Object forms, verified against
+  PSScriptAnalyzer 1.25.0 (see docs/rejected-candidates.md). Consumers should
+  run both: PSScriptAnalyzer remains the better analyzer for the cmdlet form,
+  which this rule deliberately leaves to it rather than double-reporting.
+  Two spellings are matched. The first is a type literal naming MD5, SHA1, or
+  their Managed and CryptoServiceProvider variants, under the full
+  System.Security.Cryptography namespace or the System-less Security.Cryptography
+  form PowerShell also resolves. The bracketed literal is matched whatever
+  follows it, because the type literal is itself the algorithm selection: it
+  reaches an instance through ::Create() or ::new(), and the one-shot static
+  ::HashData() takes no instance at all. The second is New-Object naming the
+  same types as a bare token, positionally or through -TypeName.
+  HMACMD5 and HMACSHA1 are deliberately not matched. They derive from HMAC, a
+  keyed construction whose security does not rest on the collision resistance
+  of the underlying hash, so reporting them would be a false positive; verified
+  against the runtime, where their base type is HMAC while MD5CryptoServiceProvider
+  and SHA1Managed derive from MD5 and SHA1 respectively. The SHA-2 family is
+  likewise unmatched, and a near-miss name such as MD5Digest is rejected because
+  the regex is anchored to the whole type name rather than searching for a
+  substring.
+  Two under-approximations are accepted to avoid false positives. A quoted type
+  name -- New-Object -TypeName "System.Security.Cryptography.MD5" -- is not
+  matched, because a string containing a type name is indistinguishable from
+  one carrying that text as data, such as a hashtable property value. An
+  algorithm chosen through a variable, as in $alg = 'MD5' used later, is a
+  dataflow fact the matcher cannot follow; see limitations.md.
+rule:
+  any:
+    - kind: type_literal
+      regex: '(?i)^\[\s*(System\s*\.\s*)?Security\s*\.\s*Cryptography\s*\.\s*(MD5|SHA1)(Managed|CryptoServiceProvider)?\s*\]$'
+    - kind: command
+      all:
+        - has:
+            field: command_name
+            regex: '(?i)^New-Object$'
+        # command_elements is FLAT: the type name is the first positional
+        # element, or the sibling that FOLLOWS -TypeName. Anchoring to the type
+        # slot is what keeps a hash type passed as constructor data -- e.g.
+        # `New-Object System.Text.StringBuilder -ArgumentList ...MD5` -- from
+        # being read as the type being constructed.
+        - has:
+            field: command_elements
+            has:
+              any:
+                # Positional: the type is the first element.
+                - all:
+                    - kind: generic_token
+                      nthChild: 2
+                      regex: '(?i)^(System\.)?Security\.Cryptography\.(MD5|SHA1)(Managed|CryptoServiceProvider)?$'
+                # Named: -TypeName <value>, the value being the following
+                # sibling across the argument separator.
+                - all:
+                    - kind: generic_token
+                      regex: '(?i)^(System\.)?Security\.Cryptography\.(MD5|SHA1)(Managed|CryptoServiceProvider)?$'
+                    # command_elements separates every element with a
+                    # command_argument_sep, so -TypeName is two positions back,
+                    # not the immediate predecessor.
+                    - follows:
+                        stopBy: neighbor
+                        kind: command_argument_sep
+                        follows:
+                          stopBy: neighbor
+                          kind: command_parameter
+                          regex: '(?i)^-TypeName$'

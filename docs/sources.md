@@ -514,6 +514,19 @@ fixed by its fixtures.
   `-m` through `-membername` all reach `-MemberName` while no other
   `ForEach-Object` or common parameter begins with `m`
   <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parameters?view=powershell-7.5>
+- `powershell-broken-hash-algorithm-type` — CWE-327, CWE-328; the PSScriptAnalyzer
+  `AvoidUsingBrokenHashAlgorithms` rule, whose scope is the `-Algorithm`
+  parameter of `Get-FileHash` and which is the differential baseline this rule
+  complements rather than duplicates
+  <https://learn.microsoft.com/en-us/powershell/utility-modules/psscriptanalyzer/rules/avoidusingbrokenhashalgorithms>;
+  the .NET cryptography guidance deprecating MD5 and SHA-1 and directing callers
+  to the SHA-2 family
+  <https://learn.microsoft.com/en-us/dotnet/standard/security/cross-platform-cryptography>;
+  the SHAttered and SHA-1 is a Shambles chosen-prefix collision results that
+  make SHA-1 unusable where collision resistance is required
+  <https://shattered.io/>; <https://sha-mbles.github.io/>;
+  NIST SP 800-131A Rev. 2, which disallows SHA-1 for digital signature
+  generation <https://csrc.nist.gov/pubs/sp/800/131/a/r2/final>
 - `powershell-web-request-certificate-check-skipped` — CWE-295; the
   `Invoke-WebRequest` reference, which documents `-SkipCertificateCheck` as
   allowing invalid certificates including expired, self-signed and

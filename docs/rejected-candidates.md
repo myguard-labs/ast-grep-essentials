@@ -513,3 +513,64 @@ rules cite. The retained rules are `php-putenv-loader-env`,
   shipped rule's `-NoEncryption` boundary starts at `-NoE`: the binder rejects
   `-No` as ambiguous between all three, verified by binding each prefix against
   the full Windows parameter set.
+
+### PSScriptAnalyzer differential harvest
+
+PSScriptAnalyzer 1.25.0 was installed and run against a probe corpus covering
+the six candidate families, alongside the shipped pack, under PowerShell 7.6.5.
+The differential is the reason these five are rejected: each family maps to a
+PSScriptAnalyzer rule that fires on the real PowerShell AST, resolves command
+aliases, and matches case-insensitively — three things a syntax-only matcher
+either cannot do or can only approximate. Duplicating them would add findings
+that are strictly worse than the ones consumers already get, so
+**PSScriptAnalyzer is the preferred analyzer for all five**, and this pack
+deliberately leaves them to it. Only the .NET type half of the broken-hash
+family survived, as `powershell-broken-hash-algorithm-type`, because that is
+the one shape PSScriptAnalyzer does not check at all.
+
+- `powershell-allow-unencrypted-authentication` — duplicate of
+  `PSAvoidUsingAllowUnencryptedAuthentication`. Probed over
+  `Invoke-WebRequest -AllowUnencryptedAuthentication`, the lowercase spelling,
+  `Invoke-RestMethod`, and the `iwr` alias: PSScriptAnalyzer reported all four,
+  including the alias form, which it resolves to the real cmdlet name. A
+  syntactic rule would have to enumerate alias spellings by hand and would
+  still miss any alias a user defines locally.
+- `powershell-convertto-securestring-plaintext` — duplicate of
+  `PSAvoidUsingConvertToSecureStringWithPlainText` (severity Error). Probed over
+  the named, positional, lowercase, and pipeline (`'p' | ConvertTo-SecureString
+  -AsPlainText -Force`) forms: PSScriptAnalyzer reported every one, the pipeline
+  form included. The pipeline shape is exactly the case a `command`-anchored
+  matcher handles worst, since the string is not an argument of the call.
+- `powershell-plaintext-password-parameter` — duplicate of
+  `PSAvoidUsingPlainTextForPassword` and `PSAvoidUsingUsernameAndPasswordParams`
+  (the latter Error). Probed over `param([string]$Password)`, a `$Passwd`
+  variant, a correctly typed `[SecureString]$Secure`, and a username/password
+  pair: PSScriptAnalyzer reported the unsafe ones, stayed silent on the
+  `SecureString` parameter, and additionally flagged the credential-pair shape
+  that a single-parameter matcher cannot see. Its claim rests on the parameter's
+  declared type, which is precisely the fact syntax alone does not carry.
+- `powershell-empty-catch-block` — duplicate of `PSAvoidUsingEmptyCatchBlock`.
+  Probed over a bare `catch {}`, a typed `catch [System.Exception] {}`, and a
+  catch containing only a comment: PSScriptAnalyzer reported all three,
+  including the comment-only body, which it treats as empty because it reads
+  statements rather than source text.
+- `powershell-assignment-in-condition` — duplicate of
+  `PSPossibleIncorrectUsageOfAssignmentOperator` and
+  `PSPossibleIncorrectUsageOfRedirectionOperator`. Probed over `if ($x = 5)`,
+  `while ($y = 1)`, `if ($a > $b)`, and the correct `if ($x -eq 1)`:
+  PSScriptAnalyzer reported the three mistakes across both `if` and `while` and
+  stayed silent on the comparison. It also distinguishes assignment from
+  redirection, which share no syntax with each other and would need two separate
+  rules here for no gain.
+
+The one retained shape, recorded here so the boundary is not re-litigated:
+`PSAvoidUsingBrokenHashAlgorithms` is scoped to the `-Algorithm` parameter of
+`Get-FileHash`. Probed over nine spellings, it reported the three `Get-FileHash`
+ones (`MD5`, lowercase `md5`, `SHA1`) and reported **nothing** for
+`[System.Security.Cryptography.MD5]::Create()`,
+`[System.Security.Cryptography.SHA1]::Create()`,
+`[System.Security.Cryptography.MD5CryptoServiceProvider]::new()`,
+`[System.Security.Cryptography.SHA1Managed]::new()`, or the `New-Object` form.
+The shipped pack reported nothing for any of the nine. That is a demonstrated
+consumer gap in the shape that matters most, since the .NET types are how MD5
+and SHA-1 are reached for anything other than hashing a file on disk.

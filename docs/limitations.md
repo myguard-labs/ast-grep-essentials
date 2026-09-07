@@ -1357,6 +1357,18 @@ rejected and is recorded in `rejected-candidates.md`.
   `Invoke-Expression` rules are errors. `[ScriptBlock]::Create('Get-Date')` on a
   wholly constant string matches exactly as `[ScriptBlock]::Create($fromWeb)`
   does.
+- `powershell-broken-hash-algorithm-type` reports **algorithm selection, not
+  exploitability**. Whether a digest carries a security decision -- a signature,
+  an integrity manifest, a trust cache key -- or is a non-adversarial checksum
+  is a property of the surrounding program, so the rule states that MD5 or SHA-1
+  was chosen and leaves the consequence to the reader. It also does not match a
+  quoted type name (`New-Object -TypeName "System.Security.Cryptography.MD5"`),
+  because a string carrying a type name is indistinguishable from one carrying
+  that text as data, nor an algorithm reached through a variable. The
+  `Get-FileHash -Algorithm MD5` cmdlet form is deliberately left to
+  PSScriptAnalyzer's `PSAvoidUsingBrokenHashAlgorithms` rather than
+  double-reported; that rule covers only the cmdlet, which is why the .NET type
+  forms are covered here. Consumers should run both analyzers.
 - Receiver types are unresolved, so `AddScript`, `InvokeScript`,
   `CreateNestedPipeline`, `NewScriptBlock` and `ExpandString` match on **any**
   receiver. A user-defined class with a method of one of those names is a
