@@ -8,11 +8,23 @@ message: >-
   authorizes subscribers. Check a capability with current_user_can instead.
 note: >-
   Matches an if statement whose condition is is_admin, or its negation, and whose
-  body only returns, dies, or calls wp_die or exit. Loading admin assets behind
+  body only returns, dies, or calls wp_die or exit, with or without braces. Loading admin assets behind
   such a guard is a legitimate use and the routine dismissal; the finding matters
   when the code after the guard changes state. A capability check performed
   elsewhere in the function is not seen. A nonce check in the same condition
   does not suppress the match: a nonce proves request intent, not capability.
+utils:
+  guard-bail-statement:
+    any:
+      - kind: return_statement
+      - kind: exit_statement
+      - all:
+          - kind: expression_statement
+          - has:
+              kind: function_call_expression
+              has:
+                field: function
+                regex: '(?i)^\\?(wp_die|wp_send_json_error)$'
 rule:
   kind: if_statement
   all:
@@ -34,20 +46,9 @@ rule:
                   regex: '(?i)^\\?(current_user_can|current_user_can_for_blog|user_can|is_super_admin)$'
     - has:
         field: body
-        kind: compound_statement
-        all:
-          - has:
-              nthChild: 1
-              any:
-                - kind: return_statement
-                - kind: exit_statement
-                - all:
-                    - kind: expression_statement
-                    - has:
-                        kind: function_call_expression
-                        has:
-                          field: function
-                          regex: '(?i)^\\?(wp_die|die|exit|wp_send_json_error)$'
-          - not:
-              has:
-                nthChild: 2
+        any:
+          - kind: compound_statement
+            all:
+              - has: {nthChild: 1, matches: guard-bail-statement}
+              - not: {has: {nthChild: 2}}
+          - matches: guard-bail-statement

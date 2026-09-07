@@ -21,11 +21,13 @@ note: >-
 utils:
   security-name:
     regex: '(?i)(token|secret|nonce|session|otp|salt|csrf|passw|(^|_)keys?$|(^|_)(api|apikey|hmac|signing|secret|priv|pub|enc|dec|master|session)_?keys?$)'
+  math-random-call:
+    kind: function_call
+    has: {field: name, regex: '^math\.random$'}
   math-random-value:
-    has:
-      stopBy: end
-      kind: function_call
-      has: {field: name, regex: '^math\.random$'}
+    any:
+      - matches: math-random-call
+      - has: {stopBy: end, matches: math-random-call}
 rule:
   any:
     - kind: variable_declaration
@@ -34,7 +36,11 @@ rule:
         - has: {stopBy: end, matches: math-random-value}
     - kind: assignment_statement
       all:
-        - has: {field: name, stopBy: end, matches: security-name}
-        - has: {field: value, stopBy: end, matches: math-random-value}
+        - has:
+            kind: variable_list
+            has: {stopBy: end, kind: identifier, matches: security-name}
+        - has:
+            kind: expression_list
+            has: {stopBy: end, matches: math-random-value}
     - kind: function_call
       has: {field: name, regex: '^os\.tmpname$'}

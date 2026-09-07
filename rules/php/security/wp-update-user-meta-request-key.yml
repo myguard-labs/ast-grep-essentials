@@ -7,7 +7,8 @@ message: >-
   keys from a fixed allowlist and never derive the key from input.
 note: >-
   Matches a GET, POST, REQUEST, COOKIE or FILES superglobal appearing inside
-  the meta-key argument of update_user_meta, add_user_meta, or update_metadata
+  the meta-key argument of update_user_meta, add_user_meta, delete_user_meta, or
+  update_metadata, add_metadata or delete_metadata
   / add_metadata called with a literal 'user' object type. Wrapper sanitizers
   such as sanitize_key or sanitize_text_field are treated as transparent
   because they restrict characters, not which key is written. A key that
@@ -25,7 +26,7 @@ rule:
     - all:
         - has:
             field: function
-            regex: '(?i)^\\?(update_user_meta|add_user_meta)$'
+            regex: '(?i)^\\?(update_user_meta|add_user_meta|delete_user_meta)$'
         - has:
             field: arguments
             has:
@@ -49,7 +50,7 @@ rule:
     - all:
         - has:
             field: function
-            regex: '(?i)^\\?(update_metadata|add_metadata)$'
+            regex: '(?i)^\\?(update_metadata|add_metadata|delete_metadata)$'
         - has:
             field: arguments
             has:

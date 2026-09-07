@@ -19,9 +19,16 @@ utils:
     regex: '^\$_(GET|POST|REQUEST|COOKIE)$'
   email-validator:
     kind: function_call_expression
-    has:
-      field: function
-      regex: '(?i)^\\?(sanitize_email|filter_var|is_email)$'
+    any:
+      - has: {field: function, regex: '(?i)^\\?sanitize_email$'}
+      - all:
+          - has: {field: function, regex: '(?i)^\\?filter_var$'}
+          - has:
+              field: arguments
+              has:
+                stopBy: end
+                kind: name
+                regex: '^FILTER_(VALIDATE|SANITIZE)_EMAIL$'
 rule:
   kind: function_call_expression
   all:

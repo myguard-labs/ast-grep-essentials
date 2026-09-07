@@ -11,12 +11,15 @@ note: >-
   direct operand of a string concatenation inside a return or echo, with no
   esc_ or wp_kses wrapper. Any call wrapping the subscript takes it out of the
   direct-operand position, so a value passed through a helper is not matched at
-  all, whether or not that helper encodes for output. sanitize_text_field in
-  particular sanitizes incoming text and performs no output encoding, so a value
-  it wraps is unsafe in an attribute and is missed here. The $args naming also
-  collides with WP_Widget::widget, whose $args carries theme-supplied
-  before_widget and after_widget markup that must be echoed unescaped; that
-  canonical body matches and is a false positive. The $atts naming is a shortcode convention rather than
+  all, whether or not that helper encodes for output. sanitize_text_field is deliberately not in the escaper list, because it
+  sanitizes incoming text and performs no output encoding, so a value it wraps
+  is still unsafe in an attribute; it is missed here only because wrapping moves
+  the subscript out of the direct-operand position. The $args naming also
+  collides with WP_Widget::widget, whose $args carries theme-supplied wrapper
+  markup that must be echoed unescaped; the before_widget, after_widget,
+  before_title and after_title keys are excluded for that reason. Interpolation is not a concatenation, so markup built as
+  "<a href='{$atts['url']}'>" is not matched at all.
+  The $atts naming is a shortcode convention rather than
   a guarantee, so a same-named array of trusted values is the routine dismissal.
   esc_attr around a value used in an href satisfies this rule but is still the
   wrong escaper for a URL.
@@ -25,14 +28,18 @@ utils:
     kind: function_call_expression
     has:
       field: function
-      regex: '(?i)^\\?(esc_html|esc_attr|esc_url|esc_js|esc_textarea|wp_kses|wp_kses_post|wp_kses_data|absint|intval|sanitize_text_field|sanitize_hex_color)$'
+      regex: '(?i)^\\?(esc_html|esc_attr|esc_url|esc_js|esc_textarea|wp_kses|wp_kses_post|wp_kses_data|absint|intval|sanitize_hex_color)$'
 rule:
   kind: subscript_expression
   all:
     - has:
         nthChild: 1
         kind: variable_name
-        regex: '(?i)^\$(atts|attributes|args)$'
+        regex: '^\$(atts|attributes|args)$'
+    - not:
+        has:
+          nthChild: 2
+          regex: '^["\x27](before_widget|after_widget|before_title|after_title)["\x27]$'
     - inside:
         kind: binary_expression
         has:

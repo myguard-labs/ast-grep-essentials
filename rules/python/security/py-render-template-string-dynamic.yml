@@ -30,11 +30,13 @@ rule:
         field: function
         any:
           - kind: identifier
-            regex: '^(render_template_string|Template)$'
+            regex: '^render_template_string$'
           - kind: attribute
-            has:
-              field: attribute
-              regex: '^(render_template_string|Template|from_string)$'
+            any:
+              - has: {field: attribute, regex: '^(render_template_string|from_string)$'}
+              - all:
+                  - has: {field: attribute, regex: '^Template$'}
+                  - has: {field: object, regex: '(^|\.)(jinja2|jinja|Environment|env|environment)$'}
     - has:
         field: arguments
         has:

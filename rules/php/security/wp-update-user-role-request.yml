@@ -55,7 +55,17 @@ rule:
             nthChild: 2
             has:
               stopBy: end
-              matches: request-superglobal
+              all:
+                - matches: request-superglobal
+                - not:
+                    inside:
+                      stopBy: end
+                      kind: subscript_expression
+                      has:
+                        nthChild: 2
+                        has:
+                          stopBy: end
+                          matches: request-superglobal
         - inside:
             stopBy: end
             kind: function_call_expression

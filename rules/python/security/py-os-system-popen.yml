@@ -47,9 +47,15 @@ rule:
     - has: {field: function, matches: shell-sink}
     - has:
         field: arguments
-        has:
-          nthChild:
-            position: 1
-            ofRule:
-              not: {kind: comment}
-          matches: runtime-built-command
+        any:
+          - has:
+              nthChild:
+                position: 1
+                ofRule:
+                  not: {kind: comment}
+              matches: runtime-built-command
+          - has:
+              kind: keyword_argument
+              all:
+                - has: {field: name, regex: '^cmd$'}
+                - has: {field: value, matches: runtime-built-command}

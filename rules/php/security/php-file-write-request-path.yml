@@ -8,8 +8,8 @@ message: >-
   a directory you resolve with realpath, and store uploads outside the webroot.
 note: >-
   Matches a GET, POST, REQUEST, COOKIE or FILES superglobal in the destination
-  argument of file_put_contents, mkdir or touch, in the second argument of copy
-  or rename, or in the first argument of fopen opened with a literal write or
+  argument of file_put_contents, mkdir or touch, in the second argument of copy,
+  rename, link or symlink, or in the first argument of fopen opened with a literal write or
   append mode. An extension allowlist applied earlier in the function is not
   seen. php-upload-unvalidated-name covers move_uploaded_file with the
   client-supplied upload name.
@@ -70,4 +70,4 @@ rule:
                 position: 2
                 ofRule: {kind: argument}
               has:
-                regex: '^["\x27][wax]'
+                regex: '^["\x27](?:[waxc]|r\+)'

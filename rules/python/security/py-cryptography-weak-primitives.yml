@@ -46,5 +46,11 @@ rule:
       all:
         - has: {field: name, regex: '^key_size$'}
         - has: {field: value, kind: integer, regex: '^(512|768|1024)$'}
+        - inside:
+            stopBy: end
+            kind: call
+            has:
+              field: function
+              regex: '(^|\.)(generate_private_key|generate_parameters)$'
     - kind: call
       has: {field: function, matches: retired-algorithm}
