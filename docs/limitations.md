@@ -894,14 +894,18 @@ tail `return` immediately after the finalize does not match, nor does a use in a
   lower-severity class that needs the surrounding capability check to judge,
   which syntax cannot see.
 - `wp-wpdb-prepare-quoted-placeholder` regex-matches the literal SQL text of the
-  first `prepare` argument. A query assembled in a variable before the call is
-  invisible, and a quoted percent sequence that is data rather than a
-  placeholder would match.
+  first `prepare` argument. It excludes numbered or formatted string
+  placeholders because WordPress preserves their caller-supplied quoting for
+  compatibility. A query assembled in a variable before the call is invisible,
+  and a quoted percent sequence that is data rather than a placeholder would
+  match.
 - `wp-wpdb-orderby-interpolation` excludes the `{$wpdb->...}` identifier forms
   but cannot see an allowlist applied to the interpolated variable in a
   preceding statement, so a query that already restricts the column to a fixed
-  set still matches. Treat it as "confirm the allowlist", not as proof of
-  injection.
+  set still matches. It also cannot know the target WordPress version: `%i`
+  identifier placeholders require WordPress 6.2 or later and support can be
+  checked with `wpdb::has_cap('identifier_placeholders')`. Treat the finding as
+  "confirm the placeholder or allowlist", not as proof of injection.
 - `wp-unlink-request-path` treats `sanitize_text_field`, `esc_attr` and
   `wp_unslash` as transparent because none removes a traversal sequence. It does
   not treat a `basename` wrapper as safe either, so a basename-guarded delete

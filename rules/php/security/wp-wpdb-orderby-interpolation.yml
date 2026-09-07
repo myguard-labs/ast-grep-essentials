@@ -3,9 +3,11 @@ language: php
 severity: warning
 message: >-
   A variable is interpolated into an ORDER BY, GROUP BY or LIMIT clause of a
-  wpdb query. Placeholders cannot be used for identifiers or sort directions, so
-  prepare offers no protection here. Resolve the column and direction through a
-  fixed allowlist and cast the limit to an integer.
+  wpdb query. On WordPress 6.2 or later, use a %i placeholder for identifiers
+  after confirming identifier_placeholders support; on older versions, resolve
+  identifiers through a fixed allowlist. Resolve sort directions through a
+  fixed allowlist, and pass LIMIT or OFFSET values through %d or cast them to
+  integers.
 note: >-
   Regex-matches an interpolated variable directly after ORDER BY, GROUP BY,
   LIMIT or OFFSET in a SQL literal passed to a wpdb method. A braced interpolation of a
@@ -15,7 +17,10 @@ note: >-
   all. The rule cannot see
   an allowlist applied to the variable in a preceding statement, so a query that
   already restricts the column to a fixed set still matches and is the routine
-  dismissal after that check is confirmed.
+  dismissal after that check is confirmed. Identifier placeholders were added
+  in WordPress 6.2 and can be detected with
+  wpdb::has_cap('identifier_placeholders'); they do not replace allowlisting for
+  ASC or DESC keywords.
 rule:
   kind: member_call_expression
   all:

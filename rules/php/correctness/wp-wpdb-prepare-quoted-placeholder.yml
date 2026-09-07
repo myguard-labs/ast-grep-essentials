@@ -2,17 +2,18 @@ id: wp-wpdb-prepare-quoted-placeholder
 language: php
 severity: warning
 message: >-
-  A placeholder inside the SQL passed to wpdb::prepare is wrapped in quotes.
-  prepare already quotes and escapes string placeholders, and since WordPress
-  4.8.3 it strips the surrounding quotes and adds its own, so the extra quotes
-  are misleading rather than protective. Remove them and leave the bare
-  placeholder.
+  A placeholder inside the SQL passed to wpdb::prepare is wrapped in quotes
+  even though this placeholder type should be left unquoted. WordPress strips
+  quotes around plain %s placeholders, while numeric and identifier
+  placeholders do not need SQL quotes. Remove the surrounding quotes.
 note: >-
-  Regex-matches a quoted %s, %d, %f or %i placeholder, with or without an
-  argument number or padding specifier, in the first argument of a prepare call
-  on a wpdb-like object. It reads the literal SQL text only, so a query
-  assembled in a variable before the call is not seen, and a quoted percent
-  sequence inside data rather than a placeholder position would match.
+  Regex-matches a quoted plain %s or a quoted %d, %f or %i placeholder, with
+  optional numeric formatting, in the first argument of a prepare call on a
+  wpdb-like object. Numbered or formatted string placeholders such as %1$s and
+  %05s are the documented compatibility exception and are intentionally not
+  reported. The rule reads literal SQL text only, so a query assembled in a
+  variable before the call is not seen, and a quoted percent sequence inside
+  data rather than a placeholder position would match.
 rule:
   kind: member_call_expression
   all:
@@ -34,4 +35,4 @@ rule:
             any:
               - kind: string
               - kind: encapsed_string
-            regex: "(?i)(\x27%[0-9]*\\\\?\\$?[-'0-9]*[sdfi]\x27|\"%[0-9]*\\\\?\\$?[-'0-9]*[sdfi]\")"
+            regex: "(\x27%(?:s|(?:[1-9][0-9]*\\\\?\\$)?[-+0-9]*(?: |0|\x27.)?[-+0-9]*(?:\\.[0-9]+)?[dfFi])\x27|\"%(?:s|(?:[1-9][0-9]*\\\\?\\$)?[-+0-9]*(?: |0|\x27.)?[-+0-9]*(?:\\.[0-9]+)?[dfFi])\")"

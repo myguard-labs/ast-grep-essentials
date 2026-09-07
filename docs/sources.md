@@ -133,8 +133,10 @@ Rule id -> evidence consulted during the harvest.
 - `wp-wpdb-prepare-quoted-placeholder` —
   <https://developer.wordpress.org/reference/classes/wpdb/prepare/> (WP 4.8.3
   `_doing_it_wrong` on quoted placeholders); CVE-2026-3180 (Contest Gallery)
-- `wp-wpdb-orderby-interpolation` — CVE-2026-5073 (ARMember Premium
-  `arm_get_directory_members` order/orderby)
+- `wp-wpdb-orderby-interpolation` —
+  <https://developer.wordpress.org/reference/classes/wpdb/prepare/> (`%i`
+  identifiers added in WordPress 6.2; capability probe documented); CVE-2026-5073
+  (ARMember Premium `arm_get_directory_members` order/orderby)
 - `wp-unlink-request-path` — CVE-2026-16940 (Custom Fields for WooCommerce),
   CVE-2026-8713 (Avada), CVE-2026-14982 (WP File Download), CVE-2026-6070,
   CVE-2026-15450, CVE-2026-13492

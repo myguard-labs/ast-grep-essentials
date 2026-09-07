@@ -86,6 +86,18 @@ class DiagnosticTests(unittest.TestCase):
             (),
         ),
         (
+            "php/correctness/wp-wpdb-prepare-quoted-placeholder.yml",
+            '<?php $wpdb->prepare("SELECT * FROM t WHERE id = \'%d\'", $id);',
+            ("plain %s", "Numbered or formatted string placeholders", "%1$s", "%05s"),
+            ("leave the bare placeholder",),
+        ),
+        (
+            "php/security/wp-wpdb-orderby-interpolation.yml",
+            '<?php $wpdb->get_results("SELECT * FROM t ORDER BY {$orderby}");',
+            ("WordPress 6.2", "%i", "identifier_placeholders", "%d", "ASC or DESC"),
+            ("Placeholders cannot be used for identifiers", "prepare offers no protection"),
+        ),
+        (
             "python/security/py-eval-exec.yml",
             'eval("1 + 1")',
             ("requires review", "external input", "trusted, resource-bounded input",
