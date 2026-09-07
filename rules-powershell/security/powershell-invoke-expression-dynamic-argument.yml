@@ -111,10 +111,17 @@ rule:
             - follows:
                 kind: command_argument_sep
                 follows:
-                  any:
-                    - kind: variable
-                    - kind: sub_expression
-                    - kind: unary_expression
+                  # A variable, subexpression or splat bound to a value-taking
+                  # common parameter's own value always parses as a single
+                  # `unary_expression` sibling at this position -- verified
+                  # against the built grammar: `-ErrorVariable $e` and
+                  # `-ErrorVariable $(Get-Var)` both wrap their value in
+                  # `unary_expression`, never a bare `variable` or
+                  # `sub_expression` child of command_elements. Matching only
+                  # `unary_expression` is therefore not an under-approximation;
+                  # bare `variable`/`sub_expression` alternatives here would be
+                  # unreachable dead arms.
+                  kind: unary_expression
                   follows:
                     kind: command_argument_sep
                     follows:

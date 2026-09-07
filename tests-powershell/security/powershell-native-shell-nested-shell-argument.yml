@@ -91,6 +91,13 @@ invalid:
 - 'cmd.exe /k cmd /k $x'
 - 'cmd /C CMD.EXE /C $x'
 - 'CMD /c cmd /c "dir $path"'
+# A bare execution-switch-shaped token (/c) sits between the outer switch and
+# the invoked program: the switch-slot anchor's exclusion list must still
+# recognise it as something OTHER than the invoked program (a generic_token
+# starting with -/), or the anchor loses track of where the outer command's
+# own switch is and reads the wrong /c as the anchor. Regression for that
+# exclusion alternative.
+- 'cmd /c /c cmd /c $x'
 # Nested PowerShell hosts reached through cmd, full switch and abbreviation.
 - 'cmd /c powershell -Command $x'
 - 'cmd /c powershell.exe -Command "Get-Item $path"'

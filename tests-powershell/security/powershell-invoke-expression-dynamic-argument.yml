@@ -38,6 +38,11 @@ valid:
 # clause the site would be reported twice, once by each rule.
 - 'Get-Content $path | Invoke-Expression $extra'
 - 'Invoke-WebRequest $u | iex "$suffix"'
+# A bare variable piped in, rather than a command or unary expression: the
+# pipeline stage before iex parses as a plain `unary_expression`, distinct
+# from the `command`/`unary_expression` shapes above. Regression for the
+# not-piped exclusion's `unary_expression` alternative.
+- '$data | iex $extra'
 # Sink name only in a comment or a string.
 - '# iex $cmd'
 - '$s = "iex $cmd"'

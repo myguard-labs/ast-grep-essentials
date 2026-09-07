@@ -212,6 +212,19 @@ rule:
                                   # `generic_token` alternative above, which
                                   # this one does not touch) is read as the
                                   # nested shell's name.
+                                  #
+                                  # A double-quoted value's `has` still lands
+                                  # on `string_literal`, not just the nested
+                                  # `expandable_string_literal`: verified
+                                  # against the built grammar, a double-quoted
+                                  # value parses as `unary_expression >
+                                  # string_literal > expandable_string_literal`,
+                                  # so `has: kind: string_literal` (matching
+                                  # any descendant, including that direct
+                                  # child) already covers both quote styles. A
+                                  # separate `expandable_string_literal`
+                                  # alternative here would be an unreachable
+                                  # dead arm dominated by `string_literal`.
                                   - kind: generic_token
                                     follows:
                                       kind: command_argument_sep
@@ -220,9 +233,7 @@ rule:
                                         regex: '(?i)^-(executionpolicy|ex|ep|configurationname|config|configurationfile|custompipename|workingdirectory|wd|wo|settingsfile|settings|inputformat|inp|if|outputformat|of|o|windowstyle|w|psconsolefile|version)$'
                                   - kind: unary_expression
                                     has:
-                                      any:
-                                        - kind: string_literal
-                                        - kind: expandable_string_literal
+                                      kind: string_literal
                                     follows:
                                       kind: command_argument_sep
                                       follows:
