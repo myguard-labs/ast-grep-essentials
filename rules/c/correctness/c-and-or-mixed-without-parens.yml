@@ -1,0 +1,28 @@
+id: c-and-or-mixed-without-parens
+language: c
+severity: warning
+message: >-
+  A && operand sits directly inside a || expression with no parentheses. C binds
+  && tighter than ||, so `a || b && c` means `a || (b && c)` — which is often
+  not the grouping the author read off the page, and a guard chain that was
+  meant to reject unless every clause holds instead accepts on the first
+  disjunct alone (CWE-670, CWE-783). Parenthesize the intended grouping so the
+  precedence is stated rather than inferred.
+note: >-
+  The check is purely syntactic and local to one expression: a binary_expression
+  whose operator is || and whose immediate left or right operand is a
+  binary_expression whose operator is &&. Because the operands are matched as
+  direct children of the || node, an already-parenthesized operand is a
+  parenthesized_expression and does not match — writing either `a || (b && c)`
+  or `(a && b) || c` clears the finding without changing behaviour. Homogeneous
+  chains of only && or only || never match. The rule cannot know which grouping
+  was intended, so a site whose implicit precedence is genuinely the intended
+  one, made deliberate by a comment, is the routine dismissal; the finding is
+  that the code does not say which.
+rule:
+  kind: binary_expression
+  all:
+    - pattern: $L || $R
+    - any:
+        - has: {field: right, pattern: $A && $B}
+        - has: {field: left, pattern: $A && $B}

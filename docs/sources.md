@@ -445,6 +445,16 @@ fixed by its fixtures.
   juggling tables <https://www.php.net/manual/en/types.comparisons.php>
 - `php-chmod-world-writable` — CWE-732; Snuffleupagus default policy
   <https://github.com/jvoisin/snuffleupagus/blob/master/config/default.rules>
+- `c-terminator-past-loop-bound` — CWE-193, CWE-787; Snuffleupagus
+  <https://github.com/jvoisin/snuffleupagus/commit/f4d3c01>, which rewrote
+  `sp_sanitize_charstring` to a `i < maxlen - 1` loop while terminating at
+  `c[maxlen]`; C17 §6.5.2.1 on array subscripting, under which the valid indices
+  of an object of N elements are 0 through N - 1
+- `c-and-or-mixed-without-parens` — CWE-670, CWE-783; Snuffleupagus
+  <https://github.com/jvoisin/snuffleupagus/commit/22aeaa9>, which parenthesized
+  an end-of-life check whose `||` and `&&` clauses had been left to implicit
+  precedence; C17 §6.5.13-14 giving `&&` higher precedence than `||`
+  <https://en.cppreference.com/w/c/language/operator_precedence>
 - `php-mail-dynamic-additional-params` — CWE-88, CWE-78; Snuffleupagus mail
   hardening
   <https://github.com/jvoisin/snuffleupagus/blob/master/doc/source/features.rst#mail-related-injections>;

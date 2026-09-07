@@ -1,0 +1,56 @@
+id: c-terminator-past-loop-bound
+valid:
+  # Near miss: the terminator lands on the index the loop reserved.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < n - 1; i++) { c[i] = 42; } c[n - 1] = 0; }'
+  # Near miss: the loop bound carries no - 1 correction, so no element was reserved.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < n; i++) { c[i] = 42; } c[n] = 0; }'
+  # Near miss: descending loop; it makes no claim about the element at n - 1.
+  - 'void f(char *c, size_t n) { for (size_t i = n - 1; i > n - 1; i--) { c[i] = 42; } c[n] = 0; }'
+  # Near miss: the terminator indexes a different variable than the loop bound.
+  - 'void f(char *c, size_t n, size_t m) { for (size_t i = 0; i < n - 1; i++) { c[i] = 42; } c[m] = 0; }'
+  # Near miss: a constant index is not the loop bound.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < n - 1; i++) { c[i] = 42; } c[7] = 0; }'
+  # Near miss: assigning a non-zero value is not writing a terminator.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < n - 1; i++) { c[i] = 42; } c[n] = 42; }'
+  # Near miss: the terminator is not the statement directly after the loop.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < n - 1; i++) { c[i] = 42; } log(); c[n] = 0; }'
+  # Near miss: the - 1 correction is on the wrong side of the subtraction.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < 1 - n; i++) { c[i] = 42; } c[n] = 0; }'
+  # The shape inside a comment must not match.
+  - 'void f(char *c, size_t n) { /* for (size_t i = 0; i < n - 1; i++) { c[i] = 42; } c[n] = 0; */ }'
+  # The shape inside a string literal must not match.
+  - 'const char *s = "for (size_t i = 0; i < n - 1; i++) { c[i] = 42; } c[n] = 0;";'
+  # Negative control: an unrelated loop plus an unrelated terminator.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < n; i++) { c[i] = 42; } return; }'
+  # Near miss: `i <= n - 1` writes through n - 1, so it reserves no element and
+  # makes no claim the terminator at n contradicts.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i <= n - 1; i++) { c[i] = 42; } c[n] = 0; }'
+  # Near miss: an addition bound describes an n + 1 byte buffer; c[n] is in range.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < n + 1; i++) { c[i] = 42; } c[n] = 0; }'
+  # Near miss: a multiplication bound is not the - 1 reservation either.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < n * 1; i++) { c[i] = 42; } c[n] = 0; }'
+  # Near miss: a division bound is not the - 1 reservation either.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < n / 1; i++) { c[i] = 42; } c[n] = 0; }'
+  # Near miss: the loop never touches the buffer being terminated, so the two
+  # statements make no joint claim.
+  - 'void g(void) { char buf[11]; int n = 10; for (int i = 0; i < n - 1; i++) { log_item(i); } buf[n] = 0; }'
+  # Near miss: the loop fills a different buffer than the one terminated.
+  - 'void f(char *c, char *d, size_t n) { for (size_t i = 0; i < n - 1; i++) { d[i] = 42; } c[n] = 0; }'
+  # Near miss: the loop indexes the right buffer with the wrong variable.
+  - 'void f(char *c, size_t n, size_t k) { for (size_t i = 0; i < n - 1; i++) { c[k] = 42; } c[n] = 0; }'
+  # Near miss: a compound assignment preserves the element, it is not a
+  # terminator write.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < n - 1; i++) { c[i] = 42; } c[n] += 0; }'
+  # Near miss: an equality test is not an assignment at all.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < n - 1; i++) { c[i] = 42; } if (c[n] == 0) { return; } }'
+  # Near miss: a non-zero character literal is not a terminator.
+  - "void f(char *c, size_t n) { for (size_t i = 0; i < n - 1; i++) { c[i] = 42; } c[n] = 'x'; }"
+invalid:
+  # The conventional C spelling of the terminator, same defect.
+  - "void f(char *c, size_t n) { for (size_t i = 0; i < n - 1; i++) { c[i] = 42; } c[n] = '\\0'; }"
+  # The upstream shape: sanitize to n - 1, terminate at n.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i < n - 1; i++) { if (c[i] < 32) { c[i] = 42; } } c[n] = 0; }'
+  # != is the same ascending shape spelled differently.
+  - 'void f(char *c, size_t n) { for (size_t i = 0; i != n - 1; i++) { c[i] = 42; } c[n] = 0; }'
+  # The buffer is a fixed array and the bound a macro-free constant name.
+  - 'void f(size_t maxlen) { char buf[64]; for (size_t i = 0; i < maxlen - 1; i++) { buf[i] = 42; } buf[maxlen] = 0; }'

@@ -230,6 +230,61 @@ pipeline-shape claim whose safe variants are numerous, and `read -r` is already
   here rather than shipped; the shipped rule's `stopBy: end` cross-function
   reach is a separate finding, filed in `issues.md`.
 
+### Round 2 (deep pass)
+
+- `c-deref-then-null-check` — from the null-deref fixes
+  <https://github.com/jvoisin/snuffleupagus/commit/c25c8a1>,
+  <https://github.com/jvoisin/snuffleupagus/commit/138e97b> and
+  <https://github.com/jvoisin/snuffleupagus/commit/b3f5254>, each of which added
+  a missing `!ptr` test to a guard that already dereferenced the pointer. The
+  syntactic residue is "a pointer is used, and later tested for NULL", but the
+  test that makes the use safe is routinely in the caller — all three upstream
+  sites take the pointer from a `zend_execute_data` the engine is contracted to
+  populate, so the pre-fix code was defensive-hardening, not a live crash.
+  Reduced to one function the claim also inverts on the correct guard-first
+  ordering. Probed with a matcher requiring, in one `compound_statement`, both a
+  `field_expression` on `$P` and a `!$P` test, over a four-case control:
+  `if (!p) return; use(p->f);` (correct), `use(p->f); if (!p) return;` (the
+  defect), a test of a different pointer, and a deref into a local. It produced
+  two findings — the defect *and* the correct guard-first case. ast-grep has no
+  cross-relation binding and no statement ordering between two `has` clauses of
+  the same node, so the matcher cannot separate "tested before use" from "tested
+  after use"; the arm that would state the order is exactly the one the engine
+  will not express here. Dropped: half the findings would be correct code, and
+  the deciding fact — which callers can pass NULL — is reachability, not
+  syntax.
+- `c-strlen-on-binary-buffer` — from
+  <https://github.com/jvoisin/snuffleupagus/commit/6d7adde>, which replaced
+  `strlen(serialized_str)` with the known byte count because a serialized PHP
+  object embeds NUL bytes. The defect is entirely about what the buffer
+  *contains*; the call `strlen(x)` is correct on every NUL-terminated string and
+  the matcher cannot read the difference. A narrower shape — `strlen` on a
+  pointer that a `memcpy` in the same block filled with an explicit length — was
+  probed over a two-case control holding the upstream defect and a correct
+  `memcpy(b, src, strlen(src) + 1); strlen(b)` C-string copy. It produced two
+  findings, one on each: the length available at the copy says nothing about
+  whether the content is binary. Dropped as dataflow.
+- `c-inet-ntop-size-not-dstlen` — from `sp_network_utils.c`, where `inet_ntop`
+  is sized with the address-family constant rather than the destination's own
+  capacity. Deciding that this is wrong requires the declared capacity of `dst`,
+  which arrives as a parameter; the shipped `c-strncat-size-misuse` already
+  holds the sub-case where the size argument is a `sizeof` of the destination.
+  Dropped: no syntactic sub-claim survives the reduction.
+- `c-zend-string-init-leak` — from the leak fixes
+  <https://github.com/jvoisin/snuffleupagus/commit/996c461> and
+  <https://github.com/jvoisin/snuffleupagus/commit/14c76b9>, which added a
+  missing `zend_string_release`. The shape is "allocated in this block, not
+  released in this block", the same co-occurrence heuristic the shipped
+  `c-free-without-null` already carries with its documented weakness. A
+  `zend_string` is routinely returned, stored in a config node, or handed to the
+  engine, so absence of a local release is the normal case rather than the
+  defect. Probed with "`zend_string_init` in a block with no
+  `zend_string_release`" over a four-case control — the upstream leak, the fixed
+  form, a function returning the string, and one storing it into a struct field.
+  It produced three findings: the leak plus both correct ownership transfers.
+  Duplicating an existing diagnostic's precision is a drop under the SNUF-02
+  precedent.
+
 ## powershell
 
 - `powershell-invoke-expression-constant-argument` — a rule for

@@ -1,0 +1,34 @@
+id: c-and-or-mixed-without-parens
+valid:
+  # Near miss: the intended grouping is stated, so there is nothing to infer.
+  - 'int f(int a, int b, int c) { return a || (b && c); }'
+  - 'int f(int a, int b, int c) { return (a && b) || c; }'
+  # Near miss: both operands parenthesized.
+  - 'int f(int a, int b, int c, int d) { return (a && b) || (c && d); }'
+  # Homogeneous chains carry no precedence question.
+  - 'int f(int a, int b, int c) { return a && b && c; }'
+  - 'int f(int a, int b, int c) { return a || b || c; }'
+  # Near miss: && at the top with || parenthesized beneath it is explicit.
+  - 'int f(int a, int b, int c, int d) { return (a || b) && (c || d); }'
+  # Other binary operators mixed with || are not this claim.
+  - 'int f(int a, int b, int c) { return a || b + c; }'
+  - 'int f(int a, int b, int c) { return a || b == c; }'
+  # A bitwise & is a different operator with different precedence.
+  - 'int f(int a, int b, int c) { return a || (b & c); }'
+  # The shape inside a comment must not match.
+  - 'int f(int a, int b, int c) { /* return a || b && c; */ return 0; }'
+  # The shape inside a string literal must not match.
+  - 'const char *s = "a || b && c";'
+  # Negative control: no logical operators at all.
+  - 'int f(int a, int b) { return a + b; }'
+invalid:
+  # The upstream shape: a version test ORed with a dated AND clause.
+  - 'int f(int a, int b, int c) { return a || b && c; }'
+  # && on the left of ||.
+  - 'int f(int a, int b, int c) { return a && b || c; }'
+  # && on both sides.
+  - 'int f(int a, int b, int c, int d) { return a && b || c && d; }'
+  # Inside an if condition, which is where the guard-chain defect bites.
+  - 'void f(int a, int b, int c) { if (a || b && c) { g(); } }'
+  # Calls as operands, the upstream spelling.
+  - 'void f(void) { if (ver() < 3 || ver() < 4 && ts() >= 100) { warn(); } }'

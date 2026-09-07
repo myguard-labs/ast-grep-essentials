@@ -1,0 +1,77 @@
+id: c-terminator-past-loop-bound
+language: c
+severity: warning
+message: >-
+  A loop sanitizes or fills a buffer up to N - 1, and the statement immediately
+  after it writes the terminator at index N. The loop's own bound says the last
+  writable element is N - 2, so index N is one past the element the caller
+  reserved for the terminator and, when N is the buffer's capacity, one past the
+  allocation entirely (CWE-193, CWE-787). Terminate at N - 1, the index the loop
+  deliberately left free.
+note: >-
+  The pairing is a direct sibling relation: the terminating assignment must be
+  the statement immediately following the for loop, the loop must index the same
+  buffer with its own loop variable, and the identifier indexing the terminator
+  must be the same identifier the loop's ascending condition (`<` or `!=`)
+  compared against with the `- 1` subtraction. The write must be a plain
+  assignment of `0` or `'\0'`; a compound assignment such as `c[n] += 0`
+  preserves the element and does not match. A descending `i > n - 1` loop makes
+  no claim about the element at `n - 1`. Writing the terminator at `buf[N - 1]`,
+  at a different variable, or at a constant index does not match, and neither
+  does a loop whose condition omits the `- 1` or corrects the bound with any
+  operator other than subtraction. `i <= n - 1` writes through `n - 1` and so
+  reserves no element; it does not match. Because ast-grep has no cross-relation
+  binding, only identifier text pairs the two sides: a buffer or bound shadowed
+  or reassigned between the loop and the terminator is not judged. A caller that
+  guarantees the buffer is at least N + 1 bytes, which makes the write in-bounds
+  though still inconsistent with the loop, is the routine dismissal.
+rule:
+  kind: expression_statement
+  has:
+    kind: assignment_expression
+    # Plain `=` only. A compound assignment such as `c[n] += 0` preserves the
+    # element instead of writing a terminator.
+    regex: '^[^=!<>+\-*/%&|^]*=[^=]'
+    all:
+      - has:
+          field: left
+          kind: subscript_expression
+          all:
+            - has: {field: argument, kind: identifier, pattern: $BUF}
+            - has: {field: index, kind: identifier, pattern: $N}
+      - has:
+          field: right
+          any:
+            - {kind: number_literal, regex: '^0$'}
+            # The conventional C spelling of the same terminator.
+            - {kind: char_literal, regex: "^'\\\\0'$"}
+  follows:
+    kind: for_statement
+    all:
+      - has:
+          field: condition
+          kind: binary_expression
+          all:
+            # Only the ascending, terminator-reserving comparisons. A
+            # decrementing `i > n - 1` loop makes no claim about the element at
+            # n - 1.
+            - any:
+                - pattern: $I < $BOUND
+                - pattern: $I != $BOUND
+            - has:
+                field: right
+                kind: binary_expression
+                pattern: $N - 1
+                all:
+                  - has: {field: left, kind: identifier, pattern: $N}
+                  - has: {field: right, kind: number_literal, regex: '^1$'}
+      # The loop must actually index the buffer that receives the terminator,
+      # with the loop variable. Without this the rule pairs any adjacent loop
+      # with any following terminator.
+      - has:
+          field: body
+          stopBy: end
+          kind: subscript_expression
+          all:
+            - has: {field: argument, kind: identifier, pattern: $BUF}
+            - has: {field: index, kind: identifier, pattern: $I}

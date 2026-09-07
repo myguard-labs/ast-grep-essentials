@@ -105,7 +105,7 @@ The PowerShell pack lives in its own config,
 This is deliberate and is enforced by a test. ast-grep aborts the *entire* scan
 when a registered custom language cannot be loaded -- it does not skip only that
 language. Registering PowerShell in the main config would convert a missing
-optional parser into a hard failure of all 248 native-language rules for every
+optional parser into a hard failure of all 250 native-language rules for every
 consumer that never wanted PowerShell:
 
 ```console
