@@ -591,3 +591,14 @@ in [rejected-candidates.md](rejected-candidates.md).
   to restrict wrappers explicitly; PHP supported protocols and wrappers
   <https://www.php.net/manual/en/wrappers.php>; `allow_url_include`
   <https://www.php.net/manual/en/filesystem.configuration.php#ini.allow-url-include>
+- `py-path-prefix-no-separator` — CWE-22
+  <https://cwe.mitre.org/data/definitions/22.html>; CWE-41 path equivalence
+  <https://cwe.mitre.org/data/definitions/41.html>; CVE-2026-48099, prefix
+  containment check accepting a sibling directory whose name extends the base;
+  `os.path.commonpath` and `Path.is_relative_to` as the separator-aware
+  counterparts <https://docs.python.org/3/library/os.path.html#os.path.commonpath>
+- `php-strpos-zero-path-prefix` — CWE-22
+  <https://cwe.mitre.org/data/definitions/22.html>; CWE-41; CVE-2026-55554, the
+  PHP twin of the same shape, where `strpos($path, $base) === 0` accepts
+  `/root_secret` for a `/root` base; `str_starts_with` and `strpos` return
+  contract <https://www.php.net/manual/en/function.strpos.php>

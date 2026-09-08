@@ -1,0 +1,24 @@
+id: py-path-prefix-no-separator
+valid:
+- 'target.startswith(base_dir + os.sep)'
+- 'target.startswith(os.path.join(base, ""))'
+- 'target.startswith(base_dir + "/")'
+- 'name.startswith("http://")'
+- 's.startswith(prefix)'
+- 'haystack.startswith(needle)'
+- 'target.startswith(("/tmp/", "/var/"))'
+- 'os.path.commonpath([base, target]) == base'
+- 'Path(target).is_relative_to(base)'
+- 'target.endswith(base_dir)'
+- '# target.startswith(base_dir)'
+- 'MESSAGE = "target.startswith(base_dir)"'
+invalid:
+- 'target.startswith(base_dir)'
+- 'path.startswith(root_path)'
+- 'dest.startswith(root)'
+- 'real_path.startswith(prefix)'
+- |
+  def serve(requested_path, docroot):
+      if not requested_path.startswith(docroot):
+          raise PermissionError(requested_path)
+      return open(requested_path, "rb").read()

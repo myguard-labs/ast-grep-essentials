@@ -17,6 +17,22 @@ syntax coverage; they do not prove all variants of a bug are detected.
 - `php-sql-string-interp` recognizes its listed function names and query
   positions, not database member calls or aliases. No interprocedural SQL or
   command dataflow is modeled.
+- `py-path-prefix-no-separator` and `php-strpos-zero-path-prefix` decide that a
+  bare prefix test is a *path* containment check from an identifier naming
+  convention alone: a receiver or haystack named `path`/`target`/`dest`/`real`
+  and an argument or needle named `base`/`root`/`dir`/`prefix`. That is a
+  convention, not a type fact, so nothing about the operands' actual contents is
+  established. The named residual false positive is a protocol-scheme or other
+  non-path prefix check written under path-like variable names, which matches
+  and is the routine dismissal. Conversely, the same defect spelled with
+  operands outside the convention (`s.startswith(p)`,
+  `strpos($haystack, $needle) === 0`) is not reported. Only a bare identifier
+  prefix matches in Python, so `base + os.sep` and `os.path.join(base, "")` are
+  excluded as the safe forms; in PHP only strict identity against integer zero
+  matches, leaving `strpos(...) !== false` (an existence test) and
+  `strpos(...) == 0` (the separate loose-comparison bug class) out. Neither
+  matcher can see whether the operands were canonicalized first or whether a
+  separator check follows.
 - `php-extract-superglobal` recognizes a direct superglobal as the first
   positional argument. Named arguments, aliases and transformed arrays need
   separate analysis. A superglobal used only to compute flags or a prefix is

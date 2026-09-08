@@ -1,0 +1,51 @@
+id: php-strpos-zero-path-prefix
+language: php
+severity: warning
+message: >-
+  Path containment checked with strpos(...) === 0, a bare prefix test whose
+  prefix carries no trailing separator. A sibling whose name merely extends the
+  base passes it: "/root_secret" starts with "/root", so it is accepted as being
+  inside it. Append the directory separator to the base before comparing, or
+  compare canonicalized paths with realpath and an explicit separator boundary.
+note: >-
+  Both operands are recognized by identifier naming convention -- a haystack
+  named $path/$target/$dest/$real and a needle named $base/$root/$dir/$prefix --
+  which is a convention, not a type fact. Only strict identity against integer
+  zero matches; strpos(...) !== false is an existence test, and strpos(...) == 0
+  is the separate loose-comparison bug class. str_starts_with is NOT a fix: it is
+  the same bare prefix test without a trailing separator, so it is still bypassed
+  by a sibling name that merely extends the base. A scheme or non-path prefix test written under path-like variable names is the
+  routine dismissal, and the matcher cannot see whether a separator check
+  follows.
+utils:
+  strpos-path-prefix-call:
+    kind: function_call_expression
+    all:
+      - has: {field: function, regex: '(?i)^\\?(strpos|stripos|mb_strpos|mb_stripos)$'}
+      - has:
+          field: arguments
+          has:
+            kind: argument
+            nthChild: 1
+            has:
+              kind: variable_name
+              regex: '(?i)^\$(path|target|dest|dst|real|realpath|resolved|candidate|fullpath|filename|requested)'
+      - has:
+          field: arguments
+          has:
+            kind: argument
+            nthChild: 2
+            has:
+              kind: variable_name
+              regex: '(?i)^\$(base|root|dir|prefix|allowed|docroot|webroot|upload)'
+rule:
+  kind: binary_expression
+  all:
+    - has: {field: operator, regex: '^===$'}
+    - any:
+        - all:
+            - has: {field: right, kind: integer, regex: '^0$'}
+            - has: {field: left, matches: strpos-path-prefix-call}
+        - all:
+            - has: {field: left, kind: integer, regex: '^0$'}
+            - has: {field: right, matches: strpos-path-prefix-call}

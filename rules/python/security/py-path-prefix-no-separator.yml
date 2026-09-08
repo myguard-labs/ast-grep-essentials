@@ -1,0 +1,36 @@
+id: py-path-prefix-no-separator
+language: python
+severity: warning
+message: >-
+  Path containment checked with a bare startswith against a prefix that carries
+  no trailing separator. A sibling whose name merely extends the base passes the
+  test: /tmp/share_evil starts with /tmp/share, so it is accepted as being
+  inside it. Append os.sep to the base, or decide containment with
+  os.path.commonpath([base, target]) == base or Path(target).is_relative_to(base)
+  after resolving both sides.
+note: >-
+  Both operands are recognized by identifier naming convention -- a receiver
+  named path/target/dest/real and an argument named base/root/dir/prefix -- which
+  is a convention, not a type fact. A prefix built as an expression is excluded,
+  so base + os.sep and os.path.join(base, "") do not match; only a bare
+  identifier argument does. A scheme or non-path prefix test written under
+  path-like variable names is the routine dismissal, and the matcher cannot see
+  whether either side was resolved beforehand.
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        kind: attribute
+        all:
+          - has: {field: attribute, regex: '^startswith$'}
+          - has:
+              field: object
+              regex: '(?i)(^|_)(path|target|dest|dst|real|realpath|resolved|candidate|fullpath|filename|requested)([0-9]*$|_)'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          nthChild: 1
+          kind: identifier
+          regex: '(?i)(^|_)(base|root|dir|prefix|allowed|docroot|webroot|upload)([0-9]*$|_)'

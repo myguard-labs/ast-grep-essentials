@@ -1,0 +1,25 @@
+id: php-strpos-zero-path-prefix
+valid:
+- '<?php if (strpos($path, $base) !== false) { serve($path); }'
+- '<?php if (str_starts_with($path, $base)) { serve($path); }'
+- '<?php if (strpos($path, $base) == 0) { serve($path); }'
+- '<?php if (strpos($haystack, $needle) === 0) { note($haystack); }'
+- '<?php if (strpos($path, $base . DIRECTORY_SEPARATOR) === 0) { serve($path); }'
+- '<?php if (substr($path, 0, strlen($base)) === $base) { serve($path); }'
+- '<?php if (strrpos($path, $base) === 0) { serve($path); }'
+- '<?php if (realpath($path) === realpath($base)) { serve($path); }'
+- '<?php // strpos($path, $base) === 0'
+- '<?php $note = "strpos($path, $base) === 0";'
+invalid:
+- '<?php if (strpos($path, $base) === 0) { serve($path); }'
+- '<?php if (0 === strpos($target, $root)) { serve($target); }'
+- '<?php if (strpos($realPath, $baseDir) === 0) { serve($realPath); }'
+- '<?php if (stripos($destination, $prefix) === 0) { serve($destination); }'
+- |
+  <?php
+  function serve_asset($requested, $docroot) {
+      if (strpos($requested, $docroot) === 0) {
+          return file_get_contents($requested);
+      }
+      throw new RuntimeException("outside root");
+  }
