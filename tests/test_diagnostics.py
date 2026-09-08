@@ -7,11 +7,21 @@ from pathlib import Path
 
 import yaml
 
+from tests._astgrep import resolve_ast_grep
+
 ROOT = Path(__file__).resolve().parents[1]
-AST_GREP = ROOT / "node_modules" / ".bin" / "ast-grep"
+AST_GREP = resolve_ast_grep()
 
 
 class DiagnosticTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if AST_GREP is None:
+            raise unittest.SkipTest(
+                "ast-grep binary not found. Install with: "
+                "npm install (for local node_modules/.bin/ast-grep) or "
+                "install ast-grep to system PATH"
+            )
     def test_all_rules_emit_declared_diagnostics(self):
         rules = sorted((ROOT / "rules").rglob("*.yml"))
         self.assertEqual(len(rules), 253, "update the explicit diagnostic inventory")

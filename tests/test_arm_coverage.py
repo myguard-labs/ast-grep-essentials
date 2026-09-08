@@ -29,8 +29,10 @@ from pathlib import Path
 
 import yaml
 
+from tests._astgrep import resolve_ast_grep
+
 ROOT = Path(__file__).resolve().parents[1]
-AST_GREP = ROOT / "node_modules" / ".bin" / "ast-grep"
+AST_GREP = resolve_ast_grep()
 
 # Mirrors tests/test_powershell_parser.py's artifact-naming logic: the build
 # script emits the platform-native suffix, so the artifact this host should
@@ -140,6 +142,15 @@ requires_powershell_parser = unittest.skipUnless(
 
 
 class ArmCoverageTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if AST_GREP is None:
+            raise unittest.SkipTest(
+                "ast-grep binary not found. Install with: "
+                "npm install (for local node_modules/.bin/ast-grep) or "
+                "install ast-grep to system PATH"
+            )
+
     def _run_arm_inventory(self, tree, powershell_config=None):
         # pylint: disable=too-many-locals,too-many-statements
         # Already true of this method pre-extension (28 locals, 59 statements

@@ -6,11 +6,21 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests._astgrep import resolve_ast_grep
+
 ROOT = Path(__file__).resolve().parents[1]
-AST_GREP = ROOT / "node_modules" / ".bin" / "ast-grep"
+AST_GREP = resolve_ast_grep()
 
 
 class DiscoveryTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if AST_GREP is None:
+            raise unittest.SkipTest(
+                "ast-grep binary not found. Install with: "
+                "npm install (for local node_modules/.bin/ast-grep) or "
+                "install ast-grep to system PATH"
+            )
     def test_phtml_uses_php_parser(self):
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / "redirect.phtml"

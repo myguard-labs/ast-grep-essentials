@@ -27,8 +27,10 @@ from pathlib import Path
 
 import yaml
 
+from tests._astgrep import resolve_ast_grep
+
 ROOT = Path(__file__).resolve().parents[1]
-AST_GREP = ROOT / "node_modules" / ".bin" / "ast-grep"
+AST_GREP = resolve_ast_grep()
 PSH_CONFIG = ROOT / "sgconfig.powershell.yml"
 NATIVE_CONFIG = ROOT / "sgconfig.yml"
 BUILD_DIR = ROOT / "build" / "powershell"
@@ -94,6 +96,15 @@ requires_parser = unittest.skipUnless(
 
 class PowerShellHarness(unittest.TestCase):
     """Build a throwaway workspace whose config points at a chosen library."""
+
+    @classmethod
+    def setUpClass(cls):
+        if AST_GREP is None:
+            raise unittest.SkipTest(
+                "ast-grep binary not found. Install with: "
+                "npm install (for local node_modules/.bin/ast-grep) or "
+                "install ast-grep to system PATH"
+            )
 
     def workspace(self, library_path, extensions=("ps1", "psm1", "psd1"),
                   script=PROBE_SCRIPT, filename="probe.ps1"):
@@ -644,6 +655,15 @@ class TestSkipCannotMasqueradeAsPass(unittest.TestCase):
 
 class TestNativeScanUnaffected(unittest.TestCase):
     """The opt-in config must not change the default scan in either direction."""
+
+    @classmethod
+    def setUpClass(cls):
+        if AST_GREP is None:
+            raise unittest.SkipTest(
+                "ast-grep binary not found. Install with: "
+                "npm install (for local node_modules/.bin/ast-grep) or "
+                "install ast-grep to system PATH"
+            )
 
     def test_native_config_declares_no_custom_language(self):
         text = NATIVE_CONFIG.read_text()
