@@ -1,0 +1,101 @@
+id: go-git-missing-end-of-options
+language: go
+severity: warning
+message: >-
+  exec.Command/CommandContext invokes git with a literal argv where a
+  non-literal value follows the subcommand and no option-terminating marker
+  appears BEFORE that value. Git parses every argument up to such a marker as
+  a possible option, so a value starting with a dash is reinterpreted as a
+  flag instead of the operand it was meant to be. A marker placed after the
+  value does not protect it. The two markers are not interchangeable:
+  --end-of-options (git >= 2.24) only terminates option parsing and leaves
+  the operand's meaning intact, while -- separates revisions from paths and
+  therefore changes what the operand means for subcommands that accept both.
+  For example, git log -- ref searches the history of a PATH named ref and
+  silently reports nothing rather than logging that revision, and
+  git checkout -- branch restores a file instead of switching branches.
+  Prefer inserting --end-of-options before the non-literal value wherever
+  the subcommand accepts it; where it does not, or where the deployed git
+  predates 2.24, validate that the value cannot begin with a dash instead of blindly
+  inserting --.
+note: >-
+  Fires on a literal exec.Command("git", ...)/exec.CommandContext(ctx,
+  "git", ...) argv where the subcommand is a literal and a later element is
+  not a literal with neither "--end-of-options" nor "--" at an earlier
+  position in the argv. A marker appearing after that element does not
+  protect it and does not suppress the finding. It cannot tell whether the
+  non-literal value is attacker-controlled, so a value drawn from a fixed
+  internal list is a legitimate dismissal. --end-of-options was added in git
+  2.24; on the git this rule was authored against (2.55.0) log, diff, show,
+  reset, checkout, restore, branch, tag, add, rm, grep, ls-files and
+  rev-parse all accept it, but
+  per-subcommand support across older releases was not audited here, so a
+  fleet on an older git must confirm it before relying on it. This rule does
+  not check which marker suits the matched subcommand, nor whether the
+  installed git is new enough -- only that some marker precedes the
+  non-literal value. This is a literal-argv rule only: the common
+  args = []string{"git", sub}; args = append(args, userValue) form, and any
+  argv built into a []string and passed with exec.Command(name, args...),
+  is an honest syntactic miss of this rule, the same class of gap already
+  disclosed for the shell and formatted-argument argv rules in this pack.
+rule:
+  all:
+    - kind: call_expression
+    - any:
+        - all:
+            - has: {field: function, regex: '^exec\.Command$'}
+            - has:
+                field: arguments
+                kind: argument_list
+                all:
+                  - has:
+                      all:
+                        - nthChild: {position: 1, ofRule: {not: {kind: comment}}}
+                        - matches: git-literal
+                  - has:
+                      all:
+                        - nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+                        - matches: string-literal
+                  - has:
+                      all:
+                        - nthChild: {position: n+3, ofRule: {not: {kind: comment}}}
+                        - matches: unprotected-not-literal
+        - all:
+            - has: {field: function, regex: '^exec\.CommandContext$'}
+            - has:
+                field: arguments
+                kind: argument_list
+                all:
+                  - has:
+                      all:
+                        - nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+                        - matches: git-literal
+                  - has:
+                      all:
+                        - nthChild: {position: 3, ofRule: {not: {kind: comment}}}
+                        - matches: string-literal
+                  - has:
+                      all:
+                        - nthChild: {position: n+4, ofRule: {not: {kind: comment}}}
+                        - matches: unprotected-not-literal
+utils:
+  string-literal:
+    any:
+      - kind: interpreted_string_literal
+      - kind: raw_string_literal
+  git-literal:
+    matches: string-literal
+    regex: '^["`]git["`]$'
+  end-marker:
+    matches: string-literal
+    regex: '^["`](--end-of-options|--)["`]$'
+  not-literal:
+    not:
+      matches: string-literal
+  unprotected-not-literal:
+    all:
+      - matches: not-literal
+      - not:
+          follows:
+            stopBy: end
+            matches: end-marker

@@ -1,0 +1,23 @@
+id: go-git-missing-end-of-options
+valid:
+- 'package p; func f() { exec.Command("git", "checkout", "--end-of-options", branch) }'
+- 'package p; func f() { exec.Command("git", "log", "--", ref) }'
+- 'package p; func f() { exec.CommandContext(ctx, "git", "diff", "--", path) }'
+- 'package p; func f() { exec.Command("git", "log", "--end-of-options", ref, "--", path) }'
+- 'package p; func f() { exec.CommandContext(ctx, "git", "grep", "--end-of-options", pat) }'
+- 'package p; func f() { exec.Command("git", "clone", "https://example.test/repo.git") }'
+- 'package p; func f() { exec.Command("git", "status") }'
+- 'package p; func f() { myexec.Command("git", "checkout", branch) }'
+- 'package p; func f() { exec.Commander("git", "checkout", branch) }'
+- 'package p; // exec.Command("git", "checkout", branch)'
+- 'package p; var s = "exec.Command(\"git\", \"checkout\", branch)"'
+- 'package p; func f() { exec.Command("hg", "checkout", branch) }'
+invalid:
+- 'package p; func f() { exec.Command("git", "checkout", branch) }'
+- 'package p; func f() { exec.Command("git", "branch", name) }'
+- 'package p; func f() { exec.CommandContext(ctx, "git", "tag", tagName) }'
+- 'package p; func f() { exec.Command("git", "log", ref) }'
+- 'package p; func f() { exec.Command("git", "clone", repoURL) }'
+- 'package p; func f() { exec.Command("git", "log", ref, "--", path) }'
+- 'package p; func f() { exec.CommandContext(ctx, "git", "log", ref, "--", path) }'
+- 'package p; func f() { exec.Command("git", "checkout", branch, "--end-of-options") }'
