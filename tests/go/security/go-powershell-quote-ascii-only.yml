@@ -1,0 +1,67 @@
+id: go-powershell-quote-ascii-only
+valid:
+- |
+  package p
+  func QuotePowerShellArg(s string) string {
+      s = strings.ReplaceAll(s, "‘", "")
+      s = strings.ReplaceAll(s, "’", "")
+      s = strings.ReplaceAll(s, "“", "")
+      s = strings.ReplaceAll(s, "”", "")
+      s = strings.ReplaceAll(s, `"`, `""`)
+      return "'" + s + "'"
+  }
+- |
+  package p
+  func QuotePSArgReplacer(s string) string {
+      r := strings.NewReplacer("‘", "", "’", "", "“", "", "”", "", `"`, `""`)
+      return "'" + r.Replace(s) + "'"
+  }
+- |
+  package p
+  func BuildArgs(args []string) *exec.Cmd {
+      return exec.Command("pwsh", append([]string{"-NoProfile", "-Command"}, args...)...)
+  }
+- |
+  package p
+  func EscapeSQLString(s string) string {
+      return strings.Replace(s, "'", "''", -1)
+  }
+invalid:
+- |
+  package p
+  func QuotePowerShellArg(s string) string {
+      s = strings.Replace(s, `"`, `\"`, -1)
+      return `"` + s + `"`
+  }
+- |
+  package p
+  func EscapePSCommandArg(s string) string {
+      // SQL-style doubling: coincidentally neutralizes the ASCII apostrophe,
+      // but never handles the PowerShell smart-quote delimiters.
+      s = strings.ReplaceAll(s, "'", "''")
+      return "'" + s + "'"
+  }
+- |
+  package p
+  func QuotePowerShellInterpreted(s string) string {
+      // The escaped source form of a double quote: four characters, not three.
+      s = strings.ReplaceAll(s, "\"", "\\\"")
+      return "\"" + s + "\""
+  }
+- |
+  package p
+  func EscapePowerShellArgument(s string) string {
+      // Smart quotes appear only as WRAPPERS, never in a replace search
+      // position, so nothing neutralizes an input smart quote.
+      s = strings.Replace(s, "'", "''", -1)
+      return "‘" + s + "’"
+  }
+- |
+  package p
+  func QuotePowerShellPrefixed(s string) string {
+      // The only smart quote is a NewReplacer REPLACEMENT VALUE (even
+      // position), which neutralizes nothing; input smart quotes stay intact.
+      s = strings.ReplaceAll(s, `"`, `""`)
+      r := strings.NewReplacer("prefix", "‘")
+      return "'" + r.Replace(s) + "'"
+  }

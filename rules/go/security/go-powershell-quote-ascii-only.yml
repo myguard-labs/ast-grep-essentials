@@ -1,0 +1,124 @@
+id: go-powershell-quote-ascii-only
+language: go
+severity: warning
+message: >-
+  Function name and body identify this as a PowerShell command-line quoting
+  helper, escaping only the ASCII quote characters. PowerShell also treats the
+  Unicode "smart quote" characters U+2018, U+2019, U+201C and U+201D as string
+  delimiters, so a value containing one of them closes the quoted argument
+  early and anything after it runs as a new command. Escaping more characters
+  does not fix this class of bug: stop interpolating untrusted values into
+  script source that PowerShell will re-parse. Invoke the target executable
+  directly with exec.Command and pass each untrusted value as its own argv
+  element, so no shell or script parser ever sees it. -EncodedCommand is not
+  a fix: it only base64-transports the script, and PowerShell still parses
+  and executes the decoded text, so an interpolated value is injected exactly
+  as before. If a script genuinely must run, keep untrusted data out of its
+  source and pass it separately, for example through -File arguments, a
+  parameter binding, or the environment.
+note: >-
+  Fires on a function whose name mentions both a PowerShell-quoting purpose
+  and escaping/quoting, whose body replaces or escapes an ASCII
+  quote/apostrophe literal, and whose body shows no evidence of SANITIZING the
+  smart-quote code points U+2018, U+2019, U+201C and U+201D. The ASCII arm
+  matches both source spellings of the character: the raw literal `` `"` ``
+  and the interpreted, backslash-escaped literal "\"" -- four source
+  characters including the backslash, which an unescaped three-character
+  pattern misses entirely. Suppression requires the smart quote to occur in a
+  SEARCH position -- the second argument of strings.Replace/ReplaceAll (or of
+  Trim/TrimLeft/TrimRight/ContainsAny/IndexAny), or an ODD
+  1-based argument position of strings.NewReplacer, which takes alternating
+  (search, replace) pairs so that only its odd arguments are search keys; a
+  smart quote appearing solely as a NewReplacer replacement VALUE neutralizes
+  nothing and does not suppress. A smart quote
+  used merely as a WRAPPER around the result ("‘" + s + "’") does not
+  suppress: it never neutralizes an input smart quote, so such a helper is a
+  true positive, not a dismissal. Suppression deliberately accepts a
+  DEFENSIBLE SUBSET rather than requiring all four code points: any single
+  smart quote in a sanitizing position is strong evidence that the author knew
+  about this class and handled it, and demanding all four would re-introduce
+  false positives on helpers that (correctly) strip only the pair their input
+  encoding can produce; a partial handler is left to human review rather than
+  reported as an ASCII-only escaper. Verified against PowerShell 7.6.5:
+  Invoke-Expression parses all four as genuine quote delimiters and a
+  smart-quote-terminated argument executes injected text as a new statement;
+  guillemets («, ») are not delimiters and are excluded from that claim. A
+  SQL-style doubling escaper (replacing `'` with `''`) is flagged here as a
+  DOCUMENTED RESIDUAL FALSE POSITIVE: it happens to neutralize the ASCII
+  apostrophe but is named and reviewed as a SQL escaper, not a PowerShell one,
+  and the matcher cannot distinguish the two from the replacement alone. A
+  helper that replaces or strips the smart-quote code points, or that never
+  claims to quote for PowerShell, is the routine dismissal.
+rule:
+  kind: function_declaration
+  all:
+    - has:
+        field: name
+        regex: '(?i)(PowerShell|PSQuote|PwshQuote|PSArg|PSCommand).*(Quote|Escape)|(Quote|Escape).*(PowerShell|PSQuote|PwshQuote|PSArg|PSCommand)'
+    - has:
+        stopBy: end
+        kind: call_expression
+        all:
+          - has:
+              field: function
+              regex: '^strings\.(Replace|ReplaceAll)$'
+          - has:
+              field: arguments
+              kind: argument_list
+              has:
+                all:
+                  - nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+                  - matches: ascii-quote-literal
+    - not:
+        has:
+          stopBy: end
+          matches: smart-quote-sanitized
+utils:
+  ascii-quote-literal:
+    any:
+      - kind: interpreted_string_literal
+        regex: '^"(?:[\x27"]|\\[\x27"])"$'
+      - kind: raw_string_literal
+        regex: '^`[\x27"]`$'
+  smart-quote-literal:
+    any:
+      - kind: interpreted_string_literal
+        regex: '[‘’“”]'
+      - kind: raw_string_literal
+        regex: '[‘’“”]'
+  smart-quote-sanitized:
+    any:
+      # strings.Replace/ReplaceAll(s, "<smart quote>", ...) -- the smart quote
+      # sits in the SEARCH argument, so it is actually being neutralized
+      # everywhere in the value. Trim/TrimLeft/TrimRight are deliberately NOT
+      # accepted here: they only strip at the string BOUNDARIES, so an
+      # embedded smart quote survives and still terminates the quoted
+      # argument. ContainsAny/IndexAny only detect, they neutralize nothing.
+      - kind: call_expression
+        all:
+          - has:
+              field: function
+              regex: '^strings\.(Replace|ReplaceAll)$'
+          - has:
+              field: arguments
+              kind: argument_list
+              has:
+                all:
+                  - nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+                  - matches: smart-quote-literal
+      # strings.NewReplacer("<smart quote>", ...) -- NewReplacer takes
+      # alternating (search, replace) pairs, so ONLY the odd 1-based argument
+      # positions are search keys. A smart quote in an even position is a
+      # REPLACEMENT VALUE and neutralizes nothing, so it must not suppress.
+      - kind: call_expression
+        all:
+          - has:
+              field: function
+              regex: '^strings\.NewReplacer$'
+          - has:
+              field: arguments
+              kind: argument_list
+              has:
+                all:
+                  - nthChild: {position: 2n+1, ofRule: {not: {kind: comment}}}
+                  - matches: smart-quote-literal

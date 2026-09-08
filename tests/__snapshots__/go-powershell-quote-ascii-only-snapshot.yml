@@ -1,0 +1,193 @@
+id: go-powershell-quote-ascii-only
+snapshots:
+  ? |
+    package p
+    func EscapePSCommandArg(s string) string {
+        // SQL-style doubling: coincidentally neutralizes the ASCII apostrophe,
+        // but never handles the PowerShell smart-quote delimiters.
+        s = strings.ReplaceAll(s, "'", "''")
+        return "'" + s + "'"
+    }
+  : labels:
+    - source: |-
+        func EscapePSCommandArg(s string) string {
+            // SQL-style doubling: coincidentally neutralizes the ASCII apostrophe,
+            // but never handles the PowerShell smart-quote delimiters.
+            s = strings.ReplaceAll(s, "'", "''")
+            return "'" + s + "'"
+        }
+      style: primary
+      start: 10
+      end: 260
+    - source: EscapePSCommandArg
+      style: secondary
+      start: 15
+      end: 33
+    - source: strings.ReplaceAll
+      style: secondary
+      start: 201
+      end: 219
+    - source: '"''"'
+      style: secondary
+      start: 223
+      end: 226
+    - source: (s, "'", "''")
+      style: secondary
+      start: 219
+      end: 233
+    - source: strings.ReplaceAll(s, "'", "''")
+      style: secondary
+      start: 201
+      end: 233
+  ? |
+    package p
+    func EscapePowerShellArgument(s string) string {
+        // Smart quotes appear only as WRAPPERS, never in a replace search
+        // position, so nothing neutralizes an input smart quote.
+        s = strings.Replace(s, "'", "''", -1)
+        return "‘" + s + "’"
+    }
+  : labels:
+    - source: |-
+        func EscapePowerShellArgument(s string) string {
+            // Smart quotes appear only as WRAPPERS, never in a replace search
+            // position, so nothing neutralizes an input smart quote.
+            s = strings.Replace(s, "'", "''", -1)
+            return "‘" + s + "’"
+        }
+      style: primary
+      start: 10
+      end: 264
+    - source: EscapePowerShellArgument
+      style: secondary
+      start: 15
+      end: 39
+    - source: strings.Replace
+      style: secondary
+      start: 200
+      end: 215
+    - source: '"''"'
+      style: secondary
+      start: 219
+      end: 222
+    - source: (s, "'", "''", -1)
+      style: secondary
+      start: 215
+      end: 233
+    - source: strings.Replace(s, "'", "''", -1)
+      style: secondary
+      start: 200
+      end: 233
+  ? |
+    package p
+    func QuotePowerShellArg(s string) string {
+        s = strings.Replace(s, `"`, `\"`, -1)
+        return `"` + s + `"`
+    }
+  : labels:
+    - source: |-
+        func QuotePowerShellArg(s string) string {
+            s = strings.Replace(s, `"`, `\"`, -1)
+            return `"` + s + `"`
+        }
+      style: primary
+      start: 10
+      end: 121
+    - source: QuotePowerShellArg
+      style: secondary
+      start: 15
+      end: 33
+    - source: strings.Replace
+      style: secondary
+      start: 61
+      end: 76
+    - source: '`"`'
+      style: secondary
+      start: 80
+      end: 83
+    - source: (s, `"`, `\"`, -1)
+      style: secondary
+      start: 76
+      end: 94
+    - source: strings.Replace(s, `"`, `\"`, -1)
+      style: secondary
+      start: 61
+      end: 94
+  ? |
+    package p
+    func QuotePowerShellInterpreted(s string) string {
+        // The escaped source form of a double quote: four characters, not three.
+        s = strings.ReplaceAll(s, "\"", "\\\"")
+        return "\"" + s + "\""
+    }
+  : labels:
+    - source: |-
+        func QuotePowerShellInterpreted(s string) string {
+            // The escaped source form of a double quote: four characters, not three.
+            s = strings.ReplaceAll(s, "\"", "\\\"")
+            return "\"" + s + "\""
+        }
+      style: primary
+      start: 10
+      end: 211
+    - source: QuotePowerShellInterpreted
+      style: secondary
+      start: 15
+      end: 41
+    - source: strings.ReplaceAll
+      style: secondary
+      start: 147
+      end: 165
+    - source: '"\""'
+      style: secondary
+      start: 169
+      end: 173
+    - source: (s, "\"", "\\\"")
+      style: secondary
+      start: 165
+      end: 182
+    - source: strings.ReplaceAll(s, "\"", "\\\"")
+      style: secondary
+      start: 147
+      end: 182
+  ? |
+    package p
+    func QuotePowerShellPrefixed(s string) string {
+        // The only smart quote is a NewReplacer REPLACEMENT VALUE (even
+        // position), which neutralizes nothing; input smart quotes stay intact.
+        s = strings.ReplaceAll(s, `"`, `""`)
+        r := strings.NewReplacer("prefix", "‘")
+        return "'" + r.Replace(s) + "'"
+    }
+  : labels:
+    - source: |-
+        func QuotePowerShellPrefixed(s string) string {
+            // The only smart quote is a NewReplacer REPLACEMENT VALUE (even
+            // position), which neutralizes nothing; input smart quotes stay intact.
+            s = strings.ReplaceAll(s, `"`, `""`)
+            r := strings.NewReplacer("prefix", "‘")
+            return "'" + r.Replace(s) + "'"
+        }
+      style: primary
+      start: 10
+      end: 328
+    - source: QuotePowerShellPrefixed
+      style: secondary
+      start: 15
+      end: 38
+    - source: strings.ReplaceAll
+      style: secondary
+      start: 212
+      end: 230
+    - source: '`"`'
+      style: secondary
+      start: 234
+      end: 237
+    - source: (s, `"`, `""`)
+      style: secondary
+      start: 230
+      end: 244
+    - source: strings.ReplaceAll(s, `"`, `""`)
+      style: secondary
+      start: 212
+      end: 244
