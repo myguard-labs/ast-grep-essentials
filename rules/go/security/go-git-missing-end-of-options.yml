@@ -23,17 +23,26 @@ note: >-
   "git", ...) argv where the subcommand is a literal and a later element is
   not a literal with neither "--end-of-options" nor "--" at an earlier
   position in the argv. A marker appearing after that element does not
-  protect it and does not suppress the finding. It cannot tell whether the
+  protect it and does not suppress the finding. One bounded Git 2.55.0
+  exception also fires: literal `git log --grep --end-of-options <dynamic>`
+  consumes --end-of-options as grep's required pattern, leaving the following
+  dynamic operand option-eligible. This exception is limited to those fixed
+  positions directly after `log` (comments do not count as arguments). Bare
+  `git log --grep -- <dynamic>` instead
+  errors because --grep has no value, so it remains a no-finding error shape.
+  It cannot tell whether the
   non-literal value is attacker-controlled, so a value drawn from a fixed
   internal list is a legitimate dismissal. --end-of-options was added in git
   2.24; on the git this rule was authored against (2.55.0) log, diff, show,
   reset, checkout, restore, branch, tag, add, rm, grep, ls-files and
-  rev-parse all accept it, but
-  per-subcommand support across older releases was not audited here, so a
+  rev-parse all accept it in ordinary positions, but `log --grep
+  --end-of-options` consumes it as the grep pattern rather than a marker.
+  Per-subcommand support across older releases was not audited here, so a
   fleet on an older git must confirm it before relying on it. This rule does
   not check which marker suits the matched subcommand, nor whether the
-  installed git is new enough -- only that some marker precedes the
-  non-literal value. This is a literal-argv rule only: the common
+  installed git is new enough -- ordinarily it checks only that some marker
+  precedes the non-literal value, plus the bounded log exception above. This
+  is a literal-argv rule only: the common
   args = []string{"git", sub}; args = append(args, userValue) form, and any
   argv built into a []string and passed with exec.Command(name, args...),
   is an honest syntactic miss of this rule, the same class of gap already
@@ -42,6 +51,7 @@ rule:
   all:
     - kind: call_expression
     - any:
+        - matches: git-log-consumed-marker
         - all:
             - has: {field: function, regex: '^exec\.Command$'}
             - has:
@@ -89,6 +99,15 @@ utils:
   end-marker:
     matches: string-literal
     regex: '^["`](--end-of-options|--)["`]$'
+  end-of-options-literal:
+    matches: string-literal
+    regex: '^["`]--end-of-options["`]$'
+  grep-literal:
+    matches: string-literal
+    regex: '^["`]--grep["`]$'
+  log-literal:
+    matches: string-literal
+    regex: '^["`]log["`]$'
   not-literal:
     not:
       matches: string-literal
@@ -99,3 +118,59 @@ utils:
           follows:
             stopBy: end
             matches: end-marker
+  git-log-consumed-marker:
+    kind: call_expression
+    all:
+      - any:
+          - all:
+              - has: {field: function, regex: '^exec\.Command$'}
+              - has:
+                  field: arguments
+                  kind: argument_list
+                  all:
+                    - has:
+                        all:
+                          - nthChild: {position: 1, ofRule: {not: {kind: comment}}}
+                          - matches: git-literal
+                    - has:
+                        all:
+                          - nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+                          - matches: log-literal
+                    - has:
+                        all:
+                          - nthChild: {position: 3, ofRule: {not: {kind: comment}}}
+                          - matches: grep-literal
+                    - has:
+                        all:
+                          - nthChild: {position: 4, ofRule: {not: {kind: comment}}}
+                          - matches: end-of-options-literal
+                    - has:
+                        all:
+                          - nthChild: {position: 5, ofRule: {not: {kind: comment}}}
+                          - matches: not-literal
+          - all:
+              - has: {field: function, regex: '^exec\.CommandContext$'}
+              - has:
+                  field: arguments
+                  kind: argument_list
+                  all:
+                    - has:
+                        all:
+                          - nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+                          - matches: git-literal
+                    - has:
+                        all:
+                          - nthChild: {position: 3, ofRule: {not: {kind: comment}}}
+                          - matches: log-literal
+                    - has:
+                        all:
+                          - nthChild: {position: 4, ofRule: {not: {kind: comment}}}
+                          - matches: grep-literal
+                    - has:
+                        all:
+                          - nthChild: {position: 5, ofRule: {not: {kind: comment}}}
+                          - matches: end-of-options-literal
+                    - has:
+                        all:
+                          - nthChild: {position: 6, ofRule: {not: {kind: comment}}}
+                          - matches: not-literal

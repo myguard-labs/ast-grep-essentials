@@ -891,8 +891,16 @@ tail `return` immediately after the finalize does not match, nor does a use in a
   is an honest syntactic miss of the same class already disclosed for the
   shell and formatted-argument argv rules in this pack. It requires only that
   one of the two marker literals appears at an earlier argv position than
-  the non-literal value; a marker placed after that value does not suppress the finding. It
-  does not check that the marker chosen is the correct one for the matched
+  the non-literal value; a marker placed after that value does not suppress
+  the finding.
+  The bounded exception is literal `git log --grep --end-of-options <dynamic>`:
+  Git 2.55.0 consumes --end-of-options as grep's pattern, leaving the dynamic
+  operand option-eligible, so the rule reports it. The exception uses fixed
+  positions directly after `log`; comments do not count as arguments. Bare
+  `git log --grep --
+  <dynamic>` errors because --grep has no value and remains a no-finding
+  error shape. It does not check that the marker chosen is correct for the
+  matched
   subcommand — `--end-of-options` merely ends option parsing, while `--`
   separates revisions from paths and so changes the operand's meaning for
   subcommands taking both (`git log -- ref` searches a path named `ref`) —
