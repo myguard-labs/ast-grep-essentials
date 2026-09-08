@@ -2,19 +2,186 @@ id: c-alloc-mul-overflow
 language: c
 severity: warning
 message: >-
-  Allocation size computed with a multiplication — malloc/ngx_palloc/ngx_pnalloc
-  of `a * b`. If either factor is attacker-influenced the product can overflow
-  size_t and under-allocate, then the following copy overflows the heap. Use a
-  checked-multiply (nginx: ngx_palloc with a size validated against a bound, or
-  reject early) or calloc's built-in overflow check.
+  Allocation argument computed with an unchecked multiplication. For
+  malloc/realloc, nginx pool allocators, and unchecked Zend allocators, a
+  wrapped product becomes the allocation size. For calloc/reallocarray and
+  checked Zend allocators, the nested product is evaluated before their
+  overflow checks. Pass raw factors to checked allocators; otherwise use a
+  checked multiply or reject the input before allocation.
 note: Dismiss if both factors are compile-time constants or provably bounded.
 rule:
   any:
-    - pattern: malloc($A * $B)
-    - pattern: ngx_palloc($POOL, $A * $B)
-    - pattern: ngx_pnalloc($POOL, $A * $B)
-    - pattern: ngx_pcalloc($POOL, $A * $B)
-    - pattern: malloc(($A * $B))
-    - pattern: ngx_palloc($POOL, ($A * $B))
-    - pattern: ngx_pnalloc($POOL, ($A * $B))
-    - pattern: ngx_pcalloc($POOL, ($A * $B))
+    - pattern:
+        context: void f(void) { malloc($A * $B); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { ngx_palloc($POOL, $A * $B); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { ngx_pnalloc($POOL, $A * $B); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { ngx_pcalloc($POOL, $A * $B); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { malloc(($A * $B)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { ngx_palloc($POOL, ($A * $B)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { ngx_pnalloc($POOL, ($A * $B)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { ngx_pcalloc($POOL, ($A * $B)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { calloc($A * $B, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { calloc($_, $A * $B); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { reallocarray($_, $A * $B, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { reallocarray($_, $_, $A * $B); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { ecalloc($A * $B, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { ecalloc($_, $A * $B); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_emalloc($A * $B, $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_emalloc($_, $A * $B, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_emalloc($_, $_, $A * $B); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_erealloc($_, $A * $B, $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_erealloc($_, $_, $A * $B, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_erealloc($_, $_, $_, $A * $B); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { calloc(($A * $B), $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { calloc($_, ($A * $B)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { reallocarray($_, ($A * $B), $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { reallocarray($_, $_, ($A * $B)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { ecalloc(($A * $B), $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { ecalloc($_, ($A * $B)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_emalloc(($A * $B), $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_emalloc($_, ($A * $B), $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_emalloc($_, $_, ($A * $B)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_erealloc($_, ($A * $B), $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_erealloc($_, $_, ($A * $B), $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_erealloc($_, $_, $_, ($A * $B)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { emalloc($A * $B); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { erealloc($_, $A * $B); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { pemalloc($A * $B, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { perealloc($_, $A * $B, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { emalloc(($A * $B)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { erealloc($_, ($A * $B)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { pemalloc(($A * $B), $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { perealloc($_, ($A * $B), $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { realloc($_, $A * $B); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_pemalloc($A * $B, $_, $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_pemalloc($_, $A * $B, $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_pemalloc($_, $_, $A * $B, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { pecalloc($A * $B, $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { pecalloc($_, $A * $B, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_perealloc($_, $A * $B, $_, $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_perealloc($_, $_, $A * $B, $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_perealloc($_, $_, $_, $A * $B, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { realloc($_, ($A * $B)); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_pemalloc(($A * $B), $_, $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_pemalloc($_, ($A * $B), $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_pemalloc($_, $_, ($A * $B), $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { pecalloc(($A * $B), $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { pecalloc($_, ($A * $B), $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_perealloc($_, ($A * $B), $_, $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_perealloc($_, $_, ($A * $B), $_, $_); }
+        selector: call_expression
+    - pattern:
+        context: void f(void) { safe_perealloc($_, $_, $_, ($A * $B), $_); }
+        selector: call_expression

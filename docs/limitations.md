@@ -433,7 +433,21 @@ recorded here so the same seams are not re-mined.
   parenthesised-condition forms added, the rule measures 0.
 - Allocation size computed by multiplication is already covered by
   `c-alloc-mul-overflow`, which carries the nginx pool allocators alongside
-  `malloc`; a separate nginx rule would duplicate it.
+  `malloc`; a separate nginx rule would duplicate it. The rule also reports a
+  direct or once-parenthesised multiplication in each numeric factor accepted
+  by `calloc`, `reallocarray`, `ecalloc`, `safe_emalloc`, and `safe_erealloc`.
+  Those calls check their own `nmemb * size` (and the Zend `+ offset`), but a
+  multiplication inside one argument has already been evaluated and may have
+  wrapped before the callee sees it. Separated raw factors remain accepted;
+  pointer arguments are excluded. The unchecked `realloc(ptr, size)` and Zend
+  `emalloc(size)`, `erealloc(ptr, size)`, `pemalloc(size, persistent)`, and
+  `perealloc(ptr, size, persistent)` forms are covered only at their numeric
+  size positions. The checked persistent Zend `pecalloc(nmemb, size,
+  persistent)`, `safe_pemalloc(nmemb, size, offset, persistent)`, and
+  `safe_perealloc(ptr, nmemb, size, offset, persistent)` forms cover only their
+  numeric factor and offset positions; pointer and persistence-flag arguments
+  are excluded. Multiplication hidden behind a variable or helper, or nested
+  inside other arithmetic, is outside this syntactic rule.
 - Three shapes were too broad to be selective and were not narrowed further:
   `ngx_cpymem`/`ngx_memcpy` whose length argument is a pointer subtraction (326
   hits), `$A->len - $B` underflow arithmetic (170), and pool allocation with a

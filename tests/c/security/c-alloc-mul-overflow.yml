@@ -1,9 +1,44 @@
 id: c-alloc-mul-overflow
 valid:
 - void f(void) { calloc(n, size); }
+- void f(void) { calloc(n, sizeof(item)); }
+- void f(void) { reallocarray(p, n, sizeof(item)); }
+- void f(void) { emalloc(size); }
+- void f(void) { erealloc(p, size); }
+- void f(void) { pemalloc(size, persistent); }
+- void f(void) { perealloc(p, size, persistent); }
+- void f(void) { ecalloc(n, sizeof(item)); }
+- void f(void) { safe_emalloc(n, sizeof(item), header); }
+- void f(void) { safe_erealloc(p, n, sizeof(item), header); }
+- void f(void) { reallocarray(p + n * size, n, sizeof(item)); }
+- void f(void) { safe_erealloc(p + n * size, n, sizeof(item), header); }
+- void f(void) { erealloc(p + n * size, bytes); }
+- void f(void) { perealloc(p + n * size, bytes, persistent); }
+- void f(void) { pemalloc(bytes, flags * mask); }
+- void f(void) { perealloc(p, bytes, flags * mask); }
+- void f(void) { my_calloc(n * size, sizeof(item)); }
+- void f(void) { my_emalloc(n * size); }
+- void f(void) { bytes = n * size; calloc(n, sizeof(item)); }
 - void f(void) { malloc(size); }
 - /* void f(void) { malloc(n * size); } */
 - void f(void) { const char *text = "void f(void) { malloc(n * size); }"; }
+- /* void f(void) { calloc(n * size, sizeof(item)); } */
+- void f(void) { const char *text = "calloc(n * size, sizeof(item))"; }
+- /* void f(void) { emalloc(n * size); } */
+- void f(void) { const char *text = "perealloc(p, n * size, persistent)"; }
+- void f(void) { realloc(p, size); }
+- void f(void) { safe_pemalloc(n, size, offset, persistent); }
+- void f(void) { pecalloc(n, size, persistent); }
+- void f(void) { safe_perealloc(p, n, size, offset, persistent); }
+- void f(void) { realloc(p + n * stride, size); }
+- void f(void) { safe_pemalloc(n, size, offset, flags * mask); }
+- void f(void) { pecalloc(n, size, flags * mask); }
+- void f(void) { safe_perealloc(p + n * stride, n, size, offset, persistent); }
+- void f(void) { safe_perealloc(p, n, size, offset, flags * mask); }
+- void f(void) { my_realloc(p, n * size); }
+- void f(void) { safe_pemalloc_checked(n * size, unit, offset, persistent); }
+- /* void f(void) { safe_pemalloc(n * size, unit, offset, persistent); } */
+- void f(void) { const char *text = "pecalloc(n * size, unit, persistent)"; }
 invalid:
 - "void f(void) { p = ngx_palloc(pool, (n * size)); }"
 - "void f(void) { p = ngx_pnalloc(pool, (n * size)); }"
@@ -13,3 +48,53 @@ invalid:
 - void f(void) { malloc((n * size)); }
 - void f(void) { ngx_pnalloc(pool, n * size); }
 - void f(void) { ngx_pcalloc(pool, n * size); }
+- void f(void) { p = calloc(n * size, sizeof(item)); }
+- void f(void) { p = calloc(n, sizeof(item) * count); }
+- void f(void) { p = reallocarray(p, n * groups, sizeof(item)); }
+- void f(void) { p = reallocarray(p, n, sizeof(item) * groups); }
+- void f(void) { p = ecalloc(n * groups, sizeof(item)); }
+- void f(void) { p = ecalloc(n, sizeof(item) * groups); }
+- void f(void) { p = safe_emalloc(n * groups, sizeof(item), header); }
+- void f(void) { p = safe_emalloc(n, sizeof(item) * groups, header); }
+- void f(void) { p = safe_emalloc(n, sizeof(item), header * groups); }
+- void f(void) { p = safe_erealloc(p, n * groups, sizeof(item), header); }
+- void f(void) { p = safe_erealloc(p, n, sizeof(item) * groups, header); }
+- void f(void) { p = safe_erealloc(p, n, sizeof(item), header * groups); }
+- void f(void) { p = calloc((n * size), sizeof(item)); }
+- void f(void) { p = calloc(n, (sizeof(item) * count)); }
+- void f(void) { p = reallocarray(p, (n * groups), sizeof(item)); }
+- void f(void) { p = reallocarray(p, n, (sizeof(item) * groups)); }
+- void f(void) { p = ecalloc((n * groups), sizeof(item)); }
+- void f(void) { p = ecalloc(n, (sizeof(item) * groups)); }
+- void f(void) { p = safe_emalloc((n * groups), sizeof(item), header); }
+- void f(void) { p = safe_emalloc(n, (sizeof(item) * groups), header); }
+- void f(void) { p = safe_emalloc(n, sizeof(item), (header * groups)); }
+- void f(void) { p = safe_erealloc(p, (n * groups), sizeof(item), header); }
+- void f(void) { p = safe_erealloc(p, n, (sizeof(item) * groups), header); }
+- void f(void) { p = safe_erealloc(p, n, sizeof(item), (header * groups)); }
+- void f(void) { p = emalloc(n * size); }
+- void f(void) { p = erealloc(p, n * size); }
+- void f(void) { p = pemalloc(n * size, persistent); }
+- void f(void) { p = perealloc(p, n * size, persistent); }
+- void f(void) { p = emalloc((n * size)); }
+- void f(void) { p = erealloc(p, (n * size)); }
+- void f(void) { p = pemalloc((n * size), persistent); }
+- void f(void) { p = perealloc(p, (n * size), persistent); }
+- void f(void) { p = realloc(p, n * size); }
+- void f(void) { p = safe_pemalloc(n * size, unit, offset, persistent); }
+- void f(void) { p = safe_pemalloc(n, size * unit, offset, persistent); }
+- void f(void) { p = safe_pemalloc(n, size, offset * extra, persistent); }
+- void f(void) { p = pecalloc(n * groups, size, persistent); }
+- void f(void) { p = pecalloc(n, size * groups, persistent); }
+- void f(void) { p = safe_perealloc(p, n * groups, size, offset, persistent); }
+- void f(void) { p = safe_perealloc(p, n, size * groups, offset, persistent); }
+- void f(void) { p = safe_perealloc(p, n, size, offset * extra, persistent); }
+- void f(void) { p = realloc(p, (n * size)); }
+- void f(void) { p = safe_pemalloc((n * size), unit, offset, persistent); }
+- void f(void) { p = safe_pemalloc(n, (size * unit), offset, persistent); }
+- void f(void) { p = safe_pemalloc(n, size, (offset * extra), persistent); }
+- void f(void) { p = pecalloc((n * groups), size, persistent); }
+- void f(void) { p = pecalloc(n, (size * groups), persistent); }
+- void f(void) { p = safe_perealloc(p, (n * groups), size, offset, persistent); }
+- void f(void) { p = safe_perealloc(p, n, (size * groups), offset, persistent); }
+- void f(void) { p = safe_perealloc(p, n, size, (offset * extra), persistent); }
