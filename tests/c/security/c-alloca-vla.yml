@@ -20,10 +20,9 @@ valid:
 - void f(void) { char buf[CFG.MAX]; }
 - void f(void) { char buf[ARRAY_SIZE(x) - 1]; }
 - void f(void) { char buf[MAX(a, b) + 1]; }
-- void f(int len) { char buf[(len + 1)]; }
-- void f(int n) { char buf[-n]; }
-- void f(struct a *a) { char buf[a->b->len]; }
-- void f(struct o *ops) { char buf[ops->get_len()]; }
+- void f(void) { char buf[CFG.SUB.MAX]; }
+- void f(int len) { char buf[(MAX_LEN + 1)]; }
+- void f(int n) { char buf[-MAX_LEN]; }
 invalid:
 - void f(void) { alloca(n); }
 - void f(void) { char *p = alloca(64); }
@@ -42,3 +41,7 @@ invalid:
 - void f(struct h *h) { char buf[h->len]; }
 - void f(int n) { char buf[get_len() + n]; }
 - void f(int n) { char buf[ARRAY_SIZE(x) - n]; }
+- void f(int len) { char buf[(len + 1)]; }
+- void f(int n) { char buf[-n]; }
+- void f(struct a *a) { char buf[a->b->len]; }
+- void f(struct o *ops) { char buf[ops->get_len()]; }

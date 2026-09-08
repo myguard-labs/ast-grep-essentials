@@ -1,5 +1,19 @@
 id: c-alloca-vla
 snapshots:
+  void f(int len) { char buf[(len + 1)]; }:
+    labels:
+    - source: buf[(len + 1)]
+      style: primary
+      start: 23
+      end: 37
+    - source: len
+      style: secondary
+      start: 28
+      end: 31
+    - source: (len + 1)
+      style: secondary
+      start: 27
+      end: 36
   void f(int len) { char buf[len + 1]; }:
     labels:
     - source: buf[len + 1]
@@ -24,6 +38,20 @@ snapshots:
       style: secondary
       start: 27
       end: 30
+  void f(int n) { char buf[-n]; }:
+    labels:
+    - source: buf[-n]
+      style: primary
+      start: 21
+      end: 28
+    - source: n
+      style: secondary
+      start: 26
+      end: 27
+    - source: -n
+      style: secondary
+      start: 25
+      end: 27
   void f(int n) { char buf[ARRAY_SIZE(x) - n]; }:
     labels:
     - source: buf[ARRAY_SIZE(x) - n]
@@ -86,6 +114,24 @@ snapshots:
       style: secondary
       start: 41
       end: 45
+  void f(struct a *a) { char buf[a->b->len]; }:
+    labels:
+    - source: buf[a->b->len]
+      style: primary
+      start: 27
+      end: 41
+    - source: a
+      style: secondary
+      start: 31
+      end: 32
+    - source: a->b
+      style: secondary
+      start: 31
+      end: 35
+    - source: a->b->len
+      style: secondary
+      start: 31
+      end: 40
   void f(struct h *h) { char buf[h->len]; }:
     labels:
     - source: buf[h->len]
@@ -100,6 +146,24 @@ snapshots:
       style: secondary
       start: 31
       end: 37
+  void f(struct o *ops) { char buf[ops->get_len()]; }:
+    labels:
+    - source: buf[ops->get_len()]
+      style: primary
+      start: 29
+      end: 48
+    - source: ops
+      style: secondary
+      start: 33
+      end: 36
+    - source: ops->get_len
+      style: secondary
+      start: 33
+      end: 45
+    - source: ops->get_len()
+      style: secondary
+      start: 33
+      end: 47
   void f(void) { __builtin_alloca(n); }:
     labels:
     - source: __builtin_alloca(n)
