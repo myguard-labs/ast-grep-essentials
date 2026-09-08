@@ -17,14 +17,23 @@ note: >-
   uppercase-letter identifiers is treated as fixed-size, and the same
   uppercase exemption applies to the callee of a call size and to the object of
   a field-access size, so the conventional fixed-size macros `buf[ARRAY_SIZE(x)]`
-  and `buf[CFG.MAX]` are skipped. The exemption is per identifier, not per
+  and `buf[CFG.MAX]` are skipped. The callee exemption also allowlists the
+  conventional lowercase count spellings `countof`, `nitems`, `nelems`, and
+  `lengthof`, so `buf[countof(z)]` is skipped the same way, through the same
+  parenthesized/unary wrappers as the uppercase exemption. This lowercase
+  allowlist covers a direct call callee only -- the function name itself, or
+  the method name of a field-access callee -- and does not extend to the
+  object of a field-access callee or to a bare field-access size, so an
+  object merely named `countof` still reports, e.g. `buf[countof.get_len()]`.
+  The exemption is per identifier, not per
   size: within an arithmetic size each lowercase identifier is skipped only
   when it sits inside `sizeof` or inside a call whose callee is uppercase. So
   `buf[ARRAY_SIZE(x) - 1]` is skipped because its only lowercase identifier is
   the macro argument, while `buf[ARRAY_SIZE(x) - n]` still reports on `n`,
   which is correct -- that size really is variable-length. That is a naming/shape heuristic, not constant-expression analysis --
-  a lowercase macro or lowercase `static const` used as or inside a size still
-  reports as a false positive. A parenthesized size and a unary size are
+  a lowercase macro or lowercase `static const` used as or inside a size --
+  other than the four allowlisted spellings above -- still reports as a false
+  positive. A parenthesized size and a unary size are
   unwrapped before the four shapes are checked, so `buf[(len + 1)]` and
   `buf[-n]` report exactly like their unwrapped form. A field-access or a
   call size may itself nest a field access in its object or callee slot, so
@@ -69,7 +78,7 @@ rule:
                               has:
                                 field: function
                                 kind: identifier
-                                regex: ^[A-Z_]
+                                regex: ^([A-Z_].*|countof|nitems|nelems|lengthof)$
               - all:
                   - kind: call_expression
                   - has:
@@ -78,7 +87,7 @@ rule:
                         - all:
                             - kind: identifier
                             - not:
-                                regex: ^[A-Z_]
+                                regex: ^([A-Z_].*|countof|nitems|nelems|lengthof)$
                         - all:
                             - kind: field_expression
                             - has:
@@ -121,7 +130,7 @@ rule:
                               has:
                                 field: function
                                 kind: identifier
-                                regex: ^[A-Z_]
+                                regex: ^([A-Z_].*|countof|nitems|nelems|lengthof)$
               - all:
                   - kind: unary_expression
                   - has:
