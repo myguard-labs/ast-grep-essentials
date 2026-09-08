@@ -1,0 +1,14 @@
+id: php-sql-in-clause-implode
+valid:
+- <?php $db->query("SELECT * FROM t WHERE id IN (" . str_repeat('?,', count($ids) - 1) . "?)", ...$ids);
+- <?php $db->query("SELECT * FROM t WHERE id = ?", [$id]);
+- <?php $logger->addCondition(implode(',', $ids));
+- <?php $csv = implode(',', $ids);
+- <?php echo implode(',', $ids);
+- "<?php /* $db->query(\"SELECT * FROM t WHERE id IN (\" . implode(',', $ids) . \")\"); */"
+- "<?php $text = '$db->query(\"SELECT * FROM t WHERE id IN (\" . implode(\",\", $ids) . \")\");';"
+invalid:
+- <?php $db->query("SELECT * FROM t WHERE id IN (" . implode(',', $ids) . ")");
+- <?php $db->exec("DELETE FROM t WHERE id IN (" . implode(',', $ids) . ")");
+- <?php $wpdb->get_results("SELECT * FROM t WHERE id IN (" . implode(',', $ids) . ")");
+- <?php $logger->query(implode(',', $ids));

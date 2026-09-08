@@ -1,0 +1,39 @@
+id: php-sql-in-clause-implode
+language: php
+severity: warning
+message: >-
+  A SQL IN-clause is built by concatenating the output of implode() into a
+  query string passed to a database method. Generate one placeholder per
+  element (e.g. implode(',', array_fill(0, count($ids), '?'))) and bind each
+  element as its own parameter; do not escape or quote the joined value.
+note: >-
+  Matches a member call whose method name looks like a query sink (query,
+  prepare, exec, get_results, get_row, get_var, get_col) and whose arguments
+  contain a call to implode() anywhere, including nested inside a
+  concatenation. The matcher does not resolve which object the call is made
+  on, so an unrelated object that happens to expose a same-named method (for
+  example $logger->addCondition(implode(...)) does not match, but
+  $logger->query(implode(...)) does) can trigger this rule; dismiss those as
+  false positives once you confirm the receiver is not a database handle. It
+  also does not check whether the implode() result reaches the query string at
+  all, so an implode() used only to build a bound parameter value (already
+  passed as a separate argument, not concatenated into the query text) is a
+  routine dismissal. It cannot tell values from placeholders inside implode(),
+  so the safe idiom implode(',', array_fill(0, count($ids), '?')) still
+  matches; dismiss that case once you confirm every element bound is a literal
+  placeholder, not data.
+rule:
+  kind: member_call_expression
+  all:
+    - has:
+        field: name
+        regex: '(?i)^(query|prepare|exec|get_results|get_row|get_var|get_col)$'
+    - has:
+        field: arguments
+        stopBy: end
+        has:
+          stopBy: end
+          kind: function_call_expression
+          has:
+            field: function
+            regex: '(?i)^\\?implode$'
