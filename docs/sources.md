@@ -206,6 +206,8 @@ Rule id -> evidence consulted during the harvest.
 - `py-zipfile-extractall` — CVE-2024-8088 (zipfile infinite loop) —
   <https://explore.alas.aws.amazon.com/CVE-2024-8088.html> ; CPython gh-146581 /
   PR 146591 (unpack_archive path handling)
+- `py-decompress-unbounded` — CVE-2026-39373; CVE-2026-40036; CVE-2026-59200;
+  CVE-2026-27888 ; CWE-409
 - `py-lxml-parser-resolve-entities` — CVE-2025-6985 (langchain-text-splitters
   XXE) —
   <https://advisories.gitlab.com/pkg/pypi/langchain-text-splitters/CVE-2025-6985/>

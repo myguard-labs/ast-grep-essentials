@@ -1,0 +1,31 @@
+id: py-decompress-unbounded
+valid:
+- 'body = obj.decompress(blob)'
+- 'body = zlib.decompressobj().decompress(blob, MAX_PLAIN)'
+- 'body = zlib.decompressobj().decompress(blob, 4096)'
+- 'body = zlib.decompressobj().decompress(blob, max_length=MAX_PLAIN)'
+- 'body = zlib.decompressobj().decompress(blob, max_length=4096)'
+- 'body = zlib.compress(blob)'
+- '# body = zlib.decompress(blob)'
+- 'body = "zlib.decompress(blob)"'
+- zlib.decompressobj().decompress(blob, 0x1000)
+- zlib.decompressobj().decompress(blob, max_length=0x40)
+invalid:
+- 'body = zlib.decompress(blob)'
+- 'body = zlib.decompress(blob, wbits)'
+- 'body = zlib.decompress(blob, 15, 1024)'
+- 'body = zlib.decompress(blob, bufsize=MAX_PLAIN)'
+- 'body = zlib.decompress(data=blob, bufsize=MAX_PLAIN)'
+- 'body = gzip.decompress(blob)'
+- 'body = bz2.decompress(blob)'
+- 'body = lzma.decompress(blob)'
+- 'body = brotli.decompress(blob)'
+- 'body = zstandard.decompress(blob)'
+- 'body = snappy.decompress(blob)'
+- 'body = zlib.decompressobj().decompress(blob)'
+- 'body = zlib.decompressobj().decompress(blob, 0)'
+- 'body = zlib.decompressobj().decompress(blob, max_length=0)'
+- zlib.decompressobj().decompress(blob, 0x0)
+- zlib.decompressobj().decompress(blob, max_length=0_0)
+- zlib.decompressobj().decompress(blob, 0o0)
+- zlib.decompressobj().decompress(blob, 0b0)

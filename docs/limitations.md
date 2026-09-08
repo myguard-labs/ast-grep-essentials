@@ -1019,6 +1019,21 @@ variable, folded from configuration, or splatted in, is invisible, and the rule
 - `py-zipfile-extractall` matches `extractall` on any receiver, so a zip, tar,
   wheel or an unrelated class with that method name are indistinguishable, and
   the archive's provenance is unknown.
+- `py-decompress-unbounded` cannot tell whether the compressed input is attacker
+  supplied. Decompressing an artifact the deployment itself produced — a bundled
+  asset, a self-written cache blob — is the routine dismissal. The matcher sees
+  only the call site: a receiver whose `decompressobj` construction happens in
+  another function, and a compression module bound to a different name, are not
+  resolved, and a cap enforced by counting bytes after the call is not visible.
+  A one-shot module-level `decompress` is always reported: `bufsize` and the
+  third positional argument only size the initial buffer, which zlib grows on
+  demand, so neither bounds the output. On the incremental form a non-literal
+  `max_length` is taken at face value as a positive cap, so a variable holding
+  `0` — which zlib defines as unlimited — is not caught.
+  It does **not** subsume `py-zipfile-extractall` or `py-tarfile-extractall`,
+  which are path-traversal matchers on archive member names, and must not be
+  documented as doing so; an archive extraction and an unbounded decompress are
+  separate findings.
 - `py-lxml-parser-resolve-entities` cannot determine whether the constructor
   belongs to `lxml.etree`, nor whether the parser is only ever used on documents
   the deployment generated. It also does not see a parser configured after

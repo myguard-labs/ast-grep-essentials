@@ -1,0 +1,64 @@
+id: py-decompress-unbounded
+language: python
+severity: warning
+message: >-
+  Compressed data decompressed with no ceiling on the output. Compression ratios
+  of a thousand to one are easy to construct, so a small body expands to
+  gigabytes and exhausts memory before the call returns. Decompress
+  incrementally with decompressobj().decompress(data, max_length) using a
+  positive max_length sized from the expected content, check unconsumed_tail and
+  treat a hit ceiling as a rejected input, or stream the output in chunks with a
+  running byte counter that aborts past the limit. zlib.decompress's bufsize is
+  only the initial buffer allocation and grows on demand, so it is not an output
+  cap; max_length=0 likewise means unlimited.
+note: >-
+  Fires on a one-shot decompress call on a compression module, which has no
+  output cap available at all — bufsize and a third positional argument size the
+  initial buffer and do not bound the result, so they do not clear this finding
+  — and on the incremental decompressobj().decompress form with no max_length or
+  with the literal max_length 0, which zlib defines as unlimited. A limit
+  imposed on the compressed source before decompression does not bound the
+  expanded output, so it does not clear this finding either. A non-literal
+  max_length is assumed to be a genuine positive cap and is not reported. A
+  decompress call on a receiver whose construction is not visible here is out of
+  scope, and a module bound to a different name is not resolved. Decompressing
+  an artifact the deployment itself produced, such as a bundled asset or a
+  self-written cache blob, is the routine dismissal.
+rule:
+  kind: call
+  any:
+    - has:
+        field: function
+        kind: attribute
+        all:
+          - has: {field: object, regex: '^(zlib|gzip|bz2|lzma|zstandard|zstd|brotli|snappy)$'}
+          - has: {field: attribute, regex: '^decompress$'}
+    - all:
+        - has:
+            field: function
+            kind: attribute
+            all:
+              - has: {field: attribute, regex: '^decompress$'}
+              - has:
+                  field: object
+                  kind: call
+                  has:
+                    field: function
+                    regex: 'decompressobj$'
+        - any:
+            - not:
+                has:
+                  field: arguments
+                  has: {nthChild: 2}
+            - has:
+                field: arguments
+                any:
+                  - has:
+                      nthChild: 2
+                      kind: integer
+                      regex: '^(0[xXoObB][0_]*|[0_]+)$'
+                  - has:
+                      kind: keyword_argument
+                      all:
+                        - has: {field: name, regex: '^max_length$'}
+                        - has: {field: value, kind: integer, regex: '^(0[xXoObB][0_]*|[0_]+)$'}
