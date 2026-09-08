@@ -9,9 +9,18 @@ valid:
 - void f(int n, char buf[n]) { }
 - void f(void) { char buf[n * 2]; }
 - void f(void) { char buf[len + 1]; }
+- void f(void) { allocate(10); }
+- void f(void) { my_alloca(10); }
+- void f(void) { dealloca(10); }
 invalid:
 - void f(void) { alloca(n); }
 - void f(void) { char *p = alloca(64); }
 - void f(int n) { char buf[n]; }
 - void f(int len) { char buf[len]; }
 - void f(int rows, int cols) { int m[rows][cols]; }
+- void f(void) { __builtin_alloca(n); }
+- void f(void) { char *p = __builtin_alloca(64); }
+- void f(void) { _alloca(n); }
+- void f(void) { char *p = _alloca(64); }
+- void f(void) { _malloca(n); }
+- void f(void) { char *p = _malloca(64); }
