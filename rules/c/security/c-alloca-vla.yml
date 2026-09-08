@@ -2,12 +2,40 @@ id: c-alloca-vla
 language: c
 severity: warning
 message: >-
-  alloca() — stack overflow / stack clash if the size is non-constant and
-  attacker-influenced, and no failure path (alloca can't report OOM). Use a heap
-  allocation (in nginx: ngx_pnalloc from the request pool) with a bounded size.
-note: Dismiss if the size is a small compile-time constant.
+  alloca() or variable-length array (VLA) — stack overflow / stack clash if the
+  size is non-constant and attacker-influenced, and no failure path (alloca
+  can't report OOM, VLAs have no error path). Use a heap allocation (in nginx:
+  ngx_pnalloc from the request pool) with a bounded size. For VLAs, use
+  fixed-size arrays, or allocate on the heap.
+note: >-
+  Dismiss if the size is a small compile-time constant. The VLA arm is a
+  naming heuristic, not a constant-expression analysis: it reports an array
+  declarator whose size is a bare identifier not starting with an uppercase
+  letter or underscore, so a conventionally-named macro such as MAX_LEN is
+  skipped while a lowercase `static const`, lowercase macro or lowercase enum
+  constant still reports -- all three are fixed-size arrays, so triage them as
+  false positives.
+  Sizes that are not a bare identifier -- `buf[n * 2]`, `buf[len + 1]`,
+  `buf[get_len()]` -- are out of scope and not reported. Parameter
+  declarators such as `void f(int n, char buf[n])` are excluded because they
+  decay to a pointer and allocate nothing. A multidimensional VLA nests one array
+  declarator per dimension, so each variable dimension reports separately:
+  `int m[rows][cols]` raises two findings for one declaration.
 rule:
-  kind: call_expression
-  has:
-    field: function
-    regex: ^alloca$
+  any:
+    - kind: call_expression
+      has:
+        field: function
+        regex: ^alloca$
+    - kind: array_declarator
+      all:
+        - has:
+            field: size
+            all:
+              - kind: identifier
+              - not:
+                  regex: ^[A-Z_]
+        - not:
+            inside:
+              kind: parameter_declaration
+              stopBy: end
