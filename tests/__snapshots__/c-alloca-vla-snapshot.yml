@@ -1,5 +1,19 @@
 id: c-alloca-vla
 snapshots:
+  void f(int len) { char buf[len + 1]; }:
+    labels:
+    - source: buf[len + 1]
+      style: primary
+      start: 23
+      end: 35
+    - source: len
+      style: secondary
+      start: 27
+      end: 30
+    - source: len + 1
+      style: secondary
+      start: 27
+      end: 34
   void f(int len) { char buf[len]; }:
     labels:
     - source: buf[len]
@@ -9,6 +23,48 @@ snapshots:
     - source: len
       style: secondary
       start: 27
+      end: 30
+  void f(int n) { char buf[ARRAY_SIZE(x) - n]; }:
+    labels:
+    - source: buf[ARRAY_SIZE(x) - n]
+      style: primary
+      start: 21
+      end: 43
+    - source: n
+      style: secondary
+      start: 41
+      end: 42
+    - source: ARRAY_SIZE(x) - n
+      style: secondary
+      start: 25
+      end: 42
+  void f(int n) { char buf[get_len() + n]; }:
+    labels:
+    - source: buf[get_len() + n]
+      style: primary
+      start: 21
+      end: 39
+    - source: get_len
+      style: secondary
+      start: 25
+      end: 32
+    - source: get_len() + n
+      style: secondary
+      start: 25
+      end: 38
+  void f(int n) { char buf[n * 2]; }:
+    labels:
+    - source: buf[n * 2]
+      style: primary
+      start: 21
+      end: 31
+    - source: n
+      style: secondary
+      start: 25
+      end: 26
+    - source: n * 2
+      style: secondary
+      start: 25
       end: 30
   void f(int n) { char buf[n]; }:
     labels:
@@ -30,6 +86,20 @@ snapshots:
       style: secondary
       start: 41
       end: 45
+  void f(struct h *h) { char buf[h->len]; }:
+    labels:
+    - source: buf[h->len]
+      style: primary
+      start: 27
+      end: 38
+    - source: h
+      style: secondary
+      start: 31
+      end: 32
+    - source: h->len
+      style: secondary
+      start: 31
+      end: 37
   void f(void) { __builtin_alloca(n); }:
     labels:
     - source: __builtin_alloca(n)
@@ -110,3 +180,17 @@ snapshots:
       style: secondary
       start: 25
       end: 31
+  void f(void) { char buf[get_len()]; }:
+    labels:
+    - source: buf[get_len()]
+      style: primary
+      start: 20
+      end: 34
+    - source: get_len
+      style: secondary
+      start: 24
+      end: 31
+    - source: get_len()
+      style: secondary
+      start: 24
+      end: 33

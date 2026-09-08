@@ -9,18 +9,30 @@ message: >-
   fixed-size arrays, or allocate on the heap.
 note: >-
   Dismiss if the size is a small compile-time constant. The VLA arm is a
-  naming heuristic, not a constant-expression analysis: it reports an array
-  declarator whose size is a bare identifier not starting with an uppercase
-  letter or underscore, so a conventionally-named macro such as MAX_LEN is
-  skipped while a lowercase `static const`, lowercase macro or lowercase enum
-  constant still reports -- all three are fixed-size arrays, so triage them as
-  false positives.
-  Sizes that are not a bare identifier -- `buf[n * 2]`, `buf[len + 1]`,
-  `buf[get_len()]` -- are out of scope and not reported. Parameter
-  declarators such as `void f(int n, char buf[n])` are excluded because they
-  decay to a pointer and allocate nothing. A multidimensional VLA nests one array
-  declarator per dimension, so each variable dimension reports separately:
-  `int m[rows][cols]` raises two findings for one declaration.
+  naming heuristic, not a constant-expression analysis: a bare identifier not
+  starting with an uppercase letter or underscore (e.g. `buf[n]`, `buf[len]`)
+  is matched; so is an expression containing such an identifier in a binary
+  operation (e.g. `buf[len + 1]`, `buf[n * 2]`), a function call (e.g.
+  `buf[get_len()]`), or field access (e.g. `buf[h->len]`). A size built only from `sizeof` or from
+  uppercase-letter identifiers is treated as fixed-size, and the same
+  uppercase exemption applies to the callee of a call size and to the object of
+  a field-access size, so the conventional fixed-size macros `buf[ARRAY_SIZE(x)]`
+  and `buf[CFG.MAX]` are skipped. The exemption is per identifier, not per
+  size: within an arithmetic size each lowercase identifier is skipped only
+  when it sits inside `sizeof` or inside a call whose callee is uppercase. So
+  `buf[ARRAY_SIZE(x) - 1]` is skipped because its only lowercase identifier is
+  the macro argument, while `buf[ARRAY_SIZE(x) - n]` still reports on `n`,
+  which is correct -- that size really is variable-length. That is a naming/shape heuristic, not constant-expression analysis --
+  a lowercase macro or lowercase `static const` used as or inside a size still
+  reports as a false positive. The four size shapes are recognised only at the
+  top level of the size, so a parenthesized size `buf[(len + 1)]`, a unary size
+  `buf[-n]`, a nested field access `buf[a->b->len]` and an indirect call
+  `buf[ops->get_len()]` are genuine VLAs that go unreported; they are pinned as
+  valid fixtures to record the boundary, not to endorse it. Parameter declarators such as
+  `void f(int n, char buf[n])` are excluded because they decay to a pointer
+  and allocate nothing. A multidimensional VLA nests one array declarator per
+  dimension, so each variable dimension reports separately: `int m[rows][cols]`
+  raises two findings for one declaration.
 rule:
   any:
     - kind: call_expression
@@ -31,10 +43,45 @@ rule:
       all:
         - has:
             field: size
-            all:
-              - kind: identifier
-              - not:
-                  regex: ^[A-Z_]
+            any:
+              - all:
+                  - kind: identifier
+                  - not:
+                      regex: ^[A-Z_]
+              - all:
+                  - kind: binary_expression
+                  - has:
+                      stopBy: end
+                      kind: identifier
+                      all:
+                        - not:
+                            regex: ^[A-Z_]
+                        - not:
+                            inside:
+                              kind: sizeof_expression
+                              stopBy: end
+                        - not:
+                            inside:
+                              stopBy: end
+                              kind: call_expression
+                              has:
+                                field: function
+                                kind: identifier
+                                regex: ^[A-Z_]
+              - all:
+                  - kind: call_expression
+                  - has:
+                      field: function
+                      kind: identifier
+                      not:
+                        regex: ^[A-Z_]
+              - all:
+                  - kind: field_expression
+                  - has:
+                      field: argument
+                      kind: identifier
+                      not:
+                        regex: ^[A-Z_]
         - not:
             inside:
               kind: parameter_declaration

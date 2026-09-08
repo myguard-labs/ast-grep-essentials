@@ -7,11 +7,23 @@ valid:
 - void f(void) { char buf[MAX_LEN]; }
 - void f(void) { char buf[SIZE_CONST]; }
 - void f(int n, char buf[n]) { }
-- void f(void) { char buf[n * 2]; }
-- void f(void) { char buf[len + 1]; }
 - void f(void) { allocate(10); }
 - void f(void) { my_alloca(10); }
 - void f(void) { dealloca(10); }
+- void f(void) { char buf[sizeof(struct s)]; }
+- void f(void) { char buf[MAX_LEN + 1]; }
+- void f(void) { char buf[sizeof(x) + 4]; }
+- void f(void) { char buf[sizeof(x)/sizeof(x[0])]; }
+- void f(void) { char buf[ARRAY_SIZE(x)]; }
+- void f(void) { char buf[NELEMS(a)]; }
+- void f(void) { char buf[MAX(A, B)]; }
+- void f(void) { char buf[CFG.MAX]; }
+- void f(void) { char buf[ARRAY_SIZE(x) - 1]; }
+- void f(void) { char buf[MAX(a, b) + 1]; }
+- void f(int len) { char buf[(len + 1)]; }
+- void f(int n) { char buf[-n]; }
+- void f(struct a *a) { char buf[a->b->len]; }
+- void f(struct o *ops) { char buf[ops->get_len()]; }
 invalid:
 - void f(void) { alloca(n); }
 - void f(void) { char *p = alloca(64); }
@@ -24,3 +36,9 @@ invalid:
 - void f(void) { char *p = _alloca(64); }
 - void f(void) { _malloca(n); }
 - void f(void) { char *p = _malloca(64); }
+- void f(int len) { char buf[len + 1]; }
+- void f(int n) { char buf[n * 2]; }
+- void f(void) { char buf[get_len()]; }
+- void f(struct h *h) { char buf[h->len]; }
+- void f(int n) { char buf[get_len() + n]; }
+- void f(int n) { char buf[ARRAY_SIZE(x) - n]; }
