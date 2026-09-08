@@ -18,6 +18,34 @@ valid:
   }
 - |
   package p
+  func QuotePSArgEscapedLeftSingle(s string) string {
+      s = strings.ReplaceAll(s, "\u2018", "")
+      s = strings.ReplaceAll(s, `"`, `""`)
+      return "'" + s + "'"
+  }
+- |
+  package p
+  func QuotePSArgEscapedRightSingle(s string) string {
+      s = strings.Replace(s, "\u2019", "", -1)
+      s = strings.ReplaceAll(s, `"`, `""`)
+      return "'" + s + "'"
+  }
+- |
+  package p
+  func QuotePSArgEscapedLeftDouble(s string) string {
+      r := strings.NewReplacer("\u201c", "")
+      s = strings.ReplaceAll(s, `"`, `""`)
+      return "'" + r.Replace(s) + "'"
+  }
+- |
+  package p
+  func QuotePSArgEscapedRightDouble(s string) string {
+      r := strings.NewReplacer("\u201d", "")
+      s = strings.ReplaceAll(s, `"`, `""`)
+      return "'" + r.Replace(s) + "'"
+  }
+- |
+  package p
   func BuildArgs(args []string) *exec.Cmd {
       return exec.Command("pwsh", append([]string{"-NoProfile", "-Command"}, args...)...)
   }
@@ -63,5 +91,18 @@ invalid:
       // position), which neutralizes nothing; input smart quotes stay intact.
       s = strings.ReplaceAll(s, `"`, `""`)
       r := strings.NewReplacer("prefix", "‘")
+      return "'" + r.Replace(s) + "'"
+  }
+- |
+  package p
+  func QuotePSArgReplacerASCII(s string) string {
+      r := strings.NewReplacer("'", "''", `"`, `""`)
+      return "'" + r.Replace(s) + "'"
+  }
+- |
+  package p
+  func QuotePowerShellMultiCharacterSmartQuote(s string) string {
+      s = strings.ReplaceAll(s, `"`, `""`)
+      r := strings.NewReplacer("‘example’", "")
       return "'" + r.Replace(s) + "'"
   }

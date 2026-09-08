@@ -25,12 +25,16 @@ note: >-
   and the interpreted, backslash-escaped literal "\"" -- four source
   characters including the backslash, which an unescaped three-character
   pattern misses entirely. Suppression requires the smart quote to occur in a
-  SEARCH position -- the second argument of strings.Replace/ReplaceAll (or of
-  Trim/TrimLeft/TrimRight/ContainsAny/IndexAny), or an ODD
+  SEARCH position -- the second argument of strings.Replace/ReplaceAll, or an
+  ODD
   1-based argument position of strings.NewReplacer, which takes alternating
   (search, replace) pairs so that only its odd arguments are search keys; a
   smart quote appearing solely as a NewReplacer replacement VALUE neutralizes
-  nothing and does not suppress. A smart quote
+  nothing and does not suppress. The search key must be a SINGLE smart-quote
+  literal: either raw Unicode or one of the interpreted-string source
+  spellings `"\u2018"`, `"\u2019"`, `"\u201c"` or `"\u201d"`; a longer key
+  that merely contains a smart quote does not establish that the delimiter
+  itself is neutralized. A smart quote
   used merely as a WRAPPER around the result ("‘" + s + "’") does not
   suppress: it never neutralizes an input smart quote, so such a helper is a
   true positive, not a dismissal. Suppression deliberately accepts a
@@ -43,32 +47,45 @@ note: >-
   Invoke-Expression parses all four as genuine quote delimiters and a
   smart-quote-terminated argument executes injected text as a new statement;
   guillemets («, ») are not delimiters and are excluded from that claim. A
-  SQL-style doubling escaper (replacing `'` with `''`) is flagged here as a
-  DOCUMENTED RESIDUAL FALSE POSITIVE: it happens to neutralize the ASCII
-  apostrophe but is named and reviewed as a SQL escaper, not a PowerShell one,
-  and the matcher cannot distinguish the two from the replacement alone. A
-  helper that replaces or strips the smart-quote code points, or that never
-  claims to quote for PowerShell, is the routine dismissal.
+  SQL-named helper such as EscapeSQLString is a routine dismissal because its
+  name does not claim a PowerShell quoting purpose. A helper that replaces or
+  strips the smart-quote code points, or that never claims to quote for
+  PowerShell, is the routine dismissal.
 rule:
   kind: function_declaration
   all:
     - has:
         field: name
         regex: '(?i)(PowerShell|PSQuote|PwshQuote|PSArg|PSCommand).*(Quote|Escape)|(Quote|Escape).*(PowerShell|PSQuote|PwshQuote|PSArg|PSCommand)'
-    - has:
-        stopBy: end
-        kind: call_expression
-        all:
-          - has:
-              field: function
-              regex: '^strings\.(Replace|ReplaceAll)$'
-          - has:
-              field: arguments
-              kind: argument_list
-              has:
-                all:
-                  - nthChild: {position: 2, ofRule: {not: {kind: comment}}}
-                  - matches: ascii-quote-literal
+    - any:
+        - has:
+            stopBy: end
+            kind: call_expression
+            all:
+              - has:
+                  field: function
+                  regex: '^strings\.(Replace|ReplaceAll)$'
+              - has:
+                  field: arguments
+                  kind: argument_list
+                  has:
+                    all:
+                      - nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+                      - matches: ascii-quote-literal
+        - has:
+            stopBy: end
+            kind: call_expression
+            all:
+              - has:
+                  field: function
+                  regex: '^strings\.NewReplacer$'
+              - has:
+                  field: arguments
+                  kind: argument_list
+                  has:
+                    all:
+                      - nthChild: {position: 2n+1, ofRule: {not: {kind: comment}}}
+                      - matches: ascii-quote-literal
     - not:
         has:
           stopBy: end
@@ -83,9 +100,11 @@ utils:
   smart-quote-literal:
     any:
       - kind: interpreted_string_literal
-        regex: '[‘’“”]'
+        regex: '^"[‘’“”]"$'
+      - kind: interpreted_string_literal
+        regex: '^"\\u201[89cCdD]"$'
       - kind: raw_string_literal
-        regex: '[‘’“”]'
+        regex: '^`[‘’“”]`$'
   smart-quote-sanitized:
     any:
       # strings.Replace/ReplaceAll(s, "<smart quote>", ...) -- the smart quote

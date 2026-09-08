@@ -80,6 +80,41 @@ snapshots:
       end: 233
   ? |
     package p
+    func QuotePSArgReplacerASCII(s string) string {
+        r := strings.NewReplacer("'", "''", `"`, `""`)
+        return "'" + r.Replace(s) + "'"
+    }
+  : labels:
+    - source: |-
+        func QuotePSArgReplacerASCII(s string) string {
+            r := strings.NewReplacer("'", "''", `"`, `""`)
+            return "'" + r.Replace(s) + "'"
+        }
+      style: primary
+      start: 10
+      end: 146
+    - source: QuotePSArgReplacerASCII
+      style: secondary
+      start: 15
+      end: 38
+    - source: strings.NewReplacer
+      style: secondary
+      start: 67
+      end: 86
+    - source: '"''"'
+      style: secondary
+      start: 87
+      end: 90
+    - source: ("'", "''", `"`, `""`)
+      style: secondary
+      start: 86
+      end: 108
+    - source: strings.NewReplacer("'", "''", `"`, `""`)
+      style: secondary
+      start: 67
+      end: 108
+  ? |
+    package p
     func QuotePowerShellArg(s string) string {
         s = strings.Replace(s, `"`, `\"`, -1)
         return `"` + s + `"`
@@ -150,6 +185,43 @@ snapshots:
       style: secondary
       start: 147
       end: 182
+  ? |
+    package p
+    func QuotePowerShellMultiCharacterSmartQuote(s string) string {
+        s = strings.ReplaceAll(s, `"`, `""`)
+        r := strings.NewReplacer("‘example’", "")
+        return "'" + r.Replace(s) + "'"
+    }
+  : labels:
+    - source: |-
+        func QuotePowerShellMultiCharacterSmartQuote(s string) string {
+            s = strings.ReplaceAll(s, `"`, `""`)
+            r := strings.NewReplacer("‘example’", "")
+            return "'" + r.Replace(s) + "'"
+        }
+      style: primary
+      start: 10
+      end: 202
+    - source: QuotePowerShellMultiCharacterSmartQuote
+      style: secondary
+      start: 15
+      end: 54
+    - source: strings.ReplaceAll
+      style: secondary
+      start: 82
+      end: 100
+    - source: '`"`'
+      style: secondary
+      start: 104
+      end: 107
+    - source: (s, `"`, `""`)
+      style: secondary
+      start: 100
+      end: 114
+    - source: strings.ReplaceAll(s, `"`, `""`)
+      style: secondary
+      start: 82
+      end: 114
   ? |
     package p
     func QuotePowerShellPrefixed(s string) string {
