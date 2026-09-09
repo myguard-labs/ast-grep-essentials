@@ -242,10 +242,11 @@ shape.
   already matched by the existing `py-ssrf-request-fstring`, whose
   `urlopen-function` utility covers both the bare and the qualified spelling; a
   plain-variable variant would need taint to be worth shipping.
-- **29 py-langchain-unsafe-tools** — the shipped part is
-  `allow_dangerous_code=True` style keywords, but the rest of the claim (a
-  `loads` from `langchain_core.load`, an unsandboxed REPL tool) turns on which
-  module the bare name came from and whether the surrounding agent is sandboxed.
+- **29 py-langchain-unsafe-tools** — the precise
+  `allow_dangerous_code=True` part now ships locally as
+  `py-langchain-dangerous-code-enabled`. The remaining claim (a `loads` from
+  `langchain_core.load`, an unsandboxed REPL tool) turns on which module the
+  bare name came from and whether the surrounding agent is sandboxed.
 - **36 py-regex-nested-quantifier** — deciding catastrophic backtracking is
   automata analysis, not pattern matching; a regex-over-regex approximation
   produces both misses and false positives and belongs in a tool such as

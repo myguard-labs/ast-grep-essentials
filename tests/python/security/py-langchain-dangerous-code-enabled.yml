@@ -1,0 +1,16 @@
+id: py-langchain-dangerous-code-enabled
+valid:
+- create_pandas_dataframe_agent(llm, df)
+- create_pandas_dataframe_agent(llm, df, allow_dangerous_code=False)
+- create_pandas_dataframe_agent(llm, df, allow_dangerous_code=enabled)
+- create_pandas_dataframe_agent(llm, df, allow_dangerous_code=truthy(True))
+- 'create_pandas_dataframe_agent(llm, df, **{"allow_dangerous_code": True})'
+- create_pandas_dataframe_agent(llm, df, dangerous_code=True)
+- '# create_pandas_dataframe_agent(llm, df, allow_dangerous_code=True)'
+- text = 'allow_dangerous_code=True'
+invalid:
+- create_pandas_dataframe_agent(llm, df, allow_dangerous_code=True)
+- create_spark_dataframe_agent(llm, df, allow_dangerous_code=True)
+- create_xorbits_agent(llm, data, allow_dangerous_code=True)
+- PALChain.from_math_prompt(llm, allow_dangerous_code=True)
+- create_pandas_dataframe_agent(llm, df, allow_dangerous_code=(True))

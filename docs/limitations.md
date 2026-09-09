@@ -1098,6 +1098,11 @@ variable, folded from configuration, or splatted in, is invisible, and the rule
   belongs to `lxml.etree`, nor whether the parser is only ever used on documents
   the deployment generated. It also does not see a parser configured after
   construction by attribute assignment.
+- `py-langchain-dangerous-code-enabled` recognises the exact keyword rather
+  than resolving the callee. Another API using the same opt-in name also
+  matches, while a value passed through a variable or dictionary expansion is
+  invisible. The match proves that dangerous code was enabled, not that the
+  surrounding execution environment lacks an adequate sandbox.
 - `py-stdlib-xml-parse` recognises modules by name, so a `defusedxml` module
   bound to the short name `ET` is indistinguishable from the stdlib one; only an
 explicit `defusedxml.` prefix is excluded. Document provenance is not modelled.

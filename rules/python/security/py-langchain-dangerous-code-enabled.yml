@@ -1,0 +1,26 @@
+id: py-langchain-dangerous-code-enabled
+language: python
+severity: warning
+message: >-
+  Dangerous generated-code execution is explicitly enabled. LangChain agents
+  and chains guarded by this option can run model-produced Python with the
+  process's privileges. Keep the option disabled, or isolate the workload in a
+  sandbox with no sensitive data, credentials, network access or host access.
+note: >-
+  Fires on a literal allow_dangerous_code=True keyword in any call. LangChain
+  uses this opt-in for PALChain and its Pandas, Spark and Xorbits dataframe
+  agents. The matcher does not resolve the callee, so another API reusing this
+  exact keyword also matches. A deliberately isolated sandbox is the routine
+  dismissal. Values supplied through a variable or dictionary expansion are
+  not seen.
+utils:
+  true-value:
+    any:
+      - kind: 'true'
+      - kind: parenthesized_expression
+        has: {kind: 'true'}
+rule:
+  kind: keyword_argument
+  all:
+    - has: {field: name, regex: '^allow_dangerous_code$'}
+    - has: {field: value, matches: true-value}

@@ -226,6 +226,10 @@ Rule id -> evidence consulted during the harvest.
   XXE) —
   <https://advisories.gitlab.com/pkg/pypi/langchain-text-splitters/CVE-2025-6985/>
   ; CWE-611
+- `py-langchain-dangerous-code-enabled` — LangChain Experimental 0.3.4 source
+  and security notice for `allow_dangerous_code` —
+  <https://github.com/langchain-ai/langchain-experimental/blob/dce0640e0ddf43d9ab0f8722e333306c6040296e/libs/experimental/langchain_experimental/agents/agent_toolkits/pandas/base.py#L152-L257>
+  ; CWE-94
 - `py-stdlib-xml-parse` —
   <https://codeql.github.com/codeql-query-help/python/py-xxe/> ;
   <https://docs.python.org/3/library/xml.html#xml-vulnerabilities>
