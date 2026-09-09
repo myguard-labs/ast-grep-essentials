@@ -118,6 +118,13 @@ snapshot sets were removed.
 
 ## c and nginx
 
+- `nginx-str-data-passed-to-nginx-nul-wrappers` — extending
+  `nginx-str-data-passed-to-libc` to `ngx_strcmp`, `ngx_strstr`, `ngx_strchr`,
+  and `ngx_strcasecmp` produced 47 findings across the local nginx-module
+  corpus, dominated by configuration-parser directive arguments. The nginx
+  development guide explicitly says directive arguments are NUL-terminated,
+  while syntax cannot distinguish them from request-derived strings. The
+  existing libc-sink rule remains the narrower review signal.
 - `c-mktemp-tmpnam` — already shipped as `c-insecure-temp-name`, which matches
   the same four API names with the same call-name matcher.
 - `c-signed-length-compare` — the claim depends on the declared type of the

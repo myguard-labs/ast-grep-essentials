@@ -1,0 +1,15 @@
+id: nginx-cpp-line-comment
+language: c
+severity: info
+message: A C++-style line comment is used where nginx requires C comments.
+note: >-
+  This is an nginx source-style check. It matches comment nodes beginning with
+  two slashes and conservative trailing-comment shapes in preprocessor
+  replacements. It does not decide whether the file is part of nginx; scope
+  the C rule pack to nginx and nginx-module sources.
+rule:
+  any:
+    - kind: comment
+      regex: '^//'
+    - kind: preproc_arg
+      regex: "^[^\"']*//"

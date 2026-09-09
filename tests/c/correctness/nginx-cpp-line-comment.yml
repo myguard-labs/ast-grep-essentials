@@ -1,0 +1,39 @@
+id: nginx-cpp-line-comment
+valid:
+- |-
+    /* good */
+    int x;
+- |-
+    /*
+     * https://nginx.org/
+     */
+    int x;
+- 'const char *url = "https://nginx.org/";'
+- 'const char *text = "// not a comment";'
+- '#define URL "https://nginx.org/"'
+- '#define TEXT "// not a comment"'
+- "#define CHARS ' //'"
+- '#define BLOCK /* // not a line comment */ 1'
+- '#define VALUE_WITH_BLOCK 1 /* prefer // style */'
+- |-
+    #define BLOCK_URL(a) \
+        /* see
+           http://nginx.org/ */ (a)
+invalid:
+- |-
+    // bad
+    int x;
+- |-
+    int x; // trailing comment
+- '#define VALUE 1 // trailing comment'
+- '#define TIGHT_VALUE 1// trailing comment'
+- '#define BARE_URL http://nginx.org/'
+- '#define SUM(a, b) ((a) + (b)) // trailing comment'
+- '#define HALF(x) ((x) / 2) // trailing comment'
+- '#define BLOCKED /* block */ 1 // trailing comment'
+- |-
+    #define MULTILINE(a) \
+        do { (a); } while (0) // trailing comment
+- |-
+    #define MULTILINE_BODY(a) do { (a); } \
+        while (0) // trailing comment

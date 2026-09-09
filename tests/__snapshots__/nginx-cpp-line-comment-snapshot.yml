@@ -1,0 +1,70 @@
+id: nginx-cpp-line-comment
+snapshots:
+  '#define BARE_URL http://nginx.org/':
+    labels:
+    - source: http://nginx.org
+      style: primary
+      start: 17
+      end: 33
+  '#define BLOCKED /* block */ 1 // trailing comment':
+    labels:
+    - source: 1 // trailing comment
+      style: primary
+      start: 28
+      end: 49
+  '#define HALF(x) ((x) / 2) // trailing comment':
+    labels:
+    - source: ((x) / 2) // trailing comment
+      style: primary
+      start: 16
+      end: 45
+  ? |-
+    #define MULTILINE(a) \
+        do { (a); } while (0) // trailing comment
+  : labels:
+    - source: do { (a); } while (0) // trailing comment
+      style: primary
+      start: 27
+      end: 68
+  ? |-
+    #define MULTILINE_BODY(a) do { (a); } \
+        while (0) // trailing comment
+  : labels:
+    - source: |-
+        do { (a); } \
+            while (0) // trailing comment
+      style: primary
+      start: 26
+      end: 73
+  '#define SUM(a, b) ((a) + (b)) // trailing comment':
+    labels:
+    - source: ((a) + (b)) // trailing comment
+      style: primary
+      start: 18
+      end: 49
+  '#define TIGHT_VALUE 1// trailing comment':
+    labels:
+    - source: 1// trailing comment
+      style: primary
+      start: 20
+      end: 40
+  '#define VALUE 1 // trailing comment':
+    labels:
+    - source: 1 // trailing comment
+      style: primary
+      start: 14
+      end: 35
+  ? |-
+    // bad
+    int x;
+  : labels:
+    - source: // bad
+      style: primary
+      start: 0
+      end: 6
+  int x; // trailing comment:
+    labels:
+    - source: // trailing comment
+      style: primary
+      start: 7
+      end: 26

@@ -43,6 +43,13 @@ rule makes is fixed by its fixtures, not by the linked page.
   NUL-terminated
   <https://nginx.org/en/docs/dev/development_guide.html#string_overview>
 - `nginx-strlen-on-ngx-str-data` — same as above
+- `nginx-cpp-line-comment` — nginx development guide,
+  [comments](https://nginx.org/en/docs/dev/development_guide.html#code_style_comments):
+  C++-style line comments are not used in nginx source.
+- `nginx-plain-inline` — nginx development guide,
+  [functions](https://nginx.org/en/docs/dev/development_guide.html#code_style_functions):
+  nginx recommends its `ngx_inline` portability macro instead of plain C
+  `inline`.
 - `nginx-slab-locked-without-lock` — nginx slab API contract,
   `src/core/ngx_slab.c`
 - `nginx-shm-data-write-without-lock` — nginx limit_req / limit_conn /
