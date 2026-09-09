@@ -1,0 +1,297 @@
+id: go-test-diagnostic-observed-value
+snapshots:
+  ? |
+    package m
+    func f(
+        t /* test handle */ *testing.T,
+    ) {
+        if observed := actual(); observed != expected {
+            t.Fatalf("got %v want %v", expected, expected)
+        }
+    }
+  : labels:
+    - source: |-
+        if observed := actual(); observed != expected {
+                t.Fatalf("got %v want %v", expected, expected)
+            }
+      style: primary
+      start: 62
+      end: 170
+  ? |
+    package m
+    func f(t *testing.T) {
+        if got := actual(); got != want {
+            // Include both values in this diagnostic.
+            t.Fatalf("got %v want %v", want, want)
+        }
+    }
+  : labels:
+    - source: |-
+        if got := actual(); got != want {
+                // Include both values in this diagnostic.
+                t.Fatalf("got %v want %v", want, want)
+            }
+      style: primary
+      start: 37
+      end: 174
+  ? |
+    package m
+    func f(t *testing.T) {
+        if got := actual(); got != want {
+            t.Fatalf("got %v want %v", want, want) // diagnostic
+        }
+    }
+  : labels:
+    - source: |-
+        if got := actual(); got != want {
+                t.Fatalf("got %v want %v", want, want) // diagnostic
+            }
+      style: primary
+      start: 37
+      end: 137
+  package m; func (s *Suite) f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) }
+      style: primary
+      start: 45
+      end: 119
+  package m; func f(first int, t *testing.T) { if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) }
+      style: primary
+      start: 45
+      end: 119
+  package m; func f(other, t *testing.T) { if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) }
+      style: primary
+      start: 41
+      end: 115
+  package m; func f(t *testing.T) { if got := actual(); got != want { /* diagnostic */ t.Fatalf("got %v want %v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { /* diagnostic */ t.Fatalf("got %v want %v", want, want) }
+      style: primary
+      start: 34
+      end: 125
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("%% got %v want %v %%", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("%% got %v want %v %%", want, want) }
+      style: primary
+      start: 34
+      end: 114
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("%%%v / %v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("%%%v / %v", want, want) }
+      style: primary
+      start: 34
+      end: 103
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("\"got %v\" want %v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("\"got %v\" want %v", want, want) }
+      style: primary
+      start: 34
+      end: 112
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("\\x25v got %v want %v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("\\x25v got %v want %v", want, want) }
+      style: primary
+      start: 34
+      end: 115
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("\x61 got %v want %v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("\x61 got %v want %v", want, want) }
+      style: primary
+      start: 34
+      end: 113
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %#v want %#v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %#v want %#v", want, want) }
+      style: primary
+      start: 34
+      end: 110
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %+v want %+v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %+v want %+v", want, want) }
+      style: primary
+      start: 34
+      end: 110
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %E want %E", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %E want %E", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %F want %F", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %F want %F", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %G want %G", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %G want %G", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %O want %O", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %O want %O", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %T want %T", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %T want %T", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %U want %U", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %U want %U", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %X want %X", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %X want %X", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %b want %b", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %b want %b", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %c want %c", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %c want %c", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %d want %d", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %d want %d", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %e want %e", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %e want %e", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %f want %f", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %f want %f", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %g want %g", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %g want %g", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %o want %o", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %o want %o", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %p want %p", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %p want %p", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %q want %q", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %q want %q", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %s want %s", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %s want %s", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %t want %t", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %t want %t", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) /* diagnostic */ } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) /* diagnostic */ }
+      style: primary
+      start: 34
+      end: 125
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) } else { ok() } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) } else { ok() }
+      style: primary
+      start: 34
+      end: 122
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %v\nwant %v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %v\nwant %v", want, want) }
+      style: primary
+      start: 34
+      end: 109
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %x want %x", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %x want %x", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf(`\x25v got %v want %v`, want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf(`\x25v got %v want %v`, want, want) }
+      style: primary
+      start: 34
+      end: 114
+  package m; func f(t *testing.T) { if got := actual(); got != want { t.Fatalf(`got %v want %v`, want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf(`got %v want %v`, want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if got := actual(); want != got { /* diagnostic */ t.Fatalf("got %v want %v", want, want) } }:
+    labels:
+    - source: if got := actual(); want != got { /* diagnostic */ t.Fatalf("got %v want %v", want, want) }
+      style: primary
+      start: 34
+      end: 125
+  package m; func f(t *testing.T) { if got := actual(); want != got { t.Fatalf("got %v want %v", want, want) } else { ok() } }:
+    labels:
+    - source: if got := actual(); want != got { t.Fatalf("got %v want %v", want, want) } else { ok() }
+      style: primary
+      start: 34
+      end: 122
+  package m; func f(t *testing.T) { if got := actual(); want != got { t.Fatalf("got %v want %v", want, want) } }:
+    labels:
+    - source: if got := actual(); want != got { t.Fatalf("got %v want %v", want, want) }
+      style: primary
+      start: 34
+      end: 108
+  package m; func f(t *testing.T) { if ready { if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) } } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) }
+      style: primary
+      start: 45
+      end: 119
+  package m; var f = func(t *testing.T) { if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) } }:
+    labels:
+    - source: if got := actual(); got != want { t.Fatalf("got %v want %v", want, want) }
+      style: primary
+      start: 40
+      end: 114

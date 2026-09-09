@@ -1,0 +1,104 @@
+id: go-test-diagnostic-observed-value
+language: go
+severity: warning
+message: >-
+  Assertion diagnostic repeats the expected value; check whether one slot should
+  print the value initialized for comparison.
+note: >-
+  Matches a short-if that initializes one identifier, with a sole direct Fatalf
+  call taking exactly two values after the format string, both repeating the
+  expected condition operand, within a function declaring a parameter named t of
+  type *testing.T. Literal formats must contain exactly two identical supported
+  directives: bare standard verbs, %+v, or %#v. Escaped percent text is allowed;
+  percent-producing Go escapes, other flags, widths, precision, indexing, custom
+  verbs, and nonliteral formats are excluded. This is a syntax heuristic, not
+  proof of diagnostic intent. It does not resolve aliases or shadowing or follow
+  values beyond this if.
+  Other helpers and repeated observed operands require separate rules and evidence.
+rule:
+  all:
+    - any:
+        - pattern: if $GOT := $ACTUAL; $GOT != $WANT { $$$BODY }
+        - pattern: if $GOT := $ACTUAL; $WANT != $GOT { $$$BODY }
+    - has:
+        field: consequence
+        has:
+          kind: statement_list
+          has:
+            all:
+              - pattern:
+                  context: 'func f() { t.Fatalf($FMT, $WANT, $WANT) }'
+                  selector: expression_statement
+              - nthChild:
+                  position: 1
+                  ofRule:
+                    not:
+                      kind: comment
+              - nthChild:
+                  position: 1
+                  reverse: true
+                  ofRule:
+                    not:
+                      kind: comment
+    - pattern: $ASSERTION
+    - inside:
+        # Named functions and methods cannot nest in valid Go.
+        stopBy:
+          kind: func_literal
+        has:
+          field: parameters
+          kind: parameter_list
+          has:
+            kind: parameter_declaration
+            all:
+              - has:
+                  kind: identifier
+                  regex: '^t$'
+              - has:
+                  field: type
+                  pattern:
+                    context: 'func f(t *testing.T) {}'
+                    selector: pointer_type
+constraints:
+  FMT:
+    all:
+      - any:
+          - kind: interpreted_string_literal
+          - kind: raw_string_literal
+      # Rust regex has no backreferences. Enumerate identical directives, with
+      # only non-percent text or %% between them; do not admit mixed modifiers.
+      - regex: >-
+          (?sx)^["`](?:[^%]|%%)*
+          (?:%v(?:[^%]|%%)*%v
+          |%T(?:[^%]|%%)*%T
+          |%t(?:[^%]|%%)*%t
+          |%b(?:[^%]|%%)*%b
+          |%c(?:[^%]|%%)*%c
+          |%d(?:[^%]|%%)*%d
+          |%o(?:[^%]|%%)*%o
+          |%O(?:[^%]|%%)*%O
+          |%q(?:[^%]|%%)*%q
+          |%x(?:[^%]|%%)*%x
+          |%X(?:[^%]|%%)*%X
+          |%U(?:[^%]|%%)*%U
+          |%e(?:[^%]|%%)*%e
+          |%E(?:[^%]|%%)*%E
+          |%f(?:[^%]|%%)*%f
+          |%F(?:[^%]|%%)*%F
+          |%g(?:[^%]|%%)*%g
+          |%G(?:[^%]|%%)*%G
+          |%s(?:[^%]|%%)*%s
+          |%p(?:[^%]|%%)*%p
+          |%\+v(?:[^%]|%%)*%\+v
+          |%\#v(?:[^%]|%%)*%\#v)
+          (?:[^%]|%%)*["`]$
+      # Count runtime percent signs conservatively. Raw strings have no escape
+      # nodes; an escaped backslash followed by x25 is not a percent escape.
+      - not:
+          has:
+            kind: escape_sequence
+            regex: '^\\(?:x25|u0025|U00000025|045)$'
+            stopBy: end
+labels:
+  ASSERTION:
+    style: primary

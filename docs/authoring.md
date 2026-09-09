@@ -48,6 +48,9 @@ global utilities require consumer `utilDirs` wiring.
 Constrain the operand named in the diagnostic, not every descendant of its
 enclosing call. Add near misses with a similar function name, an unrelated
 argument, and the same expression outside the intended control-flow position.
+In Go, a literal `t` receiver is not evidence of a test handle: constrain its
+enclosing parameter syntax when the rule depends on `*testing.T`; aliases still
+need semantic analysis.
 Regexes search node text; anchor them when an exact name is intended. On 0.45.3,
 a PHP positional-argument capture can be an `argument` node wrapping the
 expression, so verify its shape before applying a `kind` constraint.

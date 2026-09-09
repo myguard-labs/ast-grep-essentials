@@ -150,6 +150,38 @@ resolution and remain outside this matcher.
   still matches. Measured on labs/gozer, labs/gyzor and labs/mailstrix, most raw
   matches came from vendored dependencies; scope scans to first-party
   directories. Test files legitimately discard results and dominate the rest.
+- `go-test-diagnostic-observed-value` is a same-`if` syntax check: it binds the
+  initializer's sole identifier and the inequality's expected operand, then
+  matches a direct `t.Fatalf` with exactly two diagnostic values repeating that
+  expected operand. This rule deliberately covers only these expected/expected
+  `Fatalf` calls. Other helpers, including `Errorf` and non-formatting `Fatal`,
+  and observed/observed diagnostics require separate rules and evidence.
+  Multi-value initializers such as `got, err := actual()` are outside this rule.
+  Either inequality operand order is supported. An `else`
+  branch does not affect this check of the consequence. It requires exactly two
+  values after the format string, so diagnostics with trailing values do not
+  match. The consequence must contain
+  only that call as a statement; comments before or after it are allowed, but
+  additional statements and calls inside nested blocks are excluded. It does not
+  fully interpret the format string, identify other testing helpers, or perform
+  dataflow beyond the initializer, condition, and body. The nearest function,
+  method, or function literal must declare a parameter named `t` with the
+  literal type `*testing.T`; grouped parameter names are supported. Test-handle
+  parameter names other than `t`, type/import aliases, and closures using an
+  outer test handle are excluded.
+  This parameter syntax does not resolve imports or local shadowing of `t`.
+  The format must be a string literal containing exactly two identical supported
+  directives: the bare standard verbs (`vTtbcdoOqxXUeEfFgGsp`), `%+v`, or `%#v`.
+  Literal `%%` text and ordinary Go escapes are allowed. Go escapes producing a
+  percent sign (`\x25`, `\u0025`, `\U00000025`, `\045`) are excluded so
+  source-level counting cannot overlook runtime directives. Intentional mixed
+  representations such as `%v`/`%T`, `%v`/`%q`, `%d`/`%x`, and `%v`/`%#v` are quiet.
+  This deliberately misses genuine repeated-expected bugs using mixed directives,
+  other flags, widths, precision, explicit argument indexes, custom verbs,
+  encoded directives, or nonliteral formats (including constants and
+  concatenation). Findings remain
+  advisory: even identical directives cannot prove the author's intended value
+  roles, and custom `fmt.Formatter` behavior is not analyzed.
 - `py-jwt-decode-unverified` matches `jwt.decode` and bare `decode` when the
   module has a top-level exact `from jwt import decode`. Function-local imports,
   aliases and shadowing are not resolved. Verification disabled through a
