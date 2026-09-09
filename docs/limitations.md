@@ -101,6 +101,25 @@ resolution and remain outside this matcher.
 
 ## Added rules
 
+- `go-test-helper-marker` is an advisory marker for a free, non-entrypoint Go
+  function declaration that has an exact `t *testing.T` parameter, passes `t`
+  directly to another call or calls a failure/skip method on `t`, and has no
+  syntactically visible `t.Helper()` call in that function's own body.
+  Comments between the parameter's identifier, pointer, package, selector, and
+  type tokens, or the position of `t` in a grouped parameter declaration, do
+  not change the match. It cannot prove a delegated call can
+  affect the test or that the function ought to be a helper. Ordinary uses
+  such as `t.Name()` and functions that neither forward
+  `t` nor call a failure/skip method are excluded. Test-like names whose prefix
+  is followed by a Unicode lowercase letter (such as `Testify`) remain in
+  scope; conventional Test, Benchmark, Fuzz, and Example names are excluded.
+  Methods, function literals, differently named parameters, aliases for
+  `testing`, and other test interfaces are intentionally excluded. Calls made
+  inside nested function literals do not qualify, and a nested `t.Helper()`
+  does not suppress a qualifying call in the outer function. The matcher does
+  not resolve imports or local shadowing of `t`, so shadowed receivers can
+  produce advisory findings.
+
 - `go-tls-insecure-skip-verify` and `py-requests-verify-false` match a literal
   `true`/`False`. The Go rule also allows redundant parentheses and comments
   and requires the field to sit in the nearest

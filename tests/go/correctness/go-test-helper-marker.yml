@@ -1,0 +1,43 @@
+id: go-test-helper-marker
+valid:
+- package m; func TestSetup(t *testing.T) { fatalCapable(t) }
+- package m; func TestÉ(t *testing.T) { fatalCapable(t) }
+- package m; func BenchmarkSetup(t *testing.T) { fatalCapable(t) }
+- package m; func FuzzSetup(t *testing.T) { fatalCapable(t) }
+- package m; func ExampleSetup(t *testing.T) { fatalCapable(t) }
+- package m; func setup(t *testing.T) { t.Helper(); fatalCapable(t) }
+- package m; func conditionalMarker(t *testing.T) { if enabled { t.Helper() }; fatalCapable(t) }
+- package m; func ordinary(t *testing.T) { log(t.Name()) }
+- package m; func helperWithoutAssertion(t *testing.T) { value := 1; _ = value }
+- package m; func readsName(t *testing.T) { capture(t.Name()) }
+- package m; func nestedForward(t *testing.T) { func() { fatalCapable(t) }() }
+- package m; func setup(value *testing.B) { fatalCapable(value) }
+- package m; func setup(t *thing) { fatalCapable(t) }
+- package m; func renamedParameter(tb *testing.T) { tb.Fatal("failed") }
+- package m; func wrongPackage(t *test.T) { t.Fatal("failed") }
+- package m; func wrongType(t *testing.B) { t.Fatal("failed") }
+- package m; func nonPointer(t testing.T) { t.Fatal("failed") }
+- package m; func doublePointer(t **testing.T) { t.Fatal("failed") }
+- package m; func groupedNoT(first, other *testing.T) { other.Fatal("failed") }
+- package m; func groupedWrongOwner(other, t *testing.T) { other.Fatal("failed") }
+- package m; func separateWrongType(other *testing.T, t *fake.T) { t.Fatal("failed") }
+- package m; type suite struct{}; func (s *suite) setup(t *testing.T) { fatalCapable(t) }
+- package m; func outer() { func(t *testing.T) { fatalCapable(t) } }
+- package m; // func setup(t *testing.T) { fatalCapable(t) }
+- package m; var text = "func setup(t *testing.T) { fatalCapable(t) }"
+invalid:
+- package m; func setup(t *testing.T) { fatalCapable(t) }
+- package m; func seedVerified(t *testing.T) { createVerifiedUser(t) }
+- package m; func testUpdaterServer(t *testing.T) { server, err := newUpdaterServer(t); if err != nil { t.Fatal(err) }; use(server) }
+- package m; func rulesServer(t *testing.T) { requireRules(t) }
+- package m; func reportsFailure(t *testing.T) { t.Fatal("failed") }
+- package m; func skipsUnsupported(t *testing.T) { t.Skipf("unsupported") }
+- package m; func nestedHelper(t *testing.T) { func() { t.Helper() }(); fatalCapable(t) }
+- package m; func Testify(t *testing.T) { fatalCapable(t) }
+- package m; func Testé(t *testing.T) { fatalCapable(t) }
+- package m; func shadowed(t *testing.T) { if true { t := fakeHandle(); t.Fatal("failed") } }
+- package m; func commentAfterName(t /* one */ *testing.T) { t.Fatal("failed") }
+- package m; func commentAfterPointer(t * /* one */ testing.T) { t.Fatal("failed") }
+- package m; func commentBeforeSelector(t *testing /* one */ .T) { t.Fatal("failed") }
+- package m; func groupedFirst(t, other *testing.T) { t.Fatal("failed") }
+- package m; func groupedLast(other, t *testing.T) { t.Fatal("failed") }

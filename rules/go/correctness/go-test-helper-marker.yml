@@ -1,0 +1,82 @@
+id: go-test-helper-marker
+language: go
+severity: warning
+message: Go function calls a test outcome method or forwards *testing.T without t.Helper().
+note: >-
+  This syntax-only advisory matches a free function that calls a failure or
+  skip method on t, or passes t directly to another call. It cannot tell
+  whether a delegated call can affect the test or whether the function should
+  be reported as a helper. Review whether failure attribution should name the
+  caller; methods and function literals are intentionally out of scope.
+rule:
+  all:
+    - kind: function_declaration
+    - has:
+        field: parameters
+        has:
+          kind: parameter_declaration
+          all:
+            - has:
+                kind: identifier
+                regex: '^t$'
+            - has:
+                field: type
+                kind: pointer_type
+                has:
+                  kind: qualified_type
+                  all:
+                    - has:
+                        field: package
+                        regex: '^testing$'
+                    - has:
+                        field: name
+                        regex: '^T$'
+    - has:
+        stopBy: end
+        kind: call_expression
+        all:
+          - not:
+              inside:
+                stopBy: end
+                kind: func_literal
+          - any:
+              - has:
+                  field: function
+                  kind: selector_expression
+                  all:
+                    - has:
+                        field: operand
+                        kind: identifier
+                        regex: '^t$'
+                    - has:
+                        field: field
+                        regex: '^(Error|Errorf|Fatal|Fatalf|Fail|FailNow|Skip|Skipf|SkipNow)$'
+              - has:
+                  field: arguments
+                  kind: argument_list
+                  has:
+                    kind: identifier
+                    regex: '^t$'
+    - not:
+        has:
+          stopBy: end
+          kind: call_expression
+          all:
+            - not:
+                inside:
+                  stopBy: end
+                  kind: func_literal
+            - has:
+                field: function
+                all:
+                  - kind: selector_expression
+                  - has:
+                      field: operand
+                      regex: '^t$'
+                  - has:
+                      field: field
+                      regex: '^Helper$'
+    - not:
+        has:
+          field: name
+          regex: '^(Test|Benchmark|Fuzz|Example)($|[^\p{Ll}])'

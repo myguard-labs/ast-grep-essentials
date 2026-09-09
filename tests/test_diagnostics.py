@@ -24,7 +24,7 @@ class DiagnosticTests(unittest.TestCase):
             )
     def test_all_rules_emit_declared_diagnostics(self):
         rules = sorted((ROOT / "rules").rglob("*.yml"))
-        self.assertEqual(len(rules), 264, "update the explicit diagnostic inventory")
+        self.assertEqual(len(rules), 265, "update the explicit diagnostic inventory")
         checked = 0
         for path in rules:
             with self.subTest(rule=path.stem):
@@ -45,7 +45,7 @@ class DiagnosticTests(unittest.TestCase):
                 for field in ("message", "note", "severity"):
                     self.assertEqual(finding[field], declared[field], field)
                 checked += 1
-        self.assertEqual(checked, 264)
+        self.assertEqual(checked, 265)
 
     def test_no_error_rule_concedes_a_routine_dismissal(self):
         """Error severity can fail a consumer's scan, so it is reserved for
