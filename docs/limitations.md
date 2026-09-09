@@ -3,6 +3,21 @@
 These migrated rules primarily identify review candidates. Tests demonstrate
 syntax coverage; they do not prove all variants of a bug are detected.
 
+## Coraza-history literal length advisory
+
+`nginx-string-sizeof-includes-nul` matches direct `.len = sizeof("literal")`
+assignments. Literal storage includes its terminator; a text payload normally
+excludes it. The rule cannot resolve `ngx_str_t`, connect `.data` to the literal,
+or decide whether the NUL is intentional. A non-nginx capacity field deliberately
+matches in the fixtures. Empty literals are included; named static arrays,
+pointer member access, concatenated literals, initializers, computed lengths
+and other field names are outside the matcher. Wide literals also match, but
+subtracting one byte is only appropriate for narrow literals. Subtracting one
+is a near miss, not an automatic fix:
+the caller must first establish what `.len` means.
+
+## Other rule boundaries
+
 - `c-prctl-set-dumpable` recognizes decimal `1` with optional `U`/`L`
   suffixes (either order and case), not computed values, aliases, or other
   integer spellings. Zero remains excluded.

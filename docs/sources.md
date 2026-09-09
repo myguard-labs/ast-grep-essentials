@@ -4,6 +4,13 @@ Source advisory, CVE or API contract behind each rule shipped in the 2026
 cross-language harvest. Upstream pages are living references; the claim each
 rule makes is fixed by its fixtures, not by the linked page.
 
+- `nginx-string-sizeof-includes-nul` — nginx development guide,
+  [string overview](https://nginx.org/en/docs/dev/development_guide.html#string_overview):
+  `ngx_str_t.len` counts data bytes; a terminating NUL may follow those bytes.
+  Coraza proposal attribution: `6edbace5a10d` (metadata only; this claim-defense
+  pass did not consult the historical diff). The matcher identifies a literal
+  `sizeof` assigned to `.len` for review, without resolving the structure type.
+
 - `c-realloc-assign-same-pointer` — CWE-401; curl coding style
   (`Curl_saferealloc`) <https://curl.se/dev/internals.html>
 - `c-memset-before-free-secret` — CWE-14

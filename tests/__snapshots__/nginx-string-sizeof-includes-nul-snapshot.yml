@@ -1,0 +1,31 @@
+id: nginx-string-sizeof-includes-nul
+snapshots:
+  ? |-
+    ngx_str_t value;
+    value.data = (u_char *)"nginx";
+    value.len = sizeof("nginx");
+  : labels:
+    - source: value.len = sizeof("nginx")
+      style: primary
+      start: 49
+      end: 76
+  ? |-
+    void f(ngx_str_t output) {
+      output.len = sizeof("value");
+    }
+  : labels:
+    - source: output.len = sizeof("value")
+      style: primary
+      start: 29
+      end: 57
+  ? |-
+    void f(void) {
+      /* Advisory boundary: a capacity including the NUL may be intentional. */
+      struct { unsigned len; } capacity;
+      capacity.len = sizeof("");
+    }
+  : labels:
+    - source: capacity.len = sizeof("")
+      style: primary
+      start: 130
+      end: 155

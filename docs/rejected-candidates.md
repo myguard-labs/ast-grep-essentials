@@ -1,10 +1,120 @@
 # Rejected candidates
 
-Candidates from the 2026 harvest that were researched and not shipped, with the
-reason each was rejected. Every entry needs information a syntactic matcher does
-not carry: dataflow, declared types, reachability, or cross-function state. They
-are recorded so the same ground is not re-mined. Entries are grouped by the
-language whose rules they would have joined.
+Candidates from the 2026 harvest that were researched and not shipped, with
+the reason each was rejected or parked. Entries identify missing semantics,
+unsupported matcher claims, noise, overlap or unfinished drafting. They are
+recorded so the same ground is not re-mined.
+
+## Coraza-history proposals (CRZ-05)
+
+All 36 proposal texts were reviewed independently of harvested packets and
+diffs. One literal-length advisory ships; these 35 proposals do not. A failed
+draft is not evidence that the defect cannot be expressed syntactically.
+
+### External contracts and noise
+
+- `c-ifdef-on-enum-member` — overlaps `zstd-ifdef-on-enum-constant` for its
+  known constant; arbitrary dependency names require declaration information.
+  This is also the CRZ-03 duplicate, counted once.
+- `c-foreign-allocator-libc-free` — allocation provenance and the required
+  destructor are external library contracts.
+- `c-optional-dlsym-called-unchecked` — optionality and loader guarantees
+  cannot be established from the pointer call alone.
+- `nginx-intervention-negative-return-unhandled` — the helper's negative
+  sentinel and required response need its API contract.
+- `c-size-t-to-int-ffi-unchecked` — callee parameter types and effective
+  range constraints require semantic analysis.
+- `c-inspection-body-submit-result-ignored` — the return convention and
+  forwarding policy must establish whether ignoring the call is a defect.
+- `c-dedup-freed-handle-erased-early` — aliasing and the deduplication helper's
+  access to earlier slots are necessary to prove the lifecycle error.
+- `go-close-channel-with-live-sender` — sender completion and cancellation
+  guarantees are missing from the proposed syntax.
+- `go-transfer-encoding-first-value-only` — completeness depends on the
+  source API and consumer's protocol policy, not a generic index-zero access.
+- `go-range-value-address-mutated` — addressing a range copy is valid;
+  the helper's mutation and intended storage update must be established.
+- `go-hijack-state-set-before-success` — wrapper state semantics and delegated
+  error handling are needed to establish the harmful transition.
+- `go-pooled-transaction-state-not-reset` — syntax does not define the full
+  per-request reset set or ownership across pool reuse.
+- `go-bounds-guard-uses-stale-cursor` — distinct spellings do not prove
+  distinct cursor values or reachable out-of-bounds access.
+- `nginx-read-file-short-read-accepted` — partial consumption may be intended;
+  the proposal's positive itself calls `use(data, n)`.
+- `go-transform-result-changed-always-true` — the Boolean's contract is local;
+  a constant true result need not be wrong.
+- `go-contains-for-startswith-predicate` — a helper name alone does not
+  establish the intended matching semantics.
+- `go-json-exported-response-field-without-tag` — default JSON field names
+  can be the intended wire contract; proving drift requires a schema.
+
+### Parked CRZ-04 drafts
+
+- `go-writer-zero-nil-short-write` — four attempts failed from fixture YAML,
+  method-pattern parsing or zero matches. A future method/signature matcher
+  must distinguish an empty-input early return from an unconditional short
+  write; the contract remains a useful candidate.
+- `go-readfrom-iocopy-self-recursion` — the failed draft did not bind receiver
+  and method. The proposal also overstates unconditional recursion: source
+  [`WriterTo` dispatch precedes destination `ReaderFrom`](https://pkg.go.dev/io#Copy)
+  when implemented by the source. A future advisory
+  needs receiver binding and this limit.
+- `go-html-entity-index-without-hash-length-guard` — no defensible draft was
+  produced. Guard order, earlier bounds and the actual indexing branch need
+  examination; a tightly bounded future shape remains possible.
+- `go-decimal-parse-of-hex-entity` — the attempted call pattern produced zero
+  matches from a parsing mismatch. `Atoi(digits)` alone also lacks evidence
+  that `digits` is hexadecimal.
+- `go-default-overwrites-configured-processor` — a force flag can intentionally
+  override configuration; the proposed syntax lacks fallback semantics.
+- `go-next-index-bound-gt-not-gte` — no draft was produced. An ordered guard
+  and access may support a bounded advisory, but prior guards and control flow
+  must not be inferred from disconnected descendants.
+- `go-loop-format-assignment-overwrites` — per-iteration replacement can be
+  correct; intended append semantics are not syntactic.
+- `go-log-level-method-hardcodes-error` — method and constant names do not
+  establish the logger's severity contract.
+- `go-non-nil-slice-index-zero` — the syntax also admits maps and pointers;
+  slice type and earlier length guarantees are not established.
+- `go-index-plus-one-with-lte-bound` — no matcher was drafted. Same-condition
+  syntax is a plausible future candidate, but type, prior bounds and a
+  supported diagnostic remain unestablished.
+- `go-parser-invalid-input-panic` — neither untrusted input nor the parser's
+  error/recovery contract follows from a panic on a line value.
+- `go-xml-token-prefix-slice-off-by-one` — `token[1:4] == "XML"` can correctly
+  skip a leading delimiter; the expected token origin is missing.
+- `go-time-layout-literal-20-seconds` — no draft was produced. The concrete
+  date layout is a useful future advisory, but intentional literal text cannot
+  be called a proven seconds defect from this proposal alone.
+
+### Draft survivors rejected by claim defense
+
+Each counterexample below produced one diagnostic with its draft using
+`ast-grep scan --rule <draft.yml> --stdin --json`. All five rule, fixture and
+snapshot sets were removed.
+
+- `nginx-chain-aggregate-used-per-element` —
+  `for (...) { seen |= cl->buf->last_buf; if (seen) break; }` matched.
+  Stopping after observing a terminal flag does not misclassify later links;
+  the branch is not constrained to current-link handling.
+- `nginx-chain-terminal-flag-overwritten` —
+  `for (...) { current = cl->buf->last_buf; use_current(current); }` matched.
+  Per-link assignment is correct here; no aggregate state or later use is
+  required by the matcher.
+- `nginx-empty-ngx-str-converted-to-null` —
+  `if (value.len == 0) { return ERROR; } else { *out = NULL; return ERROR; }`
+  matched. Descendant search includes the opposite branch and establishes
+  neither successful conversion nor an API prohibition on NULL for emptiness.
+- `c-read-eof-breaks-before-requested-length` —
+  `while (attempts > 0) { if (cancelled == 0) break; attempts--; }` matched.
+  No read or remaining-byte update is required; legitimate termination becomes
+  a claimed truncated read. Even a read loop may check completeness afterward.
+- `go-range-outside-bounds-and` — `if x < 10 && y > 20 { return }` matched.
+  The regex does not bind the compared value and calls this reachable condition
+  unreachable. It also depends on whitespace and admits unrelated nested
+  expressions. A future AST-bound advisory must state that bound ordering is
+  assumed.
 
 ## c and nginx
 
