@@ -2,36 +2,16 @@ id: nginx-string-sizeof-includes-nul
 valid:
 - |-
   void f(void) {
-    const char text[] = "nginx";
-    value.len = sizeof(text);
-    value.capacity = sizeof("nginx");
-    value.len = sizeof("nginx") - 1;
-  }
-- |-
-  ngx_str_t value;
-  value.data = (u_char *)"nginx";
-  value.len = sizeof("nginx") - 1;
-- |-
-  void f(ngx_str_t value) {
-    value.len = strlen("nginx");
+    value.len = sizeof("text") - 1;
+    value.capacity = sizeof("text");
   }
 - |-
   void f(void) {
-    const char *text = "value.len = sizeof(\"nginx\")";
-    /* value.len = sizeof("nginx"); */
+    const char *text = "value.len = sizeof(\"text\")";
+    /* value.len = sizeof("text"); */
   }
 invalid:
 - |-
   void f(void) {
-    /* Advisory boundary: a capacity including the NUL may be intentional. */
-    struct { unsigned len; } capacity;
-    capacity.len = sizeof("");
-  }
-- |-
-  ngx_str_t value;
-  value.data = (u_char *)"nginx";
-  value.len = sizeof("nginx");
-- |-
-  void f(ngx_str_t output) {
-    output.len = sizeof("value");
+    value.len = sizeof("text");
   }

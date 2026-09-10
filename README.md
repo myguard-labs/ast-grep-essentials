@@ -1,8 +1,9 @@
 # astgrep-rules
 
-Handcrafted [ast-grep](https://ast-grep.github.io/) rules for Bash, C/nginx, Go,
-Java, JavaScript, Lua, PHP, and Python. Security and correctness checks identify
-code that needs review; a match alone does not establish a vulnerability.
+Handcrafted [ast-grep](https://ast-grep.github.io/) rules for Bash, C (including
+nginx-domain rules), Go, Java, JavaScript, Lua, PHP, and Python. Security and
+correctness checks identify code that needs review; a match alone does not
+establish a vulnerability.
 
 Perl is also present in the MyGuard corpus, but ast-grep 0.45.3 has no built-in
 Perl parser. [Custom-language support](https://ast-grep.github.io/advanced/custom-language.html)
@@ -14,13 +15,22 @@ platform.
 
 ## Layout
 
-- `rules/<language>/<category>/`: active YAML rules; nginx rules use `c`.
+- `rules/<parser-language>/<category>/`: active YAML rules. nginx rules use the
+  C parser and `nginx-*` IDs; generic C rules use `c-*` IDs. Disabled aliases
+  may retain a former ID for compatibility.
 - `tests/<language>/<category>/`: matching `valid` and `invalid` fixtures.
 - `docs/`: authoring guidance, detection limits, per-rule source evidence, and
   excluded candidates with rejection evidence.
 
-Rule IDs are stable across directory changes. Third-party packs are maintained
-separately by consumers and are not bundled here.
+Rule IDs are stable across directory changes. Intentional ID changes are listed
+in [ID migrations](docs/id-migrations.md); consumers must apply those mappings
+when updating the pack. Third-party packs are maintained separately by consumers
+and are not bundled here.
+
+The disabled compatibility alias for a renamed rule preserves an explicitly
+promoted former ID only. Consumers must still migrate suppressions, overrides,
+filters, and reports; promoting the alias temporarily emits both the former and
+replacement IDs, as detailed in the migration ledger.
 
 ## Test
 
@@ -50,7 +60,8 @@ the PHP parser.
 Warnings and information are advisory; error severity can fail a scan. Validate
 any promoted rule IDs and exercise a known positive before using a scan as a gate.
 
-See [authoring](docs/authoring.md), [limitations](docs/limitations.md),
+See [authoring](docs/authoring.md), [ID migrations](docs/id-migrations.md),
+[nginx classification](docs/nginx-classification.md), [limitations](docs/limitations.md),
 [sources](docs/sources.md) and [rejected candidates](docs/rejected-candidates.md).
 
 ## Related reading

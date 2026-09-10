@@ -1,11 +1,12 @@
 id: nginx-string-sizeof-includes-nul
 language: c
-severity: warning
-message: A .len field receives sizeof a string literal, including its terminating NUL;
-  review whether this is intended as a payload length.
-note: For an ngx_str_t pointing to that narrow literal, use sizeof(literal) - 1 for
-  the text length. This advisory does not resolve the structure type or data pointer;
-  a capacity field or an intentionally included NUL can be correct.
+severity: 'off'
+message: >-
+  Deprecated rule ID; use c-string-sizeof-includes-nul. A .len field receives
+  sizeof a string literal, including its terminating NUL.
+note: >-
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-string-sizeof-includes-nul and do not emit this rule.
 rule:
   kind: assignment_expression
   pattern:

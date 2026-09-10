@@ -47,6 +47,7 @@ AST_GREP = ROOT / "node_modules" / ".bin" / "ast-grep"
 EXTENSIONS = {"go": "go", "c": "c", "php": "php", "python": "py", "javascript": "js",
               "java": "java", "lua": "lua", "bash": "sh"}
 META = re.compile(r"\$\$?\$?[A-Z_][A-Z0-9_]*")
+COMPATIBILITY_ALIAS_IDS = {"nginx-string-sizeof-includes-nul"}
 
 
 def find_rule(rule_id: str) -> tuple[Path, Path]:
@@ -79,9 +80,38 @@ def delete_arm(rule, path, index):
     return mutant
 
 
+def canonical_severity(rule: dict):
+    """Return PyYAML's unquoted ``off`` boolean as the ast-grep severity."""
+    severity = rule.get("severity")
+    return "off" if severity is False else severity
+
+
+def runnable_rule(rule: dict) -> dict:
+    """Copy a rule and activate a disabled compatibility alias for testing."""
+    active = copy.deepcopy(rule)
+    if canonical_severity(active) == "off":
+        active["severity"] = "info"
+    return active
+
+
+def supported_severity(rule: dict) -> bool:
+    severity = canonical_severity(rule)
+    return severity in ("error", "warning", "info") or (
+        severity == "off" and rule.get("id") in COMPATIBILITY_ALIAS_IDS
+    )
+
+
+def promoted_rule_id(rule: dict) -> str | None:
+    rule_id = rule.get("id")
+    return rule_id if (
+        canonical_severity(rule) == "off" and rule_id in COMPATIBILITY_ALIAS_IDS
+    ) else None
+
+
 def scan_stdin(rule: dict, source: str) -> tuple[int | None, str]:
+    scanned_rule = runnable_rule(rule)
     try:
-        r = subprocess.run([AST_GREP, "scan", "--inline-rules", yaml.safe_dump(rule),
+        r = subprocess.run([AST_GREP, "scan", "--inline-rules", yaml.safe_dump(scanned_rule),
                             "--stdin", "--json=compact"],
                            input=source, text=True, capture_output=True, timeout=15, check=False)
     except subprocess.TimeoutExpired as error:
@@ -107,7 +137,11 @@ class Isolated:
         (d / "rules").mkdir()
         (d / "tests" / "__snapshots__").mkdir(parents=True)
         self.rule = d / "rules" / rule_path.name
-        self.rule.write_bytes(rule_path.read_bytes())
+        isolated_rule = yaml.safe_load(rule_path.read_text())
+        if canonical_severity(isolated_rule) == "off":
+            self.rule.write_text(yaml.safe_dump(runnable_rule(isolated_rule)))
+        else:
+            self.rule.write_bytes(rule_path.read_bytes())
         (d / "tests" / rule_path.name).write_bytes(fixture_path.read_bytes())
         snap = ROOT / "tests" / "__snapshots__" / f"{rule_path.stem}-snapshot.yml"
         self.has_snapshot = snap.exists()
@@ -119,7 +153,7 @@ class Isolated:
     def test(self, rule: dict | None = None) -> tuple[int, str]:
         if rule is not None:
             self.rule.write_text(yaml.safe_dump(rule))
-        cmd: list[str] = [str(AST_GREP), "test", "-c", str(self.config)]
+        cmd: list[str] = [str(AST_GREP), "test", "--include-off", "-c", str(self.config)]
         if not self.has_snapshot:
             cmd.append("--skip-snapshot-tests")
         try:
@@ -235,7 +269,7 @@ def check_arms(iso, rule):
     return not survivors and not invalid_mutants, detail
 
 
-def discover(rule_path, language, source):
+def discover(rule_path, language, source, promoted_id=None):
     """Check discovery using a real source extension and a one-rule config."""
     ext = EXTENSIONS.get(language)
     if ext is None:
@@ -248,9 +282,12 @@ def discover(rule_path, language, source):
         target = directory / f"positive.{ext}"
         target.write_text(source)
         try:
-            result = subprocess.run(
-                [AST_GREP, "scan", "-c", directory / "sgconfig.yml", "--json=compact", target],
-                capture_output=True, text=True, timeout=15, check=False)
+            command = [AST_GREP, "scan", "-c", directory / "sgconfig.yml"]
+            if promoted_id is not None:
+                command.append(f"--error={promoted_id}")
+            command.extend(["--json=compact", target])
+            result = subprocess.run(command, capture_output=True, text=True,
+                                    timeout=15, check=False)
         except subprocess.TimeoutExpired as error:
             return False, f"ast-grep timed out after {error.timeout}s"
         try:
@@ -362,7 +399,7 @@ def load_inputs(rule_path, fixture_path, check):
 def update_snapshot(rule, report, check):
     """Require the scoped update to succeed before reporting snapshot contents."""
     try:
-        result = subprocess.run([AST_GREP, "test", "-c", ROOT / "sgconfig.yml",
+        result = subprocess.run([AST_GREP, "test", "--include-off", "-c", ROOT / "sgconfig.yml",
                                  "--filter", f"^{re.escape(rule['id'])}$", "-U"],
                                 capture_output=True, text=True, timeout=60, check=False, cwd=ROOT)
     except subprocess.TimeoutExpired as error:
@@ -415,13 +452,12 @@ def main() -> int:
     if inputs is None:
         return finish(report, ok, args.json)
     rule, valid, invalid = inputs
-
     # 2. literal diagnostics -- test_diagnostics compares emitted text to the YAML
     for field in ("message", "note"):
         check(f"{field}-literal", literal_diagnostic(rule.get(field)),
               "present and no $METAVAR interpolation (snapshots do not store it)")
-    check("severity", rule.get("severity") in ("error", "warning", "info"),
-          str(rule.get("severity")))
+    severity = canonical_severity(rule)
+    check("severity", supported_severity(rule), str(severity))
 
     # 3. exact counts per fixture -- what the snapshot runner cannot assert
     passed, detail, multi = fixture_counts(rule, valid, invalid)
@@ -441,17 +477,19 @@ def main() -> int:
     # 4. isolated fixture run, then arm kills -- test_arm_coverage's contract
     iso = Isolated(rule_path, fixture_path)
     try:
+        tested_rule = runnable_rule(rule)
         rc, out = iso.test()
         tail = out.strip()[-200:] or f"no output, exit {rc}"
         check("fixture-run", rc == 0 and "1 passed; 0 failed" in out,
               ("snapshot present" if iso.has_snapshot else "no snapshot: --skip-snapshot-tests")
               + ("" if rc == 0 else " :: " + tail))
-        check("arm-kills", *check_arms(iso, rule))
+        check("arm-kills", *check_arms(iso, tested_rule))
     finally:
         iso.close()
 
     # 5. discovery through a real file and config, not a string fixture
-    check("discovery", *discover(rule_path, rule["language"], invalid[0]))
+    promoted_id = promoted_rule_id(rule)
+    check("discovery", *discover(rule_path, rule["language"], invalid[0], promoted_id))
 
     # 6. optional pattern S-expressions for the author's eyes
     if args.sexp:

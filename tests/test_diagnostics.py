@@ -2,6 +2,7 @@
 
 import json
 import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -24,7 +25,7 @@ class DiagnosticTests(unittest.TestCase):
             )
     def test_all_rules_emit_declared_diagnostics(self):
         rules = sorted((ROOT / "rules").rglob("*.yml"))
-        self.assertEqual(len(rules), 265, "update the explicit diagnostic inventory")
+        self.assertEqual(len(rules), 266, "update the explicit diagnostic inventory")
         checked = 0
         for path in rules:
             with self.subTest(rule=path.stem):
@@ -32,6 +33,8 @@ class DiagnosticTests(unittest.TestCase):
                 fixture = yaml.safe_load(
                     (ROOT / "tests" / path.relative_to(ROOT / "rules")).read_text()
                 )
+                # A direct --rule scan evaluates off rules and reports their
+                # declared severity, unlike project-config discovery.
                 result = subprocess.run(
                     [AST_GREP, "scan", "--rule", path, "--json=compact", "--stdin"],
                     input=fixture["invalid"][0], text=True, capture_output=True,
@@ -43,9 +46,57 @@ class DiagnosticTests(unittest.TestCase):
                 finding = findings[0]
                 self.assertEqual(finding["ruleId"], declared["id"])
                 for field in ("message", "note", "severity"):
-                    self.assertEqual(finding[field], declared[field], field)
+                    expected = declared[field]
+                    if field == "severity" and expected is False:
+                        expected = "off"
+                    self.assertEqual(finding[field], expected, field)
                 checked += 1
-        self.assertEqual(checked, 265)
+        self.assertEqual(checked, 266)
+
+    def test_deprecated_rule_id_matcher_tracks_replacement(self):
+        replacement = yaml.safe_load(
+            (ROOT / "rules/c/correctness/c-string-sizeof-includes-nul.yml").read_text()
+        )
+        alias = yaml.safe_load(
+            (ROOT / "rules/c/correctness/nginx-string-sizeof-includes-nul.yml").read_text()
+        )
+        metadata = {"id", "severity", "message", "note"}
+        replacement_matcher = {
+            key: value for key, value in replacement.items() if key not in metadata
+        }
+        alias_matcher = {
+            key: value for key, value in alias.items() if key not in metadata
+        }
+        self.assertEqual(alias_matcher, replacement_matcher)
+
+    def test_deprecated_rule_id_preserves_explicit_promotion(self):
+        source = 'void f(void) { value.len = sizeof("text"); }\n'
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "positive.c"
+            path.write_text(source)
+
+            normal = subprocess.run(
+                [AST_GREP, "scan", "-c", ROOT / "sgconfig.yml",
+                 "--json=compact", path],
+                text=True, capture_output=True, check=False, timeout=15,
+            )
+            self.assertEqual(normal.returncode, 0, normal.stderr)
+            self.assertEqual(
+                [finding["ruleId"] for finding in json.loads(normal.stdout)],
+                ["c-string-sizeof-includes-nul"],
+            )
+
+            promoted = subprocess.run(
+                [AST_GREP, "scan", "-c", ROOT / "sgconfig.yml",
+                 "--error=nginx-string-sizeof-includes-nul",
+                 "--json=compact", path],
+                text=True, capture_output=True, check=False, timeout=15,
+            )
+            self.assertEqual(promoted.returncode, 1, promoted.stderr)
+            self.assertEqual(
+                sorted(finding["ruleId"] for finding in json.loads(promoted.stdout)),
+                ["c-string-sizeof-includes-nul", "nginx-string-sizeof-includes-nul"],
+            )
 
     def test_no_error_rule_concedes_a_routine_dismissal(self):
         """Error severity can fail a consumer's scan, so it is reserved for

@@ -1405,7 +1405,8 @@ class ProbeTests(unittest.TestCase):
                     contextlib.redirect_stdout(io.StringIO()) as output:
                 self.assertEqual(PROBE.main(), 1)
             self.assertEqual(len(updates), 1)
-            self.assertEqual(Path(updates[0][3]), root / "sgconfig.yml")
+            config_index = updates[0].index("-c") + 1
+            self.assertEqual(Path(updates[0][config_index]), root / "sgconfig.yml")
             self.assertIn(snapshot.resolve(), [Path(path).resolve() for path in loaded])
             self.assertEqual(snapshot.read_bytes(), source_snapshot.read_bytes())
             report = json.loads(output.getvalue())
@@ -1415,6 +1416,78 @@ class ProbeTests(unittest.TestCase):
             checks = {item["name"]: item["ok"] for item in report["checks"]}
             for name in ("fixture-counts", "fixture-run", "arm-kills", "discovery"):
                 self.assertTrue(checks[name], name)
+
+    def test_probe_handles_missing_and_unquoted_off_severity(self):
+        off_ids = []
+        for path in sorted((ROOT / "rules").rglob("*.yml")):
+            rule = yaml.safe_load(path.read_text())
+            if rule.get("severity") in ("off", False):
+                off_ids.append(rule["id"])
+        self.assertEqual(sorted(off_ids), sorted(PROBE.COMPATIBILITY_ALIAS_IDS))
+
+        source_rule, source_fixture = PROBE.find_rule("nginx-string-sizeof-includes-nul")
+        source_snapshot = (
+            ROOT / "tests/__snapshots__/nginx-string-sizeof-includes-nul-snapshot.yml"
+        )
+        coverage = ROOT / "tests/arm_coverage.json"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            copy_relative_files(
+                root, (source_rule, source_fixture, source_snapshot, coverage)
+            )
+            rule = root / source_rule.relative_to(ROOT)
+            original = rule.read_text()
+
+            rule.write_text(original.replace("severity: 'off'\n", "severity: off\n"))
+            unquoted = yaml.safe_load(rule.read_text())
+            self.assertIs(unquoted["severity"], False)
+            invalid = yaml.safe_load(source_fixture.read_text())["invalid"][0]
+            self.assertEqual(PROBE.scan_stdin(unquoted, invalid), (1, ""))
+            with patch.object(PROBE, "ROOT", root), \
+                    patch("sys.argv", ["probe", source_rule.stem, "--json"]), \
+                    contextlib.redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(PROBE.main(), 0)
+            report = json.loads(output.getvalue())
+            self.assertTrue(report["ok"])
+            self.assertEqual(
+                next(item for item in report["checks"] if item["name"] == "severity")["detail"],
+                "off",
+            )
+
+            rule.write_text(original)
+            with patch.object(PROBE, "ROOT", root), \
+                    patch.object(PROBE, "COMPATIBILITY_ALIAS_IDS", set()), \
+                    patch("sys.argv", ["probe", source_rule.stem, "--json"]), \
+                    contextlib.redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(PROBE.main(), 1)
+            report = json.loads(output.getvalue())
+            severity = next(
+                item for item in report["checks"] if item["name"] == "severity"
+            )
+            self.assertFalse(severity["ok"])
+            self.assertIsNone(PROBE.promoted_rule_id({
+                "id": "work-in-progress", "severity": "off"
+            }))
+            discovery = next(
+                item for item in report["checks"] if item["name"] == "discovery"
+            )
+            self.assertFalse(discovery["ok"])
+
+            document = yaml.safe_load(original)
+            del document["severity"]
+            rule.write_text(yaml.safe_dump(document))
+            with patch.object(PROBE, "ROOT", root), \
+                    patch("sys.argv", ["probe", source_rule.stem, "--json"]), \
+                    contextlib.redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(PROBE.main(), 1)
+            report = json.loads(output.getvalue())
+            severity = next(
+                item for item in report["checks"] if item["name"] == "severity"
+            )
+            self.assertFalse(severity["ok"])
+            self.assertTrue(all(
+                item["ok"] for item in report["checks"] if item["name"] != "severity"
+            ))
 
     def test_jwt_witnesses_validate_each_deleted_arm(self):
         rule_path, fixture_path = PROBE.find_rule("py-jwt-decode-unverified")
