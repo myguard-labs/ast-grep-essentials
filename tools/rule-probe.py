@@ -8,10 +8,11 @@ replicates the suite's per-rule contracts -- fixture layout, fixture run,
 exact JSON finding counts per fixture, every `any` arm killed by a fixture,
 literal diagnostics, and real-file discovery -- and prints one bounded report.
 Passing here is necessary, not sufficient: the full suite still runs before
-commit. Pipeline: .claude/skills/astgrep-rules/references/harvest-pipeline.md
+commit. Pipeline: docs/authoring.md#harvest-and-draft-pipeline
 
 Usage:
-  rule-probe.py <rule-id>            # report + exit 0/1
+  rule-probe.py <rule-id>            # report + exit 0/1; 2 when engine is absent
+  rule-probe.py <rule-id> --brief    # verdict plus failed checks only
   rule-probe.py <rule-id> --json     # machine-readable
   rule-probe.py <rule-id> --sexp     # also dump --debug-query=sexp of each pattern
   rule-probe.py <rule-id> --snapshot # write/refresh this rule's snapshot only,
@@ -48,14 +49,23 @@ EXTENSIONS = {"go": "go", "c": "c", "php": "php", "python": "py", "javascript": 
               "java": "java", "lua": "lua", "bash": "sh"}
 META = re.compile(r"\$\$?\$?[A-Z_][A-Z0-9_]*")
 COMPATIBILITY_ALIAS_IDS = {"nginx-string-sizeof-includes-nul"}
+STDIN_SCAN_TIMEOUT = 15
+FIXTURE_SCAN_BASE_TIMEOUT = 15
+FIXTURE_SCAN_PER_SOURCE_TIMEOUT = 2
+ISOLATED_TEST_TIMEOUT = 30
+DISCOVERY_TIMEOUT = 15
+PATTERN_TIMEOUT = 15
+PATTERN_LIMIT = 6
+ORCHESTRATION_MARGIN = 30
 
 
-def find_rule(rule_id: str) -> tuple[Path, Path]:
-    hits = [p for p in (ROOT / "rules").rglob("*.yml") if p.stem == rule_id]
+def find_rule(rule_id: str, root: Path | None = None) -> tuple[Path, Path]:
+    root = ROOT if root is None else root
+    hits = [p for p in (root / "rules").rglob("*.yml") if p.stem == rule_id]
     if len(hits) != 1:
         sys.exit(f"expected exactly one rule file for {rule_id!r}, found {len(hits)}")
     rule = hits[0]
-    fixture = ROOT / "tests" / rule.relative_to(ROOT / "rules")
+    fixture = root / "tests" / rule.relative_to(root / "rules")
     return rule, fixture
 
 
@@ -113,7 +123,8 @@ def scan_stdin(rule: dict, source: str) -> tuple[int | None, str]:
     try:
         r = subprocess.run([AST_GREP, "scan", "--inline-rules", yaml.safe_dump(scanned_rule),
                             "--stdin", "--json=compact"],
-                           input=source, text=True, capture_output=True, timeout=15, check=False)
+                           input=source, text=True, capture_output=True,
+                           timeout=STDIN_SCAN_TIMEOUT, check=False)
     except subprocess.TimeoutExpired as error:
         return None, f"ast-grep timed out after {error.timeout}s"
     if r.returncode not in (0, 1):
@@ -128,11 +139,66 @@ def scan_stdin(rule: dict, source: str) -> tuple[int | None, str]:
     return len(findings), ""
 
 
+def run_source_scan(rule: dict, directory: Path,
+                    timeout: int = FIXTURE_SCAN_BASE_TIMEOUT) -> tuple[object | None, str]:
+    """Run one bounded engine process for a directory of fixture snippets."""
+    try:
+        result = subprocess.run(
+            [AST_GREP, "scan", "--inline-rules", yaml.safe_dump(runnable_rule(rule)),
+             "--json=compact", directory],
+            text=True, capture_output=True, timeout=timeout, check=False)
+    except subprocess.TimeoutExpired as error:
+        return None, f"ast-grep timed out after {error.timeout}s"
+    if result.returncode not in (0, 1):
+        return None, result.stderr.strip()[:300] or f"ast-grep exited {result.returncode}"
+    try:
+        return json.loads(result.stdout or "[]"), ""
+    except json.JSONDecodeError:
+        return None, result.stderr.strip()[:300] or "invalid ast-grep JSON"
+
+
+def source_counts(findings: object, rule_id: str, targets: list[Path]) -> list[int] | None:
+    """Attribute every finding to one expected fixture file."""
+    if not isinstance(findings, list):
+        return None
+    counts = {target: 0 for target in targets}
+    for finding in findings:
+        file_name = finding.get("file") if isinstance(finding, dict) else None
+        path = Path(file_name).resolve() if isinstance(file_name, str) else None
+        if not isinstance(finding, dict) or finding.get("ruleId") != rule_id or path not in counts:
+            return None
+        counts[path] += 1
+    return [counts[target] for target in targets]
+
+
+def scan_sources(rule: dict, sources: list[tuple[str, int, str]]) -> list[tuple[int | None, str]]:
+    """Count all fixture snippets with one pinned-engine startup."""
+    language = rule.get("language")
+    extension = EXTENSIONS.get(language) if isinstance(language, str) else None
+    if extension is None:
+        message = f"unsupported fixture language {language!r}"
+        return [(None, message)] * len(sources)
+    with tempfile.TemporaryDirectory(prefix="rule-probe-count-") as name:
+        directory = Path(name)
+        targets = [directory / f"{kind}-{index}.{extension}" for kind, index, _ in sources]
+        for target, (_, _, source) in zip(targets, sources, strict=True):
+            target.write_text(source)
+        targets = [target.resolve() for target in targets]
+        findings, message = run_source_scan(rule, directory,
+                                            timeout=FIXTURE_SCAN_BASE_TIMEOUT
+                                            + FIXTURE_SCAN_PER_SOURCE_TIMEOUT * len(sources))
+        counts = source_counts(findings, rule["id"], targets) if findings is not None else None
+    if counts is None:
+        return [(None, message or "findings for another rule or fixture")] * len(sources)
+    return [(count, "") for count in counts]
+
+
 class Isolated:
     """A throwaway sgconfig with exactly one rule, fixture and optional snapshot."""
 
-    def __init__(self, rule_path: Path, fixture_path: Path):
-        self.tmp = tempfile.TemporaryDirectory(prefix="rule-probe-", dir=ROOT)
+    def __init__(self, rule_path: Path, fixture_path: Path, root: Path | None = None):
+        root = ROOT if root is None else root
+        self.tmp = tempfile.TemporaryDirectory(prefix="rule-probe-")
         d = Path(self.tmp.name)
         (d / "rules").mkdir()
         (d / "tests" / "__snapshots__").mkdir(parents=True)
@@ -143,7 +209,7 @@ class Isolated:
         else:
             self.rule.write_bytes(rule_path.read_bytes())
         (d / "tests" / rule_path.name).write_bytes(fixture_path.read_bytes())
-        snap = ROOT / "tests" / "__snapshots__" / f"{rule_path.stem}-snapshot.yml"
+        snap = root / "tests" / "__snapshots__" / f"{rule_path.stem}-snapshot.yml"
         self.has_snapshot = snap.exists()
         if self.has_snapshot:
             (d / "tests" / "__snapshots__" / snap.name).write_bytes(snap.read_bytes())
@@ -157,7 +223,8 @@ class Isolated:
         if not self.has_snapshot:
             cmd.append("--skip-snapshot-tests")
         try:
-            r = subprocess.run(cmd, capture_output=True, text=True, timeout=30, check=False)
+            r = subprocess.run(cmd, capture_output=True, text=True,
+                               timeout=ISOLATED_TEST_TIMEOUT, check=False)
         except subprocess.TimeoutExpired as error:
             return 124, f"ast-grep timed out after {error.timeout}s"
         return r.returncode, r.stdout + r.stderr
@@ -169,14 +236,15 @@ class Isolated:
 def fixture_counts(rule, valid, invalid):
     """Check each fixture independently of earlier report failures."""
     counts, multiple, passed = [], [], True
-    for kind, sources in (("invalid", invalid), ("valid", valid)):
-        for index, source in enumerate(sources):
-            count, error = scan_stdin(rule, source)
-            passed &= count is not None and (count >= 1 if kind == "invalid" else count == 0)
-            detail = f"{kind}[{index}]={'ERR ' + error if count is None else count}"
-            counts.append(detail)
-            if kind == "invalid" and count is not None and count > 1:
-                multiple.append(detail)
+    sources = [(kind, index, source) for kind, fixtures in (("invalid", invalid),
+               ("valid", valid)) for index, source in enumerate(fixtures)]
+    results = scan_sources(rule, sources)
+    for (kind, index, _source), (count, error) in zip(sources, results, strict=True):
+        passed &= count is not None and (count >= 1 if kind == "invalid" else count == 0)
+        detail = f"{kind}[{index}]={'ERR ' + error if count is None else count}"
+        counts.append(detail)
+        if kind == "invalid" and count is not None and count > 1:
+            multiple.append(detail)
     return passed, "; ".join(counts), multiple
 
 
@@ -212,9 +280,10 @@ def validate_witness_case(case):
             raise ValueError(f"witness {field} must be a nonnegative integer")
 
 
-def arm_witnesses(rule):
+def arm_witnesses(rule, root: Path | None = None):
     """Index retained witnesses by their current arm path and integer index."""
-    coverage = ROOT / "tests/arm_coverage.json"
+    root = ROOT if root is None else root
+    coverage = root / "tests/arm_coverage.json"
     document = json.loads(coverage.read_text()) if coverage.is_file() else {"cases": []}
     if not isinstance(document, dict) or not isinstance(document.get("cases"), list):
         raise TypeError("expected an object with a cases list")
@@ -231,11 +300,11 @@ def arm_witnesses(rule):
             if case["rule"] == rule.get("id") and case["classification"] != "equivalent"}
 
 
-def check_arms(iso, rule):
+def check_arms(iso, rule, root: Path | None = None):
     """Require a fixture failure or a validated count witness for each arm."""
     arms = list(any_arms(rule["rule"]))
     try:
-        witnesses = arm_witnesses(rule)
+        witnesses = arm_witnesses(rule, root)
     except (OSError, UnicodeError, ValueError, TypeError) as error:
         return False, f"invalid arm_coverage.json: {str(error)[:300]}"
     survivors, invalid_mutants, validated = [], [], []
@@ -269,12 +338,28 @@ def check_arms(iso, rule):
     return not survivors and not invalid_mutants, detail
 
 
+def probe_timeout(rule_body: object, fixture: object, sexp: bool) -> int:
+    """Return a wrapper budget above the sum of every bounded probe phase."""
+    values = (fixture.get("valid"), fixture.get("invalid")) \
+        if isinstance(fixture, dict) else ()
+    sources = sum(len(value) for value in values if isinstance(value, list))
+    arms = len(list(any_arms(rule_body)))
+    return (
+        ORCHESTRATION_MARGIN
+        + FIXTURE_SCAN_BASE_TIMEOUT + FIXTURE_SCAN_PER_SOURCE_TIMEOUT * sources
+        + ISOLATED_TEST_TIMEOUT
+        + arms * (ISOLATED_TEST_TIMEOUT + 2 * STDIN_SCAN_TIMEOUT)
+        + DISCOVERY_TIMEOUT
+        + (PATTERN_LIMIT * PATTERN_TIMEOUT if sexp else 0)
+    )
+
+
 def discover(rule_path, language, source, promoted_id=None):
     """Check discovery using a real source extension and a one-rule config."""
     ext = EXTENSIONS.get(language)
     if ext is None:
         return False, f"unsupported discovery language {language!r}; extend EXTENSIONS"
-    with tempfile.TemporaryDirectory(prefix="rule-probe-disc-", dir=ROOT) as name:
+    with tempfile.TemporaryDirectory(prefix="rule-probe-disc-") as name:
         directory = Path(name)
         (directory / "rules").mkdir()
         (directory / "rules" / rule_path.name).write_bytes(rule_path.read_bytes())
@@ -287,7 +372,7 @@ def discover(rule_path, language, source, promoted_id=None):
                 command.append(f"--error={promoted_id}")
             command.extend(["--json=compact", target])
             result = subprocess.run(command, capture_output=True, text=True,
-                                    timeout=15, check=False)
+                                    timeout=DISCOVERY_TIMEOUT, check=False)
         except subprocess.TimeoutExpired as error:
             return False, f"ast-grep timed out after {error.timeout}s"
         try:
@@ -316,12 +401,12 @@ def pattern_expressions(rule, check):
     """Return a bounded debug view; fragment ERROR nodes are diagnostic only."""
     expressions = []
     pats = [*patterns(rule.get("rule")), *patterns(rule.get("utils"))]
-    for pat in pats[:6]:
+    for pat in pats[:PATTERN_LIMIT]:
         try:
             result = subprocess.run(
                 [AST_GREP, "run", "-l", rule["language"], "-p", pat,
                  "--debug-query=sexp", "--stdin"], input="x", text=True,
-                capture_output=True, timeout=15, check=False)
+                capture_output=True, timeout=PATTERN_TIMEOUT, check=False)
         except subprocess.TimeoutExpired as error:
             check("pattern-expressions", False, f"ast-grep timed out after {error.timeout}s")
             return expressions
@@ -344,9 +429,10 @@ def load_mapping(path, check, name):
     return value
 
 
-def check_snapshot(rule_id, invalid, check):
+def check_snapshot(rule_id, invalid, check, root: Path | None = None):
     """Match the inventory contract: snapshot mapping keys equal invalid fixtures."""
-    path = ROOT / "tests" / "__snapshots__" / f"{rule_id}-snapshot.yml"
+    root = ROOT if root is None else root
+    path = root / "tests" / "__snapshots__" / f"{rule_id}-snapshot.yml"
     if not path.exists():
         return True  # New rules can still use --skip-snapshot-tests.
     document = load_mapping(path, check, "snapshot-shape")
@@ -367,19 +453,20 @@ def fixture_shape(fixture, rule_id):
             and not set(valid) & set(invalid))
 
 
-def load_inputs(rule_path, fixture_path, check):
+def load_inputs(rule_path, fixture_path, check, root: Path | None = None):
     """Validate local rule/fixture shape before running external checks."""
     rule = load_mapping(rule_path, check, "rule-shape")
     if rule is None:
         return None
-    parts = rule_path.relative_to(ROOT / "rules").parts
+    root = ROOT if root is None else root
+    parts = rule_path.relative_to(root / "rules").parts
     layout_ok = (len(parts) == 3 and parts[0] == rule.get("language")
                  and rule_path.stem == rule.get("id"))
     check("layout", layout_ok,
           f"rules/<language>/<category>/<id>.yml with matching id/language; got {parts}")
     if not layout_ok:
         return None
-    check("fixture-exists", fixture_path.is_file(), str(fixture_path.relative_to(ROOT)))
+    check("fixture-exists", fixture_path.is_file(), str(fixture_path.relative_to(root)))
     if not fixture_path.is_file():
         return None
     fixture = load_mapping(fixture_path, check, "fixture-shape")
@@ -429,13 +516,20 @@ def literal_diagnostic(value):
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n", maxsplit=1)[0])
     ap.add_argument("rule_id")
-    ap.add_argument("--json", action="store_true")
+    output = ap.add_mutually_exclusive_group()
+    output.add_argument("--json", action="store_true")
+    output.add_argument("--brief", action="store_true")
     ap.add_argument("--sexp", action="store_true")
     ap.add_argument("--snapshot", action="store_true")
+    ap.add_argument("--input-root", type=Path, help=argparse.SUPPRESS)
     args = ap.parse_args()
 
-    rule_path, fixture_path = find_rule(args.rule_id)
-    report: dict = {"rule": str(rule_path.relative_to(ROOT)), "checks": []}
+    if args.snapshot and args.input_root is not None:
+        ap.error("--snapshot cannot be combined with --input-root")
+    input_root = ROOT if args.input_root is None else args.input_root.resolve()
+
+    rule_path, fixture_path = find_rule(args.rule_id, input_root)
+    report: dict = {"rule": str(rule_path.relative_to(input_root)), "checks": []}
     ok = True
 
     def check(name: str, passed: bool, detail: str = ""):
@@ -445,12 +539,13 @@ def main() -> int:
 
     check("ast-grep-available", AST_GREP.is_file(), "run npm ci to install ast-grep")
     if not AST_GREP.is_file():
-        return finish(report, ok, args.json)
+        finish(report, ok, args.json, args.brief)
+        return 2
 
     # 1. layout and parseability -- the inventory test's contract
-    inputs = load_inputs(rule_path, fixture_path, check)
+    inputs = load_inputs(rule_path, fixture_path, check, input_root)
     if inputs is None:
-        return finish(report, ok, args.json)
+        return finish(report, ok, args.json, args.brief)
     rule, valid, invalid = inputs
     # 2. literal diagnostics -- test_diagnostics compares emitted text to the YAML
     for field in ("message", "note"):
@@ -471,11 +566,11 @@ def main() -> int:
     if args.snapshot:
         update_snapshot(rule, report, check)
 
-    if not check_snapshot(rule["id"], invalid, check):
-        return finish(report, ok, args.json)
+    if not check_snapshot(rule["id"], invalid, check, input_root):
+        return finish(report, ok, args.json, args.brief)
 
     # 4. isolated fixture run, then arm kills -- test_arm_coverage's contract
-    iso = Isolated(rule_path, fixture_path)
+    iso = Isolated(rule_path, fixture_path, input_root)
     try:
         tested_rule = runnable_rule(rule)
         rc, out = iso.test()
@@ -483,7 +578,7 @@ def main() -> int:
         check("fixture-run", rc == 0 and "1 passed; 0 failed" in out,
               ("snapshot present" if iso.has_snapshot else "no snapshot: --skip-snapshot-tests")
               + ("" if rc == 0 else " :: " + tail))
-        check("arm-kills", *check_arms(iso, tested_rule))
+        check("arm-kills", *check_arms(iso, tested_rule, input_root))
     finally:
         iso.close()
 
@@ -495,22 +590,28 @@ def main() -> int:
     if args.sexp:
         report["sexp"] = pattern_expressions(rule, check)
 
-    return finish(report, ok, args.json)
+    return finish(report, ok, args.json, args.brief)
 
 
-def finish(report: dict, ok: bool, as_json: bool) -> int:
+def finish(report: dict, ok: bool, as_json: bool, brief: bool = False) -> int:
     report["ok"] = ok
     if as_json:
         print(json.dumps(report, indent=1))
     else:
         print(f"{report['rule']}: {'PASS' if ok else 'FAIL'}")
-        for c in report["checks"]:
+        checks = report["checks"] if not brief else brief_failures(report["checks"])
+        for c in checks:
             print(f"  [{'ok' if c['ok'] else 'FAIL'}] {c['name']}: {c['detail']}")
         for s in report.get("sexp", []):
             print(f"  sexp {s['pattern']!r}:\n    " + s["sexp"].replace("\n", "\n    "))
         if "snapshot" in report:
             print("  snapshot:\n    " + report["snapshot"].replace("\n", "\n    "))
     return 0 if ok else 1
+
+
+def brief_failures(checks: list[dict]) -> list[dict]:
+    """Return every failed gate; independent failures must remain actionable."""
+    return [check for check in checks if not check["ok"]]
 
 
 if __name__ == "__main__":

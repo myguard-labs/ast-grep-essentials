@@ -6,7 +6,7 @@ Why: mining a project's fix history for ast-grep rules is a recurring task
 expensive way; this script removes everything that is provably not a candidate
 so the model stages see a small, ranked corpus. It makes no judgement about
 whether a fix generalises -- that is the packet stage
-(harvest-packets.py). Pipeline: .claude/skills/astgrep-rules/references/harvest-pipeline.md
+(harvest-packets.py). Pipeline: docs/authoring.md#harvest-and-draft-pipeline
 
 Usage:
   harvest-history.py --root DIR --repos coraza coraza-nginx --out candidates.jsonl
@@ -28,10 +28,10 @@ Side effects: none beyond the files named above. No network. Git subprocesses
          retain harvested candidates using their SHA identity. Commits without
          attributable diffs are counted and skipped. Index output preserves
          legacy bytes with UTF-8/surrogateescape.
-Limits:  Go and C only (SOURCE_SUFFIX). Ranking is a reading order, not a
+Limits:  Native ast-grep languages only (SOURCE_LANGUAGES). Ranking is a reading order, not a
          quality score: a one-line fix carries little vocabulary and can rank
          low while being the best candidate. Downstream reads the whole corpus.
-Extend:  FIX_SUBJECT, EXCLUDE_PATH, SOURCE_SUFFIX, and the `terms` dict in
+Extend:  FIX_SUBJECT, EXCLUDE_PATH, SOURCE_LANGUAGES, and the `terms` dict in
          signal_terms().
 """
 
@@ -41,6 +41,7 @@ import re
 import subprocess
 import sys
 import unicodedata
+from collections import defaultdict
 from pathlib import Path
 from typing import NamedTuple
 from urllib.parse import unquote, urlsplit
@@ -56,8 +57,21 @@ FIX_SUBJECT = re.compile(
     re.IGNORECASE | re.VERBOSE,
 )
 
-# Source we can write rules against. Anything else is build plumbing or docs.
-SOURCE_SUFFIX = {".go", ".c", ".h"}
+# Source we can write rules against with ast-grep's built-in parsers. PowerShell
+# uses the repository's optional custom parser and stays outside this generic
+# harvest until its grammar has an equivalent isolated seed/probe path.
+SOURCE_LANGUAGES = {
+    ".bash": "bash", ".c": "c", ".h": "c", ".go": "go", ".java": "java",
+    ".js": "javascript", ".cjs": "javascript", ".mjs": "javascript",
+    ".jsx": "javascript", ".lua": "lua", ".php": "php", ".phtml": "php",
+    ".py": "python", ".sh": "bash",
+}
+
+
+def source_language(path: str) -> str | None:
+    """Map native suffixes without treating conventional C++ `.C` as C."""
+    suffix = Path(path).suffix
+    return None if suffix == ".C" else SOURCE_LANGUAGES.get(suffix.lower())
 
 # Paths that produce fixes which never generalise into a rule about product
 # code: test bodies assert behaviour rather than exhibit it, and build/CI files
@@ -113,7 +127,13 @@ def changed_source_files(repo: Path, sha: str) -> list[SourceChange]:
                 raise TruncatedGitOutput(f"truncated rename numstat for {sha}")
         if added == "-" or deleted == "-":  # binary
             continue
-        if Path(path).suffix not in SOURCE_SUFFIX:
+        language = source_language(path)
+        if language is None:
+            continue
+        if old_path is not None \
+                and source_language(old_path) != language:
+            # A cross-language rename diff contains both grammars. It cannot
+            # safely seed one parser pack, so leave it out rather than guess.
             continue
         if EXCLUDE_PATH.search(path):
             continue
@@ -287,11 +307,21 @@ def harvest(repo: Path, name: str, max_files: int, max_lines: int,
                 continue
             stats["sized"] += 1
 
-            paths = list(dict.fromkeys(path for change in files
-                                       for path in (change.old_path, change.path)
-                                       if path is not None))
-            diff = diff_body(repo, sha, paths)
-            if not diff.strip():
+            by_language: dict[str, list[SourceChange]] = defaultdict(list)
+            for change in files:
+                language = source_language(change.path)
+                if language is None:  # changed_source_files enforces this contract
+                    raise ValueError(f"unsupported harvested source path {change.path!r}")
+                by_language[language].append(change)
+            diffs = {}
+            for language, language_files in sorted(by_language.items()):
+                paths = list(dict.fromkeys(path for change in language_files
+                                           for path in (change.old_path, change.path)
+                                           if path is not None))
+                diff = diff_body(repo, sha, paths)
+                if diff.strip():
+                    diffs[language] = diff
+            if not diffs:
                 stats["no_diff"] += 1
                 continue
             if cosmetic_commit(repo, sha, files):
@@ -301,18 +331,22 @@ def harvest(repo: Path, name: str, max_files: int, max_lines: int,
             report_incomplete_commit(stats, name, sha, error)
             continue
 
-        candidates.append({
-            "repo": name,
-            "sha": sha,
-            "short": sha[:12],
-            "subject": subject,
-            "date": date[:10],
-            "files": [change.path for change in files],
-            "churn": churn,
-            "signals": signal_terms(diff, subject),
-            "url": f"{prefix}{sha}" if prefix else "",
-            "diff": diff,
-        })
+        for language, diff in diffs.items():
+            language_files = by_language[language]
+            language_churn = sum(change.added + change.deleted for change in language_files)
+            candidates.append({
+                "repo": name,
+                "sha": sha,
+                "short": sha[:12] if len(diffs) == 1 else f"{sha[:12]}-{language}",
+                "subject": subject,
+                "date": date[:10],
+                "language": language,
+                "files": [change.path for change in language_files],
+                "churn": language_churn,
+                "signals": signal_terms(diff, subject),
+                "url": f"{prefix}{sha}" if prefix else "",
+                "diff": diff,
+            })
 
     print(
         f"{name:18s} commits={stats['total']:5d} "
@@ -327,36 +361,39 @@ def harvest(repo: Path, name: str, max_files: int, max_lines: int,
     return candidates, stats["timed_out"] + stats["malformed"]
 
 
-def dedupe_by_patch_id(root: Path, candidates: list[dict]) -> list[dict]:
+def dedupe_by_patch_id(_root: Path, candidates: list[dict]) -> list[dict]:
     """Collapse the same change seen through a fork; first repo in order wins."""
-    seen: dict[str, dict] = {}
-    sha_aliases: dict[str, dict] = {}
+    seen: dict[tuple[str, str], dict] = {}
+    sha_aliases: dict[tuple[str, str], dict] = {}
     out = []
     timed_out = 0
     for c in candidates:
-        if c["sha"] in sha_aliases:
-            sha_aliases[c["sha"]].setdefault("also_in", []).append(c["repo"])
+        identity = (c["sha"], c.get("language", ""))
+        if identity in sha_aliases:
+            sha_aliases[identity].setdefault("also_in", []).append(c["repo"])
             continue
         try:
-            show = run(root / c["repo"], "show", c["sha"])
             pid = subprocess.run(["git", "patch-id", "--stable"],
-                                 input=show.encode("utf-8", "surrogateescape"),
+                                 input=c["diff"].encode("utf-8", "surrogateescape"),
                                  capture_output=True, check=True, timeout=60)
         except subprocess.TimeoutExpired as error:
             timed_out += 1
             print(f"retain {c['repo']}:{c['sha']}: "
                   f"patch identity timed out after {error.timeout}s; "
                   "using SHA fallback", file=sys.stderr)
-            key = c["sha"]
+            patch_key = c["sha"]
         else:
             patch_ids = pid.stdout.decode("ascii").split()
-            key = patch_ids[0] if patch_ids else c["sha"]
+            patch_key = patch_ids[0] if patch_ids else c["sha"]
+        # Identical patch text in different grammars is not interchangeable:
+        # each language needs a different rule pack and fixture.
+        key = (c.get("language", ""), patch_key)
         if key in seen:
-            sha_aliases[c["sha"]] = seen[key]
+            sha_aliases[identity] = seen[key]
             seen[key].setdefault("also_in", []).append(c["repo"])
             continue
         seen[key] = c
-        sha_aliases[c["sha"]] = c
+        sha_aliases[identity] = c
         out.append(c)
     if timed_out:
         print(f"dedupe timed-out-candidates={timed_out}", file=sys.stderr)

@@ -331,66 +331,60 @@ process.stdout.write(JSON.stringify(urls.map(raw => {
             self.assertIn("incomplete harvest", stderr.getvalue())
 
     def test_dedupe_sha_aliases_preserve_first_repo_and_packet_uniqueness(self):
-        for phase in ("show", "patch-id"):
-            for order in (("fast", "slow"), ("slow", "fast"), ("fast", "alias", "slow")):
-                with self.subTest(phase=phase, order=order):
-                    candidates = [{"repo": repo,
-                                   "sha": ("a" if repo == "fast" and len(order) == 3
-                                           else "b") * 40,
-                                   "short": ("a" if repo == "fast" and len(order) == 3
-                                             else "b") * 12,
-                                   "subject": "fix bounds", "files": ["x.c"],
-                                   "diff": "-old\n+new"} for repo in order]
+        for order in (("fast", "slow"), ("slow", "fast"), ("fast", "alias", "slow")):
+            with self.subTest(order=order):
+                candidates = [{"repo": repo,
+                               "sha": ("a" if repo == "fast" and len(order) == 3
+                                       else "b") * 40,
+                               "short": ("a" if repo == "fast" and len(order) == 3
+                                         else "b") * 12,
+                               "subject": "fix bounds", "files": ["x.c"],
+                               "diff": "-old\n+new"} for repo in order]
 
-                    def show(repo, *_args, target=phase):
-                        if repo.name == "slow" and target == "show":
-                            raise subprocess.TimeoutExpired(["git", "show"], 60)
-                        return repo.name
+                def patch_id(command, **_kwargs):
+                    return subprocess.CompletedProcess(command, 0, b"same-patch\n")
 
-                    def patch_id(command, *, target=phase, **kwargs):
-                        if kwargs["input"] == b"slow" and target == "patch-id":
-                            raise subprocess.TimeoutExpired(command, 60)
-                        return subprocess.CompletedProcess(command, 0, b"same-patch\n")
-
-                    with patch.object(HISTORY, "run", side_effect=show), \
-                            patch.object(HISTORY.subprocess, "run", side_effect=patch_id), \
-                            contextlib.redirect_stderr(io.StringIO()):
-                        result = HISTORY.dedupe_by_patch_id(ROOT, candidates)
-                    self.assertEqual(len(result), 1)
-                    self.assertIs(result[0], candidates[0])
-                    self.assertEqual(result[0]["repo"], order[0])
-                    self.assertEqual(result[0]["also_in"], list(order[1:]))
-                    packets = PACKETS.label_packets(result)
-                    self.assertEqual(len(packets), 1)
-                    self.assertEqual(next(iter(packets.values()))["repo"], order[0])
+                with patch.object(HISTORY.subprocess, "run", side_effect=patch_id), \
+                        contextlib.redirect_stderr(io.StringIO()):
+                    result = HISTORY.dedupe_by_patch_id(ROOT, candidates)
+                self.assertEqual(len(result), 1)
+                self.assertIs(result[0], candidates[0])
+                self.assertEqual(result[0]["repo"], order[0])
+                self.assertEqual(result[0]["also_in"], list(order[1:]))
+                packets = PACKETS.label_packets(result)
+                self.assertEqual(len(packets), 1)
+                self.assertEqual(next(iter(packets.values()))["repo"], order[0])
 
     def test_dedupe_timeouts_preserve_candidates_with_sha_identity(self):
-        for phase in ("show", "patch-id"):
-            with self.subTest(phase=phase):
-                candidates = [{"repo": repo, "sha": sha * 40}
-                              for repo, sha in (("first", "a"), ("slow", "b"),
-                                                ("last", "c"), ("fork", "b"))]
+        candidates = [{"repo": repo, "sha": sha * 40, "language": "c", "diff": repo}
+                      for repo, sha in (("first", "a"), ("slow", "b"),
+                                        ("last", "c"), ("fork", "b"))]
 
-                def show(repo, *_args, target=phase):
-                    if repo.name in ("slow", "fork") and target == "show":
-                        raise subprocess.TimeoutExpired(["git", "show"], 60)
-                    return repo.name
+        def patch_id(command, **kwargs):
+            if kwargs["input"] == b"slow":
+                raise subprocess.TimeoutExpired(command, 60)
+            return subprocess.CompletedProcess(command, 0, kwargs["input"] + b"\n")
 
-                def patch_id(command, *, target=phase, **kwargs):
-                    if kwargs["input"] in (b"slow", b"fork") and target == "patch-id":
-                        raise subprocess.TimeoutExpired(command, 60)
-                    return subprocess.CompletedProcess(command, 0, kwargs["input"] + b"\n")
+        with patch.object(HISTORY.subprocess, "run", side_effect=patch_id), \
+                contextlib.redirect_stderr(io.StringIO()) as stderr:
+            result = HISTORY.dedupe_by_patch_id(ROOT, candidates)
+        self.assertEqual([row["repo"] for row in result], ["first", "slow", "last"])
+        self.assertIs(result[1], candidates[1])
+        self.assertEqual(result[1]["also_in"], ["fork"])
+        self.assertIn("using SHA fallback", stderr.getvalue())
+        # The fork's known SHA bypasses a second identity lookup and timeout.
+        self.assertIn("timed-out-candidates=1", stderr.getvalue())
 
-                with patch.object(HISTORY, "run", side_effect=show), \
-                        patch.object(HISTORY.subprocess, "run", side_effect=patch_id), \
-                        contextlib.redirect_stderr(io.StringIO()) as stderr:
-                    result = HISTORY.dedupe_by_patch_id(ROOT, candidates)
-                self.assertEqual([row["repo"] for row in result], ["first", "slow", "last"])
-                self.assertIs(result[1], candidates[1])
-                self.assertEqual(result[1]["also_in"], ["fork"])
-                self.assertIn("using SHA fallback", stderr.getvalue())
-                # The fork's known SHA bypasses a second identity lookup and timeout.
-                self.assertIn("timed-out-candidates=1", stderr.getvalue())
+    def test_dedupe_keeps_identical_patches_for_different_languages(self):
+        candidates = [
+            {"repo": "mixed", "sha": "a" * 40, "language": language,
+             "diff": "-old\n+new"}
+            for language in ("c", "go")
+        ]
+        completed = subprocess.CompletedProcess(
+            ["git", "patch-id", "--stable"], 0, b"same-patch\n")
+        with patch.object(HISTORY.subprocess, "run", return_value=completed):
+            self.assertEqual(HISTORY.dedupe_by_patch_id(ROOT, candidates), candidates)
 
     def test_history_listing_timeout_reports_incomplete_corpus(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -455,7 +449,7 @@ process.stdout.write(JSON.stringify(urls.map(raw => {
                 self.assertIn("skip sample:" + "b" * 40, stderr.getvalue())
 
     def test_timeouts_retain_candidates_and_report_incomplete_repos(self):
-        for phase in ("harvest", "show", "patch-id"):
+        for phase in ("harvest", "patch-id"):
             with self.subTest(phase=phase), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 for name in ("first", "slow", "last"):
@@ -464,12 +458,10 @@ process.stdout.write(JSON.stringify(urls.map(raw => {
                 def harvest(_repo, name, *_args, target=phase):
                     if name == "slow" and target == "harvest":
                         raise subprocess.TimeoutExpired(["git", "log"], 60)
-                    return [{"repo": name, "sha": name, "signals": [], "churn": 1}], 0
-
-                def show(repo, *_args, target=phase):
-                    if repo.name == "slow" and target == "show":
-                        raise subprocess.TimeoutExpired(["git", "show"], 60)
-                    return repo.name
+                    return [{"repo": name, "sha": name, "short": name,
+                             "subject": "fix", "date": "2026-09-11", "language": "c",
+                             "files": ["x.c"], "url": "", "diff": name,
+                             "signals": [], "churn": 1}], 0
 
                 def patch_id(command, *, target=phase, **kwargs):
                     if kwargs["input"] == b"slow" and target == "patch-id":
@@ -477,7 +469,6 @@ process.stdout.write(JSON.stringify(urls.map(raw => {
                     return subprocess.CompletedProcess(command, 0, kwargs["input"] + b"\n")
 
                 with patch.object(HISTORY, "harvest", side_effect=harvest), \
-                        patch.object(HISTORY, "run", side_effect=show), \
                         patch.object(HISTORY.subprocess, "run", side_effect=patch_id), \
                         patch("sys.argv", ["harvest", "--root", str(root), "--repos",
                                            "first", "slow", "last"]), \
@@ -499,7 +490,8 @@ process.stdout.write(JSON.stringify(urls.map(raw => {
         raw_subject = "fix café ".encode() + b"\xff"
         candidate = {"short": "abc", "sha": "a" * 40, "repo": "sample",
                      "subject": raw_subject.decode("utf-8", "surrogateescape"),
-                     "churn": 1, "signals": [], "url": "", "diff": "+new\udcfe\n"}
+                     "churn": 1, "signals": [], "url": "", "diff": "+new\udcfe\n",
+                     "language": "c", "files": ["x.c"]}
         for file_output in (False, True):
             with self.subTest(file_output=file_output), \
                     tempfile.TemporaryDirectory() as directory, \
@@ -526,6 +518,16 @@ process.stdout.write(JSON.stringify(urls.map(raw => {
                 self.assertEqual(row["subject"].encode("utf-8", "surrogateescape"), raw_subject)
                 self.assertEqual(row["diff"], candidate["diff"])
                 self.assertIn(raw_subject, index.read_bytes())
+                if file_output:
+                    args = SimpleNamespace(work=root / "packets", corpus=output,
+                                           chunk=12, min_size=1, mechanical=True)
+                    with patch.object(PACKETS, "shipped_rules", return_value=[]), \
+                            patch.object(PACKETS, "rejected_entries", return_value=[]), \
+                            contextlib.redirect_stderr(io.StringIO()):
+                        self.assertEqual(PACKETS.cluster_emit(args), 0)
+                    metrics = json.loads(
+                        (args.work / "sift-metrics.json").read_text())
+                    self.assertEqual(metrics["raw_diff_bytes"], len(b"+new\xfe\n"))
 
     def test_git_subprocesses_have_bounded_timeouts(self):
         def timeout(command, **kwargs):
@@ -542,8 +544,8 @@ process.stdout.write(JSON.stringify(urls.map(raw => {
                 patch.object(HISTORY.subprocess, "run", side_effect=timeout), \
                 contextlib.redirect_stderr(io.StringIO()) as stderr:
             self.assertEqual(HISTORY.dedupe_by_patch_id(
-                ROOT, [{"repo": "sample", "sha": "a" * 40}]),
-                [{"repo": "sample", "sha": "a" * 40}])
+                ROOT, [{"repo": "sample", "sha": "a" * 40, "diff": "diff"}]),
+                [{"repo": "sample", "sha": "a" * 40, "diff": "diff"}])
             self.assertIn("timed-out-candidates=1", stderr.getvalue())
 
     def test_unattributable_commit_does_not_abort_other_commits_or_repos(self):
@@ -642,7 +644,7 @@ process.stdout.write(JSON.stringify(urls.map(raw => {
                             capture_output=True, check=True).stdout
         with patch.object(HISTORY, "run", return_value=diff), \
                 patch.object(HISTORY.subprocess, "run", wraps=real_run) as runner:
-            candidate = {"repo": "sample", "sha": "a" * 40}
+            candidate = {"repo": "sample", "sha": "a" * 40, "diff": diff}
             self.assertEqual(HISTORY.dedupe_by_patch_id(ROOT, [candidate]), [candidate])
         self.assertEqual(runner.call_args.kwargs["input"], raw)
         self.assertTrue(expected.strip(), "control patch must have a real patch-id")
@@ -652,6 +654,47 @@ process.stdout.write(JSON.stringify(urls.map(raw => {
         with patch.object(HISTORY, "run", return_value=numstat):
             self.assertEqual(HISTORY.changed_source_files(ROOT, "HEAD"),
                              [HISTORY.SourceChange("main.go", 1, 1)])
+
+    def test_source_filter_accepts_every_native_rule_language(self):
+        paths = ("main.sh", "main.c", "main.go", "Main.java", "main.js", "main.lua",
+                 "main.php", "main.py")
+        numstat = "".join(f"1\t0\t{path}\0" for path in (*paths, "main.rs"))
+        with patch.object(HISTORY, "run", return_value=numstat):
+            changes = HISTORY.changed_source_files(ROOT, "HEAD")
+        self.assertEqual([change.path for change in changes], list(paths))
+
+    def test_source_filter_rejects_uppercase_c_as_cpp(self):
+        with patch.object(HISTORY, "run", return_value="1\t0\tmain.C\0"):
+            self.assertEqual(HISTORY.changed_source_files(ROOT, "HEAD"), [])
+
+    def test_source_filter_rejects_cross_language_renames(self):
+        numstat = ("1\t1\t\0old.go\0new.py\0"
+                   "1\t1\t\0old.go\0new.go\0")
+        with patch.object(HISTORY, "run", return_value=numstat):
+            self.assertEqual(HISTORY.changed_source_files(ROOT, "HEAD"), [
+                HISTORY.SourceChange("new.go", 1, 1, "old.go")])
+
+    def test_harvest_splits_a_mixed_language_commit(self):
+        sha = "a" * 40
+        changes = [HISTORY.SourceChange("main.go", 2, 1),
+                   HISTORY.SourceChange("helper.py", 1, 1)]
+
+        def diff(_repo, _sha, paths):
+            return f"diff --git a/{paths[0]} b/{paths[0]}\n@@ -1 +1 @@\n-old\n+new\n"
+
+        with patch.object(HISTORY, "commit_url_prefix", return_value=None), \
+                patch.object(HISTORY, "run",
+                             return_value=f"{sha}\x1ffix mixed bug\x1f2026-09-11"), \
+                patch.object(HISTORY, "changed_source_files", return_value=changes), \
+                patch.object(HISTORY, "diff_body", side_effect=diff), \
+                patch.object(HISTORY, "cosmetic_commit", return_value=False), \
+                contextlib.redirect_stderr(io.StringIO()):
+            rows, incomplete = HISTORY.harvest(ROOT, "sample", 3, 60, None)
+        self.assertEqual(incomplete, 0)
+        self.assertEqual([row["language"] for row in rows], ["go", "python"])
+        self.assertEqual([row["files"] for row in rows], [["main.go"], ["helper.py"]])
+        self.assertEqual([row["short"] for row in rows],
+                         [f"{sha[:12]}-go", f"{sha[:12]}-python"])
 
     def test_truncated_rename_numstat_is_an_explicit_error(self):
         prefix = "1\t0\tvalid.go\0"
@@ -761,6 +804,195 @@ process.stdout.write(JSON.stringify(urls.map(raw => {
 
 
 class ReplyTests(unittest.TestCase):
+    def test_changed_excerpt_drops_context_and_classifies_edit_shape(self):
+        rewrite = ("diff --git a/x.go b/x.go\n@@ -1,3 +1,3 @@\n context\n"
+                   "-oldCall(value)\n+newCall(value)\n context two\n")
+        excerpt = PACKETS.changed_excerpt(rewrite)
+        self.assertIn("diff --git", excerpt)
+        self.assertIn("@@ ", excerpt)
+        self.assertIn("-oldCall", excerpt)
+        self.assertIn("context two", excerpt)
+        self.assertEqual(PACKETS.edit_kind(rewrite), "rewrite")
+        insertion = "--- a/x.go\n+++ b/x.go\n@@ -1 +1,2 @@\n+guard()\n"
+        self.assertEqual(PACKETS.edit_kind(insertion), "insert")
+        self.assertEqual(PACKETS.edit_kind("@@ -1 +0,0 @@\n-bad()\n"), "delete")
+        self.assertEqual(PACKETS.edit_kind("diff --git a/x.go b/x.go\n"), "empty")
+
+    def test_changed_excerpt_distinguishes_headers_from_operator_edits(self):
+        diff = ("diff --git a/x.c b/x.c\n--- a/x.c\n+++ b/x.c\n"
+                "@@ -1,2 +1,2 @@\n--- counter;\n+++ counter;\n")
+        excerpt = PACKETS.changed_excerpt(diff)
+        self.assertNotIn("--- a/x.c", excerpt)
+        self.assertNotIn("+++ b/x.c", excerpt)
+        self.assertIn("--- counter;", excerpt)
+        self.assertIn("+++ counter;", excerpt)
+        self.assertEqual(PACKETS.edit_kind(diff), "rewrite")
+
+    def test_mechanical_cluster_skips_labels_and_bounds_candidate_context(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                contextlib.redirect_stderr(io.StringIO()):
+            root = Path(directory)
+            args = SimpleNamespace(work=root, corpus=root / "corpus.jsonl", chunk=12,
+                                   min_size=1, mechanical=True)
+            corpus = [
+                {"short": "rewrite", "repo": "sample", "subject": "fix index",
+                 "files": ["x.go"], "diff": "@@ -1,2 +1,2 @@\n keep\n-x[i]\n+x[0]\n",
+                 "signals": ["bounds"], "density": 3, "url": ""},
+                {"short": "insert", "repo": "sample", "subject": "add guard",
+                 "files": ["x.go"], "diff": "@@ -1 +1,2 @@\n keep\n+if ok {}\n",
+                 "signals": [], "density": 2, "url": ""},
+            ]
+            PACKETS.write_jsonl(args.corpus, corpus)
+            prior = [{"id": f"go-index-{i}", "message": "index guard"} for i in range(20)]
+            with patch.object(PACKETS, "shipped_rules", return_value=prior), \
+                    patch.object(PACKETS, "rejected_entries", return_value=[]):
+                self.assertEqual(PACKETS.cluster_emit(args), 0)
+            packets = [json.loads(path.read_text())
+                       for path in sorted((root / "cluster/packets").glob("*.json"))]
+            routed = [candidate["short"] for packet in packets
+                      for candidate in packet["candidates"]]
+            self.assertEqual(sorted(routed), ["insert", "rewrite"])
+            self.assertEqual({packet["class"] for packet in packets},
+                             {"general-insert", "bounds-rewrite"})
+            self.assertFalse((root / "label").exists())
+            self.assertTrue((root / "sift.tsv").exists())
+            by_kind = {packet["class"]: packet for packet in packets}
+            rewrite = by_kind["bounds-rewrite"]
+            insert = by_kind["general-insert"]
+            self.assertEqual(rewrite["route"], "cheap-model")
+            self.assertEqual(insert["route"], "semantic-model")
+            self.assertEqual(rewrite["candidates"][0]["route_reason"], "simple-rewrite")
+            self.assertEqual(insert["candidates"][0]["route_reason"], "edit-insert")
+            self.assertIn(" keep", rewrite["candidates"][0]["diff"])
+            self.assertLessEqual(len(rewrite["shipped_rules"]), PACKETS.RELATED_LIMIT)
+            metrics = json.loads((root / "sift-metrics.json").read_text())
+            self.assertEqual(metrics["candidates"], 2)
+            self.assertEqual(metrics["cheap_model"], 1)
+            self.assertEqual(metrics["semantic_model"], 1)
+            self.assertEqual(metrics["semantic_diff_truncated"], 0)
+            self.assertEqual(metrics["route_reasons"],
+                             {"edit-insert": 1, "simple-rewrite": 1})
+            with contextlib.redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(PACKETS.queue(SimpleNamespace(
+                    work=root, route="all", limit=1, json=True)), 0)
+            queued = json.loads(output.getvalue())
+            self.assertEqual(len(queued["tasks"]), 1)
+            self.assertEqual(queued["remaining"], 1)
+            self.assertTrue(queued["tasks"][0]["packet"].endswith(".json"))
+
+    def test_semantic_packet_defers_fuller_diff_and_binds_evidence(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                contextlib.redirect_stderr(io.StringIO()):
+            work = Path(directory)
+            corpus_path = work / "corpus.jsonl"
+            diff = "@@ -1 +1 @@\n-old()\n+new()\n" + "far context\n" * 300
+            candidate = {"short": "abc", "repo": "sample", "subject": "fix logic",
+                         "language": "go", "files": ["x.go"], "diff": diff,
+                         "signals": [], "density": 1, "url": ""}
+            PACKETS.write_jsonl(corpus_path, [candidate])
+            args = SimpleNamespace(work=work, corpus=corpus_path, chunk=12,
+                                   min_size=1, mechanical=True)
+            with patch.object(PACKETS, "shipped_rules", return_value=[]), \
+                    patch.object(PACKETS, "rejected_entries", return_value=[]):
+                self.assertEqual(PACKETS.cluster_emit(args), 0)
+            packet_path = next((work / "cluster/packets").glob("*.json"))
+            packet = json.loads(packet_path.read_text())
+            self.assertEqual(packet_path.read_bytes(),
+                             PACKETS.packet_text(packet).encode("utf-8"))
+            rendered = packet["candidates"][0]
+            self.assertLess(rendered["diff"].count("far context"), 300)
+            evidence_path = work / rendered["evidence"]
+            self.assertIn("far context", json.loads(evidence_path.read_text())["diff"])
+            metrics = json.loads((work / "sift-metrics.json").read_text())
+            self.assertEqual(metrics["on_demand_evidence"], 1)
+            self.assertGreater(metrics["deferred_diff_bytes"], 0)
+            packet_bytes = sum(path.stat().st_size
+                               for path in (work / "cluster/packets").glob("*.json"))
+            prompt_bytes = (work / "cluster/PROMPT.md").stat().st_size
+            self.assertEqual(metrics["packet_bytes"], packet_bytes)
+            self.assertEqual(metrics["prompt_bytes"], prompt_bytes)
+            self.assertEqual(metrics["dispatch_input_bytes"], packet_bytes + prompt_bytes)
+            evidence_path.write_text("{}", encoding="utf-8")
+            self.assertIsNone(PACKETS.cluster_manifest(work / "cluster"))
+
+    def test_native_languages_and_repository_id_prefixes_are_consistent(self):
+        cases = {
+            "bash": ("x.sh", "sh-test-rule"), "c": ("x.c", "nginx-test-rule"),
+            "go": ("x.go", "go-test-rule"), "java": ("X.java", "java-test-rule"),
+            "javascript": ("x.js", "js-test-rule"), "lua": ("x.lua", "lua-test-rule"),
+            "php": ("x.php", "wp-test-rule"), "python": ("x.py", "py-test-rule"),
+        }
+        for language, (filename, rule_id) in cases.items():
+            with self.subTest(language=language):
+                candidate = {"files": [filename], "language": language}
+                self.assertEqual(PACKETS.language_of(candidate), language)
+                proposal = {"id": rule_id, "language": language, "claim": "claim",
+                            "classification": "syntactic", "positive": "bad()",
+                            "near_miss": "good()", "rationale": "reason",
+                            "supporting": ["abc"], "overlaps": []}
+                self.assertIsNone(PACKETS.validate_proposal(proposal, {"abc"}))
+        with self.assertRaisesRegex(SystemExit, "unsupported"):
+            PACKETS.language_of({"files": ["source.C"]})
+
+    def test_mechanical_route_escalates_ambiguous_context_and_keeps_fuller_diff(self):
+        base = {"short": "abc", "repo": "sample", "subject": "fix bounds",
+                "files": ["x.go"], "signals": ["bounds"], "density": 1, "url": ""}
+        simple_diff = "diff --git a/x.go b/x.go\n@@ -1 +1 @@\n-old()\n+new()\n"
+        cases = (
+            ("simple", {}, "cheap-model", "simple-rewrite"),
+            ("function-context", {"diff":
+             "diff --git a/x.go b/x.go\n@@ -1 +1 @@ func f()\n-old()\n+new()\n"},
+             "cheap-model", "simple-rewrite"),
+            ("general", {"signals": []}, "semantic-model", "unrecognized-signal"),
+            ("multi", {"files": ["x.go", "y.go"]}, "semantic-model", "multi-file"),
+            ("hunks", {"diff": simple_diff + "@@ -3 +3 @@\n-a()\n+b()\n@@ -5 +5 @@\n-c()\n+d()\n"},
+             "semantic-model", "complex-hunks"),
+            ("truncated", {"diff": "@@ -1 +1 @@\n-" + "a" * 1900 + "\n+ok\n"},
+             "semantic-model", "excerpt-truncated"),
+        )
+        for name, mutation, route, reason in cases:
+            with self.subTest(name=name):
+                candidate = {**base, "diff": simple_diff, **mutation}
+                kind = PACKETS.edit_kind(candidate["diff"])
+                self.assertEqual(PACKETS.model_route(
+                    candidate, kind, PACKETS.signal_family(candidate)), (route, reason))
+
+        candidate = {**base, "diff":
+                     "@@ -1 +1 @@\n-old()\n+new()\n context one\n context two\n"
+                     + "far context\n" * 300}
+        member = {"id": "abc", "edit": "rewrite", "route": "semantic-model",
+                  "route_reason": "unrecognized-signal"}
+        rendered = PACKETS.packet_candidate(member, {"abc": candidate}, True)
+        self.assertNotIn("far context", rendered["diff"])
+        self.assertEqual(rendered["evidence"], "cluster/evidence/abc.json")
+        evidence = PACKETS.packet_evidence(
+            {"go-general": {"candidates": [rendered]}}, {"abc": candidate})
+        self.assertIn("far context", evidence["abc"]["diff"])
+
+    def test_mechanical_cluster_rejects_zero_chunk_and_malformed_corpus(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                contextlib.redirect_stderr(io.StringIO()):
+            root = Path(directory)
+            args = SimpleNamespace(work=root, corpus=root / "corpus.jsonl", chunk=0,
+                                   min_size=1, mechanical=True)
+            valid = {"short": "abc", "subject": "fix", "files": ["x.go"],
+                     "diff": "+fix()", "signals": [], "density": 1, "url": ""}
+            PACKETS.write_jsonl(args.corpus, [valid])
+            self.assertEqual(PACKETS.cluster_emit(args), 1)
+            self.assertFalse((root / "cluster").exists())
+            args.chunk = 12
+            args.min_size = 2
+            self.assertEqual(PACKETS.cluster_emit(args), 1)
+            self.assertFalse((root / "cluster").exists())
+            args.min_size = 1
+            for mutation in ({**valid, "files": ["x.rs"]},
+                             {**valid, "files": ["x.go", "x.c"]},
+                             {**valid, "signals": "bounds"},
+                             {**valid, "density": "high"}):
+                with self.subTest(mutation=mutation), self.assertRaises(SystemExit):
+                    PACKETS.write_jsonl(args.corpus, [mutation])
+                    PACKETS.cluster_emit(args)
+
     def test_proposals_require_at_least_one_supporting_commit(self):
         proposal = self.proposal()
         proposal["supporting"] = []
@@ -768,7 +1000,9 @@ class ReplyTests(unittest.TestCase):
         proposal["supporting"] = ["abc"]
         self.assertIsNone(PACKETS.validate_proposal(proposal, {"abc"}))
         self.assertEqual(PACKETS.validate_cluster(
-            {"cluster": "go-bounds", "proposals": []}, "go-bounds", {"abc"}, "go"), (None, []))
+            {"cluster": "go-bounds", "proposals": [],
+             "dispositions": [["abc", "no-generalization"]]},
+            "go-bounds", {"abc"}, "go"), (None, []))
 
     def test_cluster_emit_requires_current_validated_label_replies(self):
         for mutation in ("class", "summary", "language", "deleted", "malformed", "labels"):
@@ -828,6 +1062,50 @@ class ReplyTests(unittest.TestCase):
                 self.assertTrue(PACKETS.packet_state(stage, packets, prompt))
                 self.assertTrue(PACKETS.emit_packets(stage, packets, prompt))
 
+    def test_emission_rejects_label_and_evidence_path_keys(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                contextlib.redirect_stderr(io.StringIO()) as errors:
+            root = Path(directory)
+            corpus_path = root / "corpus.jsonl"
+            candidate = {"short": "../../target", "repo": "sample",
+                         "subject": "fix", "files": ["x.c"], "language": "c",
+                         "diff": "+guard();", "signals": [], "density": 1,
+                         "url": ""}
+            PACKETS.write_jsonl(corpus_path, [candidate])
+            self.assertEqual(PACKETS.label_emit(SimpleNamespace(
+                work=root, corpus=corpus_path, chunk=12)), 1)
+            self.assertFalse((root / "target.json").exists())
+
+            packets = {"safe": {"candidates": [{
+                "short": candidate["short"], "evidence": "cluster/evidence/x.json"}]}}
+            evidence = PACKETS.packet_evidence(
+                packets, {candidate["short"]: candidate})
+            self.assertFalse(PACKETS.emit_packets(
+                root / "cluster", packets, PACKETS.CLUSTER_PROMPT, evidence=evidence))
+            self.assertFalse((root / "target.json").exists())
+            self.assertGreaterEqual(errors.getvalue().count("basename identifier"), 2)
+
+            boundary = "a" * 250
+            boundary_stage = root / "boundary"
+            self.assertTrue(PACKETS.emit_packets(
+                boundary_stage, {boundary: {"id": boundary}}, PACKETS.CLUSTER_PROMPT))
+            self.assertTrue((boundary_stage / "packets" / f"{boundary}.json").is_file())
+            for key in ("a" * 251, "NUL", "com1.log"):
+                stage = root / f"invalid-{len(key)}-{key[:4]}"
+                self.assertFalse(PACKETS.emit_packets(
+                    stage, {key: {"id": key}}, PACKETS.CLUSTER_PROMPT))
+                self.assertFalse((stage / "PROMPT.md").exists())
+
+            collision = {"abc": {}, "ABC": {}}
+            cases = (("packets", collision, {}),
+                     ("evidence", {"safe": {}}, collision))
+            for namespace, packets, evidence in cases:
+                with self.subTest(namespace=namespace):
+                    stage = root / f"collision-{namespace}"
+                    self.assertFalse(PACKETS.emit_packets(
+                        stage, packets, PACKETS.CLUSTER_PROMPT, evidence=evidence))
+                    self.assertFalse((stage / "PROMPT.md").exists())
+
     def test_prompt_changes_refuse_stale_replies_without_overwriting_evidence(self):
         for stage_name, constant in (("label", "LABEL_PROMPT"), ("cluster", "CLUSTER_PROMPT")):
             with self.subTest(stage=stage_name), tempfile.TemporaryDirectory() as directory, \
@@ -843,7 +1121,8 @@ class ReplyTests(unittest.TestCase):
                 if stage_name == "cluster":
                     self.assertEqual(PACKETS.cluster_emit(args), 0)
                     (root / "cluster/replies/go-bounds.json").write_text(json.dumps(
-                        {"cluster": "go-bounds", "proposals": []}))
+                        {"cluster": "go-bounds", "proposals": [],
+                         "dispositions": [["abc", "no-generalization"]]}))
                 emit = getattr(PACKETS, f"{stage_name}_emit")
                 ingest = getattr(PACKETS, f"{stage_name}_ingest")
                 self.assertEqual(ingest(args), 0)
@@ -883,11 +1162,13 @@ class ReplyTests(unittest.TestCase):
             self.assertEqual(PACKETS.cluster_emit(args), 0)
             reply = root / "cluster/replies/go-bounds.json"
             reply.write_text(json.dumps({"cluster": "go-bounds", "proposals": [
-                {**self.proposal(), "id": "c-index-check", "language": "c"}]}))
+                {**self.proposal(), "id": "c-index-check", "language": "c"}],
+                "dispositions": [["abc", ["c-index-check"]]]}))
             self.assertEqual(PACKETS.cluster_ingest(args), 1)
             self.assertEqual(PACKETS.read_jsonl(root / "cluster/proposals.jsonl"), [])
             self.assertIn("language", errors.getvalue())
-            reply.write_text(json.dumps({"cluster": "go-bounds", "proposals": [self.proposal()]}))
+            reply.write_text(json.dumps({"cluster": "go-bounds", "proposals": [self.proposal()],
+                                         "dispositions": [["abc", ["go-index-check"]]]}))
             self.assertEqual(PACKETS.cluster_ingest(args), 0)
             self.assertEqual(PACKETS.read_jsonl(root / "cluster/proposals.jsonl")[0]["language"], "go")
 
@@ -918,9 +1199,19 @@ class ReplyTests(unittest.TestCase):
             for name, packet in packets.items():
                 proposal = {**self.proposal(), "supporting": [packet["candidates"][0]["short"]]}
                 (stage / "replies" / f"{name}.json").write_text(json.dumps(
-                    {"cluster": name, "proposals": [proposal]}))
+                    {"cluster": name, "proposals": [proposal],
+                     "dispositions": [[packet["candidates"][0]["short"],
+                                       [proposal["id"]]]]}))
             self.assertEqual(PACKETS.cluster_ingest(SimpleNamespace(work=root)), 1)
             self.assertIn("duplicate proposal id", errors.getvalue())
+            queue_args = SimpleNamespace(work=root, route="all", limit=10, json=True)
+            with contextlib.redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(PACKETS.queue(queue_args), 0)
+            queued = json.loads(output.getvalue())
+            self.assertEqual({task["cluster"] for task in queued["tasks"]}, set(packets))
+            self.assertTrue(all(task["state"] == "retry" for task in queued["tasks"]))
+            self.assertTrue(all("duplicate proposal id" in task["error"]
+                                for task in queued["tasks"]))
             proposals_path = stage / "proposals.jsonl"
             self.assertEqual(PACKETS.read_jsonl(proposals_path), [])
             with self.assertRaisesRegex(SystemExit, "no proposal"):
@@ -928,10 +1219,13 @@ class ReplyTests(unittest.TestCase):
             second = stage / "replies/go-bounds-2.json"
             reply = json.loads(second.read_text())
             reply["proposals"][0]["id"] = "go-second-check"
+            reply["dispositions"][0][1] = ["go-second-check"]
             second.write_text(json.dumps(reply))
             self.assertEqual(PACKETS.cluster_ingest(SimpleNamespace(work=root)), 0)
             self.assertEqual({tuple(p["supporting"]) for p in PACKETS.read_jsonl(proposals_path)},
                              {("abc",), ("def",)})
+            dispositions = PACKETS.read_jsonl(stage / "dispositions.jsonl")
+            self.assertEqual({row["candidate"] for row in dispositions}, {"abc", "def"})
 
     def test_cluster_packet_snapshot_schema_is_validated(self):
         malformed = ({}, {"candidates": {}, "language": "go"},
@@ -958,7 +1252,8 @@ class ReplyTests(unittest.TestCase):
             self.assertTrue(PACKETS.emit_packets(stage, snapshot, PACKETS.CLUSTER_PROMPT))
             (replies / "go-bounds.json").write_text(json.dumps(
                 {"cluster": "go-bounds", "proposals": [
-                    {**self.proposal(), "supporting": ["abc"]}]}))
+                    {**self.proposal(), "supporting": ["abc"]}],
+                 "dispositions": [["abc", ["go-index-check"]]]}))
             packet_state = PACKETS.packet_state
 
             def validate_then_mutate(*args, **kwargs):
@@ -971,7 +1266,8 @@ class ReplyTests(unittest.TestCase):
                 (replies / "go-extra.json").write_text(json.dumps(
                     {"cluster": "go-extra", "proposals": [
                         {**self.proposal(), "id": "go-extra-check",
-                         "supporting": ["xyz"]}]}))
+                         "supporting": ["xyz"]}],
+                     "dispositions": [["xyz", ["go-extra-check"]]]}))
                 return valid
 
             with patch.object(PACKETS, "packet_state", side_effect=validate_then_mutate):
@@ -1045,8 +1341,11 @@ class ReplyTests(unittest.TestCase):
             self.assertEqual(PACKETS.cluster_emit(args), 1)
             self.assertEqual({p.name: p.read_bytes() for p in packets.glob("*.json")}, before)
             for name in before:
+                packet = json.loads((packets / name).read_text())
+                short = packet["candidates"][0]["short"]
                 (root / "cluster/replies" / name).write_text(json.dumps(
-                    {"cluster": Path(name).stem, "proposals": []}))
+                    {"cluster": Path(name).stem, "proposals": [],
+                     "dispositions": [[short, "no-generalization"]]}))
             self.assertEqual(PACKETS.cluster_ingest(args), 0)
             next(packets.glob("*.json")).unlink()
             self.assertEqual(PACKETS.cluster_ingest(args), 1)
@@ -1120,18 +1419,46 @@ class ReplyTests(unittest.TestCase):
         self.assertIsNone(PACKETS.validate_label({**self.label(), "summary": "x" * 160}, "abc"))
 
     def test_cluster_rejects_wrong_types_and_foreign_support(self):
-        valid = {"cluster": "go-bounds", "proposals": [self.proposal()]}
+        valid = {"cluster": "go-bounds", "proposals": [self.proposal()],
+                 "dispositions": [["abc", ["go-index-check"]]]}
         self.assertEqual(PACKETS.validate_cluster(valid, "go-bounds", {"abc"}, "go"),
                          (None, valid["proposals"]))
         for field, value in (("id", 12), ("language", "python"), ("positive", None),
                              ("near_miss", "x[i]"), ("claim", ""), ("supporting", [[]]),
                              ("supporting", ["foreign"]), ("overlaps", "rule"),
                              ("rationale", "x" * 301)):
-            reply = {"cluster": "go-bounds", "proposals": [{**self.proposal(), field: value}]}
+            reply = {"cluster": "go-bounds", "proposals": [{**self.proposal(), field: value}],
+                     "dispositions": [["abc", ["go-index-check"]]]}
             with self.subTest(field=field, value=value):
                 error, props = PACKETS.validate_cluster(reply, "go-bounds", {"abc"}, "go")
                 self.assertIsNotNone(error)
                 self.assertEqual(props, [])
+
+    def test_cluster_requires_complete_consistent_candidate_dispositions(self):
+        proposal = self.proposal()
+        valid = {"cluster": "go-bounds", "proposals": [proposal],
+                 "dispositions": [["abc", [proposal["id"]]], ["def", "noise"]]}
+        self.assertEqual(PACKETS.validate_cluster(
+            valid, "go-bounds", {"abc", "def"}, "go"), (None, [proposal]))
+        mutations = (
+            ("missing", {**valid, "dispositions": [["abc", [proposal["id"]]]]}),
+            ("repeated", {**valid, "dispositions": [
+                ["abc", [proposal["id"]]], ["abc", "noise"]]}),
+            ("foreign", {**valid, "dispositions": [
+                ["abc", [proposal["id"]]], ["xyz", "noise"]]}),
+            ("bad-reason", {**valid, "dispositions": [
+                ["abc", [proposal["id"]]], ["def", "semantic"]]}),
+            ("unknown-proposal", {**valid, "dispositions": [
+                ["abc", ["go-other-rule"]], ["def", "noise"]]}),
+            ("support-mismatch", {**valid, "dispositions": [
+                ["abc", "unclear"], ["def", "noise"]]}),
+        )
+        for name, reply in mutations:
+            with self.subTest(name=name):
+                error, proposals = PACKETS.validate_cluster(
+                    reply, "go-bounds", {"abc", "def"}, "go")
+                self.assertIsNotNone(error)
+                self.assertEqual(proposals, [])
 
     def test_label_ingest_missing_malformed_and_recovery(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -1609,9 +1936,41 @@ class ProbeTests(unittest.TestCase):
         with patch.object(PROBE, "AST_GREP", ROOT / "missing-ast-grep"), \
                 patch("sys.argv", ["probe", "go-tls-min-version", "--json"]), \
                 contextlib.redirect_stdout(io.StringIO()) as output:
-            self.assertEqual(PROBE.main(), 1)
+            self.assertEqual(PROBE.main(), 2)
         self.assertFalse(json.loads(output.getvalue())["ok"])
         self.assertIn("npm ci", output.getvalue())
+
+    def test_brief_report_omits_successful_checks(self):
+        report = {"rule": "rules/go/security/go-test.yml", "checks": [
+            {"name": "layout", "ok": True, "detail": "expected layout"},
+            {"name": "fixture-counts", "ok": False, "detail": "invalid[0]=0"},
+        ]}
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(PROBE.finish(report, False, False, brief=True), 1)
+        self.assertEqual(output.getvalue(), (
+            "rules/go/security/go-test.yml: FAIL\n"
+            "  [FAIL] fixture-counts: invalid[0]=0\n"
+        ))
+
+    def test_brief_report_keeps_independent_failed_gates(self):
+        checks = [
+            {"name": "fixture-counts", "ok": False, "detail": "invalid[0]=0"},
+            {"name": "fixture-run", "ok": False, "detail": "test failed"},
+            {"name": "arm-kills", "ok": False, "detail": "invalid mutant"},
+            {"name": "discovery", "ok": False, "detail": "0 findings"},
+            {"name": "note-literal", "ok": False, "detail": "missing note"},
+        ]
+        self.assertEqual([item["name"] for item in PROBE.brief_failures(checks)],
+                         ["fixture-counts", "fixture-run", "arm-kills", "discovery",
+                          "note-literal"])
+
+    def test_brief_pass_is_one_line(self):
+        report = {"rule": "rules/go/security/go-test.yml", "checks": [
+            {"name": "layout", "ok": True, "detail": "expected layout"},
+        ]}
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(PROBE.finish(report, True, False, brief=True), 0)
+        self.assertEqual(output.getvalue(), "rules/go/security/go-test.yml: PASS\n")
 
     def test_empty_failed_fixture_run_has_json_failure(self):
         with patch.object(PROBE.Isolated, "test", return_value=(-9, "")), \
@@ -1656,12 +2015,104 @@ class ProbeTests(unittest.TestCase):
         for name in ("fixture-counts", "fixture-run", "arm-kills", "discovery"):
             self.assertTrue(checks[name], name)
 
+    def test_real_rule_accepts_an_immutable_input_root(self):
+        rule_path, fixture_path = PROBE.find_rule("go-tls-min-version")
+        snapshot = ROOT / "tests/__snapshots__/go-tls-min-version-snapshot.yml"
+        private_id = "go-immutable-input-root"
+        with tempfile.TemporaryDirectory() as directory:
+            input_root = Path(directory)
+            renamed = {
+                rule_path: Path("rules/go/security") / f"{private_id}.yml",
+                fixture_path: Path("tests/go/security") / f"{private_id}.yml",
+                snapshot: Path("tests/__snapshots__") / f"{private_id}-snapshot.yml",
+            }
+            for source, relative in renamed.items():
+                destination = input_root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_text(source.read_text().replace("go-tls-min-version", private_id))
+            result = subprocess.run(
+                [sys.executable, str(ROOT / "tools/rule-probe.py"),
+                 private_id, "--json", "--input-root", str(input_root)],
+                capture_output=True, text=True, check=False, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertTrue(json.loads(result.stdout)["ok"])
+
+    def test_real_rule_brief_pass_is_one_line(self):
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "tools/rule-probe.py"),
+             "go-tls-min-version", "--brief"],
+            capture_output=True, text=True, check=False, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertEqual(result.stdout,
+                         "rules/go/security/go-tls-min-version.yml: PASS\n")
+
     def test_fixture_counts_reject_missing_positive_and_matching_negative(self):
-        with patch.object(PROBE, "scan_stdin", side_effect=[(0, ""), (1, "")]):
+        with patch.object(PROBE, "scan_sources", return_value=[(0, ""), (1, "")]):
             passed, detail, multiple = PROBE.fixture_counts({}, ["safe"], ["bad"])
         self.assertFalse(passed)
         self.assertEqual(detail, "invalid[0]=0; valid[0]=1")
         self.assertEqual(multiple, [])
+
+    def test_fixture_counts_use_one_scan_and_preserve_per_source_counts(self):
+        rule = {"id": "probe", "language": "go", "rule": {"pattern": "bad($X)"}}
+
+        def run(command, **_kwargs):
+            self.assertEqual(_kwargs["timeout"], 19)
+            directory = Path(command[-1])
+            self.assertNotEqual(directory, ROOT)
+            self.assertNotIn(ROOT, directory.parents)
+            findings = [
+                {"ruleId": "probe", "file": str(directory / "invalid-0.go")},
+                {"ruleId": "probe", "file": str(directory / "invalid-0.go")},
+            ]
+            return SimpleNamespace(returncode=1, stdout=json.dumps(findings), stderr="")
+
+        with patch.object(PROBE.subprocess, "run", side_effect=run) as runner:
+            passed, detail, multiple = PROBE.fixture_counts(rule, ["good(x)"], ["bad(x)"])
+        self.assertTrue(passed)
+        self.assertEqual(runner.call_count, 1)
+        self.assertEqual(detail, "invalid[0]=2; valid[0]=0")
+        self.assertEqual(multiple, ["invalid[0]=2"])
+
+    def test_isolated_probe_uses_system_temporary_directory(self):
+        rule = ROOT / "rules/go/security/go-tls-min-version.yml"
+        fixture = ROOT / "tests/go/security/go-tls-min-version.yml"
+        isolated = PROBE.Isolated(rule, fixture)
+        try:
+            directory = Path(isolated.tmp.name)
+            self.assertNotEqual(directory, ROOT)
+            self.assertNotIn(ROOT, directory.parents)
+        finally:
+            isolated.close()
+
+    def test_discovery_uses_system_temporary_directory(self):
+        rule = ROOT / "rules/go/security/go-tls-min-version.yml"
+
+        def run(command, **_kwargs):
+            target = Path(command[-1])
+            self.assertNotEqual(target.parent, ROOT)
+            self.assertNotIn(ROOT, target.parents)
+            return SimpleNamespace(returncode=1, stdout=json.dumps([
+                {"ruleId": "go-tls-min-version", "file": str(target)}]), stderr="")
+
+        with patch.object(PROBE.subprocess, "run", side_effect=run):
+            passed, _detail = PROBE.discover(rule, "go", "bad(x)")
+        self.assertTrue(passed)
+
+    def test_batched_scan_rejects_bad_process_or_attribution(self):
+        rule = {"id": "probe", "language": "go", "rule": {"pattern": "bad($X)"}}
+        cases = [
+            SimpleNamespace(returncode=2, stdout="", stderr="engine failed"),
+            SimpleNamespace(returncode=0, stdout="{}", stderr=""),
+            SimpleNamespace(returncode=1,
+                            stdout='[{"ruleId":"other","file":"foreign.go"}]', stderr=""),
+        ]
+        for result in cases:
+            with self.subTest(result=result), patch.object(
+                    PROBE.subprocess, "run", return_value=result):
+                counts = PROBE.scan_sources(rule, [("invalid", 0, "bad(x)")])
+            self.assertIsNone(counts[0][0])
+            self.assertTrue(counts[0][1])
 
     def test_scan_rejects_tool_failure_and_malformed_output(self):
         rule = {"id": "probe"}
@@ -1946,6 +2397,22 @@ class ScaffoldTests(unittest.TestCase):
             self.assertEqual(guard.read_text(encoding="utf-8"), original)
             self.assertFalse((Path(directory) / "rules").exists())
 
+    def test_assess_seed_is_bounded_read_only_and_lock_free(self):
+        argv = ["rule-scaffold", "--id", "go-test-rule", "--language", "go",
+                "--category", "correctness", "--positive", "bad(x)",
+                "--near-miss", "good(x)", "--claim", "Check call", "--seed",
+                "--contrast", "--assess-seed"]
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(SCAFFOLD, "ROOT", Path(directory)), patch("sys.argv", argv), \
+                patch.object(SCAFFOLD, "seed_matcher", return_value={"pattern": "bad($X)"}), \
+                patch.object(SCAFFOLD, "scaffold_lock", side_effect=AssertionError("lock used")), \
+                patch.object(SCAFFOLD, "pattern_roots", return_value="call_expression"), \
+                contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(SCAFFOLD.main(), 0)
+            self.assertEqual(len(output.getvalue().splitlines()), 2)
+            self.assertIn("SEED PASS", output.getvalue())
+            self.assertFalse((Path(directory) / "rules").exists())
+
     def test_count_update_preserves_utf8_source_under_ascii_defaults(self):
         original = ("# café 🧪\r\nself.assertEqual(len(rules), 3)\n"
                     "self.assertEqual(checked, 3)\r\n").encode()
@@ -2118,7 +2585,10 @@ class ScaffoldTests(unittest.TestCase):
     def test_language_prefix_boundary(self):
         for language, rule_id, valid in (("go", "golang-test-rule", False),
                 ("c", "cast-test-rule", False), ("java", "javascript-test-rule", False),
-                ("go", "go-check", True), ("c", "c-check", True), ("c", "nginx-check", True)):
+                ("go", "go-check", True), ("c", "c-check", True),
+                ("c", "nginx-check", True), ("c", "zstd-check", True),
+                ("javascript", "js-check", True), ("python", "py-check", True),
+                ("php", "wp-check", True), ("bash", "sh-check", True)):
             args = SimpleNamespace(id=rule_id, language=language, proposal=None,
                                    positive="bad(x)", near_miss="good(x)", claim="Check",
                                    category="security", matcher=None, severity="warning")
@@ -2194,8 +2664,172 @@ class ScaffoldTests(unittest.TestCase):
             rule = yaml.safe_load((root / "rules/go/security/go-test-rule.yml").read_text())
             fixture = yaml.safe_load((root / "tests/go/security/go-test-rule.yml").read_text())
             self.assertEqual(rule["rule"], {"pattern": "bad($X)"})
-            self.assertEqual(fixture, {"id": "go-test-rule", "valid": ["good(x)"], "invalid": ["bad(x)"]})
+            self.assertEqual(fixture, {"id": "go-test-rule",
+                                      "valid": ["good(x)", "// bad(x)",
+                                                'var astgrepFixture = "bad(x)"'],
+                                      "invalid": ["bad(x)"]})
             self.assertEqual(guard.read_text().count(", 4)"), 2)
+
+    def test_scaffold_generates_required_lexical_controls_for_every_language(self):
+        self.assertEqual(SCAFFOLD.lexical_controls("go", 'bad("x")', "good()"),
+                         ["good()", '// bad("x")', 'var astgrepFixture = "bad(\\"x\\")"'])
+        self.assertEqual(SCAFFOLD.lexical_controls("c", "bad();\nreturn 0;", "good();"),
+                         ["good();", "// bad();\n// return 0;",
+                          'const char *astgrep_fixture = "bad();\\nreturn 0;";'])
+        cases = {
+            "python": ("# bad()", 'astgrep_fixture = "bad()"'),
+            "javascript": ("// bad()", 'const astgrepFixture = "bad()";'),
+            "java": ("// bad()", 'class AstgrepFixture { String value = "bad()"; }'),
+            "lua": ("-- bad()", 'local astgrep_fixture = "bad()"'),
+            "bash": ("# bad()", "astgrep_fixture='bad()'"),
+            "php": ("<?php\n// bad()", "<?php\n$astgrep_fixture = 'bad()';"),
+        }
+        for language, expected in cases.items():
+            with self.subTest(language=language):
+                self.assertEqual(SCAFFOLD.lexical_controls(language, "bad()", "good()"),
+                                 ["good()", *expected])
+
+    def test_php_comment_control_neutralizes_close_tags(self):
+        positive = "<?php bad(); ?>\n<?php bad(); ?>"
+        controls = SCAFFOLD.lexical_controls("php", positive, "<?php good(); ?>")
+        self.assertEqual(controls[1],
+                         "<?php\n// <?php bad(); ? >\n// <?php bad(); ? >")
+        self.assertNotIn("?>", controls[1])
+
+    def test_contrast_is_bounded_to_structural_token_delta(self):
+        self.assertEqual(SCAFFOLD.distinct_tokens(
+            "if i+1 > len(data) { return }", "if i+1 >= len(data) { return }"), [">"])
+        self.assertEqual(SCAFFOLD.distinct_tokens(
+            "call(a, a, 4, 5, 6, 7, 8, 9, 10)", "call(a)"),
+            [",", "a", "4", "5", "6", "7", "8", "9"])
+        rule = "language: go\n"
+        fixture = "invalid: ['if x && y {}']\nvalid: ['if x || y {}']\n"
+        with patch.object(SCAFFOLD, "pattern_roots", side_effect=("if_statement", "if_statement")):
+            line = SCAFFOLD.contrast_line(rule, fixture)
+        self.assertEqual(line, "CONTRAST roots positive=if_statement near=if_statement; "
+                               'positive-only=["&&"]; near-only=["||"]')
+
+    def test_seed_generalizes_local_identifiers_but_keeps_claim_vocabulary(self):
+        pattern, bindings = SCAFFOLD.generalized_pattern(
+            "c-read-eof", "while (remaining) { n = read(fd, p, remaining); break; }")
+        self.assertEqual(bindings,
+                         {"remaining": "$V0", "n": "$V1", "fd": "$V2", "p": "$V3"})
+        self.assertEqual(pattern,
+                         "while ($V0) { $V1 = read($V2, $V3, $V0); break; }")
+
+    def test_seed_matcher_requires_generalization_and_oracle_pass(self):
+        with patch.object(SCAFFOLD, "seed_oracle", return_value=True) as oracle:
+            matcher = SCAFFOLD.seed_matcher(
+                "go-range-and", "go", "if value < low && value > high {}", ["safe()"])
+        self.assertEqual(matcher, {"pattern": "if $V0 < $V1 && $V0 > $V2 {}"})
+        oracle.assert_called_once()
+        with patch.object(SCAFFOLD, "seed_oracle", return_value=False):
+            self.assertIsNone(SCAFFOLD.seed_matcher(
+                "go-range-and", "go", "if value < low && value > high {}", ["safe()"]))
+        with patch.object(SCAFFOLD, "seed_oracle") as oracle:
+            self.assertIsNone(SCAFFOLD.seed_matcher(
+                "go-panic", "go", 'panic("bad")', ["return nil"]))
+        oracle.assert_not_called()
+
+    def test_seed_oracle_batches_fixtures_and_rejects_bad_engine_output(self):
+        rule = {"id": "go-test-rule", "language": "go", "severity": "warning",
+                "message": "seed", "note": "provisional", "rule": {"pattern": "bad($V0)"}}
+
+        def passing(command, **_kwargs):
+            directory = Path(command[-1])
+            self.assertNotEqual(directory, ROOT)
+            self.assertNotIn(ROOT, directory.parents)
+            finding = {"ruleId": "go-test-rule", "file": str(directory / "invalid-0.go")}
+            return SimpleNamespace(returncode=1, stdout=json.dumps([finding]), stderr="")
+
+        with patch.object(SCAFFOLD.subprocess, "run", side_effect=passing) as runner:
+            self.assertTrue(SCAFFOLD.seed_oracle(rule, "bad(x)", ["good(x)", "// bad(x)"]))
+        self.assertEqual(runner.call_count, 1)
+        for result in (SimpleNamespace(returncode=2, stdout="", stderr="failed"),
+                       SimpleNamespace(returncode=0, stdout="{}", stderr=""),
+                       SimpleNamespace(returncode=1,
+                                       stdout='[{"ruleId":"other","file":"x"}]', stderr="")):
+            with self.subTest(result=result), \
+                    patch.object(SCAFFOLD.subprocess, "run", return_value=result):
+                self.assertFalse(SCAFFOLD.seed_oracle(rule, "bad(x)", ["good(x)"]))
+        with patch.object(Path, "is_file", return_value=True), \
+                patch.object(SCAFFOLD.subprocess, "run",
+                             side_effect=subprocess.TimeoutExpired(["ast-grep"], 15)):
+            self.assertFalse(SCAFFOLD.seed_oracle(rule, "bad(x)", ["good(x)"]))
+
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(SCAFFOLD, "ROOT", Path(directory)), \
+                self.assertRaisesRegex(SystemExit, "run npm ci"):
+            SCAFFOLD.seed_oracle(rule, "bad(x)", ["good(x)"])
+        self.assertEqual(set(SCAFFOLD.EXTENSIONS), set(SCAFFOLD.LANGUAGES))
+        self.assertEqual(SCAFFOLD.EXTENSIONS, PROBE.EXTENSIONS)
+        self.assertEqual(SCAFFOLD.ID_PREFIXES, PACKETS.ID_PREFIXES)
+        self.assertEqual(HISTORY.SOURCE_LANGUAGES, PACKETS.LANGUAGE_SUFFIXES)
+        unsupported = {**rule, "language": "powershell"}
+        with self.assertRaisesRegex(SystemExit, "no fixture oracle"):
+            SCAFFOLD.seed_oracle(unsupported, "bad(x)", ["good(x)"])
+
+    def test_rendered_seed_is_provisional_and_falls_back_to_todo(self):
+        args = SimpleNamespace(id="go-test-rule", matcher=None, seed=True, severity="warning")
+        with patch.object(SCAFFOLD, "seed_matcher", return_value={"pattern": "bad($V0)"}):
+            rule_text, _fixture = SCAFFOLD.render_scaffold(
+                args, {}, "go", "bad(x)", "good(x)", "Check call")
+        self.assertEqual(yaml.safe_load(rule_text)["rule"], {"pattern": "bad($V0)"})
+        self.assertIn("review generality", SCAFFOLD.seed_line(rule_text))
+        with patch.object(SCAFFOLD, "seed_matcher", return_value=None):
+            rule_text, _fixture = SCAFFOLD.render_scaffold(
+                args, {}, "go", "bad(x)", "good(x)", "Check call")
+        self.assertIsInstance(yaml.safe_load(rule_text)["rule"], str)
+        self.assertIn("SEED NONE", SCAFFOLD.seed_line(rule_text))
+
+    def test_seed_cli_dry_run_is_bounded_and_does_not_write(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(
+                SCAFFOLD, "ROOT", Path(directory)):
+            root = Path(directory)
+            guard = root / "tests/test_diagnostics.py"
+            guard.parent.mkdir()
+            guard.write_text("self.assertEqual(len(rules), 3)\nself.assertEqual(checked, 3)\n")
+            argv = ["rule-scaffold", "--id", "go-test-rule", "--language", "go",
+                    "--category", "correctness", "--positive", "bad(x)",
+                    "--near-miss", "good(x)", "--claim", "Check call", "--seed",
+                    "--contrast", "--dry-run"]
+            with patch("sys.argv", argv), patch.object(
+                    SCAFFOLD, "seed_matcher", return_value={"pattern": "bad($V0)"}), \
+                    patch.object(SCAFFOLD, "pattern_roots", return_value="call_expression"), \
+                    contextlib.redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(SCAFFOLD.main(), 0)
+            self.assertIn("SEED PASS fixture oracle", output.getvalue())
+            self.assertIn("CONTRAST roots positive=call_expression", output.getvalue())
+            self.assertFalse((root / "rules").exists())
+            self.assertEqual(guard.read_text().count(", 3)"), 2)
+
+    def test_seed_and_explicit_matcher_are_refused(self):
+        args = SimpleNamespace(id="go-test-rule", matcher=Path("matcher.yml"), seed=True,
+                               severity="warning")
+        with self.assertRaisesRegex(SystemExit, "mutually exclusive"):
+            SCAFFOLD.render_scaffold(args, {}, "go", "bad(x)", "good(x)", "Check")
+
+    def test_pattern_roots_handles_missing_engine_and_parser_failure(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(SCAFFOLD, "ROOT", Path(directory)):
+            self.assertEqual(SCAFFOLD.pattern_roots("go", "bad()"), "engine-missing")
+        with patch.object(Path, "is_file", return_value=True), \
+                patch.object(SCAFFOLD.subprocess, "run",
+                             side_effect=subprocess.TimeoutExpired(["ast-grep"], 15)):
+            self.assertEqual(SCAFFOLD.pattern_roots("go", "bad()"), "unparsed")
+
+    def test_lexical_controls_reject_unmapped_language_cleanly(self):
+        with self.assertRaisesRegex(SystemExit, "no string-literal control"):
+            SCAFFOLD.lexical_controls("rust", "bad()", "good()")
+
+    def test_pattern_roots_discards_logs_and_bounds_top_level_kinds(self):
+        parsed = SimpleNamespace(stderr="warning\nDebug AST:\nsource_file (0,0)-(0,1)\n"
+                                 "  first (0,0)-(0,1)\n  second (0,0)-(0,1)\n"
+                                 "  third (0,0)-(0,1)\n  fourth (0,0)-(0,1)\n"
+                                 "  fifth (0,0)-(0,1)\nSTDIN:x\n", stdout="")
+        with patch.object(SCAFFOLD.subprocess, "run", return_value=parsed):
+            self.assertEqual(SCAFFOLD.pattern_roots("go", "x"),
+                             "first,second,third,fourth")
 
     def test_directory_creation_failure_rolls_back_owned_directories(self):
         with tempfile.TemporaryDirectory() as directory, \

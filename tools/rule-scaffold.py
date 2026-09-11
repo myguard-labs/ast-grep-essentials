@@ -5,13 +5,15 @@ Why: every new rule needs the same four mechanical edits -- rule YAML in
 rules/<lang>/<category>/<id>.yml, a fixture with the same id under tests/, the
 explicit rule-count guard in tests/test_diagnostics.py, and a layout that
 tests/test_inventory.py accepts. A model retyping those is waste and drifts;
-this script does them once so the model only writes the matcher and the
-controls. Pipeline: .claude/skills/astgrep-rules/references/harvest-pipeline.md
+this script does them once so the model writes only the matcher and meaningful
+semantic boundaries. Pipeline: docs/authoring.md#harvest-and-draft-pipeline
 
 Usage:
   rule-scaffold.py --proposal WORK/cluster/proposals.jsonl --id go-x-y \\
                    --category security --claim 'Check bounds before indexing' \\
-                   [--matcher matcher.yml] [--dry-run]
+                   [--matcher matcher.yml|--seed] [--contrast] [--dry-run]
+  rule-scaffold.py --proposal WORK/cluster/proposals.jsonl --id go-x-y \\
+                   --category security --seed --contrast --assess-seed
   rule-scaffold.py --id c-x-y --language c --category correctness \\
                    --positive 'int f(){...}' --near-miss 'int f(){...}' \\
                    --claim 'Check the return value before use' [--dry-run]
@@ -20,11 +22,13 @@ Inputs:  a proposal (by --id from a proposals.jsonl) or explicit flags;
          optional --matcher, a YAML file whose top-level mapping becomes the
          rule's `rule:` body (else a TODO placeholder that will not parse as a
          rule, so an unfinished scaffold cannot pass the suite by accident).
-Outputs: the two YAML files; tests/test_diagnostics.py count bumped by one.
+Outputs: the two YAML files and count bump; --assess-seed prints one or two bounded lines.
 Exit:    0 written, 1 refused (invalid/conflicting inputs or lock unavailable).
 Side effects: writes into the repository; --dry-run prints instead but still
-              acquires the coordination lock and may create its ignored file.
+              acquires the coordination lock and may create its ignored file;
+              --assess-seed is read-only and lock-free.
 Limits:  message/note are drafts from the claim; the author rewrites them.
+         --seed is fixture-oracle bootstrap evidence, not a generality verdict.
 Extend:  CATEGORIES, LANGUAGES.
 """
 
@@ -33,9 +37,12 @@ import errno
 import json
 import os
 import re
+import shlex
+import subprocess
 import sys
 import tempfile
 from contextlib import ExitStack, contextmanager
+from itertools import takewhile
 from pathlib import Path
 from time import monotonic, sleep
 from typing import Literal
@@ -54,8 +61,15 @@ CLEANUP_INTERRUPT_RETRIES = 3
 ROOT = Path(__file__).resolve().parents[1]
 CATEGORIES = ("security", "correctness")
 LANGUAGES = ("go", "c", "php", "python", "javascript", "java", "lua", "bash")
-# Unlike harvest-packets' Go/C proposal grammar, manual scaffolds support all
-# LANGUAGES and one defect segment (for example go-check).
+EXTENSIONS = {"go": "go", "c": "c", "php": "php", "python": "py",
+              "javascript": "js", "java": "java", "lua": "lua", "bash": "sh"}
+ID_PREFIXES = {
+    "bash": ("sh-",), "c": ("c-", "nginx-", "zstd-"), "go": ("go-",),
+    "java": ("java-",), "javascript": ("js-",), "lua": ("lua-",),
+    "php": ("php-", "wp-"), "python": ("py-",),
+}
+# Harvest proposals and manual scaffolds support every native ast-grep language
+# pack and repository-specific ID aliases (for example nginx- and wp-).
 KEBAB = re.compile(r"^[a-z]+(-[a-z0-9]+)+$")
 
 
@@ -162,8 +176,8 @@ def warn_temp_retained(path: Path, reason: str) -> bool:
     return True
 
 
-def prepare_scaffold(args):
-    """Resolve proposal fields and reject conflicting destinations before writing."""
+def scaffold_inputs(args):
+    """Resolve and validate proposal fields without inspecting write destinations."""
     if not KEBAB.fullmatch(args.id):
         sys.exit(f"id {args.id!r} is not kebab-case")
     prop = load_proposal(args.proposal, args.id) if args.proposal else {}
@@ -175,9 +189,15 @@ def prepare_scaffold(args):
         sys.exit("need language, positive, near-miss and claim (flags or --proposal)")
     if language not in LANGUAGES:
         sys.exit(f"unsupported language {language!r}")
-    prefixes = ("c-", "nginx-") if language == "c" else (f"{language}-",)
+    prefixes = ID_PREFIXES[language]
     if not args.id.startswith(prefixes):
         sys.exit(f"id {args.id!r} must be prefixed with its language")
+    return prop, language, positive, near_miss, claim
+
+
+def prepare_scaffold(args):
+    """Resolve proposal fields and reject conflicting destinations before writing."""
+    prop, language, positive, near_miss, claim = scaffold_inputs(args)
 
     rule_path, fixture_path = scaffold_paths(args.id, language, args.category)
     rendered = render_scaffold(args, prop, language, positive, near_miss, claim)
@@ -199,6 +219,8 @@ def scaffold_paths(rule_id, language, category):
 def render_scaffold(args, prop, language, positive, near_miss, claim):
     """Serialize one rule and fixture, retaining a deliberately invalid TODO matcher."""
 
+    if args.matcher and getattr(args, "seed", False):
+        sys.exit("--matcher and --seed are mutually exclusive")
     if args.matcher:
         try:
             matcher = yaml.safe_load(args.matcher.read_text(encoding="utf-8"))
@@ -207,6 +229,11 @@ def render_scaffold(args, prop, language, positive, near_miss, claim):
                      "provide a readable YAML rule body")
         if not isinstance(matcher, dict):
             sys.exit("--matcher must be a YAML mapping (the rule body)")
+    elif getattr(args, "seed", False):
+        matcher = seed_matcher(args.id, language, positive, lexical_controls(
+            language, positive, near_miss))
+        if matcher is None:
+            matcher = "TODO: no safe seed passed the fixture oracle"
     else:
         # A string here is rejected by ast-grep as "Cannot parse rule", so an
         # unfinished scaffold fails loudly instead of matching nothing.
@@ -219,11 +246,186 @@ def render_scaffold(args, prop, language, positive, near_miss, claim):
         "rule": matcher,
     }
     fixture = {"id": args.id,
-               "valid": [LiteralStr(near_miss)],
+               "valid": [LiteralStr(source) for source in lexical_controls(
+                   language, positive, near_miss)],
                "invalid": [LiteralStr(positive)]}
     rule_text = yaml.dump(rule, sort_keys=False, width=80, allow_unicode=True)
     fixture_text = yaml.dump(fixture, sort_keys=False, width=1000, allow_unicode=True)
     return rule_text, fixture_text
+
+
+def lexical_controls(language: str, positive: str, near_miss: str) -> list[str]:
+    """Add parseable comment and string controls for every scaffold language."""
+    comment_prefix = {"python": "#", "bash": "#", "lua": "--"}.get(language, "//")
+    comment_source = positive.replace("?>", "? >") if language == "php" else positive
+    commented = "\n".join(f"{comment_prefix} {line}" for line in comment_source.splitlines())
+    literal = json.dumps(positive, ensure_ascii=False)
+    strings = {
+        "go": f"var astgrepFixture = {literal}",
+        "c": f"const char *astgrep_fixture = {literal};",
+        "python": f"astgrep_fixture = {literal}",
+        "javascript": f"const astgrepFixture = {literal};",
+        "java": f"class AstgrepFixture {{ String value = {literal}; }}",
+        "lua": f"local astgrep_fixture = {literal}",
+        "bash": f"astgrep_fixture={shlex.quote(positive)}",
+        "php": ("<?php\n$astgrep_fixture = '"
+                + positive.replace("\\", "\\\\").replace("'", "\\'") + "';"),
+    }
+    if language == "php":
+        commented = "<?php\n" + commented
+    if language not in strings:
+        sys.exit(f"no string-literal control defined for language {language!r}")
+    return [near_miss, commented, strings[language]]
+
+
+TOKEN = re.compile(r'''(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[A-Za-z_]\w*|
+                       \d+(?:\.\d+)?|&&|\|\||==|!=|<=|>=|\+\+|--|->|\S)''', re.VERBOSE)
+KEYWORDS = set("""_ break case chan char const continue default defer do else enum error
+    fallthrough false for func go goto if import int int64 interface long map nil package
+    range return rune select short signed sizeof static string struct switch true type
+    typedef unsigned var void while byte bool""".split())  # noqa: SIM905 -- compact keyword table
+
+
+def distinct_tokens(source: str, other: str) -> list[str]:
+    """Return at most eight ordered tokens whose multiplicity differs."""
+    mine, remaining, distinct = TOKEN.findall(source), TOKEN.findall(other), []
+    for token in mine:
+        if token in remaining:
+            remaining.remove(token)
+        elif token not in distinct:
+            distinct.append(token)
+    return distinct[:8]
+
+
+def generalized_pattern(rule_id: str, source: str) -> tuple[str, dict[str, str]]:
+    """Replace fixture-local lowercase identifiers with stable metavariables."""
+    protected = set(rule_id.lower().split("-"))
+    tokens = list(TOKEN.finditer(source))
+    bindings: dict[str, str] = {}
+    pieces, end = [], 0
+    for match in tokens:
+        token = match.group()
+        pieces.append(source[end:match.start()])
+        eligible = (re.fullmatch(r"[a-z_]\w*", token) is not None
+                    and token not in KEYWORDS and token.lower() not in protected)
+        if eligible:
+            bindings.setdefault(token, f"$V{len(bindings)}")
+            pieces.append(bindings[token])
+        else:
+            pieces.append(token)
+        end = match.end()
+    pieces.append(source[end:])
+    return "".join(pieces), bindings
+
+
+def seed_oracle(rule: dict, positive: str, valid: list[str]) -> bool:
+    """Accept a provisional pattern only when one pinned-engine scan separates fixtures."""
+    engine = ROOT / "node_modules/.bin/ast-grep"
+    extension = EXTENSIONS.get(rule["language"])
+    if not engine.is_file():
+        sys.exit("--seed needs ast-grep; run npm ci")
+    if extension is None:
+        sys.exit(f"--seed has no fixture oracle for language {rule['language']!r}")
+    try:
+        with tempfile.TemporaryDirectory(prefix="rule-seed-") as name:
+            directory = Path(name)
+            targets = write_seed_sources(directory, extension, positive, valid)
+            result = subprocess.run(
+                [engine, "scan", "--inline-rules", yaml.safe_dump(rule),
+                 "--json=compact", directory],
+                text=True, capture_output=True, timeout=15, check=False)
+            if result.returncode not in (0, 1):
+                return False
+            findings = json.loads(result.stdout or "[]")
+    except (OSError, UnicodeError, subprocess.SubprocessError, json.JSONDecodeError):
+        return False
+    counts = seed_counts(findings, rule["id"], targets)
+    return counts is not None and counts[0] >= 1 and all(count == 0 for count in counts[1:])
+
+
+def write_seed_sources(directory: Path, extension: str, positive: str,
+                       valid: list[str]) -> list[Path]:
+    """Write the bounded oracle corpus and return canonical target paths."""
+    sources = [("invalid", positive), *(("valid", source) for source in valid)]
+    targets = []
+    for index, (kind, source) in enumerate(sources):
+        target = directory / f"{kind}-{index}.{extension}"
+        target.write_text(source, encoding="utf-8")
+        targets.append(target.resolve())
+    return targets
+
+
+def seed_counts(findings: object, rule_id: str, targets: list[Path]) -> list[int] | None:
+    """Attribute seed findings to the exact temporary fixture files."""
+    if not isinstance(findings, list):
+        return None
+    counts = {target: 0 for target in targets}
+    for finding in findings:
+        path = Path(finding.get("file", "")).resolve() if isinstance(finding, dict) else None
+        if not isinstance(finding, dict) or finding.get("ruleId") != rule_id or path not in counts:
+            return None
+        counts[path] += 1
+    return [counts[target] for target in targets]
+
+
+def seed_matcher(rule_id: str, language: str, positive: str,
+                 valid: list[str]) -> dict | None:
+    """Return an oracle-passing generalized pattern, never an exact-source fallback."""
+    pattern, bindings = generalized_pattern(rule_id, positive)
+    if not bindings:
+        return None
+    matcher = {"pattern": pattern}
+    rule = {"id": rule_id, "language": language, "severity": "warning",
+            "message": "seed", "note": "provisional", "rule": matcher}
+    return matcher if seed_oracle(rule, positive, valid) else None
+
+
+def pattern_roots(language: str, source: str) -> str:
+    """Ask the pinned parser for bounded top-level named-node kinds."""
+    engine = ROOT / "node_modules/.bin/ast-grep"
+    if not engine.is_file():
+        return "engine-missing"
+    try:
+        result = subprocess.run(
+            [engine, "run", "-l", language, "-p", source, "--debug-query=ast", "--stdin"],
+            input="x", text=True, capture_output=True, timeout=15, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return "unparsed"
+    return roots_from_debug(result.stderr + result.stdout)
+
+
+def roots_from_debug(output: str) -> str:
+    """Extract at most four top-level kinds from ast-grep's debug section."""
+    marker = "Debug AST:\n"
+    if marker not in output:
+        return "unparsed"
+    lines = output.split(marker, maxsplit=1)[1].splitlines()[1:]
+    tree_lines = takewhile(lambda line: not line or line.startswith(" "), lines)
+    roots = []
+    for line in tree_lines:
+        if line.startswith("  ") and not line.startswith("    "):
+            kind = line.strip().split(" ", maxsplit=1)[0]
+            if kind not in roots:
+                roots.append(kind)
+    return ",".join(roots[:4]) or "unparsed"
+
+
+def contrast_line(rule_text: str, fixture_text: str) -> str:
+    """Render parser roots and lexical delta without exposing AST logs."""
+    rule, fixture = yaml.safe_load(rule_text), yaml.safe_load(fixture_text)
+    positive, near_miss = fixture["invalid"][0], fixture["valid"][0]
+    positive_only = json.dumps(distinct_tokens(positive, near_miss), ensure_ascii=False)
+    near_only = json.dumps(distinct_tokens(near_miss, positive), ensure_ascii=False)
+    return (f"CONTRAST roots positive={pattern_roots(rule['language'], positive)} "
+            f"near={pattern_roots(rule['language'], near_miss)}; "
+            f"positive-only={positive_only}; near-only={near_only}")
+
+
+def seed_line(rule_text: str) -> str:
+    """State whether --seed produced a provisional matcher without repeating it."""
+    matcher = yaml.safe_load(rule_text).get("rule")
+    return ("SEED PASS fixture oracle; review generality before rule-draft.py"
+            if isinstance(matcher, dict) else "SEED NONE; author matcher from CONTRAST")
 
 
 def create_parent_dirs(directories: tuple[Path, ...], created_dirs: list[Path]) -> None:
@@ -395,10 +597,26 @@ def main() -> int:
     ap.add_argument("--near-miss", help="source that must not match")
     ap.add_argument("--claim", help="one-sentence syntactic claim (message draft)")
     ap.add_argument("--matcher", type=Path, help="YAML file: the `rule:` body")
+    ap.add_argument("--seed", action="store_true",
+                    help="bootstrap a generalized matcher only if the fixture oracle passes")
+    ap.add_argument("--contrast", action="store_true",
+                    help="print bounded parser roots and positive/near-miss token delta")
     ap.add_argument("--severity", default="warning", choices=("error", "warning", "info"))
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--assess-seed", action="store_true",
+                    help="print only the seed verdict; no lock, count, or destination check")
     args = ap.parse_args()
 
+    if getattr(args, "assess_seed", False):
+        if not args.seed or args.matcher:
+            ap.error("--assess-seed requires --seed and forbids --matcher")
+        prop, language, positive, near_miss, claim = scaffold_inputs(args)
+        rule_text, fixture_text = render_scaffold(
+            args, prop, language, positive, near_miss, claim)
+        print(seed_line(rule_text))
+        if args.contrast:
+            print(contrast_line(rule_text, fixture_text))
+        return 0
     if args.dry_run:
         with cli_scaffold_lock():
             rule_path, fixture_path, (rule_text, fixture_text) = prepare_scaffold(args)
@@ -406,6 +624,10 @@ def main() -> int:
         print(f"--- {rule_path.relative_to(ROOT)}\n{rule_text}")
         print(f"--- {fixture_path.relative_to(ROOT)}\n{fixture_text}")
         print(f"--- tests/test_diagnostics.py: rule count {old} -> {new}")
+        if args.seed:
+            print(seed_line(rule_text))
+        if args.contrast:
+            print(contrast_line(rule_text, fixture_text))
         return 0
     with cli_scaffold_lock():
         rule_path, fixture_path, (rule_text, fixture_text) = prepare_scaffold(args)
@@ -424,6 +646,10 @@ def main() -> int:
             raise
     print(f"wrote {rule_path.relative_to(ROOT)}, {fixture_path.relative_to(ROOT)}; "
           f"rule count {old} -> {new}. Next: tools/rule-probe.py {args.id}")
+    if getattr(args, "seed", False):
+        print(seed_line(rule_text))
+    if getattr(args, "contrast", False):
+        print(contrast_line(rule_text, fixture_text))
     return 0
 
 

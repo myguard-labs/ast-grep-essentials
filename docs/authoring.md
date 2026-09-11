@@ -3,6 +3,58 @@
 Checked against ast-grep 0.45.3 on 2026-09-06. The linked upstream pages are
 living references; the lockfile and fixtures define this repository's baseline.
 
+## Harvest and draft pipeline
+
+The repository contains the complete command pipeline for turning project
+history into rule drafts. Keep its working directory outside the checkout; only
+reviewed rules, fixtures, harvest indexes, and source or limitation notes belong
+in Git.
+
+1. `harvest-history.py` builds a ranked JSONL corpus and a Markdown index from
+   one or more Git histories.
+2. `harvest-packets.py cluster-emit --mechanical` routes every candidate into a
+   bounded proposal packet. Large semantic diffs are reduced to changed-line
+   excerpts; their fuller evidence files are read only when needed. Use `queue`
+   to dispatch only missing or invalid replies, then run `cluster-ingest` and
+   `dedupe`.
+3. `rule-batch.py` validates the proposal and deduplication ledgers, separates
+   duplicates and semantic-only proposals, and tests whether syntactic
+   proposals have a safe fixture seed. Review `draft-plan.tsv` before using
+   `--apply-seeded`. `--queue` lists only unfinished actionable rules and
+   `--task ID` emits one compact drafting packet. Both modes revalidate the
+   full plan against the current proposal and deduplication ledgers, and fail
+   when that plan is stale.
+   After reviewing a task's `PASS`, or explicitly accepting its `PARKED` report,
+   use the emitted `--mark-reviewed ID` command to remove that exact proposal
+   and rule/fixture version from the queue.
+4. `rule-scaffold.py` writes a rule/fixture pair and updates the rule-count
+   guard. `rule-draft.py` permits four distinct rule/fixture attempts and calls
+   `rule-probe.py` for a bounded, isolated verdict.
+5. A probe pass proves the local rule contracts only. Review the claim and
+   matcher generality, update `sources.md` and `limitations.md` when applicable,
+   then run the full `npm test` suite before committing.
+
+Each command's `--help` output defines its flags. Its module docstring and the
+persisted packet prompts define artifacts, exit codes, and failure behavior.
+A minimal stage 2 through stage 4 sequence is:
+
+```bash
+python3 tools/harvest-packets.py cluster-emit --mechanical --corpus C.jsonl --work WORK
+python3 tools/harvest-packets.py queue --work WORK --route semantic-model --json
+python3 tools/harvest-packets.py cluster-ingest --work WORK
+python3 tools/harvest-packets.py dedupe --work WORK
+python3 tools/rule-batch.py --work WORK --category correctness
+python3 tools/rule-batch.py --work WORK --category correctness --apply-seeded
+python3 tools/rule-batch.py --work WORK --category correctness --queue --json
+python3 tools/rule-batch.py --work WORK --category correctness --task RULE-ID
+# After completing the emitted task's matcher and generality review:
+python3 tools/rule-batch.py --work WORK --category correctness --mark-reviewed RULE-ID
+```
+
+Harvesting, proposal validation, and fixture-seed checks cover the repository's
+native Bash, C, Go, Java, JavaScript, Lua, PHP, and Python packs. PowerShell uses
+an optional custom parser and remains outside this generic isolated workflow.
+
 ## Define the claim
 
 Start with a small inert example that should match and a closely related one
