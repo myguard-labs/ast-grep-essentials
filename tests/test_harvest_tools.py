@@ -1696,6 +1696,322 @@ class ScaffoldTests(unittest.TestCase):
                 "--near-miss", "good(x)", "--claim", "Check call", "--matcher", str(matcher)]
         return guard, argv
 
+    @staticmethod
+    def write_plan(root, **updates):
+        plan = {
+            "version": 1,
+            "id": "go-test-rule",
+            "language": "go",
+            "category": "security",
+            "severity": "warning",
+            "message": "Review dangerous calls",
+            "note": "Dismiss when validation is established semantically.",
+            "match": {
+                "target": {"pattern": "danger($ARG)"},
+                "require": [{"inside": {"kind": "function_declaration"}}],
+                "exclude": [{"pattern": "danger(\"safe\")"}],
+                "any": [{"matches": "is-input"}, {"regex": "^danger"}],
+            },
+            "utils": {"is-input": {"has": {"kind": "identifier"}}},
+            "constraints": {"ARG": {"kind": "identifier"}},
+            "cases": {
+                "valid": ["danger(\"safe\")", "other(input)"],
+                "invalid": ["danger(input)", "danger(requestValue)"],
+            },
+        }
+        plan.update(updates)
+        path = root / "plan.yml"
+        path.write_text(yaml.safe_dump(plan, sort_keys=False), encoding="utf-8")
+        return path
+
+    def test_plan_compiles_ordered_matcher_and_complete_config(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(SCAFFOLD, "ROOT", Path(directory)):
+            root = Path(directory)
+            guard = root / "tests/test_diagnostics.py"
+            guard.parent.mkdir()
+            guard.write_text(
+                "self.assertEqual(len(rules), 3)\nself.assertEqual(checked, 3)\n",
+                encoding="utf-8",
+            )
+            plan = self.write_plan(
+                root,
+                source=("https://github.com/coderabbitai/ast-grep-essentials/"
+                        "blob/revision/rules/go/example.yml"),
+                metadata={"family": "api-argument"},
+            )
+            with patch("sys.argv", ["rule-scaffold", "--plan", str(plan)]), \
+                    patch.object(SCAFFOLD, "preflight_plan") as preflight:
+                self.assertEqual(SCAFFOLD.main(), 0)
+            preflight.assert_called_once()
+            rule_path = root / "rules/go/security/go-test-rule.yml"
+            rule_text = rule_path.read_text(encoding="utf-8")
+            self.assertIn("# CodeRabbit source: https://github.com/", rule_text)
+            rule = yaml.safe_load(rule_text)
+            self.assertEqual(
+                rule["rule"]["all"],
+                [
+                    {"pattern": "danger($ARG)"},
+                    {"inside": {"kind": "function_declaration"}},
+                    {"not": {"pattern": 'danger("safe")'}},
+                    {"any": [{"matches": "is-input"}, {"regex": "^danger"}]},
+                ],
+            )
+            self.assertEqual(rule["constraints"]["ARG"], {"kind": "identifier"})
+            self.assertEqual(rule["metadata"], {"family": "api-argument"})
+            fixture = yaml.safe_load(
+                (root / "tests/go/security/go-test-rule.yml").read_text(encoding="utf-8")
+            )
+            self.assertEqual(fixture["valid"], ['danger("safe")', "other(input)"])
+            self.assertEqual(fixture["invalid"], ["danger(input)", "danger(requestValue)"])
+
+    def test_plan_preflight_checks_both_contrast_arms(self):
+        rule = yaml.safe_dump({
+            "id": "py-plan-probe", "language": "python", "severity": "warning",
+            "message": "probe", "rule": {"pattern": "danger($ARG)"},
+        }, sort_keys=False)
+        cases = {"invalid": ["danger(user)"], "valid": ["safe(user)"]}
+        SCAFFOLD.preflight_plan(rule, cases, "py-plan-probe")
+        with self.assertRaisesRegex(SystemExit, "contrast preflight failed"):
+            SCAFFOLD.preflight_plan(
+                rule, {"invalid": ["danger(user)"], "valid": ["danger(safe)"]},
+                "py-plan-probe",
+            )
+
+    def test_plan_check_is_compact_and_does_not_write(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(SCAFFOLD, "ROOT", Path(directory)):
+            root = Path(directory)
+            guard = root / "tests/test_diagnostics.py"
+            guard.parent.mkdir()
+            guard.write_text(
+                "self.assertEqual(len(rules), 3)\nself.assertEqual(checked, 3)\n",
+                encoding="utf-8",
+            )
+            plan = self.write_plan(root)
+            stdout = io.StringIO()
+            with patch("sys.argv", ["rule-scaffold", "--plan", str(plan), "--check"]), \
+                    patch.object(SCAFFOLD, "preflight_plan"), \
+                    contextlib.redirect_stdout(stdout):
+                self.assertEqual(SCAFFOLD.main(), 0)
+            self.assertEqual(
+                stdout.getvalue(),
+                "plan ok: go-test-rule; 2 invalid, 2 valid; no files written\n",
+            )
+            self.assertFalse((root / "rules").exists())
+            self.assertEqual(guard.read_text(encoding="utf-8").count(", 3)"), 2)
+
+    def test_plan_rejects_unknown_util_and_unbound_constraint(self):
+        base = {"utils": {}, "rule": {"matches": "missing"}}
+        with self.assertRaisesRegex(SystemExit, "undefined local utilities: missing"):
+            SCAFFOLD.validate_plan_rules(base, base["rule"])
+        unbound = {"constraints": {"ARG": {"kind": "identifier"}}}
+        with self.assertRaisesRegex(SystemExit, "not bound by rule: ARG"):
+            SCAFFOLD.validate_plan_rules(unbound, {"pattern": "danger($OTHER)"})
+        with self.assertRaisesRegex(SystemExit, "not bound by rule: ARG"):
+            SCAFFOLD.validate_plan_rules(unbound, {"pattern": "danger($$$ARG)"})
+        utility_binding = {
+            "utils": {"capture": {"pattern": "danger($ARG)"}},
+            "constraints": {"ARG": {"kind": "identifier"}},
+        }
+        SCAFFOLD.validate_plan_rules(utility_binding, {"matches": "capture"})
+
+    def test_plan_rejects_schema_drift_and_incomplete_contrast(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for plan, error in (
+                ({"version": 2}, "version must be 1"),
+                ({"version": 1, "surprise": True}, "unknown keys: surprise"),
+            ):
+                path = root / "plan.yml"
+                path.write_text(yaml.safe_dump(plan), encoding="utf-8")
+                with self.subTest(error=error), self.assertRaisesRegex(SystemExit, error):
+                    SCAFFOLD.load_plan(path)
+            path = self.write_plan(root, cases={"valid": [], "invalid": ["bad"]})
+            args = SimpleNamespace(
+                plan=path, id=None, proposal=None, language=None, category=None,
+                positive=None, near_miss=None, claim=None, matcher=None, cases=None,
+                severity=None,
+            )
+            with self.assertRaisesRegex(SystemExit, "at least one valid"):
+                SCAFFOLD.apply_plan(args)
+
+    def test_named_any_branches_compile_without_generator_metadata(self):
+        spec = {
+            "target": {"kind": "call"},
+            "any": [
+                {"name": "boolean-arm", "rule": {"pattern": "danger(false)"},
+                 "witness": "danger(false)"},
+                {"name": "object-arm", "rule": {"pattern": "danger({verify: false})"},
+                 "witness": "danger({verify: false})"},
+            ],
+        }
+        matcher = SCAFFOLD.compile_match(spec)
+        self.assertEqual(
+            matcher["all"][1],
+            {"any": [{"pattern": "danger(false)"},
+                     {"pattern": "danger({verify: false})"}]},
+        )
+        cases = {"invalid": ["danger(false)", "danger({verify: false})"], "valid": ["ok()"]}
+        SCAFFOLD.validate_named_witnesses({"match": spec}, cases)
+        with self.assertRaisesRegex(SystemExit, "ANY_WITNESS_MISSING: object-arm"):
+            SCAFFOLD.validate_named_witnesses(
+                {"match": spec}, {"invalid": ["danger(false)"], "valid": ["ok()"]},
+            )
+        with self.assertRaisesRegex(SystemExit, "at least two branches"):
+            SCAFFOLD.compile_match({"target": {"kind": "call"}, "any": [spec["any"][0]]})
+
+    def test_synthesis_emits_v1_candidate_facts_for_every_archetype(self):
+        positive_ast = "Debug AST:\nmodule (0,0)-(0,9)\n  call (0,0)-(0,9)\n    function: identifier (0,0)-(0,6)\n"
+        near_ast = "Debug AST:\nmodule (0,0)-(0,4)\n  identifier (0,0)-(0,4)\n"
+        with patch.object(SCAFFOLD, "debug_ast", side_effect=[positive_ast, near_ast] * 4):
+            for archetype in SCAFFOLD.ARCHETYPES:
+                with self.subTest(archetype=archetype):
+                    plan = SCAFFOLD.synthesize_plan("python", "danger(x)", "safe", archetype)
+                    self.assertEqual(plan["version"], 1)
+                    self.assertEqual(plan["archetype"], archetype)
+                    self.assertEqual(plan["cases"]["valid"], ["safe"])
+                    self.assertIn("candidateFacts", plan["metadata"])
+
+    def test_import_sensitive_synthesis_bounds_import_to_module(self):
+        debug = ("Debug AST:\nmodule (0,0)-(1,9)\n  import_statement (0,0)-(0,8)\n"
+                 "  call (1,0)-(1,9)\n")
+        with patch.object(SCAFFOLD, "debug_ast", side_effect=[debug, debug]):
+            plan = SCAFFOLD.synthesize_plan(
+                "python", "import x\nx.danger()", "import x\nx.safe()", "import-sensitive",
+            )
+        relation = plan["match"]["require"][0]
+        self.assertEqual(relation["inside"]["kind"], "module")
+        self.assertEqual(relation["inside"]["has"], {"kind": "import_statement"})
+
+    def test_debug_ast_cache_keys_engine_language_and_source_digest(self):
+        SCAFFOLD.DEBUG_AST_CACHE.clear()
+        result = SimpleNamespace(returncode=0, stdout="", stderr="Debug AST:\nmodule (0,0)-(0,1)\n")
+        with patch.object(SCAFFOLD, "engine_version", return_value="ast-grep 1"), \
+                patch.object(SCAFFOLD.subprocess, "run", return_value=result) as run:
+            first = SCAFFOLD.debug_ast("python", "x")
+            second = SCAFFOLD.debug_ast("python", "x")
+        self.assertEqual(first, second)
+        self.assertEqual(run.call_count, 1)
+
+    def test_mutation_candidates_cover_anchor_field_and_traversal_bound(self):
+        matcher = {"has": {"field": "function", "regex": "^danger$", "stopBy": "end"}}
+        paths = [path for path, _ in SCAFFOLD.mutation_candidates(matcher)]
+        self.assertEqual(
+            paths,
+            ["rule.has.field", "rule.has.regex-anchor", "rule.has.stopBy"],
+        )
+
+    def test_plan_rejects_unbounded_mutation_request(self):
+        plan = {
+            "id": "go-test-rule", "language": "go", "category": "security",
+            "message": "message", "note": "note", "cases": {},
+            "mutation_limit": SCAFFOLD.MAX_MUTATIONS + 1,
+        }
+        with self.assertRaisesRegex(SystemExit, "mutation_limit"):
+            SCAFFOLD.validate_plan_header(plan)
+
+    def test_named_arm_deletion_rejects_surviving_witness(self):
+        with tempfile.TemporaryDirectory() as directory:
+            plan = self.write_plan(Path(directory))
+            data = yaml.safe_load(plan.read_text(encoding="utf-8"))
+            data["match"]["any"] = [
+                {"name": "input-arm", "rule": {"matches": "is-input"},
+                 "witness": "danger(input)"},
+                {"name": "regex-arm", "rule": {"regex": "^danger"},
+                 "witness": "danger(requestValue)"},
+            ]
+            with patch.object(SCAFFOLD, "run_preflight", return_value=(True, "processes=1")), \
+                    self.assertRaisesRegex(SystemExit, "ANY_ARM_SURVIVED: input-arm"):
+                SCAFFOLD.preflight_named_arms(data, data["cases"])
+
+    def test_preflight_metrics_are_machine_readable(self):
+        completed = SimpleNamespace(returncode=0, stdout="pass", stderr="")
+        with patch.object(SCAFFOLD.subprocess, "run", return_value=completed):
+            passed, detail = SCAFFOLD.run_preflight(
+                "id: x\n", {"invalid": ["x"], "valid": ["y"]}, "x",
+            )
+        self.assertTrue(passed)
+        self.assertRegex(detail, r"^processes=1 elapsed_ms=\d+ output_bytes=4")
+
+    def test_preflight_classifies_invalid_rule_as_engine_error(self):
+        passed, detail = SCAFFOLD.run_preflight(
+            "id: broken\nlanguage: python\nseverity: warning\nmessage: broken\nrule: []\n",
+            {"invalid": ["x"], "valid": ["y"]}, "broken",
+        )
+        self.assertFalse(passed)
+        self.assertIn("engine-error=", detail)
+
+    def test_plan_preflight_separates_engine_and_contrast_failures(self):
+        with patch.object(SCAFFOLD, "ENGINE", Path(__file__)), \
+                patch.object(SCAFFOLD, "run_preflight",
+                             return_value=(False, "processes=1 engine-error=timeout")), \
+                self.assertRaisesRegex(SystemExit, "CONTRAST_PREFLIGHT_ERROR"):
+            SCAFFOLD.preflight_plan("rule", {"invalid": ["x"], "valid": ["y"]}, "x")
+
+    def test_cases_file_extends_fixture_in_declared_order(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(SCAFFOLD, "ROOT", Path(directory)):
+            root = Path(directory)
+            _, argv = self.make_scaffold_case(root)
+            cases = root / "cases.yml"
+            cases.write_text(
+                "valid:\n"
+                "  - similar(x)\n"
+                "  - |\n"
+                "    nested {\n"
+                "      bad(x)\n"
+                "    }\n"
+                "invalid:\n"
+                "  - bad(x, audit)\n",
+                encoding="utf-8",
+            )
+            argv.extend(("--cases", str(cases)))
+            with patch("sys.argv", argv):
+                self.assertEqual(SCAFFOLD.main(), 0)
+            fixture = yaml.safe_load(
+                (root / "tests/go/security/go-test-rule.yml").read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                fixture["valid"],
+                ["good(x)", "similar(x)", "nested {\n  bad(x)\n}\n"],
+            )
+            self.assertEqual(fixture["invalid"], ["bad(x)", "bad(x, audit)"])
+
+    def test_cases_file_rejects_invalid_shapes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            cases = root / "cases.yml"
+            failures = (
+                ("- valid\n", "must be a YAML mapping"),
+                ("other: []\n", "unknown keys: other"),
+                ("1: []\n", "unknown keys: 1"),
+                ("valid: one\n", "valid must be a list of strings"),
+                ("invalid:\n  - 1\n", "invalid must be a list of strings"),
+            )
+            for source, error in failures:
+                with self.subTest(source=source):
+                    cases.write_text(source, encoding="utf-8")
+                    with self.assertRaisesRegex(SystemExit, error):
+                        SCAFFOLD.load_cases(cases)
+
+    def test_cases_file_rejects_duplicate_and_contradictory_sources(self):
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(SCAFFOLD, "ROOT", Path(directory)):
+            root = Path(directory)
+            _, argv = self.make_scaffold_case(root)
+            cases = root / "cases.yml"
+            for source, error in (
+                ("valid:\n  - good(x)\n", "duplicate valid source"),
+                ("valid:\n  - bad(x)\n", "both valid and invalid"),
+                ("invalid:\n  - bad(x)\n", "duplicate invalid source"),
+            ):
+                with self.subTest(source=source):
+                    cases.write_text(source, encoding="utf-8")
+                    with patch("sys.argv", [*argv, "--cases", str(cases)]), \
+                            self.assertRaisesRegex(SystemExit, error):
+                        SCAFFOLD.main()
+
     def test_count_temporary_files_are_ignored(self):
         self.assertIn(".rule-count-*", (ROOT / ".gitignore").read_text(
             encoding="utf-8").splitlines())
@@ -2191,7 +2507,12 @@ class ScaffoldTests(unittest.TestCase):
                     self.assertEqual(SCAFFOLD.main(), 0)
                 with patch("sys.argv", argv), self.assertRaisesRegex(SystemExit, "refusing to overwrite"):
                     SCAFFOLD.main()
-            rule = yaml.safe_load((root / "rules/go/security/go-test-rule.yml").read_text())
+            rule_path = root / "rules/go/security/go-test-rule.yml"
+            self.assertTrue(rule_path.read_text().startswith(
+                "# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | "
+                "https://deb.myguard.nl\n"
+            ))
+            rule = yaml.safe_load(rule_path.read_text())
             fixture = yaml.safe_load((root / "tests/go/security/go-test-rule.yml").read_text())
             self.assertEqual(rule["rule"], {"pattern": "bad($X)"})
             self.assertEqual(fixture, {"id": "go-test-rule", "valid": ["good(x)"], "invalid": ["bad(x)"]})

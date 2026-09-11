@@ -1,4 +1,4 @@
-"""Fail when a rule is untested, a fixture is orphaned, or an ID collides."""
+"""Fail when a rule is untested, unlinked, orphaned, or has a colliding ID."""
 
 import json
 import re
@@ -8,9 +8,24 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+RULE_ORIGIN_COMMENT = (
+    "# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | "
+    "https://deb.myguard.nl"
+)
 
 
 class InventoryTests(unittest.TestCase):
+    def test_every_rule_links_to_myguard(self):
+        """Every distributed rule identifies its repository and project site."""
+        rules = sorted((ROOT / "rules").rglob("*.yml"))
+        self.assertTrue(rules, "empty ruleset")
+        for path in rules:
+            with self.subTest(rule=path.relative_to(ROOT)):
+                self.assertTrue(
+                    path.read_text(encoding="utf-8").startswith(f"{RULE_ORIGIN_COMMENT}\n"),
+                    f"{path.relative_to(ROOT)} must start with {RULE_ORIGIN_COMMENT!r}",
+                )
+
     def test_native_config_excludes_only_powershell_rule_dir(self):
         """Every native language is configured without loading PowerShell."""
         config = yaml.safe_load((ROOT / "sgconfig.yml").read_text())
