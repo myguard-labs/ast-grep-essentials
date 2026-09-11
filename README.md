@@ -68,6 +68,13 @@ See [authoring](docs/authoring.md), [ID migrations](docs/id-migrations.md),
 [nginx classification](docs/nginx-classification.md), [limitations](docs/limitations.md),
 [sources](docs/sources.md) and [rejected candidates](docs/rejected-candidates.md).
 
+## License
+
+The [MyGuard Internal Use License 1.0](LICENSE) permits internal use, including
+internal commercial use. Outside GitHub, distribution to third parties is
+prohibited. GitHub users retain applicable on-service rights, and the license
+defines a limited fork and branch workflow for pull-request contributions.
+
 ## Related reading
 
 [The MyGuard AI coding workflow](https://deb.myguard.nl/articles/ai-coding-workflow-memory-skills-review/)

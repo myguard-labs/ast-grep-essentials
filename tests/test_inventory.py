@@ -1,9 +1,10 @@
-"""Fail when a rule is untested, a fixture is orphaned, or an ID collides."""
+"""Check repository inventory, test coverage, IDs, and metadata consistency."""
 
 import json
 import re
 import unittest
 from pathlib import Path
+from textwrap import dedent
 
 import yaml
 
@@ -11,6 +12,61 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class InventoryTests(unittest.TestCase):
+    def test_license_contract(self):
+        license_name = "MyGuard Internal Use License 1.0"
+        license_path = ROOT / "LICENSE"
+        self.assertTrue(license_path.is_file(), "LICENSE must exist")
+        license_text = license_path.read_text()
+        expected_license = dedent(
+            f"""\
+            {license_name}
+
+            Copyright (C) 2026 Thijs Eilander. All rights reserved.
+
+            Permission is granted to download, copy, run, and modify this software solely
+            for internal use, including internal commercial use.
+
+            The software and modified versions may not be sold, sublicensed, published,
+            redistributed, or otherwise made available to third parties.
+
+            As a limited exception to the preceding paragraph, you may create and modify a
+            GitHub fork or branch solely to prepare and submit modified versions through a
+            GitHub pull request to:
+
+            https://github.com/myguard-labs/ast-grep-essentials
+
+            GitHub users may also exercise the on-service rights granted by GitHub's Terms
+            of Service. Those platform rights do not grant permission to redistribute the
+            software outside GitHub.
+
+            Contributing Back
+
+            Users who create new rules, fixes, or improvements are expected to submit those
+            changes to the canonical repository above through a GitHub pull request.
+            This expectation is nonbinding and is not a condition of the permissions
+            granted above. Submission does not guarantee acceptance.
+            """
+        )
+        self.assertEqual(license_text, expected_license)
+
+        readme = (ROOT / "README.md").read_text()
+        license_section = readme.split("## License\n\n", 1)[1].split("\n## ", 1)[0]
+        normalized_section = " ".join(license_section.split())
+        expected_summary = (
+            f"The [{license_name}](LICENSE) permits internal use, including "
+            "internal commercial use. Outside GitHub, distribution to third "
+            "parties is prohibited. GitHub users retain applicable on-service "
+            "rights, and the license defines a limited fork and branch workflow "
+            "for pull-request contributions."
+        )
+        self.assertEqual(normalized_section, expected_summary)
+
+        package = json.loads((ROOT / "package.json").read_text())
+        package_lock = json.loads((ROOT / "package-lock.json").read_text())
+        expected_license = "SEE LICENSE IN LICENSE"
+        self.assertEqual(package["license"], expected_license)
+        self.assertEqual(package_lock["packages"][""]["license"], expected_license)
+
     def test_native_config_excludes_only_powershell_rule_dir(self):
         """Every native language is configured without loading PowerShell."""
         config = yaml.safe_load((ROOT / "sgconfig.yml").read_text())
