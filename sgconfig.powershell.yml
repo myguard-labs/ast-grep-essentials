@@ -8,15 +8,15 @@
 # aborts the entire scan when a registered custom language cannot be loaded --
 # it does not skip just that language. Registering PowerShell in the main
 # config would therefore turn a missing optional parser into a total failure of
-# all 248 native-language rules for every consumer that never asked for
-# PowerShell. Keeping it separate means the default scan is unaffected, while a
+# all native-language rules for every consumer that never asked for PowerShell.
+# Keeping it separate means the default scan is unaffected, while a
 # PowerShell scan that cannot load its parser still fails closed rather than
 # silently reporting zero findings.
 #
 #   tools/powershell/build-grammar.sh
 #   ast-grep scan -c sgconfig.powershell.yml <path>
 ruleDirs:
-  - rules-powershell
+  - rules/powershell
 customLanguages:
   powershell:
     # Keyed by Rust target triple, which ast-grep resolves against its own
@@ -45,4 +45,4 @@ customLanguages:
     # `_` would -- `$_` is the pipeline variable and appears constantly.
     expandoChar: 'µ'
 testConfigs:
-  - testDir: tests-powershell
+  - testDir: tests/powershell

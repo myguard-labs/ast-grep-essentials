@@ -50,12 +50,16 @@ the resulting diff. CI never accepts snapshots automatically.
 npx ast-grep scan -c sgconfig.yml /path/to/source
 ```
 
-Consumers can add this checkout's `rules` directory to their `sgconfig.yml`
-`ruleDirs`; paths are relative to that config. Keep tests and `docs/candidates`
-out of rule discovery. Project-config settings do not follow a `ruleDirs`
-import: consumers that scan PHP templates must also copy this repository's
-`languageGlobs` PHP mapping (`php: ['*.php', '*.phtml']`) so both extensions use
-the PHP parser.
+Migration: consumers that previously configured the parent `rules/` directory
+must replace it with the native-language `ruleDirs` listed in `sgconfig.yml`
+before updating this checkout. The parent now contains `rules/powershell/`,
+whose rules cannot load without the custom language registration in
+`sgconfig.powershell.yml`; leaving the parent configured makes the entire native
+scan fail. Paths are relative to the consuming config. Keep tests and
+`docs/candidates` out of rule discovery. Project-config settings do not follow a
+`ruleDirs` import: consumers that scan PHP templates must also copy this
+repository's `languageGlobs` PHP mapping (`php: ['*.php', '*.phtml']`) so both
+extensions use the PHP parser.
 
 Warnings and information are advisory; error severity can fail a scan. Validate
 any promoted rule IDs and exercise a known positive before using a scan as a gate.

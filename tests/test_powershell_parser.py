@@ -110,14 +110,14 @@ class PowerShellHarness(unittest.TestCase):
                   script=PROBE_SCRIPT, filename="probe.ps1"):
         tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, tmp, ignore_errors=True)
-        (tmp / "rules-powershell").mkdir()
-        (tmp / "rules-powershell" / "probe.yml").write_text(PROBE_RULE)
+        (tmp / "rules" / "powershell").mkdir(parents=True)
+        (tmp / "rules" / "powershell" / "probe.yml").write_text(PROBE_RULE)
         (tmp / "src").mkdir()
         (tmp / "src" / filename).write_text(script)
         exts = "\n".join(f"      - {e}" for e in extensions)
         (tmp / "sgconfig.yml").write_text(
             "ruleDirs:\n"
-            "  - rules-powershell\n"
+            "  - rules/powershell\n"
             "customLanguages:\n"
             "  powershell:\n"
             f"    libraryPath: {library_path}\n"
@@ -181,7 +181,7 @@ class TestPositiveDiscovery(PowerShellHarness):
             "}\n"
         )
         tmp = self.workspace(LIBRARY, script=manifest, filename="manifest.psd1")
-        (tmp / "rules-powershell" / "probe.yml").write_text(
+        (tmp / "rules" / "powershell" / "probe.yml").write_text(
             "id: psh-parse-error\n"
             "language: powershell\n"
             "severity: error\n"
@@ -251,7 +251,7 @@ class TestFailsClosed(PowerShellHarness):
         """
         malformed = "function Broken {\n    param([string]$x\n    if ($x -eq\n}\n"
         tmp = self.workspace(LIBRARY, script=malformed)
-        (tmp / "rules-powershell" / "probe.yml").write_text(
+        (tmp / "rules" / "powershell" / "probe.yml").write_text(
             "id: psh-parse-error\n"
             "language: powershell\n"
             "severity: error\n"
@@ -684,15 +684,16 @@ class TestNativeScanUnaffected(unittest.TestCase):
         json.loads(result.stdout)
 
     def test_every_powershell_rule_has_distinguishing_fixtures(self):
-        """The native inventory gate globs rules/, so it never sees this pack.
+        """The native inventory gate excludes this opt-in custom-language pack.
 
         Without an equivalent gate here a PowerShell rule could ship with no
         fixture file at all and `ast-grep test` would report success, because
         it only runs the fixtures that exist.
         """
-        rules = sorted((ROOT / "rules-powershell").rglob("*.yml"))
+        rule_root = ROOT / "rules" / "powershell"
+        rules = sorted(rule_root.rglob("*.yml"))
         self.assertTrue(rules, "empty PowerShell ruleset")
-        fixture_root = ROOT / "tests-powershell"
+        fixture_root = ROOT / "tests" / "powershell"
         fixtures = {
             p for p in fixture_root.rglob("*.yml")
             if "__snapshots__" not in p.parts
@@ -702,7 +703,7 @@ class TestNativeScanUnaffected(unittest.TestCase):
         for path in rules:
             with self.subTest(rule=path.name):
                 rule = yaml.safe_load(path.read_text())
-                relative = path.relative_to(ROOT / "rules-powershell")
+                relative = path.relative_to(rule_root)
                 self.assertEqual(rule["language"], "powershell")
                 self.assertEqual(path.stem, rule["id"])
                 self.assertTrue(rule["id"].startswith("powershell-"))
@@ -735,12 +736,13 @@ class TestNativeScanUnaffected(unittest.TestCase):
         documentation defect that no fixture assertion catches, because
         snapshots pin ranges and labels, not diagnostic prose.
         """
-        for path in sorted((ROOT / "rules-powershell").rglob("*.yml")):
+        rule_root = ROOT / "rules" / "powershell"
+        for path in sorted(rule_root.rglob("*.yml")):
             with self.subTest(rule=path.stem):
                 declared = yaml.safe_load(path.read_text())
                 fixture = yaml.safe_load(
-                    (ROOT / "tests-powershell"
-                     / path.relative_to(ROOT / "rules-powershell")).read_text()
+                    (ROOT / "tests" / "powershell"
+                     / path.relative_to(rule_root)).read_text()
                 )
                 result = subprocess.run(
                     [str(AST_GREP), "scan", "-c", str(PSH_CONFIG),
@@ -770,7 +772,7 @@ class TestNativeScanUnaffected(unittest.TestCase):
             "false positive is accepted",
         )
         offenders = []
-        for path in sorted((ROOT / "rules-powershell").rglob("*.yml")):
+        for path in sorted((ROOT / "rules" / "powershell").rglob("*.yml")):
             declared = yaml.safe_load(path.read_text())
             if declared.get("severity") != "error":
                 continue
@@ -779,12 +781,6 @@ class TestNativeScanUnaffected(unittest.TestCase):
             if hit is not None:
                 offenders.append(f"{declared['id']}: note concedes {hit!r}")
         self.assertEqual(offenders, [], "demote these rules to severity warning")
-
-    def test_powershell_rules_are_not_in_the_native_rule_dir(self):
-        """Native discovery counts stay untouched by the PowerShell pack."""
-        native_langs = {p.name for p in (ROOT / "rules").iterdir() if p.is_dir()}
-        self.assertNotIn("powershell", native_langs)
-
 
 if __name__ == "__main__":
     unittest.main()

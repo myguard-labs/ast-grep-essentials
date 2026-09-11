@@ -24,7 +24,10 @@ class DiagnosticTests(unittest.TestCase):
                 "install ast-grep to system PATH"
             )
     def test_all_rules_emit_declared_diagnostics(self):
-        rules = sorted((ROOT / "rules").rglob("*.yml"))
+        rules = sorted(
+            path for path in (ROOT / "rules").rglob("*.yml")
+            if path.relative_to(ROOT / "rules").parts[0] != "powershell"
+        )
         self.assertEqual(len(rules), 266, "update the explicit diagnostic inventory")
         checked = 0
         for path in rules:
@@ -111,7 +114,11 @@ class DiagnosticTests(unittest.TestCase):
             "false positive is accepted",
         )
         offenders = []
-        for path in sorted((ROOT / "rules").rglob("*.yml")):
+        paths = sorted(
+            path for path in (ROOT / "rules").rglob("*.yml")
+            if path.relative_to(ROOT / "rules").parts[0] != "powershell"
+        )
+        for path in paths:
             declared = yaml.safe_load(path.read_text())
             if declared.get("severity") != "error":
                 continue

@@ -5,8 +5,8 @@ assert exact JSON counts and demonstrate a count change after deleting their
 specific arm. Rule parse errors and scanner failures are errors, never kills.
 
 Two independent rule trees are gated here: the native pack (`rules/` +
-`tests/`, plain `sgconfig.yml`) and the PowerShell pack (`rules-powershell/` +
-`tests-powershell/`, `sgconfig.powershell.yml`). They are NOT symmetric --
+`tests/`, plain `sgconfig.yml`) and the PowerShell pack (`rules/powershell/` +
+`tests/powershell/`, `sgconfig.powershell.yml`). They are NOT symmetric --
 PowerShell needs a compiled Tree-sitter grammar ast-grep loads as a custom
 language, and that grammar is built, not vendored. When it is absent, the
 PowerShell half fails closed as an explicit, visible skip (never a silent pass
@@ -129,8 +129,8 @@ _POWERSHELL_CONFIG_EXTRA = (
 
 POWERSHELL_TREE = Tree(
     name="powershell",
-    rules_dir=ROOT / "rules-powershell",
-    tests_dir=ROOT / "tests-powershell",
+    rules_dir=ROOT / "rules" / "powershell",
+    tests_dir=ROOT / "tests" / "powershell",
     cases_path=ROOT / "tests/arm_coverage_powershell.json",
     extra_config=_POWERSHELL_CONFIG_EXTRA,
 )
@@ -164,7 +164,13 @@ class ArmCoverageTests(unittest.TestCase):
         invalid = {}
         seen_invalid = set()
         tested = fixture_kills = count_kills = 0
-        for rule_path in sorted(tree.rules_dir.rglob("*.yml")):
+        rule_paths = sorted(tree.rules_dir.rglob("*.yml"))
+        if tree.name == "native":
+            rule_paths = [
+                path for path in rule_paths
+                if not path.is_relative_to(POWERSHELL_TREE.rules_dir)
+            ]
+        for rule_path in rule_paths:
             rule = yaml.safe_load(rule_path.read_text())
             arms = list(any_arms(rule["rule"]))
             if not arms:
@@ -175,9 +181,9 @@ class ArmCoverageTests(unittest.TestCase):
             prefix = f"arm-coverage-{tree.name}-"
             with tempfile.TemporaryDirectory(prefix=prefix, dir=ROOT) as name:
                 directory = Path(name)
-                rules_rel = tree.rules_dir.name
-                tests_rel = tree.tests_dir.name
-                (directory / rules_rel).mkdir()
+                rules_rel = tree.rules_dir.relative_to(ROOT)
+                tests_rel = tree.tests_dir.relative_to(ROOT)
+                (directory / rules_rel).mkdir(parents=True)
                 snapshots = directory / tests_rel / "__snapshots__"
                 snapshots.mkdir(parents=True)
                 fixture_path = tree.tests_dir / rule_path.relative_to(tree.rules_dir)
