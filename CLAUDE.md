@@ -2,10 +2,15 @@
 
 - Active rules: `rules/<language>/<category>/<id>.yml`; nginx uses language `c`.
 - Tests mirror that path under `tests/`; keep IDs stable and globally unique.
+- Every rule starts with the MyGuard repository/site comment documented in
+  `docs/authoring.md`; rules adapted from CodeRabbit also link their upstream
+  CodeRabbit repository in an adjacent comment.
 - Every rule needs positive, near-miss, and comment/string controls. Advisory
   rules may intentionally match safe code; document that boundary.
-- Read `docs/authoring.md` before changing matchers; explain semantic limits in
-  `docs/limitations.md`. Rejected experiments stay outside `rules/`.
+- Read `docs/authoring.md` before changing matchers. Rules with several facts,
+  alternatives, or scope boundaries also follow `docs/complex-rules.md`;
+  explain semantic limits in `docs/limitations.md`. Rejected experiments stay
+  outside `rules/`.
 - Run `npm ci`, install `requirements-dev.txt`, and run `npm test`.
   Inventory validation checks discovery and IDs; review fixture semantics
   separately to establish that near misses exercise the intended boundary.

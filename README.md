@@ -44,6 +44,22 @@ Tests check rule/test coverage, positive detections, negative controls, and
 snapshots. To review changed snapshots, run `npx ast-grep test -i` and inspect
 the resulting diff. CI never accepts snapshots automatically.
 
+## Generate
+
+Describe a complex rule once in a versioned plan, preview it, then write its
+rule, fixture, and inventory update atomically:
+
+```sh
+python3 tools/rule-scaffold.py --plan /tmp/my-rule.yml --check
+python3 tools/rule-scaffold.py --plan /tmp/my-rule.yml --dry-run
+python3 tools/rule-scaffold.py --plan /tmp/my-rule.yml
+```
+
+Generation fails before writing if the plan schema, utility references,
+constraint bindings, or any positive/negative contrast case is invalid. See the
+[complex-rule contract](docs/complex-rules.md#generate-the-rule-and-contrast-matrix)
+for the plan format.
+
 ## Use
 
 ```sh
@@ -64,7 +80,8 @@ extensions use the PHP parser.
 Warnings and information are advisory; error severity can fail a scan. Validate
 any promoted rule IDs and exercise a known positive before using a scan as a gate.
 
-See [authoring](docs/authoring.md), [ID migrations](docs/id-migrations.md),
+See [authoring](docs/authoring.md), [complex rule design and
+generation](docs/complex-rules.md), [ID migrations](docs/id-migrations.md),
 [nginx classification](docs/nginx-classification.md), [limitations](docs/limitations.md),
 [sources](docs/sources.md) and [rejected candidates](docs/rejected-candidates.md).
 

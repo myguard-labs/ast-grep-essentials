@@ -2,6 +2,11 @@
 
 Checked against ast-grep 0.45.3 on 2026-09-06. The linked upstream pages are
 living references; the lockfile and fixtures define this repository's baseline.
+Rules that need several structural facts, scope boundaries, alternatives, or a
+contrast matrix also follow [the complex-rule design and generation
+contract](complex-rules.md). Prefer its single `--plan` input: it preflights the
+whole contrast matrix before creating files and keeps matcher configuration,
+fixtures, limits, and provenance in one reviewable contract.
 
 ## Define the claim
 
@@ -71,6 +76,22 @@ the following word before treating that word as another flag.
 Put the rule in `rules/<language>/<category>/<id>.yml` and matching fixtures in
 `tests/<language>/<category>/<id>.yml`. Use `security` for security review and
 `correctness` for general API/logic mistakes.
+
+Start every active rule file with this inline YAML comment so copied or
+redistributed rules link back to both project homes:
+
+```yaml
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+```
+
+When a rule is copied or adapted from CodeRabbit's pack, add an adjacent source
+comment linking to the exact upstream rule when known, or at minimum to its
+repository:
+
+```yaml
+# CodeRabbit source: https://github.com/coderabbitai/ast-grep-essentials
+```
+
 Tests identify the rule by `id`; use realistic syntax including PHP open tags
 and complete C functions where context affects parsing.
 
