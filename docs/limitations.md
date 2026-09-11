@@ -1728,3 +1728,30 @@ rejected and is recorded in `rejected-candidates.md`.
   Their unambiguous prefixes were established by binding each candidate against
   the full Windows parameter set rather than against the host's live cmdlet, and
   a script carrying them is reported wherever it is scanned.
+
+## CodeRabbit imports
+
+The 184 rules recorded in `coderabbit-rules.json` retain their upstream
+syntactic claims and fixtures. Their inclusion means the rules are available to
+consumers; it does not turn pattern matches into proof of exploitability,
+runtime reachability, type identity, or dataflow. Review a finding in its code
+context before treating it as a vulnerability.
+
+The import adds one generic provenance near-miss per fixture and regenerates
+snapshots with ast-grep 0.45.3. Those generic snippets are not rule-specific
+comment/string lookalikes; adding such controls for every imported matcher is a
+tracked follow-up. The import normalizes whitespace, 281 utility identifiers that
+contained characters the pinned engine rejects, and five uppercase language
+keys. A small number of verified matcher and diagnostic defects are corrected
+locally and identified by each rule's modification header. The manifest records
+the pinned source paths and original upstream digests; it is traceability
+metadata, not an independently fetched supply-chain attestation.
+
+The upstream rules run through the normal ast-grep fixture and snapshot suite.
+They are excluded from the local per-arm mutation inventory because the
+upstream fixtures do not distinguish every matcher alternative. This means a
+branch can regress without the mutation gate noticing until imported fixtures
+gain per-arm witnesses. All imported rules do run the diagnostic metadata
+contract; interpolated message and note text is required to be non-empty rather
+than byte-identical to its declaration. The stricter per-arm gate continues to
+cover every locally authored native rule.

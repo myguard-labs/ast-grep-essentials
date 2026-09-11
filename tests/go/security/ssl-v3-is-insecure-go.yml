@@ -1,0 +1,31 @@
+id: ssl-v3-is-insecure-go
+valid:
+  - |
+    package main
+
+    var coderabbitControl = "CodeRabbit"
+  - |
+    client_good := &http.Client{
+    Transport: &http.Transport{
+      TLSClientConfig: &tls.Config{
+        KeyLogWriter: w,
+        // OK
+        MinVersion:         tls.VersionTLS10,
+        Rand:               zeroSource{}, // for reproducible output; don't do this.
+        InsecureSkipVerify: true,         // test server certificate is not trusted.
+      },
+    },
+    }
+
+invalid:
+  - |
+    client := &http.Client{
+     Transport: &http.Transport{
+       TLSClientConfig: &tls.Config{
+         KeyLogWriter:       w,
+         MinVersion:         tls.VersionSSL30,
+         Rand:               zeroSource{}, // for reproducible output; don't do this.
+         InsecureSkipVerify: true,         // test server certificate is not trusted.
+       },
+     },
+    }

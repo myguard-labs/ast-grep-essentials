@@ -1,0 +1,21 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# CodeRabbit source repository: https://github.com/coderabbitai/ast-grep-essentials
+# CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/java/security/cookie-secure-flag-false-java.yml
+# Original author (Git): ESS-ENN
+# License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+# Modified by MyGuard: provenance metadata added; matcher behavior is unchanged.
+id: cookie-secure-flag-false-java
+language: java
+severity: warning
+message: >-
+  A cookie was detected without setting the 'secure' flag. The 'secure'
+  flag for cookies prevents the client from transmitting the cookie over
+  insecure channels such as HTTP. Set the 'secure' flag by calling
+  '$COOKIE.setSecure(true);'.
+note: >-
+  [CWE-614] Sensitive Cookie in HTTPS Session Without 'Secure' Attribute.
+  [REFERENCES]
+      - https://owasp.org/www-community/controls/SecureCookieAttribute
+ast-grep-essentials: true
+rule:
+  pattern: $COOKIE.setSecure(false);

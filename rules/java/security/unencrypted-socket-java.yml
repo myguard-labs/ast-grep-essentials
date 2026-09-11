@@ -1,0 +1,28 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# CodeRabbit source repository: https://github.com/coderabbitai/ast-grep-essentials
+# CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/java/security/unencrypted-socket-java.yml
+# Original author (Git): ESS-ENN
+# License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+# Modified by MyGuard: provenance metadata added; matcher behavior is unchanged.
+id: unencrypted-socket-java
+language: java
+severity: info
+message: >-
+  "Detected use of a Java socket that is not encrypted. As a result, the
+      traffic could be read by an attacker intercepting the network traffic. Use
+      an SSLSocket created by 'SSLSocketFactory' or 'SSLServerSocketFactory'
+      instead."
+note: >-
+  [CWE-319] Cleartext Transmission of Sensitive Information
+  [REFERENCES]
+      - https://owasp.org/Top10/A02_2021-Cryptographic_Failures
+ast-grep-essentials: true
+
+rule:
+  any:
+    - pattern: new ServerSocket($$$)
+    - pattern: new Socket($$$)
+  not:
+    has:
+      stopBy: end
+      kind: ERROR

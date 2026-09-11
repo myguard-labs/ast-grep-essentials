@@ -1,0 +1,34 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# CodeRabbit source repository: https://github.com/coderabbitai/ast-grep-essentials
+# CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/ruby/security/force-ssl-false-ruby.yml
+# Original author (Git): ESS-ENN
+# License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+# Modified by MyGuard: provenance metadata added; utility IDs normalized; matcher behavior is unchanged.
+id: force-ssl-false-ruby
+language: ruby
+severity: warning
+message: >-
+  Checks for configuration setting of force_ssl to false. Force_ssl
+  forces usage of HTTPS, which could lead to network interception of
+  unencrypted application traffic. To fix, set config.force_ssl = true.
+note: >-
+  [CWE-311] Missing Encryption of Sensitive Data.
+  [REFERENCES]
+      - https://github.com/presidentbeef/brakeman/blob/main/lib/brakeman/checks/check_force_ssl.rb
+
+ast-grep-essentials: true
+
+utils:
+  UPSTREAM_UTIL_001:
+    kind: assignment
+    all:
+      - has:
+          kind: call
+          pattern: config.force_ssl
+      - has:
+          regex: ^\s*false$
+
+rule:
+  kind: assignment
+  any:
+    - matches: UPSTREAM_UTIL_001

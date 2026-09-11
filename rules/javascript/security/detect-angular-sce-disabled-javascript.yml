@@ -1,0 +1,24 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# CodeRabbit source repository: https://github.com/coderabbitai/ast-grep-essentials
+# CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/javascript/security/detect-angular-sce-disabled-javascript.yml
+# Original author (Git): ESS-ENN
+# License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+# Modified by MyGuard: provenance metadata added; matcher behavior is unchanged.
+id: detect-angular-sce-disabled-javascript
+language: javascript
+severity: warning
+message: >-
+  $sceProvider is set to false. Disabling Strict Contextual escaping
+  (SCE) in an AngularJS application could provide additional attack surface
+  for XSS vulnerabilities.
+note: >-
+  [CWE-79] Improper Neutralization of Input During Web Page Generation.
+  [REFERENCES]
+      - https://docs.angularjs.org/api/ng/service/$sce
+      - https://owasp.org/www-chapter-london/assets/slides/OWASPLondon20170727_AngularJS.pdf
+
+ast-grep-essentials: true
+
+rule:
+  pattern: |
+    $sceProvider.enabled(false);

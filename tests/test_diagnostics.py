@@ -1,6 +1,7 @@
 """Assert main diagnostic text emitted by ast-grep, not just snapshots."""
 
 import json
+import re
 import subprocess
 import tempfile
 import unittest
@@ -12,6 +13,10 @@ from tests._astgrep import resolve_ast_grep
 
 ROOT = Path(__file__).resolve().parents[1]
 AST_GREP = resolve_ast_grep()
+CODERABBIT_IDS = {
+    entry["id"]
+    for entry in json.loads((ROOT / "docs/coderabbit-rules.json").read_text())["rules"]
+}
 
 
 class DiagnosticTests(unittest.TestCase):
@@ -28,7 +33,7 @@ class DiagnosticTests(unittest.TestCase):
             path for path in (ROOT / "rules").rglob("*.yml")
             if path.relative_to(ROOT / "rules").parts[0] != "powershell"
         )
-        self.assertEqual(len(rules), 266, "update the explicit diagnostic inventory")
+        self.assertEqual(len(rules), 450, "update the explicit diagnostic inventory")
         checked = 0
         for path in rules:
             with self.subTest(rule=path.stem):
@@ -52,9 +57,20 @@ class DiagnosticTests(unittest.TestCase):
                     expected = declared[field]
                     if field == "severity" and expected is False:
                         expected = "off"
-                    self.assertEqual(finding[field], expected, field)
+                    if path.stem in CODERABBIT_IDS and field in ("message", "note"):
+                        # Upstream diagnostics interpolate captured metavariables.
+                        self.assertIsInstance(finding[field], str, field)
+                        self.assertTrue(finding[field].strip(), field)
+                        for token in re.findall(r"\$[A-Z][A-Z0-9_]*", expected):
+                            self.assertIn(
+                                token[1:],
+                                finding["metaVariables"]["single"],
+                                f"unbound {field} token {token}",
+                            )
+                    else:
+                        self.assertEqual(finding[field], expected, field)
                 checked += 1
-        self.assertEqual(checked, 266)
+        self.assertEqual(checked, 450)
 
     def test_deprecated_rule_id_matcher_tracks_replacement(self):
         replacement = yaml.safe_load(
