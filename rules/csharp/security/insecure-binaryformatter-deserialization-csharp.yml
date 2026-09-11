@@ -1,0 +1,49 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# CodeRabbit source repository: https://github.com/coderabbitai/ast-grep-essentials
+# CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/csharp/security/insecure-binaryformatter-deserialization-csharp.yml
+# Original author (Git): ESS-ENN
+# License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+# Modified by MyGuard: provenance metadata added; matcher behavior is unchanged.
+id: insecure-binaryformatter-deserialization-csharp
+severity: warning
+language: csharp
+message: >-
+  The BinaryFormatter type is dangerous and is not recommended for data
+  processing. Applications should stop using BinaryFormatter as soon as
+  possible, even if they believe the data they're processing to be
+  trustworthy. BinaryFormatter is insecure and can't be made secure.
+note: >-
+  [CWE-502] Deserialization of Untrusted Data.
+  [REFERENCES]
+      - https://docs.microsoft.com/en-us/dotnet/standard/serialization/binaryformatter-security-guide
+
+ast-grep-essentials: true
+
+utils:
+  MATCH_PATTERN_BinaryFormatter:
+   pattern: new BinaryFormatter()
+   any:
+    - inside:
+        stopBy: end
+        follows:
+          stopBy: end
+          kind: using_directive
+          pattern: using System.Runtime.Serialization.Formatters.Binary;
+    - inside:
+        kind: global_statement
+        stopBy: end
+        follows:
+          stopBy: end
+          kind: using_directive
+          pattern: using System.Runtime.Serialization.Formatters.Binary
+   not:
+    inside:
+      kind: object_creation_expression
+      stopBy: end
+      not:
+        inside:
+          kind: variable_declarator
+          stopBy: end
+
+rule:
+  matches: MATCH_PATTERN_BinaryFormatter

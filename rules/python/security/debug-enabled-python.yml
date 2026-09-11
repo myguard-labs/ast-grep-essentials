@@ -1,0 +1,99 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# CodeRabbit source repository: https://github.com/coderabbitai/ast-grep-essentials
+# CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/python/security/debug-enabled-python.yml
+# Original author (Git): ESS-ENN
+# License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+# Modified by MyGuard: provenance metadata added; utility IDs normalized; matcher behavior is unchanged.
+id: debug-enabled-python
+severity: warning
+language: python
+message: >-
+  Detected Flask app with debug=True. Do not deploy to production with
+  this flag enabled as it will leak sensitive information. Instead, consider
+  using Flask configuration variables or setting 'debug' using system
+  environment variables.
+note: >-
+  [CWE-489] Active Debug Code.
+  [REFERENCES]
+      - https://labs.detectify.com/2015/10/02/how-patreon-got-hacked-publicly-exposed-werkzeug-debugger/
+ast-grep-essentials: true
+utils:
+  UPSTREAM_UTIL_001:
+    kind: call
+    all:
+      - has:
+          stopBy: neighbor
+          kind: attribute
+          all:
+            - has:
+                stopBy: neighbor
+                kind: identifier
+                regex: "^app$"
+            - has:
+                stopBy: neighbor
+                kind: identifier
+                regex: "^run$"
+      - has:
+          stopBy: neighbor
+          kind: argument_list
+          has:
+            stopBy: neighbor
+            kind: keyword_argument
+            regex: "^debug=True$"
+      - any:
+          - inside:
+              stopBy: end
+              kind: if_statement
+              follows:
+                stopBy: end
+                kind: import_from_statement
+                has:
+                  stopBy: end
+                  kind: dotted_name
+                  has:
+                    stopBy: neighbor
+                    kind: identifier
+                    regex: "^Flask$"
+          - inside:
+              stopBy: end
+              kind: function_definition
+              follows:
+                stopBy: end
+                kind: import_from_statement
+                has:
+                  stopBy: end
+                  kind: dotted_name
+                  has:
+                    stopBy: neighbor
+                    kind: identifier
+                    regex: "^Flask$"
+          - inside:
+              stopBy: end
+              kind: expression_statement
+              follows:
+                stopBy: end
+                kind: import_from_statement
+                has:
+                  stopBy: end
+                  kind: dotted_name
+                  has:
+                    stopBy: neighbor
+                    kind: identifier
+                    regex: "^Flask$"
+          - inside:
+              stopBy: end
+              kind: decorated_definition
+              follows:
+                stopBy: end
+                kind: import_from_statement
+                has:
+                  stopBy: end
+                  kind: dotted_name
+                  has:
+                    stopBy: neighbor
+                    kind: identifier
+                    regex: "^Flask$"
+rule:
+  kind: call
+  any:
+    - matches: UPSTREAM_UTIL_001

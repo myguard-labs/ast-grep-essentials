@@ -1,0 +1,38 @@
+id: insecure-binaryformatter-deserialization-csharp
+snapshots:
+  ? |
+    using System.Runtime.Serialization.Formatters.Binary;
+    namespace InsecureDeserialization
+    {
+     public class InsecureBinaryFormatterDeserialization
+     {
+        public void BinaryFormatterDeserialization(string json)
+        {
+            try
+            {
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+                MemoryStream memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+                binaryFormatter.Deserialize(memoryStream);
+                memoryStream.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+    }
+    }
+  : labels:
+    - source: new BinaryFormatter()
+      style: primary
+      start: 280
+      end: 301
+    - source: using System.Runtime.Serialization.Formatters.Binary;
+      style: secondary
+      start: 0
+      end: 53
+    - source: using System.Runtime.Serialization.Formatters.Binary;
+      style: secondary
+      start: 0
+      end: 53

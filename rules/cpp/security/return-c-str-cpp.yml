@@ -1,0 +1,129 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# CodeRabbit source repository: https://github.com/coderabbitai/ast-grep-essentials
+# CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/cpp/security/return-c-str-cpp.yml
+# Original author (Git): ESS-ENN
+# License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+# Modified by MyGuard: provenance metadata added; diagnostic corrected; matcher behavior is unchanged.
+id: return-c-str-cpp
+language: cpp
+severity: warning
+message: >-
+  A method returns a pointer to memory owned by a local string. The pointer is
+  invalid after that string goes out of scope, which can trigger use after free.
+note: >-
+  [CWE-416] Use After Free
+  [REFERENCES]
+      - https://wiki.sei.cmu.edu/confluence/display/c/DCL30-C.+Declare+objects+with+appropriate+storage+durations
+      - https://wiki.sei.cmu.edu/confluence/display/cplusplus/EXP54-CPP.+Do+not+access+an+object+outside+of+its+lifetime
+
+ast-grep-essentials: true
+
+rule:
+  any:
+    - pattern: return basic_string<$TYPE>($$$).$METHOD();
+    - pattern: return std::basic_string<$TYPE>($$$).$METHOD();
+    - pattern: return string($$$).$METHOD();
+    - pattern: return std::string($$$).$METHOD();
+    - pattern: return wstring($$$).$METHOD();
+    - pattern: return std::wstring($$$).$METHOD();
+    - pattern: return $STR.$METHOD();
+      any:
+        - follows:
+            stopBy: end
+            all:
+              - not:
+                  has:
+                    stopBy: end
+                    kind: storage_class_specifier
+              - any:
+                  - kind: declaration
+                    not:
+                      pattern: $STR_VAL $STR = "$STRG";
+              - has:
+                  pattern: $STR_VAL
+              - has:
+                  stopBy: end
+                  pattern: $STR
+        - inside:
+            stopBy: end
+            follows:
+              stopBy: end
+              all:
+                - not:
+                    has:
+                      stopBy: end
+                      kind: storage_class_specifier
+                - any:
+                    - kind: declaration
+                      not:
+                        pattern: $STR_VAL $STR = "$STRG";
+                - has:
+                    pattern: $STR_VAL
+                - has:
+                    pattern: $STR
+        - inside:
+            stopBy: end
+            follows:
+              stopBy: end
+              all:
+                - not:
+                    has:
+                      stopBy: end
+                      kind: storage_class_specifier
+                - any:
+                    - kind: pointer_declarator
+                      not:
+                        has:
+                          stopBy: end
+                          pattern: $STR_VAL $STR = "$STRG";
+                      has:
+                        kind: function_declarator
+                        all:
+                          - has:
+                              stopBy: end
+                              any:
+                                - kind: qualified_identifier
+                                - kind: type_identifier
+                              regex: ^(basic_string<.*>|std::basic_string<.*>|string|std::string|wstring|std::wstring|string(.*)|std::string(.*)|wstring(.*)|std::wstring(.*)|basic_string<.*>(.*)|std::basic_string<.*>(.*))$
+                          - has:
+                              stopBy: end
+                              pattern: $STR
+        - follows:
+            stopBy: end
+            all:
+              - not:
+                  has:
+                    stopBy: end
+                    kind: storage_class_specifier
+              - any:
+                  - kind: pointer_declarator
+                    has:
+                      kind: function_declarator
+                      all:
+                        - not:
+                            has:
+                              stopBy: end
+                              pattern: $STR_VAL $STR = "$STRG";
+                        - has:
+                            stopBy: end
+                            any:
+                              - kind: qualified_identifier
+                              - kind: type_identifier
+                            regex: ^(basic_string<.*>|std::basic_string<.*>|string|std::string|wstring|std::wstring|string(.*)|std::string(.*)|wstring(.*)|std::wstring(.*)|basic_string<.*>(.*)|std::basic_string<.*>(.*))$
+                        - has:
+                            stopBy: end
+                            pattern: $STR
+    - pattern: return $STR_VAL.$METHOD();
+  not:
+    all:
+      - has:
+          stopBy: end
+          kind: ERROR
+      - inside:
+          stopBy: end
+          kind: ERROR
+constraints:
+  METHOD:
+    regex: ^(c_str|data)$
+  STR_VAL:
+    regex: ^(basic_string<.*>|std::basic_string<.*>|string|std::string|wstring|std::wstring|string(.*)|std::string(.*)|wstring(.*)|std::wstring(.*)|basic_string<.*>(.*)|std::basic_string<.*>(.*))$

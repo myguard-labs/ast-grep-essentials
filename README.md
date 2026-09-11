@@ -1,9 +1,10 @@
 # astgrep-rules
 
-Handcrafted [ast-grep](https://ast-grep.github.io/) rules for Bash, C (including
-nginx-domain rules), Go, Java, JavaScript, Lua, PHP, and Python. Security and
-correctness checks identify code that needs review; a match alone does not
-establish a vulnerability.
+Curated [ast-grep](https://ast-grep.github.io/) rules for Bash, C, C++, C#,
+Go, HTML, Java, JavaScript, Kotlin, Lua, PHP, Python, Ruby, Rust, Scala, Swift,
+and TypeScript. C includes nginx-domain rules. Security and correctness checks
+identify code that needs review; a match alone does not establish a
+vulnerability.
 
 Perl is also present in the MyGuard corpus, but ast-grep 0.45.3 has no built-in
 Perl parser. [Custom-language support](https://ast-grep.github.io/advanced/custom-language.html)
@@ -24,8 +25,15 @@ platform.
 
 Rule IDs are stable across directory changes. Intentional ID changes are listed
 in [ID migrations](docs/id-migrations.md); consumers must apply those mappings
-when updating the pack. Third-party packs are maintained separately by consumers
-and are not bundled here.
+when updating the pack.
+
+The active pack includes 184 rules copied from
+[CodeRabbit's ast-grep essentials](https://github.com/coderabbitai/ast-grep-essentials)
+at commit `73120109bf45c284d0cd8a37bdd7082e80e92e87`. Git attributes their original
+creation to ESS-ENN. The upstream root `LICENSE` is Apache License 2.0; each
+copied rule carries that license notice and an exact source link, and the
+import is tracked in
+[`docs/coderabbit-rules.json`](docs/coderabbit-rules.json).
 
 The disabled compatibility alias for a renamed rule preserves an explicitly
 promoted former ID only. Consumers must still migrate suppressions, overrides,

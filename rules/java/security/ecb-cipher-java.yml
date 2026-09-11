@@ -1,0 +1,58 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# CodeRabbit source repository: https://github.com/coderabbitai/ast-grep-essentials
+# CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/java/security/ecb-cipher-java.yml
+# Original author (Git): ESS-ENN
+# License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+# Modified by MyGuard: provenance metadata added; matcher behavior is unchanged.
+id: ecb-cipher-java
+severity: warning
+language: java
+message: >-
+      Cipher in ECB mode is detected. ECB mode produces the same output for
+      the same input each time which allows an attacker to intercept and replay
+      the data. Further, ECB mode does not provide any integrity checking. See
+      https://find-sec-bugs.github.io/bugs.htm#CIPHER_INTEGRITY.
+note: >-
+  [CWE-327] Use of a Broken or Risky Cryptographic Algorithm.
+  [REFERENCES]
+      - https://owasp.org/Top10/A02_2021-Cryptographic_Failures
+
+ast-grep-essentials: true
+
+rule:
+  kind: local_variable_declaration
+  all:
+   - has:
+       kind: type_identifier
+       regex: ^Cipher$
+   - has:
+       kind: variable_declarator
+       all:
+           - has:
+                 kind: identifier
+           - has:
+                 kind: method_invocation
+                 all:
+                     - has:
+                        kind: identifier
+                        regex: ^getInstance$
+                     - has:
+                           kind: argument_list
+                           has:
+                               pattern: $MODE
+                               nthChild:
+                                position: 1
+                                ofRule:
+                                  not:
+                                    kind: line_comment
+                           not:
+                            has:
+                              nthChild:
+                                position: 2
+                                ofRule:
+                                  not:
+                                    kind: line_comment
+
+constraints:
+  MODE:
+    regex: .*ECB.*

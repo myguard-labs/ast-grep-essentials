@@ -1,0 +1,62 @@
+id: ssl-v3-is-insecure-go
+snapshots:
+  ? |
+    client := &http.Client{
+     Transport: &http.Transport{
+       TLSClientConfig: &tls.Config{
+         KeyLogWriter:       w,
+         MinVersion:         tls.VersionSSL30,
+         Rand:               zeroSource{}, // for reproducible output; don't do this.
+         InsecureSkipVerify: true,         // test server certificate is not trusted.
+       },
+     },
+    }
+  : labels:
+    - source: |-
+        tls.Config{
+             KeyLogWriter:       w,
+             MinVersion:         tls.VersionSSL30,
+             Rand:               zeroSource{}, // for reproducible output; don't do this.
+             InsecureSkipVerify: true,         // test server certificate is not trusted.
+           }
+      style: primary
+      start: 74
+      end: 325
+    - source: tls.Config
+      style: secondary
+      start: 74
+      end: 84
+    - source: MinVersion
+      style: secondary
+      start: 119
+      end: 129
+    - source: tls
+      style: secondary
+      start: 139
+      end: 142
+    - source: VersionSSL30
+      style: secondary
+      start: 143
+      end: 155
+    - source: tls.VersionSSL30
+      style: secondary
+      start: 139
+      end: 155
+    - source: tls.VersionSSL30
+      style: secondary
+      start: 139
+      end: 155
+    - source: 'MinVersion:         tls.VersionSSL30'
+      style: secondary
+      start: 119
+      end: 155
+    - source: |-
+        {
+             KeyLogWriter:       w,
+             MinVersion:         tls.VersionSSL30,
+             Rand:               zeroSource{}, // for reproducible output; don't do this.
+             InsecureSkipVerify: true,         // test server certificate is not trusted.
+           }
+      style: secondary
+      start: 84
+      end: 325

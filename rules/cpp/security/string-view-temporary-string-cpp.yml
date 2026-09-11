@@ -1,0 +1,949 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# CodeRabbit source repository: https://github.com/coderabbitai/ast-grep-essentials
+# CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/cpp/security/string-view-temporary-string-cpp.yml
+# Original author (Git): ESS-ENN
+# License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+# Modified by MyGuard: provenance metadata added; language normalized from Cpp to cpp; utility IDs normalized; matcher behavior is unchanged.
+id: string-view-temporary-string-cpp
+language: cpp
+severity: warning
+message: >-
+  This `std::string_view` is constructed from a temporary `std::string`.
+  The `std::string` value is immediately destroyed after assignment and
+  accessing data through the `std::string_view` will trigger a
+  use-after-free.
+note: >-
+  [CWE-416] Use After Free.
+  [REFERENCES]
+      - https://wiki.sei.cmu.edu/confluence/display/cplusplus/MEM50-CPP.+Do+not+access+freed+memory
+
+ast-grep-essentials: true
+
+utils:
+  UPSTREAM_UTIL_001:
+    # $VAR = std::to_string(...);
+    kind: expression_statement
+    has:
+      stopBy: neighbor
+      kind: assignment_expression
+      all:
+        - has:
+            stopBy: neighbor
+            kind: identifier
+            regex: ^(string_view|wstring_view)$
+        - has:
+            stopBy: neighbor
+            kind: call_expression
+            all:
+              - has:
+                  stopBy: neighbor
+                  kind: qualified_identifier
+                  regex: ^std::to_string$
+              - has:
+                  stopBy: neighbor
+                  kind: argument_list
+
+  UPSTREAM_UTIL_002:
+    # $VAR = std::to_string(...);
+    kind: expression_statement
+    has:
+      stopBy: neighbor
+      kind: assignment_expression
+      all:
+        - has:
+            stopBy: neighbor
+            kind: identifier
+            regex: ^(string_view|wstring_view)$
+        - has:
+            stopBy: neighbor
+            kind: call_expression
+            all:
+              - has:
+                  stopBy: neighbor
+                  kind: field_expression
+                  regex: ^(string.substr|wstring.substr)$
+              - has:
+                  stopBy: neighbor
+                  kind: argument_list
+
+  UPSTREAM_UTIL_003:
+    #  $VAR = $EXPR + ...
+    kind: expression_statement
+    has:
+      stopBy: neighbor
+      kind: assignment_expression
+      all:
+        - has:
+            stopBy: neighbor
+            kind: identifier
+            regex: ^(string_view|wstring_view)$
+        - has:
+            stopBy: neighbor
+            kind: binary_expression
+            has:
+              stopBy: neighbor
+              kind: identifier
+              regex: ^(wstring|string)$
+              nthChild: 1
+
+  UPSTREAM_UTIL_004:
+    #  $VAR = "..." + $EXPR
+    kind: expression_statement
+    has:
+      stopBy: neighbor
+      kind: assignment_expression
+      all:
+        - has:
+            stopBy: neighbor
+            kind: identifier
+            regex: ^(string_view|wstring_view)$
+        - has:
+            stopBy: end
+            kind: binary_expression
+            all:
+              - has:
+                  stopBy: end
+                  kind: string_literal
+                  nthChild: 1
+              - has:
+                  stopBy: end
+                  kind: identifier
+                  regex: ^(string|wstring)$
+
+  UPSTREAM_UTIL_005:
+    # $VAR_instance = "..." + $EXPR
+    kind: expression_statement
+    all:
+      - has:
+          stopBy: neighbor
+          kind: assignment_expression
+          all:
+            - has:
+                stopBy: neighbor
+                kind: identifier
+                pattern: $VAR_INSTANCE
+            - has:
+                stopBy: neighbor
+                kind: binary_expression
+                all:
+                  - has:
+                      stopBy: neighbor
+                      kind: string_literal
+                  - has:
+                      stopBy: neighbor
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+      - any:
+          - inside:
+              stopBy: end
+              follows:
+                stopBy: end
+                kind: declaration
+                all:
+                  - has:
+                      stopBy: neighbor
+                      regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                      nthChild: 1
+                  - has:
+                      stopBy: end
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                    nthChild: 1
+                - has:
+                    stopBy: end
+                    kind: identifier
+                    pattern: $EXPR_INSTANCE
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    any:
+                      - kind: type_identifier
+                      - kind: qualified_identifier
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                - has:
+                    stopBy: end
+                    kind: init_declarator
+                    has:
+                      stopBy: end
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+      - any:
+          - inside:
+              stopBy: end
+              follows:
+                stopBy: end
+                any:
+                  - kind: field_declaration
+                  - kind: declaration
+                all:
+                  - has:
+                      stopBy: neighbor
+                      regex: ^(string_view|basic_string_view<.*>|std::basic_string_view<.*>|std::string_view|std::wstring_view|wstring_view)$
+                      nthChild: 1
+                  - has:
+                      stopBy: end
+                      kind: identifier
+                      pattern: $VAR_INSTANCE
+
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    regex: ^(string_view|basic_string_view<.*>|std::basic_string_view<.*>|std::string_view|std::wstring_view|wstring_view)$
+                    nthChild: 1
+                - has:
+                    stopBy: end
+                    kind: identifier
+                    pattern: $VAR_INSTANCE
+
+  UPSTREAM_UTIL_006:
+    kind: expression_statement
+    all:
+      - has:
+          stopBy: neighbor
+          kind: assignment_expression
+          all:
+            - has:
+                stopBy: neighbor
+                kind: identifier
+                pattern: $VAR_INSTANCE
+            - has:
+                stopBy: neighbor
+                kind: binary_expression
+                has:
+                  stopBy: end
+                  kind: identifier
+                  pattern: $EXPR_INSTANCE
+      - any:
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                    nthChild: 1
+                - has:
+                    stopBy: end
+                    kind: identifier
+                    pattern: $EXPR_INSTANCE
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    any:
+                      - kind: type_identifier
+                      - kind: qualified_identifier
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                - has:
+                    stopBy: neighbor
+                    kind: init_declarator
+                    has:
+                      stopBy: end
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+          - inside:
+              stopBy: end
+              follows:
+                stopBy: end
+                any:
+                  - kind: field_declaration
+                  - kind: declaration
+                all:
+                  - has:
+                      stopBy: end
+                      any:
+                        - kind: type_identifier
+                        - kind: qualified_identifier
+                      regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                  - has:
+                      stopBy: end
+                      pattern: $EXPR_INSTANCE
+      - follows:
+          stopBy: end
+          any:
+            - kind: field_declaration
+            - kind: declaration
+          all:
+            - has:
+                stopBy: neighbor
+                regex: ^(string_view|basic_string_view<.*>|std::basic_string_view<.*>|std::string_view|std::wstring_view|wstring_view)$
+                nthChild: 1
+            - has:
+                stopBy: end
+                kind: identifier
+                pattern: $VAR_INSTANCE
+
+  UPSTREAM_UTIL_007:
+    # $VAR = std::to_string(...);
+    kind: expression_statement
+    all:
+      - has:
+          stopBy: neighbor
+          kind: assignment_expression
+          all:
+            - has:
+                stopBy: neighbor
+                kind: identifier
+                pattern: $VAR_INSTANCE
+            - has:
+                stopBy: neighbor
+                kind: call_expression
+                all:
+                  - has:
+                      stopBy: end
+                      kind: field_expression
+                      all:
+                        - any:
+                            - has:
+                                stopBy: end
+                                kind: identifier
+                                pattern: $EXPR_INSTANCE
+                                nthChild: 1
+                            - has:
+                                stopBy: end
+                                any:
+                                  - kind: type_identifier
+                                  - kind: qualified_identifier
+                                regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                        - has:
+                            stopBy: neighbor
+                            kind: field_identifier
+                            regex: ^substr$
+                  - has:
+                      stopBy: neighbor
+                      kind: argument_list
+      - any:
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                    nthChild: 1
+                - has:
+                    stopBy: end
+                    kind: identifier
+                    pattern: $EXPR_INSTANCE
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    any:
+                      - kind: type_identifier
+                      - kind: qualified_identifier
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                - has:
+                    stopBy: neighbor
+                    kind: init_declarator
+                    has:
+                      stopBy: neighbor
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+          - inside:
+              stopBy: end
+              follows:
+                stopBy: end
+                any:
+                  - kind: field_declaration
+                  - kind: declaration
+                all:
+                  - has:
+                      stopBy: end
+                      any:
+                        - kind: type_identifier
+                        - kind: qualified_identifier
+                      regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                  - has:
+                      stopBy: end
+                      pattern: $EXPR_INSTANCE
+      - follows:
+          stopBy: end
+          any:
+            - kind: field_declaration
+            - kind: declaration
+          all:
+            - has:
+                stopBy: neighbor
+                regex: ^(string_view|basic_string_view<.*>|std::basic_string_view<.*>|std::string_view|std::wstring_view|wstring_view)$
+                nthChild: 1
+            - has:
+                stopBy: end
+                kind: identifier
+                pattern: $VAR_INSTANCE
+
+  UPSTREAM_UTIL_008:
+    # $VAR = std::to_string(...);
+    kind: expression_statement
+    all:
+      - has:
+          stopBy: neighbor
+          kind: assignment_expression
+          all:
+            - has:
+                stopBy: neighbor
+                kind: identifier
+                pattern: $VAR_INSTANCE
+            - has:
+                stopBy: neighbor
+                kind: call_expression
+                all:
+                  - has:
+                      stopBy: end
+                      kind: qualified_identifier
+                      regex: ^std::to_string$
+                  - has:
+                      stopBy: neighbor
+                      kind: argument_list
+      - follows:
+          stopBy: end
+          any:
+            - kind: field_declaration
+            - kind: declaration
+          all:
+            - has:
+                stopBy: neighbor
+                regex: ^(string_view|basic_string_view<.*>|std::basic_string_view<.*>|std::string_view|std::wstring_view|wstring_view)$
+                nthChild: 1
+            - has:
+                stopBy: neighbor
+                kind: identifier
+                pattern: $VAR_INSTANCE
+
+  UPSTREAM_UTIL_009:
+    kind: call_expression
+    all:
+      - has:
+          stopBy: neighbor
+          regex: ^(basic_string_view<.*>|std::basic_string_view<.*>|string_view|std::string_view|wstring_view|std::wstring_view)$
+      - has:
+          stopBy: neighbor
+          kind: argument_list
+          has:
+            stopBy: neighbor
+            kind: call_expression
+            all:
+              - has:
+                  stopBy: neighbor
+                  kind: qualified_identifier
+                  regex: ^std::to_string$
+              - has:
+                  stopBy: neighbor
+                  kind: argument_list
+
+  UPSTREAM_UTIL_010:
+    kind: declaration
+    all:
+      - has:
+          stopBy: neighbor
+          regex: ^(basic_string_view<.*>|std::basic_string_view<.*>|string_view|std::string_view|wstring_view|std::wstring_view)$
+      - has:
+          stopBy: end
+          kind: call_expression
+          all:
+            - has:
+                stopBy: neighbor
+                kind: qualified_identifier
+                regex: ^std::to_string$
+            - has:
+                stopBy: neighbor
+                kind: argument_list
+
+  UPSTREAM_UTIL_011:
+    kind: call_expression
+    all:
+      - has:
+          stopBy: neighbor
+          regex: ^(basic_string_view<.*>|std::basic_string_view<.*>|string_view|std::string_view|wstring_view|std::wstring_view)$
+      - has:
+          stopBy: end
+          kind: binary_expression
+          has:
+            stopBy: neighbor
+            kind: identifier
+            regex: ^(wstring|string)$
+            nthChild: 1
+
+  UPSTREAM_UTIL_012:
+    kind: call_expression
+    all:
+      - has:
+          stopBy: neighbor
+          regex: ^(std::basic_string_view<.*>|basic_string_view<.*>|string_view|std::string_view|wstring_view|std::wstring_view)$
+      - has:
+          stopBy: end
+          kind: argument_list
+          has:
+            stopBy: neighbor
+            kind: binary_expression
+            has:
+              stopBy: end
+              kind: identifier
+              nthChild: 1
+              pattern: $EXPR_INSTANCE
+      - any:
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                    nthChild: 1
+                - has:
+                    stopBy: end
+                    kind: identifier
+                    pattern: $EXPR_INSTANCE
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    any:
+                      - kind: type_identifier
+                      - kind: qualified_identifier
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                - has:
+                    stopBy: neighbor
+                    kind: init_declarator
+                    has:
+                      stopBy: neighbor
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+          - inside:
+              stopBy: end
+              follows:
+                stopBy: end
+                any:
+                  - kind: field_declaration
+                  - kind: declaration
+                all:
+                  - has:
+                      stopBy: end
+                      any:
+                        - kind: type_identifier
+                        - kind: qualified_identifier
+                      regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                  - has:
+                      stopBy: end
+                      pattern: $EXPR_INSTANCE
+
+  UPSTREAM_UTIL_013:
+    kind: call_expression
+    all:
+      - has:
+          stopBy: neighbor
+          regex: ^(basic_string_view<.*>|std::basic_string_view<.*>|string_view|std::string_view|wstring_view|std::wstring_view)$
+      - has:
+          stopBy: end
+          kind: argument_list
+          has:
+            stopBy: end
+            kind: binary_expression
+            all:
+              - has:
+                  stopBy: neighbor
+                  kind: string_literal
+                  nthChild: 1
+                  has:
+                    stopBy: neighbor
+                    kind: string_content
+              - has:
+                  stopBy: end
+                  kind: identifier
+                  nthChild: 2
+                  pattern: $EXPR_INSTANCE
+      - any:
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                    nthChild: 1
+                - has:
+                    stopBy: neighbor
+                    kind: identifier
+                    pattern: $EXPR_INSTANCE
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    any:
+                      - kind: type_identifier
+                      - kind: qualified_identifier
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                - has:
+                    stopBy: neighbor
+                    kind: init_declarator
+                    has:
+                      stopBy: neighbor
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+          - inside:
+              stopBy: end
+              follows:
+                stopBy: end
+                any:
+                  - kind: field_declaration
+                  - kind: declaration
+                all:
+                  - has:
+                      stopBy: end
+                      any:
+                        - kind: type_identifier
+                        - kind: qualified_identifier
+                      regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                  - has:
+                      stopBy: end
+                      pattern: $EXPR_INSTANCE
+
+  UPSTREAM_UTIL_014:
+    kind: call_expression
+    all:
+      - has:
+          stopBy: neighbor
+          regex: ^(basic_string_view<.*>|std::basic_string_view<.*>|string_view|std::string_view|wstring_view|std::wstring_view)$
+      - has:
+          stopBy: end
+          kind: argument_list
+          has:
+            stopBy: neighbor
+            kind: binary_expression
+            all:
+              - has:
+                  stopBy: neighbor
+                  kind: string_literal
+                  nthChild: 1
+                  has:
+                    stopBy: neighbor
+                    kind: string_content
+              - has:
+                  stopBy: end
+                  kind: identifier
+                  nthChild: 2
+                  regex: ^(wstring|string)$
+
+  UPSTREAM_UTIL_015:
+    kind: call_expression
+    all:
+      - has:
+          stopBy: neighbor
+          regex: ^(string_view|std::string_view|wstring_view|std::wstring_view)$
+      - has:
+          stopBy: end
+          kind: argument_list
+          has:
+            stopBy: neighbor
+            kind: call_expression
+            all:
+              - has:
+                  stopBy: neighbor
+                  kind: field_expression
+                  regex: ^(string.substr|wstring.substr)$
+              - has:
+                  stopBy: neighbor
+                  kind: argument_list
+
+  UPSTREAM_UTIL_016:
+    kind: call_expression
+    all:
+      - has:
+          stopBy: neighbor
+          regex: ^(basic_string_view<.*>|string_view|std::string_view|wstring_view|std::wstring_view|std::basic_string_view<.*>)$
+      - has:
+          stopBy: end
+          kind: argument_list
+          has:
+            stopBy: neighbor
+            kind: call_expression
+            all:
+              - has:
+                  stopBy: end
+                  kind: field_expression
+                  all:
+                    - any:
+                        - has:
+                            stopBy: end
+                            kind: identifier
+                            pattern: $EXPR_INSTANCE
+                            nthChild: 1
+                        - has:
+                            stopBy: end
+                            any:
+                              - kind: type_identifier
+                              - kind: qualified_identifier
+                            regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                    - has:
+                        stopBy: neighbor
+                        kind: field_identifier
+                        regex: ^substr$
+              - has:
+                  stopBy: neighbor
+                  kind: argument_list
+      - any:
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                    nthChild: 1
+                - has:
+                    stopBy: end
+                    kind: identifier
+                    pattern: $EXPR_INSTANCE
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    any:
+                      - kind: type_identifier
+                      - kind: qualified_identifier
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                - has:
+                    stopBy: neighbor
+                    kind: init_declarator
+                    has:
+                      stopBy: neighbor
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+          - inside:
+              stopBy: end
+              follows:
+                stopBy: end
+                any:
+                  - kind: field_declaration
+                  - kind: declaration
+                all:
+                  - has:
+                      stopBy: end
+                      any:
+                        - kind: type_identifier
+                        - kind: qualified_identifier
+                      regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                  - has:
+                      stopBy: end
+                      pattern: $EXPR_INSTANCE
+
+  UPSTREAM_UTIL_017:
+    # $VAR_instance $VAR = "..." + $EXPR
+    kind: declaration
+    all:
+      - has:
+          kind: type_identifier
+          regex: ^(string_view|basic_string_view<.*>|std::basic_string_view<.*>|std::string_view|std::wstring_view|wstring_view)$
+      - has:
+          stopBy: neighbor
+          kind: init_declarator
+          all:
+            - has:
+                stopBy: neighbor
+                kind: identifier
+                pattern: $VAR_INSTANCE
+            - has:
+                stopBy: neighbor
+                kind: binary_expression
+                all:
+                  - has:
+                      stopBy: neighbor
+                      kind: string_literal
+                  - has:
+                      stopBy: neighbor
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+      - any:
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                    nthChild: 1
+                - has:
+                    stopBy: neighbor
+                    kind: identifier
+                    pattern: $EXPR_INSTANCE
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    any:
+                      - kind: type_identifier
+                      - kind: qualified_identifier
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                - has:
+                    stopBy: neighbor
+                    kind: init_declarator
+                    has:
+                      stopBy: neighbor
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+
+  UPSTREAM_UTIL_018:
+    # $VAR_instance = "..." + $EXPR
+    kind: declaration
+    all:
+      - has:
+          nthChild: 1
+          regex: ^(basic_string_view<.*>|std::basic_string_view<.*>|string_view|std::string_view|wstring_view|std::wstring_view)$
+      - has:
+          stopBy: neighbor
+          kind: init_declarator
+          all:
+            - has:
+                stopBy: neighbor
+                kind: identifier
+            - has:
+                stopBy: neighbor
+                kind: binary_expression
+                all:
+                  - has:
+                      stopBy: neighbor
+                      kind: string_literal
+                  - has:
+                      stopBy: neighbor
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+      - any:
+          - inside:
+              stopBy: end
+              follows:
+                stopBy: end
+                kind: declaration
+                all:
+                  - has:
+                      stopBy: neighbor
+                      regex: ^(wstring|string|std::wstring|std::basic_string<.*>|basic_string<.*>)$
+                      nthChild: 1
+                  - has:
+                      stopBy: end
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                    nthChild: 1
+                - has:
+                    stopBy: end
+                    kind: identifier
+                    pattern: $EXPR_INSTANCE
+          - follows:
+              stopBy: end
+              any:
+                - kind: field_declaration
+                - kind: declaration
+              all:
+                - has:
+                    stopBy: neighbor
+                    any:
+                      - kind: type_identifier
+                      - kind: qualified_identifier
+                    regex: ^(wstring|string|std::wstring|std::string|std::basic_string<.*>|basic_string<.*>)$
+                - has:
+                    stopBy: end
+                    kind: init_declarator
+                    has:
+                      stopBy: end
+                      kind: identifier
+                      pattern: $EXPR_INSTANCE
+
+rule:
+  any:
+    - kind: expression_statement
+      any:
+        - matches: UPSTREAM_UTIL_001
+        - matches: UPSTREAM_UTIL_002
+        - matches: UPSTREAM_UTIL_003
+        - matches: UPSTREAM_UTIL_004
+        - matches: UPSTREAM_UTIL_005
+        - matches: UPSTREAM_UTIL_006
+        - matches: UPSTREAM_UTIL_007
+        - matches: UPSTREAM_UTIL_007
+        - matches: UPSTREAM_UTIL_008
+    - kind: call_expression
+      any:
+        - matches: UPSTREAM_UTIL_009
+        - matches: UPSTREAM_UTIL_011
+        - matches: UPSTREAM_UTIL_012
+        - matches: UPSTREAM_UTIL_013
+        - matches: UPSTREAM_UTIL_014
+        - matches: UPSTREAM_UTIL_015
+        - matches: UPSTREAM_UTIL_016
+    - kind: declaration
+      any:
+        - matches: UPSTREAM_UTIL_010
+        - matches: UPSTREAM_UTIL_017
+        - matches: UPSTREAM_UTIL_018
+  all:
+    - not:
+        has:
+          stopBy: end
+          kind: ERROR
+    - not:
+        inside:
+          stopBy: end
+          kind: ERROR

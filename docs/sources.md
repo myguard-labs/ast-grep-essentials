@@ -622,3 +622,15 @@ in [rejected-candidates.md](rejected-candidates.md).
   PHP twin of the same shape, where `strpos($path, $base) === 0` accepts
   `/root_secret` for a `/root` base; `str_starts_with` and `strpos` return
   contract <https://www.php.net/manual/en/function.strpos.php>
+
+## CodeRabbit rule import
+
+The complete 184-rule import under `rules/` comes from
+<https://github.com/coderabbitai/ast-grep-essentials/tree/73120109bf45c284d0cd8a37bdd7082e80e92e87>.
+Git attributes the original creation of all 184 rule files to ESS-ENN. The
+upstream root `LICENSE` contains Apache License 2.0, and that license text is
+retained beside the copied rules. Upstream's `package.json` still says `ISC`;
+this import follows the repository-level license file and records the metadata
+mismatch rather than hiding it. The manifest records upstream file digests for
+audit and refresh work; CI checks attribution and manifest completeness, but
+does not fetch upstream or claim an independent supply-chain attestation.

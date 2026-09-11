@@ -1,0 +1,27 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# CodeRabbit source repository: https://github.com/coderabbitai/ast-grep-essentials
+# CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/cpp/security/fix-format-security-error-cpp.yml
+# Original author (Git): ESS-ENN
+# License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+# Modified by MyGuard: provenance metadata added; function matcher and diagnostic corrected.
+id: fix-format-security-error-cpp
+language: cpp
+severity: warning
+message: >-
+  A non-literal format string can interpret attacker-controlled directives,
+  causing a crash, information disclosure, or memory modification.
+note: >-
+  [CWE-134] Use of Externally-Controlled Format String.
+ast-grep-essentials: true
+
+rule:
+  pattern: $PRINTF($S, $VAR)
+constraints:
+  PRINTF: # a format string function
+    { regex: "^(sprintf|fprintf)$" }
+  VAR: # not a literal string
+    not:
+      any:
+      - { kind: string_literal }
+      - { kind: concatenated_string }
+fix: $PRINTF($S, "%s", $VAR)

@@ -33,6 +33,10 @@ from tests._astgrep import resolve_ast_grep
 
 ROOT = Path(__file__).resolve().parents[1]
 AST_GREP = resolve_ast_grep()
+CODERABBIT_IDS = {
+    entry["id"]
+    for entry in json.loads((ROOT / "docs/coderabbit-rules.json").read_text())["rules"]
+}
 
 # Mirrors tests/test_powershell_parser.py's artifact-naming logic: the build
 # script emits the platform-native suffix, so the artifact this host should
@@ -169,6 +173,7 @@ class ArmCoverageTests(unittest.TestCase):
             rule_paths = [
                 path for path in rule_paths
                 if not path.is_relative_to(POWERSHELL_TREE.rules_dir)
+                and path.stem not in CODERABBIT_IDS
             ]
         for rule_path in rule_paths:
             rule = yaml.safe_load(rule_path.read_text())

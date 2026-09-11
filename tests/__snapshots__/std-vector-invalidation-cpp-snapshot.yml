@@ -1,0 +1,94 @@
+id: std-vector-invalidation-cpp
+snapshots:
+  ? |
+    void loop_variant_5(std::vector<int> &vec) {
+      for(std::vector<int>::iterator it = vec.begin(); it != vec.end(); ++it) {
+        if (should_erase(*it)) {
+          vec.erase(it);
+        }
+      }
+    }
+    void loop_variant_6(std::vector<int> &vec) {
+      for(std::vector<int>::iterator it = vec.begin(); it != vec.end(); it++) {
+        if (should_erase(*it)) {
+          vec.erase(it);
+        }
+      }
+    }
+    void loop_variant_7(std::vector<int> &vec) {
+      for(std::vector<int>::iterator it = vec.rbegin(); it != vec.rend(); ++it) {
+        if (should_erase(*it)) {
+          vec.erase(it);
+        }
+      }
+    }
+    void loop_variant_8(std::vector<int> &vec) {
+      for(std::vector<int>::iterator it = vec.rbegin(); it != vec.rend(); it++) {
+        if (should_erase(*it)) {
+          vec.erase(it);
+        }
+      }
+    }
+    void loop_variant_9(std::vector<int> &vec) {
+      for(std::vector<int>::iterator it = vec.begin(), end = vec.end(); it != end; ++it) {
+        if (should_erase(*it)) {
+          vec.erase(it);
+        }
+      }
+    }
+    void loop_variant_10(std::vector<int> &vec) {
+      for(std::vector<int>::iterator it = vec.begin(), end = vec.end(); it != end; it++) {
+        if (should_erase(*it)) {
+          vec.erase(it);
+        }
+      }
+    }
+    void loop_variant_11(std::vector<int> &vec) {
+      for(std::vector<int>::iterator it = vec.rbegin(), end = vec.rend(); it != end; ++it) {
+        if (should_erase(*it)) {
+          vec.erase(it);
+        }
+      }
+    }
+    void loop_variant_12(std::vector<int> &vec) {
+      for(std::vector<int>::iterator it = vec.rbegin(), end = vec.rend(); it != end; it++) {
+        if (should_erase(*it)) {
+          vec.erase(it);
+        }
+      }
+    }
+    void f(std::vector<int> &vec, std::vector<int> &other_vec) {
+      for(std::vector<int>::iterator it = vec.begin(); it != vec.end(); it++) {
+        if (foo()) {
+          vec.push_back(0);
+          // Modifying a different container is OK
+          other_vec.push_back(0);
+        }
+      }
+    }
+  : labels:
+    - source: vec.erase(it)
+      style: primary
+      start: 156
+      end: 169
+    - source: std::vector<int>::iterator it = vec.begin();
+      style: secondary
+      start: 51
+      end: 95
+    - source: it != vec.end()
+      style: secondary
+      start: 96
+      end: 111
+    - source: ++it
+      style: secondary
+      start: 113
+      end: 117
+    - source: |-
+        for(std::vector<int>::iterator it = vec.begin(); it != vec.end(); ++it) {
+            if (should_erase(*it)) {
+              vec.erase(it);
+            }
+          }
+      style: secondary
+      start: 47
+      end: 180
