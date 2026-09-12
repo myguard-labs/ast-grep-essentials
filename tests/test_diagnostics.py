@@ -1,6 +1,7 @@
 """Assert main diagnostic text emitted by ast-grep, not just snapshots."""
 
 import json
+import os
 import re
 import subprocess
 import tempfile
@@ -19,23 +20,21 @@ CODERABBIT_IDS = {
 }
 
 
+@unittest.skipIf(
+    AST_GREP is None,
+    "ast-grep binary not found; install npm dependencies or a system binary",
+)
 class DiagnosticTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        if AST_GREP is None:
-            raise unittest.SkipTest(
-                "ast-grep binary not found. Install with: "
-                "npm install (for local node_modules/.bin/ast-grep) or "
-                "install ast-grep to system PATH"
-            )
     def test_all_rules_emit_declared_diagnostics(self):
         rules = sorted(
             path for path in (ROOT / "rules").rglob("*.yml")
             if path.relative_to(ROOT / "rules").parts[0] != "powershell"
         )
         self.assertEqual(len(rules), 450, "update the explicit diagnostic inventory")
+        selected = set(filter(None, os.environ.get("ASTGREP_RULE_IDS", "").split(",")))
+        checked_rules = [path for path in rules if not selected or path.stem in selected]
         checked = 0
-        for path in rules:
+        for path in checked_rules:
             with self.subTest(rule=path.stem):
                 declared = yaml.safe_load(path.read_text())
                 fixture = yaml.safe_load(
@@ -70,7 +69,7 @@ class DiagnosticTests(unittest.TestCase):
                     else:
                         self.assertEqual(finding[field], expected, field)
                 checked += 1
-        self.assertEqual(checked, 450)
+        self.assertEqual(checked, len(checked_rules))
 
     def test_deprecated_rule_id_matcher_tracks_replacement(self):
         replacement = yaml.safe_load(

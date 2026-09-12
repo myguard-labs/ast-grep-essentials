@@ -1,0 +1,64 @@
+version: 1
+id: py-tempfile-mktemp
+language: python
+category: security
+severity: warning
+message: >-
+  tempfile.mktemp returns a name without creating the file, leaving a race in
+  which another process can create the path or replace it with a symlink. Use
+  NamedTemporaryFile, TemporaryFile, mkstemp, or TemporaryDirectory so creation
+  is atomic.
+note: >-
+  Matches the qualified tempfile.mktemp spelling. Import aliases and
+  `from tempfile import mktemp` are not resolved. The finding is about the gap
+  between choosing and opening the name; merely checking that the path does not
+  exist does not close that race.
+rule:
+  kind: call
+  has:
+    field: function
+    kind: attribute
+    all:
+      - has: {field: object, regex: '^tempfile$'}
+      - has: {field: attribute, regex: '^mktemp$'}
+mutation_exclusions:
+  rule.has.field: >-
+    The enclosing call has only one attribute-shaped function child, so the
+    field selector is redundant but preserves secondary labels.
+  rule.has.kind: >-
+    The field-qualified child clauses already require an attribute node;
+    retaining the kind makes the intended matcher shape explicit.
+  rule.has.all[0].has.field: >-
+    The object child is the only direct child that can equal tempfile once the
+    enclosing node and attribute field are fixed.
+  rule.has.all[1].has.field: >-
+    The attribute-name child is the only direct child that can equal mktemp once
+    the enclosing node and object field are fixed.
+cases:
+  valid:
+    - 'path = tempfile.mkstemp()'
+    - 'with tempfile.NamedTemporaryFile() as handle: pass'
+    - 'path = helper.mktemp()'
+    - 'path = tf.mktemp()'
+    - 'path = consume(tempfile.mktemp)'
+    - 'path = mytempfile.mktemp()'
+    - 'path = other.tempfile.mktemp()'
+    - 'path = tempfile.other.mktemp()'
+    - 'path = obj.mktemp(tempfile)'
+    - 'path = tempfile.mktemp_extra()'
+    - 'result = wrapper(tempfile, mktemp)'
+    - 'text = "tempfile.mktemp()"'
+    - '# tempfile.mktemp()'
+  invalid:
+    - 'path = tempfile.mktemp()'
+    - 'path = tempfile.mktemp(prefix="cache-")'
+    - |
+      def choose_name():
+          return tempfile.mktemp(dir="/var/tmp")
+oracles:
+  'path = tempfile.mktemp()':
+    count: 1
+    texts: ['tempfile.mktemp()']
+    ranges: [[7, 24]]
+    severity: warning
+    labels: [tempfile.mktemp(), tempfile, mktemp, tempfile.mktemp]

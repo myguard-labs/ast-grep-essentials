@@ -1,3 +1,4 @@
+# Generated from: plans/python/correctness/py-bare-except.yml
 id: py-bare-except
 valid:
 - |
@@ -30,8 +31,37 @@ valid:
 - |
   try:
       f()
+  except:
+      if debug:
+          log.debug("reraising")
+      raise
+- |
+  try:
+      f()
   except ValueError:
       pass
+- |
+  try:
+      f()
+  except:
+      raise
+      log.info("unreachable but nonterminal")
+- |
+  try:
+      f()
+  except:
+      raise
+      # a comment must not hide a direct unconditional re-raise
+      log.info("still unreachable")
+- |
+  try:
+      f()
+  except:
+      def helper():
+          if done:
+              return
+          raise RuntimeError("helper failed")
+      raise
 invalid:
 - |
   try:
@@ -45,6 +75,19 @@ invalid:
       f()
   except:
       raise RuntimeError("failed")
+- |
+  try:
+      f()
+  except:
+      raise RuntimeError("failed")
+      raise
+- |
+  try:
+      f()
+  except:
+      if debug:
+          raise RuntimeError("failed")
+      raise
 - |
   try:
       f()
@@ -70,3 +113,18 @@ invalid:
           if item.bad:
               raise
       log.info("ignored")
+- |
+  try:
+      f()
+  except:
+      if handled:
+          return
+      raise
+      log.info("unreachable only on the raise path")
+- |
+  try:
+      f()
+  except:
+      class Cleanup:
+          raise RuntimeError("class body failed")
+      raise

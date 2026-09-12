@@ -45,8 +45,12 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 AST_GREP = ROOT / "node_modules" / ".bin" / "ast-grep"
-EXTENSIONS = {"go": "go", "c": "c", "php": "php", "python": "py", "javascript": "js",
-              "java": "java", "lua": "lua", "bash": "sh"}
+EXTENSIONS = {
+    "bash": "sh", "c": "c", "cpp": "cpp", "csharp": "cs", "go": "go",
+    "html": "html", "java": "java", "javascript": "js", "kotlin": "kt",
+    "lua": "lua", "php": "php", "python": "py", "ruby": "rb", "rust": "rs",
+    "scala": "scala", "swift": "swift", "typescript": "ts",
+}
 META = re.compile(r"\$\$?\$?[A-Z_][A-Z0-9_]*")
 COMPATIBILITY_ALIAS_IDS = {"nginx-string-sizeof-includes-nul"}
 STDIN_SCAN_TIMEOUT = 15

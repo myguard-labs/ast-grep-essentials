@@ -2762,7 +2762,9 @@ class ScaffoldTests(unittest.TestCase):
                 self.assertRaisesRegex(SystemExit, "run npm ci"):
             SCAFFOLD.seed_oracle(rule, "bad(x)", ["good(x)"])
         self.assertEqual(set(SCAFFOLD.EXTENSIONS), set(SCAFFOLD.LANGUAGES))
-        self.assertEqual(SCAFFOLD.EXTENSIONS, PROBE.EXTENSIONS)
+        self.assertEqual(SCAFFOLD.EXTENSIONS,
+                         {language: PROBE.EXTENSIONS[language]
+                          for language in SCAFFOLD.LANGUAGES})
         self.assertEqual(SCAFFOLD.ID_PREFIXES, PACKETS.ID_PREFIXES)
         self.assertEqual(HISTORY.SOURCE_LANGUAGES, PACKETS.LANGUAGE_SUFFIXES)
         unsupported = {**rule, "language": "powershell"}

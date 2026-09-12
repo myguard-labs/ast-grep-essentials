@@ -4,24 +4,24 @@
 # Original author (Git): ESS-ENN
 # License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
 # Modified by MyGuard: provenance metadata added; function matcher and diagnostic corrected.
+# Generated from: plans/cpp/security/fix-format-security-error-cpp.yml
 id: fix-format-security-error-cpp
 language: cpp
 severity: warning
 message: >-
-  A non-literal format string can interpret attacker-controlled directives,
-  causing a crash, information disclosure, or memory modification.
+  A non-literal format string can interpret attacker-controlled directives, causing
+  a crash, information disclosure, or memory modification.
 note: >-
   [CWE-134] Use of Externally-Controlled Format String.
 ast-grep-essentials: true
-
-rule:
-  pattern: $PRINTF($S, $VAR)
 constraints:
-  PRINTF: # a format string function
-    { regex: "^(sprintf|fprintf)$" }
-  VAR: # not a literal string
+  PRINTF:
+    regex: ^(sprintf|fprintf)$
+  VAR:
     not:
       any:
-      - { kind: string_literal }
-      - { kind: concatenated_string }
+      - kind: string_literal
+      - kind: concatenated_string
 fix: $PRINTF($S, "%s", $VAR)
+rule:
+  pattern: $PRINTF($S, $VAR)

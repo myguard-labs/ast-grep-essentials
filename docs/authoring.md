@@ -55,6 +55,38 @@ Harvesting, proposal validation, and fixture-seed checks cover the repository's
 native Bash, C, Go, Java, JavaScript, Lua, PHP, and Python packs. PowerShell uses
 an optional custom parser and remains outside this generic isolated workflow.
 
+## Generate from a canonical plan
+
+For native-language rules that benefit from repeatable mechanical construction,
+keep a v1 plan at `plans/<language>/<category>/<id>.yml`. A plan owns the
+corresponding rule and fixture, records positive and negative contrasts, and
+can pin exact JSON oracles for ranges, text, diagnostics, labels, or fixed output.
+
+```bash
+python3 tools/rule-plan.py plans/python/security/py-tempfile-mktemp.yml
+npm run generate:check
+npm run generate
+```
+
+Plan preflight compiles the matcher, rejects malformed or unreachable local
+utilities, runs the isolated fixture contrasts, and weakens structural clauses
+one at a time. Every selected mutation must break a test. Generated files carry
+an ownership marker; regeneration refuses to overwrite a hand-authored file.
+`npm run generate:check` is read-only and fails on drift.
+
+For imported rules, keep license and source provenance in `comments` and
+vendor-specific top-level metadata in `extensions`. The compiler rejects
+extension keys that could override ast-grep configuration. This makes imported
+rules plan-owned without discarding their attribution contract.
+
+Use `python3 tools/rule-mechanics.py metamorph PLAN` to emit bounded lookalike
+and boundary candidates for review. Candidates deliberately have no invented
+expected result. Use `differential` with two engine binaries and a bounded local
+corpus to compare normalized, duplicate-sensitive findings across upgrades.
+The versioned `tests/differential/v1` corpus runs in `test:mechanics`; after an
+intentional engine or rule behavior change, inspect the JSON delta before using
+`corpus-update` to accept the new baseline.
+
 ## Define the claim
 
 Start with a small inert example that should match and a closely related one

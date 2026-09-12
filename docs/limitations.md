@@ -284,9 +284,9 @@ Conditions. SSRF was absorbed into A01 Broken Access Control in this edition.
 See <https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/>.
 
 - `py-bare-except` and `py-except-pass` cover A10/CWE-396/CWE-390.
-  `py-bare-except` excludes only an unconditional terminal bare `raise`, the
-  documented cleanup idiom; a conditional re-raise, work after the re-raise,
-  or `raise Other()` still matches.
+  `py-bare-except` excludes an unconditional direct bare `raise`; statements
+  after it are unreachable and do not change that result. A conditional or
+  nested re-raise, or `raise Other()`, still matches.
   `py-except-pass` matches only a body whose single statement is `pass` or
   `...`, comments aside, so `pass` followed by real work or nested in a loop
   does not match; ruff E722 and flake8

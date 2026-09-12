@@ -4,6 +4,22 @@ snapshots:
     try:
         f()
     except:
+        class Cleanup:
+            raise RuntimeError("class body failed")
+        raise
+  : labels:
+    - source: |-
+        except:
+            class Cleanup:
+                raise RuntimeError("class body failed")
+            raise
+      style: primary
+      start: 13
+      end: 97
+  ? |
+    try:
+        f()
+    except:
         def later():
             raise
         pass
@@ -54,6 +70,40 @@ snapshots:
     try:
         f()
     except:
+        if debug:
+            raise RuntimeError("failed")
+        raise
+  : labels:
+    - source: |-
+        except:
+            if debug:
+                raise RuntimeError("failed")
+            raise
+      style: primary
+      start: 13
+      end: 81
+  ? |
+    try:
+        f()
+    except:
+        if handled:
+            return
+        raise
+        log.info("unreachable only on the raise path")
+  : labels:
+    - source: |-
+        except:
+            if handled:
+                return
+            raise
+            log.info("unreachable only on the raise path")
+      style: primary
+      start: 13
+      end: 112
+  ? |
+    try:
+        f()
+    except:
         log.info("ignored")
   : labels:
     - source: |-
@@ -86,3 +136,17 @@ snapshots:
       style: primary
       start: 13
       end: 53
+  ? |
+    try:
+        f()
+    except:
+        raise RuntimeError("failed")
+        raise
+  : labels:
+    - source: |-
+        except:
+            raise RuntimeError("failed")
+            raise
+      style: primary
+      start: 13
+      end: 63

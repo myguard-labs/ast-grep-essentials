@@ -1,0 +1,191 @@
+version: 1
+id: py-bare-except
+language: python
+category: correctness
+severity: warning
+message: >-
+  Bare `except:` catches BaseException subclasses such as KeyboardInterrupt and
+  SystemExit, so a shutdown signal can be treated as a routine error (OWASP
+  A10:2025, CWE-396). Catch `Exception` when you mean ordinary failures, or name
+  the specific errors you can handle.
+note: >-
+  Fires on a clause with no exception type. A bare clause that re-raises with
+  a direct bare `raise`, and contains no return or competing non-bare raise, is
+  treated as the documented cleanup idiom. This conservative syntax check does
+  not prove control flow. A clause that can return or raise a different
+  exception still matches. PEP 760 proposed removing this form from the
+  language.
+utils:
+  terminal-bare-reraise:
+    regex: '^raise$'
+  nonbare-raise:
+    all:
+      - kind: raise_statement
+      - not:
+          regex: '^raise$'
+rule:
+  all:
+    - kind: except_clause
+    - not:
+        has:
+          field: value
+          regex: '.'
+    - not:
+        has:
+          kind: block
+          all:
+            - has:
+                matches: terminal-bare-reraise
+            - not:
+                has:
+                  kind: return_statement
+                  stopBy:
+                    kind: function_definition
+            - not:
+                has:
+                  matches: nonbare-raise
+                  stopBy:
+                    kind: function_definition
+cases:
+  valid:
+    - |
+      # try:
+      #     f()
+      # except:
+      #     pass
+    - |
+      text = """try:
+          f()
+      except:
+          pass
+      """
+    - |
+      try:
+          f()
+      except Exception:
+          log.exception("failed")
+    - |
+      try:
+          f()
+      except:
+          raise
+    - |
+      try:
+          f()
+      except:
+          cleanup()
+          raise
+    - |
+      try:
+          f()
+      except:
+          if debug:
+              log.debug("reraising")
+          raise
+    - |
+      try:
+          f()
+      except ValueError:
+          pass
+    - |
+      try:
+          f()
+      except:
+          raise
+          log.info("unreachable but nonterminal")
+    - |
+      try:
+          f()
+      except:
+          raise
+          # a comment must not hide a direct unconditional re-raise
+          log.info("still unreachable")
+    - |
+      try:
+          f()
+      except:
+          def helper():
+              if done:
+                  return
+              raise RuntimeError("helper failed")
+          raise
+  invalid:
+    - |
+      try:
+          f()
+      except:
+          def later():
+              raise
+          pass
+    - |
+      try:
+          f()
+      except:
+          raise RuntimeError("failed")
+    - |
+      try:
+          f()
+      except:
+          raise RuntimeError("failed")
+          raise
+    - |
+      try:
+          f()
+      except:
+          if debug:
+              raise RuntimeError("failed")
+          raise
+    - |
+      try:
+          f()
+      except:
+          log.info("ignored")
+    - |
+      try:
+          f()
+      except:
+          pass
+    - |
+      try:
+          f()
+      except:
+          if debug:
+              raise
+          pass
+    - |
+      try:
+          f()
+      except:
+          for item in items:
+              if item.bad:
+                  raise
+          log.info("ignored")
+    - |
+      try:
+          f()
+      except:
+          if handled:
+              return
+          raise
+          log.info("unreachable only on the raise path")
+    - |
+      try:
+          f()
+      except:
+          class Cleanup:
+              raise RuntimeError("class body failed")
+          raise
+mutation_exclusions:
+  rule.all[2].not.has.kind: >-
+    The except clause's handler is its only direct child, so the surrounding
+    has relation already selects the block and makes this kind redundant.
+oracles:
+  ? |
+    try:
+        f()
+    except:
+        pass
+  : count: 1
+    texts: ["except:\n    pass"]
+    ranges: [[13, 29]]
+    severity: warning
