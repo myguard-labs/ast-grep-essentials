@@ -90,6 +90,7 @@ valid:
     fprintf(stderr, "%p %s", memchr(data, needle, length), "known");
     fprintf(stderr, R"tag(%p %s)tag", memchr(data, needle, length), "known");
     fprintf(stderr, "%p " "%s", memchr(data, needle, length), "known");
+    fprintf(stderr, "%p " "%" "s", memchr(data, needle, length), "known");
   }
 - |
   void escaped_percent_consumes_pointer() {
@@ -108,6 +109,18 @@ valid:
     fprintf(stderr, R"%s(text)%s", getenv("NAME"));
   }
 invalid:
+- |
+  void split_percent_s_format() {
+    fprintf(stderr, "%" "s", memchr(data, needle, length));
+  }
+- |
+  void split_percent_s_after_text_format() {
+    fprintf(stderr, "text %" "s", memchr(data, needle, length));
+  }
+- |
+  void split_percent_s_after_escaped_percent_format() {
+    fprintf(stderr, "%% %" "s", memchr(data, needle, length));
+  }
 - |
   void f() {
      char buf[128];

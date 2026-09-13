@@ -151,6 +151,33 @@ snapshots:
       start: 39
       end: 46
   ? |
+    void split_percent_s_after_escaped_percent_format() {
+      fprintf(stderr, "%% %" "s", memchr(data, needle, length));
+    }
+  : labels:
+    - source: memchr(data, needle, length)
+      style: secondary
+      start: 84
+      end: 112
+  ? |
+    void split_percent_s_after_text_format() {
+      fprintf(stderr, "text %" "s", memchr(data, needle, length));
+    }
+  : labels:
+    - source: memchr(data, needle, length)
+      style: secondary
+      start: 75
+      end: 103
+  ? |
+    void split_percent_s_format() {
+      fprintf(stderr, "%" "s", memchr(data, needle, length));
+    }
+  : labels:
+    - source: memchr(data, needle, length)
+      style: secondary
+      start: 59
+      end: 87
+  ? |
     void test_getc() {
      int c = getc(fptr = fopen(file_name, "r"));
     }

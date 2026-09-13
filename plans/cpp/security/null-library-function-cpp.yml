@@ -35,6 +35,7 @@ mutation_exclusions:
   utils.percent-s-literal.any[1].kind: 'The anchored R-string prefix already excludes ordinary and concatenated literal nodes; the kind documents the intended raw-string CST contract.'
   utils.percent-s-literal.any[1].regex-anchor: 'A raw-string literal contains its R-string introducer only at the node start, so the literal prefix already supplies the same boundary; the explicit anchor documents it.'
   utils.percent-s-literal.any[2].kind: 'The first ordinary-segment regex is shared with the direct-literal arm, so deleting this kind only makes that arm duplicate the intended concatenated match; the kind records the CST contract.'
+  utils.percent-s-literal.any[3].kind: 'The embedded ordinary quote boundary cannot occur in a direct string-literal node, so the regex already confines this arm to concatenated literals; the kind records that CST contract.'
 message: >-
   A library function that may return NULL is dereferenced or passed directly
   to a library function that requires a valid pointer, without a NULL check.
@@ -166,6 +167,8 @@ utils:
         regex: '^R"[^()\\\s]{0,16}\((?:[^%)]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s'
       - kind: concatenated_string
         regex: '^"(?:[^%"\\]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s'
+      - kind: concatenated_string
+        regex: '^"(?:[^%"\\]|%%)*%"\s*"s'
 cases:
   valid:
     - |
@@ -257,6 +260,7 @@ cases:
         fprintf(stderr, "%p %s", memchr(data, needle, length), "known");
         fprintf(stderr, R"tag(%p %s)tag", memchr(data, needle, length), "known");
         fprintf(stderr, "%p " "%s", memchr(data, needle, length), "known");
+        fprintf(stderr, "%p " "%" "s", memchr(data, needle, length), "known");
       }
     - |
       void escaped_percent_consumes_pointer() {
@@ -275,6 +279,18 @@ cases:
         fprintf(stderr, R"%s(text)%s", getenv("NAME"));
       }
   invalid:
+    - |
+      void split_percent_s_format() {
+        fprintf(stderr, "%" "s", memchr(data, needle, length));
+      }
+    - |
+      void split_percent_s_after_text_format() {
+        fprintf(stderr, "text %" "s", memchr(data, needle, length));
+      }
+    - |
+      void split_percent_s_after_escaped_percent_format() {
+        fprintf(stderr, "%% %" "s", memchr(data, needle, length));
+      }
     - |
        void f() {
           char buf[128];
