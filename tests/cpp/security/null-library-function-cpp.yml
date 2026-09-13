@@ -1,36 +1,506 @@
+# Generated from: plans/cpp/security/null-library-function-cpp.yml
 id: null-library-function-cpp
 valid:
-  - |
-    void coderabbit_control() { const char *text = "CodeRabbit"; }
-  - |
-     errno = 0;
-     fwrite(data, len, 1, f);
-     if (errno) {
-        ERRS("unable to write output file");
-        goto out_flush;
-     }
-  - |
-     void safe() {
-       char buf[128];
-       strcpy(buf, mygetenv("FOO"));
-     }
-
+- |
+  void coderabbit_control() { const char *text = "CodeRabbit"; }
+- |
+  errno = 0;
+  fwrite(data, len, 1, f);
+  if (errno) {
+     ERRS("unable to write output file");
+     goto out_flush;
+  }
+- |
+  void safe() {
+    char buf[128];
+    strcpy(buf, mygetenv("FOO"));
+  }
+- |
+  void checked() {
+    const char *value = getenv("FOO");
+    if (value != nullptr) strlen(value);
+  }
+- |
+  void malformed_descendant_control() {
+    strlen(getenv("X", ?));
+  }
+- |
+  void namespace_controls() {
+    strcpy(buf, project::getenv("FOO"));
+    object.strcpy(buf, getenv("FOO"));
+  }
+- |
+  void nested_control() {
+    consume(wrapper(getenv("FOO")));
+  }
+- |
+  void dereference_shape_controls(Node *node, char *buffer, int index) {
+    consume(buffer[index]);
+    consume(buffer[getenv("INDEX")]);
+    consume(node->field);
+    consume(wrapper(getenv("FIELD"))->field);
+    consume(*buffer);
+    consume(*wrapper(getenv("POINTER")));
+    consume(*mygetenv("POINTER_SUFFIX"));
+    consume(*project::getenv("POINTER_MEMBER"));
+    consume(*(known_nonnull));
+    consume(*((known_nonnull)));
+  }
+- |
+  void consumer_shape_controls() {
+    project::consume(getenv("FOO"));
+    strlen(known_nonnull);
+    strlen((known_nonnull));
+    fwrite(data, 1, 1, stream = known_file);
+    consume(a, b, c, getenv("FOURTH"));
+    log_message(stream, "%s", getenv("THIRD"));
+    mystrlen(getenv("FIRST"));
+    mystrcpy(buffer, getenv("SECOND"));
+    myfwrite(a, b, c, getenv("FOURTH_SUFFIX"));
+    myfprintf(stream, "%s", getenv("THIRD_SUFFIX"));
+    myfprintf(stream, "%s", getenv("THIRD_REST_SUFFIX"), extra);
+    object.fwrite(a, b, c, getenv("FOURTH_MEMBER"));
+    mymemccpy(dst, getenv("SECOND_REST_SUFFIX"), 0, size);
+    mystrtol(getenv("FIRST_REST_SUFFIX"), nullptr, 10);
+    getc(stream = myfopen(path, "r"));
+  }
+- |
+  void lexical_controls() {
+    // strcpy(buf, getenv("COMMENT"));
+    const char *example = "fwrite(data, 1, 1, fopen(path, mode))";
+  }
+- |
+  void malformed( {
+    strcpy(buf, getenv("BROKEN"));
+  }
+- |
+  void pointer_format_control() {
+    fprintf(stderr, "%p", memchr(data, needle, length));
+    fprintf(stderr, "%%s %p", memchr(data, needle, length));
+    fprintf(stderr, "%s", known_nonnull);
+    fprintf(stderr, "%s", known_nonnull, getenv("UNUSED"));
+    fprintf(stderr, "%p", getenv("POINTER"), "%s");
+    fprintf(stderr, format%s, memchr(data, needle, length));
+    fprintf(stderr, (format), memchr(data, needle, length));
+    fprintf(stderr, ((format)), memchr(data, needle, length));
+    fwrite(data, size, getenv("COUNT"), stream);
+  }
+- |
+  void null_safe_fallback_control() {
+    strlen(getenv("NAME") ?: "");
+  }
+- |
+  void preceding_format_conversion_control() {
+    fprintf(stderr, "%p %s", memchr(data, needle, length), "known");
+    fprintf(stderr, R"tag(%p %s)tag", memchr(data, needle, length), "known");
+    fprintf(stderr, "%p " "%s", memchr(data, needle, length), "known");
+    fprintf(stderr, "%p " "%" "s", memchr(data, needle, length), "known");
+  }
+- |
+  void escaped_percent_consumes_pointer() {
+    fprintf(stderr, "\x25p %s", memchr(data, needle, length), "known");
+  }
+- |
+  void octal_percent_consumes_pointer() {
+    fprintf(stderr, "\045p %s", memchr(data, needle, length), "known");
+  }
+- |
+  void raw_delimiter_in_concatenation_is_not_format_content() {
+    fprintf(stderr, R"%s(text)%s" "%p", memchr(data, needle, length));
+  }
+- |
+  void raw_closing_delimiter_is_not_format_content() {
+    fprintf(stderr, R"%s(text)%s", getenv("NAME"));
+  }
+- |
+  char *&getenv();
+  void assignment_lhs_control(char *known) {
+    strlen(getenv() = known);
+  }
+- |
+  void source_name_argument_control() {
+    strlen(wrapper(getenv));
+  }
+- |
+  void nested_first_operand_control() {
+    memcpy(wrapper(getenv("DEST")), source, size);
+  }
+- |
+  void nested_second_operand_control() {
+    memcpy(destination, wrapper(getenv("SRC")), size);
+  }
+- |
+  void positional_sink_name_controls() {
+    mymemcpy(getenv("DEST"), source, size);
+    mymemcpy(destination, getenv("SRC"), size);
+  }
+- |
+  void nonnull_assigned_positional_controls() {
+    memcpy(destination = known, source, size);
+    memcpy(destination, source = known, size);
+    memcpy(getenv() = known, source, size);
+    memcpy(destination, getenv() = known, size);
+  }
+- |
+  void address_of_controls() {
+    &getenv("NAME");
+    &(pointer = getenv("NAME"));
+  }
+- |
+  void escaped_quote_before_format_control() {
+    fprintf(stderr, "\"%s", memchr(data, needle, length));
+  }
+- |
+  void embedded_raw_introducer_control() {
+    fprintf(stderr, R"OUT(ignored) R"tag(%s)OUT", memchr(data, needle, length));
+  }
 invalid:
-  - |
-     void f() {
-        char buf[128];
-        strcpy(buf, getenv("FOO"));
-     }
-  - |
-     {
-      fwrite("foo", 3, 1, fopen("foo.txt", "w"));
-     }
-  - |
-     {
-      FILE *fptr;
-      fwrite("foo", 3, 1, fptr = fopen("foo.txt", "w"));
-     }
-  - |
-     void test_getc() {
-      int c = getc(fptr = fopen(file_name, "r"));
-     }
+- |
+  void split_percent_s_format() {
+    fprintf(stderr, "%" "s", memchr(data, needle, length));
+  }
+- |
+  void assigned_positional_operands() {
+    memcpy(destination = getenv("DEST"), source, size);
+    memcpy(destination, source = getenv("SRC"), size);
+  }
+- |
+  void assigned_subscript_operand() {
+    (pointer = getenv("NAME"))[0];
+  }
+- |
+  void twice_wrapped_assigned_subscript_operand() {
+    ((pointer = getenv("NAME")))[0];
+  }
+- |
+  void assigned_member_operand() {
+    (stream = fopen("path", "r"))->flags;
+  }
+- |
+  void assigned_unary_dereference_operand() {
+    *(pointer = getenv("NAME"));
+  }
+- |
+  void parenthesized_assignment_sink_operands() {
+    strlen((pointer = getenv("NAME")));
+    strtol((pointer = getenv("NUMBER")), end, base);
+    fprintf(stderr, "%s", (pointer = memchr(data, needle, length)));
+    fwrite(data, size, count, (stream = fopen("path", "w")));
+  }
+- |
+  void assigned_dereference_operands() {
+    (pointer = getenv("NAME"))[0];
+    ((pointer = getenv("NAME")))[0];
+    (stream = fopen("path", "r"))->flags;
+    *(pointer = getenv("NAME"));
+  }
+- |
+  void both_positional_operands() {
+    memcpy(getenv("DEST"), getenv("SRC"), size);
+  }
+- |
+  void split_percent_s_after_text_format() {
+    fprintf(stderr, "text %" "s", memchr(data, needle, length));
+  }
+- |
+  void split_percent_s_after_escaped_percent_format() {
+    fprintf(stderr, "%% %" "s", memchr(data, needle, length));
+  }
+- |
+  void f() {
+     char buf[128];
+     strcpy(buf, getenv("FOO"));
+  }
+- |
+  {
+   fwrite("foo", 3, 1, fopen("foo.txt", "w"));
+  }
+- |
+  {
+   FILE *fptr;
+   fwrite("foo", 3, 1, fptr = fopen("foo.txt", "w"));
+  }
+- |
+  void test_getc() {
+   int c = getc(fptr = fopen(file_name, "r"));
+  }
+- |
+  char subscript_number() { return getenv("NAME")[0]; }
+- |
+  char subscript_identifier(int index) { return std::getenv("NAME")[index]; }
+- |
+  char member_access() { return ::fopen("file", "r")->flags; }
+- |
+  char direct_dereference() { return *getenv("NAME"); }
+- |
+  long qualified_sink() { return std::strlen(::getenv("NAME")); }
+- |
+  char parenthesized_subscript() { return ((getenv("NAME")))[0]; }
+- |
+  char parenthesized_member() { return (fopen("file", "r"))->flags; }
+- |
+  char parenthesized_dereference() { return *((getenv("NAME"))); }
+- |
+  long parenthesized_sink() { return strlen((getenv("NAME"))); }
+- |
+  long twice_parenthesized_sink() { return strlen(((getenv("NAME")))); }
+- |
+  int parenthesized_assignment() { return getc(stream = (fopen(path, "r"))); }
+- |
+  char *stpcpy_source() { return stpcpy(destination, getenv("NAME")); }
+- |
+  void unsafe_string_format() {
+    fprintf(stderr, "%s", memchr(data, needle, length));
+  }
+- |
+  void unsafe_global_qualified_string_format() {
+    ::fprintf(stderr, "%s", memchr(data, needle, length));
+  }
+- |
+  void unsafe_std_qualified_string_format() {
+    std::fprintf(stderr, "%s", memchr(data, needle, length));
+  }
+- |
+  void unsafe_after_escaped_percent_format() {
+    fprintf(stderr, "%% %s", memchr(data, needle, length));
+  }
+- |
+  void unsafe_concatenated_string_format() {
+    fprintf(stderr, "%s" " tail", memchr(data, needle, length));
+  }
+- |
+  void unsafe_concatenated_after_escaped_percent_format() {
+    fprintf(stderr, "%% %s" " tail", memchr(data, needle, length));
+  }
+- |
+  void unsafe_raw_string_format() {
+    fprintf(stderr, R"tag(%10s)tag", memchr(data, needle, length));
+  }
+- |
+  void unsafe_raw_after_escaped_percent_format() {
+    fprintf(stderr, R"tag(%% %s)tag", memchr(data, needle, length));
+  }
+- |
+  void unsafe_percent_raw_delimiter_format() {
+    fprintf(stderr, R"%(%s)%", memchr(data, needle, length));
+  }
+- |
+  void unsafe_parenthesized_format() {
+    fprintf(stderr, (("%.3s")), memchr(data, needle, length));
+  }
+- |
+  void unsafe_single_parenthesized_format() {
+    fprintf(stderr, ("%s"), memchr(data, needle, length));
+  }
+- |
+  void unsafe_variadic_string_format() {
+    fprintf(stderr, "%10s", memchr(data, needle, length), extra);
+  }
+- |
+  void unsafe_global_qualified_variadic_string_format() {
+    ::fprintf(stderr, "%10s", memchr(data, needle, length), extra);
+  }
+- |
+  void unsafe_std_qualified_variadic_string_format() {
+    std::fprintf(stderr, "%10s", memchr(data, needle, length), extra);
+  }
+- |
+  long parenthesized_sink_callee() { return (strlen)(getenv("NAME")); }
+- |
+  long spaced_qualified_sink() { return std :: strlen(getenv("NAME")); }
+- |
+  long parenthesized_source_callee() { return strlen((getenv)("NAME")); }
+- |
+  long first_position_with_rest() { return strtol(getenv("NUMBER"), nullptr, 10); }
+- |
+  void second_position_with_rest() {
+    memccpy(destination, memchr(data, needle, length), 0, size);
+  }
+- |
+  void source_api_inventory() {
+    strlen(fgets()); strlen(fopen()); strlen(getenv()); strlen(getgrent());
+    strlen(getgrgid()); strlen(getgrnam()); strlen(getlogin()); strlen(getpwent());
+    strlen(getpwnam()); strlen(getpwuid()); strlen(getpwuuid()); strlen(gets());
+    strlen(inet_ntop()); strlen(realpath()); strlen(tempnam()); strlen(tmpfile());
+    strlen(tmpnam()); strlen(memchr()); strlen(strcasestr_l()); strlen(strcasestr());
+    strlen(strchr()); strlen(strnstr()); strlen(strpbrk()); strlen(strrchr());
+    strlen(strstr()); strlen(strtok_r()); strlen(strtok());
+  }
+- |
+  void sink_api_inventory() {
+    atof(getenv()); atoi(getenv()); atol_l(getenv()); atol(getenv());
+    atoll_l(getenv()); atoll(getenv()); getc(getenv()); fprintf(getenv());
+    fgetpos(getenv()); fseek(getenv()); fseeko(getenv()); fsetpos(getenv());
+    ftell(getenv()); ftello(getenv()); rewind(getenv()); strlen(getenv());
+    strtoimax(getenv()); strtod(getenv()); strtol(getenv()); strtoul(getenv());
+    strtoll(getenv()); strtoq(getenv()); bcopy(getenv()); memccpy(getenv());
+    memcpy(getenv()); memmove(getenv()); stpncpy(getenv()); strcat(getenv());
+    strcpy(getenv()); strlcat(getenv()); strlcpy(getenv()); strncat(getenv());
+    stpcpy(getenv()); wcpcpy(getenv()); wcpncpy(getenv()); fwrite(getenv());
+  }
+- |
+  void second_position_sink_api_inventory() {
+    fprintf(stream, getenv()); bcopy(destination, getenv());
+    memccpy(destination, getenv()); memcpy(destination, getenv());
+    memmove(destination, getenv()); stpncpy(destination, getenv());
+    strcat(destination, getenv()); strcpy(destination, getenv());
+    strlcat(destination, getenv()); strlcpy(destination, getenv());
+    strncat(destination, getenv()); stpcpy(destination, getenv());
+    wcpcpy(destination, getenv()); wcpncpy(destination, getenv());
+  }
+- |
+  void witness_source_fgets() { strlen(fgets()); }
+- |
+  void witness_source_fopen() { strlen(fopen()); }
+- |
+  void witness_source_getenv() { strlen(getenv()); }
+- |
+  void witness_source_getgrent() { strlen(getgrent()); }
+- |
+  void witness_source_getgrgid() { strlen(getgrgid()); }
+- |
+  void witness_source_getgrnam() { strlen(getgrnam()); }
+- |
+  void witness_source_getlogin() { strlen(getlogin()); }
+- |
+  void witness_source_getpwent() { strlen(getpwent()); }
+- |
+  void witness_source_getpwnam() { strlen(getpwnam()); }
+- |
+  void witness_source_getpwuid() { strlen(getpwuid()); }
+- |
+  void witness_source_getpwuuid() { strlen(getpwuuid()); }
+- |
+  void witness_source_gets() { strlen(gets()); }
+- |
+  void witness_source_inet_ntop() { strlen(inet_ntop()); }
+- |
+  void witness_source_realpath() { strlen(realpath()); }
+- |
+  void witness_source_tempnam() { strlen(tempnam()); }
+- |
+  void witness_source_tmpfile() { strlen(tmpfile()); }
+- |
+  void witness_source_tmpnam() { strlen(tmpnam()); }
+- |
+  void witness_source_memchr() { strlen(memchr()); }
+- |
+  void witness_source_strcasestr_l() { strlen(strcasestr_l()); }
+- |
+  void witness_source_strcasestr() { strlen(strcasestr()); }
+- |
+  void witness_source_strchr() { strlen(strchr()); }
+- |
+  void witness_source_strnstr() { strlen(strnstr()); }
+- |
+  void witness_source_strpbrk() { strlen(strpbrk()); }
+- |
+  void witness_source_strrchr() { strlen(strrchr()); }
+- |
+  void witness_source_strstr() { strlen(strstr()); }
+- |
+  void witness_source_strtok_r() { strlen(strtok_r()); }
+- |
+  void witness_source_strtok() { strlen(strtok()); }
+- |
+  void witness_first_only_sink_atof() { atof(getenv("VALUE")); }
+- |
+  void witness_first_only_sink_atoi() { atoi(getenv("VALUE")); }
+- |
+  void witness_first_only_sink_atol() { atol(getenv("VALUE")); }
+- |
+  void witness_first_only_sink_atoll() { atoll(getenv("VALUE")); }
+- |
+  void witness_first_only_sink_getc() { getc(fopen("path", "r")); }
+- |
+  void witness_first_only_sink_ftell() { ftell(fopen("path", "r")); }
+- |
+  void witness_first_only_sink_ftello() { ftello(fopen("path", "r")); }
+- |
+  void witness_first_only_sink_rewind() { rewind(fopen("path", "r")); }
+- |
+  void witness_first_only_sink_strlen() { strlen(getenv("VALUE")); }
+- |
+  void witness_first_rest_sink_atol_l() { atol_l(getenv("VALUE"), locale); }
+- |
+  void witness_first_rest_sink_atoll_l() { atoll_l(getenv("VALUE"), locale); }
+- |
+  void witness_first_rest_sink_fprintf() { fprintf(fopen("path", "w"), "%s", "ok"); }
+- |
+  void witness_first_rest_sink_fgetpos() { fgetpos(fopen("path", "r"), position); }
+- |
+  void witness_first_rest_sink_fseek() { fseek(fopen("path", "r"), offset, origin); }
+- |
+  void witness_first_rest_sink_fseeko() { fseeko(fopen("path", "r"), offset, origin); }
+- |
+  void witness_first_rest_sink_fsetpos() { fsetpos(fopen("path", "r"), position); }
+- |
+  void witness_first_rest_sink_strtoimax() { strtoimax(getenv("VALUE"), end, base); }
+- |
+  void witness_first_rest_sink_strtod() { strtod(getenv("VALUE"), end); }
+- |
+  void witness_first_rest_sink_strtol() { strtol(getenv("VALUE"), end, base); }
+- |
+  void witness_first_rest_sink_strtoul() { strtoul(getenv("VALUE"), end, base); }
+- |
+  void witness_first_rest_sink_strtoll() { strtoll(getenv("VALUE"), end, base); }
+- |
+  void witness_first_rest_sink_strtoq() { strtoq(getenv("VALUE"), end, base); }
+- |
+  void witness_first_rest_sink_bcopy() { bcopy(getenv("SRC"), destination, size); }
+- |
+  void witness_first_rest_sink_memccpy() { memccpy(getenv("DEST"), source, character, size); }
+- |
+  void witness_first_rest_sink_memcpy() { memcpy(getenv("DEST"), source, size); }
+- |
+  void witness_first_rest_sink_memmove() { memmove(getenv("DEST"), source, size); }
+- |
+  void witness_first_rest_sink_stpncpy() { stpncpy(getenv("DEST"), source, size); }
+- |
+  void witness_first_rest_sink_strcat() { strcat(getenv("DEST"), source); }
+- |
+  void witness_first_rest_sink_strcpy() { strcpy(getenv("DEST"), source); }
+- |
+  void witness_first_rest_sink_strlcat() { strlcat(getenv("DEST"), source, size); }
+- |
+  void witness_first_rest_sink_strlcpy() { strlcpy(getenv("DEST"), source, size); }
+- |
+  void witness_first_rest_sink_strncat() { strncat(getenv("DEST"), source, size); }
+- |
+  void witness_first_rest_sink_stpcpy() { stpcpy(getenv("DEST"), source); }
+- |
+  void witness_first_rest_sink_wcpcpy() { wcpcpy(getenv("DEST"), source); }
+- |
+  void witness_first_rest_sink_wcpncpy() { wcpncpy(getenv("DEST"), source, size); }
+- |
+  void witness_first_rest_sink_fwrite() { fwrite(getenv("DATA"), size, count, stream); }
+- |
+  void witness_second_only_sink_fprintf() { fprintf(stream, getenv("FORMAT")); }
+- |
+  void witness_second_only_sink_strcat() { strcat(destination, getenv("SRC")); }
+- |
+  void witness_second_only_sink_strcpy() { strcpy(destination, getenv("SRC")); }
+- |
+  void witness_second_only_sink_stpcpy() { stpcpy(destination, getenv("SRC")); }
+- |
+  void witness_second_only_sink_wcpcpy() { wcpcpy(destination, getenv("SRC")); }
+- |
+  void witness_second_rest_sink_fprintf() { fprintf(stream, getenv("FORMAT"), value); }
+- |
+  void witness_second_rest_sink_bcopy() { bcopy(source, getenv("DEST"), size); }
+- |
+  void witness_second_rest_sink_memccpy() { memccpy(destination, getenv("SRC"), character, size); }
+- |
+  void witness_second_rest_sink_memcpy() { memcpy(destination, getenv("SRC"), size); }
+- |
+  void witness_second_rest_sink_memmove() { memmove(destination, getenv("SRC"), size); }
+- |
+  void witness_second_rest_sink_stpncpy() { stpncpy(destination, getenv("SRC"), size); }
+- |
+  void witness_second_rest_sink_strlcat() { strlcat(destination, getenv("SRC"), size); }
+- |
+  void witness_second_rest_sink_strlcpy() { strlcpy(destination, getenv("SRC"), size); }
+- |
+  void witness_second_rest_sink_strncat() { strncat(destination, getenv("SRC"), size); }
+- |
+  void witness_second_rest_sink_wcpncpy() { wcpncpy(destination, getenv("SRC"), size); }
