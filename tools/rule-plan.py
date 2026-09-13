@@ -34,6 +34,7 @@ LANGUAGE_EXTENSIONS = {
 }
 LANGUAGES = tuple(LANGUAGE_EXTENSIONS)
 CATEGORIES = ("security", "correctness")
+API_CONTRACT_LANGUAGES = {"c", "cpp"}
 MAX_MUTATIONS = 256
 MAX_PREFLIGHT_SECONDS = 300
 MAX_ENGINE_SECONDS = 20
@@ -44,7 +45,7 @@ PLAN_KEYS = {
     "match", "rule", "utils", "constraints", "labels", "fix",
     "transform", "rewriters", "files", "ignores", "url", "metadata", "cases",
     "mutation_limit", "mutation_exclusions", "oracles", "comments", "extensions", "claims",
-    "metamorphic",
+    "metamorphic", "api_contracts",
 }
 
 CLAIM_DIMENSIONS = {"api", "callee", "operator", "argument-position", "literal-form", "syntax"}
@@ -384,6 +385,53 @@ def validate_oracles(plan: dict, cases: dict[str, list[str]]) -> None:
             raise ValueError("rules with fix require fixed output for every invalid source")
 
 
+def validate_api_contracts(plan: dict, cases: dict[str, list[str]]) -> None:
+    """Bind API arity and contract-sensitive positions to exact-count witnesses."""
+    contracts = plan.get("api_contracts", [])
+    if not isinstance(contracts, list):
+        raise TypeError("api_contracts must be a list")
+    if contracts and plan["language"] not in API_CONTRACT_LANGUAGES:
+        raise ValueError(
+            f"api_contracts do not support {plan['language']} syntax")
+    invalid = set(cases["invalid"])
+    seen = set()
+    uses: dict[str, int] = {}
+    for contract in contracts:
+        if not isinstance(contract, dict) or set(contract) != {
+                "callee", "arity", "positions", "witnesses"}:
+            raise ValueError("api contract has invalid shape")
+        callee, arity = contract["callee"], contract["arity"]
+        positions, witnesses = contract["positions"], contract["witnesses"]
+        if not isinstance(callee, str) or not callee.strip():
+            raise ValueError("api contract callee must be a non-empty string")
+        if not isinstance(arity, int) or isinstance(arity, bool) or arity < 1:
+            raise ValueError("api contract arity must be a positive integer")
+        identity = (callee, arity)
+        if identity in seen:
+            raise ValueError("api contracts require unique callee and arity pairs")
+        seen.add(identity)
+        if (not isinstance(positions, list) or not positions
+                or any(not isinstance(position, int) or isinstance(position, bool)
+                       or position < 1 for position in positions)
+                or len(positions) != len(set(positions))):
+            raise ValueError("api contract positions must be unique positive integers")
+        if max(positions) > arity:
+            raise ValueError("api contract position cannot exceed arity")
+        if not isinstance(witnesses, dict) or set(witnesses) != set(positions):
+            raise ValueError("api contract witnesses must exactly cover positions")
+        if any(not isinstance(source, str) or source not in invalid
+               for source in witnesses.values()):
+            raise ValueError("api contract witnesses must be invalid cases")
+        for source in witnesses.values():
+            uses[source] = uses.get(source, 0) + 1
+    for source, expected_count in uses.items():
+        actual = plan.get("oracles", {}).get(source, {}).get("count")
+        if actual != expected_count:
+            raise ValueError(
+                f"api contract witness needs exact count oracle; "
+                f"expected {expected_count}, got {actual!r}")
+
+
 def validate_claims(plan: dict, cases: dict[str, list[str]]) -> None:
     """Require every declared syntactic claim and pair to have an invalid witness."""
     claims = plan.get("claims", {})
@@ -527,6 +575,44 @@ def validate_derived_syntax(plan: dict, cases: dict[str, list[str]], deadline: f
             raise RuntimeError(f"METAMORPHIC_PARSE_ERROR: {error}") from error
 
 
+def validate_api_contract_syntax(plan: dict, matcher: dict, deadline: float,
+                                 telemetry: PhaseTelemetry) -> None:
+    """Prove each declared API witness targets its stated call and position."""
+    rule_text = render_rule(plan, matcher)
+    extension = LANGUAGE_EXTENSIONS[plan["language"]]
+    invoke = partial(_syntax_run, deadline=deadline, telemetry=telemetry)
+    findings_by_source = {}
+    calls_by_contract = {}
+    for contract in plan.get("api_contracts", []):
+        for position, source in contract["witnesses"].items():
+            if source not in findings_by_source:
+                try:
+                    SYNTAX.validate_full_source(
+                        source, plan["language"], extension, deadline, invoke)
+                except RuntimeError as error:
+                    raise RuntimeError(
+                        f"API_CONTRACT_PARSE_ERROR: {contract['callee']}/"
+                        f"{contract['arity']} witness is malformed") from error
+                findings_by_source[source] = SYNTAX.rule_spans(
+                    source, extension, rule_text, invoke)
+            identity = (source, contract["callee"], contract["arity"])
+            if identity not in calls_by_contract:
+                calls_by_contract[identity] = SYNTAX.api_call_arguments(
+                    source, plan["language"], extension, contract["callee"],
+                    contract["arity"], invoke)
+            calls = calls_by_contract[identity]
+            if len(calls) != 1:
+                raise RuntimeError(
+                    f"API_CONTRACT_CALL_MISMATCH: {contract['callee']}/"
+                    f"{contract['arity']} needs one exact call, got {len(calls)}")
+            argument = calls[0][position - 1]
+            if not any(argument[0] <= start and end <= argument[1]
+                       for start, end in findings_by_source[source]):
+                raise RuntimeError(
+                    f"API_CONTRACT_POSITION_UNMATCHED: {contract['callee']}/"
+                    f"{contract['arity']} argument {position}")
+
+
 def named_branches(plan: dict) -> list[dict]:
     match = plan.get("match", {})
     branches = match.get("any", []) if isinstance(match, dict) else []
@@ -541,6 +627,7 @@ def validate_plan(plan: dict) -> tuple[dict, dict[str, list[str]]]:
     validate_utilities(plan, matcher)
     validate_constraints(plan, matcher)
     validate_oracles(plan, cases)
+    validate_api_contracts(plan, cases)
     validate_claims(plan, cases)
     validate_metamorphic(plan, cases)
     branches = named_branches(plan)
@@ -943,6 +1030,7 @@ def preflight(plan: dict, matcher: dict, cases: dict[str, list[str]],
     deadline = perf_counter() + MAX_PREFLIGHT_SECONDS if deadline is None else deadline
     expanded = expanded_cases(plan, cases, deadline, telemetry)
     validate_derived_syntax(plan, cases, deadline, telemetry, expanded)
+    validate_api_contract_syntax(plan, matcher, deadline, telemetry)
     cases = expanded
     telemetry.valid_cases, telemetry.invalid_cases = len(cases["valid"]), len(cases["invalid"])
     telemetry.bytes = sum(len(source.encode()) for values in cases.values() for source in values)
