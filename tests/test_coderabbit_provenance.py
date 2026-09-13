@@ -20,7 +20,8 @@ def yaml_id(path):
 
 def source_metadata_index(lines):
     if (
-        lines[1].startswith("# Last enriched: ")
+        len(lines) >= 3
+        and lines[1].startswith("# Last enriched: ")
         and lines[2].startswith("# Last touched: ")
     ):
         return 3
@@ -36,6 +37,7 @@ class CodeRabbitProvenanceTests(unittest.TestCase):
     def _assert_source_metadata(
         self, lines, repository, commit, author, source_path
     ):
+        self.assertGreaterEqual(len(lines), 6)
         self.assertEqual(lines[0], MYGUARD_HEADER)
         source_index = source_metadata_index(lines)
         self.assertEqual(
@@ -128,6 +130,12 @@ class CodeRabbitProvenanceTests(unittest.TestCase):
                     "Author",
                     "rule.yml",
                 )
+
+    def test_truncated_metadata_fails_with_assertion(self):
+        with self.assertRaises(AssertionError):
+            self._assert_source_metadata(
+                [MYGUARD_HEADER], "example", "abc", "Author", "rule.yml"
+            )
 
     def test_manifest_records_pinned_source_digests(self):
         for entry in self.entries:
