@@ -132,6 +132,8 @@ class RulePlanTests(unittest.TestCase):
         for contract, message in invalid_contracts:
             with self.subTest(contract=contract), self.assertRaisesRegex(ValueError, message):
                 PLAN.validate_plan({**plan, "api_contracts": [contract]})
+        with self.assertRaisesRegex(ValueError, "unique callee and arity"):
+            PLAN.validate_plan({**plan, "api_contracts": plan["api_contracts"] * 2})
 
         without_count = {**plan, "oracles": {second: {"count": 1}}}
         with self.assertRaisesRegex(ValueError, "exact count oracle"):
@@ -207,6 +209,21 @@ class RulePlanTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "CALL_MISMATCH"):
             PLAN.validate_api_contract_syntax(
                 wrong_arity, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
+
+        repeated = "void f(){ memcpy(NULL, src, 8); memcpy(NULL, src, 8); }"
+        repeated_plan = {
+            **plan,
+            "cases": {"invalid": [repeated], "valid": plan["cases"]["valid"]},
+            "oracles": {repeated: {"count": 1}},
+            "api_contracts": [{
+                "callee": "memcpy", "arity": 3,
+                "positions": [1], "witnesses": {1: repeated},
+            }],
+        }
+        with self.assertRaisesRegex(RuntimeError, "needs one exact call, got 2"):
+            PLAN.validate_api_contract_syntax(
+                repeated_plan, matcher, perf_counter() + 20,
+                PLAN.PhaseTelemetry())
 
         for malformed in (
                 "void f(){ memcpy(NULL, src, 8);",
