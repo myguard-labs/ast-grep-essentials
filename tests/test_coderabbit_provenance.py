@@ -27,32 +27,35 @@ def source_metadata_index(lines):
     return 1
 
 
-def assert_source_metadata(testcase, lines, repository, commit, author, source_path):
-    testcase.assertEqual(lines[0], MYGUARD_HEADER)
-    source_index = source_metadata_index(lines)
-    testcase.assertEqual(
-        lines[source_index], f"# CodeRabbit source repository: {repository}\n"
-    )
-    testcase.assertEqual(
-        lines[source_index + 1],
-        f"# CodeRabbit source file: {repository}/blob/{commit}/{source_path}\n",
-    )
-    testcase.assertEqual(
-        lines[source_index + 2], f"# Original author (Git): {author}\n"
-    )
-    testcase.assertEqual(
-        lines[source_index + 3],
-        "# License: Apache License 2.0 "
-        "(https://www.apache.org/licenses/LICENSE-2.0)\n",
-    )
-    testcase.assertTrue(lines[source_index + 4].startswith("# Modified by MyGuard: "))
-
-
 class CodeRabbitProvenanceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.manifest = json.loads(MANIFEST.read_text())
         cls.entries = cls.manifest["rules"]
+
+    def _assert_source_metadata(
+        self, lines, repository, commit, author, source_path
+    ):
+        self.assertEqual(lines[0], MYGUARD_HEADER)
+        source_index = source_metadata_index(lines)
+        self.assertEqual(
+            lines[source_index], f"# CodeRabbit source repository: {repository}\n"
+        )
+        self.assertEqual(
+            lines[source_index + 1],
+            f"# CodeRabbit source file: {repository}/blob/{commit}/{source_path}\n",
+        )
+        self.assertEqual(
+            lines[source_index + 2], f"# Original author (Git): {author}\n"
+        )
+        self.assertEqual(
+            lines[source_index + 3],
+            "# License: Apache License 2.0 "
+            "(https://www.apache.org/licenses/LICENSE-2.0)\n",
+        )
+        self.assertTrue(
+            lines[source_index + 4].startswith("# Modified by MyGuard: ")
+        )
 
     def test_manifest_covers_all_imported_rules(self):
         self.assertEqual(len(self.entries), 184)
@@ -73,8 +76,7 @@ class CodeRabbitProvenanceTests(unittest.TestCase):
             with self.subTest(rule=entry["id"]):
                 path = ROOT / entry["target_path"]
                 lines = path.read_text().splitlines(keepends=True)
-                assert_source_metadata(
-                    self,
+                self._assert_source_metadata(
                     lines,
                     repository,
                     commit,
@@ -97,7 +99,7 @@ class CodeRabbitProvenanceTests(unittest.TestCase):
             ),
             "# Modified by MyGuard: test\n",
         ]
-        assert_source_metadata(self, lines, "example", "abc", "Author", "rule.yml")
+        self._assert_source_metadata(lines, "example", "abc", "Author", "rule.yml")
 
     def test_enrichment_headers_require_canonical_pair(self):
         metadata = [
@@ -117,8 +119,7 @@ class CodeRabbitProvenanceTests(unittest.TestCase):
         ]
         for headers in malformed_headers:
             with self.subTest(headers=headers), self.assertRaises(AssertionError):
-                assert_source_metadata(
-                    self,
+                self._assert_source_metadata(
                     [MYGUARD_HEADER, *headers, *metadata],
                     "example",
                     "abc",
