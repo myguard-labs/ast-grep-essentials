@@ -3,6 +3,52 @@
 Checked against ast-grep 0.45.3 on 2026-09-06. The linked upstream pages are
 living references; the lockfile and fixtures define this repository's baseline.
 
+## Record enrichment provenance
+
+Every active rule starts with these three comments:
+
+```yaml
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# Last enriched: 2026-09-13 by qwen3-coder-30b
+# Last touched: 2026-09-11 by Thijs Eilander
+```
+
+`Last enriched` records the date and reviewer for the latest complete semantic
+review of the rule, message, note, fixtures, sources, and documented limits.
+Use an exact model ID or a person's public author name. An automated model run
+must name its model; do not record a client or orchestration tool as the
+reviewer. The standard automated path uses the local Arc-hosted
+`qwen3-coder-30b` endpoint and has no Codex, Claude, credentials, proxy
+inheritance, or cloud fallback.
+
+`Last touched` records the date and author of the latest substantive edit to
+the rule file. For an existing rule, derive both from its most recent Git commit
+before adding or refreshing provenance-only comments. Adding or updating only
+these comments does not count as touching the rule. A later matcher, diagnostic,
+severity, utility, constraint, transform, or fix edit updates `Last touched`;
+fixture-only and documentation-only edits do not.
+
+Use ISO 8601 calendar dates (`YYYY-MM-DD`). Keep both comments directly below
+the MyGuard comment. During the one-rule-per-PR migration, reviewers enforce
+their position and shape; after every active rule has migrated, the inventory
+tests enforce the contract pack-wide. These are YAML comments because ast-grep
+rejects unsupported top-level metadata, while comments travel with copied rules
+and do not change scanning.
+
+Enrichment is review work, not a timestamping shortcut. Run the complete
+fixture suite after a pack-wide enrichment, review every proposed matcher or
+diagnostic change, and update `Last enriched` only for rules actually examined.
+The date and reviewer say who performed that examination; they do not claim
+that the reviewer authored the rule or that the rule has no semantic limits.
+
+Ship each enriched rule in its own pull request. That PR may include only the
+rule and its directly paired artifacts: its fixture, snapshot, limitation or
+source entry, and source plan when one exists. Do not combine two rule IDs in
+one enrichment PR, even when their changes are mechanical or closely related.
+Repository-wide tooling, tests, and documentation belong in a separate
+foundation PR. This keeps each semantic review, provenance claim, test result,
+and rollback independently auditable.
+
 ## Harvest and draft pipeline
 
 The repository contains the complete command pipeline for turning project
