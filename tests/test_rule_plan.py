@@ -114,18 +114,18 @@ class RulePlanTests(unittest.TestCase):
             oracles={first: {"count": 1}, second: {"count": 1}},
             api_contracts=[{
                 "callee": "memcpy", "arity": 3,
-                "nullable_positions": [1, 2], "witnesses": {1: first, 2: second},
+                "positions": [1, 2], "witnesses": {1: first, 2: second},
             }],
         )
         PLAN.validate_plan(plan)
 
         invalid_contracts = (
-            ({"callee": "memcpy", "arity": 2, "nullable_positions": [1, 3],
+            ({"callee": "memcpy", "arity": 2, "positions": [1, 3],
               "witnesses": {1: first, 3: second}}, "cannot exceed arity"),
-            ({"callee": "memcpy", "arity": 3, "nullable_positions": [1],
+            ({"callee": "memcpy", "arity": 3, "positions": [1],
               "witnesses": {1: "missing"}}, "must be invalid cases"),
-            ({"callee": "memcpy", "arity": 3, "nullable_positions": [1, 2],
-              "witnesses": {1: first}}, "must exactly cover nullable_positions"),
+            ({"callee": "memcpy", "arity": 3, "positions": [1, 2],
+              "witnesses": {1: first}}, "must exactly cover positions"),
         )
         for contract, message in invalid_contracts:
             with self.subTest(contract=contract), self.assertRaisesRegex(ValueError, message):
@@ -141,7 +141,7 @@ class RulePlanTests(unittest.TestCase):
             language="cpp", cases={"invalid": [source], "valid": ["safe();"]},
             api_contracts=[{
                 "callee": "memcpy", "arity": 3,
-                "nullable_positions": [1, 2], "witnesses": {1: source, 2: source},
+                "positions": [1, 2], "witnesses": {1: source, 2: source},
             }],
         )
         with self.assertRaisesRegex(ValueError, "expected 2"):
@@ -156,7 +156,7 @@ class RulePlanTests(unittest.TestCase):
             oracles={source: {"count": 1}},
             api_contracts=[{
                 "callee": "memcpy", "arity": 3,
-                "nullable_positions": [1], "witnesses": {1: source},
+                "positions": [1], "witnesses": {1: source},
             }],
         )
         matcher, _cases = PLAN.validate_plan(plan)
@@ -165,7 +165,7 @@ class RulePlanTests(unittest.TestCase):
 
         wrong_position = {**plan, "api_contracts": [{
             "callee": "memcpy", "arity": 3,
-            "nullable_positions": [2], "witnesses": {2: source},
+            "positions": [2], "witnesses": {2: source},
         }]}
         with self.assertRaisesRegex(RuntimeError, "POSITION_UNMATCHED"):
             PLAN.validate_api_contract_syntax(
@@ -179,7 +179,7 @@ class RulePlanTests(unittest.TestCase):
 
         wrong_arity = {**plan, "api_contracts": [{
             "callee": "memcpy", "arity": 2,
-            "nullable_positions": [1], "witnesses": {1: source},
+            "positions": [1], "witnesses": {1: source},
         }]}
         with self.assertRaisesRegex(RuntimeError, "CALL_MISMATCH"):
             PLAN.validate_api_contract_syntax(

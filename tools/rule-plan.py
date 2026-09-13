@@ -385,7 +385,7 @@ def validate_oracles(plan: dict, cases: dict[str, list[str]]) -> None:
 
 
 def validate_api_contracts(plan: dict, cases: dict[str, list[str]]) -> None:
-    """Bind API arity and nullable operand positions to exact-count witnesses."""
+    """Bind API arity and contract-sensitive positions to exact-count witnesses."""
     contracts = plan.get("api_contracts", [])
     if not isinstance(contracts, list):
         raise TypeError("api_contracts must be a list")
@@ -393,10 +393,10 @@ def validate_api_contracts(plan: dict, cases: dict[str, list[str]]) -> None:
     seen = set()
     for contract in contracts:
         if not isinstance(contract, dict) or set(contract) != {
-                "callee", "arity", "nullable_positions", "witnesses"}:
+                "callee", "arity", "positions", "witnesses"}:
             raise ValueError("api contract has invalid shape")
         callee, arity = contract["callee"], contract["arity"]
-        positions, witnesses = contract["nullable_positions"], contract["witnesses"]
+        positions, witnesses = contract["positions"], contract["witnesses"]
         if not isinstance(callee, str) or not callee.strip():
             raise ValueError("api contract callee must be a non-empty string")
         if not isinstance(arity, int) or isinstance(arity, bool) or arity < 1:
@@ -409,11 +409,11 @@ def validate_api_contracts(plan: dict, cases: dict[str, list[str]]) -> None:
                 or any(not isinstance(position, int) or isinstance(position, bool)
                        or position < 1 for position in positions)
                 or len(positions) != len(set(positions))):
-            raise ValueError("api contract nullable_positions must be unique positive integers")
+            raise ValueError("api contract positions must be unique positive integers")
         if max(positions) > arity:
-            raise ValueError("api contract nullable position cannot exceed arity")
+            raise ValueError("api contract position cannot exceed arity")
         if not isinstance(witnesses, dict) or set(witnesses) != set(positions):
-            raise ValueError("api contract witnesses must exactly cover nullable_positions")
+            raise ValueError("api contract witnesses must exactly cover positions")
         if any(not isinstance(source, str) or source not in invalid
                for source in witnesses.values()):
             raise ValueError("api contract witnesses must be invalid cases")

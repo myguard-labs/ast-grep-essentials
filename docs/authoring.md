@@ -143,9 +143,10 @@ the detection outcome stays equivalent or changes. These cases join the normal
 contrast and mutation suite only after a language-specific parser check rejects
 ERROR or MISSING nodes.
 
-For APIs where more than one operand may independently violate the contract,
+For APIs where more than one operand may independently violate a rule's
+syntactic contract,
 declare `api_contracts` instead of leaving the coverage implicit in fixture
-prose. Each entry binds one callee and realistic arity to all nullable,
+prose. Each entry binds one callee and realistic arity to all contract-sensitive,
 one-based argument positions and an invalid witness for every position. Every
 witness needs an exact `oracles.<source>.count`; a source reused for two
 positions must produce two diagnostics.
@@ -154,7 +155,7 @@ positions must produce two diagnostics.
 api_contracts:
   - callee: memcpy
     arity: 3
-    nullable_positions: [1, 2]
+    positions: [1, 2]
     witnesses:
       1: memcpy(NULL, src, size);
       2: memcpy(dst, NULL, size);
@@ -165,7 +166,9 @@ arity, valid or unknown witnesses, duplicate callee/arity contracts, and stale
 diagnostic counts. Preflight also uses the pinned parser to require one exact
 callee/arity call and a rule finding wholly contained in every declared argument.
 Keep unrelated operator, qualification, wrapper, parser-recovery, and
-regex-boundary negative controls in `cases.valid`.
+regex-boundary negative controls in `cases.valid`. The declaration proves
+syntactic positional coverage; semantic properties such as nullability remain
+the rule author's responsibility and must not be inferred from this metadata.
 
 Plan mutation checks use one pinned-engine batch in the normal case and bisect
 only engine-load failures for exact attribution. Use
