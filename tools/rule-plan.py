@@ -34,6 +34,7 @@ LANGUAGE_EXTENSIONS = {
 }
 LANGUAGES = tuple(LANGUAGE_EXTENSIONS)
 CATEGORIES = ("security", "correctness")
+API_CONTRACT_LANGUAGES = {"c", "cpp"}
 MAX_MUTATIONS = 256
 MAX_PREFLIGHT_SECONDS = 300
 MAX_ENGINE_SECONDS = 20
@@ -389,6 +390,9 @@ def validate_api_contracts(plan: dict, cases: dict[str, list[str]]) -> None:
     contracts = plan.get("api_contracts", [])
     if not isinstance(contracts, list):
         raise TypeError("api_contracts must be a list")
+    if contracts and plan["language"] not in API_CONTRACT_LANGUAGES:
+        raise ValueError(
+            f"api_contracts do not support {plan['language']} syntax")
     invalid = set(cases["invalid"])
     seen = set()
     for contract in contracts:

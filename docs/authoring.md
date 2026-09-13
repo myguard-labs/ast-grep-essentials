@@ -169,6 +169,8 @@ Keep unrelated operator, qualification, wrapper, parser-recovery, and
 regex-boundary negative controls in `cases.valid`. The declaration proves
 syntactic positional coverage; semantic properties such as nullability remain
 the rule author's responsibility and must not be inferred from this metadata.
+The initial parser-backed contract supports C and C++ plans; other languages
+fail closed until their call grammar has dedicated controls.
 
 Plan mutation checks use one pinned-engine batch in the normal case and bisect
 only engine-load failures for exact attribution. Use

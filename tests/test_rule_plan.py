@@ -118,6 +118,8 @@ class RulePlanTests(unittest.TestCase):
             }],
         )
         PLAN.validate_plan(plan)
+        with self.assertRaisesRegex(ValueError, "do not support python syntax"):
+            PLAN.validate_plan({**plan, "language": "python"})
 
         invalid_contracts = (
             ({"callee": "memcpy", "arity": 2, "positions": [1, 3],
@@ -162,6 +164,9 @@ class RulePlanTests(unittest.TestCase):
         matcher, _cases = PLAN.validate_plan(plan)
         PLAN.validate_api_contract_syntax(
             plan, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
+        c_plan = {**plan, "language": "c"}
+        PLAN.validate_api_contract_syntax(
+            c_plan, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
 
         wrong_position = {**plan, "api_contracts": [{
             "callee": "memcpy", "arity": 3,
