@@ -171,6 +171,12 @@ class RulePlanTests(unittest.TestCase):
             PLAN.validate_api_contract_syntax(
                 wrong_position, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
 
+        whole_call = {**plan, "rule": {"pattern": "memcpy($$$ARGS)"}}
+        with self.assertRaisesRegex(RuntimeError, "POSITION_UNMATCHED"):
+            PLAN.validate_api_contract_syntax(
+                whole_call, whole_call["rule"], perf_counter() + 20,
+                PLAN.PhaseTelemetry())
+
         wrong_arity = {**plan, "api_contracts": [{
             "callee": "memcpy", "arity": 2,
             "nullable_positions": [1], "witnesses": {1: source},
