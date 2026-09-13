@@ -732,18 +732,24 @@ def _qualified_pattern_mutations(pattern: str):
 
 
 def _regex_alternative_mutations(pattern: str):
-    alternatives = _regex_alternatives(pattern)
     prefix = suffix = ""
+    body = pattern
+    leading_flags = re.match(r"(\^?)(\(\?[A-Za-z-]+\))(.*)", body, flags=re.DOTALL)
+    if leading_flags:
+        anchor, flags, body = leading_flags.groups()
+        prefix = anchor + flags
+    alternatives = _regex_alternatives(body)
     grouped_whole = False
     if not alternatives:
         grouped = re.fullmatch(
             r"(\^?(?:\(\?:|\(\?[A-Za-z-]+:|\())(.+)"
             r"(\)(?:(?:[?+*]|\{\d+(?:,\d*)?\})\??)?\$?)",
-            pattern, flags=re.DOTALL)
+            body, flags=re.DOTALL)
         if grouped:
             grouped_whole = True
-            prefix, body, suffix = grouped.groups()
-            group_prefix = prefix.removeprefix("^")
+            group_prefix_text, body, suffix = grouped.groups()
+            prefix += group_prefix_text
+            group_prefix = group_prefix_text.removeprefix("^")
             verbose = TRANSFORMS.inline_verbose(group_prefix)
             alternatives = _regex_alternatives(body, verbose=verbose)
     emitted = set()

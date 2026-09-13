@@ -150,6 +150,13 @@ class RuleRegexMutationTests(unittest.TestCase):
             "^open$|^write$",
         )
 
+    def test_top_level_alternatives_preserve_leading_global_flags(self):
+        mutations = dict(PLAN.mutation_candidates({"regex": "(?i)a|b"}))
+        self.assertEqual(
+            mutations["rule.regex-alternative[0]-deleted"]["regex"], "(?i)b")
+        self.assertEqual(
+            mutations["rule.regex-alternative[1]-deleted"]["regex"], "(?i)a")
+
     def test_regex_split_ignores_escaped_group_and_class_bars(self):
         # pylint: disable-next=protected-access
         self.assertEqual(PLAN._regex_alternatives(r"^(a|b)[|]c\|d$|^e$"),
