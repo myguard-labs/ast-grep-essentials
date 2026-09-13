@@ -41,6 +41,7 @@ CST_TARGET_KINDS: dict[str, dict[str, str | tuple[str, ...]]] = {
         "php": ("member_call_expression", "member_access_expression",
                 "nullsafe_member_call_expression", "nullsafe_member_access_expression"),
     },
+    "qualified-name": {"cpp": "qualified_identifier"},
     "member-access-swap": {"c": "field_expression", "cpp": "field_expression"},
 }
 

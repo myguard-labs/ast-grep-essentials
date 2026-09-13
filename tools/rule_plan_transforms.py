@@ -233,15 +233,16 @@ def regex_alternatives(pattern: str, *, verbose: bool = False) -> list[str]:
 
 
 def nested_regex_alternative_mutations(pattern: str):
-    """Yield byte-preserving deletions from each innermost concatenated group."""
-    groups = re.compile(r"\((?:\?[A-Za-z-]+:|\?:)?([^()]*)\)")
-    for group in groups.finditer(pattern):
-        alternatives = regex_alternatives(
-            group.group(1), verbose=inline_verbose(group.group(0)[1:]))
+    """Yield byte-preserving deletions from every structural regex group."""
+    state = _RegexState([False])
+    index = 0
+    while index < len(pattern):
+        index = state.advance(pattern, index)
+    for start, end, verbose in state.groups:
+        alternatives = regex_alternatives(pattern[start:end], verbose=verbose)
         for index in range(len(alternatives)):
             remaining = "|".join(part for part_index, part in enumerate(alternatives)
                                  if part_index != index)
-            start, end = group.span(1)
             yield f"group@{start}.{index}", pattern[:start] + remaining + pattern[end:]
 
 
@@ -263,6 +264,8 @@ class _RegexState:
     escaped: bool = False
     in_comment: bool = False
     bars: list[int] = field(default_factory=list)
+    group_starts: list[tuple[int, bool]] = field(default_factory=list)
+    groups: list[tuple[int, int, bool]] = field(default_factory=list)
 
     def advance(self, pattern: str, index: int) -> int:
         character = pattern[index]
@@ -279,6 +282,8 @@ class _RegexState:
         elif character == "(":
             index = self._open_group(pattern, index)
         elif character == ")" and len(self.modes) > 1:
+            start, opening_mode = self.group_starts.pop()
+            self.groups.append((start, index, opening_mode))
             self.modes.pop()
         elif character == "|" and len(self.modes) == 1:
             self.bars.append(index)
@@ -288,11 +293,13 @@ class _RegexState:
         flags = INLINE_FLAGS.match(pattern, index)
         if not flags:
             self.modes.append(self.modes[-1])
+            self.group_starts.append((index + 1, self.modes[-1]))
             return index
         _enabled, _disabled, terminator = flags.groups()
         mode = inline_verbose(pattern[index:], self.modes[-1])
         if terminator == ":":
             self.modes.append(mode)
+            self.group_starts.append((flags.end(), mode))
         else:
             self.modes[-1] = mode
         return flags.end() - 1

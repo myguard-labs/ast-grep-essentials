@@ -195,6 +195,45 @@ class RuleRegexMutationTests(unittest.TestCase):
         self.assertIn("pre(b)post|outer(c|d)", regexes.values())
         self.assertIn("pre(a|b)post|outer(d)", regexes.values())
 
+    def test_nested_regex_mutations_ignore_nonstructural_parentheses(self):
+        cases = {
+            r"\(a|b\)": {r"\(a", r"b\)"},
+            r"[(a|b)]": set(),
+            "(?x:(a # ignored | fake\n|b))": {"(?x:(b))", "(?x:(a # ignored | fake\n))"},
+            "^(?:pre(a|b)post)$": {"^(?:pre(b)post)$", "^(?:pre(a)post)$"},
+        }
+        for pattern, expected in cases.items():
+            with self.subTest(pattern=pattern):
+                mutations = {
+                    value["regex"] for key, value in
+                    PLAN.mutation_candidates({"regex": pattern})
+                    if "regex-alternative" in key
+                }
+                self.assertEqual(mutations, expected)
+
+    def test_nested_alternatives_inside_grouped_alternatives_are_mutated(self):
+        mutations = {
+            value["regex"] for key, value in
+            PLAN.mutation_candidates({"regex": "^(?:(a|b)|c)$"})
+            if "regex-alternative" in key
+        }
+        self.assertEqual(
+            mutations,
+            {"^(?:c)$", "^(?:(a|b))$", "^(?:(b)|c)$", "^(?:(a)|c)$"},
+        )
+
+    def test_nested_group_reparse_uses_mode_at_group_open(self):
+        pattern = "(?x:(a # ignored | fake\n(?-x)b|c))"
+        mutations = {
+            value["regex"] for key, value in
+            PLAN.mutation_candidates({"regex": pattern})
+            if "regex-alternative" in key
+        }
+        self.assertEqual(
+            mutations,
+            {"(?x:(c))", "(?x:(a # ignored | fake\n(?-x)b))"},
+        )
+
     def test_scoped_verbose_group_does_not_mask_outer_alternative(self):
         pattern = "^foo#bar$|^(?x:a|b)$"
         mutations = dict(PLAN.mutation_candidates({"regex": pattern}))
@@ -212,7 +251,12 @@ class RuleRegexMutationTests(unittest.TestCase):
         mutations = dict(PLAN.mutation_candidates({"regex": pattern}))
         expected = ("(?x:a # ) | fake\n|b)$", "^foo$")
         keys = [key for key in mutations if "regex-alternative" in key]
-        self.assertEqual(len(keys), 2)
+        self.assertEqual(len(keys), 4)
+        self.assertEqual(
+            {mutations[key]["regex"] for key in keys},
+            {"(?x:a # ) | fake\n|b)$", "^foo$",
+             "^foo$|(?x:b)$", "^foo$|(?x:a # ) | fake\n)$"},
+        )
         for index, regex in enumerate(expected):
             self.assertEqual(
                 mutations[f"rule.regex-alternative[{index}]-deleted"]["regex"], regex)
@@ -248,7 +292,12 @@ class RuleRegexMutationTests(unittest.TestCase):
         mutations = dict(PLAN.mutation_candidates({"regex": pattern}))
         expected = ("(?Ux:a # ) | fake\n|b)$", "^foo$")
         keys = [key for key in mutations if "regex-alternative" in key]
-        self.assertEqual(len(keys), 2)
+        self.assertEqual(len(keys), 4)
+        self.assertEqual(
+            {mutations[key]["regex"] for key in keys},
+            {"(?Ux:a # ) | fake\n|b)$", "^foo$",
+             "^foo$|(?Ux:b)$", "^foo$|(?Ux:a # ) | fake\n)$"},
+        )
         for index, regex in enumerate(expected):
             self.assertEqual(
                 mutations[f"rule.regex-alternative[{index}]-deleted"]["regex"], regex)

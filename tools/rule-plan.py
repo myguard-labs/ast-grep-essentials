@@ -746,14 +746,17 @@ def _regex_alternative_mutations(pattern: str):
             group_prefix = prefix.removeprefix("^")
             verbose = TRANSFORMS.inline_verbose(group_prefix)
             alternatives = _regex_alternatives(body, verbose=verbose)
+    emitted = set()
     for index in range(len(alternatives)):
         remaining = "|".join(
             part for part_index, part in enumerate(alternatives)
             if part_index != index)
-        yield index, prefix + remaining + suffix
-    if grouped_whole:
-        return
-    yield from TRANSFORMS.nested_regex_alternative_mutations(pattern)
+        mutation = prefix + remaining + suffix
+        emitted.add(mutation)
+        yield index, mutation
+    for identity, mutation in TRANSFORMS.nested_regex_alternative_mutations(pattern):
+        if mutation not in emitted:
+            yield identity, mutation
 
 
 def _pattern_mutations(value: dict, path: str, key: str, child):
