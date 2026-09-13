@@ -4,6 +4,8 @@
 # Original author (Git): ESS-ENN
 # License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
 # Modified by MyGuard: provenance metadata preserved; Refine outcome records field-aware function matching, literal diagnostics, and defended matcher paths.
+# Last enriched: 2026-09-13 by gpt-5
+# Last touched: 2026-09-13 by Thijs Eilander
 # Generated from: plans/cpp/security/null-library-function-cpp.yml
 id: null-library-function-cpp
 language: cpp
@@ -46,6 +48,13 @@ utils:
     - matches: null-return-call
     - matches: null-return-paren-one
     - matches: null-return-paren-two
+  nullable-consumed-operand:
+    any:
+    - matches: null-return-operand
+    - kind: assignment_expression
+      has:
+        field: right
+        matches: null-return-operand
   percent-s-format:
     any:
     - matches: percent-s-literal
@@ -77,6 +86,10 @@ rule:
   all:
   - not:
       inside:
+        stopBy: end
+        kind: ERROR
+  - not:
+      has:
         stopBy: end
         kind: ERROR
   - any:
@@ -114,30 +127,40 @@ rule:
           field: function
           regex: ^\(*\s*(?:(?:std\s*)?::\s*)?fwrite\s*\)*$
     - all:
-      - pattern:
-          context: void f() { $SECOND_ONLY($_, $OPERAND); }
-          selector: call_expression
-      - has:
-          field: function
-          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?(?:fprintf|bcopy|memccpy|memcpy|memmove|stpncpy|strcat|strcpy|strlcat|strlcpy|strncat|stpcpy|wcpcpy|wcpncpy)\s*\)*$
+      - matches: nullable-consumed-operand
+      - nthChild: 1
+      - inside:
+          stopBy: neighbor
+          kind: argument_list
+          inside:
+            stopBy: neighbor
+            kind: call_expression
+            has:
+              field: function
+              regex: ^\(*\s*(?:(?:std\s*)?::\s*)?(?:fprintf|bcopy|memccpy|memcpy|memmove|stpncpy|strcat|strcpy|strlcat|strlcpy|strncat|stpcpy|wcpcpy|wcpncpy|fwrite)\s*\)*$
     - all:
-      - pattern:
-          context: void f() { $SECOND_REST($_, $OPERAND, $$$REST); }
-          selector: call_expression
-      - has:
-          field: function
-          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?(?:bcopy|memccpy|memcpy|memmove|stpncpy|strcat|strcpy|strlcat|strlcpy|strncat|stpcpy|wcpcpy|wcpncpy)\s*\)*$
+      - matches: nullable-consumed-operand
+      - nthChild: 2
+      - inside:
+          stopBy: neighbor
+          kind: argument_list
+          inside:
+            stopBy: neighbor
+            kind: call_expression
+            has:
+              field: function
+              regex: ^\(*\s*(?:(?:std\s*)?::\s*)?(?:fprintf|bcopy|memccpy|memcpy|memmove|stpncpy|strcat|strcpy|strlcat|strlcpy|strncat|stpcpy|wcpcpy|wcpncpy)\s*\)*$
     - all:
       - pattern:
           context: void f() { $FIRST_ONLY($OPERAND); }
           selector: call_expression
       - has:
           field: function
-          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?(?:atof|atoi|atol_l|atol|atoll_l|atoll|getc|fprintf|fgetpos|fseek|fseeko|fsetpos|ftell|ftello|rewind|strlen|strtoimax|strtod|strtol|strtoul|strtoll|strtoq|bcopy|memccpy|memcpy|memmove|stpncpy|strcat|strcpy|strlcat|strlcpy|strncat|stpcpy|wcpcpy|wcpncpy|fwrite)\s*\)*$
+          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?(?:atof|atoi|atol|atoll|getc|ftell|ftello|rewind|strlen)\s*\)*$
     - all:
       - pattern:
           context: void f() { $FIRST_REST($OPERAND, $$$REST); }
           selector: call_expression
       - has:
           field: function
-          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?(?:atof|atoi|atol_l|atol|atoll_l|atoll|getc|fgetpos|fseek|fseeko|fsetpos|ftell|ftello|rewind|strlen|strtoimax|strtod|strtol|strtoul|strtoll|strtoq|fwrite)\s*\)*$
+          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?(?:atol_l|atoll_l|fgetpos|fseek|fseeko|fsetpos|strtoimax|strtod|strtol|strtoul|strtoll|strtoq)\s*\)*$

@@ -2,11 +2,7 @@ id: null-library-function-cpp
 snapshots:
   ? |
     char *stpcpy_source() { return stpcpy(destination, getenv("NAME")); }
-  : labels:
-    - source: getenv("NAME")
-      style: secondary
-      start: 51
-      end: 65
+  : labels: []
   ? |
     char direct_dereference() { return *getenv("NAME"); }
   : labels: []
@@ -85,15 +81,22 @@ snapshots:
       start: 48
       end: 66
   ? |
+    void assigned_positional_operands() {
+      memcpy(destination = getenv("DEST"), source, size);
+      memcpy(destination, source = getenv("SRC"), size);
+    }
+  : labels: []
+  ? |
+    void both_positional_operands() {
+      memcpy(getenv("DEST"), getenv("SRC"), size);
+    }
+  : labels: []
+  ? |
     void f() {
        char buf[128];
        strcpy(buf, getenv("FOO"));
     }
-  : labels:
-    - source: getenv("FOO")
-      style: secondary
-      start: 44
-      end: 57
+  : labels: []
   ? |
     void second_position_sink_api_inventory() {
       fprintf(stream, getenv()); bcopy(destination, getenv());
@@ -104,20 +107,12 @@ snapshots:
       strncat(destination, getenv()); stpcpy(destination, getenv());
       wcpcpy(destination, getenv()); wcpncpy(destination, getenv());
     }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 62
-      end: 70
+  : labels: []
   ? |
     void second_position_with_rest() {
       memccpy(destination, memchr(data, needle, length), 0, size);
     }
-  : labels:
-    - source: memchr(data, needle, length)
-      style: secondary
-      start: 58
-      end: 86
+  : labels: []
   ? |
     void sink_api_inventory() {
       atof(getenv()); atoi(getenv()); atol_l(getenv()); atol(getenv());
@@ -313,600 +308,242 @@ snapshots:
       start: 65
       end: 93
   ? |
-    void witness_first_only_sink_atof() { atof(getenv()); }
+    void witness_first_only_sink_atof() { atof(getenv("VALUE")); }
   : labels:
-    - source: getenv()
+    - source: getenv("VALUE")
       style: secondary
       start: 43
-      end: 51
+      end: 58
   ? |
-    void witness_first_only_sink_atoi() { atoi(getenv()); }
+    void witness_first_only_sink_atoi() { atoi(getenv("VALUE")); }
   : labels:
-    - source: getenv()
+    - source: getenv("VALUE")
       style: secondary
       start: 43
-      end: 51
+      end: 58
   ? |
-    void witness_first_only_sink_atol() { atol(getenv()); }
+    void witness_first_only_sink_atol() { atol(getenv("VALUE")); }
   : labels:
-    - source: getenv()
+    - source: getenv("VALUE")
       style: secondary
       start: 43
-      end: 51
+      end: 58
   ? |
-    void witness_first_only_sink_atol_l() { atol_l(getenv()); }
+    void witness_first_only_sink_atoll() { atoll(getenv("VALUE")); }
   : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_only_sink_atoll() { atoll(getenv()); }
-  : labels:
-    - source: getenv()
+    - source: getenv("VALUE")
       style: secondary
       start: 45
-      end: 53
+      end: 60
   ? |
-    void witness_first_only_sink_atoll_l() { atoll_l(getenv()); }
+    void witness_first_only_sink_ftell() { ftell(fopen("path", "r")); }
   : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
-  ? |
-    void witness_first_only_sink_bcopy() { bcopy(getenv()); }
-  : labels:
-    - source: getenv()
+    - source: fopen("path", "r")
       style: secondary
       start: 45
-      end: 53
+      end: 63
   ? |
-    void witness_first_only_sink_fgetpos() { fgetpos(getenv()); }
+    void witness_first_only_sink_ftello() { ftello(fopen("path", "r")); }
   : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
-  ? |
-    void witness_first_only_sink_fprintf() { fprintf(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
-  ? |
-    void witness_first_only_sink_fseek() { fseek(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 45
-      end: 53
-  ? |
-    void witness_first_only_sink_fseeko() { fseeko(getenv()); }
-  : labels:
-    - source: getenv()
+    - source: fopen("path", "r")
       style: secondary
       start: 47
-      end: 55
+      end: 65
   ? |
-    void witness_first_only_sink_fsetpos() { fsetpos(getenv()); }
+    void witness_first_only_sink_getc() { getc(fopen("path", "r")); }
   : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
-  ? |
-    void witness_first_only_sink_ftell() { ftell(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 45
-      end: 53
-  ? |
-    void witness_first_only_sink_ftello() { ftello(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_only_sink_fwrite() { fwrite(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_only_sink_getc() { getc(getenv()); }
-  : labels:
-    - source: getenv()
+    - source: fopen("path", "r")
       style: secondary
       start: 43
-      end: 51
-  ? |
-    void witness_first_only_sink_memccpy() { memccpy(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
-  ? |
-    void witness_first_only_sink_memcpy() { memcpy(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_only_sink_memmove() { memmove(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
-  ? |
-    void witness_first_only_sink_rewind() { rewind(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_only_sink_stpcpy() { stpcpy(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_only_sink_stpncpy() { stpncpy(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
-  ? |
-    void witness_first_only_sink_strcat() { strcat(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_only_sink_strcpy() { strcpy(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_only_sink_strlcat() { strlcat(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
-  ? |
-    void witness_first_only_sink_strlcpy() { strlcpy(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
-  ? |
-    void witness_first_only_sink_strlen() { strlen(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_only_sink_strncat() { strncat(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
-  ? |
-    void witness_first_only_sink_strtod() { strtod(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_only_sink_strtoimax() { strtoimax(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 53
       end: 61
   ? |
-    void witness_first_only_sink_strtol() { strtol(getenv()); }
+    void witness_first_only_sink_rewind() { rewind(fopen("path", "r")); }
   : labels:
-    - source: getenv()
+    - source: fopen("path", "r")
       style: secondary
       start: 47
-      end: 55
+      end: 65
   ? |
-    void witness_first_only_sink_strtoll() { strtoll(getenv()); }
+    void witness_first_only_sink_strlen() { strlen(getenv("VALUE")); }
   : labels:
-    - source: getenv()
+    - source: getenv("VALUE")
+      style: secondary
+      start: 47
+      end: 62
+  ? |
+    void witness_first_rest_sink_atol_l() { atol_l(getenv("VALUE"), locale); }
+  : labels:
+    - source: getenv("VALUE")
+      style: secondary
+      start: 47
+      end: 62
+  ? |
+    void witness_first_rest_sink_atoll_l() { atoll_l(getenv("VALUE"), locale); }
+  : labels:
+    - source: getenv("VALUE")
       style: secondary
       start: 49
-      end: 57
+      end: 64
   ? |
-    void witness_first_only_sink_strtoq() { strtoq(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
+    void witness_first_rest_sink_bcopy() { bcopy(getenv("SRC"), destination, size); }
+  : labels: []
   ? |
-    void witness_first_only_sink_strtoul() { strtoul(getenv()); }
+    void witness_first_rest_sink_fgetpos() { fgetpos(fopen("path", "r"), position); }
   : labels:
-    - source: getenv()
+    - source: fopen("path", "r")
       style: secondary
       start: 49
-      end: 57
+      end: 67
   ? |
-    void witness_first_only_sink_wcpcpy() { wcpcpy(getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
+    void witness_first_rest_sink_fprintf() { fprintf(fopen("path", "w"), "%s", "ok"); }
+  : labels: []
   ? |
-    void witness_first_only_sink_wcpncpy() { wcpncpy(getenv()); }
+    void witness_first_rest_sink_fseek() { fseek(fopen("path", "r"), offset, origin); }
   : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
-  ? |
-    void witness_first_rest_sink_atof() { atof(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 43
-      end: 51
-  ? |
-    void witness_first_rest_sink_atoi() { atoi(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 43
-      end: 51
-  ? |
-    void witness_first_rest_sink_atol() { atol(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 43
-      end: 51
-  ? |
-    void witness_first_rest_sink_atol_l() { atol_l(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_rest_sink_atoll() { atoll(getenv(), extra); }
-  : labels:
-    - source: getenv()
+    - source: fopen("path", "r")
       style: secondary
       start: 45
-      end: 53
+      end: 63
   ? |
-    void witness_first_rest_sink_atoll_l() { atoll_l(getenv(), extra); }
+    void witness_first_rest_sink_fseeko() { fseeko(fopen("path", "r"), offset, origin); }
   : labels:
-    - source: getenv()
+    - source: fopen("path", "r")
+      style: secondary
+      start: 47
+      end: 65
+  ? |
+    void witness_first_rest_sink_fsetpos() { fsetpos(fopen("path", "r"), position); }
+  : labels:
+    - source: fopen("path", "r")
       style: secondary
       start: 49
-      end: 57
+      end: 67
   ? |
-    void witness_first_rest_sink_fgetpos() { fgetpos(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
+    void witness_first_rest_sink_fwrite() { fwrite(getenv("DATA"), size, count, stream); }
+  : labels: []
   ? |
-    void witness_first_rest_sink_fseek() { fseek(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 45
-      end: 53
+    void witness_first_rest_sink_memccpy() { memccpy(getenv("DEST"), source, character, size); }
+  : labels: []
   ? |
-    void witness_first_rest_sink_fseeko() { fseeko(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
+    void witness_first_rest_sink_memcpy() { memcpy(getenv("DEST"), source, size); }
+  : labels: []
   ? |
-    void witness_first_rest_sink_fsetpos() { fsetpos(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 49
-      end: 57
+    void witness_first_rest_sink_memmove() { memmove(getenv("DEST"), source, size); }
+  : labels: []
   ? |
-    void witness_first_rest_sink_ftell() { ftell(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 45
-      end: 53
+    void witness_first_rest_sink_stpcpy() { stpcpy(getenv("DEST"), source); }
+  : labels: []
   ? |
-    void witness_first_rest_sink_ftello() { ftello(getenv(), extra); }
+    void witness_first_rest_sink_stpncpy() { stpncpy(getenv("DEST"), source, size); }
+  : labels: []
+  ? |
+    void witness_first_rest_sink_strcat() { strcat(getenv("DEST"), source); }
+  : labels: []
+  ? |
+    void witness_first_rest_sink_strcpy() { strcpy(getenv("DEST"), source); }
+  : labels: []
+  ? |
+    void witness_first_rest_sink_strlcat() { strlcat(getenv("DEST"), source, size); }
+  : labels: []
+  ? |
+    void witness_first_rest_sink_strlcpy() { strlcpy(getenv("DEST"), source, size); }
+  : labels: []
+  ? |
+    void witness_first_rest_sink_strncat() { strncat(getenv("DEST"), source, size); }
+  : labels: []
+  ? |
+    void witness_first_rest_sink_strtod() { strtod(getenv("VALUE"), end); }
   : labels:
-    - source: getenv()
+    - source: getenv("VALUE")
       style: secondary
       start: 47
-      end: 55
+      end: 62
   ? |
-    void witness_first_rest_sink_fwrite() { fwrite(getenv(), extra); }
+    void witness_first_rest_sink_strtoimax() { strtoimax(getenv("VALUE"), end, base); }
   : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_rest_sink_getc() { getc(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 43
-      end: 51
-  ? |
-    void witness_first_rest_sink_rewind() { rewind(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_rest_sink_strlen() { strlen(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_rest_sink_strtod() { strtod(getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 47
-      end: 55
-  ? |
-    void witness_first_rest_sink_strtoimax() { strtoimax(getenv(), extra); }
-  : labels:
-    - source: getenv()
+    - source: getenv("VALUE")
       style: secondary
       start: 53
-      end: 61
+      end: 68
   ? |
-    void witness_first_rest_sink_strtol() { strtol(getenv(), extra); }
+    void witness_first_rest_sink_strtol() { strtol(getenv("VALUE"), end, base); }
   : labels:
-    - source: getenv()
+    - source: getenv("VALUE")
       style: secondary
       start: 47
-      end: 55
+      end: 62
   ? |
-    void witness_first_rest_sink_strtoll() { strtoll(getenv(), extra); }
+    void witness_first_rest_sink_strtoll() { strtoll(getenv("VALUE"), end, base); }
   : labels:
-    - source: getenv()
+    - source: getenv("VALUE")
       style: secondary
       start: 49
-      end: 57
+      end: 64
   ? |
-    void witness_first_rest_sink_strtoq() { strtoq(getenv(), extra); }
+    void witness_first_rest_sink_strtoq() { strtoq(getenv("VALUE"), end, base); }
   : labels:
-    - source: getenv()
+    - source: getenv("VALUE")
       style: secondary
       start: 47
-      end: 55
+      end: 62
   ? |
-    void witness_first_rest_sink_strtoul() { strtoul(getenv(), extra); }
+    void witness_first_rest_sink_strtoul() { strtoul(getenv("VALUE"), end, base); }
   : labels:
-    - source: getenv()
+    - source: getenv("VALUE")
       style: secondary
       start: 49
-      end: 57
+      end: 64
   ? |
-    void witness_second_only_sink_bcopy() { bcopy(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 59
-      end: 67
+    void witness_first_rest_sink_wcpcpy() { wcpcpy(getenv("DEST"), source); }
+  : labels: []
   ? |
-    void witness_second_only_sink_fprintf() { fprintf(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
+    void witness_first_rest_sink_wcpncpy() { wcpncpy(getenv("DEST"), source, size); }
+  : labels: []
   ? |
-    void witness_second_only_sink_memccpy() { memccpy(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
+    void witness_second_only_sink_fprintf() { fprintf(stream, getenv("FORMAT")); }
+  : labels: []
   ? |
-    void witness_second_only_sink_memcpy() { memcpy(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 61
-      end: 69
+    void witness_second_only_sink_stpcpy() { stpcpy(destination, getenv("SRC")); }
+  : labels: []
   ? |
-    void witness_second_only_sink_memmove() { memmove(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
+    void witness_second_only_sink_strcat() { strcat(destination, getenv("SRC")); }
+  : labels: []
   ? |
-    void witness_second_only_sink_stpcpy() { stpcpy(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 61
-      end: 69
+    void witness_second_only_sink_strcpy() { strcpy(destination, getenv("SRC")); }
+  : labels: []
   ? |
-    void witness_second_only_sink_stpncpy() { stpncpy(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
+    void witness_second_only_sink_wcpcpy() { wcpcpy(destination, getenv("SRC")); }
+  : labels: []
   ? |
-    void witness_second_only_sink_strcat() { strcat(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 61
-      end: 69
+    void witness_second_rest_sink_bcopy() { bcopy(source, getenv("DEST"), size); }
+  : labels: []
   ? |
-    void witness_second_only_sink_strcpy() { strcpy(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 61
-      end: 69
+    void witness_second_rest_sink_fprintf() { fprintf(stream, getenv("FORMAT"), value); }
+  : labels: []
   ? |
-    void witness_second_only_sink_strlcat() { strlcat(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
+    void witness_second_rest_sink_memccpy() { memccpy(destination, getenv("SRC"), character, size); }
+  : labels: []
   ? |
-    void witness_second_only_sink_strlcpy() { strlcpy(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
+    void witness_second_rest_sink_memcpy() { memcpy(destination, getenv("SRC"), size); }
+  : labels: []
   ? |
-    void witness_second_only_sink_strncat() { strncat(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
+    void witness_second_rest_sink_memmove() { memmove(destination, getenv("SRC"), size); }
+  : labels: []
   ? |
-    void witness_second_only_sink_wcpcpy() { wcpcpy(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 61
-      end: 69
+    void witness_second_rest_sink_stpncpy() { stpncpy(destination, getenv("SRC"), size); }
+  : labels: []
   ? |
-    void witness_second_only_sink_wcpncpy() { wcpncpy(destination, getenv()); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
+    void witness_second_rest_sink_strlcat() { strlcat(destination, getenv("SRC"), size); }
+  : labels: []
   ? |
-    void witness_second_rest_sink_bcopy() { bcopy(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 59
-      end: 67
+    void witness_second_rest_sink_strlcpy() { strlcpy(destination, getenv("SRC"), size); }
+  : labels: []
   ? |
-    void witness_second_rest_sink_memccpy() { memccpy(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
+    void witness_second_rest_sink_strncat() { strncat(destination, getenv("SRC"), size); }
+  : labels: []
   ? |
-    void witness_second_rest_sink_memcpy() { memcpy(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 61
-      end: 69
-  ? |
-    void witness_second_rest_sink_memmove() { memmove(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
-  ? |
-    void witness_second_rest_sink_stpcpy() { stpcpy(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 61
-      end: 69
-  ? |
-    void witness_second_rest_sink_stpncpy() { stpncpy(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
-  ? |
-    void witness_second_rest_sink_strcat() { strcat(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 61
-      end: 69
-  ? |
-    void witness_second_rest_sink_strcpy() { strcpy(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 61
-      end: 69
-  ? |
-    void witness_second_rest_sink_strlcat() { strlcat(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
-  ? |
-    void witness_second_rest_sink_strlcpy() { strlcpy(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
-  ? |
-    void witness_second_rest_sink_strncat() { strncat(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
-  ? |
-    void witness_second_rest_sink_wcpcpy() { wcpcpy(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 61
-      end: 69
-  ? |
-    void witness_second_rest_sink_wcpncpy() { wcpncpy(destination, getenv(), extra); }
-  : labels:
-    - source: getenv()
-      style: secondary
-      start: 63
-      end: 71
+    void witness_second_rest_sink_wcpncpy() { wcpncpy(destination, getenv("SRC"), size); }
+  : labels: []
   ? |
     void witness_source_fgets() { strlen(fgets()); }
   : labels:

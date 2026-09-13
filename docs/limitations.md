@@ -29,12 +29,12 @@ the caller must first establish what `.len` means.
   supported function forms, with at most two transparent parenthesis layers.
   For `fprintf`, the format-sensitive arm covers the direct third argument when
   the first consuming conversion in an unprefixed ordinary or raw literal, or
-  in the first unprefixed ordinary segment of a concatenated literal, is `%s`, a decimal
-  width such as `%10s`, or a decimal precision such as `%.3s`; up to two
+  in the first unprefixed ordinary segment of a concatenated literal, is `%s`,
+  a decimal width such as `%10s`, or a decimal precision such as `%.3s`; up to two
   transparent parentheses around the format are accepted. It distinguishes
   escaped `%%s`; a plain `%s` split exactly as `"%" "s"` across the first two
-  ordinary segments is also recognized. Ordinary formats and the first ordinary concatenated segment
-  containing a C/C++ escape
+  ordinary segments is also recognized. Ordinary formats and the first ordinary
+  concatenated segment containing a C/C++ escape
   before the first consuming conversion are skipped because this syntactic rule
   cannot decode whether an escape such as `\x25` introduces an earlier format
   directive. Raw formats are scanned only through the first `)`, so a `%s`
