@@ -1,6 +1,7 @@
 import tempfile
 import unittest
 from pathlib import Path
+from time import perf_counter
 from unittest.mock import patch
 
 import yaml
@@ -103,6 +104,155 @@ class RulePlanTests(unittest.TestCase):
                 patch.object(PLAN, "_run_mutant_batch", return_value=outcomes) as batch:
             PLAN.preflight(plan, matcher, cases)
         self.assertEqual(batch.call_args.args[0], candidates)
+
+    def test_api_contracts_bind_arity_positions_and_exact_counts(self):
+        first = "memcpy(NULL, src, 8);"
+        second = "memcpy(dst, NULL, 8);"
+        plan = minimal_plan(
+            language="cpp",
+            cases={"invalid": [first, second], "valid": ["memcpy(dst, src, 8);"]},
+            oracles={first: {"count": 1}, second: {"count": 1}},
+            api_contracts=[{
+                "callee": "memcpy", "arity": 3,
+                "positions": [1, 2], "witnesses": {1: first, 2: second},
+            }],
+        )
+        PLAN.validate_plan(plan)
+        with self.assertRaisesRegex(ValueError, "do not support python syntax"):
+            PLAN.validate_plan({**plan, "language": "python"})
+
+        invalid_contracts = (
+            ({"callee": "memcpy", "arity": 2, "positions": [1, 3],
+              "witnesses": {1: first, 3: second}}, "cannot exceed arity"),
+            ({"callee": "memcpy", "arity": 3, "positions": [1],
+              "witnesses": {1: "missing"}}, "must be invalid cases"),
+            ({"callee": "memcpy", "arity": 3, "positions": [1, 2],
+              "witnesses": {1: first}}, "must exactly cover positions"),
+        )
+        for contract, message in invalid_contracts:
+            with self.subTest(contract=contract), self.assertRaisesRegex(ValueError, message):
+                PLAN.validate_plan({**plan, "api_contracts": [contract]})
+        with self.assertRaisesRegex(ValueError, "unique callee and arity"):
+            PLAN.validate_plan({**plan, "api_contracts": plan["api_contracts"] * 2})
+
+        without_count = {**plan, "oracles": {second: {"count": 1}}}
+        with self.assertRaisesRegex(ValueError, "exact count oracle"):
+            PLAN.validate_plan(without_count)
+
+    def test_api_contract_reused_witness_requires_matching_count(self):
+        source = "memcpy(NULL, NULL, 8);"
+        base = minimal_plan(
+            language="cpp", cases={"invalid": [source], "valid": ["safe();"]},
+            api_contracts=[{
+                "callee": "memcpy", "arity": 3,
+                "positions": [1, 2], "witnesses": {1: source, 2: source},
+            }],
+        )
+        with self.assertRaisesRegex(ValueError, "expected 2"):
+            PLAN.validate_plan({**base, "oracles": {source: {"count": 1}}})
+        PLAN.validate_plan({**base, "oracles": {source: {"count": 2}}})
+
+    def test_api_contract_preflight_proves_exact_call_and_position(self):
+        source = "void f(){ memcpy(NULL, src, 8); }"
+        plan = minimal_plan(
+            language="cpp", rule={"pattern": "NULL"},
+            cases={"invalid": [source], "valid": ["void f(){ safe(); }"]},
+            oracles={source: {"count": 1}},
+            api_contracts=[{
+                "callee": "memcpy", "arity": 3,
+                "positions": [1], "witnesses": {1: source},
+            }],
+        )
+        matcher, _cases = PLAN.validate_plan(plan)
+        PLAN.validate_api_contract_syntax(
+            plan, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
+        c_plan = {**plan, "language": "c"}
+        PLAN.validate_api_contract_syntax(
+            c_plan, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
+
+        shared = "void f(){ memcpy(NULL, NULL, 8); }"
+        shared_plan = {
+            **plan,
+            "cases": {"invalid": [shared], "valid": plan["cases"]["valid"]},
+            "oracles": {shared: {"count": 2}},
+            "api_contracts": [{
+                "callee": "memcpy", "arity": 3, "positions": [1, 2],
+                "witnesses": {1: shared, 2: shared},
+            }],
+        }
+        with patch.object(
+                PLAN.SYNTAX, "api_call_arguments",
+                wraps=PLAN.SYNTAX.api_call_arguments) as query:
+            PLAN.validate_api_contract_syntax(
+                shared_plan, matcher, perf_counter() + 20,
+                PLAN.PhaseTelemetry())
+        self.assertEqual(query.call_count, 1)
+
+        wrong_position = {**plan, "api_contracts": [{
+            "callee": "memcpy", "arity": 3,
+            "positions": [2], "witnesses": {2: source},
+        }]}
+        with self.assertRaisesRegex(RuntimeError, "POSITION_UNMATCHED"):
+            PLAN.validate_api_contract_syntax(
+                wrong_position, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
+
+        whole_call = {**plan, "rule": {"pattern": "memcpy($$$ARGS)"}}
+        with self.assertRaisesRegex(RuntimeError, "POSITION_UNMATCHED"):
+            PLAN.validate_api_contract_syntax(
+                whole_call, whole_call["rule"], perf_counter() + 20,
+                PLAN.PhaseTelemetry())
+
+        wrong_arity = {**plan, "api_contracts": [{
+            "callee": "memcpy", "arity": 2,
+            "positions": [1], "witnesses": {1: source},
+        }]}
+        with self.assertRaisesRegex(RuntimeError, "CALL_MISMATCH"):
+            PLAN.validate_api_contract_syntax(
+                wrong_arity, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
+
+        repeated = "void f(){ memcpy(NULL, src, 8); memcpy(NULL, src, 8); }"
+        repeated_plan = {
+            **plan,
+            "cases": {"invalid": [repeated], "valid": plan["cases"]["valid"]},
+            "oracles": {repeated: {"count": 1}},
+            "api_contracts": [{
+                "callee": "memcpy", "arity": 3,
+                "positions": [1], "witnesses": {1: repeated},
+            }],
+        }
+        with self.assertRaisesRegex(RuntimeError, "needs one exact call, got 2"):
+            PLAN.validate_api_contract_syntax(
+                repeated_plan, matcher, perf_counter() + 20,
+                PLAN.PhaseTelemetry())
+
+        for malformed in (
+                "void f(){ memcpy(NULL, src, 8);",
+                "void f(){ memcpy(NULL, src, 8) }"):
+            malformed_plan = {
+                **plan,
+                "cases": {"invalid": [malformed], "valid": plan["cases"]["valid"]},
+                "oracles": {malformed: {"count": 1}},
+                "api_contracts": [{
+                    "callee": "memcpy", "arity": 3,
+                    "positions": [1], "witnesses": {1: malformed},
+                }],
+            }
+            with self.subTest(malformed=malformed), self.assertRaisesRegex(
+                    RuntimeError, "API_CONTRACT_PARSE_ERROR"):
+                PLAN.validate_api_contract_syntax(
+                    malformed_plan, matcher, perf_counter() + 20,
+                    PLAN.PhaseTelemetry())
+
+    def test_preflight_invokes_api_contract_syntax_gate(self):
+        plan = minimal_plan(language="cpp")
+        matcher, cases = PLAN.validate_plan(plan)
+        with patch.object(PLAN, "expanded_cases", return_value=cases), \
+                patch.object(PLAN, "validate_derived_syntax"), \
+                patch.object(PLAN, "validate_api_contract_syntax",
+                             side_effect=RuntimeError("api gate reached")) as gate, \
+                self.assertRaisesRegex(RuntimeError, "api gate reached"):
+            PLAN.preflight(plan, matcher, cases)
+        gate.assert_called_once()
 
     def test_utility_graph_rejects_undefined_cycle_and_unreachable(self):
         cases = [
