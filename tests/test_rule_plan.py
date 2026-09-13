@@ -1,6 +1,7 @@
 import tempfile
 import unittest
 from pathlib import Path
+from time import perf_counter
 from unittest.mock import patch
 
 import yaml
@@ -146,6 +147,37 @@ class RulePlanTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "expected 2"):
             PLAN.validate_plan({**base, "oracles": {source: {"count": 1}}})
         PLAN.validate_plan({**base, "oracles": {source: {"count": 2}}})
+
+    def test_api_contract_preflight_proves_exact_call_and_position(self):
+        source = "void f(){ memcpy(NULL, src, 8); }"
+        plan = minimal_plan(
+            language="cpp", rule={"pattern": "NULL"},
+            cases={"invalid": [source], "valid": ["void f(){ safe(); }"]},
+            oracles={source: {"count": 1}},
+            api_contracts=[{
+                "callee": "memcpy", "arity": 3,
+                "nullable_positions": [1], "witnesses": {1: source},
+            }],
+        )
+        matcher, _cases = PLAN.validate_plan(plan)
+        PLAN.validate_api_contract_syntax(
+            plan, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
+
+        wrong_position = {**plan, "api_contracts": [{
+            "callee": "memcpy", "arity": 3,
+            "nullable_positions": [2], "witnesses": {2: source},
+        }]}
+        with self.assertRaisesRegex(RuntimeError, "POSITION_UNMATCHED"):
+            PLAN.validate_api_contract_syntax(
+                wrong_position, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
+
+        wrong_arity = {**plan, "api_contracts": [{
+            "callee": "memcpy", "arity": 2,
+            "nullable_positions": [1], "witnesses": {1: source},
+        }]}
+        with self.assertRaisesRegex(RuntimeError, "CALL_MISMATCH"):
+            PLAN.validate_api_contract_syntax(
+                wrong_arity, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
 
     def test_utility_graph_rejects_undefined_cycle_and_unreachable(self):
         cases = [

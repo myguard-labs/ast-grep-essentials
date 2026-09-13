@@ -571,6 +571,33 @@ def validate_derived_syntax(plan: dict, cases: dict[str, list[str]], deadline: f
             raise RuntimeError(f"METAMORPHIC_PARSE_ERROR: {error}") from error
 
 
+def validate_api_contract_syntax(plan: dict, matcher: dict, deadline: float,
+                                 telemetry: PhaseTelemetry) -> None:
+    """Prove each declared API witness targets its stated call and position."""
+    rule_text = render_rule(plan, matcher)
+    extension = LANGUAGE_EXTENSIONS[plan["language"]]
+    invoke = partial(_syntax_run, deadline=deadline, telemetry=telemetry)
+    findings_by_source = {}
+    for contract in plan.get("api_contracts", []):
+        for position, source in contract["witnesses"].items():
+            if source not in findings_by_source:
+                findings_by_source[source] = SYNTAX.rule_spans(
+                    source, extension, rule_text, invoke)
+            calls = SYNTAX.api_call_arguments(
+                source, plan["language"], extension, contract["callee"],
+                contract["arity"], invoke)
+            if len(calls) != 1:
+                raise RuntimeError(
+                    f"API_CONTRACT_CALL_MISMATCH: {contract['callee']}/"
+                    f"{contract['arity']} needs one exact call, got {len(calls)}")
+            argument = calls[0][position - 1]
+            if not any(argument[0] <= start and end <= argument[1]
+                       for start, end in findings_by_source[source]):
+                raise RuntimeError(
+                    f"API_CONTRACT_POSITION_UNMATCHED: {contract['callee']}/"
+                    f"{contract['arity']} argument {position}")
+
+
 def named_branches(plan: dict) -> list[dict]:
     match = plan.get("match", {})
     branches = match.get("any", []) if isinstance(match, dict) else []
@@ -988,6 +1015,7 @@ def preflight(plan: dict, matcher: dict, cases: dict[str, list[str]],
     deadline = perf_counter() + MAX_PREFLIGHT_SECONDS if deadline is None else deadline
     expanded = expanded_cases(plan, cases, deadline, telemetry)
     validate_derived_syntax(plan, cases, deadline, telemetry, expanded)
+    validate_api_contract_syntax(plan, matcher, deadline, telemetry)
     cases = expanded
     telemetry.valid_cases, telemetry.invalid_cases = len(cases["valid"]), len(cases["invalid"])
     telemetry.bytes = sum(len(source.encode()) for values in cases.values() for source in values)

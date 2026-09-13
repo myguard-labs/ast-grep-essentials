@@ -134,6 +134,39 @@ def callee_spans(source: str, language: str, extension: str,
     ]
 
 
+def api_call_arguments(source: str, language: str, extension: str, callee: str,
+                       arity: int, invoke) -> list[list[tuple[int, int]]]:
+    """Return argument spans for exact-arity calls to the declared callee."""
+    variables = [f"$ARG{index}" for index in range(1, arity + 1)]
+    pattern = f"$CALLEE({', '.join(variables)})"
+    with tempfile.TemporaryDirectory(prefix="rule-plan-api-") as directory:
+        path = Path(directory) / f"source.{extension}"
+        path.write_text(source, encoding="utf-8")
+        result = invoke(
+            ["run", "-l", language, "-p", pattern, "--json=compact", str(path)])
+    if result.returncode not in (0, 1):
+        raise RuntimeError(f"API_CONTRACT_TARGET_ERROR: {result.stderr[-500:]}")
+    encoded = source.encode("utf-8")
+    calls = []
+    for row in json.loads(result.stdout or "[]"):
+        single = row.get("metaVariables", {}).get("single", {})
+        if single.get("CALLEE", {}).get("text") != callee:
+            continue
+        spans = []
+        for variable in variables:
+            offsets = single.get(variable.removeprefix("$"), {}).get(
+                "range", {}).get("byteOffset", {})
+            if set(offsets) != {"start", "end"}:
+                break
+            spans.append((
+                len(encoded[:offsets["start"]].decode("utf-8")),
+                len(encoded[:offsets["end"]].decode("utf-8")),
+            ))
+        if len(spans) == arity:
+            calls.append(spans)
+    return calls
+
+
 def validate_full_source(source: str, language: str, extension: str,
                          deadline: float, invoke) -> None:
     """Parse a program file and reject tree-sitter ERROR or MISSING recovery."""

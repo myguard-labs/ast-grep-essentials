@@ -162,8 +162,10 @@ api_contracts:
 
 The closed schema rejects missing positional arms, positions beyond the stated
 arity, valid or unknown witnesses, duplicate callee/arity contracts, and stale
-diagnostic counts. Keep unrelated operator, qualification, wrapper, parser
-recovery, and regex-boundary negative controls in `cases.valid`.
+diagnostic counts. Preflight also uses the pinned parser to require one exact
+callee/arity call and a rule finding overlapping every declared argument.
+Keep unrelated operator, qualification, wrapper, parser-recovery, and
+regex-boundary negative controls in `cases.valid`.
 
 Plan mutation checks use one pinned-engine batch in the normal case and bisect
 only engine-load failures for exact attribution. Use
