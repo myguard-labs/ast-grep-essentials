@@ -160,7 +160,7 @@ utils:
       - kind: string_literal
         regex: '^(?:u8|u|U|L)?"(?:[^%"\\]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s'
       - kind: raw_string_literal
-        regex: '^R"[^()\\\s]{0,16}\((?:[^%]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s'
+        regex: '^R"[^()\\\s]{0,16}\((?:[^%)]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s'
       - kind: concatenated_string
         regex: '^(?:u8|u|U|L)?"(?:[^%"\\]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s'
 cases:
@@ -266,6 +266,10 @@ cases:
     - |
       void raw_delimiter_in_concatenation_is_not_format_content() {
         fprintf(stderr, R"%s(text)%s" "%p", memchr(data, needle, length));
+      }
+    - |
+      void raw_closing_delimiter_is_not_format_content() {
+        fprintf(stderr, R"%s(text)%s", getenv("NAME"));
       }
   invalid:
     - |

@@ -36,7 +36,10 @@ the caller must first establish what `.len` means.
   containing a C/C++ escape
   before the first consuming conversion are skipped because this syntactic rule
   cannot decode whether an escape such as `\x25` introduces an earlier format
-  directive. It also does not parse flags, positional directives, `*` widths,
+  directive. Raw formats are scanned only through the first `)`, so a `%s`
+  after an earlier literal `)` in raw content is conservatively missed rather
+  than confused with a closing delimiter. It also does not parse flags,
+  positional directives, `*` widths,
   or later variadic arguments. Calls nested
   in parser `ERROR` recovery nodes are excluded; fix malformed C++ before
   treating the absence of a finding as safe.
