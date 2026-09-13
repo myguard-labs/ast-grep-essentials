@@ -5,13 +5,21 @@ snapshots:
   : labels: []
   ? |
     char direct_dereference() { return *getenv("NAME"); }
-  : labels: []
+  : labels:
+    - source: getenv("NAME")
+      style: secondary
+      start: 36
+      end: 50
   ? |
     char member_access() { return ::fopen("file", "r")->flags; }
   : labels: []
   ? |
     char parenthesized_dereference() { return *((getenv("NAME"))); }
-  : labels: []
+  : labels:
+    - source: ((getenv("NAME")))
+      style: secondary
+      start: 43
+      end: 61
   ? |
     char parenthesized_member() { return (fopen("file", "r"))->flags; }
   : labels: []
@@ -81,11 +89,38 @@ snapshots:
       start: 48
       end: 66
   ? |
+    void assigned_dereference_operands() {
+      (pointer = getenv("NAME"))[0];
+      ((pointer = getenv("NAME")))[0];
+      (stream = fopen("path", "r"))->flags;
+      *(pointer = getenv("NAME"));
+    }
+  : labels: []
+  ? |
+    void assigned_member_operand() {
+      (stream = fopen("path", "r"))->flags;
+    }
+  : labels: []
+  ? |
     void assigned_positional_operands() {
       memcpy(destination = getenv("DEST"), source, size);
       memcpy(destination, source = getenv("SRC"), size);
     }
   : labels: []
+  ? |
+    void assigned_subscript_operand() {
+      (pointer = getenv("NAME"))[0];
+    }
+  : labels: []
+  ? |
+    void assigned_unary_dereference_operand() {
+      *(pointer = getenv("NAME"));
+    }
+  : labels:
+    - source: (pointer = getenv("NAME"))
+      style: secondary
+      start: 47
+      end: 73
   ? |
     void both_positional_operands() {
       memcpy(getenv("DEST"), getenv("SRC"), size);
@@ -97,6 +132,18 @@ snapshots:
        strcpy(buf, getenv("FOO"));
     }
   : labels: []
+  ? |
+    void parenthesized_assignment_sink_operands() {
+      strlen((pointer = getenv("NAME")));
+      strtol((pointer = getenv("NUMBER")), end, base);
+      fprintf(stderr, "%s", (pointer = memchr(data, needle, length)));
+      fwrite(data, size, count, (stream = fopen("path", "w")));
+    }
+  : labels:
+    - source: (pointer = getenv("NAME"))
+      style: secondary
+      start: 57
+      end: 83
   ? |
     void second_position_sink_api_inventory() {
       fprintf(stream, getenv()); bcopy(destination, getenv());
@@ -181,6 +228,11 @@ snapshots:
       style: secondary
       start: 33
       end: 61
+  ? |
+    void twice_wrapped_assigned_subscript_operand() {
+      ((pointer = getenv("NAME")))[0];
+    }
+  : labels: []
   ? |
     void unsafe_after_escaped_percent_format() {
       fprintf(stderr, "%% %s", memchr(data, needle, length));

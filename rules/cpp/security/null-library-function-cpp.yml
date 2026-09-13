@@ -1,11 +1,11 @@
 # MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# Last enriched: 2026-09-13 by Thijs Eilander
+# Last touched: 2026-09-13 by Thijs Eilander
 # CodeRabbit source repository: https://github.com/coderabbitai/ast-grep-essentials
 # CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/cpp/security/null-library-function-cpp.yml
 # Original author (Git): ESS-ENN
 # License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
 # Modified by MyGuard: provenance metadata preserved; Refine outcome records field-aware function matching, literal diagnostics, and defended matcher paths.
-# Last enriched: 2026-09-13 by Thijs Eilander
-# Last touched: 2026-09-13 by Thijs Eilander
 # Generated from: plans/cpp/security/null-library-function-cpp.yml
 id: null-library-function-cpp
 language: cpp
@@ -21,12 +21,7 @@ constraints:
   FORMAT:
     matches: percent-s-format
   OPERAND:
-    any:
-    - matches: null-return-operand
-    - kind: assignment_expression
-      has:
-        field: right
-        matches: null-return-operand
+    matches: nullable-consumed-operand
 utils:
   null-return-call:
     kind: call_expression
@@ -51,10 +46,23 @@ utils:
   nullable-consumed-operand:
     any:
     - matches: null-return-operand
-    - kind: assignment_expression
+    - matches: nullable-assignment
+    - kind: parenthesized_expression
       has:
-        field: right
-        matches: null-return-operand
+        stopBy: neighbor
+        matches: nullable-assignment
+    - kind: parenthesized_expression
+      has:
+        stopBy: neighbor
+        kind: parenthesized_expression
+        has:
+          stopBy: neighbor
+          matches: nullable-assignment
+  nullable-assignment:
+    kind: assignment_expression
+    has:
+      field: right
+      matches: null-return-operand
   percent-s-format:
     any:
     - matches: percent-s-literal
@@ -96,15 +104,14 @@ rule:
     - kind: subscript_expression
       has:
         field: argument
-        matches: null-return-operand
+        matches: nullable-consumed-operand
     - kind: field_expression
       has:
         field: argument
-        matches: null-return-operand
-    - kind: pointer_expression
-      has:
-        field: argument
-        matches: null-return-operand
+        matches: nullable-consumed-operand
+    - pattern:
+        context: void f() { *$OPERAND; }
+        selector: pointer_expression
     - all:
       - pattern:
           context: void f() { $FPRINTF_ONLY($_, $FORMAT, $OPERAND); }

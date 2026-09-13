@@ -5,19 +5,18 @@ category: security
 severity: warning
 comments:
   - 'MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl'
+  - 'Last enriched: 2026-09-13 by Thijs Eilander'
+  - 'Last touched: 2026-09-13 by Thijs Eilander'
   - 'CodeRabbit source repository: https://github.com/coderabbitai/ast-grep-essentials'
   - 'CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/cpp/security/null-library-function-cpp.yml'
   - 'Original author (Git): ESS-ENN'
   - 'License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)'
   - 'Modified by MyGuard: provenance metadata preserved; Refine outcome records field-aware function matching, literal diagnostics, and defended matcher paths.'
-  - 'Last enriched: 2026-09-13 by Thijs Eilander'
-  - 'Last touched: 2026-09-13 by Thijs Eilander'
 extensions:
   ast-grep-essentials: true
 mutation_exclusions:
   rule.all[2].any[0].has.field: 'The field selector documents the subscript operand; the C++ contrast has only one direct call child.'
   rule.all[2].any[1].has.field: 'The field selector documents the member object; the C++ contrast has only one direct call child.'
-  rule.all[2].any[2].has.field: 'The field selector documents the unary operand; the C++ contrast has only one direct call child.'
   rule.all[2].any[3].all[1].has.field: 'A call has one direct callee child; the field selector documents that the fprintf contract applies to the callee.'
   rule.all[2].any[4].all[1].has.field: 'A call has one direct callee child; the field selector documents that the variadic fprintf contract applies to the callee.'
   rule.all[2].any[5].all[1].has.field: 'A call has one direct callee child; the field selector documents that the fwrite contract applies to the callee.'
@@ -31,6 +30,9 @@ mutation_exclusions:
   rule.all[2].any[9].all[1].has.field: 'A call has one direct callee child; the field selector documents that the variadic first-position contract applies to the callee.'
   utils.null-return-paren-one.has.stopBy: 'Neighbor is the engine default here; spelling it pins the transparent single-wrapper boundary.'
   utils.null-return-paren-two.has.stopBy: 'Neighbor is the engine default here; spelling it pins the transparent double-wrapper boundary.'
+  utils.nullable-consumed-operand.any[2].has.stopBy: 'Neighbor is the engine default here; spelling it pins the transparent assignment-wrapper boundary.'
+  utils.nullable-consumed-operand.any[3].has.stopBy: 'Neighbor is the engine default here; spelling it pins the outer transparent assignment-wrapper boundary.'
+  utils.nullable-consumed-operand.any[3].has.has.stopBy: 'Neighbor is the engine default here; spelling it pins the inner transparent assignment-wrapper boundary.'
   utils.percent-s-format.any[1].has.stopBy: 'Neighbor is the engine default here; spelling it pins the transparent single-wrapper format boundary.'
   utils.percent-s-format.any[2].has.stopBy: 'Neighbor is the engine default here; spelling it pins the transparent double-wrapper format boundary.'
   utils.percent-s-format.any[2].has.has.stopBy: 'Neighbor is the engine default here; spelling it pins the nested transparent format boundary.'
@@ -59,15 +61,14 @@ rule:
         - kind: subscript_expression
           has:
             field: argument
-            matches: null-return-operand
+            matches: nullable-consumed-operand
         - kind: field_expression
           has:
             field: argument
-            matches: null-return-operand
-        - kind: pointer_expression
-          has:
-            field: argument
-            matches: null-return-operand
+            matches: nullable-consumed-operand
+        - pattern:
+            context: void f() { *$OPERAND; }
+            selector: pointer_expression
         - all:
             - pattern:
                 context: void f() { $FPRINTF_ONLY($_, $FORMAT, $OPERAND); }
@@ -131,12 +132,7 @@ constraints:
   FORMAT:
     matches: percent-s-format
   OPERAND:
-    any:
-      - matches: null-return-operand
-      - kind: assignment_expression
-        has:
-          field: right
-          matches: null-return-operand
+    matches: nullable-consumed-operand
 labels:
   OPERAND:
     style: secondary
@@ -164,10 +160,23 @@ utils:
   nullable-consumed-operand:
     any:
       - matches: null-return-operand
-      - kind: assignment_expression
+      - matches: nullable-assignment
+      - kind: parenthesized_expression
         has:
-          field: right
-          matches: null-return-operand
+          stopBy: neighbor
+          matches: nullable-assignment
+      - kind: parenthesized_expression
+        has:
+          stopBy: neighbor
+          kind: parenthesized_expression
+          has:
+            stopBy: neighbor
+            matches: nullable-assignment
+  nullable-assignment:
+    kind: assignment_expression
+    has:
+      field: right
+      matches: null-return-operand
   percent-s-format:
     any:
       - matches: percent-s-literal
@@ -335,6 +344,11 @@ cases:
         memcpy(destination, getenv() = known, size);
       }
     - |
+      void address_of_controls() {
+        &getenv("NAME");
+        &(pointer = getenv("NAME"));
+      }
+    - |
       void escaped_quote_before_format_control() {
         fprintf(stderr, "\"%s", memchr(data, needle, length));
       }
@@ -351,6 +365,36 @@ cases:
       void assigned_positional_operands() {
         memcpy(destination = getenv("DEST"), source, size);
         memcpy(destination, source = getenv("SRC"), size);
+      }
+    - |
+      void assigned_subscript_operand() {
+        (pointer = getenv("NAME"))[0];
+      }
+    - |
+      void twice_wrapped_assigned_subscript_operand() {
+        ((pointer = getenv("NAME")))[0];
+      }
+    - |
+      void assigned_member_operand() {
+        (stream = fopen("path", "r"))->flags;
+      }
+    - |
+      void assigned_unary_dereference_operand() {
+        *(pointer = getenv("NAME"));
+      }
+    - |
+      void parenthesized_assignment_sink_operands() {
+        strlen((pointer = getenv("NAME")));
+        strtol((pointer = getenv("NUMBER")), end, base);
+        fprintf(stderr, "%s", (pointer = memchr(data, needle, length)));
+        fwrite(data, size, count, (stream = fopen("path", "w")));
+      }
+    - |
+      void assigned_dereference_operands() {
+        (pointer = getenv("NAME"))[0];
+        ((pointer = getenv("NAME")))[0];
+        (stream = fopen("path", "r"))->flags;
+        *(pointer = getenv("NAME"));
       }
     - |
       void both_positional_operands() {
@@ -663,6 +707,22 @@ cases:
     - |
       void witness_second_rest_sink_wcpncpy() { wcpncpy(destination, getenv("SRC"), size); }
 oracles:
+  ? |
+    void parenthesized_assignment_sink_operands() {
+      strlen((pointer = getenv("NAME")));
+      strtol((pointer = getenv("NUMBER")), end, base);
+      fprintf(stderr, "%s", (pointer = memchr(data, needle, length)));
+      fwrite(data, size, count, (stream = fopen("path", "w")));
+    }
+  : count: 4
+  ? |
+    void assigned_dereference_operands() {
+      (pointer = getenv("NAME"))[0];
+      ((pointer = getenv("NAME")))[0];
+      (stream = fopen("path", "r"))->flags;
+      *(pointer = getenv("NAME"));
+    }
+  : count: 4
   ? |
     void both_positional_operands() {
       memcpy(getenv("DEST"), getenv("SRC"), size);
