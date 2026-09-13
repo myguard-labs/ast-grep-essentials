@@ -168,6 +168,24 @@ class RulePlanTests(unittest.TestCase):
         PLAN.validate_api_contract_syntax(
             c_plan, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
 
+        shared = "void f(){ memcpy(NULL, NULL, 8); }"
+        shared_plan = {
+            **plan,
+            "cases": {"invalid": [shared], "valid": plan["cases"]["valid"]},
+            "oracles": {shared: {"count": 2}},
+            "api_contracts": [{
+                "callee": "memcpy", "arity": 3, "positions": [1, 2],
+                "witnesses": {1: shared, 2: shared},
+            }],
+        }
+        with patch.object(
+                PLAN.SYNTAX, "api_call_arguments",
+                wraps=PLAN.SYNTAX.api_call_arguments) as query:
+            PLAN.validate_api_contract_syntax(
+                shared_plan, matcher, perf_counter() + 20,
+                PLAN.PhaseTelemetry())
+        self.assertEqual(query.call_count, 1)
+
         wrong_position = {**plan, "api_contracts": [{
             "callee": "memcpy", "arity": 3,
             "positions": [2], "witnesses": {2: source},
@@ -189,6 +207,24 @@ class RulePlanTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "CALL_MISMATCH"):
             PLAN.validate_api_contract_syntax(
                 wrong_arity, matcher, perf_counter() + 20, PLAN.PhaseTelemetry())
+
+        for malformed in (
+                "void f(){ memcpy(NULL, src, 8);",
+                "void f(){ memcpy(NULL, src, 8) }"):
+            malformed_plan = {
+                **plan,
+                "cases": {"invalid": [malformed], "valid": plan["cases"]["valid"]},
+                "oracles": {malformed: {"count": 1}},
+                "api_contracts": [{
+                    "callee": "memcpy", "arity": 3,
+                    "positions": [1], "witnesses": {1: malformed},
+                }],
+            }
+            with self.subTest(malformed=malformed), self.assertRaisesRegex(
+                    RuntimeError, "METAMORPHIC_PARSE_ERROR"):
+                PLAN.validate_api_contract_syntax(
+                    malformed_plan, matcher, perf_counter() + 20,
+                    PLAN.PhaseTelemetry())
 
     def test_utility_graph_rejects_undefined_cycle_and_unreachable(self):
         cases = [

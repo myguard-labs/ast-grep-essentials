@@ -395,6 +395,7 @@ def validate_api_contracts(plan: dict, cases: dict[str, list[str]]) -> None:
             f"api_contracts do not support {plan['language']} syntax")
     invalid = set(cases["invalid"])
     seen = set()
+    uses: dict[str, int] = {}
     for contract in contracts:
         if not isinstance(contract, dict) or set(contract) != {
                 "callee", "arity", "positions", "witnesses"}:
@@ -421,15 +422,14 @@ def validate_api_contracts(plan: dict, cases: dict[str, list[str]]) -> None:
         if any(not isinstance(source, str) or source not in invalid
                for source in witnesses.values()):
             raise ValueError("api contract witnesses must be invalid cases")
-        uses = {}
         for source in witnesses.values():
             uses[source] = uses.get(source, 0) + 1
-        for source, expected_count in uses.items():
-            actual = plan.get("oracles", {}).get(source, {}).get("count")
-            if actual != expected_count:
-                raise ValueError(
-                    f"api contract witness needs exact count oracle; "
-                    f"expected {expected_count}, got {actual!r}")
+    for source, expected_count in uses.items():
+        actual = plan.get("oracles", {}).get(source, {}).get("count")
+        if actual != expected_count:
+            raise ValueError(
+                f"api contract witness needs exact count oracle; "
+                f"expected {expected_count}, got {actual!r}")
 
 
 def validate_claims(plan: dict, cases: dict[str, list[str]]) -> None:
@@ -582,14 +582,20 @@ def validate_api_contract_syntax(plan: dict, matcher: dict, deadline: float,
     extension = LANGUAGE_EXTENSIONS[plan["language"]]
     invoke = partial(_syntax_run, deadline=deadline, telemetry=telemetry)
     findings_by_source = {}
+    calls_by_contract = {}
     for contract in plan.get("api_contracts", []):
         for position, source in contract["witnesses"].items():
             if source not in findings_by_source:
+                SYNTAX.validate_full_source(
+                    source, plan["language"], extension, deadline, invoke)
                 findings_by_source[source] = SYNTAX.rule_spans(
                     source, extension, rule_text, invoke)
-            calls = SYNTAX.api_call_arguments(
-                source, plan["language"], extension, contract["callee"],
-                contract["arity"], invoke)
+            identity = (source, contract["callee"], contract["arity"])
+            if identity not in calls_by_contract:
+                calls_by_contract[identity] = SYNTAX.api_call_arguments(
+                    source, plan["language"], extension, contract["callee"],
+                    contract["arity"], invoke)
+            calls = calls_by_contract[identity]
             if len(calls) != 1:
                 raise RuntimeError(
                     f"API_CONTRACT_CALL_MISMATCH: {contract['callee']}/"
