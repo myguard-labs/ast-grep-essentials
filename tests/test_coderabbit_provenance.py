@@ -19,10 +19,12 @@ def yaml_id(path):
 
 
 def source_metadata_index(lines):
-    index = 1
-    while lines[index].startswith(("# Last enriched: ", "# Last touched: ")):
-        index += 1
-    return index
+    if (
+        lines[1].startswith("# Last enriched: ")
+        and lines[2].startswith("# Last touched: ")
+    ):
+        return 3
+    return 1
 
 
 def assert_source_metadata(testcase, lines, repository, commit, author, source_path):
@@ -96,6 +98,33 @@ class CodeRabbitProvenanceTests(unittest.TestCase):
             "# Modified by MyGuard: test\n",
         ]
         assert_source_metadata(self, lines, "example", "abc", "Author", "rule.yml")
+
+    def test_enrichment_headers_require_canonical_pair(self):
+        metadata = [
+            "# CodeRabbit source repository: example\n",
+            "# CodeRabbit source file: example/blob/abc/rule.yml\n",
+            "# Original author (Git): Author\n",
+            (
+                "# License: Apache License 2.0 "
+                "(https://www.apache.org/licenses/LICENSE-2.0)\n"
+            ),
+            "# Modified by MyGuard: test\n",
+        ]
+        malformed_headers = [
+            ["# Last touched: date by person\n", "# Last enriched: date by person\n"],
+            ["# Last enriched: date by person\n", "# Last enriched: date by person\n"],
+            ["# Last enriched: date by person\n"],
+        ]
+        for headers in malformed_headers:
+            with self.subTest(headers=headers), self.assertRaises(AssertionError):
+                assert_source_metadata(
+                    self,
+                    [MYGUARD_HEADER, *headers, *metadata],
+                    "example",
+                    "abc",
+                    "Author",
+                    "rule.yml",
+                )
 
     def test_manifest_records_pinned_source_digests(self):
         for entry in self.entries:
