@@ -81,6 +81,16 @@ valid:
     fprintf(stderr, ((format)), memchr(data, needle, length));
     fwrite(data, size, getenv("COUNT"), stream);
   }
+- |
+  void null_safe_fallback_control() {
+    strlen(getenv("NAME") ?: "");
+  }
+- |
+  void preceding_format_conversion_control() {
+    fprintf(stderr, "%p %s", memchr(data, needle, length), "known");
+    fprintf(stderr, R"tag(%p %s)tag", memchr(data, needle, length), "known");
+    fprintf(stderr, "%p " "%s", memchr(data, needle, length), "known");
+  }
 invalid:
 - |
   void f() {
@@ -135,6 +145,10 @@ invalid:
 - |
   void unsafe_raw_string_format() {
     fprintf(stderr, R"tag(%10s)tag", memchr(data, needle, length));
+  }
+- |
+  void unsafe_percent_raw_delimiter_format() {
+    fprintf(stderr, R"%(%s)%", memchr(data, needle, length));
   }
 - |
   void unsafe_parenthesized_format() {
