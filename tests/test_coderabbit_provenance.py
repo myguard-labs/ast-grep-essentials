@@ -114,6 +114,7 @@ class CodeRabbitProvenanceTests(unittest.TestCase):
         ]
         malformed_headers = [
             ["# Last touched: date by person\n", "# Last enriched: date by person\n"],
+            ["# Last touched: date by person\n"],
             ["# Last enriched: date by person\n", "# Last enriched: date by person\n"],
             ["# Last enriched: date by person\n"],
         ]
