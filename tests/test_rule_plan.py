@@ -104,6 +104,49 @@ class RulePlanTests(unittest.TestCase):
             PLAN.preflight(plan, matcher, cases)
         self.assertEqual(batch.call_args.args[0], candidates)
 
+    def test_api_contracts_bind_arity_positions_and_exact_counts(self):
+        first = "memcpy(NULL, src, 8);"
+        second = "memcpy(dst, NULL, 8);"
+        plan = minimal_plan(
+            language="cpp",
+            cases={"invalid": [first, second], "valid": ["memcpy(dst, src, 8);"]},
+            oracles={first: {"count": 1}, second: {"count": 1}},
+            api_contracts=[{
+                "callee": "memcpy", "arity": 3,
+                "nullable_positions": [1, 2], "witnesses": {1: first, 2: second},
+            }],
+        )
+        PLAN.validate_plan(plan)
+
+        invalid_contracts = (
+            ({"callee": "memcpy", "arity": 2, "nullable_positions": [1, 3],
+              "witnesses": {1: first, 3: second}}, "cannot exceed arity"),
+            ({"callee": "memcpy", "arity": 3, "nullable_positions": [1],
+              "witnesses": {1: "missing"}}, "must be invalid cases"),
+            ({"callee": "memcpy", "arity": 3, "nullable_positions": [1, 2],
+              "witnesses": {1: first}}, "must exactly cover nullable_positions"),
+        )
+        for contract, message in invalid_contracts:
+            with self.subTest(contract=contract), self.assertRaisesRegex(ValueError, message):
+                PLAN.validate_plan({**plan, "api_contracts": [contract]})
+
+        without_count = {**plan, "oracles": {second: {"count": 1}}}
+        with self.assertRaisesRegex(ValueError, "exact count oracle"):
+            PLAN.validate_plan(without_count)
+
+    def test_api_contract_reused_witness_requires_matching_count(self):
+        source = "memcpy(NULL, NULL, 8);"
+        base = minimal_plan(
+            language="cpp", cases={"invalid": [source], "valid": ["safe();"]},
+            api_contracts=[{
+                "callee": "memcpy", "arity": 3,
+                "nullable_positions": [1, 2], "witnesses": {1: source, 2: source},
+            }],
+        )
+        with self.assertRaisesRegex(ValueError, "expected 2"):
+            PLAN.validate_plan({**base, "oracles": {source: {"count": 1}}})
+        PLAN.validate_plan({**base, "oracles": {source: {"count": 2}}})
+
     def test_utility_graph_rejects_undefined_cycle_and_unreachable(self):
         cases = [
             ({"rule": {"matches": "missing"}}, "undefined local utilities"),

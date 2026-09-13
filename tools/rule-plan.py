@@ -44,7 +44,7 @@ PLAN_KEYS = {
     "match", "rule", "utils", "constraints", "labels", "fix",
     "transform", "rewriters", "files", "ignores", "url", "metadata", "cases",
     "mutation_limit", "mutation_exclusions", "oracles", "comments", "extensions", "claims",
-    "metamorphic",
+    "metamorphic", "api_contracts",
 }
 
 CLAIM_DIMENSIONS = {"api", "callee", "operator", "argument-position", "literal-form", "syntax"}
@@ -384,6 +384,50 @@ def validate_oracles(plan: dict, cases: dict[str, list[str]]) -> None:
             raise ValueError("rules with fix require fixed output for every invalid source")
 
 
+def validate_api_contracts(plan: dict, cases: dict[str, list[str]]) -> None:
+    """Bind API arity and nullable operand positions to exact-count witnesses."""
+    contracts = plan.get("api_contracts", [])
+    if not isinstance(contracts, list):
+        raise TypeError("api_contracts must be a list")
+    invalid = set(cases["invalid"])
+    seen = set()
+    for contract in contracts:
+        if not isinstance(contract, dict) or set(contract) != {
+                "callee", "arity", "nullable_positions", "witnesses"}:
+            raise ValueError("api contract has invalid shape")
+        callee, arity = contract["callee"], contract["arity"]
+        positions, witnesses = contract["nullable_positions"], contract["witnesses"]
+        if not isinstance(callee, str) or not callee.strip():
+            raise ValueError("api contract callee must be a non-empty string")
+        if not isinstance(arity, int) or isinstance(arity, bool) or arity < 1:
+            raise ValueError("api contract arity must be a positive integer")
+        identity = (callee, arity)
+        if identity in seen:
+            raise ValueError("api contracts require unique callee and arity pairs")
+        seen.add(identity)
+        if (not isinstance(positions, list) or not positions
+                or any(not isinstance(position, int) or isinstance(position, bool)
+                       or position < 1 for position in positions)
+                or len(positions) != len(set(positions))):
+            raise ValueError("api contract nullable_positions must be unique positive integers")
+        if max(positions) > arity:
+            raise ValueError("api contract nullable position cannot exceed arity")
+        if not isinstance(witnesses, dict) or set(witnesses) != set(positions):
+            raise ValueError("api contract witnesses must exactly cover nullable_positions")
+        if any(not isinstance(source, str) or source not in invalid
+               for source in witnesses.values()):
+            raise ValueError("api contract witnesses must be invalid cases")
+        uses = {}
+        for source in witnesses.values():
+            uses[source] = uses.get(source, 0) + 1
+        for source, expected_count in uses.items():
+            actual = plan.get("oracles", {}).get(source, {}).get("count")
+            if actual != expected_count:
+                raise ValueError(
+                    f"api contract witness needs exact count oracle; "
+                    f"expected {expected_count}, got {actual!r}")
+
+
 def validate_claims(plan: dict, cases: dict[str, list[str]]) -> None:
     """Require every declared syntactic claim and pair to have an invalid witness."""
     claims = plan.get("claims", {})
@@ -541,6 +585,7 @@ def validate_plan(plan: dict) -> tuple[dict, dict[str, list[str]]]:
     validate_utilities(plan, matcher)
     validate_constraints(plan, matcher)
     validate_oracles(plan, cases)
+    validate_api_contracts(plan, cases)
     validate_claims(plan, cases)
     validate_metamorphic(plan, cases)
     branches = named_branches(plan)

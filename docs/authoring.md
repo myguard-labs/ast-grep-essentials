@@ -143,6 +143,28 @@ the detection outcome stays equivalent or changes. These cases join the normal
 contrast and mutation suite only after a language-specific parser check rejects
 ERROR or MISSING nodes.
 
+For APIs where more than one operand may independently violate the contract,
+declare `api_contracts` instead of leaving the coverage implicit in fixture
+prose. Each entry binds one callee and realistic arity to all nullable,
+one-based argument positions and an invalid witness for every position. Every
+witness needs an exact `oracles.<source>.count`; a source reused for two
+positions must produce two diagnostics.
+
+```yaml
+api_contracts:
+  - callee: memcpy
+    arity: 3
+    nullable_positions: [1, 2]
+    witnesses:
+      1: memcpy(NULL, src, size);
+      2: memcpy(dst, NULL, size);
+```
+
+The closed schema rejects missing positional arms, positions beyond the stated
+arity, valid or unknown witnesses, duplicate callee/arity contracts, and stale
+diagnostic counts. Keep unrelated operator, qualification, wrapper, parser
+recovery, and regex-boundary negative controls in `cases.valid`.
+
 Plan mutation checks use one pinned-engine batch in the normal case and bisect
 only engine-load failures for exact attribution. Use
 `python3 tools/rule-plan.py PLAN --telemetry /tmp/plan.json` when measuring the
