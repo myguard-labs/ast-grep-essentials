@@ -25,6 +25,27 @@ def source_metadata_index(lines):
     return index
 
 
+def assert_source_metadata(testcase, lines, repository, commit, author, source_path):
+    testcase.assertEqual(lines[0], MYGUARD_HEADER)
+    source_index = source_metadata_index(lines)
+    testcase.assertEqual(
+        lines[source_index], f"# CodeRabbit source repository: {repository}\n"
+    )
+    testcase.assertEqual(
+        lines[source_index + 1],
+        f"# CodeRabbit source file: {repository}/blob/{commit}/{source_path}\n",
+    )
+    testcase.assertEqual(
+        lines[source_index + 2], f"# Original author (Git): {author}\n"
+    )
+    testcase.assertEqual(
+        lines[source_index + 3],
+        "# License: Apache License 2.0 "
+        "(https://www.apache.org/licenses/LICENSE-2.0)\n",
+    )
+    testcase.assertTrue(lines[source_index + 4].startswith("# Modified by MyGuard: "))
+
+
 class CodeRabbitProvenanceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -50,27 +71,13 @@ class CodeRabbitProvenanceTests(unittest.TestCase):
             with self.subTest(rule=entry["id"]):
                 path = ROOT / entry["target_path"]
                 lines = path.read_text().splitlines(keepends=True)
-                self.assertEqual(lines[0], MYGUARD_HEADER)
-                source_index = source_metadata_index(lines)
-                self.assertEqual(
-                    lines[source_index],
-                    f"# CodeRabbit source repository: {repository}\n",
-                )
-                self.assertEqual(
-                    lines[source_index + 1],
-                    f"# CodeRabbit source file: {repository}/blob/{commit}/"
-                    f"{entry['source_path']}\n",
-                )
-                self.assertEqual(
-                    lines[source_index + 2], f"# Original author (Git): {author}\n"
-                )
-                self.assertEqual(
-                    lines[source_index + 3],
-                    "# License: Apache License 2.0 "
-                    "(https://www.apache.org/licenses/LICENSE-2.0)\n",
-                )
-                self.assertTrue(
-                    lines[source_index + 4].startswith("# Modified by MyGuard: ")
+                assert_source_metadata(
+                    self,
+                    lines,
+                    repository,
+                    commit,
+                    author,
+                    entry["source_path"],
                 )
                 self.assertEqual(yaml_id(path), entry["id"])
 
@@ -80,8 +87,15 @@ class CodeRabbitProvenanceTests(unittest.TestCase):
             "# Last enriched: 2026-09-13 by Thijs Eilander\n",
             "# Last touched: 2026-09-13 by Thijs Eilander\n",
             "# CodeRabbit source repository: example\n",
+            "# CodeRabbit source file: example/blob/abc/rule.yml\n",
+            "# Original author (Git): Author\n",
+            (
+                "# License: Apache License 2.0 "
+                "(https://www.apache.org/licenses/LICENSE-2.0)\n"
+            ),
+            "# Modified by MyGuard: test\n",
         ]
-        self.assertEqual(source_metadata_index(lines), 3)
+        assert_source_metadata(self, lines, "example", "abc", "Author", "rule.yml")
 
     def test_manifest_records_pinned_source_digests(self):
         for entry in self.entries:
