@@ -18,6 +18,32 @@ the caller must first establish what `.len` means.
 
 ## Other rule boundaries
 
+- `null-library-function-cpp` syntactically reports a direct call to its listed
+  NULL-returning C library functions when that call is subscripted, accessed
+  through `->`, dereferenced with unary `*`, or passed directly (optionally as
+  an assignment RHS) to a listed pointer-consuming library function. The
+  routine dismissal is a call whose surrounding program proves the result
+  cannot be NULL. It does not model types, overload resolution, wrappers,
+  aliases, macros, prior checks, control flow, or platform-specific return
+  contracts; unqualified, global-qualified, and `std::` spellings are the only
+  supported function forms, with at most two transparent parenthesis layers.
+  For `fprintf`, the format-sensitive arm covers the direct third argument when
+  the first consuming conversion in an unprefixed ordinary or raw literal, or
+  in the first unprefixed ordinary segment of a concatenated literal, is `%s`,
+  a decimal width such as `%10s`, or a decimal precision such as `%.3s`; up to two
+  transparent parentheses around the format are accepted. It distinguishes
+  escaped `%%s`; a plain `%s` split exactly as `"%" "s"` across the first two
+  ordinary segments is also recognized. Ordinary formats and the first ordinary
+  concatenated segment containing a C/C++ escape
+  before the first consuming conversion are skipped because this syntactic rule
+  cannot decode whether an escape such as `\x25` introduces an earlier format
+  directive. Raw formats are scanned only through the first `)`, so a `%s`
+  after an earlier literal `)` in raw content is conservatively missed rather
+  than confused with a closing delimiter. It also does not parse flags,
+  positional directives, `*` widths,
+  or later variadic arguments. Calls nested
+  in parser `ERROR` recovery nodes are excluded; fix malformed C++ before
+  treating the absence of a finding as safe.
 - `nginx-cpp-line-comment` and `nginx-plain-inline` enforce nginx source style
   purely by syntax. They cannot identify whether a C file belongs to nginx, so
   consumers must scope these informational rules to nginx core and module
