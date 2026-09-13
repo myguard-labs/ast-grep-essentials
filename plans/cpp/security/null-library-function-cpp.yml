@@ -158,11 +158,11 @@ utils:
   percent-s-literal:
     any:
       - kind: string_literal
-        regex: '^(?:[^%\\]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s'
+        regex: '^(?:u8|u|U|L)?"(?:[^%"\\]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s'
       - kind: raw_string_literal
         regex: '^R"[^()\\\s]{0,16}\((?:[^%]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s'
       - kind: concatenated_string
-        regex: '^(?:[^%\\]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s'
+        regex: '^(?:u8|u|U|L)?"(?:[^%"\\]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s'
 cases:
   valid:
     - |
@@ -262,6 +262,10 @@ cases:
     - |
       void octal_percent_consumes_pointer() {
         fprintf(stderr, "\045p %s", memchr(data, needle, length), "known");
+      }
+    - |
+      void raw_delimiter_in_concatenation_is_not_format_content() {
+        fprintf(stderr, R"%s(text)%s" "%p", memchr(data, needle, length));
       }
   invalid:
     - |

@@ -99,6 +99,10 @@ valid:
   void octal_percent_consumes_pointer() {
     fprintf(stderr, "\045p %s", memchr(data, needle, length), "known");
   }
+- |
+  void raw_delimiter_in_concatenation_is_not_format_content() {
+    fprintf(stderr, R"%s(text)%s" "%p", memchr(data, needle, length));
+  }
 invalid:
 - |
   void f() {
