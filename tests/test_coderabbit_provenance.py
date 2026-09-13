@@ -11,6 +11,8 @@ MYGUARD_HEADER = (
     "# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | "
     "https://deb.myguard.nl\n"
 )
+
+
 def yaml_id(path):
     match = re.search(r"(?m)^id:\s*[\"']?([^\s\"']+)", path.read_text())
     return match.group(1) if match else None
@@ -42,21 +44,31 @@ class CodeRabbitProvenanceTests(unittest.TestCase):
                 path = ROOT / entry["target_path"]
                 lines = path.read_text().splitlines(keepends=True)
                 self.assertEqual(lines[0], MYGUARD_HEADER)
+                source_index = 1
+                while lines[source_index].startswith(
+                    ("# Last enriched: ", "# Last touched: ")
+                ):
+                    source_index += 1
                 self.assertEqual(
-                    lines[1], f"# CodeRabbit source repository: {repository}\n"
+                    lines[source_index],
+                    f"# CodeRabbit source repository: {repository}\n",
                 )
                 self.assertEqual(
-                    lines[2],
+                    lines[source_index + 1],
                     f"# CodeRabbit source file: {repository}/blob/{commit}/"
                     f"{entry['source_path']}\n",
                 )
-                self.assertEqual(lines[3], f"# Original author (Git): {author}\n")
                 self.assertEqual(
-                    lines[4],
+                    lines[source_index + 2], f"# Original author (Git): {author}\n"
+                )
+                self.assertEqual(
+                    lines[source_index + 3],
                     "# License: Apache License 2.0 "
                     "(https://www.apache.org/licenses/LICENSE-2.0)\n",
                 )
-                self.assertTrue(lines[5].startswith("# Modified by MyGuard: "))
+                self.assertTrue(
+                    lines[source_index + 4].startswith("# Modified by MyGuard: ")
+                )
                 self.assertEqual(yaml_id(path), entry["id"])
 
     def test_manifest_records_pinned_source_digests(self):
