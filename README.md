@@ -144,6 +144,13 @@ import is tracked in
 
 ## Further reading
 
+Rule enrichment uses one pull request per rule ID. A rule PR may carry that
+rule's fixture, snapshot, source or limitation entry, and source plan, but never
+a second rule. Pack-wide enrichment tooling and policy changes use a separate
+foundation PR. See the [authoring guide](docs/authoring.md#record-enrichment-provenance)
+for the required `Last enriched` and `Last touched` comments and their exact
+meaning.
+
 See [sources](docs/sources.md) for rule evidence and
 [rejected candidates](docs/rejected-candidates.md) for patterns we investigated
 but chose not to ship.
