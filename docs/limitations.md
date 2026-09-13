@@ -28,8 +28,8 @@ the caller must first establish what `.len` means.
   contracts; unqualified, global-qualified, and `std::` spellings are the only
   supported function forms, with at most two transparent parenthesis layers.
   For `fprintf`, the format-sensitive arm covers the direct third argument when
-  the first consuming conversion in an ordinary or raw literal, or in the first
-  ordinary segment of a concatenated literal, is `%s`, a decimal
+  the first consuming conversion in an unprefixed ordinary or raw literal, or
+  in the first unprefixed ordinary segment of a concatenated literal, is `%s`, a decimal
   width such as `%10s`, or a decimal precision such as `%.3s`; up to two
   transparent parentheses around the format are accepted. It distinguishes
   escaped `%%s`. Ordinary formats and the first ordinary concatenated segment

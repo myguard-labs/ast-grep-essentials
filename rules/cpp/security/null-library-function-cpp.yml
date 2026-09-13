@@ -63,11 +63,11 @@ utils:
   percent-s-literal:
     any:
     - kind: string_literal
-      regex: ^(?:u8|u|U|L)?"(?:[^%"\\]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s
+      regex: ^"(?:[^%"\\]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s
     - kind: raw_string_literal
       regex: ^R"[^()\\\s]{0,16}\((?:[^%)]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s
     - kind: concatenated_string
-      regex: ^(?:u8|u|U|L)?"(?:[^%"\\]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s
+      regex: ^"(?:[^%"\\]|%%)*%(?:[0-9]+)?(?:\.[0-9]+)?s
 labels:
   OPERAND:
     style: secondary
@@ -96,46 +96,46 @@ rule:
           selector: call_expression
       - has:
           field: function
-          regex: ^\(*\s*(?:(?:::\s*|std\s*::\s*)?fprintf)\s*\)*$
+          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?fprintf\s*\)*$
     - all:
       - pattern:
           context: void f() { $FPRINTF_REST($_, $FORMAT, $OPERAND, $$$REST); }
           selector: call_expression
       - has:
           field: function
-          regex: ^\(*\s*(?:(?:::\s*|std\s*::\s*)?fprintf)\s*\)*$
+          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?fprintf\s*\)*$
     - all:
       - pattern:
           context: void f() { $FWRITE($_, $_, $_, $OPERAND); }
           selector: call_expression
       - has:
           field: function
-          regex: ^\(*\s*(?:(?:::\s*|std\s*::\s*)?fwrite)\s*\)*$
+          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?fwrite\s*\)*$
     - all:
       - pattern:
           context: void f() { $SECOND_ONLY($_, $OPERAND); }
           selector: call_expression
       - has:
           field: function
-          regex: ^\(*\s*(?:(?:::\s*|std\s*::\s*)?(?:fprintf|bcopy|memccpy|memcpy|memmove|stpncpy|strcat|strcpy|strlcat|strlcpy|strncat|stpcpy|wcpcpy|wcpncpy))\s*\)*$
+          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?(?:fprintf|bcopy|memccpy|memcpy|memmove|stpncpy|strcat|strcpy|strlcat|strlcpy|strncat|stpcpy|wcpcpy|wcpncpy)\s*\)*$
     - all:
       - pattern:
           context: void f() { $SECOND_REST($_, $OPERAND, $$$REST); }
           selector: call_expression
       - has:
           field: function
-          regex: ^\(*\s*(?:(?:::\s*|std\s*::\s*)?(?:fprintf|bcopy|memccpy|memcpy|memmove|stpncpy|strcat|strcpy|strlcat|strlcpy|strncat|stpcpy|wcpcpy|wcpncpy))\s*\)*$
+          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?(?:bcopy|memccpy|memcpy|memmove|stpncpy|strcat|strcpy|strlcat|strlcpy|strncat|stpcpy|wcpcpy|wcpncpy)\s*\)*$
     - all:
       - pattern:
           context: void f() { $FIRST_ONLY($OPERAND); }
           selector: call_expression
       - has:
           field: function
-          regex: ^\(*\s*(?:(?:::\s*|std\s*::\s*)?(?:atof|atoi|atol_l|atol|atoll_l|atoll|getc|fprintf|fgetpos|fseek|fseeko|fsetpos|ftell|ftello|rewind|strlen|strtoimax|strtod|strtol|strtoul|strtoll|strtoq|bcopy|memccpy|memcpy|memmove|stpncpy|strcat|strcpy|strlcat|strlcpy|strncat|stpcpy|wcpcpy|wcpncpy|fwrite))\s*\)*$
+          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?(?:atof|atoi|atol_l|atol|atoll_l|atoll|getc|fprintf|fgetpos|fseek|fseeko|fsetpos|ftell|ftello|rewind|strlen|strtoimax|strtod|strtol|strtoul|strtoll|strtoq|bcopy|memccpy|memcpy|memmove|stpncpy|strcat|strcpy|strlcat|strlcpy|strncat|stpcpy|wcpcpy|wcpncpy|fwrite)\s*\)*$
     - all:
       - pattern:
           context: void f() { $FIRST_REST($OPERAND, $$$REST); }
           selector: call_expression
       - has:
           field: function
-          regex: ^\(*\s*(?:(?:::\s*|std\s*::\s*)?(?:atof|atoi|atol_l|atol|atoll_l|atoll|getc|fprintf|fgetpos|fseek|fseeko|fsetpos|ftell|ftello|rewind|strlen|strtoimax|strtod|strtol|strtoul|strtoll|strtoq|bcopy|memccpy|memcpy|memmove|stpncpy|strcat|strcpy|strlcat|strlcpy|strncat|stpcpy|wcpcpy|wcpncpy|fwrite))\s*\)*$
+          regex: ^\(*\s*(?:(?:std\s*)?::\s*)?(?:atof|atoi|atol_l|atol|atoll_l|atoll|getc|fgetpos|fseek|fseeko|fsetpos|ftell|ftello|rewind|strlen|strtoimax|strtod|strtol|strtoul|strtoll|strtoq|fwrite)\s*\)*$
