@@ -18,6 +18,13 @@ def yaml_id(path):
     return match.group(1) if match else None
 
 
+def source_metadata_index(lines):
+    index = 1
+    while lines[index].startswith(("# Last enriched: ", "# Last touched: ")):
+        index += 1
+    return index
+
+
 class CodeRabbitProvenanceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -44,11 +51,7 @@ class CodeRabbitProvenanceTests(unittest.TestCase):
                 path = ROOT / entry["target_path"]
                 lines = path.read_text().splitlines(keepends=True)
                 self.assertEqual(lines[0], MYGUARD_HEADER)
-                source_index = 1
-                while lines[source_index].startswith(
-                    ("# Last enriched: ", "# Last touched: ")
-                ):
-                    source_index += 1
+                source_index = source_metadata_index(lines)
                 self.assertEqual(
                     lines[source_index],
                     f"# CodeRabbit source repository: {repository}\n",
@@ -70,6 +73,15 @@ class CodeRabbitProvenanceTests(unittest.TestCase):
                     lines[source_index + 4].startswith("# Modified by MyGuard: ")
                 )
                 self.assertEqual(yaml_id(path), entry["id"])
+
+    def test_enrichment_headers_precede_source_metadata(self):
+        lines = [
+            MYGUARD_HEADER,
+            "# Last enriched: 2026-09-13 by Thijs Eilander\n",
+            "# Last touched: 2026-09-13 by Thijs Eilander\n",
+            "# CodeRabbit source repository: example\n",
+        ]
+        self.assertEqual(source_metadata_index(lines), 3)
 
     def test_manifest_records_pinned_source_digests(self):
         for entry in self.entries:
