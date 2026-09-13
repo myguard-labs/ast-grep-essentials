@@ -738,7 +738,8 @@ def _regex_alternative_mutations(pattern: str):
     if leading_flags:
         anchor, flags, body = leading_flags.groups()
         prefix = anchor + flags
-    alternatives = _regex_alternatives(body)
+    verbose = TRANSFORMS.inline_verbose(flags) if leading_flags else False
+    alternatives = _regex_alternatives(body, verbose=verbose)
     grouped_whole = False
     if not alternatives:
         grouped = re.fullmatch(

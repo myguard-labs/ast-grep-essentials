@@ -157,6 +157,16 @@ class RuleRegexMutationTests(unittest.TestCase):
         self.assertEqual(
             mutations["rule.regex-alternative[1]-deleted"]["regex"], "(?i)a")
 
+    def test_leading_global_verbose_flag_applies_while_splitting(self):
+        mutations = dict(PLAN.mutation_candidates(
+            {"regex": "(?x)a # ignored | fake\n|b"}))
+        self.assertEqual(
+            mutations["rule.regex-alternative[0]-deleted"]["regex"], "(?x)b")
+        self.assertEqual(
+            mutations["rule.regex-alternative[1]-deleted"]["regex"],
+            "(?x)a # ignored | fake\n",
+        )
+
     def test_regex_split_ignores_escaped_group_and_class_bars(self):
         # pylint: disable-next=protected-access
         self.assertEqual(PLAN._regex_alternatives(r"^(a|b)[|]c\|d$|^e$"),
