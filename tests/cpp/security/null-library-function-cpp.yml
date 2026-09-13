@@ -91,6 +91,14 @@ valid:
     fprintf(stderr, R"tag(%p %s)tag", memchr(data, needle, length), "known");
     fprintf(stderr, "%p " "%s", memchr(data, needle, length), "known");
   }
+- |
+  void escaped_percent_consumes_pointer() {
+    fprintf(stderr, "\x25p %s", memchr(data, needle, length), "known");
+  }
+- |
+  void octal_percent_consumes_pointer() {
+    fprintf(stderr, "\045p %s", memchr(data, needle, length), "known");
+  }
 invalid:
 - |
   void f() {

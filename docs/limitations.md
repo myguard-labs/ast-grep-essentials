@@ -32,7 +32,10 @@ the caller must first establish what `.len` means.
   format is `%s`, a decimal
   width such as `%10s`, or a decimal precision such as `%.3s`; up to two
   transparent parentheses around the format are accepted. It distinguishes
-  escaped `%%s`, but does not parse flags, positional directives, `*` widths,
+  escaped `%%s`. Ordinary and concatenated formats containing a C/C++ escape
+  before the first consuming conversion are skipped because this syntactic rule
+  cannot decode whether an escape such as `\x25` introduces an earlier format
+  directive. It also does not parse flags, positional directives, `*` widths,
   or later variadic arguments. Calls nested
   in parser `ERROR` recovery nodes are excluded; fix malformed C++ before
   treating the absence of a finding as safe.
