@@ -133,6 +133,25 @@ The versioned `tests/differential/v1` corpus runs in `test:mechanics`; after an
 intentional engine or rule behavior change, inspect the JSON delta before using
 `corpus-update` to accept the new baseline.
 
+For a plan with several advertised syntactic forms, declare its `claims`
+matrix instead of relying on prose. The compiler requires an invalid witness
+for every named form and every pair of claim dimensions. Semantic properties
+such as runtime type, data flow, reachability, ownership, or trust are rejected
+as plan claims because a syntax fixture cannot establish them. Declare reviewed
+derived cases in `metamorphic`; each supported transformation must state whether
+the detection outcome stays equivalent or changes. These cases join the normal
+contrast and mutation suite only after a language-specific parser check rejects
+ERROR or MISSING nodes.
+
+Plan mutation checks use one pinned-engine batch in the normal case and bisect
+only engine-load failures for exact attribution. Use
+`python3 tools/rule-plan.py PLAN --telemetry /tmp/plan.json` when measuring the
+mechanics: `counts` includes stable plan, valid/invalid case, exclusion,
+input-byte, engine-process, and mutant totals; the phase durations are labeled
+wall-clock informational data. Mutation limits
+apply to required mutations; documented exclusions are still executed in the
+same batch. A timeout kills the engine's complete process group.
+
 ## Define the claim
 
 Start with a small inert example that should match and a closely related one
