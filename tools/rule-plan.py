@@ -586,8 +586,13 @@ def validate_api_contract_syntax(plan: dict, matcher: dict, deadline: float,
     for contract in plan.get("api_contracts", []):
         for position, source in contract["witnesses"].items():
             if source not in findings_by_source:
-                SYNTAX.validate_full_source(
-                    source, plan["language"], extension, deadline, invoke)
+                try:
+                    SYNTAX.validate_full_source(
+                        source, plan["language"], extension, deadline, invoke)
+                except RuntimeError as error:
+                    raise RuntimeError(
+                        f"API_CONTRACT_PARSE_ERROR: {contract['callee']}/"
+                        f"{contract['arity']} witness is malformed") from error
                 findings_by_source[source] = SYNTAX.rule_spans(
                     source, extension, rule_text, invoke)
             identity = (source, contract["callee"], contract["arity"])

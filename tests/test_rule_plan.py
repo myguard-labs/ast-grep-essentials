@@ -238,10 +238,21 @@ class RulePlanTests(unittest.TestCase):
                 }],
             }
             with self.subTest(malformed=malformed), self.assertRaisesRegex(
-                    RuntimeError, "METAMORPHIC_PARSE_ERROR"):
+                    RuntimeError, "API_CONTRACT_PARSE_ERROR"):
                 PLAN.validate_api_contract_syntax(
                     malformed_plan, matcher, perf_counter() + 20,
                     PLAN.PhaseTelemetry())
+
+    def test_preflight_invokes_api_contract_syntax_gate(self):
+        plan = minimal_plan(language="cpp")
+        matcher, cases = PLAN.validate_plan(plan)
+        with patch.object(PLAN, "expanded_cases", return_value=cases), \
+                patch.object(PLAN, "validate_derived_syntax"), \
+                patch.object(PLAN, "validate_api_contract_syntax",
+                             side_effect=RuntimeError("api gate reached")) as gate, \
+                self.assertRaisesRegex(RuntimeError, "api gate reached"):
+            PLAN.preflight(plan, matcher, cases)
+        gate.assert_called_once()
 
     def test_utility_graph_rejects_undefined_cycle_and_unreachable(self):
         cases = [
