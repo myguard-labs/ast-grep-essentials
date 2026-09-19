@@ -97,6 +97,19 @@ python3 tools/rule-batch.py --work WORK --category correctness --task RULE-ID
 python3 tools/rule-batch.py --work WORK --category correctness --mark-reviewed RULE-ID
 ```
 
+For a resumable end-to-end harvest, `rule-harvest.py` composes the same
+deterministic tools without embedding provider credentials or model transport:
+
+```bash
+python3 tools/rule-harvest.py all --root /src --repos project-a project-b --work /tmp/harvest
+```
+
+The command exits 2 after emitting proposal packets and reports the persisted
+prompt, packet, and reply directories. Dispatch those artifacts through a
+trusted harness, write the JSON replies under the reported directory, and
+rerun the same command. Use `status` to inspect a resumed handoff and `--dry-run`
+to print the tool sequence without writing artifacts.
+
 Harvesting, proposal validation, and fixture-seed checks cover the repository's
 native Bash, C, Go, Java, JavaScript, Lua, PHP, and Python packs. PowerShell uses
 an optional custom parser and remains outside this generic isolated workflow.
