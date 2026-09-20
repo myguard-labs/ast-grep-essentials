@@ -1,8 +1,10 @@
 # Opt-in ast-grep configuration for the PowerShell rule pack.
 #
 # PowerShell needs a compiled Tree-sitter grammar that ast-grep loads as a
-# dynamic library. That library is built, not vendored, so it is absent until
-# `tools/powershell/build-grammar.sh` has run.
+# dynamic library. That library is built, not vendored. MyGuard builds it with
+# the private ast-grep-harness `tools/powershell/build-grammar.sh`, pointed at
+# this checkout by an absolute `ASTGREP_ESSENTIALS` path. Other consumers must
+# provide a compatible library at the mapped path below.
 #
 # It lives in its own config rather than in sgconfig.yml on purpose. ast-grep
 # aborts the entire scan when a registered custom language cannot be loaded --
@@ -13,7 +15,7 @@
 # PowerShell scan that cannot load its parser still fails closed rather than
 # silently reporting zero findings.
 #
-#   tools/powershell/build-grammar.sh
+#   # Build through the private MyGuard ast-grep-harness first.
 #   ast-grep scan -c sgconfig.powershell.yml <path>
 ruleDirs:
   - rules/powershell
