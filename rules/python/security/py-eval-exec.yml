@@ -1,17 +1,38 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# Last enriched: 2026-09-21 by z-ai/glm-5.3-flash
+# Last touched: 2026-09-21 by z-ai/glm-5.3-flash
 id: py-eval-exec
 language: python
 severity: warning
 message: >-
-  eval()/exec() call requires review. It executes Python code and can allow code
-  execution when its argument carries external input. Use a format-specific parser
-  with input limits for untrusted data, or a dispatch table for commands. Recommend
-  ast.literal_eval only for trusted, resource-bounded input; it can exhaust memory,
-  stack, or CPU.
+  eval()/exec() call requires review. It executes Python code and can allow
+  code execution when its argument carries external input. Use a
+  format-specific parser with input limits for untrusted data, or a dispatch
+  table for commands. Recommend ast.literal_eval only for trusted,
+  resource-bounded input; it can exhaust memory, stack, or CPU.
 note: >-
-  Fires on eval/exec with any argument. Dismiss only if the argument is a
-  hardcoded literal and provably never derives from input.
+  Fires on direct eval/exec calls and on builtins.eval/builtins.exec attribute
+  calls. Syntactic only: names are not resolved, so aliased imports such as
+  'import builtins as b' are not matched and a shadowed non-builtin name with
+  the same spelling would still be flagged. Attribute calls on any other
+  receiver (e.g. runner.eval, ast.literal_eval) are not matched. Dismiss only
+  if the argument is a hardcoded literal and provably never derives from
+  input.
 rule:
-  kind: call
-  has:
-    field: function
-    regex: ^(eval|exec)$
+  any:
+    - kind: call
+      has:
+        field: function
+        kind: identifier
+        regex: '^(eval|exec)$'
+    - kind: call
+      has:
+        field: function
+        all:
+          - kind: attribute
+          - has:
+              field: attribute
+              regex: '^(eval|exec)$'
+          - has:
+              field: object
+              regex: '^builtins$'

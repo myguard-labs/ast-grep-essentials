@@ -1,8 +1,16 @@
 id: py-eval-exec
 valid:
-- ast.literal_eval(text)
-- '# eval(text)'
-- text = 'eval(text)'
+  - 'ast.literal_eval(text)'
+  - '# eval(text)'
+  - 'text = ''eval(text)'''
+  - |
+    runner.eval(text)
 invalid:
-- eval(text)
-- exec(text)
+  - 'eval(text)'
+  - 'exec(text)'
+  - |
+    import builtins
+    result = builtins.eval(text)
+  - |
+    import builtins
+    builtins.exec(text)
