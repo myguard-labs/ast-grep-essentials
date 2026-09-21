@@ -1,0 +1,18 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# Last enriched: 2026-09-21 by z-ai/glm-5.3-flash
+# Last touched: 2026-09-21 by z-ai/glm-5.3-flash
+id: py-unreferenced-asyncio-create-task
+language: python
+severity: warning
+message: 'asyncio.create_task(...) result is discarded; retain the Task or await it'
+note: >-
+  Purely syntactic check: flags only a bare expression-statement call to
+  asyncio.create_task. It cannot reason about dataflow or runtime behavior, so
+  retention patterns outside a direct
+  assignment/return/await/collection-add/nested-call/other-receiver are out of
+  scope.
+rule:
+  kind: expression_statement
+  has:
+    stopBy: neighbor
+    pattern: 'asyncio.create_task($$$ARGS)'

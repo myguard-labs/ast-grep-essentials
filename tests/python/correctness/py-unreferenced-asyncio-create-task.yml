@@ -1,0 +1,21 @@
+id: py-unreferenced-asyncio-create-task
+valid:
+  - |
+    task = asyncio.create_task(work())
+  - |
+    return asyncio.create_task(work())
+  - |
+    tasks.add(asyncio.create_task(work()))
+  - |
+    await asyncio.create_task(work())
+  - |
+    loop.create_task(work())
+  - |
+    # asyncio.create_task(work())
+  - |
+    text = 'asyncio.create_task(work())'
+invalid:
+  - |
+    asyncio.create_task(work())
+  - |
+    asyncio.create_task(coro(), name='worker')
