@@ -1,0 +1,29 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# Last enriched: 2026-09-21 by z-ai/glm-5.3-flash
+# Last touched: 2026-09-21 by z-ai/glm-5.3-flash
+id: py-acceptance-named-temp-delete-false
+language: python
+severity: warning
+message: >-
+  tempfile.NamedTemporaryFile(delete=False) persists the temporary path;
+  deliberate cleanup is required.
+note: >-
+  Syntactic check only: this matches a direct call to
+  tempfile.NamedTemporaryFile that contains a literal delete=False keyword
+  argument. It cannot detect aliased or dynamically resolved module
+  references, delete supplied via **kwargs or a runtime value, or whether the
+  caller actually performs cleanup.
+rule:
+  all:
+    - pattern: 'tempfile.NamedTemporaryFile($$$ARGS)'
+    - has:
+        field: arguments
+        has:
+          kind: keyword_argument
+          all:
+            - has:
+                field: name
+                regex: '^delete$'
+            - has:
+                field: value
+                pattern: 'False'
