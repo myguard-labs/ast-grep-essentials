@@ -1,0 +1,22 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+id: py-raise-in-del
+language: python
+severity: warning
+message: >-
+  __del__ directly raises an exception; destructor exceptions are ignored and
+  cannot reliably report failure.
+note: >-
+  Matches only a raise_statement that is a direct child of the __del__ body.
+  Conditional, nested-callable and locally handled raises are outside this
+  deliberately narrow syntax boundary.
+rule:
+  all:
+    - kind: function_definition
+    - has:
+        field: name
+        regex: '^__del__$'
+    - has:
+        field: body
+        kind: block
+        has:
+          kind: raise_statement

@@ -1,0 +1,35 @@
+id: py-raise-in-del
+valid:
+  - '# raise RuntimeError("resource was not closed")'
+  - text = 'raise RuntimeError("resource was not closed")'
+  - |
+    class Resource:
+        def close(self):
+            raise RuntimeError("resource was not closed")
+  - |
+    class Resource:
+        def __del__(self):
+            self.close()
+  - |
+    class Resource:
+        def __del__(self):
+            def report_failure():
+                raise RuntimeError("resource was not closed")
+            report_failure()
+  - |
+    class Resource:
+        def __del__(self):
+            try:
+                raise RuntimeError("resource was not closed")
+            except RuntimeError:
+                pass
+  - |
+    class Resource:
+        def __del__(self):
+            if self.is_open:
+                raise RuntimeError("resource was not closed")
+invalid:
+  - |
+    class Resource:
+        def __del__(self):
+            raise RuntimeError("resource was not closed")
