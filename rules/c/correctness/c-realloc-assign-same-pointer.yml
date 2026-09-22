@@ -1,19 +1,41 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# Last enriched: 2026-09-22 by claude-local
+# Last touched: 2026-09-22 by claude-local
 id: c-realloc-assign-same-pointer
 language: c
 severity: warning
 message: >-
-  realloc/reallocarray result assigned back over the pointer that was passed in.
-  When the reallocation fails the function returns NULL and the original block
-  is still allocated, so this assignment overwrites the only reference to it:
-  the old memory leaks and every later use of the variable dereferences NULL.
-  Assign into a fresh temporary, test it for NULL, and only then store it back.
+  realloc/reallocarray result assigned back over the pointer that was passed
+  in, directly or through a cast. When the reallocation fails the function
+  returns NULL and the original block is still allocated, so this assignment
+  overwrites the only reference to it: the old memory leaks and every later
+  use of the variable dereferences NULL. Assign into a fresh temporary, test
+  it for NULL, and only then store it back.
 note: >-
-  The match is purely syntactic: the same identifier text appears as the
-  assignment target and as the first realloc argument. It does not check
-  whether the caller aborts on allocation failure, which is the one shape that
-  makes this idiom defensible; a program that exits on OOM can be dismissed.
-  Reallocation through a different variable or a struct field is not matched.
+  The match is purely syntactic: the same identifier or dereference text
+  appears as the assignment target and as the first realloc/reallocarray
+  argument. A single cast wrapping the call, as in `p = (char *)realloc(p,
+  n);`, is now matched because the cast is a pure syntactic wrapper that does
+  not change the leak-on-failure semantics; the callee name must still be
+  literally realloc or reallocarray, so wrappers such as `my_realloc` are not
+  matched, and a cast around a call that reallocates a different variable is
+  not matched either. Shapes outside a direct assignment of the call,
+  including chained or parenthesized casts, calls routed through a helper, or
+  reallocation into a struct field or a differently spelled lvalue, are still
+  missed. The rule does not check whether the caller aborts on allocation
+  failure, which is the one shape that makes this idiom defensible; a program
+  that exits on OOM can be dismissed.
 rule:
   any:
-    - pattern: $P = realloc($P, $$$ARGS)
-    - pattern: $P = reallocarray($P, $$$ARGS)
+    - pattern: '$P = realloc($P, $$$ARGS)'
+    - pattern: '$P = reallocarray($P, $$$ARGS)'
+    - pattern:
+        context: 'void __ag_ctx(void) { $P = ($T)realloc($P, $$$ARGS); }'
+        selector: assignment_expression
+    - pattern:
+        context: 'void __ag_ctx(void) { $P = ($T)reallocarray($P, $$$ARGS); }'
+        selector: assignment_expression
+metadata:
+  rule_modified_at: '2026-09-22'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-22'
