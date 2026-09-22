@@ -1,0 +1,15 @@
+id: py-exists-gated-is-symlink
+valid:
+  - |
+    from pathlib import Path
+
+    def reject_symlink(path: Path) -> None:
+        if path.is_symlink():
+            raise ValueError("Symlinks are not allowed")
+invalid:
+  - |
+    from pathlib import Path
+
+    def reject_symlink(path: Path) -> None:
+        if path.exists() and path.is_symlink():
+            raise ValueError("Symlinks are not allowed")
