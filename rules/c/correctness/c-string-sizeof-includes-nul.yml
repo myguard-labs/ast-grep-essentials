@@ -3,21 +3,32 @@
 id: c-string-sizeof-includes-nul
 language: c
 severity: warning
-message: A .len field receives sizeof a string literal, including its terminating NUL;
+message: >-
+  A len field receives sizeof a string literal, including its terminating NUL;
   review whether this is intended as a payload length.
-note: For a narrow literal used as text, sizeof(literal) - 1 is its byte length.
-  This advisory does not resolve the structure type or data pointer; a capacity
-  field or an intentionally included NUL can be correct.
+note: >-
+  For a narrow literal used as text, sizeof(literal) - 1 is its byte length.
+  This advisory matches both the dot form obj.len and the arrow form p->len,
+  and does not resolve the structure type or data pointer; a capacity field or
+  an intentionally included NUL can be correct.
 rule:
   kind: assignment_expression
-  pattern:
-    context: |
-      void f(void) { $STR.len = sizeof($LIT); }
-    selector: assignment_expression
+  any:
+    - pattern:
+        context: |
+          void f(void) { $STR.len = sizeof($LIT); }
+        selector: assignment_expression
+    - pattern:
+        context: |
+          void f(void) { $STR->len = sizeof($LIT); }
+        selector: assignment_expression
 constraints:
   LIT:
     kind: string_literal
 metadata:
+  rule_modified_at: '2026-09-23'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-23'
   created_at: '2026-09-09'
   source: 'MyGuard'
   modified_by: 'MyGuard'

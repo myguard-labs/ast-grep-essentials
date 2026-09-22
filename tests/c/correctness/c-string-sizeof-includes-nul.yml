@@ -1,37 +1,57 @@
 id: c-string-sizeof-includes-nul
 valid:
-- |-
-  void f(void) {
-    const char text[] = "nginx";
-    value.len = sizeof(text);
-    value.capacity = sizeof("nginx");
+  - |-
+    void f(void) {
+      const char text[] = "nginx";
+      value.len = sizeof(text);
+      value.capacity = sizeof("nginx");
+      value.len = sizeof("nginx") - 1;
+    }
+  - |-
+    ngx_str_t value;
+    value.data = (u_char *)"nginx";
     value.len = sizeof("nginx") - 1;
-  }
-- |-
-  ngx_str_t value;
-  value.data = (u_char *)"nginx";
-  value.len = sizeof("nginx") - 1;
-- |-
-  void f(ngx_str_t value) {
-    value.len = strlen("nginx");
-  }
-- |-
-  void f(void) {
-    const char *text = "value.len = sizeof(\"nginx\")";
-    /* value.len = sizeof("nginx"); */
-  }
+  - |-
+    void f(ngx_str_t value) {
+      value.len = strlen("nginx");
+    }
+  - |-
+    void f(void) {
+      const char *text = "value.len = sizeof(\"nginx\")";
+      /* value.len = sizeof("nginx"); */
+    }
+  - |-
+    void f(ngx_str_t *value) {
+      value->len = sizeof("nginx") - 1;
+    }
+  - |-
+    void f(ngx_buf_t *b) {
+      b->capacity = sizeof("nginx");
+    }
+  - |-
+    void f(ngx_str_t *value, const char *text) {
+      value->len = strlen(text);
+    }
 invalid:
-- |-
-  void f(void) {
-    /* Advisory boundary: a capacity including the NUL may be intentional. */
-    struct { unsigned len; } capacity;
-    capacity.len = sizeof("");
-  }
-- |-
-  ngx_str_t value;
-  value.data = (u_char *)"nginx";
-  value.len = sizeof("nginx");
-- |-
-  void f(ngx_str_t output) {
-    output.len = sizeof("value");
-  }
+  - |-
+    void f(void) {
+      /* Advisory boundary: a capacity including the NUL may be intentional. */
+      struct { unsigned len; } capacity;
+      capacity.len = sizeof("");
+    }
+  - |-
+    ngx_str_t value;
+    value.data = (u_char *)"nginx";
+    value.len = sizeof("nginx");
+  - |-
+    void f(ngx_str_t output) {
+      output.len = sizeof("value");
+    }
+  - |-
+    void f(ngx_str_t *value) {
+      value->len = sizeof("nginx");
+    }
+  - |-
+    void f(ngx_http_request_t *r) {
+      r->headers_out.content_type->len = sizeof("text/plain");
+    }
