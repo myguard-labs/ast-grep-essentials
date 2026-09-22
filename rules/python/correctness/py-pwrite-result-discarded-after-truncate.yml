@@ -1,0 +1,24 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# Last enriched: 2026-09-22 by codex-local
+# Last touched: 2026-09-22 by codex-local
+id: py-pwrite-result-discarded-after-truncate
+language: python
+severity: warning
+message: The return value of os.pwrite is discarded immediately after os.ftruncate.
+note: >-
+  This checks adjacent statements with syntactically identical descriptor
+  arguments. It does not resolve os bindings or prove descriptor identity,
+  short writes, or incomplete contents.
+rule:
+  pattern:
+    context: 'os.pwrite($FD, $DATA, $OFFSET)'
+    selector: expression_statement
+  follows:
+    stopBy: neighbor
+    pattern:
+      context: 'os.ftruncate($FD, $SIZE)'
+      selector: expression_statement
+metadata:
+  rule_modified_at: '2026-09-22'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-22'
