@@ -1,0 +1,22 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# Last enriched: 2026-09-22 by codex-local
+# Last touched: 2026-09-22 by codex-local
+id: py-lstat-before-read-bytes
+language: python
+severity: warning
+message: Path metadata is checked before a separate read_bytes call.
+note: >-
+  This matches the shown function syntax with repeated receiver expressions;
+  it does not establish runtime path identity, method behavior, or
+  exploitability.
+rule:
+  pattern: |
+    def $FUNC($$$PARAMS) -> $RETURN:
+        $META = $PATH.lstat()
+        if not $STAT.S_ISREG($META.st_mode):
+            $$$REJECTION
+        return $PATH.read_bytes()
+metadata:
+  rule_modified_at: '2026-09-22'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-22'
