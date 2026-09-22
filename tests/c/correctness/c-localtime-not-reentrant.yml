@@ -1,11 +1,16 @@
 id: c-localtime-not-reentrant
 valid:
-- void f(void) { localtime_r(&t, &tm); }
-- void f(void) { gmtime_r(&t, &tm); }
-- /* void f(void) { localtime(&t); } */
-- void f(void) { const char *text = "void f(void) { localtime(&t); }"; }
+  - 'void f(void) { localtime_r(&t, &tm); }'
+  - 'void f(void) { gmtime_r(&t, &tm); }'
+  - '/* void f(void) { localtime(&t); } */'
+  - 'void f(void) { const char *text = "void f(void) { localtime(&t); }"; }'
+  - 'void f(const char *s) { struct tm tm; getdate_r(s, &tm); }'
+  - 'void f(const char *s) { my_getdate(s); }'
+  - '/* void f(const char *s) { getdate(s); } */'
 invalid:
-- void f(void) { localtime(&t); }
-- void f(void) { gmtime(&t); }
-- void f(void) { ctime(&t); }
-- void f(void) { asctime(tm); }
+  - 'void f(void) { localtime(&t); }'
+  - 'void f(void) { gmtime(&t); }'
+  - 'void f(void) { ctime(&t); }'
+  - 'void f(void) { asctime(tm); }'
+  - 'void f(void) { struct tm *parsed = getdate("2026-09-22 10:00:00"); }'
+  - 'void f(const char *s) { if (getdate(s) == NULL) { return; } }'
