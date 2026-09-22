@@ -1,0 +1,57 @@
+id: py-resource-warning-before-finally-in-del
+snapshots:
+  ? |
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
+            warnings.warn("Unclosed writer", ResourceWarning)
+            try:
+                self.stream.flush()
+            finally:
+                self.stream.close()
+  : labels:
+    - source: warnings.warn("Unclosed writer", ResourceWarning)
+      style: primary
+      start: 124
+      end: 173
+    - source: warnings.warn("Unclosed writer", ResourceWarning)
+      style: secondary
+      start: 124
+      end: 173
+    - source: |-
+        def __del__(self):
+                warnings.warn("Unclosed writer", ResourceWarning)
+                try:
+                    self.stream.flush()
+                finally:
+                    self.stream.close()
+      style: secondary
+      start: 97
+      end: 267
+    - source: |-
+        warnings.warn("Unclosed writer", ResourceWarning)
+                try:
+                    self.stream.flush()
+                finally:
+                    self.stream.close()
+      style: secondary
+      start: 124
+      end: 267
+    - source: |-
+        finally:
+                    self.stream.close()
+      style: secondary
+      start: 227
+      end: 267
+    - source: |-
+        try:
+                    self.stream.flush()
+                finally:
+                    self.stream.close()
+      style: secondary
+      start: 182
+      end: 267
