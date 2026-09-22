@@ -1,12 +1,27 @@
 id: c-realloc-assign-same-pointer
 valid:
-  - 'int f(char **b, size_t n) { char *t = realloc(*b, n); if (t == NULL) { return -1; } *b = t; return 0; }'
+  - >-
+    int f(char **b, size_t n) { char *t = realloc(*b, n); if (t == NULL) {
+    return -1; } *b = t; return 0; }
   - 'int f(char *p, size_t n) { char *q = realloc(p, n); return q != NULL; }'
   - 'int f(char *p, size_t n) { p = my_realloc(p, n); return p != NULL; }'
-  - 'int f(char *p, size_t n) { char *t = reallocarray(p, n, 4); return t != NULL; }'
+  - >-
+    int f(char *p, size_t n) { char *t = reallocarray(p, n, 4); return t !=
+    NULL; }
   - 'void f(void) { /* p = realloc(p, n); */ }'
   - 'const char *s = "p = realloc(p, n);";'
+  - >-
+    int f(char *p, char *q, size_t n) { p = (char *)realloc(q, n); return p !=
+    NULL; }
+  - >-
+    int f(char *p, size_t n) { char *t = (char *)realloc(p, n); if (t == NULL) {
+    return -1; } p = t; return 0; }
+  - 'int f(char *p, size_t n) { p = (char *)my_realloc(p, n); return p != NULL; }'
 invalid:
   - 'int f(char *p, size_t n) { p = realloc(p, n); return p != NULL; }'
   - 'int f(char **b, size_t n) { *b = realloc(*b, n); return *b != NULL; }'
   - 'int f(char *p, size_t n) { p = reallocarray(p, n, 4); return p != NULL; }'
+  - 'int f(char *p, size_t n) { p = (char *)realloc(p, n); return p != NULL; }'
+  - >-
+    int f(void **b, size_t n) { *b = (void *)reallocarray(*b, n, 8); return *b
+    != NULL; }
