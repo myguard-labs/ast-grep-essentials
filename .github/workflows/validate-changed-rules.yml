@@ -47,3 +47,10 @@ jobs:
         run: >-
           python trusted/ci/validate_changed_rules.py
           --root candidate
+      - name: Install the alias checker dependencies
+        run: python -m pip install --disable-pip-version-check "PyYAML==6.0.2"
+      - name: Check deprecated aliases track their replacements
+        run: >-
+          python trusted/ci/sync_deprecated_aliases.py
+          --root candidate
+          --check
