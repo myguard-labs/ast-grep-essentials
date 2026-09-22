@@ -1,5 +1,7 @@
 # astgrep-rules
 
+[ast-grep security rules pack](https://deb.myguard.nl/articles/ast-grep-security-rules-pack/)
+
 Public, curated ast-grep security and correctness rules with their fixtures,
 scan configuration, licenses, and a pinned ast-grep engine. Rule creation,
 enrichment, planning, and validation tooling live in the private MyGuard
@@ -45,10 +47,20 @@ authoring and validation harness before merging changes to this public corpus.
 
 ## Rule sources
 
-The active pack includes 184 rules copied from CodeRabbit's ast-grep essentials
-at commit `73120109bf45c284d0cd8a37bdd7082e80e92e87`. Each copied rule records its
-exact source and Apache-2.0 notice in its leading comments; the corresponding
-upstream license is retained under `LICENSES/`.
+The active pack incorporates 184 rules from
+[CodeRabbit's ast-grep essentials](https://github.com/coderabbitai/ast-grep-essentials),
+copied at commit `73120109bf45c284d0cd8a37bdd7082e80e92e87`. That upstream
+project is now archived and no longer maintained, so those rules are carried
+forward here.
+
+The incorporated rules remain under the
+[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0), and the
+upstream license text is retained verbatim at
+[`LICENSES/CodeRabbit-ast-grep-essentials-Apache-2.0.txt`](LICENSES/CodeRabbit-ast-grep-essentials-Apache-2.0.txt).
+Each incorporated rule records its exact upstream source, its Apache-2.0
+notice, and any MyGuard modification in its leading comments and `metadata`
+block. Rules original to this pack are covered by the repository license
+described below.
 
 ## License
 
