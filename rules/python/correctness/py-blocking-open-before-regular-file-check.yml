@@ -1,0 +1,19 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# Last enriched: 2026-09-22 by codex-local
+# Last touched: 2026-09-22 by codex-local
+id: py-blocking-open-before-regular-file-check
+language: python
+severity: warning
+message: >-
+  Opening with os.O_RDONLY alone may block when the path is a FIFO without a
+  writer.
+note: >-
+  This matches only the literal os.open call syntax. It does not establish the
+  path type, binding of os, runtime blocking, or a subsequent regular-file
+  check.
+rule:
+  pattern: 'os.open($PATH, os.O_RDONLY)'
+metadata:
+  rule_modified_at: '2026-09-22'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-22'

@@ -1,0 +1,18 @@
+id: py-blocking-open-before-regular-file-check
+snapshots:
+  ? |
+    import os
+    import stat
+
+    def validate_file(path):
+        fd = os.open(path, os.O_RDONLY)
+        try:
+            if not stat.S_ISREG(os.fstat(fd).st_mode):
+                raise ValueError('Expected a regular file')
+        finally:
+            os.close(fd)
+  : labels:
+    - source: os.open(path, os.O_RDONLY)
+      style: primary
+      start: 57
+      end: 83
