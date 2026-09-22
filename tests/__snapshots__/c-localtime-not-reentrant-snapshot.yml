@@ -1,5 +1,15 @@
 id: c-localtime-not-reentrant
 snapshots:
+  void f(const char *s) { if (getdate(s) == NULL) { return; } }:
+    labels:
+    - source: getdate(s)
+      style: primary
+      start: 28
+      end: 38
+    - source: getdate
+      style: secondary
+      start: 28
+      end: 35
   void f(void) { asctime(tm); }:
     labels:
     - source: asctime(tm)
@@ -40,3 +50,13 @@ snapshots:
       style: secondary
       start: 15
       end: 24
+  void f(void) { struct tm *parsed = getdate("2026-09-22 10:00:00"); }:
+    labels:
+    - source: getdate("2026-09-22 10:00:00")
+      style: primary
+      start: 35
+      end: 65
+    - source: getdate
+      style: secondary
+      start: 35
+      end: 42
