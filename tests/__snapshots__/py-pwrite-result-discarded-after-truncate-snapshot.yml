@@ -1,0 +1,17 @@
+id: py-pwrite-result-discarded-after-truncate
+snapshots:
+  ? |
+    import os
+
+    def replace_token(fd, token):
+        os.ftruncate(fd, 0)
+        os.pwrite(fd, token, 0)
+  : labels:
+    - source: os.pwrite(fd, token, 0)
+      style: primary
+      start: 69
+      end: 92
+    - source: os.ftruncate(fd, 0)
+      style: secondary
+      start: 45
+      end: 64
