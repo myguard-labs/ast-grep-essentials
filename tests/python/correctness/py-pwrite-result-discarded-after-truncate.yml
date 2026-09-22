@@ -1,0 +1,20 @@
+id: py-pwrite-result-discarded-after-truncate
+valid:
+  - |
+    import os
+
+    def replace_token(fd, token):
+        os.ftruncate(fd, 0)
+        offset = 0
+        while offset < len(token):
+            written = os.pwrite(fd, token[offset:], offset)
+            if written <= 0:
+                raise OSError('positional write made no progress')
+            offset += written
+invalid:
+  - |
+    import os
+
+    def replace_token(fd, token):
+        os.ftruncate(fd, 0)
+        os.pwrite(fd, token, 0)
