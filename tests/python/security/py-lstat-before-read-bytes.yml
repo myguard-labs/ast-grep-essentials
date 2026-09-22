@@ -1,0 +1,23 @@
+id: py-lstat-before-read-bytes
+valid:
+  - |
+    import os
+    from pathlib import Path
+    import stat
+
+    def read_regular(path: Path) -> bytes:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(fd, "rb") as stream:
+            if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+                raise ValueError("Expected a regular file")
+            return stream.read()
+invalid:
+  - |
+    from pathlib import Path
+    import stat
+
+    def read_regular(path: Path) -> bytes:
+        metadata = path.lstat()
+        if not stat.S_ISREG(metadata.st_mode):
+            raise ValueError("Expected a regular file")
+        return path.read_bytes()
