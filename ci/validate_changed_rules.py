@@ -107,11 +107,73 @@ def mirrored_fixture(rule_path: PurePosixPath) -> str:
     return PurePosixPath("tests", *rule_path.parts[1:]).as_posix()
 
 
-def missing_fixture_changes(paths: Sequence[str]) -> list[str]:
+def _rule_body(data: bytes) -> bytes:
+    """Everything from the first line that is not a blank or a comment.
+
+    Only the leading banner is set aside: a ``#`` line further down may sit in
+    a block scalar, where it is pattern text rather than a comment. Only YAML
+    whitespace (space and tab) may precede a banner ``#``; any other byte,
+    including a BOM or a no-break space, starts the body.
+    """
+    lines = data.splitlines(keepends=True)
+    for index, line in enumerate(lines):
+        stripped = line.lstrip(b" \t")
+        if stripped.rstrip(b"\r\n") and not stripped.startswith(b"#"):
+            return b"".join(lines[index:])
+    return b""
+
+
+def _base_blob(root: Path, base: str, path: PurePosixPath) -> bytes | None:
+    try:
+        result = subprocess.run(
+            [
+                "git",
+                "cat-file",
+                "blob",
+                "--end-of-options",
+                f"{base}:{path.as_posix()}",
+            ],
+            cwd=root,
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return None if result.returncode else result.stdout
+
+
+def header_only_rule_changes(
+    root: Path, base: str, paths: Sequence[str]
+) -> frozenset[str]:
+    """Changed rules whose bytes differ from ``base`` only in the banner."""
+    exempt = set()
+    for value in paths:
+        path = _safe_path(value)
+        if path is None or len(path.parts) != 4 or path.parts[0] != "rules":
+            continue
+        current = root / path
+        if not current.exists():
+            continue
+        _require_contained_regular(root, current, "rule")
+        previous = _base_blob(root, base, path)
+        if previous is None:
+            continue  # An added rule, or an unreadable base, is never exempt.
+        body = _rule_body(current.read_bytes())
+        if body and body == _rule_body(previous):
+            exempt.add(value)
+    return frozenset(exempt)
+
+
+def missing_fixture_changes(
+    paths: Sequence[str], exempt: frozenset[str] = frozenset()
+) -> list[str]:
     changed = set(paths)
     missing = set()
     for value in paths:
         path = _safe_path(value)
+        if value in exempt:
+            continue
         if path is not None and len(path.parts) == 4 and path.parts[0] == "rules":
             fixture = mirrored_fixture(path)
             if fixture not in changed:
@@ -311,8 +373,11 @@ def latest_engine() -> Iterator[tuple[Path, str]]:
         yield engine, installed
 
 
-def validate_changed(root: Path, engine: Path, paths: Sequence[str]) -> int:
-    missing = missing_fixture_changes(paths)
+def validate_changed(
+    root: Path, engine: Path, paths: Sequence[str], base: str | None = None
+) -> int:
+    exempt = header_only_rule_changes(root, base, paths) if base else frozenset()
+    missing = missing_fixture_changes(paths, exempt)
     if missing:
         raise ValidationError(
             "changed rules require changed mirrored fixtures: " + ", ".join(missing)
@@ -356,11 +421,11 @@ def main() -> int:
             engine = args.engine.resolve()
             if not engine.is_file() or not os.access(engine, os.X_OK):
                 raise ValidationError("--engine must name an executable file")
-            count = validate_changed(root, engine, paths)
+            count = validate_changed(root, engine, paths, args.base)
             version = _run([engine, "--version"], cwd=root, timeout=15).stdout.strip()
         else:
             with latest_engine() as (engine, version):
-                count = validate_changed(root, engine, paths)
+                count = validate_changed(root, engine, paths, args.base)
     except ValidationError as error:
         print(f"validate-changed-rules: {error}", file=sys.stderr)
         return 1
