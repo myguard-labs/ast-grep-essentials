@@ -1,3 +1,6 @@
+# MyGuard rule: https://github.com/myguard-labs/ast-grep-essentials | https://deb.myguard.nl
+# Last enriched: 2026-09-23 by claude-local
+# Last touched: 2026-09-23 by claude-local
 # https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
 
 id: c-strtok-not-reentrant
@@ -5,22 +8,33 @@ language: c
 severity: warning
 message: >-
   strtok keeps its parse position in a single process-wide static. Two
-  tokenisations that interleave, whether across threads, across an nginx thread
-  pool, or simply because a function called from inside the loop also
+  tokenisations that interleave, whether across threads, across an nginx
+  thread pool, or simply because a function called from inside the loop also
   tokenises, silently corrupt each other's state and return tokens from the
   wrong string. Use strtok_r with a caller-owned save pointer, or scan with
   strcspn/strchr.
 note: >-
-  A direct call-name match. It does not attempt to prove that two tokenisations
-  can actually overlap, so a single-threaded program with exactly one call site
-  is unaffected in practice; the hazard is that library code cannot know it is
-  the only caller. strtok_r and strtok_s are the intended replacements and are
-  not matched.
+  A direct call-name match on strtok, including the parenthesized-callee form
+  (strtok)(...) used to bypass a function-like macro. It does not attempt to
+  prove that two tokenisations can actually overlap, so a single-threaded
+  program with exactly one call site is unaffected in practice; the hazard is
+  that library code cannot know it is the only caller. Calls through function
+  pointers, aliases or macros that expand to strtok are not tracked. strtok_r
+  and strtok_s are the intended replacements and are not matched.
 rule:
   kind: call_expression
-  has: {field: function, regex: '^strtok$'}
+  has:
+    field: function
+    any:
+      - kind: identifier
+        regex: '^strtok$'
+      - kind: parenthesized_expression
+        regex: '^\((\s|\()*strtok(\s|\))*\)$'
 metadata:
   created_at: '2026-09-06'
-  source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  source: MyGuard
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  rule_modified_at: '2026-09-23'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-23'
