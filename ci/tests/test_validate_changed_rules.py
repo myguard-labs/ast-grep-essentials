@@ -45,6 +45,123 @@ class ValidateChangedRulesTests(unittest.TestCase):
             ["tests/go/correctness/go-two.yml"],
         )
 
+    def commit_base(self, root: Path) -> str:
+        environment = {
+            **os.environ,
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_CONFIG_NOSYSTEM": "1",
+        }
+        for command in (
+            ["git", "init", "-q"],
+            ["git", "add", "-A"],
+            [
+                "git",
+                "-c",
+                "user.name=ci",
+                "-c",
+                "user.email=ci@example.invalid",
+                "-c",
+                "commit.gpgsign=false",
+                "commit",
+                "-q",
+                "-m",
+                "base",
+            ],
+        ):
+            subprocess.run(command, cwd=root, env=environment, check=True)
+        return subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=root,
+            env=environment,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+
+    def header_rule(self, root: Path, header: str, body: str) -> tuple[Path, str]:
+        rule, _ = self.make_pair(root)
+        rule.write_text(header + body)
+        return rule, "rules/python/security/py-one.yml"
+
+    def test_banner_only_change_needs_no_fixture_change(self) -> None:
+        body = "id: py-one\nlanguage: python\nrule: {kind: call}\n"
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            rule, path = self.header_rule(root, "# old\n# Last touched: x\n\n", body)
+            base = self.commit_base(root)
+            rule.write_text("# new\n\n" + body)
+
+            exempt = gate.header_only_rule_changes(root, base, [path])
+            engine = self.make_engine(root, "test result: ok. 1 passed; 0 failed;")
+            with redirect_stdout(io.StringIO()):
+                count = gate.validate_changed(root, engine, [path], base)
+
+        self.assertEqual(exempt, frozenset({path}))
+        self.assertEqual(gate.missing_fixture_changes([path], exempt), [])
+        self.assertEqual(count, 1)
+
+    def test_body_change_still_needs_a_fixture_change(self) -> None:
+        body = "id: py-one\nlanguage: python\nrule: {kind: call}\n"
+        changes = {
+            "matcher": "# b\n" + body.replace("call", "call_expression"),
+            "comment inside a block scalar": (
+                "# b\n" + body + "note: |\n  # changed\n"
+            ),
+            "comment below the first key": "# b\nid: py-one\n# moved\n" + body[11:],
+            "banner emptied the rule": "# b\n",
+        }
+        for label, text in changes.items():
+            with self.subTest(label), tempfile.TemporaryDirectory() as name:
+                root = Path(name)
+                rule, path = self.header_rule(root, "# a\n", body + "note: |\n  # x\n")
+                if label != "comment inside a block scalar":
+                    rule.write_text("# a\n" + body)
+                base = self.commit_base(root)
+                rule.write_text(text)
+
+                exempt = gate.header_only_rule_changes(root, base, [path])
+                engine = self.make_engine(root, "test result: ok. 1 passed; 0 failed;")
+                with self.assertRaisesRegex(gate.ValidationError, "mirrored fixtures"):
+                    gate.validate_changed(root, engine, [path], base)
+
+                self.assertEqual(exempt, frozenset())
+
+    def test_added_rule_and_unknown_base_are_never_exempt(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            (root / "README").write_text("x\n")
+            base = self.commit_base(root)
+            _, path = self.header_rule(root, "# a\n", "id: py-one\n")
+
+            self.assertEqual(gate.header_only_rule_changes(root, base, [path]), set())
+            self.assertEqual(
+                gate.header_only_rule_changes(root, "0" * 40, [path]), set()
+            )
+
+    def test_symlinked_banner_candidate_is_rejected(self) -> None:
+        with (
+            tempfile.TemporaryDirectory() as name,
+            tempfile.TemporaryDirectory() as out,
+        ):
+            root = Path(name)
+            rule, path = self.header_rule(root, "# a\n", "id: py-one\n")
+            base = self.commit_base(root)
+            outside = Path(out) / "rule.yml"
+            outside.write_text("# b\nid: py-one\n")
+            rule.unlink()
+            rule.symlink_to(outside)
+
+            with self.assertRaisesRegex(gate.ValidationError, "regular file"):
+                gate.header_only_rule_changes(root, base, [path])
+
+    def test_without_a_base_no_rule_is_exempt(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            _, path = self.header_rule(root, "# a\n", "id: py-one\n")
+            engine = self.make_engine(root, "test result: ok. 1 passed; 0 failed;")
+            with self.assertRaisesRegex(gate.ValidationError, "mirrored fixtures"):
+                gate.validate_changed(root, engine, [path])
+
     def test_only_supported_rule_languages_enter_the_gate(self) -> None:
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
