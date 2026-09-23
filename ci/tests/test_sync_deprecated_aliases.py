@@ -39,6 +39,53 @@ metadata:
   deprecated_alias_of: real-rule
 """
 
+BANNER = "# https://example.invalid/pack | https://example.invalid/repo\n\n"
+
+STYLED_REPLACEMENT = BANNER + """\
+id: real-rule
+language: c
+severity: warning
+message: >-
+  Replacement prose.
+rule:
+  kind: assignment_expression
+  any:
+    - pattern:
+        context: |
+          void f(void) { $S.len = sizeof($L); }
+        selector: assignment_expression
+constraints:
+  L:
+    kind: string_literal
+metadata:
+  source: 'MyGuard'
+"""
+
+STYLED_ALIAS_HEAD = BANNER + """\
+id: old-rule
+"""
+
+STYLED_ALIAS_OWNED = """\
+severity: 'off'
+message: >-
+  Deprecated rule ID; use real-rule. This folded prose is long enough that a
+  YAML re-dump would reflow it onto a single plain scalar line.
+note: >-
+  Compatibility alias for consumers that explicitly promote the former ID.
+"""
+
+STYLED_ALIAS_TAIL = """\
+metadata:
+  deprecated_alias_of: real-rule
+  source: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+"""
+
+STYLED_ALIAS = (
+    STYLED_ALIAS_HEAD + "language: c\n" + STYLED_ALIAS_OWNED
+    + "rule:\n  pattern: STALE\n" + STYLED_ALIAS_TAIL
+)
+
 
 class AliasSyncTests(unittest.TestCase):
     def setUp(self):
@@ -131,6 +178,63 @@ class AliasSyncTests(unittest.TestCase):
         (other / "real-rule.yml").write_text(REPLACEMENT)
         with self.assertRaises(SystemExit):
             alias_sync.sync(self.root, check=True)
+
+    def test_sync_rewrites_only_the_matcher_text(self):
+        """Banner, folded prose, and quoting survive; matcher is the target's text."""
+        (self.rules / "real-rule.yml").write_text(STYLED_REPLACEMENT)
+        (self.rules / "old-rule.yml").write_text(STYLED_ALIAS)
+        self.assertEqual(alias_sync.sync(self.root, check=False), 0)
+        target_rule = STYLED_REPLACEMENT[
+            STYLED_REPLACEMENT.index("rule:\n"):STYLED_REPLACEMENT.index("metadata:")
+        ]
+        expected = (
+            STYLED_ALIAS_HEAD + "language: c\n" + STYLED_ALIAS_OWNED
+            + target_rule + STYLED_ALIAS_TAIL
+        )
+        self.assertEqual((self.rules / "old-rule.yml").read_text(), expected)
+        alias = self.alias()
+        target = yaml.safe_load(STYLED_REPLACEMENT)
+        self.assertEqual(alias["rule"], target["rule"])
+        self.assertEqual(alias["constraints"], target["constraints"])
+        self.assertEqual(alias["severity"], "off")
+        self.assertEqual(alias_sync.sync(self.root, check=True), 0)
+
+    def test_sync_leaves_an_in_sync_alias_byte_identical(self):
+        (self.rules / "real-rule.yml").write_text(STYLED_REPLACEMENT)
+        (self.rules / "old-rule.yml").write_text(STYLED_ALIAS)
+        alias_sync.sync(self.root, check=False)
+        once = (self.rules / "old-rule.yml").read_bytes()
+        # Reformat the matcher without changing its meaning: no drift, no write.
+        (self.rules / "old-rule.yml").write_bytes(
+            once.replace(b"  L:\n    kind: string_literal", b"  L: {kind: string_literal}")
+        )
+        reformatted = (self.rules / "old-rule.yml").read_bytes()
+        self.assertEqual(alias_sync.sync(self.root, check=True), 0)
+        self.assertEqual(alias_sync.sync(self.root, check=False), 0)
+        self.assertEqual((self.rules / "old-rule.yml").read_bytes(), reformatted)
+
+    def test_sync_drops_stale_keys_and_adds_new_ones_before_metadata(self):
+        (self.rules / "real-rule.yml").write_text(STYLED_REPLACEMENT)
+        (self.rules / "old-rule.yml").write_text(
+            STYLED_ALIAS.replace("rule:\n", "utils:\n  x:\n    kind: call\nrule:\n")
+        )
+        alias_sync.sync(self.root, check=False)
+        text = (self.rules / "old-rule.yml").read_text()
+        self.assertNotIn("utils:", text)
+        self.assertLess(text.index("constraints:"), text.index("metadata:"))
+        self.assertTrue(text.startswith(BANNER))
+
+    def test_a_non_mapping_target_is_a_hard_error(self):
+        (self.rules / "real-rule.yml").write_text("- just\n- a list\n")
+        with self.assertRaises(SystemExit):
+            alias_sync.sync(self.root, check=True)
+        with self.assertRaises(SystemExit):
+            alias_sync.sync(self.root, check=False)
+        self.assertEqual((self.rules / "old-rule.yml").read_text(), ALIAS)
+
+    def test_document_markers_are_refused_rather_than_mangled(self):
+        with self.assertRaises(SystemExit):
+            alias_sync.split_blocks("---\nid: x\n")
 
 
 if __name__ == "__main__":
