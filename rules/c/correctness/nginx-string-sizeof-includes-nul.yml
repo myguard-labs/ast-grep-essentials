@@ -11,10 +11,15 @@ note: >-
   Normal scans use c-string-sizeof-includes-nul and do not emit this rule.
 rule:
   kind: assignment_expression
-  pattern:
-    context: |
-      void f(void) { $STR.len = sizeof($LIT); }
-    selector: assignment_expression
+  any:
+    - pattern:
+        context: |
+          void f(void) { $STR.len = sizeof($LIT); }
+        selector: assignment_expression
+    - pattern:
+        context: |
+          void f(void) { $STR->len = sizeof($LIT); }
+        selector: assignment_expression
 constraints:
   LIT:
     kind: string_literal
