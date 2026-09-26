@@ -5,8 +5,14 @@ valid:
   - 'void f(char *t) { my_tmpnam(t); }'
   - 'void f(void) { /* tmpnam(NULL); */ }'
   - 'const char *s = "mktemp(template)";'
+  - 'void f(char *t) { (mkstemp)(t); }'
+  - >-
+    struct Api { char *(*tmpnam)(char *); }; void f(struct Api api, char *t) {
+    (api.tmpnam)(t); }
 invalid:
   - 'void f(char *t) { mktemp(t); }'
   - 'void f(char *t) { tmpnam(t); }'
   - 'void f(char *t) { tmpnam_r(t); }'
   - 'void f(void) { char *p = tempnam("/tmp", "app"); }'
+  - 'void f(char *t) { (tmpnam)(t); }'
+  - 'void f(char *t) { ((mktemp))(t); }'
