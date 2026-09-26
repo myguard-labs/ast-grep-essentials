@@ -4,22 +4,24 @@ id: c-insecure-temp-name
 language: c
 severity: warning
 message: >-
-  Insecure temporary-name API (mktemp/tmpnam/tmpnam_r/tempnam). The returned
-  pathname is not created atomically, so another process can create it or
-  replace it with a symlink before it is opened. Use mkstemp/mkostemp or
-  tmpfile, and keep the returned descriptor instead of reopening the path.
+  Temporary-name API call (mktemp/tmpnam/tmpnam_r/tempnam). Review use of a
+  separately generated pathname; prefer atomic creation with mkstemp/mkostemp
+  or tmpfile.
 note: >-
-  Candidate inventory of direct calls to the listed libc APIs. Wrappers and
-  function-pointer aliases are not resolved. A later open with O_CREAT|O_EXCL
-  can close the creation race, but generating a name separately remains
-  unnecessary and deserves review.
+  Matches listed API identifiers used as callees, including parentheses with
+  whitespace. This is a single-file syntactic inventory; it does not resolve
+  symbols, wrappers, function-pointer aliases, or subsequent file creation.
+  Comments within callee parentheses are not covered.
 rule:
   kind: call_expression
   has:
     field: function
-    regex: '^(mktemp|tmpnam|tmpnam_r|tempnam)$'
+    regex: '^\s*(\(\s*)*(mktemp|tmpnam|tmpnam_r|tempnam)(\s*\))*\s*$'
 metadata:
+  rule_modified_at: '2026-09-26'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-26'
   created_at: '2026-09-06'
-  source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  source: MyGuard
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
