@@ -1,5 +1,35 @@
 id: nginx-strlen-on-ngx-str-data
 snapshots:
+  ? |-
+    #include <stddef.h>
+    #include <string.h>
+    typedef struct { size_t len; unsigned char *data; } ngx_str_t;
+    size_t f(ngx_str_t *s) { return strlen((const char *)(s->data)); }
+  : labels:
+    - source: strlen((const char *)(s->data))
+      style: primary
+      start: 135
+      end: 166
+    - source: strlen
+      style: secondary
+      start: 135
+      end: 141
+    - source: data
+      style: secondary
+      start: 160
+      end: 164
+    - source: s->data
+      style: secondary
+      start: 157
+      end: 164
+    - source: (const char *)(s->data)
+      style: secondary
+      start: 142
+      end: 165
+    - source: (const char *)(s->data)
+      style: secondary
+      start: 142
+      end: 165
   size_t f(ngx_str_t *s) { return ngx_strlen(s->data); }:
     labels:
     - source: ngx_strlen(s->data)
@@ -40,7 +70,11 @@ snapshots:
       style: secondary
       start: 47
       end: 53
-    - source: s.data
+    - source: (char *) s.data
       style: secondary
-      start: 47
+      start: 38
+      end: 53
+    - source: (char *) s.data
+      style: secondary
+      start: 38
       end: 53

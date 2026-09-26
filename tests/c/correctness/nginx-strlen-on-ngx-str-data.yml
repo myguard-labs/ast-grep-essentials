@@ -7,6 +7,16 @@ valid:
   - 'size_t f(ngx_str_t *s) { return strlen(s->name); }'
   - 'void f(void) { /* ngx_strlen(s->data); */ }'
   - 'const char *s = "ngx_strlen(s->data)";'
+  - |-
+    #include <stddef.h>
+    #include <string.h>
+    typedef struct { size_t len; unsigned char *data; } ngx_str_t;
+    size_t f(ngx_str_t *s) { return strlen(s->data ? "present" : "absent"); }
 invalid:
   - 'size_t f(ngx_str_t *s) { return ngx_strlen(s->data); }'
   - 'size_t f(ngx_str_t s) { return strlen((char *) s.data); }'
+  - |-
+    #include <stddef.h>
+    #include <string.h>
+    typedef struct { size_t len; unsigned char *data; } ngx_str_t;
+    size_t f(ngx_str_t *s) { return strlen((const char *)(s->data)); }
