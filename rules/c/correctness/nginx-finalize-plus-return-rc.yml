@@ -4,28 +4,34 @@ id: nginx-finalize-plus-return-rc
 language: c
 severity: warning
 message: >-
-  The same status is both handed to ngx_http_finalize_request and returned. A
-  content handler's return value is itself finalized by the core, so this
-  finalizes the request twice: r->main->count is decremented once too often, the
-  request is freed while another reference still expects it to be live, and the
-  connection is reused under the old request's pointers. Either finalize and
-  return NGX_DONE, or skip the explicit finalize and just return the status.
+  A status identifier passed to ngx_http_finalize_request is also returned
+  later in the same block. Check whether the enclosing function's return value
+  triggers another finalization.
 note: >-
-  Advisory. The rule only sees that a finalize call is followed, as a later
-  sibling in the same block, by a return of the same identifier. It cannot tell
-  whether the enclosing function is a content handler, where the double
-  finalize bites, or a callback invoked by the event loop, where the return
-  value is discarded and the pattern is harmless. Confirm how the function is
-  registered before acting.
+  This syntactic advisory matches a finalize call followed by a sibling return
+  of the same identifier, optionally wrapped in redundant parentheses. It does
+  not establish handler registration, unchanged status values, reachability,
+  or double finalization at runtime.
 rule:
   kind: expression_statement
-  pattern: ngx_http_finalize_request($R, $RC);
+  pattern: 'ngx_http_finalize_request($R, $RC);'
   precedes:
     stopBy: end
     kind: return_statement
-    has: {kind: identifier, pattern: $RC}
+    has:
+      kind: identifier
+      pattern: '$RC'
+      stopBy:
+        not:
+          kind: parenthesized_expression
+constraints:
+  RC:
+    kind: identifier
 metadata:
+  rule_modified_at: '2026-09-26'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-26'
   created_at: '2026-09-06'
-  source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  source: MyGuard
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
