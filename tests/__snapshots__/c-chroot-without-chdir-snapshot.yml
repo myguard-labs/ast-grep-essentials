@@ -1,5 +1,21 @@
 id: c-chroot-without-chdir
 snapshots:
+  ? |-
+    extern int chroot(const char *);
+    int f(const char *d) { (chroot)(d); return 0; }
+  : labels:
+    - source: (chroot)(d)
+      style: primary
+      start: 56
+      end: 67
+    - source: int f(const char *d) { (chroot)(d); return 0; }
+      style: secondary
+      start: 33
+      end: 80
+    - source: (chroot)
+      style: secondary
+      start: 56
+      end: 64
   int f(const char *d) { chroot(d); return 0; }:
     labels:
     - source: chroot(d)
