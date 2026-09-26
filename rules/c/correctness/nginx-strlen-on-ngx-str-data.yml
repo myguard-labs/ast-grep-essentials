@@ -4,29 +4,46 @@ id: nginx-strlen-on-ngx-str-data
 language: c
 severity: warning
 message: >-
-  strlen applied to a .data member whose length is already carried alongside it.
-  In the ngx_str_t convention the len field is the authority: the buffer is not
-  terminated, so this scan either walks past the value into the next header or,
-  where a terminator does happen to follow, silently disagrees with len for any
-  value containing an embedded zero. Use the len field.
+  strlen or ngx_strlen scans a data member. If this follows the ngx_str_t
+  convention, use its accompanying len field instead of scanning for a
+  terminator.
 note: >-
-  Matches strlen and ngx_strlen applied to a member named data; it does not
-  verify that the struct is an ngx_str_t, so an unrelated member of that name
-  holding a genuinely terminated string reports here and is a valid dismissal.
-  A length recomputed on a buffer the module terminated itself is redundant
-  rather than wrong.
+  Matches an argument that is itself a member named data, optionally enclosed
+  in casts or parentheses. Does not verify the member's type, termination, or
+  accompanying length field. Unrelated terminated data members may report.
+utils:
+  data-member:
+    kind: field_expression
+    has:
+      field: field
+      regex: '^data$'
+  wrapper:
+    any:
+      - kind: cast_expression
+      - kind: parenthesized_expression
 rule:
   kind: call_expression
   all:
-    - has: {field: function, regex: '^(strlen|ngx_strlen)$'}
+    - has:
+        field: function
+        regex: '^(strlen|ngx_strlen)$'
     - has:
         field: arguments
         has:
-          stopBy: end
-          kind: field_expression
-          has: {field: field, regex: '^data$'}
+          any:
+            - matches: data-member
+            - all:
+                - matches: wrapper
+                - has:
+                    matches: data-member
+                    stopBy:
+                      not:
+                        matches: wrapper
 metadata:
+  rule_modified_at: '2026-09-26'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-26'
   created_at: '2026-09-06'
-  source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  source: MyGuard
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
