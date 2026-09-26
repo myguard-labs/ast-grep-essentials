@@ -3,20 +3,24 @@
 id: nginx-cpp-line-comment
 language: c
 severity: info
-message: A C++-style line comment is used where nginx requires C comments.
+message: 'A C++-style line comment is used where nginx requires C comments.'
 note: >-
-  This is an nginx source-style check. It matches comment nodes beginning with
-  two slashes and conservative trailing-comment shapes in preprocessor
-  replacements. It does not decide whether the file is part of nginx; scope
-  the C rule pack to nginx and nginx-module sources.
+  This single-file nginx source-style check matches comment nodes beginning
+  with two slashes and conservative preprocessor replacement shapes, allowing
+  closed string literals with escaped characters before the slashes. It does
+  not fully tokenize replacements, handle character literals, or establish
+  nginx file membership; scope this rule to nginx and nginx-module sources.
 rule:
   any:
     - kind: comment
       regex: '^//'
     - kind: preproc_arg
-      regex: "^[^\"']*//"
+      regex: '^(?:[^"'']|"(?:[^"\\\r\n]|\\[^\r\n])*")*//'
 metadata:
+  rule_modified_at: '2026-09-26'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-26'
   created_at: '2026-09-09'
-  source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  source: MyGuard
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
