@@ -4,20 +4,19 @@ id: c-chroot-without-chdir
 language: c
 severity: warning
 message: >-
-  chroot called in a function that contains no chdir. chroot changes the root
-  directory but leaves the working directory where it was, and a working
-  directory outside the new root is a documented escape: relative traversal from
-  it walks straight back out of the jail. Call chdir("/") immediately after
-  chroot, or chdir into the target and chroot(".").
+  chroot called in a function containing no direct chdir or fchdir call;
+  review working-directory handling.
 note: >-
-  The check is co-occurrence of the two call names inside one function
-  definition, in either order, so a chdir performed by the caller or by a helper
-  is not seen and reports here. It also says nothing about the other half of a
-  correct jail: descriptors opened before the chroot, and privileges not yet
-  dropped, both defeat it while this rule stays silent.
+  Checks only same-function syntactic co-occurrence, in either order.
+  Recognizes bare call names and names wrapped in parentheses with optional
+  whitespace. Comments within the parenthesized callee are not recognized.
+  Does not resolve symbols, aliases, helpers, execution order, reachability,
+  or call success, and does not establish that a jail is secure.
 rule:
   kind: call_expression
-  has: {field: function, regex: '^chroot$'}
+  has:
+    field: function
+    regex: '^\s*(\(\s*)*chroot(\s*\))*\s*$'
   inside:
     kind: function_definition
     stopBy: end
@@ -25,9 +24,14 @@ rule:
       has:
         stopBy: end
         kind: call_expression
-        has: {field: function, regex: '^(chdir|fchdir)$'}
+        has:
+          field: function
+          regex: '^\s*(\(\s*)*(chdir|fchdir)(\s*\))*\s*$'
 metadata:
+  rule_modified_at: '2026-09-26'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-26'
   created_at: '2026-09-06'
-  source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  source: MyGuard
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
