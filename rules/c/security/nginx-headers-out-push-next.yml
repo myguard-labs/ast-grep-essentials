@@ -5,20 +5,35 @@ language: c
 severity: info
 message: >-
   ngx_list_push(&r->headers_out.headers) returns UNZEROED pool memory. Since
-  nginx 1.23.0 same-name response headers are a linked list through
-  ngx_table_elt_t.next, so every push must set `h->next = NULL` (core does
-  `h->hash = 1; h->next = NULL;` on every push — gzip_filter:283,
-  headers_filter:365). An indeterminate `next` is a wild pointer walk in any
-  consumer that follows the chain (Vary/Cache-Control merges, proxy, more_headers).
+  nginx 1.23.0, same-name response headers form a linked list through
+  ngx_table_elt_t.next, so every push must set `h->next = NULL`. Core nginx
+  does `h->hash = 1; h->next = NULL;` on every push. This function never
+  assigns NULL to a `->next` field. An indeterminate `next` becomes a wild
+  pointer walk in any consumer that follows the chain (Vary/Cache-Control
+  merges, proxy, more_headers).
 note: >-
-  Candidate — the reviewer confirms `next = NULL` (or a full memzero/struct
-  assignment) follows within the same function. Invisible to ASan (live pool
-  memory). Guard with `#if (nginx_version >= 1023000)` only where the tree
-  still builds pre-1.23. Real: labs/http-zstd Vary push, PR #117, 2026-08.
+  Syntactic candidate only. The rule stays quiet when the enclosing function
+  contains any `X->next = NULL` assignment. It does not check that X is the
+  pushed element, that the assignment is reachable, or that it runs before the
+  element is used. It also does not treat memzero or a whole-struct assignment
+  as clearing `next`. The reviewer should confirm these cases. This bug is
+  invisible to ASan because the pool memory is live. Guard with `#if
+  (nginx_version >= 1023000)` only where the tree still builds against nginx
+  older than 1.23.
 rule:
-  pattern: ngx_list_push(&$R->headers_out.headers)
+  pattern: 'ngx_list_push(&$R->headers_out.headers)'
+  not:
+    inside:
+      kind: function_definition
+      stopBy: end
+      has:
+        pattern: '$H->next = NULL'
+        stopBy: end
 metadata:
+  rule_modified_at: '2026-09-27'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-27'
   created_at: '2026-09-04'
-  source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  source: MyGuard
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
