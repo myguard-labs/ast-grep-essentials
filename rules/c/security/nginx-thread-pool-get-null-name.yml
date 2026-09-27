@@ -4,20 +4,39 @@ id: nginx-thread-pool-get-null-name
 language: c
 severity: error
 message: >-
-  ngx_thread_pool_get(cycle, NULL) dereferences name->len with no NULL check
-  (src/core/ngx_thread_pool.c) — worker SIGSEGV the first time the code path
-  runs. ngx_thread_pool_add() DOES accept NULL (defaults to "default"), which
-  is why the asymmetry gets missed. Pass a real ngx_str_t (ngx_string("default")).
+  ngx_thread_pool_get(cycle, NULL) dereferences name->len without checking for
+  NULL (src/core/ngx_thread_pool.c), so the worker crashes with SIGSEGV the
+  first time this code path runs. A pointer cast such as (ngx_str_t *) NULL is
+  still NULL. ngx_thread_pool_add() DOES accept NULL (it defaults to
+  "default"), which is why this difference is easy to miss. Pass a real
+  ngx_str_t (ngx_string("default")).
 note: >-
-  Exact shape, no reviewer judgement needed. Only reachable in a --with-threads
-  build, so a threads-off CI matrix is green while the shipped binary crashes
-  (nginx-error-abuse-module persist timer, 2026-06-12).
+  This rule only checks syntax. It matches a literal NULL name argument,
+  either bare, in parentheses, or behind an explicit cast, written directly in
+  the ngx_thread_pool_get() call. It does not follow variables, macros or
+  other expressions that turn out to be NULL at runtime. The crash only
+  happens in a --with-threads build, so CI with threads disabled can pass
+  while the shipped binary crashes (nginx-error-abuse-module persist timer,
+  2026-06-12).
 rule:
   any:
-    - pattern: ngx_thread_pool_get($CYCLE, NULL)
-    - pattern: ngx_thread_pool_get($CYCLE, (NULL))
+    - pattern: 'ngx_thread_pool_get($CYCLE, NULL)'
+    - pattern: 'ngx_thread_pool_get($CYCLE, (NULL))'
+    - all:
+        - pattern: 'ngx_thread_pool_get($CYCLE, $NAME)'
+        - has:
+            field: arguments
+            has:
+              kind: cast_expression
+              nthChild: 2
+              has:
+                field: value
+                regex: '^\(?\s*NULL\s*\)?$'
 metadata:
+  rule_modified_at: '2026-09-27'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-09-27'
   created_at: '2026-09-04'
-  source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  source: MyGuard
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
