@@ -2,6 +2,28 @@ id: c-send-without-nosignal
 snapshots:
   ? |
     static int
+    batched(int fd, struct mmsghdr *msgs, unsigned int n)
+    {
+        return sendmmsg(fd, msgs, n, 0);
+    }
+  : labels:
+    - source: sendmmsg(fd, msgs, n, 0)
+      style: primary
+      start: 78
+      end: 102
+  ? |
+    static int
+    batched_nonblocking(int fd, struct mmsghdr *msgs, unsigned int n)
+    {
+        return sendmmsg(fd, msgs, n, MSG_DONTWAIT);
+    }
+  : labels:
+    - source: sendmmsg(fd, msgs, n, MSG_DONTWAIT)
+      style: primary
+      start: 90
+      end: 125
+  ? |
+    static int
     clears_flag(int fd, const char *buf, size_t len, int flags)
     {
         return (int) send(fd, buf, len, flags & ~MSG_NOSIGNAL);
