@@ -13,7 +13,9 @@ message: >-
   A non-literal format string can interpret attacker-controlled directives, causing
   a crash, information disclosure, or memory modification.
 note: >-
-  [CWE-134] Use of Externally-Controlled Format String.
+  [CWE-134] Use of Externally-Controlled Format String. This rule reports diagnostics
+  only: no automatic fix is offered, because inserting "%s" would change the format
+  contract of calls that pass further arguments.
 ast-grep-essentials: true
 constraints:
   PRINTF:
@@ -23,9 +25,21 @@ constraints:
       any:
       - kind: string_literal
       - kind: concatenated_string
-fix: $PRINTF($S, "%s", $VAR)
+      - kind: raw_string_literal
+      - all:
+        - kind: parenthesized_expression
+        - has:
+            any:
+            - kind: string_literal
+            - kind: concatenated_string
+            - kind: raw_string_literal
+            stopBy:
+              not:
+                kind: parenthesized_expression
 rule:
-  pattern: $PRINTF($S, $VAR)
+  any:
+  - pattern: $PRINTF($S, $VAR)
+  - pattern: $PRINTF($S, $VAR, $$$REST)
 metadata:
   created_at: '2026-09-11'
   source: 'CodeRabbit'
