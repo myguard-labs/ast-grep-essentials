@@ -3,10 +3,18 @@ valid:
   - |
     void coderabbit_control() { const char *text = "CodeRabbit"; }
   - |
-   void test_003(const char *input)
-   {
-    storer->store_binary(Clocks->system());
-   }
+    void test_003(const char *input)
+    {
+     storer->store_binary(Clocks->system());
+    }
+  - |
+    struct Clock {
+        int system() const { return 0; }
+    };
+    int read_clock(const Clock& clock) {
+        int status = clock.system();
+        return status;
+    }
 invalid:
   - |
     void test_002(const char *input)
@@ -33,4 +41,11 @@ invalid:
     {
         /* Handle error */
     }
+    }
+  - |
+    #include <cstdlib>
+    using std::system;
+    int run_command() {
+        int status = system("true");
+        return status;
     }
