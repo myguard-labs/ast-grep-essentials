@@ -6,50 +6,47 @@
 # Modified by MyGuard: provenance metadata added; matcher behavior is unchanged.
 
 id: insecure-binaryformatter-deserialization-csharp
-severity: warning
 language: csharp
+severity: warning
 message: >-
-  The BinaryFormatter type is dangerous and is not recommended for data
-  processing. Applications should stop using BinaryFormatter as soon as
-  possible, even if they believe the data they're processing to be
-  trustworthy. BinaryFormatter is insecure and can't be made secure.
+  BinaryFormatter construction is insecure and should be replaced with a safer
+  serialization API.
 note: >-
-  [CWE-502] Deserialization of Untrusted Data.
-  [REFERENCES]
-      - https://docs.microsoft.com/en-us/dotnet/standard/serialization/binaryformatter-security-guide
-
-ast-grep-essentials: true
-
-utils:
-  MATCH_PATTERN_BinaryFormatter:
-   pattern: new BinaryFormatter()
-   any:
-    - inside:
-        stopBy: end
-        follows:
-          stopBy: end
-          kind: using_directive
-          pattern: using System.Runtime.Serialization.Formatters.Binary;
-    - inside:
-        kind: global_statement
-        stopBy: end
-        follows:
-          stopBy: end
-          kind: using_directive
-          pattern: using System.Runtime.Serialization.Formatters.Binary
-   not:
-    inside:
-      kind: object_creation_expression
-      stopBy: end
-      not:
-        inside:
-          kind: variable_declarator
-          stopBy: end
-
+  This rule detects constructor syntax in a single file. It does not resolve
+  types, verify namespace binding, or determine whether deserialization
+  occurs.
 rule:
-  matches: MATCH_PATTERN_BinaryFormatter
+  all:
+    - pattern: 'new $TYPE()'
+    - not:
+        all:
+          - pattern: 'new BinaryFormatter()'
+          - not:
+              inside:
+                stopBy: end
+                follows:
+                  stopBy: end
+                  kind: using_directive
+                  pattern: 'using System.Runtime.Serialization.Formatters.Binary;'
+    - not:
+        all:
+          - pattern: 'new BinaryFormatter()'
+          - inside:
+              kind: object_creation_expression
+              stopBy: end
+              not:
+                inside:
+                  kind: variable_declarator
+                  stopBy: end
+constraints:
+  TYPE:
+    regex: '^(System\.Runtime\.Serialization\.Formatters\.Binary\.)?BinaryFormatter$'
 metadata:
+  rule_modified_at: '2026-10-05'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-05'
   created_at: '2026-09-11'
   source: 'CodeRabbit'
-  modified_by: 'MyGuard'
-  license: 'Apache-2.0'
+  modified_by: MyGuard
+  license: Apache-2.0
+ast-grep-essentials: true

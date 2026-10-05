@@ -1,8 +1,19 @@
 id: insecure-binaryformatter-deserialization-csharp
-
 valid:
   - |
     class CodeRabbitControl { string Text = "CodeRabbit"; }
+  - |
+    namespace Application
+    {
+        class BinaryFormatter { }
+        class Example
+        {
+            public object CreateFormatter()
+            {
+                return new Application.BinaryFormatter();
+            }
+        }
+    }
 invalid:
   - |
     using System.Runtime.Serialization.Formatters.Binary;
@@ -26,4 +37,12 @@ invalid:
             }
         }
     }
+    }
+  - |
+    class Example
+    {
+        public object CreateFormatter()
+        {
+            return new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+        }
     }
