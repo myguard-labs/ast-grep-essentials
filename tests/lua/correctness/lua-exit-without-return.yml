@@ -7,7 +7,16 @@ valid:
   - 'local status = handler.exit(403)'
   - 'local text = "ngx.exit(403)"'
   - '-- ngx.exit(403)'
+  - |-
+    return function()
+      return ngx.exit(ngx.HTTP_FORBIDDEN)
+    end
 invalid:
   - 'if not ok then ngx.exit(ngx.HTTP_FORBIDDEN) end'
   - 'ngx.redirect("/login")'
   - 'ngx.exec("@fallback")'
+  - |-
+    return function()
+      ngx.exit(ngx.HTTP_FORBIDDEN)
+      handle_request()
+    end

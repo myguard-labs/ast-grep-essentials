@@ -4,26 +4,39 @@ id: lua-exit-without-return
 language: lua
 severity: warning
 message: >-
-  Request terminated by ngx.exit, ngx.redirect or ngx.exec written as a bare
-  statement instead of a return. Control continues to the next statement in the
-  same block, so a deny branch that was meant to stop the request keeps running
-  handler code and can fail open. Write the call as a return statement.
+  Bare ngx.exit, ngx.redirect or ngx.exec call. Use a return statement when
+  the intent is to return from the current function.
 note: >-
-  Matches an ngx.exit, ngx.redirect or ngx.exec call that is an expression
-  statement rather than part of a return statement. A bare call as the last
-  statement of a handler behaves the same as a return in most phases, so such a
-  call is reported even though it is harmless there. Which phase the code runs in
-  is not visible to this matcher.
+  Matches syntactically bare termination calls. Return ancestry is checked
+  only within the current function definition, so a return enclosing that
+  definition does not suppress calls in its body. This rule does not determine
+  runtime termination behavior, execution phase, or whether subsequent code
+  executes; final bare calls are also reported.
 rule:
   kind: function_call
   all:
-    - has: {field: name, regex: '^ngx\.(exit|redirect|exec)$'}
-    - not: {inside: {kind: return_statement, stopBy: end}}
-    - not: {inside: {kind: arguments}}
-    - not: {inside: {kind: expression_list}}
-    - not: {inside: {kind: binary_expression}}
+    - has:
+        field: name
+        regex: '^ngx\.(exit|redirect|exec)$'
+    - not:
+        inside:
+          kind: return_statement
+          stopBy:
+            kind: function_definition
+    - not:
+        inside:
+          kind: arguments
+    - not:
+        inside:
+          kind: expression_list
+    - not:
+        inside:
+          kind: binary_expression
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-06'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
