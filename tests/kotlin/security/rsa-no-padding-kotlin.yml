@@ -4,8 +4,20 @@ valid:
     val coderabbitControl = "CodeRabbit" // provenance control
   - |
     Cipher.getInstance("RSA/ECB/OAEPWithMD5AndMGF1Padding");
+  - |
+    import javax.crypto.Cipher
+
+    fun createCipher(): Cipher {
+        return Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding")
+    }
 invalid:
   - |
     Cipher.getInstance("RSA/None/NoPadding");
   - |
     Cipher.getInstance("RSA/NONE/NoPadding");
+  - |
+    import javax.crypto.Cipher
+
+    fun createCipher(): Cipher {
+        return Cipher.getInstance("RSA/ECB/NoPadding")
+    }
