@@ -6,6 +6,12 @@ valid:
     Socket soc = SSLSocketFactory.getDefault().createSocket("www.google.com", 443);
   - |
     ServerSocket ssoc = SSLServerSocketFactory.getDefault().createServerSocket(1234);
+  - |
+    class TlsServer {
+      java.net.ServerSocket open() throws java.io.IOException {
+        return javax.net.ssl.SSLServerSocketFactory.getDefault().createServerSocket(1234);
+      }
+    }
 invalid:
   - |
     Socket soc = new Socket("www.google.com", 80);
@@ -23,3 +29,9 @@ invalid:
     ServerSocket ssoc2 = new ServerSocket(1234, 10);
   - |
     ServerSocket ssoc3 = new ServerSocket(1234, 10, InetAddress.getByAddress(address));
+  - |
+    class PlainServer {
+      java.net.ServerSocket open() throws java.io.IOException {
+        return new java.net.ServerSocket(1234);
+      }
+    }

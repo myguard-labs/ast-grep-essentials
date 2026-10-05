@@ -9,26 +9,27 @@ id: unencrypted-socket-java
 language: java
 severity: info
 message: >-
-  "Detected use of a Java socket that is not encrypted. As a result, the
-      traffic could be read by an attacker intercepting the network traffic. Use
-      an SSLSocket created by 'SSLSocketFactory' or 'SSLServerSocketFactory'
-      instead."
+  Direct construction of a socket may expose network traffic without transport
+  encryption.
 note: >-
-  [CWE-319] Cleartext Transmission of Sensitive Information
-  [REFERENCES]
-      - https://owasp.org/Top10/A02_2021-Cryptographic_Failures
-ast-grep-essentials: true
-
+  This rule identifies constructor syntax only. It does not resolve
+  unqualified type names or determine whether traffic is sensitive or
+  protected by another layer.
 rule:
-  any:
-    - pattern: new ServerSocket($$$)
-    - pattern: new Socket($$$)
+  pattern: 'new $TYPE($$$ARGS)'
   not:
     has:
       stopBy: end
       kind: ERROR
+constraints:
+  TYPE:
+    regex: '^(Socket|ServerSocket|java\.net\.ServerSocket)$'
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-11'
   source: 'CodeRabbit'
-  modified_by: 'MyGuard'
-  license: 'Apache-2.0'
+  modified_by: MyGuard
+  license: Apache-2.0
+ast-grep-essentials: true
