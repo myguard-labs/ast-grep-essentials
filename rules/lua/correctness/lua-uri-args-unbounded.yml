@@ -4,27 +4,31 @@ id: lua-uri-args-unbounded
 language: lua
 severity: warning
 message: >-
-  Request argument or header table read with the limit set to zero, which means
-  unlimited. A request carrying a hundred thousand arguments then forces the
-  worker to build a table of that size before any handler logic runs, which
-  burns CPU and memory on every such request. Pass an explicit small maximum and
-  handle the truncated error it returns.
+  Request argument or header table read with an unlimited literal limit. Pass
+  an explicit small maximum and handle the truncated error it returns.
 note: >-
-  Matches ngx.req.get_uri_args, get_post_args and get_headers called with a
-  literal zero, which the module documents as unlimited. A call with no argument
-  is not matched, because the module applies a default of 100. A limit passed
-  through a variable is not matched either, and the matcher does not check that
-  the truncated return value is handled.
+  Matches ngx.req.get_uri_args, get_post_args and get_headers with the literal
+  number spelling 0 or 0.0 as the first argument. This is a single-file
+  syntactic check; it does not resolve aliases or variables, evaluate other
+  numeric expressions, or check handling of the truncated return value.
 rule:
   kind: function_call
   all:
-    - has: {field: name, regex: '^ngx\.req\.get_(uri_args|post_args|headers)$'}
+    - has:
+        field: name
+        regex: '^ngx\.req\.get_(uri_args|post_args|headers)$'
     - has:
         stopBy: neighbor
         kind: arguments
-        has: {nthChild: 1, kind: number, regex: '^0$'}
+        has:
+          nthChild: 1
+          kind: number
+          regex: '^0(\.0)?$'
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-06'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
