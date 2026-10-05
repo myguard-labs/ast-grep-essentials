@@ -6,9 +6,19 @@ valid:
     void foo() {
       DH_generate_parameters_ex(NULL, 2049);
     }
-
+  - |
+    void RSA_generate_key_ex(void *, int, void *, void *);
+    void wrapper(decltype(&RSA_generate_key_ex), int);
+    void configure() {
+      wrapper(RSA_generate_key_ex, 1024);
+    }
 invalid:
   - |
     void foo() {
       DH_generate_parameters_ex(NULL, 1024);
+    }
+  - |
+    void RSA_generate_key_ex(void *, int, void *, void *);
+    void generate() {
+      RSA_generate_key_ex(nullptr, 1024, nullptr, nullptr);
     }
