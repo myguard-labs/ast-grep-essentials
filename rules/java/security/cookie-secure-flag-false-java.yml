@@ -9,19 +9,22 @@ id: cookie-secure-flag-false-java
 language: java
 severity: warning
 message: >-
-  A cookie was detected without setting the 'secure' flag. The 'secure'
-  flag for cookies prevents the client from transmitting the cookie over
-  insecure channels such as HTTP. Set the 'secure' flag by calling
-  '$COOKIE.setSecure(true);'.
+  Explicit setSecure(false) disables the secure flag; use setSecure(true) when
+  the cookie must be restricted to secure transport.
 note: >-
-  [CWE-614] Sensitive Cookie in HTTPS Session Without 'Secure' Attribute.
-  [REFERENCES]
-      - https://owasp.org/www-community/controls/SecureCookieAttribute
-ast-grep-essentials: true
+  This rule matches only the syntax of an explicit setSecure(false)
+  invocation. It does not establish the receiver's type, cookie sensitivity,
+  transport configuration, or later flag changes.
 rule:
-  pattern: $COOKIE.setSecure(false);
+  pattern:
+    context: 'class Example { void configure() { $COOKIE.setSecure(false); } }'
+    selector: method_invocation
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-11'
   source: 'CodeRabbit'
-  modified_by: 'MyGuard'
-  license: 'Apache-2.0'
+  modified_by: MyGuard
+  license: Apache-2.0
+ast-grep-essentials: true

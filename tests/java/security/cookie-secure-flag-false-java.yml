@@ -7,6 +7,16 @@ valid:
     cookie.setSecure(true);
     cookie.setHttpOnly(true);
     response.addCookie(cookie);
+  - |
+    class Example {
+      interface Cookie { void setSecure(boolean secure); }
+      java.util.function.Consumer<Cookie> configure = cookie -> cookie.setSecure(true);
+    }
 invalid:
   - |
     cookie.setSecure(false);
+  - |
+    class Example {
+      interface Cookie { void setSecure(boolean secure); }
+      java.util.function.Consumer<Cookie> configure = cookie -> cookie.setSecure(false);
+    }
