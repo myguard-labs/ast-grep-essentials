@@ -4,8 +4,22 @@ valid:
     class CodeRabbitControl { String text = "CodeRabbit"; }
   - |
     Cipher.getInstance("RSA/ECB/OAEPWithMD5AndMGF1Padding");
+  - |
+    import javax.crypto.Cipher;
+    class Example {
+      Cipher create() throws Exception {
+        return Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+      }
+    }
 invalid:
   - |
     Cipher.getInstance("RSA/None/NoPadding");
   - |
     Cipher.getInstance("RSA/NONE/NoPadding");
+  - |
+    import javax.crypto.Cipher;
+    class Example {
+      Cipher create() throws Exception {
+        return Cipher.getInstance("RSA/ECB/NoPadding");
+      }
+    }
