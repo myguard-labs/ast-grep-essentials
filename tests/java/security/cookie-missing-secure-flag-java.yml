@@ -9,6 +9,15 @@ valid:
         cookie.setSecure(true);
         response.addCookie(cookie);
     }
+  - |-
+    class CookieController {
+        void send(HttpServletResponse response, String value) {
+            Cookie cookie = new Cookie("cookie", "initial");
+            cookie.setValue(value);
+            cookie.setSecure(true);
+            response.addCookie(cookie);
+        }
+    }
 invalid:
   - |
     public class CookieController {
@@ -17,4 +26,12 @@ invalid:
     public void setCookie(@RequestParam String value, HttpServletResponse response) {
         Cookie cookie = new Cookie("cookie", value);
         response.addCookie(cookie);
+    }
+  - |-
+    class CookieController {
+        void send(HttpServletResponse response, String value) {
+            Cookie cookie = new Cookie("cookie", "initial");
+            cookie.setValue(value);
+            response.addCookie(cookie);
+        }
     }
