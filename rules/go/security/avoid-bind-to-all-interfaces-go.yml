@@ -9,35 +9,29 @@ id: avoid-bind-to-all-interfaces-go
 language: go
 severity: warning
 message: >-
-  "Detected a network listener listening on 0.0.0.0 or an empty string.
-      This could unexpectedly expose the server publicly as it binds to all
-      available interfaces. Instead, specify another IP address that is not
-      0.0.0.0 nor the empty string."
+  Network listener uses a literal wildcard address that may expose it on all
+  available interfaces.
 note: >-
-  [CWE-200] Exposure of Sensitive Information to an Unauthorized Actor
-  [REFERENCES]
-      -  https://owasp.org/Top10/A01_2021-Broken_Access_Control
-
-ast-grep-essentials: true
-
+  Matches only calls spelled net.Listen or tls.Listen with literal wildcard
+  addresses; import resolution, network semantics, and runtime exposure are
+  not verified.
 rule:
+  pattern: '$PKG.Listen($NETWORK, $IP)'
   not:
     has:
       stopBy: end
       kind: ERROR
-  any:
-    - pattern: tls.Listen($NETWORK, $IP $$$)
-    - pattern: net.Listen($NETWORK, $IP $$$)
-
 constraints:
+  PKG:
+    regex: '^(net|tls)$'
   IP:
-    any:
-      - kind: interpreted_string_literal
-        regex: ^"0.0.0.0:.*"$|^":.*"$|^'0.0.0.0:.*'$|^':.*'$
-      - kind: raw_string_literal
-        regex: ^`0.0.0.0:.*`$|^`:.*`$
+    regex: '^("(0\.0\.0\.0|\[::\])?:[^"]*"|`(0\.0\.0\.0|\[::\])?:[^`]*`)$'
 metadata:
+  rule_modified_at: '2026-10-05'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-05'
   created_at: '2026-09-11'
   source: 'CodeRabbit'
-  modified_by: 'MyGuard'
-  license: 'Apache-2.0'
+  modified_by: MyGuard
+  license: Apache-2.0
+ast-grep-essentials: true

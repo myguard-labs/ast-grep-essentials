@@ -6,8 +6,10 @@ valid:
     var coderabbitControl = "CodeRabbit"
   - |
     l, err := net.Listen("tcp", "192.168.1.101:2000")
+  - "package main\n\nimport \"net\"\n\nfunc main() {\n\tlistener, err := net.Listen(\"tcp\", \"[::1]:2000\")\n\tif err != nil {\n\t\treturn\n\t}\n\tdefer listener.Close()\n}\n"
 invalid:
   - |
     l, err := net.Listen("tcp", "0.0.0.0:2000")
   - |
     l, err := net.Listen("tcp", ":2000")
+  - "package main\n\nimport \"net\"\n\nfunc main() {\n\tlistener, err := net.Listen(\"tcp\", \"[::]:2000\")\n\tif err != nil {\n\t\treturn\n\t}\n\tdefer listener.Close()\n}\n"
