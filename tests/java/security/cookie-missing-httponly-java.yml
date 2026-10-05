@@ -6,6 +6,17 @@ valid:
     existingCookie.setValue("");
         existingCookie.setMaxAge(0);
         response.addCookie(existingCookie);
+  - |
+    import javax.servlet.http.Cookie;
+    import javax.servlet.http.HttpServletResponse;
+
+    class CookieHandler {
+        void send(HttpServletResponse response) {
+            Cookie cookie = new Cookie("session", "value");
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+        }
+    }
 invalid:
   - |
     @RequestMapping(value = "/cookie1", method = "GET")
@@ -18,4 +29,15 @@ invalid:
         Cookie cookie = new Cookie("cookie", value);
         cookie.setSecure(true);
         response.addCookie(cookie);
+    }
+  - |
+    import javax.servlet.http.Cookie;
+    import javax.servlet.http.HttpServletResponse;
+
+    class CookieHandler {
+        void send(HttpServletResponse response) {
+            Cookie cookie = new Cookie("session", "value");
+            cookie.setHttpOnly(false);
+            response.addCookie(cookie);
+        }
     }
