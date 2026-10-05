@@ -9,50 +9,37 @@ id: httponly-false-csharp
 language: csharp
 severity: warning
 message: >-
-  "Detected a cookie where the `HttpOnly` flag is either missing or
-      disabled. The `HttpOnly` cookie flag instructs the browser to forbid
-      client-side JavaScript to read the cookie. If JavaScript interaction is
-      required, you can ignore this finding. However, set the `HttpOnly` flag to
-      `true` in all other cases. If this wasn't intentional, it's recommended to
-      set the HttpOnly flag to true so the cookie will not be accessible through
-      client-side scripts or to use the Cookie Policy Middleware to globally set
-      the HttpOnly flag. You can then use the CookieOptions class when
-      instantiating the cookie, which inherits these settings and will require
-      future developers to have to explicitly override them on a case-by-case
-      basis if needed. This approach ensures cookies are secure by default."
+  Explicitly disabled HttpOnly flag on Cookie configuration or a CookieOptions
+  initializer.
 note: >-
-  [CWE-1004] Sensitive Cookie Without 'HttpOnly' Flag"
-  [REFERENCES]
-      - https://learn.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-8.0#cookie-policy-middleware
-      - https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.cookieoptions
-      - https://owasp.org/Top10/A05_2021-Security_Misconfiguration
-
-ast-grep-essentials: true
-
+  Matches literal false assignments to a member ending in .Cookie.HttpOnly or
+  to HttpOnly directly within a fully qualified
+  Microsoft.AspNetCore.Http.CookieOptions initializer. This is a single-file
+  syntactic check; it does not resolve types, runtime policy, or omitted
+  flags.
 rule:
-  kind: boolean_literal
-  pattern: $LITERAL
-  follows:
-    regex: ^=$
-    follows:
-      kind: member_access_expression
-      inside:
-        kind: assignment_expression
-      all:
-        - has:
-            kind: member_access_expression
-            nthChild: 1
-            regex: \.Cookie$
-        - has:
-            kind: identifier
-            nthChild: 2
-            regex: ^HttpOnly$
-
+  all:
+    - pattern: '$TARGET = false'
+    - not:
+        all:
+          - has:
+              field: left
+              regex: '^HttpOnly$'
+          - not:
+              inside:
+                kind: initializer_expression
+                inside:
+                  kind: object_creation_expression
+                  regex: '^new\s+Microsoft\.AspNetCore\.Http\.CookieOptions\s*(?:\(\s*\))?\s*\{'
 constraints:
-  LITERAL:
-    regex: ^false$
+  TARGET:
+    regex: '^(?:HttpOnly|.+\.Cookie\.HttpOnly)$'
 metadata:
+  rule_modified_at: '2026-10-05'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-05'
   created_at: '2026-09-11'
   source: 'CodeRabbit'
-  modified_by: 'MyGuard'
-  license: 'Apache-2.0'
+  modified_by: MyGuard
+  license: Apache-2.0
+ast-grep-essentials: true
