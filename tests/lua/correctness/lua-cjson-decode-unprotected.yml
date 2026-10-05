@@ -7,7 +7,21 @@ valid:
   - 'local body = json.decode(data)'
   - 'local text = "cjson.decode(data)"'
   - '-- cjson.decode(data)'
+  - |-
+    local data = '{'
+    local function consume(value)
+      return value
+    end
+    local ok, body = pcall(function()
+      return consume(cjson.decode(data))
+    end)
 invalid:
   - 'local body = cjson.decode(ngx.req.get_body_data())'
   - 'local claims = cjson.decode(ngx.decode_base64(parts[2]))'
   - 'ngx.say(cjson.encode(result))'
+  - |-
+    local data = '{'
+    local function consume(value)
+      return value
+    end
+    local ok, body = pcall(consume, cjson.decode(data))

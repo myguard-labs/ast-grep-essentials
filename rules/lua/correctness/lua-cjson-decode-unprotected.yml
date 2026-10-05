@@ -4,28 +4,39 @@ id: lua-cjson-decode-unprotected
 language: lua
 severity: warning
 message: >-
-  JSON decoded with the raising cjson API and no protected call around it.
-  Malformed input then throws a Lua error out of the handler, which becomes a 500
-  and, in an access-phase plugin whose error path is not covered, can let the
-  request through unauthenticated. Require cjson.safe, which returns nil and an
-  error, or wrap the decode in pcall.
+  A cjson.decode or cjson.encode call appears outside an anonymous callback
+  passed to pcall or xpcall. Calls evaluated while constructing protected-call
+  arguments execute before protection begins.
 note: >-
-  Matches a cjson.decode or cjson.encode call that is not the function argument
-  of a pcall or xpcall. It cannot see whether cjson was required as cjson.safe at
-  the top of the file, because the call site looks identical, so a file using the
-  safe module is a false positive. An enclosing pcall several frames up is also
-  not seen.
+  This is a single-file syntactic check for calls spelled cjson.decode or
+  cjson.encode. It excludes calls within anonymous functions supplied directly
+  as pcall or xpcall arguments. It does not resolve module bindings,
+  distinguish cjson.safe, or establish protection through named callbacks or
+  enclosing callers.
 rule:
   kind: function_call
   all:
-    - has: {field: name, regex: '^cjson\.(decode|encode)$'}
+    - has:
+        field: name
+        regex: '^cjson\.(decode|encode)$'
     - not:
         inside:
           stopBy: end
-          kind: function_call
-          has: {field: name, regex: '^x?pcall$'}
+          kind: function_definition
+          inside:
+            stopBy: neighbor
+            kind: arguments
+            inside:
+              stopBy: neighbor
+              kind: function_call
+              has:
+                field: name
+                regex: '^x?pcall$'
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-06'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

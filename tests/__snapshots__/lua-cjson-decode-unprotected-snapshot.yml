@@ -20,6 +20,21 @@ snapshots:
       style: secondary
       start: 15
       end: 27
+  ? |-
+    local data = '{'
+    local function consume(value)
+      return value
+    end
+    local ok, body = pcall(consume, cjson.decode(data))
+  : labels:
+    - source: cjson.decode(data)
+      style: primary
+      start: 98
+      end: 116
+    - source: cjson.decode
+      style: secondary
+      start: 98
+      end: 110
   ngx.say(cjson.encode(result)):
     labels:
     - source: cjson.encode(result)
