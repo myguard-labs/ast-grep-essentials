@@ -18,7 +18,16 @@ valid:
       ss, err = token.SignedString(key)
       fmt.Printf("%v %v\n", ss, err)
     }
+  - |
+    package main
 
+    import "github.com/dgrijalva/jwt-go"
+
+    func main() {
+      _ = jwt.SigningMethodHS256
+      myjwt := struct{ SigningMethodNone string }{SigningMethodNone: "ordinary data"}
+      _ = myjwt.SigningMethodNone
+    }
 invalid:
   - |
     import (
@@ -33,4 +42,14 @@ invalid:
       token := jwt.NewWithClaims(jwt.SigningMethodNone, claims)
       ss, err := token.SignedString(jwt.UnsafeAllowNoneSignatureType)
       fmt.Printf("%v %v\n", ss, err)
+    }
+  - |
+    package main
+
+    import "github.com/dgrijalva/jwt-go"
+
+    var method = jwt.SigningMethodNone
+
+    func main() {
+      _ = method
     }
