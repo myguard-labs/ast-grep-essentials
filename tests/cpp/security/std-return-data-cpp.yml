@@ -9,9 +9,23 @@ valid:
         return v.data();
       }
     }
+  - |
+    #include <string>
+
+    const char *return_static_string_data() {
+      static std::string text = "hello";
+      return text.data();
+    }
 invalid:
   - |
     int *return_vector_data() {
      std::vector<int> v;
      return v.data();
+    }
+  - |
+    #include <string>
+
+    const char *return_string_data() {
+      std::string text = "hello";
+      return text.data();
     }

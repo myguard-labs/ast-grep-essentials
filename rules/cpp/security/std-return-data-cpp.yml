@@ -9,88 +9,37 @@ id: std-return-data-cpp
 language: cpp
 severity: warning
 message: >-
-  `data()` returns a pointer to memory owned by a local object. The pointer is
-  invalid after that object goes out of scope, which can trigger use after free.
+  Returning data() from a preceding local container declaration may leave a
+  dangling pointer after the function returns.
 note: >-
-  [CWE-416] Use After Free.
-  [REFERENCES]
-      - https://wiki.sei.cmu.edu/confluence/display/c/DCL30-C.+Declare+objects+with+appropriate+storage+durations
-
-ast-grep-essentials: true
-
+  This rule checks direct return syntax and a preceding non-static declaration
+  in the same block. It does not resolve names, types, aliases, ownership, or
+  runtime lifetime.
 rule:
   kind: return_statement
-  pattern: return $VAR.data();
-  all:
-    - inside:
-        stopBy: end
-        kind: function_definition
-        all:
-          - has:
-              nthChild: 1
-              pattern: $RETURN_TYPE
-          - has:
-              kind: pointer_declarator
-    - any:
-        - follows:
-            stopBy: end
-            all:
-              - has:
-                  nthChild: 1
-                  regex: ^(array<.*>|std::array<.*>|deque<.*>|std::deque<.*>|forward_list<.*>|std::forward_list<.*>|list<.*>|std::list<.*>|map<.*, .*>|std::map<.*, .*>|multimap<.*, .*>|std::multimap<.*, .*>|multiset<.*>|std::multiset<.*>|set<.*>|std::set<.*>|unordered_map<.*>|std::unordered_map<.*>|unordered_multimap<.*, .*>|std::unordered_multimap<.*, .*>|unordered_multiset<.*>|std::unordered_multiset<.*>|unordered_set<.*>|std::unordered_set<.*>|vector<.*>|std::vector<.*>)$
-              - has:
-                  stopBy: end
-                  #   nthChild: 2
-                  pattern: $VAR
-              - not:
-                  inside:
-                    stopBy: end
-                    has:
-                      kind: storage_class_specifier
-              - inside:
-                  stopBy: end
-                  kind: compound_statement
-        - inside:
-            stopBy: end
-            follows:
-              stopBy: end
-              all:
-                - has:
-                    nthChild: 1
-                    regex: ^(array<.*>|std::array<.*>|deque<.*>|std::deque<.*>|forward_list<.*>|std::forward_list<.*>|list<.*>|std::list<.*>|map<.*, .*>|std::map<.*, .*>|multimap<.*, .*>|std::multimap<.*, .*>|multiset<.*>|std::multiset<.*>|set<.*>|std::set<.*>|unordered_map<.*>|std::unordered_map<.*>|unordered_multimap<.*, .*>|std::unordered_multimap<.*, .*>|unordered_multiset<.*>|std::unordered_multiset<.*>|unordered_set<.*>|std::unordered_set<.*>|vector<.*>|std::vector<.*>)$
-                - has:
-                    #   nthChild: 2
-                    stopBy: end
-                    pattern: $VAR
-                - not:
-                    inside:
-                      stopBy: end
-                      has:
-                        kind: storage_class_specifier
-                - inside:
-                    stopBy: end
-                    kind: compound_statement
-        - inside:
-            stopBy: end
-            follows:
-              stopBy: end
-              kind: pointer_declarator
-              all:
-                - has:
-                    stopBy: end
-                    nthChild: 1
-                    regex: ^(array<.*>|std::array<.*>|deque<.*>|std::deque<.*>|forward_list<.*>|std::forward_list<.*>|list<.*>|std::list<.*>|map<.*, .*>|std::map<.*, .*>|multimap<.*, .*>|std::multimap<.*, .*>|multiset<.*>|std::multiset<.*>|set<.*>|std::set<.*>|unordered_map<.*>|std::unordered_map<.*>|unordered_multimap<.*, .*>|std::unordered_multimap<.*, .*>|unordered_multiset<.*>|std::unordered_multiset<.*>|unordered_set<.*>|std::unordered_set<.*>|vector<.*>|std::vector<.*>)$
-                - has:
-                    #   nthChild: 2
-                    stopBy: end
-                    pattern: $VAR
-                - not:
-                    inside:
-                      stopBy: end
-                      has:
-                        kind: storage_class_specifier
+  pattern: 'return $VAR.data();'
+  follows:
+    stopBy: end
+    all:
+      - kind: declaration
+      - has:
+          nthChild: 1
+          regex: '^(std::string|vector<.*>|std::vector<.*>|array<.*>|std::array<.*>)$'
+      - has:
+          stopBy: end
+          kind: identifier
+          pattern: '$VAR'
+      - not:
+          has:
+            kind: storage_class_specifier
+      - inside:
+          kind: compound_statement
 metadata:
+  rule_modified_at: '2026-10-05'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-05'
   created_at: '2026-09-11'
   source: 'CodeRabbit'
-  modified_by: 'MyGuard'
-  license: 'Apache-2.0'
+  modified_by: MyGuard
+  license: Apache-2.0
+ast-grep-essentials: true
