@@ -6,50 +6,29 @@
 # Modified by MyGuard: provenance metadata added; utility IDs normalized; matcher behavior is unchanged.
 
 id: stacktrace-disclosure-csharp
-severity: warning
 language: csharp
+severity: warning
 message: >-
-  Stacktrace information is displayed in a non-Development environment.
-  Accidentally disclosing sensitive stack trace information in a production
-  environment aids an attacker in reconnaissance and information gathering.
+  Developer exception middleware appears outside the then block of an
+  IsDevelopment check.
 note: >-
-  [CWE-209] Generation of Error Message Containing Sensitive Information.
-  [REFERENCES]
-    - https://cwe.mitre.org/data/definitions/209.html
-    - https://owasp.org/Top10/A04_2021-Insecure_Design/
-
-ast-grep-essentials: true
-
-utils:
-  kind_invocation_expression:
-    kind: invocation_expression
-    all:
-      - has:
-          nthChild: 1
-          kind: member_access_expression
-          pattern: $ENV.IsDevelopment
-      - has:
-          nthChild: 2
-          kind: argument_list
-
-  UPSTREAM_UTIL_001:
-    kind: expression_statement
-    pattern: $APP.UseDeveloperExceptionPage($$$);
-    not:
-      inside:
-        stopBy: end
-        kind: if_statement
-        has:
-          nthChild: 1
-          any:
-            - matches: kind_invocation_expression
-            - kind: parenthesized_expression
-              has:
-                matches: kind_invocation_expression
+  This rule checks only single-file syntax. It does not establish the runtime
+  environment, resolve method identities, or prove that stack traces are
+  disclosed.
 rule:
   kind: expression_statement
-  matches: UPSTREAM_UTIL_001
+  pattern: '$APP.UseDeveloperExceptionPage($$$);'
   all:
+    - not:
+        inside:
+          stopBy: end
+          kind: block
+          nthChild: 2
+          inside:
+            kind: if_statement
+            has:
+              nthChild: 1
+              pattern: '$ENV.IsDevelopment()'
     - not:
         has:
           stopBy: end
@@ -59,7 +38,11 @@ rule:
           stopBy: end
           kind: ERROR
 metadata:
+  rule_modified_at: '2026-10-05'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-05'
   created_at: '2026-09-11'
   source: 'CodeRabbit'
-  modified_by: 'MyGuard'
-  license: 'Apache-2.0'
+  modified_by: MyGuard
+  license: Apache-2.0
+ast-grep-essentials: true

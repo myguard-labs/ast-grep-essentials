@@ -7,6 +7,25 @@ valid:
         {
             app.UseExceptionHandler("/Error");
         }
+  - |-
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Hosting;
+
+    class Startup
+    {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+            }
+        }
+    }
 invalid:
   - |
     if (env.IsProduction())
@@ -38,3 +57,22 @@ invalid:
         {
             app.UseDeveloperExceptionPage();
         }
+  - |-
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Hosting;
+
+    class Startup
+    {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Error");
+            }
+            else
+            {
+                app.UseDeveloperExceptionPage();
+            }
+        }
+    }
