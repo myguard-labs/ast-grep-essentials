@@ -4,7 +4,19 @@ valid:
     class CodeRabbitControl { String text = "CodeRabbit"; }
   - |
     dbf.setFeature("http://xml.org/sax/features/external-parameter-entities" , false);
+  - |-
+    class XmlConfiguration {
+      void configure(javax.xml.parsers.DocumentBuilderFactory dbf) throws javax.xml.parsers.ParserConfigurationException {
+        dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", (false));
+      }
+    }
 invalid:
   - |
     dbf.setFeature("http://xml.org/sax/features/external-parameter-entities" , true);
     spf.setFeature("http://xml.org/sax/features/external-parameter-entities" , true);
+  - |-
+    class XmlConfiguration {
+      void configure(javax.xml.parsers.DocumentBuilderFactory dbf) throws javax.xml.parsers.ParserConfigurationException {
+        dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", (true));
+      }
+    }
