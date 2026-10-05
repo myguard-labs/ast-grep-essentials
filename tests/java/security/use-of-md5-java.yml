@@ -10,7 +10,13 @@ valid:
         MessageDigest md5Digest = MessageDigest.getInstance("SHA1");
       }
     }
-
+  - |
+    class StrongDigest {
+      java.security.MessageDigest create() throws java.security.NoSuchAlgorithmException {
+        java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+        return digest;
+      }
+    }
 invalid:
   - |
     import java.security.MessageDigest;
@@ -18,5 +24,12 @@ invalid:
     public class Bad{
       public byte[] bad1(String password) {
         MessageDigest md5Digest = MessageDigest.getInstance("MD5");
+      }
+    }
+  - |
+    class WeakDigest {
+      java.security.MessageDigest create() throws java.security.NoSuchAlgorithmException {
+        java.security.MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+        return digest;
       }
     }
