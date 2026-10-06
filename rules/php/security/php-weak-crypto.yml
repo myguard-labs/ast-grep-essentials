@@ -4,25 +4,37 @@ id: php-weak-crypto
 language: php
 severity: warning
 message: >-
-  md5/sha1 call, unsafe for a password; crypt call requiring salt and algorithm
-  review; or mt_rand/rand/uniqid call, unsafe for a security value. md5 and sha1
-  are fast and collision-prone, while crypt strength depends on its
-  salt-selected algorithm and cost. These PRNGs are predictable, so tokens can
-  be guessed. Use password_hash/password_verify for passwords and
-  random_bytes/random_int for tokens.
+  Weak hash, salt-dependent crypt call, or predictable random-value generator
+  requires security review. Use password_hash/password_verify for passwords
+  and random_bytes/random_int for security tokens.
 note: >-
-  Fires on the call itself. md5/sha1 over a non-secret (cache key, ETag,
-  checksum) is a legitimate use and the routine dismissal. crypt can select a
-  strong password algorithm with a suitable salt, but hand-rolled salt,
-  algorithm and cost selection require review; password_hash is preferred for
-  new code. The password and token cases are otherwise not dismissals.
+  Matches direct function-call syntax only, including hash calls whose first
+  argument is a literal md5 or sha1 algorithm. Does not establish password or
+  token use, resolve function names, or evaluate dynamic algorithm arguments.
+  Non-secret checksums can be legitimate, and crypt strength depends on its
+  salt-selected algorithm and cost.
 rule:
-  kind: function_call_expression
-  has:
-    field: function
-    regex: '(?i)^\\?(md5|sha1|crypt|mt_rand|rand|uniqid)$'
+  all:
+    - kind: function_call_expression
+    - has:
+        field: function
+        regex: '(?i)^\\?(md5|sha1|crypt|mt_rand|rand|uniqid|hash)$'
+    - not:
+        all:
+          - has:
+              field: function
+              regex: '(?i)^\\?hash$'
+          - not:
+              has:
+                field: arguments
+                has:
+                  nthChild: 1
+                  regex: '(?i)^["''](md5|sha1)["'']$'
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-05'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
