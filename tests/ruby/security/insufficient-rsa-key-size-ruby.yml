@@ -3,7 +3,15 @@ valid:
   - |
     coderabbit_control = "CodeRabbit" # provenance control
   - |
-     key = OpenSSL::PKey::RSA.new(2048)
+    key = OpenSSL::PKey::RSA.new(2048)
+  - |
+    key = OpenSSL::PKey::RSA.new(0x800)
+  - |
+    key = OpenSSL::PKey::RSA.generate(2048, 0x3)
 invalid:
   - |
-     key = OpenSSL::PKey::RSA.new(204)
+    key = OpenSSL::PKey::RSA.new(204)
+  - |
+    key = OpenSSL::PKey::RSA.new(0x400)
+  - |
+    key = OpenSSL::PKey::RSA.generate(0x7ff)
