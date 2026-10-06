@@ -8,28 +8,26 @@
 id: reqwest-accept-invalid-rust
 language: rust
 severity: warning
-message: >-
-  Dangerously accepting invalid TLS
+message: Dangerously accepting invalid TLS
 note: >-
-  [CWE-295]: Improper Certificate
-  [REFERENCES]
-      - https://docs.rs/reqwest/latest/reqwest/struct.ClientBuilder.html#method.danger_accept_invalid_hostnames
-      - https://docs.rs/reqwest/latest/reqwest/struct.ClientBuilder.html#method.danger_accept_invalid_certs
-ast-grep-essentials: true
-utils:
-  match_call_expression:
-    kind: call_expression
-    any:
-      - pattern: $CLIENT.danger_accept_invalid_hostnames(true)
-      - pattern: $CLIENT.danger_accept_invalid_certs(true)
+  Matches literal true passed to either dangerous TLS option on receivers
+  syntactically beginning with reqwest::Client::builder(), including
+  parenthesized receivers and chained calls. Does not verify receiver types or
+  runtime TLS behavior.
 rule:
-  any:
-    - matches: match_call_expression
+  kind: call_expression
+  pattern: '$CLIENT.$METHOD(true)'
 constraints:
+  METHOD:
+    regex: '^danger_accept_invalid_(hostnames|certs)$'
   CLIENT:
-    regex: '^reqwest::Client::builder\(\)'
+    regex: '^\(*\s*reqwest::Client::builder\(\)'
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-11'
   source: 'CodeRabbit'
-  modified_by: 'MyGuard'
-  license: 'Apache-2.0'
+  modified_by: MyGuard
+  license: Apache-2.0
+ast-grep-essentials: true

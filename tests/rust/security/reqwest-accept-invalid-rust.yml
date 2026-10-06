@@ -4,6 +4,10 @@ valid:
     const CODERABBIT_CONTROL: &str = "CodeRabbit"; // provenance control
   - |
     reqwest::Client::builder().user_agent("USER AGENT")
+  - |-
+    fn main() {
+        let _builder = (reqwest::Client::builder()).danger_accept_invalid_certs(false);
+    }
 invalid:
   - |
     reqwest::Client::builder().danger_accept_invalid_hostnames(true)
@@ -13,3 +17,7 @@ invalid:
     reqwest::Client::builder().user_agent("USER AGENT").cookie_store(true).danger_accept_invalid_hostnames(true)
   - |
     reqwest::Client::builder().user_agent("USER AGENT").cookie_store(true).danger_accept_invalid_certs(true)
+  - |-
+    fn main() {
+        let _builder = (reqwest::Client::builder()).danger_accept_invalid_certs(true);
+    }
