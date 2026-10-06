@@ -4,22 +4,29 @@ id: py-pickle-loads
 language: python
 severity: warning
 message: >-
-  pickle.load()/loads() on untrusted data — unpickling runs __reduce__ and can
-  execute arbitrary code. Never unpickle data crossing a trust boundary (network,
-  cache, uploaded file). Use json, or sign the payload (hmac) before trusting it.
+  Pickle load and loads calls can execute arbitrary code when deserializing
+  untrusted data.
 note: >-
-  Fires on any pickle.load/loads. Safe only when the source is data you produced
-  and never exposed to an attacker.
+  Matches calls to load or loads on the literal name pickle, including
+  parenthesized references. This single-file syntactic rule does not resolve
+  imports, shadowing, aliases, or whether the input is trusted.
 rule:
   kind: call
   has:
     field: function
     kind: attribute
     all:
-      - has: {field: object, regex: ^pickle$}
-      - has: {field: attribute, regex: '^loads?$'}
+      - has:
+          field: object
+          regex: '^\s*(\(\s*)*pickle(\s*\))*\s*$'
+      - has:
+          field: attribute
+          regex: '^loads?$'
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-04'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

@@ -1,11 +1,21 @@
 id: py-pickle-loads
 valid:
-- json.loads(data)
-- pickle.dumps(data)
-- notpickle.loads(data)
-- '# pickle.loads(data)'
-- text = 'pickle.loads(data)'
+  - 'json.loads(data)'
+  - 'pickle.dumps(data)'
+  - 'notpickle.loads(data)'
+  - '# pickle.loads(data)'
+  - 'text = ''pickle.loads(data)'''
+  - |
+    import notpickle
+
+    def decode(data):
+        return (notpickle).loads(data)
 invalid:
-- pickle.loads(data)
-- pickle.load(stream)
-- pickle . loads(data)
+  - 'pickle.loads(data)'
+  - 'pickle.load(stream)'
+  - 'pickle . loads(data)'
+  - |
+    import pickle
+
+    def decode(data):
+        return (pickle).loads(data)
