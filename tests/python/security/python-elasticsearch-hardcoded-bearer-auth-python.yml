@@ -7,10 +7,13 @@ valid:
       "https://localhost:9200",
       bearer_auth=os.env["token-value"]
     )
-
+  - |
+    es = elasticsearch.Elasticsearch("https://localhost:9200", transport_options=dict(bearer_auth='example-static-token'))
 invalid:
   - |
     es = elasticsearch.Elasticsearch(
       "https://localhost:9200",
       bearer_auth="token-value"
     )
+  - |
+    es = elasticsearch.Elasticsearch("https://localhost:9200", bearer_auth='example-static-token')
