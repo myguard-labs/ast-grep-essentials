@@ -4,18 +4,14 @@ id: php-preg-replace-eval-modifier
 language: php
 severity: warning
 message: >-
-  A preg_replace pattern carries the e modifier, which makes PHP evaluate the
-  replacement string as code with the captured groups substituted into it, so any
-  attacker-influenced subject becomes code execution. The modifier was removed in
-  PHP 7.0; use preg_replace_callback.
+  A literal pattern in the first argument of preg_replace contains the legacy
+  e modifier. Remove the modifier and use preg_replace_callback where needed.
 note: >-
-  Regex-matches the modifier letters after the closing delimiter of a literal
-  pattern in the first argument of preg_replace, for the common delimiters
-  slash, hash, tilde, bang, percent, brace and parenthesis, allowing a
-  backslash-escaped delimiter inside the pattern body. A
-  pattern assembled in a variable is not seen. On PHP 7 and later the call fails
-  instead of executing, which is the routine dismissal for legacy code that still
-  needs the modifier removed.
+  Detects quoted pattern syntax with an e modifier using slash, hash, tilde,
+  bang, percent, brace, parenthesis, or at-sign delimiters. This is a
+  single-file syntactic check; it does not resolve computed patterns,
+  interpolation values, function bindings, PHP versions, or whether
+  replacement code executes.
 rule:
   kind: function_call_expression
   all:
@@ -28,15 +24,17 @@ rule:
           kind: argument
           nthChild:
             position: 1
-            ofRule: {kind: argument}
+            ofRule:
+              kind: argument
           has:
             stopBy: end
-            any:
-              - kind: string
-              - kind: encapsed_string
-            regex: '^["\x27](/(?:\\.|[^/])*/|#(?:\\.|[^#])*#|~(?:\\.|[^~])*~|!(?:\\.|[^!])*!|%(?:\\.|[^%])*%|\{.*\}|\(.*\))[imsxuADSUXJ]*e[imsxuADSUXJ]*["\x27]$'
+            regex: >-
+              ^["\x27](/(?:\\.|[^/])*/|#(?:\\.|[^#])*#|~(?:\\.|[^~])*~|!(?:\\.|[^!])*!|%(?:\\.|[^%])*%|@(?:\\.|[^@])*@|\{.*\}|\(.*\))[imsxuADSUXJ]*e[imsxuADSUXJ]*["\x27]$
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-06'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
