@@ -4,40 +4,29 @@ id: py-stdlib-xml-parse
 language: python
 severity: warning
 message: >-
-  Standard-library XML parser used on document input. xml.sax and xml.dom.pulldom
-  resolve external entities, and every stdlib parser expands nested entities, so
-  untrusted XML yields local-file disclosure or a billion-laughs memory blowup.
-  Parse untrusted documents with the defusedxml equivalents instead.
+  XML parser call detected. Review whether document input is untrusted and
+  whether a hardened XML parser is required.
 note: >-
-  Fires on a qualified xml.sax, minidom, pulldom or ElementTree parse, parseString,
-  fromstring or make_parser call. A defusedxml module bound to the same short
-  name, such as an ElementTree alias, is indistinguishable here; a call written
-  through the defusedxml prefix is excluded, as is a document
-  the deployment generated itself, which is the routine dismissal.
-utils:
-  stdlib-xml-parse-call:
-    kind: attribute
-    any:
-      - all:
-          - has:
-              field: object
-              regex: '(^|\.)(sax|minidom|pulldom)$'
-          - has: {field: attribute, regex: '^(parse|parseString|make_parser)$'}
-      - all:
-          - has:
-              field: object
-              regex: '(^|\.)(ElementTree|ET)$'
-          - has: {field: attribute, regex: '^(parse|fromstring|XMLParser)$'}
+  Matches parser calls through the listed receiver names, including
+  parenthesized receivers. This is a single-file syntactic check: receiver
+  names do not establish module identity, input trust, parser configuration,
+  or vulnerability. Calls explicitly qualified through defusedxml are
+  excluded.
 rule:
   kind: call
   has:
     field: function
     all:
-      - matches: stdlib-xml-parse-call
+      - kind: attribute
+      - regex: >-
+          ^\(*\s*([A-Za-z_][A-Za-z0-9_]*\.)*((sax|minidom|pulldom)\s*\)*\.(parse|parseString|make_parser)|(ElementTree|ET)\s*\)*\.(parse|fromstring|XMLParser))$
       - not:
-          regex: '^defusedxml\.'
+          regex: '^\(*\s*defusedxml\.'
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-06'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
