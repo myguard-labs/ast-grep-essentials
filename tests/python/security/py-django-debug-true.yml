@@ -1,13 +1,19 @@
 id: py-django-debug-true
 valid:
-- DEBUG = False
-- DEBUG = env.bool("DEBUG", False)
-- DEBUG = os.environ.get("DEBUG") == "1"
-- TEMPLATE_DEBUG = True
-- |
-  def f():
-      DEBUG = True
-- '# DEBUG = True'
-- text = 'DEBUG = True'
+  - 'DEBUG = False'
+  - 'DEBUG = env.bool("DEBUG", False)'
+  - 'DEBUG = os.environ.get("DEBUG") == "1"'
+  - 'TEMPLATE_DEBUG = True'
+  - |
+    def f():
+        DEBUG = True
+  - '# DEBUG = True'
+  - 'text = ''DEBUG = True'''
+  - 'DEBUG = TEMPLATE_DEBUG = False'
+  - 'DEBUG = TEMPLATE_DEBUG = env.bool("DEBUG", False)'
+  - |-
+    def configure():
+        DEBUG = TEMPLATE_DEBUG = True
 invalid:
-- DEBUG = True
+  - 'DEBUG = True'
+  - 'DEBUG = TEMPLATE_DEBUG = True'

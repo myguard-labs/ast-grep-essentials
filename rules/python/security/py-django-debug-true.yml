@@ -4,25 +4,32 @@ id: py-django-debug-true
 language: python
 severity: warning
 message: >-
-  Django DEBUG set to a literal True at module level. Debug responses render the
-  full traceback, the local variables of every frame and the settings module, so
-  database credentials and the signing key are handed to anyone who triggers an
-  error. Read the flag from the environment and keep production at False.
+  Module-level DEBUG is assigned literal True. Disable debug mode in
+  production to avoid exposing diagnostic details.
 note: >-
-  Fires on a module-level assignment of the bare name DEBUG to a literal True.
-  A flag read from the environment or a call is not matched, and the matcher
-  does not know whether this module is the one a deployment loads. A settings
-  module used only by the local development server is the routine dismissal.
+  Matches a direct module-level assignment to bare DEBUG with literal True,
+  including chains through bare ASCII identifiers ending in literal True. This
+  is a single-file syntax check; it does not establish that Django loads this
+  module or that the deployment is production.
 rule:
   kind: assignment
   all:
-    - has: {field: left, kind: identifier, regex: '^DEBUG$'}
-    - has: {field: right, regex: '^True$'}
+    - has:
+        field: left
+        kind: identifier
+        regex: '^DEBUG$'
+    - has:
+        field: right
+        regex: '^(?:[A-Za-z_][A-Za-z0-9_]*\s*=\s*)*True$'
     - inside:
         kind: expression_statement
-        inside: {kind: module}
+        inside:
+          kind: module
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-06'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
