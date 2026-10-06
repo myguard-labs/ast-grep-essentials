@@ -4,17 +4,20 @@ id: py-acceptance-named-temp-delete-false
 language: python
 severity: warning
 message: >-
-  tempfile.NamedTemporaryFile(delete=False) persists the temporary path;
-  deliberate cleanup is required.
+  NamedTemporaryFile with literal delete=False leaves a temporary path
+  requiring deliberate cleanup.
 note: >-
-  Syntactic check only: this matches a direct call to
-  tempfile.NamedTemporaryFile that contains a literal delete=False keyword
-  argument. It cannot detect aliased or dynamically resolved module
-  references, delete supplied via **kwargs or a runtime value, or whether the
-  caller actually performs cleanup.
+  Syntactic check only: matches tempfile.NamedTemporaryFile calls or bare
+  NamedTemporaryFile calls in a file containing an explicit unaliased from
+  tempfile import NamedTemporaryFile statement, with literal delete=False. It
+  does not establish name binding, import execution, runtime API identity, or
+  cleanup, and does not detect aliases or dynamically supplied arguments.
 rule:
   all:
-    - pattern: 'tempfile.NamedTemporaryFile($$$ARGS)'
+    - kind: call
+    - has:
+        field: function
+        regex: '^(tempfile\.NamedTemporaryFile|NamedTemporaryFile)$'
     - has:
         field: arguments
         has:
@@ -26,8 +29,23 @@ rule:
             - has:
                 field: value
                 pattern: 'False'
+    - not:
+        all:
+          - has:
+              field: function
+              regex: '^NamedTemporaryFile$'
+          - not:
+              inside:
+                kind: module
+                stopBy: end
+                has:
+                  pattern: from tempfile import NamedTemporaryFile
+                  stopBy: end
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-21'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

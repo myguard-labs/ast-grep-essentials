@@ -8,6 +8,12 @@ valid:
     handle = tempfile.NamedTemporaryFile()
   - |
     handle = other.NamedTemporaryFile(delete=False)
+  - |
+    from other import NamedTemporaryFile
+    handle = NamedTemporaryFile(delete=False)
+  - |
+    from tempfile import NamedTemporaryFile
+    handle = NamedTemporaryFile(delete=True)
 invalid:
   - |
     import tempfile
@@ -15,3 +21,6 @@ invalid:
   - |
     import tempfile
     handle = tempfile.NamedTemporaryFile(mode="w", delete = False)
+  - |
+    from tempfile import NamedTemporaryFile
+    handle = NamedTemporaryFile(delete=False)
