@@ -4,47 +4,49 @@ id: py-lxml-parser-resolve-entities
 language: python
 severity: warning
 message: >-
-  lxml XMLParser constructed without resolve_entities=False still expands
-  declared entities, so untrusted XML can read local files through an external
-  entity or exhaust memory with a billion-laughs expansion. Construct it with
-  resolve_entities=False, no_network=True and load_dtd=False, or parse with
-  defusedxml.
+  XMLParser construction lacks a literal False or 'internal' value for
+  resolve_entities. For untrusted XML, configure entity handling explicitly.
 note: >-
-  Fires on an XMLParser or ETCompatXMLParser construction, qualified or bare,
-  whose argument list has no literal False or 'internal' for resolve_entities. It does not
-  check where the parsed document comes from, and a parser reused only for
-  documents the deployment generated is the routine dismissal. A receiver named
-  for the standard library ElementTree module is excluded, because
-  resolve_entities is not a parameter there and the advice would be a TypeError;
-  whether a bare or otherwise-qualified name resolves to lxml.etree is not
-  determined.
+  Matches bare or qualified XMLParser and ETCompatXMLParser calls without
+  resolve_entities set to literal False, including whitespace-separated
+  parentheses around False, or an unparenthesized 'internal' string.
+  Standard-library-style ElementTree receivers are excluded. This is a
+  single-file syntactic check; it does not establish import identity, input
+  trust, runtime configuration, or entity expansion behavior.
 rule:
   kind: call
   all:
     - has:
         field: function
-        any:
-          - kind: identifier
-            regex: '^(XMLParser|ETCompatXMLParser)$'
-          - kind: attribute
-            all:
-              - has:
-                  field: attribute
-                  regex: '^(XMLParser|ETCompatXMLParser)$'
-              - not:
-                  has:
-                    field: object
-                    regex: '(?i)(^|\.)(ET|ElementTree|xml\.etree\.ElementTree|cElementTree)$'
+        all:
+          - not:
+              all:
+                - not:
+                    kind: identifier
+                - not:
+                    kind: attribute
+          - regex: '(^|\.)(XMLParser|ETCompatXMLParser)$'
+          - not:
+              has:
+                field: object
+                regex: '(?i)(^|\.)(ET|ElementTree|xml\.etree\.ElementTree|cElementTree)$'
     - not:
         has:
           field: arguments
           has:
             kind: keyword_argument
             all:
-              - has: {field: name, regex: '^resolve_entities$'}
-              - has: {field: value, regex: '^(False|[\"\x27]internal[\"\x27])$'}
+              - has:
+                  field: name
+                  regex: '^resolve_entities$'
+              - has:
+                  field: value
+                  regex: '^(False|["\x27]internal["\x27]|\(\s*(\(\s*)*False\s*(\)\s*)*\))$'
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-06'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

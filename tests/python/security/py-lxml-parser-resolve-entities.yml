@@ -1,15 +1,24 @@
 id: py-lxml-parser-resolve-entities
 valid:
-- etree.XMLParser(resolve_entities=False)
-- etree.XMLParser(resolve_entities=False, no_network=True, load_dtd=False)
-- XMLParser(resolve_entities=False)
-- defusedxml.lxml.parse(upload)
-- etree.HTMLParser()
-- '# etree.XMLParser()'
-- text = 'etree.XMLParser()'
-- ET.XMLParser()
-- etree.XMLParser(resolve_entities="internal")
+  - 'etree.XMLParser(resolve_entities=False)'
+  - 'etree.XMLParser(resolve_entities=False, no_network=True, load_dtd=False)'
+  - 'XMLParser(resolve_entities=False)'
+  - 'defusedxml.lxml.parse(upload)'
+  - 'etree.HTMLParser()'
+  - '# etree.XMLParser()'
+  - 'text = ''etree.XMLParser()'''
+  - 'ET.XMLParser()'
+  - 'etree.XMLParser(resolve_entities="internal")'
+  - |-
+    from lxml import etree
+    parser = etree.XMLParser(resolve_entities=(False))
+  - |-
+    from lxml import etree
+    parser = etree.ETCompatXMLParser(resolve_entities=((False)))
 invalid:
-- etree.XMLParser()
-- XMLParser(remove_blank_text=True)
-- lxml.etree.ETCompatXMLParser()
+  - 'etree.XMLParser()'
+  - 'XMLParser(remove_blank_text=True)'
+  - 'lxml.etree.ETCompatXMLParser()'
+  - |-
+    from lxml import etree
+    parser = etree.XMLParser(resolve_entities=(True))
