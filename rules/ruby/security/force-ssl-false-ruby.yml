@@ -9,32 +9,23 @@ id: force-ssl-false-ruby
 language: ruby
 severity: warning
 message: >-
-  Checks for configuration setting of force_ssl to false. Force_ssl
-  forces usage of HTTPS, which could lead to network interception of
-  unencrypted application traffic. To fix, set config.force_ssl = true.
+  Explicitly assigning false to config.force_ssl disables this HTTPS
+  enforcement setting.
 note: >-
-  [CWE-311] Missing Encryption of Sensitive Data.
-  [REFERENCES]
-      - https://github.com/presidentbeef/brakeman/blob/main/lib/brakeman/checks/check_force_ssl.rb
-
-ast-grep-essentials: true
-
-utils:
-  UPSTREAM_UTIL_001:
-    kind: assignment
-    all:
-      - has:
-          kind: call
-          pattern: config.force_ssl
-      - has:
-          regex: ^\s*false$
-
+  This rule checks only direct single-file assignments of a false literal,
+  optionally enclosed in one pair of parentheses; it does not determine
+  effective configuration or runtime HTTPS enforcement.
 rule:
-  kind: assignment
-  any:
-    - matches: UPSTREAM_UTIL_001
+  pattern: 'config.force_ssl = $VALUE'
+constraints:
+  VALUE:
+    regex: '^\s*(?:false|\(\s*false\s*\))\s*$'
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-11'
   source: 'CodeRabbit'
-  modified_by: 'MyGuard'
-  license: 'Apache-2.0'
+  modified_by: MyGuard
+  license: Apache-2.0
+ast-grep-essentials: true
