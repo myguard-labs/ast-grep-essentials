@@ -4,49 +4,64 @@ id: py-jinja2-autoescape-off
 language: python
 severity: warning
 message: >-
-  Jinja Environment constructed without autoescaping. The default is off, so any
-  rendered variable holding markup is written into the page verbatim and becomes
-  stored or reflected cross-site scripting. Pass
-  autoescape=select_autoescape() for mixed templates, or autoescape=True when
-  every template in the environment is HTML.
+  Environment construction lacks autoescape=True or a call whose function is
+  named select_autoescape. Review autoescaping when rendering HTML.
 note: >-
-  Fires on an Environment or SandboxedEnvironment construction whose argument
-  list carries neither autoescape=True nor autoescape=select_autoescape(...).
-  An environment configured after construction by assigning to the attribute is
-  not seen. An environment that renders only non-markup output, such as
-  configuration files, SQL or e-mail text, is the routine dismissal.
+  This is a single-file syntactic check of constructor and helper names. It
+  does not resolve imports, verify helper behavior, determine output format,
+  or track later configuration.
 utils:
   autoescape-enabled:
     kind: keyword_argument
     all:
-      - has: {field: name, regex: '^autoescape$'}
+      - has:
+          field: name
+          regex: '^autoescape$'
       - has:
           field: value
-          any:
-            - regex: '^True$'
-            - kind: call
-              has:
-                field: function
-                regex: 'select_autoescape$'
+          not:
+            all:
+              - not:
+                  regex: '^True$'
+              - not:
+                  kind: call
+                  has:
+                    field: function
+                    not:
+                      all:
+                        - not:
+                            kind: identifier
+                            regex: '^select_autoescape$'
+                        - not:
+                            kind: attribute
+                            has:
+                              field: attribute
+                              regex: '^select_autoescape$'
 rule:
   kind: call
   all:
     - has:
         field: function
-        any:
-          - kind: identifier
-            regex: '^(Environment|SandboxedEnvironment|NativeEnvironment)$'
-          - kind: attribute
-            has:
-              field: attribute
-              regex: '^(Environment|SandboxedEnvironment|NativeEnvironment)$'
+        not:
+          all:
+            - not:
+                kind: identifier
+                regex: '^(Environment|SandboxedEnvironment|NativeEnvironment)$'
+            - not:
+                kind: attribute
+                has:
+                  field: attribute
+                  regex: '^(Environment|SandboxedEnvironment|NativeEnvironment)$'
     - not:
         has:
           field: arguments
           has:
             matches: autoescape-enabled
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-06'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

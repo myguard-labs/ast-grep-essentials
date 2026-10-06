@@ -1,13 +1,24 @@
 id: py-jinja2-autoescape-off
 valid:
-- Environment(autoescape=True)
-- jinja2.Environment(loader=FileSystemLoader("t"), autoescape=True)
-- Environment(autoescape=select_autoescape(["html"]))
-- jinja2.sandbox.SandboxedEnvironment(autoescape=select_autoescape())
-- Template("x")
-- '# Environment(loader=l)'
-- text = 'Environment(loader=l)'
+  - 'Environment(autoescape=True)'
+  - 'jinja2.Environment(loader=FileSystemLoader("t"), autoescape=True)'
+  - 'Environment(autoescape=select_autoescape(["html"]))'
+  - 'jinja2.sandbox.SandboxedEnvironment(autoescape=select_autoescape())'
+  - 'Template("x")'
+  - '# Environment(loader=l)'
+  - 'text = ''Environment(loader=l)'''
+  - |-
+    import jinja2
+
+    env = jinja2.Environment(autoescape=jinja2.select_autoescape())
 invalid:
-- Environment(autoescape=False)
-- jinja2.Environment(loader=FileSystemLoader("t"))
-- jinja2.sandbox.SandboxedEnvironment()
+  - 'Environment(autoescape=False)'
+  - 'jinja2.Environment(loader=FileSystemLoader("t"))'
+  - 'jinja2.sandbox.SandboxedEnvironment()'
+  - |-
+    from jinja2 import Environment
+
+    def disable_select_autoescape():
+        return False
+
+    env = Environment(autoescape=disable_select_autoescape())
