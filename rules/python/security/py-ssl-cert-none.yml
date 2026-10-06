@@ -4,42 +4,31 @@ id: py-ssl-cert-none
 language: python
 severity: warning
 message: >-
-  SSLContext.verify_mode is set to ssl.CERT_NONE, disabling peer-certificate
-  validation. For TLS clients use ssl.create_default_context or
-  PROTOCOL_TLS_CLIENT and keep hostname checking enabled; add a private CA to
-  the trust store instead of disabling verification.
+  Assigning ssl.CERT_NONE to verify_mode disables peer-certificate validation
+  when the receiver is an SSL context.
 note: >-
-  Matches a direct assignment of ssl.CERT_NONE to any receiver's verify_mode.
-  Syntax cannot identify the receiver type or whether this is a client or a
-  server requesting optional client certificates. Test-only local clients and
-  intentionally unauthenticated server-side client-certificate policy are
-  routine dismissals. Aliased constants and assignments through helper methods
-  are missed.
+  Matches direct verify_mode assignments whose right-hand side is
+  ssl.CERT_NONE, allowing parentheses around ssl and the complete expression.
+  This single-file syntax check cannot establish receiver types, resolve the
+  ssl name, distinguish client and server policy, or detect aliased constants.
 rule:
   kind: assignment
   all:
     - has:
         field: left
         kind: attribute
-        has: {field: attribute, regex: '^verify_mode$'}
+        has:
+          field: attribute
+          regex: '^verify_mode$'
     - has:
         field: right
-        any:
-          - kind: attribute
-            all:
-              - has: {field: object, regex: '^ssl$'}
-              - has: {field: attribute, regex: '^CERT_NONE$'}
-          - kind: parenthesized_expression
-            all:
-              - regex: '(?s)^(?:\s|[()]|#[^\n]*(?:\n|$))*ssl\.CERT_NONE(?:\s|[()]|#[^\n]*(?:\n|$))*$'
-              - has:
-                  stopBy: end
-                  kind: attribute
-                  all:
-                    - has: {field: object, regex: '^ssl$'}
-                    - has: {field: attribute, regex: '^CERT_NONE$'}
+        regex: >-
+          (?s)^(?:\s|\(|#[^\n]*(?:\n|$))*ssl(?:\s|\)|#[^\n]*(?:\n|$))*\.(?:\s|#[^\n]*(?:\n|$))*CERT_NONE(?:\s|\)|#[^\n]*(?:\n|$))*$
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-06'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

@@ -6,6 +6,11 @@ valid:
   - 'config.verify_mode = CERT_NONE'
   - 'text = "ctx.verify_mode = ssl.CERT_NONE"'
   - '# ctx.verify_mode = ssl.CERT_NONE'
+  - |
+    import ssl
+
+    def require_peer_auth(context):
+        context.verify_mode = (ssl).CERT_REQUIRED
 invalid:
   - 'ctx.verify_mode = ssl.CERT_NONE'
   - 'client_context.verify_mode = ssl.CERT_NONE'
@@ -13,3 +18,8 @@ invalid:
   - |
     def disable_peer_auth(context):
         context.verify_mode = ssl.CERT_NONE
+  - |
+    import ssl
+
+    def disable_peer_auth(context):
+        context.verify_mode = (ssl).CERT_NONE
