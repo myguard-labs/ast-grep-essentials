@@ -11,6 +11,19 @@ snapshots:
       style: primary
       start: 20
       end: 92
+    - source: |-
+        class Resource:
+            def __del__(self):
+                raise RuntimeError("resource was not closed")
+      style: secondary
+      start: 0
+      end: 92
+    - source: |-
+        def __del__(self):
+                raise RuntimeError("resource was not closed")
+      style: secondary
+      start: 20
+      end: 92
     - source: __del__
       style: secondary
       start: 24
@@ -23,3 +36,39 @@ snapshots:
       style: secondary
       start: 47
       end: 92
+  ? |
+    class Resource:
+        def __del__(self):
+            raise ValueError("cleanup failed") from None
+  : labels:
+    - source: |-
+        def __del__(self):
+                raise ValueError("cleanup failed") from None
+      style: primary
+      start: 20
+      end: 91
+    - source: |-
+        class Resource:
+            def __del__(self):
+                raise ValueError("cleanup failed") from None
+      style: secondary
+      start: 0
+      end: 91
+    - source: |-
+        def __del__(self):
+                raise ValueError("cleanup failed") from None
+      style: secondary
+      start: 20
+      end: 91
+    - source: __del__
+      style: secondary
+      start: 24
+      end: 31
+    - source: raise ValueError("cleanup failed") from None
+      style: secondary
+      start: 47
+      end: 91
+    - source: raise ValueError("cleanup failed") from None
+      style: secondary
+      start: 47
+      end: 91

@@ -1,7 +1,7 @@
 id: py-raise-in-del
 valid:
   - '# raise RuntimeError("resource was not closed")'
-  - text = 'raise RuntimeError("resource was not closed")'
+  - 'text = ''raise RuntimeError("resource was not closed")'''
   - |
     class Resource:
         def close(self):
@@ -28,8 +28,15 @@ valid:
         def __del__(self):
             if self.is_open:
                 raise RuntimeError("resource was not closed")
+  - |
+    def __del__(self):
+        raise ValueError("cleanup failed") from None
 invalid:
   - |
     class Resource:
         def __del__(self):
             raise RuntimeError("resource was not closed")
+  - |
+    class Resource:
+        def __del__(self):
+            raise ValueError("cleanup failed") from None
