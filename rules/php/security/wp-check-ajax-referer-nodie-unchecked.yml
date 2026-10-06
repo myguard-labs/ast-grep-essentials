@@ -4,15 +4,13 @@ id: wp-check-ajax-referer-nodie-unchecked
 language: php
 severity: error
 message: >-
-  check_ajax_referer is called with the stop argument set to false, which makes
-  it return instead of dying, and its result is discarded because the call is a
-  bare statement. A forged AJAX request runs the handler. Branch on the return
-  value, or drop the false so the function terminates the request itself.
+  A bare check_ajax_referer call supplies literal false for stop and discards
+  the return value. Check the result or enable termination on failure.
 note: >-
-  Matches only an expression statement whose whole expression is the call and
-  whose third positional argument is the literal false. A stop argument supplied
-  through a variable or a named argument, or a result assigned and then ignored,
-  is not matched. The two-argument form dies on failure and is correct.
+  Matches only bare call statements with literal false as the third positional
+  argument or as the named stop argument. This syntactic check does not
+  establish whether another guard protects the handler or resolve the called
+  function.
 rule:
   kind: expression_statement
   has:
@@ -26,14 +24,20 @@ rule:
           field: arguments
           has:
             kind: argument
-            nthChild:
-              position: 3
-              ofRule: {kind: argument}
-            has:
-              kind: boolean
-              regex: '(?i)^false$'
+            regex: '^(?:stop\s*:\s*)?(?i:false)$'
+            not:
+              all:
+                - regex: '^(?i:false)$'
+                - not:
+                    nthChild:
+                      position: 3
+                      ofRule:
+                        kind: argument
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-06'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
