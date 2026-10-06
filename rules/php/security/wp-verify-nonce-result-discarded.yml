@@ -4,25 +4,28 @@ id: wp-verify-nonce-result-discarded
 language: php
 severity: error
 message: >-
-  wp_verify_nonce is called as a bare statement, so its result is thrown away and
-  the handler continues for a forged request; the CSRF check is decorative. Wrap
-  the call in a condition that stops the request, or use check_admin_referer,
-  which dies on failure.
+  The result of a standalone wp_verify_nonce call is discarded. Use its result
+  in a condition that rejects a failed nonce check.
 note: >-
-  Matches only an expression statement whose whole expression is the
-  wp_verify_nonce call. A result assigned to a variable and then never branched
-  on is not syntactically distinguishable from a legitimate use and is not
-  matched; the equivalent discarded check_ajax_referer shape is a separate rule.
+  Matches expression statements consisting of a wp_verify_nonce call,
+  optionally wrapped in parentheses. This is a single-file syntactic check; it
+  does not establish request reachability or whether other nonce checks exist.
+  Assignments, returns, and conditional uses are excluded.
 rule:
   kind: expression_statement
   has:
-    nthChild: 1
     kind: function_call_expression
+    stopBy:
+      not:
+        kind: parenthesized_expression
     has:
       field: function
       regex: '(?i)^\\?wp_verify_nonce$'
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-06'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
