@@ -4,23 +4,25 @@ id: py-assert-for-auth
 language: python
 severity: warning
 message: >-
-  Authorization check written as an assert. Python removes assert statements
-  entirely under -O, and many container images run the interpreter that way, so
-  the check silently disappears and every caller passes. Raise the framework's
-  permission error from an explicit if instead.
+  Assert condition contains an authorization-related name. Python removes
+  assert statements under optimization; use an explicit permission check when
+  this assertion enforces authorization.
 note: >-
-  Fires on an assert whose condition text mentions admin, staff, authenticated,
-  permission, authorization, a role, an owner or a login. It is a name
-  heuristic over the condition source, so an assert in a test module, which the
-  test runner never runs optimised, is the routine dismissal. Excluding test
-  paths at the scanner is the usual way to silence those.
+  This single-file syntax heuristic matches authorization-related text in
+  assert conditions, including owner_id ownership comparisons. It does not
+  establish that an assertion enforces authorization, and it excludes text
+  appearing only in the assertion message.
 rule:
   kind: assert_statement
   has:
     nthChild: 1
-    regex: '(?i)(is_admin|is_staff|is_superuser|is_authenticated|has_perm|permission|authoriz|is_allowed|\brole\b|is_owner|logged_in|current_user)'
+    regex: >-
+      (?i)(is_admin|is_staff|is_superuser|is_authenticated|has_perm|permission|authoriz|is_allowed|\brole\b|is_owner|owner_id|logged_in|current_user)
 metadata:
+  rule_modified_at: '2026-10-06'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-06'
   created_at: '2026-09-06'
   source: 'MyGuard'
-  modified_by: 'MyGuard'
-  license: 'MyGuard Internal Use License 1.0'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
