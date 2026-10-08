@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-async-method-without-await
+language: typescript
+severity: warning
+message: >-
+  Async method body contains no await expression; the async modifier may be
+  unnecessary.
+note: >-
+  Syntactic check only. It looks for an await expression anywhere in the
+  method body, including inside nested functions. It does not check whether
+  the async modifier is needed to satisfy an interface, an override contract,
+  or to turn thrown errors into rejected promises.
+rule:
+  kind: method_definition
+  regex: '^(?:@[^\n]*\s+)*(?:(?:public|private|protected|static|override)\s+)*async\s'
+  has:
+    field: body
+    kind: statement_block
+    not:
+      has:
+        kind: await_expression
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
