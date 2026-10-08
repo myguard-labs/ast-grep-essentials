@@ -1,0 +1,5 @@
+id: go-break-skips-remaining-iterations
+valid:
+  - "package p\n\nfunc f(keys [][]int, xs []int) int {\n\tn := 0\n\tfor i := range xs {\n\t\tif len(keys[i]) == 0 {\n\t\t\tcontinue\n\t\t}\n\t\tn += xs[i]\n\t}\n\treturn n\n}"
+invalid:
+  - "package p\n\nfunc f(keys [][]int, xs []int) int {\n\tn := 0\n\tfor i := range xs {\n\t\tif len(keys[i]) == 0 {\n\t\t\tbreak\n\t\t}\n\t\tn += xs[i]\n\t}\n\treturn n\n}"

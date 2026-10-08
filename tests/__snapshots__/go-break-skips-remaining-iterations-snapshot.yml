@@ -1,0 +1,24 @@
+id: go-break-skips-remaining-iterations
+snapshots:
+  ? "package p\n\nfunc f(keys [][]int, xs []int) int {\n\tn := 0\n\tfor i := range xs {\n\t\tif len(keys[i]) == 0 {\n\t\t\tbreak\n\t\t}\n\t\tn += xs[i]\n\t}\n\treturn n\n}"
+  : labels:
+    - source: break
+      style: primary
+      start: 105
+      end: 110
+    - source: "for i := range xs {\n\t\tif len(keys[i]) == 0 {\n\t\t\tbreak\n\t\t}\n\t\tn += xs[i]\n\t}"
+      style: secondary
+      start: 57
+      end: 130
+    - source: len(keys[i]) == 0
+      style: secondary
+      start: 82
+      end: 99
+    - source: n += xs[i]
+      style: secondary
+      start: 117
+      end: 127
+    - source: "if len(keys[i]) == 0 {\n\t\t\tbreak\n\t\t}"
+      style: secondary
+      start: 79
+      end: 114
