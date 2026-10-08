@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-max-clamp-offset-index
+language: go
+severity: warning
+message: >-
+  Index clamped with max(0, ...) may silently read the wrong element instead
+  of failing on a negative offset.
+note: >-
+  Syntactic heuristic only. It matches an index expression whose index is a
+  direct call max(0, expr). It cannot tell whether the clamp is intentional,
+  whether the operand is a slice or string, or whether max is the builtin.
+rule:
+  pattern: '$S[max(0, $E)]'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
