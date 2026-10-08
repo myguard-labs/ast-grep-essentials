@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-dynamic-import-floating-promise
+language: javascript
+severity: warning
+message: >-
+  Dynamic import() is used as a bare statement, so its promise is not awaited
+  and has no catch handler. A failed import will become an unhandled
+  rejection.
+note: >-
+  This is a syntactic check only. It flags an import() call that is the entire
+  expression statement. It does not track promises assigned to variables or
+  returned, and it does not see global unhandled-rejection handlers.
+rule:
+  kind: expression_statement
+  has:
+    kind: call_expression
+    has:
+      field: function
+      kind: import
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
