@@ -1,0 +1,19 @@
+id: go-bounds-check-off-by-one
+language: go
+severity: warning
+message: The guard i <= len(a) lets i equal len(a), so the a[i+1] read in the same condition is out of range.
+note: Matches only the same-condition shape (i <= len(a) && ... a[i+1]); the same mistake split across statements, other index expressions, a guard that ensures i is smaller by another route, or the operand type is not seen; a map indexed this way is flagged although a missing key does not panic.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^&&$'
+    - has:
+        field: left
+        pattern: $I <= len($A)
+    - has:
+        field: right
+        has:
+          stopBy: end
+          pattern: $A[$I+1]

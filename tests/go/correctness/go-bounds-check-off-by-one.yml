@@ -1,0 +1,13 @@
+id: go-bounds-check-off-by-one
+valid:
+- if i+1 < len(arr) && arr[i+1] == val { return }
+- if i < len(arr) && arr[i+1] == val { return }
+- if i <= len(arr) && arr[i] == val { return }
+- if i <= len(arr) && other[i+1] == val { return }
+- // if i <= len(arr) && arr[i+1] == val { return }
+- var astgrepFixture = "if i <= len(arr) && arr[i+1] == val"
+- if i <= len(arr) && arr[i-1] == val { return }
+- if i <= len(arr) || arr[i+1] == val { return }
+invalid:
+- if i <= len(arr) && arr[i+1] == val { return }
+- if i <= len(arr) && arr[i+1] != val { return }
