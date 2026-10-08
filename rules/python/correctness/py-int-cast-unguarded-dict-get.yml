@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-int-cast-unguarded-dict-get
+language: python
+severity: warning
+message: >-
+  int() cast of a .get() value is not guarded by a try statement handling
+  ValueError or TypeError.
+note: >-
+  Syntactic check only. It does not prove the value can be missing or
+  non-numeric. It treats any enclosing try statement whose except clauses
+  mention ValueError or TypeError as a guard, and it ignores guards in calling
+  functions.
+rule:
+  pattern: 'int($$$ARGS)'
+  has:
+    pattern: '$OBJ.get($$$GARGS)'
+    stopBy: end
+  not:
+    inside:
+      kind: try_statement
+      stopBy: end
+      has:
+        kind: except_clause
+        has:
+          kind: identifier
+          regex: '^(ValueError|TypeError)$'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
