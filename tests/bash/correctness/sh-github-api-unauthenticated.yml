@@ -1,0 +1,11 @@
+id: sh-github-api-unauthenticated
+valid:
+- 'json="$(curl -fsSL -H "Authorization: Bearer ${GH_TOKEN}" https://api.github.com/repos/owner/repo/releases/latest)"'
+- '# json="$(curl -fsSL https://api.github.com/repos/owner/repo/releases/latest)"'
+- astgrep_fixture='json="$(curl -fsSL https://api.github.com/repos/owner/repo/releases/latest)"'
+- curl -fsSL https://example.com/api.github.com/releases
+- 'curl -fsSL --header "authorization: token $GITHUB_TOKEN" https://api.github.com/user'
+invalid:
+- json="$(curl -fsSL https://api.github.com/repos/owner/repo/releases/latest)"
+- curl -s "https://api.github.com/repos/owner/repo/tags"
+- curl -fsSL 'https://api.github.com/rate_limit'

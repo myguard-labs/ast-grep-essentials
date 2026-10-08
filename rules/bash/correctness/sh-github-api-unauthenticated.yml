@@ -1,0 +1,23 @@
+id: sh-github-api-unauthenticated
+language: bash
+severity: warning
+message: curl calls api.github.com without an Authorization header and is limited to the unauthenticated rate quota.
+note: >-
+  Matches a curl command with a literal api.github.com URL argument and no
+  argument mentioning Authorization. Credentials passed through a config file,
+  .netrc, a header file, or an array variable are not seen and may be reported.
+rule:
+  kind: command
+  all:
+    - has:
+        field: name
+        regex: ^curl$
+    - has:
+        any:
+          - kind: word
+          - kind: string
+          - kind: raw_string
+        regex: ^["']?https://api\.github\.com/
+    - not:
+        has:
+          regex: (?i)authorization
