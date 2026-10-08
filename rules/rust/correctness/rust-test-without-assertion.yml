@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: rust-test-without-assertion
+language: rust
+severity: warning
+message: 'Test function contains no assert!, assert_eq!, or assert_ne! invocation.'
+note: >-
+  Syntactic check only. It looks only at the attribute immediately before the
+  function, so other attributes in between hide the test attribute. It does
+  not count assertions made through helper functions, other macros, or panics
+  such as unwrap as checks.
+rule:
+  kind: function_item
+  follows:
+    kind: attribute_item
+    regex: '^#\[(tokio::)?test\]$'
+  not:
+    has:
+      kind: macro_invocation
+      regex: '^assert(_eq|_ne)?!'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
