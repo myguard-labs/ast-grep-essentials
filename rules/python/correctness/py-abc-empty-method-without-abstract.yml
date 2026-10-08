@@ -1,0 +1,47 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-abc-empty-method-without-abstract
+language: python
+severity: warning
+message: >-
+  Method on an ABC subclass has a pass-only body but no abstractmethod
+  decorator, so subclasses silently inherit a no-op.
+note: >-
+  Syntactic only. It checks for ABC by name in the class bases (including
+  abc.ABC). It does not resolve aliases, metaclass=ABCMeta, or inherited ABC
+  bases, and it may also flag nested functions inside such a class.
+rule:
+  kind: function_definition
+  has:
+    field: body
+    kind: block
+    all:
+      - has:
+          kind: pass_statement
+      - not:
+          has:
+            nthChild: 2
+  inside:
+    kind: class_definition
+    stopBy: end
+    has:
+      field: superclasses
+      kind: argument_list
+      has:
+        kind: identifier
+        regex: '^ABC$'
+        stopBy: end
+  not:
+    inside:
+      kind: decorated_definition
+      has:
+        kind: decorator
+        regex: abstractmethod
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
