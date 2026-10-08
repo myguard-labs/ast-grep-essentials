@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-splitext-extension-lookup
+language: python
+severity: warning
+message: >-
+  A mapping lookup is keyed only on the lower-cased file extension from
+  os.path.splitext, so full-name and multi-part suffix matches are lost.
+note: >-
+  Syntactic match only. It flags a .get() call whose sole argument is
+  os.path.splitext(...)[1].lower(). It cannot tell whether the receiver is
+  really a mapping or whether full-name and multi-part suffixes are handled
+  somewhere else.
+rule:
+  pattern: '$MAP.get(os.path.splitext($NAME)[1].lower())'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
