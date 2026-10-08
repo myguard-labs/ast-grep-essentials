@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-platform-arch-package-name-typescript
+language: typescript
+severity: warning
+message: >-
+  Package path is built from process.platform and process.arch with no libc or
+  variant segment before the path separator.
+note: >-
+  Syntactic only. Matches template literals that interpolate process.platform
+  and have ${process.arch} immediately followed by '/'. It cannot tell whether
+  the package is actually split by libc, or whether the platform is ever Linux
+  at runtime.
+rule:
+  kind: template_string
+  all:
+    - regex: '\$\{\s*process\.platform\s*\}'
+    - regex: '\$\{\s*process\.arch\s*\}/'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
