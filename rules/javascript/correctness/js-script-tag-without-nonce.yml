@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-script-tag-without-nonce
+language: javascript
+severity: warning
+message: >-
+  Template literal emits a script tag with a src attribute but no nonce;
+  strict CSP will block it.
+note: >-
+  Syntactic check only. It looks for a template literal that contains
+  '<script' followed by whitespace and a src attribute, and that never
+  mentions 'nonce'. It cannot tell whether a nonce is added later, at runtime,
+  or through an aliased variable.
+rule:
+  kind: template_string
+  all:
+    - regex: '<script\s+src='
+    - not:
+        regex: nonce
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
