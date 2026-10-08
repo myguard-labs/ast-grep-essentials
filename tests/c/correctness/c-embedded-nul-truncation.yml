@@ -1,0 +1,9 @@
+id: c-embedded-nul-truncation
+valid:
+- void f(const char *body) { my_jsmn_parse(body); }
+- /* void f(const char *body, size_t len) { jsmn_parse(body, len); } */
+- int f(jsmn_parser *p, const char *b, size_t n, jsmntok_t *t) { if (memchr(b, 0, n)) return -1; return jsmn_parse(p, b, n, t, 8); }
+- int f(jsmn_parser *p, const char *b, size_t n, jsmntok_t *t) { if (strnlen(b, n) != n) return -1; return jsmn_parse(p, b, n, t, 8); }
+invalid:
+- int f(jsmn_parser *p, const char *b, size_t n, jsmntok_t *t) { return jsmn_parse(p, b, n, t, 8); }
+- int f(jsmn_parser *p, const char *b, size_t n, jsmntok_t *t) { int r = jsmn_parse(p, b, n, t, 8); if (r < 0) return r; return 0; }

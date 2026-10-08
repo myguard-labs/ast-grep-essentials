@@ -1,0 +1,20 @@
+id: c-embedded-nul-truncation
+language: c
+severity: warning
+message: jsmn_parse is called in a function that never checks the body for embedded NUL bytes, so a NUL silently truncates the parsed JSON.
+note: jsmn stops at the first NUL yet can report success, dropping later fields. The matcher only sees that the enclosing function has no memchr or strnlen call; a NUL check done by a caller or helper is invisible.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: '^jsmn_parse$'
+  inside:
+    stopBy: end
+    kind: function_definition
+    not:
+      has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          regex: '^(memchr|strnlen|strlen)$'
