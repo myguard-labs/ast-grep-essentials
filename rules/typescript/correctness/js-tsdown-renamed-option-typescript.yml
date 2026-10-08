@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-tsdown-renamed-option-typescript
+language: typescript
+severity: warning
+message: >-
+  The top-level tsdown options inlineOnly and external were replaced by nested
+  deps options. If left in place, they are silently ignored.
+note: >-
+  This is a syntax-only check. It matches inlineOnly or external keys that sit
+  directly in the object literal passed to a call named defineConfig. It does
+  not check that defineConfig comes from tsdown, which tsdown version is used,
+  or configs built through variables or spreads.
+rule:
+  kind: pair
+  has:
+    field: key
+    regex: '^[''"]?(inlineOnly|external)[''"]?$'
+  inside:
+    kind: object
+    inside:
+      kind: arguments
+      inside:
+        kind: call_expression
+        has:
+          field: function
+          regex: '^defineConfig$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
