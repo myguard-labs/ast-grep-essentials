@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-range-start-only-containment
+language: python
+severity: warning
+message: >-
+  Chained comparison checks only the range start for containment, but the
+  function also takes a range end. Ranges that span the window can be missed.
+note: >-
+  This is a syntactic heuristic. It matches a chained `a <= x <= b` comparison
+  whose middle operand name contains "start", inside a function that has a
+  parameter whose name contains "end". It cannot confirm that the end
+  parameter is the matching range end or that an overlap test was intended.
+rule:
+  pattern: '$A <= $X <= $B'
+  inside:
+    kind: function_definition
+    stopBy: end
+    has:
+      field: parameters
+      has:
+        kind: identifier
+        regex: end
+constraints:
+  X:
+    kind: identifier
+    regex: start
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
