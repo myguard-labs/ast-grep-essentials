@@ -1,0 +1,41 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-log-full-config-dict-fstring
+language: python
+severity: warning
+message: >-
+  Logger call interpolates a full .as_dict() mapping into an f-string; this
+  can leak secrets such as API keys or tokens into logs.
+note: >-
+  Syntactic only. Matches logger-style method calls
+  (debug/info/warning/warn/error/exception/critical/log) whose f-string
+  argument directly interpolates a call to .as_dict(). It does not check
+  whether the receiver is really a logger or whether the mapping holds
+  sensitive data. It also misses aliased or precomputed dicts.
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        kind: attribute
+        has:
+          field: attribute
+          regex: '^(debug|info|warning|warn|error|exception|critical|log)$'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          kind: string
+          has:
+            kind: interpolation
+            has:
+              field: expression
+              pattern: '$OBJ.as_dict()'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
