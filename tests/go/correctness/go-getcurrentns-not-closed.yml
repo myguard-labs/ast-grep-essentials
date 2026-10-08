@@ -1,0 +1,5 @@
+id: go-getcurrentns-not-closed
+valid:
+  - "import \"github.com/containernetworking/plugins/pkg/ns\"\nfunc f() error {\n\tinitns, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer initns.Close()\n\treturn initns.Do(func(_ ns.NetNS) error { return nil })\n}"
+invalid:
+  - "import \"github.com/containernetworking/plugins/pkg/ns\"\nfunc f() error {\n\tinitns, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\treturn initns.Do(func(_ ns.NetNS) error { return nil })\n}"
