@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: java-unbounded-stringbuilder-append-loop
+language: java
+severity: warning
+message: >-
+  While loop appends to a builder without any length() check in the loop,
+  which may allow unbounded memory growth.
+note: >-
+  This is a syntactic check only. It matches any .append(...) call inside a
+  while loop that has no .length() call in its condition or body. It does not
+  check the receiver's type, whether the input is untrusted, or whether a size
+  limit is enforced some other way, so results need triage.
+rule:
+  kind: while_statement
+  has:
+    stopBy: end
+    kind: method_invocation
+    has:
+      field: name
+      regex: '^append$'
+  not:
+    has:
+      stopBy: end
+      kind: method_invocation
+      has:
+        field: name
+        regex: '^length$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
