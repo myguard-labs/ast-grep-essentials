@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-path-resolve-process-cwd
+language: javascript
+severity: warning
+message: >-
+  path.resolve/path.join anchored at process.cwd() builds a path relative to
+  the invocation directory, not the module file.
+note: >-
+  Syntactic review candidate only. It matches calls on an identifier named
+  `path` and cannot confirm that `path` is node:path. Using the current
+  working directory may be intended, so check what the code is meant to do
+  before changing it.
+rule:
+  pattern: 'path.$METHOD(process.cwd(), $$$REST)'
+constraints:
+  METHOD:
+    regex: '^(resolve|join)$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
