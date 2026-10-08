@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-dotenv-module-level-load
+language: python
+severity: warning
+message: >-
+  load_dotenv() is called at module level, so it changes os.environ at import
+  time for every importer.
+note: >-
+  This is a syntactic check. It only flags a bare load_dotenv(...) expression
+  statement that sits directly in the module body. It does not resolve
+  aliases, attribute calls such as dotenv.load_dotenv(), or module-level calls
+  nested in if or try blocks or in assignments. It also cannot tell whether
+  the module is a library or an entry-point script.
+rule:
+  pattern: 'load_dotenv($$$ARGS)'
+  inside:
+    kind: expression_statement
+    inside:
+      kind: module
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
