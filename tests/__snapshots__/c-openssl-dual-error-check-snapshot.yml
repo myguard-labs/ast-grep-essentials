@@ -1,0 +1,52 @@
+id: c-openssl-dual-error-check
+snapshots:
+  int f(unsigned long e) { if (ERR_GET_REASON(e) != PEM_R_NO_START_LINE) { return 0; } return 1; }:
+    labels:
+    - source: ERR_GET_REASON(e) != PEM_R_NO_START_LINE
+      style: primary
+      start: 29
+      end: 69
+    - source: PEM_R_NO_START_LINE
+      style: secondary
+      start: 50
+      end: 69
+  int f(unsigned long e) { if (ERR_GET_REASON(e) == PEM_R_NO_START_LINE) { return 1; } return 0; }:
+    labels:
+    - source: ERR_GET_REASON(e) == PEM_R_NO_START_LINE
+      style: primary
+      start: 29
+      end: 69
+    - source: PEM_R_NO_START_LINE
+      style: secondary
+      start: 50
+      end: 69
+  ? int f(unsigned long e) { if (ERR_GET_REASON(e) == SSL_R_UNINITIALIZED || ERR_GET_REASON(e) == SSL_R_PROTOCOL_IS_SHUTDOWN) { return 1; } return 0; }
+  : labels:
+    - source: ERR_GET_REASON(e) == SSL_R_UNINITIALIZED
+      style: primary
+      start: 29
+      end: 69
+    - source: SSL_R_UNINITIALIZED
+      style: secondary
+      start: 50
+      end: 69
+  int f(unsigned long e, int ok) { if (ok && ERR_GET_REASON(e) == X509_R_KEY_VALUES_MISMATCH) { return 1; } return 0; }:
+    labels:
+    - source: ERR_GET_REASON(e) == X509_R_KEY_VALUES_MISMATCH
+      style: primary
+      start: 43
+      end: 90
+    - source: X509_R_KEY_VALUES_MISMATCH
+      style: secondary
+      start: 64
+      end: 90
+  int f(void) { if (ERR_GET_REASON(ERR_peek_last_error()) == PEM_R_NO_START_LINE) { ERR_clear_error(); } return 0; }:
+    labels:
+    - source: ERR_GET_REASON(ERR_peek_last_error()) == PEM_R_NO_START_LINE
+      style: primary
+      start: 18
+      end: 78
+    - source: PEM_R_NO_START_LINE
+      style: secondary
+      start: 59
+      end: 78

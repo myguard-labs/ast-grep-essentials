@@ -1,0 +1,30 @@
+id: c-openssl-dual-error-check
+language: c
+severity: warning
+message: ERR_GET_REASON() is compared with a library-specific reason constant in an expression that never calls ERR_GET_LIB(), so the same numeric reason from another OpenSSL library would also match (CWE-697).
+note: 'The check is syntactic: ERR_GET_REASON(x) ==/!= an identifier shaped LIB_R_NAME (ERR_R_* generic reasons excluded) with no ERR_GET_LIB() call anywhere in an enclosing ||/&& expression. The matcher
+  cannot see a library check made in an earlier statement or if, or a queue known to hold only one library''s errors, which are the routine dismissals; it also cannot tell whether the reason value collides
+  with another library''s. The suppression is deliberately conservative: any ERR_GET_LIB() call in an enclosing expression clears the finding, including one joined with || that does not actually guard the
+  reason test, so such sites are missed rather than over-reported.'
+rule:
+  kind: binary_expression
+  all:
+  - any:
+    - pattern: ERR_GET_REASON($E) == $R
+    - pattern: ERR_GET_REASON($E) != $R
+  - has:
+      field: right
+      kind: identifier
+      regex: ^[A-Z0-9_]+_R_[A-Z0-9_]+$
+      not:
+        regex: ^ERR_R_
+  - not:
+      inside:
+        kind: binary_expression
+        stopBy: end
+        has:
+          kind: call_expression
+          stopBy: end
+          has:
+            field: function
+            regex: ^ERR_GET_LIB$
