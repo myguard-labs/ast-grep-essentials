@@ -1,0 +1,24 @@
+id: py-recovery-limit-check-only-in-except
+valid:
+  - |-
+    def recover(data, limit):
+        out = b''
+        for index in range(len(data)):
+            if index > limit:
+                raise RuntimeError('limit')
+            try:
+                out += data[index:index + 1]
+            except ValueError:
+                pass
+        return out
+invalid:
+  - |-
+    def recover(data, limit):
+        out = b''
+        for index in range(len(data)):
+            try:
+                out += data[index:index + 1]
+            except ValueError:
+                if index > limit:
+                    raise RuntimeError('limit')
+        return out
