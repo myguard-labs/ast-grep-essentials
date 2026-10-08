@@ -1,0 +1,13 @@
+id: readdir-lstat-unguarded-typescript
+valid:
+  - |-
+    import fs from 'fs'
+    for (const entry of fs.readdirSync(dir)) {
+      try { fs.lstatSync(path.join(dir, entry)) } catch {}
+    }
+invalid:
+  - |-
+    import fs from 'fs'
+    for (const entry of fs.readdirSync(dir)) {
+      fs.lstatSync(path.join(dir, entry))
+    }

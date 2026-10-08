@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: readdir-lstat-unguarded-typescript
+language: typescript
+severity: warning
+message: >-
+  fs.lstatSync/fs.statSync on a readdirSync entry without a try block can
+  throw ENOENT if the entry disappears.
+note: >-
+  Syntactic check only. It matches fs.lstatSync or fs.statSync calls inside a
+  for-of loop over fs.readdirSync(...) that have no enclosing try statement.
+  It does not check that the stat argument comes from the loop variable, and
+  it does not resolve aliases of fs.
+rule:
+  pattern: 'fs.$M($$$ARGS)'
+  inside:
+    pattern: 'for (const $E of fs.readdirSync($$$DIR)) $BODY'
+    stopBy: end
+  not:
+    inside:
+      kind: try_statement
+      stopBy: end
+constraints:
+  M:
+    regex: '^l?statSync$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
