@@ -1,0 +1,24 @@
+id: nginx-log-debug-arg-count-mismatch
+valid:
+- void f(void) { ngx_log_debug4(NGX_LOG_DEBUG_HTTP, log, 0, "status %ui client %V zone %V count=%ui", a, b, c, d); }
+- void f(void) { ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "rate 100%% of %ui", a); }
+- void f(void) { ngx_log_debug0(NGX_LOG_DEBUG_HTTP, log, 0, "no specifiers here"); }
+- void f(void) { ngx_log_debug3(NGX_LOG_DEBUG_HTTP, log, 0, "%ui %V %V", a, b, c); }
+- void f(void) { /* ngx_log_debug3(NGX_LOG_DEBUG_HTTP, log, 0, "%ui %V %V %ui", a, b, c); */ }
+- const char *s = "ngx_log_debug3(NGX_LOG_DEBUG_HTTP, log, 0, \"%ui %V %V %ui\", a, b, c);";
+- void f(void) { ngx_log_debug0(NGX_LOG_DEBUG_HTTP, log, 0, "done%N"); }
+- void f(void) { ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "%ui%Z%N", a); }
+- void f(void) { ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "literal", "%ui %V"); }
+- void f(void) { ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "%ui", a); }
+- void f(void) { ngx_log_debug0(NGX_LOG_DEBUG_HTTP, log, 0, "100%"); }
+invalid:
+- void f(void) { ngx_log_debug3(NGX_LOG_DEBUG_HTTP, log, 0, "status %ui client %V zone %V count=%ui", a, b, c); }
+- void f(void) { ngx_log_debug0(NGX_LOG_DEBUG_HTTP, log, 0, "oops %ui"); }
+- void f(void) { ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "100%% %ui %V", a); }
+- void f(void) { ngx_log_debug8(NGX_LOG_DEBUG_HTTP, log, 0, "%d%d%d%d%d%d%d%d%d", 1,2,3,4,5,6,7,8); }
+- void f(void) { ngx_log_debug2(NGX_LOG_DEBUG_HTTP, log, 0, "%ui %ui %ui", a0, a1); }
+- void f(void) { ngx_log_debug4(NGX_LOG_DEBUG_HTTP, log, 0, "%ui %ui %ui %ui %ui", a0, a1, a2, a3); }
+- void f(void) { ngx_log_debug5(NGX_LOG_DEBUG_HTTP, log, 0, "%ui %ui %ui %ui %ui %ui", a0, a1, a2, a3, a4); }
+- void f(void) { ngx_log_debug6(NGX_LOG_DEBUG_HTTP, log, 0, "%ui %ui %ui %ui %ui %ui %ui", a0, a1, a2, a3, a4, a5); }
+- void f(void) { ngx_log_debug7(NGX_LOG_DEBUG_HTTP, log, 0, "%ui %ui %ui %ui %ui %ui %ui %ui", a0, a1, a2, a3, a4, a5, a6); }
+- void f(void) { ngx_log_debug1(NGX_LOG_DEBUG_HTTP, log, 0, "%ui%N %V", a); }

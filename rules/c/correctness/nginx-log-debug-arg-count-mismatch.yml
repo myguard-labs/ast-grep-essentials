@@ -1,0 +1,99 @@
+id: nginx-log-debug-arg-count-mismatch
+language: c
+severity: warning
+message: ngx_log_debugN format string has more conversion specifiers than the N arguments the macro takes after the format.
+note: Matches only a literal format string in the fourth argument (the format after level, log and err) whose conversion count (not counting %% and the argument-less %N and %Z) exceeds N in the macro name;
+  it does not see "*" width arguments, concatenated formats or macro-built formats, and does not flag too many arguments.
+rule:
+  kind: call_expression
+  any:
+  - all:
+    - has:
+        field: function
+        regex: ^ngx_log_debug0$
+    - has:
+        kind: argument_list
+        has:
+          kind: string_literal
+          nthChild: 4
+          regex: ^L?"(?:[^%]|%[%NZ])*(?:%[^%NZ"](?:[^%]|%[%NZ])*){1}
+  - all:
+    - has:
+        field: function
+        regex: ^ngx_log_debug1$
+    - has:
+        kind: argument_list
+        has:
+          kind: string_literal
+          nthChild: 4
+          regex: ^L?"(?:[^%]|%[%NZ])*(?:%[^%NZ"](?:[^%]|%[%NZ])*){2}
+  - all:
+    - has:
+        field: function
+        regex: ^ngx_log_debug2$
+    - has:
+        kind: argument_list
+        has:
+          kind: string_literal
+          nthChild: 4
+          regex: ^L?"(?:[^%]|%[%NZ])*(?:%[^%NZ"](?:[^%]|%[%NZ])*){3}
+  - all:
+    - has:
+        field: function
+        regex: ^ngx_log_debug3$
+    - has:
+        kind: argument_list
+        has:
+          kind: string_literal
+          nthChild: 4
+          regex: ^L?"(?:[^%]|%[%NZ])*(?:%[^%NZ"](?:[^%]|%[%NZ])*){4}
+  - all:
+    - has:
+        field: function
+        regex: ^ngx_log_debug4$
+    - has:
+        kind: argument_list
+        has:
+          kind: string_literal
+          nthChild: 4
+          regex: ^L?"(?:[^%]|%[%NZ])*(?:%[^%NZ"](?:[^%]|%[%NZ])*){5}
+  - all:
+    - has:
+        field: function
+        regex: ^ngx_log_debug5$
+    - has:
+        kind: argument_list
+        has:
+          kind: string_literal
+          nthChild: 4
+          regex: ^L?"(?:[^%]|%[%NZ])*(?:%[^%NZ"](?:[^%]|%[%NZ])*){6}
+  - all:
+    - has:
+        field: function
+        regex: ^ngx_log_debug6$
+    - has:
+        kind: argument_list
+        has:
+          kind: string_literal
+          nthChild: 4
+          regex: ^L?"(?:[^%]|%[%NZ])*(?:%[^%NZ"](?:[^%]|%[%NZ])*){7}
+  - all:
+    - has:
+        field: function
+        regex: ^ngx_log_debug7$
+    - has:
+        kind: argument_list
+        has:
+          kind: string_literal
+          nthChild: 4
+          regex: ^L?"(?:[^%]|%[%NZ])*(?:%[^%NZ"](?:[^%]|%[%NZ])*){8}
+  - all:
+    - has:
+        field: function
+        regex: ^ngx_log_debug8$
+    - has:
+        kind: argument_list
+        has:
+          kind: string_literal
+          nthChild: 4
+          regex: ^L?"(?:[^%]|%[%NZ])*(?:%[^%NZ"](?:[^%]|%[%NZ])*){9}
