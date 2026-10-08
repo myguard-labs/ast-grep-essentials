@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-html-template-unescaped-interpolation
+language: javascript
+severity: warning
+message: >-
+  Template literal builds HTML with a raw identifier or member interpolation;
+  encode the value before interpolating.
+note: >-
+  Syntactic only. The rule cannot tell whether the interpolated value was
+  already escaped, is trusted, or is a non-string safe value, and it does not
+  check where the interpolation sits relative to the tag.
+rule:
+  kind: template_string
+  regex: '<[A-Za-z]'
+  has:
+    kind: template_substitution
+    regex: '^\$\{\s*[A-Za-z_$][\w$.]*\s*\}$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
