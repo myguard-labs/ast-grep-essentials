@@ -1,0 +1,18 @@
+id: sh-variable-name-literal-in-test
+language: bash
+severity: warning
+message: A -n or -z test is given a quoted all-caps name as a literal string, so the test is constant instead of checking the variable.
+note: Matches [ -n "NAME" ], [ -z "NAME" ] and the [[ ]] forms where the operand is a double-quoted all-caps identifier. It cannot tell a mistyped variable reference from an intentional literal, and does
+  not see other test operators such as = or -v.
+rule:
+  kind: test_command
+  has:
+    kind: unary_expression
+    all:
+    - has:
+        field: operator
+        kind: test_operator
+        regex: ^-[nz]$
+    - has:
+        kind: string
+        regex: ^"[A-Z_][A-Z0-9_]*"$
