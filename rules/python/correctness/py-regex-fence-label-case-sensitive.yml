@@ -1,0 +1,43 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-regex-fence-label-case-sensitive
+language: python
+severity: warning
+message: >-
+  Regex matching a yaml|yml fence label is case-sensitive; Markdown info
+  strings like YAML or Yaml will be missed. Pass re.IGNORECASE.
+note: >-
+  Syntactic check only. It looks at direct
+  re.search/re.sub/re.match/re.compile calls whose first argument is a string
+  literal containing yaml|yml and that have no IGNORECASE or re.I argument and
+  no inline (?i) flag. It does not follow aliased imports, flags held in
+  variables, or patterns built at runtime.
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        regex: '^re\.(search|sub|match|compile)$'
+    - has:
+        field: arguments
+        has:
+          kind: string
+          nthChild: 1
+          regex: 'yaml\|yml'
+          not:
+            regex: '\(\?[a-zA-Z]*i'
+    - not:
+        has:
+          field: arguments
+          stopBy: end
+          has:
+            stopBy: end
+            regex: '^(re\.)?(IGNORECASE|I)$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
