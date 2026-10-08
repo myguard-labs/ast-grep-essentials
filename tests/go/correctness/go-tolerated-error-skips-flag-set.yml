@@ -1,0 +1,40 @@
+id: go-tolerated-error-skips-flag-set
+valid:
+  - |-
+    package p
+
+    type flagSet struct{}
+
+    func (flagSet) Set(string) {}
+
+    func process(err error, flag flagSet) (bool, error) {
+        seen := false
+        if err != nil {
+            if !errors.Is(err, io.ErrUnexpectedEOF) {
+                flag.Set("1")
+                return seen, err
+            }
+            flag.Set("1")
+            seen = true
+        }
+        return seen, nil
+    }
+invalid:
+  - |-
+    package p
+
+    type flagSet struct{}
+
+    func (flagSet) Set(string) {}
+
+    func process(err error, flag flagSet) (bool, error) {
+        seen := false
+        if err != nil {
+            if !errors.Is(err, io.ErrUnexpectedEOF) {
+                flag.Set("1")
+                return seen, err
+            }
+            seen = true
+        }
+        return seen, nil
+    }

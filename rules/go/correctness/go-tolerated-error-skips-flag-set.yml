@@ -1,0 +1,48 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-tolerated-error-skips-flag-set
+language: go
+severity: warning
+message: >-
+  The branch that rejects errors.Is calls Set on a flag, but the code after
+  it, where that error is tolerated, never calls Set.
+note: >-
+  This only checks the statements after the if in the same block. It cannot
+  tell whether skipping the flag on the tolerated path is intended, whether
+  the receivers are the same flag, or whether the flag is set somewhere else,
+  so every match needs review.
+utils:
+  set-call:
+    kind: call_expression
+    has:
+      field: function
+      kind: selector_expression
+      has:
+        field: field
+        regex: '^Set$'
+rule:
+  kind: if_statement
+  all:
+    - has:
+        field: condition
+        kind: unary_expression
+        regex: '^!\s*errors\.Is\('
+    - has:
+        field: consequence
+        has:
+          matches: set-call
+          stopBy: end
+    - not:
+        precedes:
+          stopBy: end
+          has:
+            matches: set-call
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
