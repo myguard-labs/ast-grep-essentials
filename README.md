@@ -45,6 +45,45 @@ Rule enrichment uses one pull request per rule ID. A rule PR may include that
 rule's fixture and snapshot, but never a second rule. MyGuard runs the private
 authoring and validation harness before merging changes to this public corpus.
 
+## Reviewed packs
+
+A reviewed pack is a commit that carries a signed annotated tag named
+`reviewed-YYYYMMDD-N` (N starts at 1 per day). Consumers that need a reviewed
+pack pin such a tag's commit, not an arbitrary `main` commit.
+`ci/promote.py` owns the gates:
+
+```sh
+python3 ci/promote.py check            # gates over the working tree
+python3 ci/promote.py check --rev REF  # gates over one commit
+python3 ci/promote.py baseline         # rewrite ci/baselines/promotion.json
+python3 ci/promote.py tag              # clean tree, HEAD == origin/main only
+```
+
+`check` blocks when any of these fails:
+
+- `ast-grep test` with snapshots, or `python -m unittest discover -s ci/tests`;
+- a rule added or changed since the previous `reviewed-*` tag (every rule
+  when none exists) has no mirrored fixture with both `valid` and `invalid`
+  cases; such rules are listed as withheld;
+- the pinned engine differs from `package.json` or the baseline, or the
+  pinned corpus `ci/corpus` no longer matches the baseline digest;
+- a rule reports more corpus findings than its baseline count plus
+  `fp.new_rule_threshold` (a rule absent from the baseline counts from 0),
+  unless `fp.acknowledged` lists that rule with a count at least that high;
+- the median wall time of the timed corpus scans exceeds
+  `median_seconds * (1 + tolerance_ratio) + tolerance_seconds` from the
+  baseline (defaults 50% plus 0.25 s; timings are host-specific, so rebaseline
+  on the host that tags).
+
+`baseline` keeps the tolerances and threshold, absorbs current counts, and
+clears acknowledgements. `tag` reruns `check` on HEAD, creates the signed tag
+with the gate summary as its message, and prints the push command; it never
+pushes. PowerShell rules get the fixture gate but their snapshot tests need
+the separately built parser (`sgconfig.powershell.yml`).
+
+The corpus is MyGuard-authored source copied from the commits listed in
+`ci/corpus/SOURCES.md`; it is scan input only and is never built or run.
+
 ## Rule sources
 
 The active pack incorporates 184 rules from

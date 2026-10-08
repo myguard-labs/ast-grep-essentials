@@ -1,0 +1,441 @@
+// Command strixd is the standalone YARA scanner backend for rspamd. rspamd has
+// no native YARA module (as of 4.1.0), so the mailstrix.lua plugin POSTs message or
+// MIME-part bytes here over HTTP and strixd scans them against a compiled YARA
+// rule set, returning the matched rule names. It mirrors the gozer backend's
+// shape: one authenticated HTTP endpoint (/scan), /health and /metrics,
+// configuration through environment variables with selected CLI overrides,
+// and a health subcommand for the distroless HEALTHCHECK (no shell or curl
+// in the image).
+//
+// Usage:
+//
+//	strixd [serve] [flags]      run the HTTP backend on MAILSTRIX_HOST:MAILSTRIX_PORT
+//	strixd scan [flags] [path…] scan files/dirs (or stdin) locally, print matches
+//	strixd check-rules [flags]  compile the rule set, report count, exit non-zero on fail
+//	strixd extract [flags][path] dump what the extractor carves from a file (no scan)
+//	strixd health               probe the local /health endpoint (HEALTHCHECK)
+//	strixd version              print the version
+//
+// `strixd scan` compiles the same rule set in-process and scans without the HTTP
+// server, so it works for one-off triage and pipelines, e.g.
+//
+//	strixd scan suspicious.doc                 # one file
+//	strixd scan /var/mail/cur                  # a maildir (recursed)
+//	strixd scan - < /var/mail/cur/123:2,S      # a maildir file on stdin
+//	cat msg.eml | strixd scan                  # no path => stdin too
+//
+// SIGHUP recompiles the rule set without dropping the listener, so a rules
+// refresh (new image layer bind-mounted, or an operator edit) takes effect with
+// `docker kill -s HUP yarad`.
+package main
+
+import (
+	"context"
+	"errors"
+	"flag"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"strconv"
+	"strings"
+	"syscall"
+	"time"
+
+	"github.com/myguard-labs/mailstrix/internal/mailstrix"
+)
+
+var version = "dev"
+
+// libyaraVersion is the libyara release strixd was built/linked against, injected
+// at build time via -ldflags "-X main.libyaraVersion=<v>" from the Dockerfile's
+// YARA_VERSION. A compiled .yac only loads on a matching libyara, so `fetch-rules`
+// compares this against a downloaded bundle's manifest and refuses a mismatch.
+// Empty (dev builds) disables the skew check.
+var libyaraVersion = ""
+
+func disablePollingForCacheFallback(cfg *mailstrix.Config, cacheErr error, logf func(string, ...any)) {
+	// Preserve invalid intervals so NewRulesUpdater still reports the operator's
+	// configuration error instead of silently converting it into disabled polling.
+	if cacheErr == nil || cfg.RulesPollInterval < time.Minute {
+		return
+	}
+	logf("automatic rules polling disabled while the writable cache is unavailable")
+	cfg.RulesPollInterval = 0
+}
+
+func selectRulesFallback(cfg *mailstrix.Config, cacheErr error, logf func(string, ...any)) {
+	if cacheErr == nil {
+		return
+	}
+	if fi, err := os.Stat(cfg.RulesPath); err == nil && fi.Mode().IsRegular() && fi.Size() > 0 {
+		return
+	}
+	if fi, err := os.Stat(cfg.RulesDir); err == nil && fi.IsDir() {
+		cfg.RulesPath = ""
+		return
+	}
+	if fi, err := os.Stat(cfg.SeedRules); err == nil && fi.Mode().IsRegular() && fi.Size() > 0 {
+		cfg.RulesPath = cfg.SeedRules
+		cfg.RulesDir = ""
+		logf("using baked rules seed directly while the writable cache is unavailable")
+	}
+}
+
+func runReloadSignals(ctx context.Context, hup <-chan os.Signal, reload func()) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-hup:
+			// Both cases may be ready during shutdown. Do not start another
+			// potentially blocking cache reload after cancellation won the race.
+			if ctx.Err() != nil {
+				return
+			}
+			reload()
+		}
+	}
+}
+
+func main() {
+	log.SetFlags(0) // journald adds its own timestamps
+	os.Exit(run(os.Args[1:]))
+}
+
+// printUsage lists the subcommands. Per-subcommand flags are shown by passing
+// -h to that subcommand (each uses a flag.FlagSet).
+func printUsage(w *os.File) {
+	_, _ = fmt.Fprint(w, `strixd — YARA scanning backend for rspamd
+
+usage: strixd <command> [flags]
+
+commands:
+  serve        run the HTTP backend (/scan, /metrics, /health) — the default
+  scan         scan files/dirs/stdin against the rules in-process
+  fetch-rules  download an updated compiled rule bundle into the cache
+  check-rules  compile the rules, print the count, exit non-zero on failure
+  extract      dump what the container extractor carves from a file (no scan)
+  info         print build, libyara, and loaded-rules-bundle identity
+  health       probe the local /health endpoint (container HEALTHCHECK)
+  version      print the version
+
+Run "strixd <command> -h" for that command's flags.
+`)
+}
+
+func run(args []string) int {
+	cmd := "serve"
+	if len(args) > 0 {
+		switch args[0] {
+		case "version", "--version", "-version", "-v":
+			fmt.Println("strixd", version)
+			return 0
+		case "help", "--help", "-h":
+			// Caught here, before the leading-dash guard below, so `strixd -h` /
+			// `--help` show the command list (exit 0) instead of falling through to
+			// the serve FlagSet's own help.
+			printUsage(os.Stdout)
+			return 0
+		}
+		if !strings.HasPrefix(args[0], "-") {
+			cmd, args = args[0], args[1:]
+		}
+	}
+	switch cmd {
+	case "serve":
+		return cmdServe(args)
+	case "scan":
+		return cmdScan(args)
+	case "check-rules":
+		return cmdCheckRules(args)
+	case "extract":
+		return cmdExtract(args)
+	case "fetch-rules":
+		return cmdFetchRules(args)
+	case "info":
+		return cmdInfo(args)
+	case "health":
+		return cmdHealth()
+	case "help":
+		printUsage(os.Stdout)
+		return 0
+	default:
+		printUsage(os.Stderr)
+		return 2
+	}
+}
+
+// cmdHealth probes the local /health endpoint and exits 0/1. It is the
+// container HEALTHCHECK in the distroless image (no shell/curl); it reads the
+// same MAILSTRIX_HOST/MAILSTRIX_PORT the server binds.
+func cmdHealth() int {
+	cfg := mailstrix.LoadConfig()
+	host := cfg.Host
+	if host == "" || host == "0.0.0.0" || host == "::" {
+		host = "127.0.0.1"
+	}
+	url := "http://" + host + ":" + strconv.Itoa(cfg.Port) + "/health"
+	c := &http.Client{Timeout: 3 * time.Second}
+	resp, err := c.Get(url)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "health:", err)
+		return 1
+	}
+	defer resp.Body.Close() //nolint:errcheck // read-side close; nothing to recover
+	if resp.StatusCode != http.StatusOK {
+		fmt.Fprintln(os.Stderr, "health: status", resp.StatusCode)
+		return 1
+	}
+	return 0
+}
+
+// adapterDrain coordinates native clamd/CAPE ownership with scanner cleanup.
+// Only the main goroutine uses it. A failed drain is sticky: skip cleanup while
+// native callers remain. Scanner.Close currently stops feed refreshers only;
+// this conservative guard also protects any future native-resource cleanup.
+type adapterDrain struct {
+	service interface{ Shutdown(context.Context) error }
+	cape    interface{ Shutdown(context.Context) error }
+	stopped bool
+	err     error
+}
+
+func (d *adapterDrain) shutdown(ctx context.Context) error {
+	if !d.stopped {
+		d.stopped = true
+		capeDone := make(chan error, 1)
+		go func() {
+			if d.cape == nil {
+				capeDone <- nil
+				return
+			}
+			capeDone <- d.cape.Shutdown(ctx)
+		}()
+		var clamdErr error
+		if d.service != nil {
+			clamdErr = d.service.Shutdown(ctx)
+		}
+		d.err = errors.Join(clamdErr, <-capeDone)
+	}
+	return d.err
+}
+
+func (d *adapterDrain) closeScanner(closeFn func()) {
+	if d.err == nil {
+		closeFn()
+	}
+}
+
+func adapterDrainBudget(cfg *mailstrix.Config) time.Duration {
+	budget := cfg.ScanTimeout + 5*time.Second
+	if cfg.CAPEConfigFile != "" {
+		budget += 30 * time.Second
+	}
+	return budget
+}
+
+// shutdownAdapters shares one absolute deadline and joins every adapter before
+// deferred cleanup. The sticky native-adapter drain stays on the calling main
+// goroutine.
+func shutdownAdapters(ctx context.Context, drain *adapterDrain, httpShutdown func(context.Context) error, icapShutdown func(context.Context)) error {
+	httpDone := make(chan error, 1)
+	icapDone := make(chan struct{})
+	go func() { httpDone <- httpShutdown(ctx) }()
+	go func() { defer close(icapDone); icapShutdown(ctx) }()
+	_ = drain.shutdown(ctx) // deferred reporter logs the sticky error and sets exitCode
+	err := <-httpDone
+	<-icapDone
+	return err
+}
+
+// cmdServe loads config from the environment, overlays CLI flags
+// (flag > env > default), compiles the rule set, wires a SIGHUP reloader, and
+// serves until the process is signalled.
+func cmdServe(args []string) (exitCode int) {
+	cfg := mailstrix.LoadConfig()
+	cfg.Version = version // build identity, surfaced on /version
+
+	fs := flag.NewFlagSet("serve", flag.ContinueOnError)
+	fs.StringVar(&cfg.Host, "host", cfg.Host, "HTTP bind host (MAILSTRIX_HOST); serves /scan,/metrics,/health")
+	fs.IntVar(&cfg.Port, "port", cfg.Port, "HTTP bind port (MAILSTRIX_PORT, default 8079)")
+	fs.StringVar(&cfg.CAPEConfigFile, "cape-config", cfg.CAPEConfigFile, "optional administrator CAPE config file; separate HTTPS listener (MAILSTRIX_CAPE_CONFIG_FILE)")
+	fs.StringVar(&cfg.CAPEPolicy, "cape-policy", cfg.CAPEPolicy, "sandbox adapter policy; only static-only supported (MAILSTRIX_CAPE_POLICY)")
+	fs.DurationVar(&cfg.BackendTimeout, "backend-timeout", cfg.BackendTimeout, "per-request backend budget (MAILSTRIX_BACKEND_TIMEOUT)")
+	fs.DurationVar(&cfg.ScanTimeout, "scan-timeout", cfg.ScanTimeout, "per-scan libyara timeout (MAILSTRIX_SCAN_TIMEOUT)")
+	fs.IntVar(&cfg.MaxConcurrent, "max-concurrent", cfg.MaxConcurrent, "max in-flight scans (MAILSTRIX_MAX_CONCURRENT)")
+	fs.Int64Var(&cfg.MaxBody, "max-body", cfg.MaxBody, "max request body bytes (MAILSTRIX_MAX_BODY)")
+	fs.StringVar(&cfg.Token, "token", cfg.Token, "shared-secret for /scan (MAILSTRIX_TOKEN[_FILE])")
+	fs.StringVar(&cfg.RulesDir, "rules-dir", cfg.RulesDir, "dir of *.yar/*.yara to compile (MAILSTRIX_RULES_DIR)")
+	fs.StringVar(&cfg.RulesPath, "rules", cfg.RulesPath, "precompiled .yac bundle, wins over -rules-dir (MAILSTRIX_RULES)")
+	fs.StringVar(&cfg.CacheDir, "cache-dir", cfg.CacheDir, "writable dir for the live rule bundle; seeded from -seed-rules when empty/unreadable (MAILSTRIX_CACHE_DIR)")
+	fs.StringVar(&cfg.SeedRules, "seed-rules", cfg.SeedRules, "baked read-only .yac used to (re)seed the cache (MAILSTRIX_SEED_RULES)")
+	fs.DurationVar(&cfg.RulesMaxAge, "rules-max-age", cfg.RulesMaxAge, "loaded rules maximum age; 0 disables checking (default 48h)")
+	fs.DurationVar(&cfg.RulesPollInterval, "rules-poll-interval", cfg.RulesPollInterval, "automatic rules check interval; 0 disables networking")
+	fs.DurationVar(&cfg.RulesFetchTimeout, "rules-fetch-timeout", cfg.RulesFetchTimeout, "automatic rules network and cache-lock deadline")
+	fs.StringVar(&cfg.RulesURL, "rules-url", cfg.RulesURL, "public rules release directory or mirror")
+	fs.BoolVar(&cfg.RulesAllowHTTP, "rules-allow-http", cfg.RulesAllowHTTP, "permit a plain-http rules URL; https-to-http redirects stay refused (MAILSTRIX_RULES_ALLOW_HTTP)")
+	fs.BoolVar(&cfg.Verbose, "verbose", cfg.Verbose, "per-request logging (MAILSTRIX_VERBOSE)")
+	fs.BoolVar(&cfg.LogStdout, "log-stdout", cfg.LogStdout, "info/access logs to stdout; errors stay stderr (MAILSTRIX_LOG_STDOUT)")
+	if err := fs.Parse(args); err != nil {
+		return 2
+	}
+	// Re-apply all sanitize clamps after flag overlay so a non-positive flag
+	// value (e.g. -scan-timeout=0) cannot disable safety guards that LoadConfig
+	// set on startup. Finalize is idempotent: clamping an already-valid value
+	// is a no-op. The scanner copies cfg.ScanTimeout at construction time, so
+	// the clamp must happen before EnsureCachedRules/NewScanner.
+	cfg.Finalize()
+	if err := cfg.ValidateCAPE(); err != nil {
+		log.Printf("[mailstrix] invalid CAPE configuration")
+		return 2
+	}
+	if err := cfg.ValidateRedisMAC(); err != nil {
+		log.Printf("[mailstrix] %v", err)
+		return 2
+	}
+	if err := cfg.ValidateWildcardBind(); err != nil {
+		log.Printf("[mailstrix] %v", err)
+		return 2
+	}
+	if err := mailstrix.ValidateSecrets(); err != nil {
+		log.Printf("[mailstrix] %v", err)
+		return 2
+	}
+
+	logf := func(format string, a ...any) { log.Printf("[mailstrix] "+format, a...) }
+
+	// Seed-on-startup / self-heal: when a writable cache dir is configured, serve
+	// rules from it and reseed from the baked read-only bundle when the cache is
+	// missing or unreadable (fresh deploy / wiped bindmount). No-op when no cache
+	// dir is set. A seeding failure is not fatal here — fall back to whatever
+	// RulesPath/RulesDir NewScanner can load, so a misconfigured cache never takes
+	// the scanner fully offline.
+	cacheErr := mailstrix.EnsureCachedRules(cfg, logf)
+	if cacheErr != nil {
+		logf("rules cache unavailable, falling back to baked rules: %v", cacheErr)
+	}
+	selectRulesFallback(cfg, cacheErr, logf)
+
+	scanner, err := mailstrix.NewScanner(cfg, logf)
+	if err != nil {
+		log.Printf("[mailstrix] FATAL: cannot load rules: %v", err)
+		return 1
+	}
+	// Stop the scanner's abuse.ch feed refreshers after a successful drain.
+	// A failed native drain conservatively leaves cleanup to process exit.
+	drain := &adapterDrain{}
+	defer drain.closeScanner(scanner.Close)
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), adapterDrainBudget(cfg))
+		defer cancel()
+		if err := drain.shutdown(ctx); err != nil {
+			exitCode = 1
+			log.Printf("[mailstrix] native adapter shutdown error: %v", err)
+		}
+	}()
+	if cfg.Canary {
+		logf("CANARY MODE: all matches tagged mailstrix_canary=1 (shadow/observe-only)")
+	}
+
+	// A valid polling request must not turn the documented baked-rules fallback
+	// into a startup failure.
+	disablePollingForCacheFallback(cfg, cacheErr, logf)
+	srv := mailstrix.NewServer(cfg, scanner)
+	updater, err := mailstrix.NewRulesUpdater(cfg, scanner, libyaraVersion, srv.FlushCache)
+	if err != nil {
+		log.Printf("[mailstrix] invalid rules updater: %v", err)
+		return 2
+	}
+	srv.SetRulesUpdater(updater)
+	capeService, capeErr := srv.StartCAPE()
+	drain.cape = capeService
+	if errors.Is(capeErr, mailstrix.ErrCAPEConfig) {
+		log.Printf("[mailstrix] invalid CAPE configuration")
+		return 2
+	}
+	if capeErr != nil {
+		log.Printf("[mailstrix] CAPE unavailable; static scanning continues")
+	}
+	clamd, err := srv.StartClamd()
+	if err != nil {
+		log.Printf("[mailstrix] clamd startup error: %v", err)
+		return 2
+	}
+	drain.service = clamd
+	// Every exit path drains clamd and CAPE before scanner.Close. A native scan
+	// cannot be interrupted by closing its socket. On timeout, skip scanner
+	// cleanup; Close currently stops feed refreshers and does not destroy the
+	// engine.
+	updateCtx, updateCancel := context.WithCancel(context.Background())
+	updateDone := make(chan struct{})
+	go func() { defer close(updateDone); updater.Run(updateCtx) }()
+	defer func() { updateCancel(); <-updateDone }()
+
+	// Optional ICAP listener — disabled when ICAPAddr is empty.
+	icapShutdown := func(_ context.Context) {}
+	if cfg.ICAPAddr != "" {
+		icapCtx, icapCancel := context.WithCancel(context.Background())
+		defer icapCancel() // belt-and-suspenders; icapShutdown below calls it first on SIGTERM
+		go func() {
+			if err := srv.ListenAndServeICAP(icapCtx); err != nil {
+				logf("ICAP listener error: %v", err)
+			}
+		}()
+		icapShutdown = func(ctx context.Context) {
+			icapCancel()
+			srv.ShutdownICAP(ctx)
+		}
+	}
+
+	// SIGHUP -> recompile rules in place, then flush the verdict cache (old
+	// verdicts were computed against the previous rule set). A failed reload
+	// keeps the old set active and leaves the cache intact (Reload logs and
+	// returns; the listener never drops).
+	hup := make(chan os.Signal, 1)
+	signal.Notify(hup, syscall.SIGHUP)
+	hupDone := make(chan struct{})
+	defer func() { signal.Stop(hup); updateCancel(); <-hupDone }()
+	go func() {
+		defer close(hupDone)
+		runReloadSignals(updateCtx, hup, func() {
+			logf("SIGHUP: reloading rules")
+			if err := scanner.ReloadAll(); err != nil {
+				logf("reload failed: %v", err)
+				return
+			}
+			srv.FlushCache()
+		})
+	}()
+
+	// Graceful shutdown on SIGTERM/SIGINT: stop accepting new scans (/ready 503s)
+	// and drain in-flight scans for a bounded window before exiting — important
+	// during rolling image/rule updates so a scan in progress isn't dropped. The
+	// drain budget covers the longest a single scan can run (ScanTimeout) plus a
+	// little slack.
+	srvErr := make(chan error, 1)
+	go func() { srvErr <- srv.ListenAndServe() }()
+
+	term := make(chan os.Signal, 1)
+	signal.Notify(term, syscall.SIGTERM, syscall.SIGINT)
+
+	select {
+	case err := <-srvErr:
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Printf("[mailstrix] server error: %v", err)
+			return 1
+		}
+		return 0
+	case sig := <-term:
+		logf("%s: draining (graceful shutdown)", sig)
+		ctx, cancel := context.WithTimeout(context.Background(), adapterDrainBudget(cfg))
+		defer cancel()
+		if err := shutdownAdapters(ctx, drain, srv.Shutdown, icapShutdown); err != nil {
+			log.Printf("[mailstrix] shutdown error: %v", err)
+			return 1
+		}
+		<-srvErr // ListenAndServe returns http.ErrServerClosed once drained
+		return 0
+	}
+}
