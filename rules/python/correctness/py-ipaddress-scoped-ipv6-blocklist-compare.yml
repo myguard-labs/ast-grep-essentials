@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-ipaddress-scoped-ipv6-blocklist-compare
+language: python
+severity: warning
+message: >-
+  A parsed ipaddress.ip_address(...) result is tested for membership directly.
+  An IPv6 zone identifier changes equality and hashing, so a scoped address
+  can get past the blocklist.
+note: >-
+  This is a syntactic match only. It flags a direct `ipaddress.ip_address(...)
+  in <collection>` comparison. It does not check whether the collection is a
+  blocklist, whether the input can contain a zone identifier, or whether the
+  code normalizes the address somewhere else.
+rule:
+  pattern: 'ipaddress.ip_address($ADDR) in $COLLECTION'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

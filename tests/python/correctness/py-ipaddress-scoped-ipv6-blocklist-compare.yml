@@ -1,0 +1,13 @@
+id: py-ipaddress-scoped-ipv6-blocklist-compare
+valid:
+  - |-
+    import ipaddress
+    BLOCKED = {ipaddress.ip_address('fd00:ec2::254')}
+    def is_blocked(s):
+        return ipaddress.IPv6Address(ipaddress.ip_address(s).packed) in BLOCKED
+invalid:
+  - |-
+    import ipaddress
+    BLOCKED = {ipaddress.ip_address('fd00:ec2::254')}
+    def is_blocked(s):
+        return ipaddress.ip_address(s) in BLOCKED
