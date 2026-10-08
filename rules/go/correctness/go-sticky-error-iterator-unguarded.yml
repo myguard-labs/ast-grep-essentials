@@ -1,0 +1,46 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-sticky-error-iterator-unguarded
+language: go
+severity: warning
+message: >-
+  Method increments receiver state without first checking the receiver's
+  sticky err field.
+note: >-
+  Syntactic only. It matches a method body that increments a receiver field
+  and contains no `if recv.err != nil` check anywhere in that body. It does
+  not check whether the receiver struct actually declares an err field,
+  whether the guard comes first or returns, or whether the error is checked
+  some other way.
+rule:
+  kind: method_declaration
+  all:
+    - has:
+        field: receiver
+        has:
+          kind: parameter_declaration
+          has:
+            field: name
+            pattern: '$R'
+    - has:
+        field: body
+        has:
+          stopBy: end
+          pattern: '$R.$F++'
+    - not:
+        has:
+          field: body
+          has:
+            stopBy: end
+            pattern: |
+              if $R.err != nil {
+                $$$
+              }
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
