@@ -1,0 +1,14 @@
+id: sh-blocking-http-curl-no-timeout
+valid:
+- curl -s --max-time 10 "http://example.com"
+- curl -s --max-time 5 "$url"
+- curl -s -m 30 "http://localhost:8080/health"
+- curl -L -m 10 "http://example.com"
+invalid:
+- curl -s "http://example.com"
+- curl -s '$url'
+- curl "http://localhost:8080/health"
+- 'curl -s -H "Content-Type: application/json" "http://api.example.com"'
+- curl -L "http://redirect.example.com"
+- curl -X POST -d "data" "http://example.com"
+- 'curl -H "X-Test: $(printf %s -m)" "http://example.com"'

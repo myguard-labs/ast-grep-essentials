@@ -1,0 +1,17 @@
+id: sh-blocking-http-curl-no-timeout
+language: bash
+severity: warning
+message: curl is run without a -m/--max-time bound, so it can hang indefinitely on an unresponsive server.
+note: Matches any curl command lacking a standalone -m or --max-time word; it does not check the option value (so -m 0, which disables the limit, counts as a bound) and cannot see --connect-timeout, a
+  timeout wrapper, options in a curlrc or -K config file, combined short flags such as -sm10, or whether the call is
+  in a service or status check.
+rule:
+  kind: command
+  all:
+    - has:
+        field: name
+        regex: '^curl$'
+    - not:
+        has:
+          kind: word
+          regex: '^(-m|-m\S+|--max-time|--max-time=\S+)$'
