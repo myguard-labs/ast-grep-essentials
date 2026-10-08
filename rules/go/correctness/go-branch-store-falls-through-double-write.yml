@@ -1,0 +1,45 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-branch-store-falls-through-double-write
+language: go
+severity: warning
+message: >-
+  An if-block that stores into a map index falls through to a second map-index
+  store of the same key and value; a return may be missing.
+note: >-
+  Syntactic only. Matches an if statement with no else whose block contains an
+  index store and no return or continue, followed later in the same block by
+  another index store using the same key and value expressions. It does not
+  check types, aliasing, or whether writing to both stores is intended.
+rule:
+  all:
+    - kind: if_statement
+    - not:
+        has:
+          field: alternative
+          regex: '.'
+    - has:
+        field: consequence
+        all:
+          - has:
+              stopBy: end
+              pattern: '$FIRST[$KEY] = $VAL'
+          - not:
+              has:
+                stopBy: end
+                kind: return_statement
+          - not:
+              has:
+                stopBy: end
+                kind: continue_statement
+    - precedes:
+        stopBy: end
+        pattern: '$SECOND[$KEY] = $VAL'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

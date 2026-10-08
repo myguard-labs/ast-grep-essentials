@@ -1,0 +1,20 @@
+id: go-branch-store-falls-through-double-write
+snapshots:
+  ? "func (c *cache) put(isClass bool, key string, n *entry) {\n\tif isClass {\n\t\tc.classNodes[key] = n\n\t}\n\tc.contractNodes[key] = n\n}"
+  : labels:
+    - source: "if isClass {\n\t\tc.classNodes[key] = n\n\t}"
+      style: primary
+      start: 59
+      end: 98
+    - source: c.classNodes[key] = n
+      style: secondary
+      start: 74
+      end: 95
+    - source: "{\n\t\tc.classNodes[key] = n\n\t}"
+      style: secondary
+      start: 70
+      end: 98
+    - source: c.contractNodes[key] = n
+      style: secondary
+      start: 100
+      end: 124

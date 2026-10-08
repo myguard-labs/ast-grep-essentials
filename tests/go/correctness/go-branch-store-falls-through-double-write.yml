@@ -1,0 +1,5 @@
+id: go-branch-store-falls-through-double-write
+valid:
+  - "func (c *cache) put(isClass bool, key string, n *entry) {\n\tif isClass {\n\t\tc.classNodes[key] = n\n\t\treturn\n\t}\n\tc.contractNodes[key] = n\n}"
+invalid:
+  - "func (c *cache) put(isClass bool, key string, n *entry) {\n\tif isClass {\n\t\tc.classNodes[key] = n\n\t}\n\tc.contractNodes[key] = n\n}"
