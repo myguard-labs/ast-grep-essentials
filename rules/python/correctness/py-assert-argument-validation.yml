@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-assert-argument-validation
+language: python
+severity: warning
+message: >-
+  Validation written as an assert statement is removed under python -O; raise
+  an explicit exception instead.
+note: >-
+  Syntactic only. The rule matches any assert whose condition is a comparison
+  inside a function. It cannot tell whether the compared name is a parameter
+  or the other side is a constant, so asserts on locals or internal invariants
+  are also flagged and need triage.
+rule:
+  kind: assert_statement
+  has:
+    kind: comparison_operator
+  inside:
+    kind: function_definition
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
