@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-nested-quantifier-regex
+language: javascript
+severity: warning
+message: >-
+  Regex literal has a quantified group that contains an inner + or *
+  quantifier (nested repetition).
+note: >-
+  This is a text heuristic on regex literals only. It checks groups that have
+  no nested parentheses and an unescaped inner + or * followed by an outer +
+  or *. It does not prove that catastrophic backtracking happens. It does not
+  check regexes built with RegExp or from strings.
+rule:
+  kind: regex
+  regex: '\([^()]*[^\\][+*][^()]*\)[+*]'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
