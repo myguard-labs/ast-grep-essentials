@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-assert-under-own-none-guard
+language: python
+severity: warning
+message: >-
+  This assert repeats the enclosing if's 'is not None' check, so it can never
+  fail.
+note: >-
+  This is a syntax-only check. It needs the assert and the enclosing if
+  condition to use the same expression text. It does not look at aliasing,
+  reassignment between the guard and the assert, or whether the assert is in
+  an else branch.
+rule:
+  pattern: 'assert $X is not None'
+  inside:
+    stopBy: end
+    kind: if_statement
+    has:
+      field: condition
+      pattern: '$X is not None'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
