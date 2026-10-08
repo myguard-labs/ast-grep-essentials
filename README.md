@@ -81,8 +81,10 @@ with the gate summary as its message, and prints the push command; it never
 pushes. PowerShell rules get the fixture gate but their snapshot tests need
 the separately built parser (`sgconfig.powershell.yml`).
 
-The corpus is MyGuard-authored source copied from the commits listed in
-`ci/corpus/SOURCES.md`; it is scan input only and is never built or run.
+The corpus is MyGuard-authored source, copied from the commits listed in
+`ci/corpus/SOURCES.md` or written for it under `ci/corpus/samples/`; it is
+scan input only and is never built or run. PowerShell sources are not part of
+the corpus scan, which uses the default `sgconfig.yml`.
 
 ## Rule sources
 
