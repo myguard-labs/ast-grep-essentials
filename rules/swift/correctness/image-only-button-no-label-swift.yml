@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: image-only-button-no-label-swift
+language: swift
+severity: warning
+message: >-
+  Image-only Button has no accessibilityLabel; VoiceOver will read the SF
+  Symbol name instead of the action.
+note: >-
+  Syntactic check within a single Button expression. It only recognizes an
+  accessibilityLabel modifier applied directly to the Button call. Labels
+  applied further along the modifier chain or on enclosing containers are not
+  seen.
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        kind: simple_identifier
+        regex: '^Button$'
+    - has:
+        kind: lambda_literal
+        stopBy: end
+        regex: '^\{\s*Image\(systemName:[^{}]*\)\s*\}$'
+    - not:
+        inside:
+          kind: navigation_expression
+          has:
+            kind: navigation_suffix
+            regex: accessibilityLabel
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
