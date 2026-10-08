@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-ml-model-no-explicit-device
+language: python
+severity: warning
+message: >-
+  CrossEncoder or SentenceTransformer is constructed without an explicit
+  device keyword argument; the device is auto-selected per host.
+note: >-
+  Syntactic check only. It matches direct calls named CrossEncoder or
+  SentenceTransformer whose argument list has no literal device= keyword. It
+  cannot see a device passed via **kwargs or positionally, aliased imports, or
+  attribute-qualified calls such as module.CrossEncoder.
+rule:
+  kind: call
+  has:
+    field: function
+    kind: identifier
+    regex: '^(CrossEncoder|SentenceTransformer)$'
+  not:
+    has:
+      field: arguments
+      has:
+        kind: keyword_argument
+        has:
+          field: name
+          regex: '^device$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
