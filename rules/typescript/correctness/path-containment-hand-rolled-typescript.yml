@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: path-containment-hand-rolled-typescript
+language: typescript
+severity: warning
+message: >-
+  Hand-rolled path containment check compares a relative path against '..' or
+  '../'; use the shared containment helper instead.
+note: >-
+  Syntactic only. It matches an equality test against the literal '..' joined
+  by || with a startsWith('../') call on the same identifier, when that test
+  sits in a statement block that also contains a relative(base, join(base, p))
+  call. It does not prove that the compared identifier holds that call's
+  result. It also does not find other spellings, such as double quotes,
+  path.sep, or a reversed operand order.
+rule:
+  pattern: '$R === ''..'' || $R.startsWith(''../'')'
+  inside:
+    kind: statement_block
+    stopBy: end
+    has:
+      stopBy: end
+      pattern: 'relative($B, join($B, $P))'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
