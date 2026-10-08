@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-subprocess-argv-bearer-token
+language: python
+severity: warning
+message: >-
+  An f-string that builds an Authorization header is passed in a subprocess
+  argument list, so the secret is exposed in argv.
+note: >-
+  This rule only checks syntax. It matches an f-string literal containing
+  Authorization with an interpolation, placed directly in a list that is a
+  positional argument to a subprocess.* call. It does not check whether the
+  interpolated value is really a secret or whether the process listing is
+  visible to other users. It also misses argument lists that are built
+  elsewhere or passed through aliases.
+rule:
+  kind: string
+  regex: Authorization
+  has:
+    kind: interpolation
+  inside:
+    kind: list
+    inside:
+      kind: argument_list
+      inside:
+        kind: call
+        has:
+          field: function
+          pattern: 'subprocess.$FUNC'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
