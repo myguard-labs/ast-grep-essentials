@@ -1,0 +1,39 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: rust-self-recursive-method-call
+language: rust
+severity: error
+message: >-
+  Method in an inherent impl calls itself via self with no other body logic,
+  causing unbounded recursion.
+note: >-
+  Syntactic check only. It matches a function in an impl block that has no
+  trait, where the whole body is self.<same name>() with an optional .into().
+  It does not resolve types, macros, or calls that go through other methods.
+rule:
+  all:
+    - kind: function_item
+    - has:
+        field: name
+        pattern: '$N'
+    - has:
+        field: body
+        regex: '^\{\s*self\.[A-Za-z_][A-Za-z0-9_]*\(\)(\.into\(\))?\s*\}$'
+        has:
+          stopBy: end
+          pattern: 'self.$N()'
+    - inside:
+        kind: impl_item
+        stopBy: end
+        not:
+          has:
+            field: trait
+            regex: '\S'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
