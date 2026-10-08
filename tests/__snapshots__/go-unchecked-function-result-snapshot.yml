@@ -1,0 +1,44 @@
+id: go-unchecked-function-result
+snapshots:
+  ? "package m\n\nfunc a() {\n\tf, err := os.Open(p)\n\tdefer f.Close()\n\tif err != nil {\n\t\treturn\n\t}\n}\n"
+  : labels:
+    - source: f, err := os.Open(p)
+      style: primary
+      start: 23
+      end: 43
+    - source: f
+      style: secondary
+      start: 51
+      end: 52
+    - source: defer f.Close()
+      style: secondary
+      start: 45
+      end: 60
+  ? "package m\n\nfunc a() {\n\tv, err := fn()\n\tfmt.Printf(\"err: %v\", v)\n\tif err != nil {\n\t\treturn\n\t}\n}\n"
+  : labels:
+    - source: v, err := fn()
+      style: primary
+      start: 23
+      end: 37
+    - source: v
+      style: secondary
+      start: 61
+      end: 62
+    - source: 'fmt.Printf("err: %v", v)'
+      style: secondary
+      start: 39
+      end: 63
+  ? "package m\n\nfunc a() {\n\tv, err := fn()\n\tobj.method(v)\n}\n"
+  : labels:
+    - source: v, err := fn()
+      style: primary
+      start: 23
+      end: 37
+    - source: v
+      style: secondary
+      start: 50
+      end: 51
+    - source: obj.method(v)
+      style: secondary
+      start: 39
+      end: 52

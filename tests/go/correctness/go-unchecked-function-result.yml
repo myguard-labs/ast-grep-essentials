@@ -1,0 +1,27 @@
+id: go-unchecked-function-result
+valid:
+- "package m\n\nfunc a() {\n\tv, err := fn()\n\tif err != nil {\n\t\treturn\n\t}\n\tobj.method(v)\n}\n"
+- "package m\n\nfunc a() {\n\tv, err := fn()\n\tfmt.Println(\"ready\")\n\tif err != nil {\n\t\treturn\n\t}\n\tobj.method(v)\n}\n"
+- "package m\n\nfunc a() (int, error) {\n\tv, err := fn()\n\treturn v, err\n}\n"
+- "package m\n\nfunc a() {\n\tv, _ := fn()\n\tobj.method(v)\n}\n"
+- "package m\n\nfunc a() {\n\tn := fn()\n\tobj.method(n)\n}\n"
+- 'package m
+
+
+  // v, err := fn()
+
+  // obj.method(v)
+
+  func a() {}
+
+  '
+- 'package m
+
+
+  var astgrepFixture = "v, err := fn(); obj.method(v)"
+
+  '
+invalid:
+- "package m\n\nfunc a() {\n\tv, err := fn()\n\tobj.method(v)\n}\n"
+- "package m\n\nfunc a() {\n\tf, err := os.Open(p)\n\tdefer f.Close()\n\tif err != nil {\n\t\treturn\n\t}\n}\n"
+- "package m\n\nfunc a() {\n\tv, err := fn()\n\tfmt.Printf(\"err: %v\", v)\n\tif err != nil {\n\t\treturn\n\t}\n}\n"

@@ -1,0 +1,18 @@
+id: go-unchecked-function-result
+language: go
+severity: warning
+message: The value from a call that also returns err is used by the very next statement, which has no err identifier, so the error is not checked first.
+note: Only the statement immediately after a `v, err := call()` declaration is inspected, and only when it uses v without an err identifier; a later check, an error variable with another name, or an intentional use of a possibly invalid value cannot be told apart syntactically. Calls whose result is safe to use on error (for example a nil-tolerant method) still match.
+rule:
+  kind: short_var_declaration
+  pattern: $V, err := $F($$$ARGS)
+  precedes:
+    all:
+    - has:
+        pattern: $V
+        stopBy: end
+    - not:
+        has:
+          kind: identifier
+          regex: '^err$'
+          stopBy: end
