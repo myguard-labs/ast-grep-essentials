@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: spawn-sync-drops-signal-typescript
+language: typescript
+severity: warning
+message: >-
+  spawn.sync result destructures only status and re-exits with it; a
+  signal-killed child yields null status and the parent exits successfully.
+note: >-
+  Syntactic only. It matches a declaration that destructures exactly `status`
+  from spawn.sync, followed by a later sibling statement whose process.exit
+  call uses an identifier named status. It does not track aliasing, other ways
+  of checking the signal, or whether the status shown is the same binding.
+rule:
+  pattern: 'const { status } = spawn.sync($$$ARGS)'
+  precedes:
+    stopBy: end
+    has:
+      pattern: 'process.exit($$$EXIT)'
+      stopBy: end
+      has:
+        kind: identifier
+        regex: '^status$'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
