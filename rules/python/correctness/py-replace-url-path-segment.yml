@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-replace-url-path-segment
+language: python
+severity: warning
+message: >-
+  Deleting a path-prefix literal with str.replace removes every occurrence,
+  not only a leading prefix; prefer removeprefix or an explicit startswith
+  check.
+note: >-
+  Syntactic only. Matches .replace calls that substitute a string literal
+  starting with '/' by an empty string literal. It cannot tell whether the
+  receiver is a URL or path string, or whether replacing every occurrence is
+  actually intended.
+rule:
+  pattern: '$S.replace($P, $E)'
+constraints:
+  P:
+    kind: string
+    regex: '^[rRuU]?[''"]/'
+  E:
+    regex: '^(''''|"")$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
