@@ -1,0 +1,39 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-global-regex-test-stateful
+language: javascript
+severity: warning
+message: >-
+  A regex literal with the g flag is bound to a name and its test method is
+  called; lastIndex keeps state between calls.
+note: >-
+  Syntactic only. Matches a call to NAME.test(...) in a file that also
+  declares NAME with a regex literal carrying the g flag. It does not check
+  scope, shadowing, reassignment, or whether test is actually called more than
+  once.
+rule:
+  pattern: '$R.test($$$ARGS)'
+  inside:
+    kind: program
+    stopBy: end
+    has:
+      kind: variable_declarator
+      stopBy: end
+      all:
+        - has:
+            field: name
+            pattern: '$R'
+        - has:
+            field: value
+            kind: regex
+            has:
+              kind: regex_flags
+              regex: g
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
