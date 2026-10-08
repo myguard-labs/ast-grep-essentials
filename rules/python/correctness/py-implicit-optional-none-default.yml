@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-implicit-optional-none-default
+language: python
+severity: warning
+message: >-
+  Parameter has a None default but its annotation does not allow None
+  (implicit Optional).
+note: >-
+  Syntactic check only. It flags typed parameters that default to the literal
+  None when the annotation text does not mention None, Optional, Any, or
+  object. It does not resolve type aliases, imported aliases of Optional,
+  TypeVars, or string annotations that resolve to optional types.
+rule:
+  kind: typed_default_parameter
+  has:
+    field: value
+    kind: none
+  not:
+    has:
+      field: type
+      regex: '\bNone\b|Optional|\bAny\b|\bobject\b'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
