@@ -1,0 +1,16 @@
+id: sh-unquoted-array-element
+language: bash
+severity: warning
+message: Array element contains an unquoted variable expansion, so word splitting and globbing can break it into several elements.
+note: Matches only array literal elements whose expansion is not inside double quotes; it cannot see whether the value actually contains whitespace or glob characters, or whether splitting is intended.
+rule:
+  inside:
+    kind: array
+  any:
+  - kind: simple_expansion
+  - kind: expansion
+  - kind: concatenation
+    has:
+      any:
+      - kind: simple_expansion
+      - kind: expansion

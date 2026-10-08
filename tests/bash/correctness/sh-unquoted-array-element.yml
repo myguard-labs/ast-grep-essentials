@@ -1,0 +1,16 @@
+id: sh-unquoted-array-element
+valid:
+- ports=("A:$A" "B:$B" "C:$C")
+- '# ports=(A:$A B:$B C:$C)'
+- astgrep_fixture='ports=(A:$A B:$B C:$C)'
+- ports=("$A" "${B}")
+- ports=(a b c)
+- ports=("$A""$B")
+- x=$A
+- ports=("${arr[@]}")
+invalid:
+- ports=(A:$A B:$B C:$C)
+- ports=($A)
+- ports=(a ${B})
+- ports=(a "b" ${C}x)
+- ports=(a "$B"$C)
