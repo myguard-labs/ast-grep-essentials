@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: java-arrays-aslist-then-add
+language: java
+severity: warning
+message: >-
+  A list created directly by Arrays.asList has a fixed size, so calling add on
+  it throws UnsupportedOperationException.
+note: >-
+  This is a syntactic check only. It matches an add(...) statement that comes
+  after a sibling local declaration initialized directly with
+  Arrays.asList(...) in the same block. It does not track reassignments made
+  in between, aliases, add calls inside nested blocks, or List.of.
+rule:
+  pattern: '$L.add($$$ARGS);'
+  follows:
+    stopBy: end
+    pattern: '$T $L = Arrays.asList($$$ITEMS);'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
