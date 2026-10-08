@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: reactorkit-xctwaiter-result-discarded-swift
+language: swift
+severity: warning
+message: >-
+  XCTWaiter().wait(for:timeout:) result is discarded, so a timed-out wait is
+  not detected; assert the result equals .completed.
+note: >-
+  Syntactic only. It flags XCTWaiter().wait(for:timeout:) calls that are not
+  the direct value of a let/var declaration. It does not follow later use of
+  the result, and it does not detect other ways of using it, such as passing
+  it as an argument or assigning it.
+rule:
+  pattern: 'XCTWaiter().wait(for: $EXPS, timeout: $TIMEOUT)'
+  not:
+    inside:
+      kind: property_declaration
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
