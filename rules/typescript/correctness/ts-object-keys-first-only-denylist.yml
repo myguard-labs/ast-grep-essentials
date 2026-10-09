@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-object-keys-first-only-denylist
+language: typescript
+severity: warning
+message: >-
+  Only the first key from Object.keys(...) is checked against a set. Other
+  keys in the same mapping are never checked, so a denied key can get through.
+note: >-
+  Syntactic only. It matches a const set to Object.keys(...)[0] when a later
+  statement in the same block calls .has() with that same name. It does not
+  track scope, shadowing, reassignment or aliasing, and it does not check that
+  the receiver of .has() is a denylist or allowlist.
+rule:
+  pattern: 'const $K = Object.keys($O)[0]'
+  precedes:
+    stopBy: end
+    has:
+      stopBy: end
+      pattern: '$S.has($K)'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
