@@ -1,0 +1,22 @@
+id: py-tarfile-getmembers-full-enumeration
+valid:
+- |-
+  import tarfile
+  def scan(path):
+      tf = tarfile.open(path)
+      for member in tf:
+          pass
+- |-
+  # import tarfile
+  # def scan(path):
+  #     tf = tarfile.open(path)
+  #     for member in tf.getmembers():
+  #         pass
+- astgrep_fixture = "import tarfile\ndef scan(path):\n    tf = tarfile.open(path)\n    for member in tf.getmembers():\n        pass"
+invalid:
+- |-
+  import tarfile
+  def scan(path):
+      tf = tarfile.open(path)
+      for member in tf.getmembers():
+          pass

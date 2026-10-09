@@ -1,0 +1,10 @@
+id: py-tarfile-getmembers-full-enumeration
+language: python
+severity: warning
+message: "A call to `.getmembers()` on a tarfile object, used as the loop iterable, enumerates every archive member before any per-member limit can run."
+note: "Archive member count limits must be enforced while iterating. getmembers() reads every header into memory first, so an archive with huge member counts exhausts memory before the limit check. Iterating the TarFile object directly reads one header at a time."
+rule:
+  kind: for_statement
+  has:
+    field: right
+    pattern: $TF.getmembers()
