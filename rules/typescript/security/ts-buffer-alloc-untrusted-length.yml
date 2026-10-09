@@ -1,0 +1,10 @@
+id: ts-buffer-alloc-untrusted-length
+language: typescript
+severity: warning
+message: Buffer.alloc is called with a length read from a parsed element's len property
+  with no bounds check in the same call.
+note: Parsers that size allocations from attacker-controlled container lengths can
+  exhaust memory. The fix validates the length first. Whether the value is untrusted
+  needs dataflow, so this is a taint claim.
+rule:
+  pattern: Buffer.alloc($E.len)
