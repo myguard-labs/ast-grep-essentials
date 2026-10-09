@@ -1,0 +1,16 @@
+id: js-transform-emits-error-not-destroy
+valid:
+- |-
+  Decoder.prototype._transform = function (buf, enc, done) {
+    this.destroy(new Error('bad'))
+  }
+- |-
+  // Decoder.prototype._transform = function (buf, enc, done) {
+  //   this.emit('error', new Error('bad'))
+  // }
+- const astgrepFixture = "Decoder.prototype._transform = function (buf, enc, done) {\n  this.emit('error', new Error('bad'))\n}";
+invalid:
+- |-
+  Decoder.prototype._transform = function (buf, enc, done) {
+    this.emit('error', new Error('bad'))
+  }
