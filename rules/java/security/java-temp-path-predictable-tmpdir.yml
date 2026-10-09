@@ -1,0 +1,10 @@
+id: java-temp-path-predictable-tmpdir
+language: java
+severity: warning
+message: A File built from the java.io.tmpdir system property plus a fixed name prefix
+  and a variable suffix is reported.
+note: Predictable names in a shared temp directory can be pre-created or replaced
+  by other local users. It generalises to native-library and cache extraction. Safety
+  depends on ownership and permission checks, so this is taint.
+rule:
+  pattern: new File(System.getProperty("java.io.tmpdir"), $PREFIX + $SUFFIX)
