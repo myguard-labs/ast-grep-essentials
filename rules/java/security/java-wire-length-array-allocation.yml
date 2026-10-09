@@ -1,0 +1,14 @@
+id: java-wire-length-array-allocation
+language: java
+severity: warning
+message: An array allocation whose size expression is a direct call to a stream read
+  method (for example readInt or readUnsignedByte) with no bound applied to that call
+  is reported.
+note: A size taken straight from the wire lets a peer force huge allocations. It generalises
+  to length-prefixed binary parsers. Safety depends on a bound checked elsewhere,
+  so this is taint.
+rule:
+  pattern: new $T[$RECV.$M($$$ARGS)]
+constraints:
+  M:
+    regex: ^read(Byte|UnsignedByte|Short|UnsignedShort|Char|Int|Long)$
