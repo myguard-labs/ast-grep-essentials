@@ -1,0 +1,12 @@
+id: py-kwargs-get-frame-limit-unclamped
+language: python
+severity: warning
+message: A value read with kwargs.get(name, default) is assigned to a frame-count
+  or sampling bound without a min() ceiling.
+note: Caller-controlled count limits reach allocation and loop bounds. Whether the
+  value is request-controlled needs dataflow, so the shape is recorded as taint.
+rule:
+  pattern: $NAME = kwargs.get($$$ARGS)
+constraints:
+  NAME:
+    regex: '(?i)(frame|sample)'
