@@ -1,0 +1,10 @@
+id: histogram-unclamped-float-index-csharp
+language: csharp
+severity: warning
+message: An integer cast of MathF.Round applied to a float product is used directly
+  as an array index with no Math.Clamp inside the index expression.
+note: Floating-point pixel formats can hold values outside the normalized range, so
+  an unclamped float-to-index conversion writes out of bounds. The same pattern recurs
+  in any histogram or lookup table indexed by a computed float.
+rule:
+  pattern: histogram[(int)MathF.Round(Vector4.Dot($V0, $V1) * 255)]++;
