@@ -8,10 +8,10 @@ message: >-
   sticky err field.
 note: >-
   Syntactic only. It matches a method body that increments a receiver field
-  and contains no `if recv.err != nil` check anywhere in that body. It does
-  not check whether the receiver struct actually declares an err field,
-  whether the guard comes first or returns, or whether the error is checked
-  some other way.
+  and contains no `if recv.err != nil` check anywhere in that body. The
+  receiver type must be a struct declared in the same file with a direct err
+  field. It does not check whether the guard comes first or returns, or
+  whether the error is checked some other way.
 rule:
   kind: method_declaration
   all:
@@ -19,9 +19,47 @@ rule:
         field: receiver
         has:
           kind: parameter_declaration
-          has:
-            field: name
-            pattern: '$R'
+          all:
+            - has:
+                field: name
+                pattern: '$R'
+            - has:
+                field: type
+                any:
+                  - kind: type_identifier
+                    pattern: '$T'
+                  - kind: generic_type
+                    has:
+                      field: type
+                      pattern: '$T'
+                  - kind: pointer_type
+                    has:
+                      any:
+                        - kind: type_identifier
+                          pattern: '$T'
+                        - kind: generic_type
+                          has:
+                            field: type
+                            pattern: '$T'
+    - inside:
+        kind: source_file
+        has:
+          kind: type_spec
+          stopBy: end
+          all:
+            - has:
+                field: name
+                pattern: '$T'
+            - has:
+                field: type
+                kind: struct_type
+                has:
+                  kind: field_declaration_list
+                  has:
+                    kind: field_declaration
+                    has:
+                      field: name
+                      regex: '^err$'
     - has:
         field: body
         has:

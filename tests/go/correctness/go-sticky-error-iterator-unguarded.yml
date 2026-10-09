@@ -1,5 +1,9 @@
 id: go-sticky-error-iterator-unguarded
 valid:
   - "type Rows struct {\n\terr              error\n\tseekRow, curRow int\n}\n\nfunc (rows *Rows) Next() bool {\n\tif rows.err != nil {\n\t\treturn false\n\t}\n\trows.seekRow++\n\treturn rows.curRow >= rows.seekRow\n}"
+  - "type Parser struct {\n\ttokens int\n}\n\nfunc (p *Parser) Token() error {\n\tp.tokens++\n\treturn nil\n}"
+  - "type Other struct {\n\terr error\n}\n\ntype Rows struct {\n\tseekRow int\n}\n\nfunc (rows *Rows) Next() bool {\n\trows.seekRow++\n\treturn true\n}"
+  - "type Rows struct {\n\tstate struct{ err error }\n\tseekRow int\n}\n\nfunc (rows *Rows) Next() bool {\n\trows.seekRow++\n\treturn true\n}"
 invalid:
   - "type Rows struct {\n\terr              error\n\tseekRow, curRow int\n}\n\nfunc (rows *Rows) Next() bool {\n\trows.seekRow++\n\treturn rows.curRow >= rows.seekRow\n}"
+  - "type Rows[T any] struct {\n\terr     error\n\tseekRow int\n}\n\nfunc (rows *Rows[T]) Next() bool {\n\trows.seekRow++\n\treturn true\n}"
