@@ -1,0 +1,11 @@
+id: ts-fetch-response-discarded
+language: typescript
+severity: warning
+message: An awaited `fetch(...)` call used as a bare expression statement, so its
+  Response status and ok flag are discarded.
+note: Discarding the Response hides HTTP failures, so callers report success for writes
+  that never happened. Binding the response and checking ok fixes it wherever fetch
+  is used for writes.
+rule:
+  pattern: 'async function $V0($V1, $V2) { await fetch($V1, { $V3: ''PUT'', $V4: $V2
+    }) }'
