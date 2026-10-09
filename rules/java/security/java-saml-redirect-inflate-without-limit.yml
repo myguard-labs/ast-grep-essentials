@@ -1,0 +1,10 @@
+id: java-saml-redirect-inflate-without-limit
+language: java
+severity: warning
+message: A call to parseRequestRedirectBinding with a single argument, so no inflate
+  size bound is passed at the call site.
+note: Decompressing attacker-supplied deflate data without a size cap lets a small
+  request expand into a large allocation. The one-argument overload's bound is set
+  in its definition, so this is cross-function.
+rule:
+  pattern: SAMLRequestParser.parseRequestRedirectBinding($ARG)
