@@ -1,0 +1,11 @@
+id: py-tempdir-assigned-without-cleanup-guard
+language: python
+severity: warning
+message: A function assigns tempfile.TemporaryDirectory() to an attribute and runs
+  further statements outside any try block.
+note: If setup raises after the temporary directory is created, nothing removes it.
+  The leak recurs in any context-manager __enter__ that allocates before fallible
+  work.
+rule:
+  pattern: "def $V0(self):\n    self.temp_dir = tempfile.TemporaryDirectory()\n  \
+    \  self.setup()\n    return self.files"
