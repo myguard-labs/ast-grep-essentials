@@ -1,0 +1,11 @@
+id: js-typeof-object-accepts-array
+language: javascript
+severity: warning
+message: An if-throw guard that tests a value with typeof ... 'object' without also
+  excluding arrays through Array.isArray.
+note: typeof returns 'object' for arrays as well as plain objects. Validators that
+  expect a claims or options object let a JSON array pass unless they check Array.isArray.
+  The shape recurs in any payload or config validator.
+rule:
+  pattern: "function $V0($V1) {\n  if (!$V1 || typeof $V1 !== 'object') {\n    throw\
+    \ new Error('bad payload')\n  }\n}"
