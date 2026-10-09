@@ -1,0 +1,38 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-redisearch-unescaped-filter-interpolation
+language: typescript
+severity: warning
+message: >-
+  RediSearch filter fragment interpolates a member expression without a
+  visible assert or escape call in the enclosing block.
+note: >-
+  Syntactic heuristic only. It treats any call whose callee name starts with
+  assert or escape in an enclosing statement block as a guard. It does not
+  check whether that helper validates this specific value, whether it runs
+  before the interpolation, or whether the guard sits in an outer function.
+rule:
+  kind: template_string
+  regex: '^`@'
+  has:
+    kind: template_substitution
+    has:
+      kind: member_expression
+  not:
+    inside:
+      kind: statement_block
+      stopBy: end
+      has:
+        kind: call_expression
+        stopBy: end
+        has:
+          field: function
+          regex: '(^|\.)(assert|escape)\w*$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
