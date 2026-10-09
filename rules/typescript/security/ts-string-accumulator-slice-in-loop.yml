@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-string-accumulator-slice-in-loop
+language: typescript
+severity: warning
+message: >-
+  Reading back the last character of a string accumulator that the enclosing
+  loop appends to with += can make parsing quadratic.
+note: >-
+  Syntactic only. This matches `X.slice(-1)` inside a for-in or for-of loop
+  whose body also contains `X += ...` on the same identifier. It does not
+  check that X is a string, whether the append actually runs on every
+  iteration, aliasing, or other loop kinds.
+rule:
+  pattern: '$ACC.slice(-1)'
+  inside:
+    stopBy: end
+    kind: for_in_statement
+    has:
+      stopBy: end
+      pattern: '$ACC += $T'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
