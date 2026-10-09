@@ -1,0 +1,13 @@
+id: py-method-dict-get-authz-no-default
+valid:
+- |-
+  validators = {'GET': check_read, 'PUT': check_write}
+  v = validators.get(method, deny_all)
+- |-
+  # validators = {'GET': check_read, 'PUT': check_write}
+  # v = validators.get(method)
+- 'astgrep_fixture = "validators = {''GET'': check_read, ''PUT'': check_write}\nv = validators.get(method)"'
+invalid:
+- |-
+  validators = {'GET': check_read, 'PUT': check_write}
+  v = validators.get(method)

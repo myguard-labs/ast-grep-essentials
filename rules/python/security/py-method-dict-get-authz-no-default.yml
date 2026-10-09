@@ -1,0 +1,10 @@
+id: py-method-dict-get-authz-no-default
+language: python
+severity: warning
+message: "An authorization validator is looked up from a dict literal keyed by HTTP method with .get(method) and no default, so an unlisted method yields None."
+note: "Adding a method to an auth dispatch table fixed a gap for MPU POST. An unlisted method returns None, so whether it fails open depends on the caller. Confirming that needs caller reading, so it is cross-function."
+rule:
+  pattern: $TABLE.get($METHOD)
+constraints:
+  METHOD:
+    regex: '^(method|http_method|request_method)$'
