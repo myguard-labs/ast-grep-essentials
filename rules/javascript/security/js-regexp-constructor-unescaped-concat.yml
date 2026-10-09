@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-regexp-constructor-unescaped-concat
+language: javascript
+severity: warning
+message: >-
+  RegExp constructed from string concatenation with an unescaped dynamic
+  operand; escape the value before building the pattern.
+note: >-
+  Syntactic only. Flags new RegExp(...) whose arguments contain a +
+  concatenation with a bare identifier operand; it cannot tell whether the
+  identifier was already escaped, is constant, or is trusted.
+rule:
+  pattern: 'new RegExp($$$ARGS)'
+  has:
+    field: arguments
+    has:
+      stopBy: end
+      pattern: '$L + $R'
+      has:
+        kind: identifier
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
