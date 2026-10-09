@@ -1,0 +1,11 @@
+id: java-scanner-loop-without-eof-check
+language: java
+severity: warning
+message: A while loop whose condition compares a char variable against a single character
+  literal with != and never compares against CharacterIterator.DONE.
+note: Hand-written scanners that stop only on a delimiter loop forever on truncated
+  input, a DoS shape. The pattern recurs in comment, string and token readers. Expect
+  noise where a loop is bounded by other means.
+rule:
+  pattern: class A { void $V0(char $V1) { while ($V1 != '\n') { $V1 = read(); } }
+    }
