@@ -1,0 +1,12 @@
+id: js-startswith-prefix-path-no-boundary
+language: javascript
+severity: warning
+message: An if-condition that calls startsWith(X) with no separator test on the character
+  after X, whose body slices the same subject by X.length.
+note: Raw prefix tests let sibling names such as foo2 pass for an allowlisted foo,
+  then the remainder is trusted. The same startsWith-then-slice shape recurs in path,
+  module and ID allowlists. Legitimate prefix stripping is a noise risk, so the near-miss
+  adds a separator test in the same condition.
+rule:
+  pattern: function $V0 (path, $V1) { if (path.startsWith(mod.path)) { const $V2 =
+    path.slice(mod.path.length); return $V2 } }
