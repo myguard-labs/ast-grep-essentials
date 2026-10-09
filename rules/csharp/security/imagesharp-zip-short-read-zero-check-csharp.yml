@@ -1,0 +1,24 @@
+id: imagesharp-zip-short-read-zero-check-csharp
+language: csharp
+severity: warning
+message: An if-statement that throws when a byte count accumulated from stream reads
+  is compared with the literal 0, instead of with the expected uncompressed size,
+  is reported.
+note: A zero-only check accepts a partially read stream, so truncated input passes
+  as valid. Completeness needs a comparison to the expected size. Any decoder that
+  trusts a short read has this shape. Needs dataflow to know the count comes from
+  reads, so it is recorded as taint.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        field: condition
+        pattern: $COUNT == 0
+    - has:
+        field: consequence
+        has:
+          kind: throw_statement
+          stopBy: end
+constraints:
+  COUNT:
+    regex: '(?i)(read|total|count|bytes)'
