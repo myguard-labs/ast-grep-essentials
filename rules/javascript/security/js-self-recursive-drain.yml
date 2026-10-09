@@ -1,0 +1,11 @@
+id: js-self-recursive-drain
+language: javascript
+severity: warning
+message: A method that, inside an if-branch, re-invokes itself as this.<same name>(null,
+  ...) to process a pending queue.
+note: Self-recursion per buffered value grows the call stack with the number of queued
+  values, so a large chunk can exhaust it. A loop or a separate drain function keeps
+  stack depth constant. The shape is a general queue-draining pattern.
+rule:
+  pattern: "Decoder.prototype._transform = function ($V0, $V1, $V2) {\n  if (this._chunks.length\
+    \ > 0) {\n    this._transform(null, $V1, $V2)\n  } else {\n    done()\n  }\n}"
