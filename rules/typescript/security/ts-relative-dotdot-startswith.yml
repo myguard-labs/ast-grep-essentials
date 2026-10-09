@@ -1,0 +1,11 @@
+id: ts-relative-dotdot-startswith
+language: typescript
+severity: warning
+message: A local assigned from `relative(...)` whose result is tested with `startsWith('..')`
+  as a containment check.
+note: A bare startsWith('..') misreads names such as ..cache as escapes and misses
+  absolute results from relative(). A shared helper that checks whole segments and
+  absoluteness is the stable form.
+rule:
+  pattern: function $V0($V1, $V2) { const $V3 = relative($V1, $V2); return rel.startsWith('..')
+    }
