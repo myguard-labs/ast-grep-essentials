@@ -1,0 +1,14 @@
+id: py-otel-record-exception-unguarded
+valid:
+- |
+  def fail(span, err, include_content):
+      if include_content:
+          span.record_exception(err)
+- |-
+  # def fail(span, err):
+  #     span.record_exception(err)
+- astgrep_fixture = "def fail(span, err):\n    span.record_exception(err)\n"
+invalid:
+- |
+  def fail(span, err):
+      span.record_exception(err)

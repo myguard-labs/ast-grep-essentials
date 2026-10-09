@@ -1,0 +1,10 @@
+id: py-otel-record-exception-unguarded
+language: python
+severity: warning
+message: span.record_exception() is called with no enclosing conditional on a content-capture
+  flag in the same function.
+note: Exception messages and stack traces can echo prompts, tool arguments, or provider
+  responses. Recording only the type when content capture is off avoids leaking content
+  into span events.
+rule:
+  pattern: "def $V0($V1, $V2):\n    span.record_exception($V2)\n"
