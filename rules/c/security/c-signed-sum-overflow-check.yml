@@ -1,0 +1,11 @@
+id: c-signed-sum-overflow-check
+language: c
+severity: warning
+message: A signed int local is assigned the sum of two operands, then compared with
+  < against one of those operands as an overflow check.
+note: Signed overflow is undefined behavior, so the compiler may delete a post-addition
+  overflow check and leave a heap overflow (CWE-190). The same check recurs in size
+  and length arithmetic. Unsigned types wrap well-defined, so the near miss is safe.
+rule:
+  pattern: "int check(int $V0, int $V1) {\n    int $V2 = $V0 + $V1;\n    if ($V2 <\
+    \ $V0) {\n        return 1;\n    }\n    return 0;\n}"

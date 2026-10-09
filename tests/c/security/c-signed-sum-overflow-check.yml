@@ -1,0 +1,28 @@
+id: c-signed-sum-overflow-check
+valid:
+- |-
+  int check(int position, int size) {
+      unsigned int new_size = position + size;
+      if (new_size < position) {
+          return 1;
+      }
+      return 0;
+  }
+- |-
+  // int check(int position, int size) {
+  //     int new_size = position + size;
+  //     if (new_size < position) {
+  //         return 1;
+  //     }
+  //     return 0;
+  // }
+- const char *astgrep_fixture = "int check(int position, int size) {\n    int new_size = position + size;\n    if (new_size < position) {\n        return 1;\n    }\n    return 0;\n}";
+invalid:
+- |-
+  int check(int position, int size) {
+      int new_size = position + size;
+      if (new_size < position) {
+          return 1;
+      }
+      return 0;
+  }
