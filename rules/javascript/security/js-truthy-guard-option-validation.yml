@@ -1,0 +1,12 @@
+id: js-truthy-guard-option-validation
+language: javascript
+severity: warning
+message: An if-condition of the form `<id> && (typeof <id> !== ... || <id> < 0)` that
+  throws on a bad option, where the bare truthiness test on `<id>` skips falsy invalid
+  values such as NaN, empty string or false.
+note: Option validators guarded by bare truthiness let falsy invalid values (NaN,
+  empty string, false) skip the check. The shape recurs across config-parsing code
+  that validates numeric options.
+rule:
+  pattern: if ($V0 && (typeof $V0 !== 'number' || $V0 < 0)) { throw new TypeError('bad
+    timeout') }
