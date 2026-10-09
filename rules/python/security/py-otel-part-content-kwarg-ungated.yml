@@ -1,0 +1,10 @@
+id: py-otel-part-content-kwarg-ungated
+language: python
+severity: warning
+message: A call passes a content= keyword to a telemetry message-part constructor
+  in a function with no branch that tests include_content.
+note: Content-bearing fields written into telemetry bypass the redaction setting when
+  the constructor is called without a gate. The shape repeats for any part type that
+  carries model text.
+rule:
+  pattern: "def $V0(self, $V1):\n    return [TextPart($V2='text', content=self.model_response())]"

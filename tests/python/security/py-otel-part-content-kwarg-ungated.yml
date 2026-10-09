@@ -1,0 +1,13 @@
+id: py-otel-part-content-kwarg-ungated
+valid:
+- |-
+  def parts(self, settings):
+      return [TextPart(type='text', content=self.model_response()) if settings.include_content else TextPart(type='text')]
+- |-
+  # def parts(self, settings):
+  #     return [TextPart(type='text', content=self.model_response())]
+- astgrep_fixture = "def parts(self, settings):\n    return [TextPart(type='text', content=self.model_response())]"
+invalid:
+- |-
+  def parts(self, settings):
+      return [TextPart(type='text', content=self.model_response())]
