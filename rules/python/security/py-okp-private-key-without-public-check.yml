@@ -1,0 +1,21 @@
+id: py-okp-private-key-without-public-check
+language: python
+severity: warning
+message: A `from_private_bytes(...)` call that builds an OKP private key in a function
+  containing no `public_key()` comparison is reported.
+note: A JWK whose x does not match d lets the public and private halves disagree,
+  so key identity can be confused. Checking that needs the value of x and the derived
+  public key to be related, which is dataflow, so it is recorded as taint.
+rule:
+  all:
+    - pattern: $KEY.from_private_bytes($$$ARGS)
+    - inside:
+        kind: function_definition
+        stopBy: end
+        not:
+          has:
+            pattern: $_.public_key()
+            stopBy: end
+constraints:
+  KEY:
+    regex: ^(Ed25519|Ed448|X25519|X448)PrivateKey$

@@ -1,0 +1,19 @@
+id: py-okp-private-key-without-public-check
+valid:
+- |-
+  def load(jwk):
+      d = base64url_decode(jwk['d'])
+      key = Ed25519PrivateKey.from_private_bytes(d)
+      if key.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw) != base64url_decode(jwk['x']):
+          raise InvalidKeyError('mismatch')
+      return key
+- |-
+  # def load(jwk):
+  #     d = base64url_decode(jwk['d'])
+  #     return Ed25519PrivateKey.from_private_bytes(d)
+- astgrep_fixture = "def load(jwk):\n    d = base64url_decode(jwk['d'])\n    return Ed25519PrivateKey.from_private_bytes(d)"
+invalid:
+- |-
+  def load(jwk):
+      d = base64url_decode(jwk['d'])
+      return Ed25519PrivateKey.from_private_bytes(d)
