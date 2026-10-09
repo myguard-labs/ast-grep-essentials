@@ -1,0 +1,10 @@
+id: py-semaphore-acquire-without-finally
+language: python
+severity: warning
+message: An awaited .acquire() on a limiter-like object is not inside an async with
+  block or a try statement that has a finally clause.
+note: A slot taken without a guaranteed release leaks when a stream ends early or
+  an exception is raised. Release on every exit path is a local, checkable property
+  of the function.
+rule:
+  pattern: "async def $V0($V1):\n    await limiter.acquire()\n    await work()\n"

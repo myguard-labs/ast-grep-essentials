@@ -1,0 +1,19 @@
+id: py-semaphore-acquire-without-finally
+valid:
+- |
+  async def handle(limiter):
+      await limiter.acquire()
+      try:
+          await work()
+      finally:
+          limiter.release()
+- |-
+  # async def handle(limiter):
+  #     await limiter.acquire()
+  #     await work()
+- astgrep_fixture = "async def handle(limiter):\n    await limiter.acquire()\n    await work()\n"
+invalid:
+- |
+  async def handle(limiter):
+      await limiter.acquire()
+      await work()
