@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-cross-env-node-options-overwrite
+language: typescript
+severity: warning
+message: >-
+  NODE_OPTIONS is set directly in a string literal without referencing the
+  existing NODE_OPTIONS value, which can drop options set by the caller.
+note: >-
+  Single-file syntactic check only. It flags string literals containing
+  NODE_OPTIONS= that have no literal reference to the existing variable. It
+  does not inspect template literals, runtime environment values, or whether
+  the command is actually executed.
+rule:
+  kind: string
+  regex: 'NODE_OPTIONS='
+  not:
+    regex: '\$\{NODE_OPTIONS\}'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
