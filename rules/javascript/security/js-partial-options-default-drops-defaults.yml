@@ -1,0 +1,11 @@
+id: js-partial-options-default-drops-defaults
+language: javascript
+severity: warning
+message: A parameter reassigned as p = p || { literal }, so any caller-supplied partial
+  object loses the literal's other default keys.
+note: The || fallback replaces the whole defaults object when any option is passed.
+  Security defaults such as protoAction are then silently lost. Merging defaults under
+  the caller's object keeps every default key.
+rule:
+  pattern: "function $V0(options) {\n  options = options || { $V1: false, $V2: 'error'\
+    \ }\n  return options\n}"
