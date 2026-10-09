@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-reader-mutates-parameter-buffer
+language: javascript
+severity: warning
+message: >-
+  Reader or decoder function writes into one of its own parameters by index,
+  mutating the caller's buffer.
+note: >-
+  This check is syntactic only. It matches an index assignment whose object is
+  the same identifier as a plain parameter of the enclosing function
+  declaration named read* or decode*. It does not track aliases,
+  reassignments, shadowing in nested scopes, destructured parameters, or
+  whether the mutation is intentional.
+rule:
+  pattern: '$OBJ[$IDX] = $VAL'
+  inside:
+    stopBy: end
+    kind: function_declaration
+    all:
+      - has:
+          field: name
+          regex: '^(read|decode)'
+      - has:
+          field: parameters
+          has:
+            kind: identifier
+            pattern: '$OBJ'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

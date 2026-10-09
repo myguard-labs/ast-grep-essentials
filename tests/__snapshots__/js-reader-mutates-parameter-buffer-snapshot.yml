@@ -1,0 +1,32 @@
+id: js-reader-mutates-parameter-buffer
+snapshots:
+  ? |-
+    function readInt64BE (buf, offset) {
+      buf[offset] = buf[offset] ^ 0xff
+      return buf.readUInt32BE(offset)
+    }
+  : labels:
+    - source: buf[offset] = buf[offset] ^ 0xff
+      style: primary
+      start: 39
+      end: 71
+    - source: readInt64BE
+      style: secondary
+      start: 9
+      end: 20
+    - source: buf
+      style: secondary
+      start: 22
+      end: 25
+    - source: buf
+      style: secondary
+      start: 22
+      end: 25
+    - source: |-
+        function readInt64BE (buf, offset) {
+          buf[offset] = buf[offset] ^ 0xff
+          return buf.readUInt32BE(offset)
+        }
+      style: secondary
+      start: 0
+      end: 107

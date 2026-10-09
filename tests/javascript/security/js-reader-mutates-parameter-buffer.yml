@@ -1,0 +1,14 @@
+id: js-reader-mutates-parameter-buffer
+valid:
+  - |-
+    function readInt64BE (buf, offset) {
+      const copy = Buffer.from(buf)
+      copy[offset] = copy[offset] ^ 0xff
+      return copy.readUInt32BE(offset)
+    }
+invalid:
+  - |-
+    function readInt64BE (buf, offset) {
+      buf[offset] = buf[offset] ^ 0xff
+      return buf.readUInt32BE(offset)
+    }
