@@ -1,0 +1,11 @@
+id: go-strconv-bitsize8-error-discarded
+language: go
+severity: warning
+message: A strconv.ParseUint or strconv.ParseInt call with bitSize literal 8 whose
+  error result is assigned to the blank identifier.
+note: Out-of-range input makes ParseUint/ParseInt return the saturated bound plus
+  an error. Discarding the error keeps that bound, so octal escapes above the byte
+  range decode to wrong bytes. The shape recurs in both decoders of the commit.
+rule:
+  pattern: "func $V0($V1 string) byte {\n\t$V2, _ := strconv.ParseUint($V1, 8, 8)\n\
+    \treturn byte($V2)\n}"
