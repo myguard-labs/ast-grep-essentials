@@ -1,0 +1,11 @@
+id: py-otel-span-record-exception-no-content-check
+language: python
+severity: warning
+message: A `.record_exception(...)` call on a span in a function that has no `include_content`
+  (or similar content-capture) condition, so exception message and stack trace are
+  always recorded.
+note: Exception messages and tracebacks can echo prompts, tool arguments, or provider
+  responses. Recording them unconditionally leaks content that the content-capture
+  setting is meant to withhold. The gate is a local, syntactic check.
+rule:
+  pattern: "def $V0(span, $V1):\n    span.record_exception($V1)"

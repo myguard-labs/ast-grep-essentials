@@ -1,0 +1,14 @@
+id: py-otel-span-record-exception-no-content-check
+valid:
+- |-
+  def on_error(span, error, include_content):
+      if include_content:
+          span.record_exception(error)
+- |-
+  # def on_error(span, error):
+  #     span.record_exception(error)
+- astgrep_fixture = "def on_error(span, error):\n    span.record_exception(error)"
+invalid:
+- |-
+  def on_error(span, error):
+      span.record_exception(error)
