@@ -1,0 +1,46 @@
+id: ruby-mechanize-redirect-header-leak
+snapshots:
+  ? |-
+    def follow_redirect(uri, headers)
+      if response.is_a?(Net::HTTPRedirection)
+        follow_redirect(URI(response['location']), headers)
+      end
+    end
+  : labels:
+    - source: follow_redirect(URI(response['location']), headers)
+      style: primary
+      start: 80
+      end: 131
+    - source: follow_redirect
+      style: secondary
+      start: 4
+      end: 19
+    - source: |-
+        def follow_redirect(uri, headers)
+          if response.is_a?(Net::HTTPRedirection)
+            follow_redirect(URI(response['location']), headers)
+          end
+        end
+      style: secondary
+      start: 0
+      end: 141
+    - source: (uri, headers)
+      style: secondary
+      start: 19
+      end: 33
+    - source: |-
+        def follow_redirect(uri, headers)
+          if response.is_a?(Net::HTTPRedirection)
+            follow_redirect(URI(response['location']), headers)
+          end
+        end
+      style: secondary
+      start: 0
+      end: 141
+    - source: |-
+        if response.is_a?(Net::HTTPRedirection)
+            follow_redirect(URI(response['location']), headers)
+          end
+      style: secondary
+      start: 36
+      end: 137

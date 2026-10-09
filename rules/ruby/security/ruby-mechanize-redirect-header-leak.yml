@@ -1,0 +1,28 @@
+id: ruby-mechanize-redirect-header-leak
+language: ruby
+severity: warning
+message: A Ruby method passes its own headers argument unchanged into a recursive
+  call to itself inside a redirect-handling branch.
+note: Redirect hops can forward credential headers to a new host when the header set
+  is rebuilt per hop. Whether the header is withheld depends on state set in other
+  functions, so a single-function syntactic match cannot decide it. Recorded so it
+  is not re-mined.
+rule:
+  all:
+    - pattern: $METHOD($$$ARGS, headers)
+    - inside:
+        kind: method
+        stopBy: end
+        has:
+          field: name
+          pattern: $METHOD
+    - inside:
+        kind: method
+        stopBy: end
+        has:
+          field: parameters
+          regex: '\bheaders\b'
+    - inside:
+        kind: if
+        stopBy: end
+        regex: '(?i)redirect'

@@ -1,0 +1,22 @@
+id: ruby-mechanize-redirect-header-leak
+valid:
+- |-
+  def follow_redirect(uri, headers)
+    if response.is_a?(Net::HTTPRedirection)
+      follow_redirect(URI(response['location']), headers.reject { |k, _| k == 'Authorization' })
+    end
+  end
+- |-
+  # def follow_redirect(uri, headers)
+  #   if response.is_a?(Net::HTTPRedirection)
+  #     follow_redirect(URI(response['location']), headers)
+  #   end
+  # end
+- astgrep_fixture = "def follow_redirect(uri, headers)\n  if response.is_a?(Net::HTTPRedirection)\n    follow_redirect(URI(response['location']), headers)\n  end\nend"
+invalid:
+- |-
+  def follow_redirect(uri, headers)
+    if response.is_a?(Net::HTTPRedirection)
+      follow_redirect(URI(response['location']), headers)
+    end
+  end
