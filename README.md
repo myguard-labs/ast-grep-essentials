@@ -40,8 +40,7 @@ lookalikes, and relevant boundary cases. Keep every example inert: validation
 parses fixtures and never needs to execute them.
 
 Rule enrichment uses one pull request per rule ID. A rule PR may include that
-rule's fixture and snapshot, but never a second rule. MyGuard runs the private
-authoring and validation harness before merging changes to this public corpus.
+rule's fixture and snapshot, but never a second rule.
 
 ## Reviewed packs
 
