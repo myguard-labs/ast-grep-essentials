@@ -1,0 +1,19 @@
+id: py-json-loads-recursionerror-missing
+valid:
+- |-
+  try:
+      value = json.loads(body)
+  except (json.JSONDecodeError, ValueError, RecursionError):
+      value = body
+- |-
+  # try:
+  #     value = json.loads(body)
+  # except (json.JSONDecodeError, ValueError):
+  #     value = body
+- astgrep_fixture = "try:\n    value = json.loads(body)\nexcept (json.JSONDecodeError, ValueError):\n    value = body"
+invalid:
+- |-
+  try:
+      value = json.loads(body)
+  except (json.JSONDecodeError, ValueError):
+      value = body

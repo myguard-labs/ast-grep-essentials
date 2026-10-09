@@ -1,0 +1,11 @@
+id: py-json-loads-recursionerror-missing
+language: python
+severity: warning
+message: A json.loads call inside a try block whose except tuple names JSONDecodeError
+  or ValueError but not RecursionError.
+note: Deeply nested JSON raises RecursionError, which is not a ValueError, so a caller-supplied
+  body can escape the fallback path. The commit adds RecursionError to the except
+  tuple. The shape generalises to any json.loads on untrusted input.
+rule:
+  pattern: "try:\n    $V0 = json.loads($V1)\nexcept (json.JSONDecodeError, ValueError):\n\
+    \    $V0 = $V1"
