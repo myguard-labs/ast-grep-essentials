@@ -1,0 +1,12 @@
+id: java-unvalidated-decompressed-length-alloc
+language: java
+severity: warning
+message: An array or buffer allocation whose size argument is directly a getDecompressedLength(...)
+  call, so the header-derived length is used without an intervening bound.
+note: Length fields read from untrusted headers reach allocation unchecked. The advisory
+  shows a 4-byte header driving a 1 GiB allocation. Any length-prefixed decoder shares
+  this shape, but whether a bound exists needs dataflow, so this is recorded as taint.
+  The unqualified getDecompressedLength(...) form is not matched here; it needs its own
+  fixture before it can be added back.
+rule:
+  pattern: new $T[$RECV.getDecompressedLength($$$ARGS)]

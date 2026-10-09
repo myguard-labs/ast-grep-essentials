@@ -1,0 +1,7 @@
+id: java-unvalidated-decompressed-length-alloc
+valid:
+- class T { byte[] f(byte[] src) { int n = LZ4DecompressorWithLength.getDecompressedLength(src); return new byte[n]; } }
+- // class T { byte[] f(byte[] src) { return new byte[LZ4DecompressorWithLength.getDecompressedLength(src)]; } }
+- class AstgrepFixture { String value = "class T { byte[] f(byte[] src) { return new byte[LZ4DecompressorWithLength.getDecompressedLength(src)]; } }"; }
+invalid:
+- class T { byte[] f(byte[] src) { return new byte[LZ4DecompressorWithLength.getDecompressedLength(src)]; } }
