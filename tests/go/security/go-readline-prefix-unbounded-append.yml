@@ -1,0 +1,7 @@
+id: go-readline-prefix-unbounded-append
+valid:
+- func f(rd *bufio.Reader) []byte { var whole []byte; for { line, isPrefix, err := rd.ReadLine(); if err != nil { return whole }; whole = line; if !isPrefix { return whole } } }
+- // func f(rd *bufio.Reader) []byte { var whole []byte; for { line, isPrefix, err := rd.ReadLine(); if err != nil { return whole }; whole = append(whole, line...); if !isPrefix { return whole } } }
+- var astgrepFixture = "func f(rd *bufio.Reader) []byte { var whole []byte; for { line, isPrefix, err := rd.ReadLine(); if err != nil { return whole }; whole = append(whole, line...); if !isPrefix { return whole } } }"
+invalid:
+- func f(rd *bufio.Reader) []byte { var whole []byte; for { line, isPrefix, err := rd.ReadLine(); if err != nil { return whole }; whole = append(whole, line...); if !isPrefix { return whole } } }

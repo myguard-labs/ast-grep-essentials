@@ -1,0 +1,12 @@
+id: go-readline-prefix-unbounded-append
+language: go
+severity: warning
+message: A loop repeatedly calls ReadLine, appends each returned chunk onto one slice
+  with append(x, line...), and stops only when isPrefix is false, with no size cap.
+note: The moby group parser grows a line buffer across ReadLine prefix chunks with
+  no bound, so one huge line exhausts memory. The fix uses bufio.Scanner with a capped
+  buffer. Any reader loop with this shape shares the defect.
+rule:
+  pattern: func $V0($V1 *bufio.Reader) []byte { var whole []byte; for { $V2, $V3,
+    $V4 := rd.ReadLine(); if $V4 != nil { return whole }; whole = append(whole, line...);
+    if !$V3 { return whole } } }
