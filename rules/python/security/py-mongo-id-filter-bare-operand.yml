@@ -1,0 +1,24 @@
+id: py-mongo-id-filter-bare-operand
+language: python
+severity: warning
+message: 'A query dict maps _id or files_id to a bare variable instead of an operator document such as {''$eq'': value}, passed to a MongoDB find, delete, or update call.'
+note: A caller-supplied dict used as a bare filter value enables operator injection. Exploitability depends on whether the value is caller-controlled, so it is recorded as taint.
+rule:
+  kind: pair
+  all:
+    - has:
+        field: key
+        regex: '^[''"](_id|files_id)[''"]$'
+    - has:
+        field: value
+        kind: identifier
+    - inside:
+        kind: dictionary
+        stopBy: end
+        inside:
+          kind: argument_list
+          inside:
+            kind: call
+            has:
+              field: function
+              regex: '\.(find|find_one|delete_one|delete_many|update_one|update_many|replace_one|find_one_and_update|find_one_and_delete|find_one_and_replace)$'
