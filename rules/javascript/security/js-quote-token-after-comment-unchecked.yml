@@ -1,0 +1,14 @@
+id: js-quote-token-after-comment-unchecked
+language: javascript
+severity: warning
+message: "A map callback over quoted tokens that sets a comment flag and then returns each string token without a line-terminator test is reported."
+note: "Shell-quote fix: a token after a comment must not carry a newline or U+2028/2029 into the shell. The check depends on state set by an earlier iteration, so it is recorded as cross-function and not as a syntactic rule."
+rule:
+  pattern: $XS.map(function ($S) { $$$BODY })
+  has:
+    pattern: sawComment = true
+    stopBy: end
+  not:
+    has:
+      pattern: LINE_TERMINATORS.test($$$ARGS)
+      stopBy: end
