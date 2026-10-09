@@ -1,5 +1,22 @@
 id: ts-authz-conditional-missing-deny-branch
 valid:
-  - 'export const getFilters = async (svc: any, creds: any) => {\n  const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });\n  if (d.result === AuthorizeResult.DENY) {\n    throw new NotAllowedError();\n  }\n  if (d.result === AuthorizeResult.CONDITIONAL) {\n    return transform(d.conditions);\n  }\n  return undefined;\n};'
+  - |
+    export const getFilters = async (svc: any, creds: any) => {
+      const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });
+      if (d.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError();
+      }
+      if (d.result === AuthorizeResult.CONDITIONAL) {
+        return transform(d.conditions);
+      }
+      return undefined;
+    };
 invalid:
-  - 'export const getFilters = async (svc: any, creds: any) => {\n  const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });\n  if (d.result === AuthorizeResult.CONDITIONAL) {\n    return transform(d.conditions);\n  }\n  return undefined;\n};'
+  - |
+    export const getFilters = async (svc: any, creds: any) => {
+      const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });
+      if (d.result === AuthorizeResult.CONDITIONAL) {
+        return transform(d.conditions);
+      }
+      return undefined;
+    };

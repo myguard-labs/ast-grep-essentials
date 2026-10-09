@@ -1,24 +1,34 @@
 id: ts-authz-conditional-missing-deny-branch
 snapshots:
-  ? 'export const getFilters = async (svc: any, creds: any) => {\n  const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });\n  if (d.result === AuthorizeResult.CONDITIONAL) {\n    return transform(d.conditions);\n  }\n  return undefined;\n};'
+  ? |
+    export const getFilters = async (svc: any, creds: any) => {
+      const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });
+      if (d.result === AuthorizeResult.CONDITIONAL) {
+        return transform(d.conditions);
+      }
+      return undefined;
+    };
   : labels:
-    - source: if (d.result === AuthorizeResult.CONDITIONAL) {\n    return transform(d.conditions);\n  }
+    - source: |-
+        if (d.result === AuthorizeResult.CONDITIONAL) {
+            return transform(d.conditions);
+          }
       style: primary
-      start: 152
-      end: 241
+      start: 150
+      end: 237
     - source: (d.result === AuthorizeResult.CONDITIONAL)
       style: secondary
-      start: 155
-      end: 197
+      start: 153
+      end: 195
     - source: return undefined;
       style: secondary
-      start: 245
-      end: 262
+      start: 240
+      end: 257
     - source: 'svc.authorizeConditional([{ permission }], { credentials: creds })'
       style: secondary
-      start: 81
-      end: 147
+      start: 80
+      end: 146
     - source: 'svc.authorizeConditional([{ permission }], { credentials: creds })'
       style: secondary
-      start: 81
-      end: 147
+      start: 80
+      end: 146
