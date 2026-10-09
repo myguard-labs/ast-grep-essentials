@@ -1,0 +1,9 @@
+id: py-regex-compile-unescaped-replace
+language: python
+severity: warning
+message: re.compile is applied to a string built by str.replace() over an input value,
+  with no re.escape() around that input.
+note: Input text reaches the regex engine as syntax, so metacharacters can cause backtracking
+  blowup. The same shape appears wherever glob or wildcard text becomes a regex.
+rule:
+  pattern: $V0 = re.compile(wildcard.replace('*', '(?:.*?)'))
