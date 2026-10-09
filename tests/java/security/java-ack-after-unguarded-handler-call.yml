@@ -1,0 +1,7 @@
+id: java-ack-after-unguarded-handler-call
+valid:
+- while (true) { Delivery d = consumer.nextDelivery(); try { handle(d); } catch (RuntimeException e) { } channel.basicAck(d.getEnvelope().getDeliveryTag(), false); }
+- // while (true) { Delivery d = consumer.nextDelivery(); handle(d); channel.basicAck(d.getEnvelope().getDeliveryTag(), false); }
+- class AstgrepFixture { String value = "while (true) { Delivery d = consumer.nextDelivery(); handle(d); channel.basicAck(d.getEnvelope().getDeliveryTag(), false); }"; }
+invalid:
+- while (true) { Delivery d = consumer.nextDelivery(); handle(d); channel.basicAck(d.getEnvelope().getDeliveryTag(), false); }

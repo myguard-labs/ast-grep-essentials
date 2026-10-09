@@ -1,0 +1,17 @@
+id: java-ack-after-unguarded-handler-call
+language: java
+severity: warning
+message: "Inside a loop, a basicAck call that follows a handler call with no try block around the handler call is reported."
+note: "A consumer loop with no guard around the handler stops on the first runtime exception. Whether the handler throws needs callee analysis."
+rule:
+  pattern: $CH.basicAck($$$ACK);
+  inside:
+    kind: while_statement
+    stopBy: end
+  follows:
+    pattern: handle($$$ARGS);
+    not:
+      inside:
+        kind: try_statement
+        stopBy:
+          kind: while_statement
