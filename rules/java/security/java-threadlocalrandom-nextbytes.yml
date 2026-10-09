@@ -1,0 +1,11 @@
+id: java-threadlocalrandom-nextbytes
+language: java
+severity: warning
+message: A call of the form ThreadLocalRandom.current().nextBytes(...) fills a byte
+  array from a non-cryptographic generator.
+note: Bytes from ThreadLocalRandom feed security values such as digest cnonces, tokens
+  and keys. The same call recurs wherever such values are generated, so the syntax
+  is the reusable signal. Reviewers must confirm the value is security-relevant.
+rule:
+  pattern: class A { void $V0(byte[] $V1) { ThreadLocalRandom.current().nextBytes($V1);
+    } }
