@@ -1,0 +1,16 @@
+id: py-validate-tokens-unguarded
+valid:
+- |
+  def f(grammar, tokens):
+      try:
+          grammar.validate_tokens(tokens)
+      except ValueError:
+          return None
+- |-
+  # def f(grammar, tokens):
+  #     grammar.validate_tokens(tokens)
+- astgrep_fixture = "def f(grammar, tokens):\n    grammar.validate_tokens(tokens)\n"
+invalid:
+- |
+  def f(grammar, tokens):
+      grammar.validate_tokens(tokens)

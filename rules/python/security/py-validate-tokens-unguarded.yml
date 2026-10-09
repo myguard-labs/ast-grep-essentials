@@ -1,0 +1,13 @@
+id: py-validate-tokens-unguarded
+language: python
+severity: warning
+message: "A call to a grammar object's validate_tokens(...) method is made with no enclosing try/except in the same function, so a request-level validation error propagates to the caller."
+note: 'Advisory GHSA-85xf-c7hm-whqw: request-level grammar errors escaped the request boundary and killed the shared engine. Whether the error is fatal depends on the caller''s handler and on whether -1 padding reaches the validator (dataflow), so it is recorded as cross-function, not a syntactic rule.'
+rule:
+  all:
+    - pattern: $OBJ.validate_tokens($$$ARGS)
+    - not:
+        inside:
+          kind: try_statement
+          stopBy:
+            kind: function_definition
