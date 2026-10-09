@@ -1,0 +1,22 @@
+id: go-audit-log-field-crlf-unescaped
+language: go
+severity: warning
+message: A fmt.Fprintf or Fprintln call whose format is a log line and whose argument
+  is a request-derived value not passed through an escaper such as a strings.Replacer
+  for CR and LF.
+note: Attacker-controlled header and body fields written raw into a line-oriented
+  audit log allow CRLF injection and log forgery. Whether a value is attacker-controlled
+  needs dataflow, so this is recorded as taint.
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        regex: '^fmt\.Fprint(f|ln)$'
+    - has:
+        field: arguments
+        has:
+          kind: call_expression
+          has:
+            field: function
+            regex: '\.(Header\.Get|FormValue|PostFormValue|UserAgent|Referer)$'

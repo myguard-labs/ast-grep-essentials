@@ -1,0 +1,7 @@
+id: go-audit-log-field-crlf-unescaped
+valid:
+- "func logLine(w io.Writer, req *http.Request) {\n\tfmt.Fprintf(w, \"[%s] %s\\n\", time.Now(), logEscaper.Replace(req.Header.Get(\"X-Id\")))\n}"
+- "// func logLine(w io.Writer, req *http.Request) {\n// \tfmt.Fprintf(w, \"[%s] %s\\n\", time.Now(), req.Header.Get(\"X-Id\"))\n// }"
+- var astgrepFixture = "func logLine(w io.Writer, req *http.Request) {\n\tfmt.Fprintf(w, \"[%s] %s\\n\", time.Now(), req.Header.Get(\"X-Id\"))\n}"
+invalid:
+- "func logLine(w io.Writer, req *http.Request) {\n\tfmt.Fprintf(w, \"[%s] %s\\n\", time.Now(), req.Header.Get(\"X-Id\"))\n}"
