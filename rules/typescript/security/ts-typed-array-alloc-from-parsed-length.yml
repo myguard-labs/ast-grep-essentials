@@ -1,0 +1,10 @@
+id: ts-typed-array-alloc-from-parsed-length
+language: typescript
+severity: warning
+message: A `new Uint8Array(...)` allocation whose size is a `.len`-style member read
+  from a parsed header or element record.
+note: Sizing an allocation directly from a length field in untrusted input lets a
+  crafted header force huge allocations. Reading large payloads in bounded chunks
+  is the fix. Whether the length is untrusted needs taint.
+rule:
+  pattern: new Uint8Array($REC.len)
