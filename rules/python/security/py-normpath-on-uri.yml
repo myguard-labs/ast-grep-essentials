@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-normpath-on-uri
+language: python
+severity: warning
+message: >-
+  os.path.normpath is applied to URI text. Use posixpath.normpath for URI
+  paths.
+note: >-
+  This is a syntactic check only. It matches calls to os.path.normpath whose
+  single argument is an identifier named uri or url. It does not follow
+  aliases, imports such as 'from os import path', or values flowing in from
+  variables with other names, and it does not prove that the value is really a
+  URI.
+rule:
+  pattern: 'os.path.normpath($X)'
+constraints:
+  X:
+    regex: '^(uri|url)$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
