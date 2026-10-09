@@ -1,0 +1,7 @@
+id: go-unbounded-col-range-loop
+valid:
+- func f(c struct{ Min, Max int }) { for i := max(0, c.Min); i <= min(16384, c.Max); i++ { _ = i } }
+- // func f(c struct{ Min, Max int }) { for i := c.Min; i <= c.Max; i++ { _ = i } }
+- var astgrepFixture = "func f(c struct{ Min, Max int }) { for i := c.Min; i <= c.Max; i++ { _ = i } }"
+invalid:
+- func f(c struct{ Min, Max int }) { for i := c.Min; i <= c.Max; i++ { _ = i } }

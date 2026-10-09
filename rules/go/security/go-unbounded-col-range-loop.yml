@@ -1,0 +1,11 @@
+id: go-unbounded-col-range-loop
+language: go
+severity: warning
+message: A for loop initialises and bounds its counter directly from the Min and Max
+  fields of one struct value (for i := x.Min; i <= x.Max; i++) with no max or min
+  clamp in the loop header.
+note: The bare form is common in benign loops. The hazard only exists when Min or
+  Max come from untrusted input and no clamp applies earlier, which needs dataflow,
+  so it is recorded as taint rather than a syntactic rule.
+rule:
+  pattern: 'for $I := $X.Min; $I <= $X.Max; $I++ { $$$BODY }'
