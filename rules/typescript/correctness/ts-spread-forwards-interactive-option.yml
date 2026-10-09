@@ -1,0 +1,44 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-spread-forwards-interactive-option
+language: typescript
+severity: warning
+message: >-
+  An options object passed to a `.handler(` call spreads an identifier without
+  overriding `interactive`, so a prompt the caller already handled may open
+  again.
+note: >-
+  This is a syntactic check only. It cannot tell whether the spread object
+  actually contains an interactive flag, or whether passing it through is
+  intended. It only looks at object literals passed directly as call
+  arguments.
+rule:
+  kind: object
+  has:
+    kind: spread_element
+    has:
+      kind: identifier
+  not:
+    has:
+      kind: pair
+      has:
+        field: key
+        regex: '^interactive$'
+  inside:
+    kind: arguments
+    inside:
+      kind: call_expression
+      has:
+        field: function
+        kind: member_expression
+        has:
+          field: property
+          regex: '^handler$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
