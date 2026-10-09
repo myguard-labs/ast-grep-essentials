@@ -1,0 +1,10 @@
+id: php-xpath-attr-predicate-case-sensitive
+language: php
+severity: warning
+message: An XPath query whose predicate selects elements by a literal attribute name,
+  such as [@href], is used to find security-relevant references in parsed markup.
+note: XPath attribute names are case sensitive, so mixed-case names such as HrEf are
+  skipped by the predicate, even though a later step normalises them to href. This
+  generalises to any attribute-name predicate followed by normalisation.
+rule:
+  pattern: $xpath->query('//use[@href or @xlink:href]', $$V0);
