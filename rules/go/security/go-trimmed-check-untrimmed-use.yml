@@ -1,0 +1,11 @@
+id: go-trimmed-check-untrimmed-use
+language: go
+severity: warning
+message: An if statement tests strings.TrimSpace(v) against an empty string, and the
+  same identifier v, not the trimmed value, is passed to a later call.
+note: The emptiness check validates the trimmed value but the untrimmed value is used
+  downstream, so padded input slips past the check. Reassignment of v between the
+  two lines is a possible false positive.
+rule:
+  pattern: func $V0($V1 string) error { if strings.TrimSpace($V1) == "" { return $V2
+    }; return exec($V1) }
