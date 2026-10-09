@@ -1,0 +1,10 @@
+id: js-jwt-verify-empty-key-literal
+language: javascript
+severity: warning
+message: A verify or createVerifier call whose key argument is the literal empty string
+  or null.
+note: An empty or null key with an explicit allowlist can verify nothing, so verification
+  may silently accept unsigned tokens. Same root cause as GHSA-8wpc-h4q6-8fxv, and
+  it applies to any verify call.
+rule:
+  pattern: 'jwt.verify($V0, '''', { $V1: [''HS256''] })'
