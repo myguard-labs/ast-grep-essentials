@@ -1,0 +1,7 @@
+id: js-recursive-decoder-no-depth-bound
+valid:
+- function readArray(buf, n, depth) { if (depth > 100) throw new Error('deep'); const out = []; for (let i = 0; i < n; i++) out.push(readArray(buf, n, depth + 1)); return out }
+- // function readArray(buf, n) { const out = []; for (let i = 0; i < n; i++) out.push(readArray(buf, n)); return out }
+- const astgrepFixture = "function readArray(buf, n) { const out = []; for (let i = 0; i < n; i++) out.push(readArray(buf, n)); return out }";
+invalid:
+- function readArray(buf, n) { const out = []; for (let i = 0; i < n; i++) out.push(readArray(buf, n)); return out }
