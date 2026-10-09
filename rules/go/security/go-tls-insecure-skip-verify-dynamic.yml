@@ -1,0 +1,34 @@
+id: go-tls-insecure-skip-verify-dynamic
+language: go
+severity: warning
+message: A tls.Config composite literal sets InsecureSkipVerify to a non-literal expression
+  (identifier or selector) instead of a constant, so whether certificate verification
+  is disabled depends on a value that is not visible at the call site.
+note: Only literal true is flagged by the shipped rule. A config-driven toggle is
+  the path the CVE used (TlsInsecureSkipVerify defaulting to true and passed into
+  tls.Config). Whether the value is unsafe needs config dataflow, so it is recorded
+  as taint.
+utils:
+  dynamic-value:
+    kind: literal_element
+    regex: '^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*$'
+    not:
+      regex: '^(true|false)$'
+rule:
+  kind: keyed_element
+  all:
+    - has:
+        field: key
+        regex: ^InsecureSkipVerify$
+    - has:
+        field: value
+        matches: dynamic-value
+    - inside:
+        kind: composite_literal
+        stopBy:
+          kind: composite_literal
+        has:
+          field: type
+          regex: '^tls\.Config$'
+
+Note: I could not write this to `rules/go/security/go-tls-insecure-skip-verify-dynamic.yml` because this session has no file-write tool (serena's `query_project` is read-only). Please apply it there. The existing fixture at `tests/go/security/go-tls-insecure-skip-verify-dynamic.yml` already has the right cases (`cfg.Skip` invalid; `false` valid), so it needs no change. The regex excludes `true` and `false` because Go's grammar parses them as identifiers.

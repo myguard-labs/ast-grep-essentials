@@ -1,0 +1,7 @@
+id: go-tls-insecure-skip-verify-dynamic
+valid:
+- "package p\n\nimport \"crypto/tls\"\n\nfunc newTLS(cfg Config) *tls.Config {\n\treturn &tls.Config{InsecureSkipVerify: false}\n}"
+- "// package p\n// \n// import \"crypto/tls\"\n// \n// func newTLS(cfg Config) *tls.Config {\n// \treturn &tls.Config{InsecureSkipVerify: cfg.Skip}\n// }"
+- 'var astgrepFixture = "package p\n\nimport \"crypto/tls\"\n\nfunc newTLS(cfg Config) *tls.Config {\n\treturn &tls.Config{InsecureSkipVerify: cfg.Skip}\n}"'
+invalid:
+- "package p\n\nimport \"crypto/tls\"\n\nfunc newTLS(cfg Config) *tls.Config {\n\treturn &tls.Config{InsecureSkipVerify: cfg.Skip}\n}"
