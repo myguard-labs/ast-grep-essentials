@@ -1,0 +1,7 @@
+id: go-formula-reentrant-calc-cell-value
+valid:
+- func (fn *formulaFuncs) ANCHORARRAY(argsList *list.List) formulaArg { arg, err := fn.f.cellResolver(fn.ctx, "Sheet1", "A1"); _ = arg; _ = err; return formulaArg{} }
+- '// func (fn *formulaFuncs) ANCHORARRAY(argsList *list.List) formulaArg { r, err := fn.f.CalcCellValue("Sheet1", "A1", Options{RawCellValue: true}); _ = r; _ = err; return formulaArg{} }'
+- 'var astgrepFixture = "func (fn *formulaFuncs) ANCHORARRAY(argsList *list.List) formulaArg { r, err := fn.f.CalcCellValue(\"Sheet1\", \"A1\", Options{RawCellValue: true}); _ = r; _ = err; return formulaArg{} }"'
+invalid:
+- 'func (fn *formulaFuncs) ANCHORARRAY(argsList *list.List) formulaArg { r, err := fn.f.CalcCellValue("Sheet1", "A1", Options{RawCellValue: true}); _ = r; _ = err; return formulaArg{} }'

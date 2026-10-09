@@ -1,0 +1,18 @@
+id: go-formula-reentrant-calc-cell-value
+language: go
+severity: warning
+message: A formula-function method on formulaFuncs calls fn.f.CalcCellValue, which
+  re-enters full evaluation of a referenced cell.
+note: Mutually referencing array formulas recurse without bound when each cell is
+  evaluated through the full calc path. Whether a cycle exists depends on the call
+  graph, so this is cross-function. Replacing it with a non-recursive resolver is
+  the reusable fix.
+rule:
+  kind: method_declaration
+  all:
+    - has:
+        field: receiver
+        regex: 'formulaFuncs'
+    - has:
+        stopBy: end
+        pattern: fn.f.CalcCellValue($$$ARGS)
