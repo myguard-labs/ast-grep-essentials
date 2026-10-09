@@ -1,0 +1,9 @@
+id: py-pop-zero-in-while-loop
+language: python
+severity: warning
+message: A `.pop(0)` call inside the body of a `while` loop is reported.
+note: Removing the head of a Python list is O(n), so a loop that drains an attacker-sized
+  sequence with pop(0) is quadratic. The same drain shape recurs in any parser that
+  walks a queue. The near miss is the O(1) deque idiom.
+rule:
+  pattern: "def $V0($V1):\n    while $V1:\n        $V2 = queue.pop(0)\n        handle($V2)"
