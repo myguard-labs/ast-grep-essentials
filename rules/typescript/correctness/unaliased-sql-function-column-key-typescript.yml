@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: unaliased-sql-function-column-key-typescript
+language: typescript
+severity: warning
+message: >-
+  Result row is keyed by an unaliased SQL function call column name; alias the
+  column in the query and use the alias as the key.
+note: >-
+  Syntactic only. Matches any string-literal subscript whose text looks like a
+  function call such as "version()". It does not check that the object is a
+  query result row or what the SQL text says.
+rule:
+  kind: subscript_expression
+  has:
+    field: index
+    kind: string
+    regex: '^["''][A-Za-z_][A-Za-z0-9_.]*\(.*\)["'']$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
