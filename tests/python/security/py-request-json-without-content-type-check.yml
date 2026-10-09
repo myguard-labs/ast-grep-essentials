@@ -1,0 +1,18 @@
+id: py-request-json-without-content-type-check
+valid:
+- |-
+  async def chat(request):
+      if request.headers.get('content-type') != 'application/json':
+          return Response(status_code=415)
+      body = await request.json()
+      return body
+- |-
+  # async def chat(request):
+  #     body = await request.json()
+  #     return body
+- astgrep_fixture = "async def chat(request):\n    body = await request.json()\n    return body"
+invalid:
+- |-
+  async def chat(request):
+      body = await request.json()
+      return body

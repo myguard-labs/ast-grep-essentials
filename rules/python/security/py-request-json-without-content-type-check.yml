@@ -1,0 +1,10 @@
+id: py-request-json-without-content-type-check
+language: python
+severity: warning
+message: A function that calls `request.json()` without any `content-type` header
+  check in its body is reported.
+note: request.json() parses any body regardless of content type. A cross-site form
+  or text/plain post can then reach a state-changing local endpoint without a preflight.
+  Requiring application/json in the handler closes that route.
+rule:
+  pattern: "async def $V0(request):\n    $V1 = await request.json()\n    return $V1"
