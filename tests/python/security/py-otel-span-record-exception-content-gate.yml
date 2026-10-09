@@ -1,0 +1,14 @@
+id: py-otel-span-record-exception-content-gate
+valid:
+- |-
+  def report(span, err, include_content):
+      if include_content:
+          span.record_exception(err)
+- |-
+  # def report(span, err, include_content):
+  #     span.record_exception(err)
+- astgrep_fixture = "def report(span, err, include_content):\n    span.record_exception(err)"
+invalid:
+- |-
+  def report(span, err, include_content):
+      span.record_exception(err)

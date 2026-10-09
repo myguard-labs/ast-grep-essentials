@@ -1,0 +1,10 @@
+id: py-otel-span-record-exception-content-gate
+language: python
+severity: warning
+message: span.record_exception() is called in a function with no branch that tests
+  an include_content flag.
+note: The SDK exception event carries the message and stack trace, which can echo
+  content the setting withholds. Any span recorder that skips the content gate has
+  the same leak.
+rule:
+  pattern: "def $V0(span, $V1, $V2):\n    span.record_exception($V1)"
