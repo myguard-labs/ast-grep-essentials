@@ -1,0 +1,13 @@
+id: go-exec-name-from-config-unvalidated
+language: go
+severity: warning
+message: A struct literal sets a Name field directly from a string parameter that
+  is later executed as a command, with no lookup against registered names.
+note: The knowns fix replaces a raw config-supplied binary name with an allowlist
+  lookup, closing a command-injection path. Tracking the name to exec needs dataflow,
+  so recorded as taint.
+rule:
+  pattern: '$T{Name: $V}'
+  inside:
+    kind: function_declaration
+    stopBy: end
