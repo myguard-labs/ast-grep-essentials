@@ -1,0 +1,13 @@
+id: py-cache-key-request-id
+valid:
+- |-
+  def store(cache, request_id, value):
+      cache[str(uuid.uuid4())] = value
+- |-
+  # def store(cache, request_id, value):
+  #     cache[request_id] = value
+- astgrep_fixture = "def store(cache, request_id, value):\n    cache[request_id] = value"
+invalid:
+- |-
+  def store(cache, request_id, value):
+      cache[request_id] = value

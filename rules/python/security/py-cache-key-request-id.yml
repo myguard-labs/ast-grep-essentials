@@ -1,0 +1,15 @@
+id: py-cache-key-request-id
+language: python
+severity: warning
+message: A subscript assignment into a cache whose key is a bare parameter named request_id.
+note: A caller-chosen key lets two requests share or overwrite one cache entry. The
+  commit switches to server-generated keys. Whether the id is caller-controlled needs
+  dataflow, so this is taint.
+rule:
+  pattern: $CACHE[request_id] = $VALUE
+  inside:
+    kind: function_definition
+    stopBy: end
+    has:
+      field: parameters
+      regex: '(^\(|,)\s*request_id\s*(:|=|,|\))'
