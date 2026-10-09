@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-regex-chained-dotstar
+language: javascript
+severity: warning
+message: >-
+  Regex literal contains two or more .* quantifiers, which can backtrack
+  super-linearly on long inputs.
+note: >-
+  This check looks only at the text of the regex pattern. It does not check
+  whether input length is bounded or whether the match can actually backtrack,
+  and it may flag escaped sequences such as \.* or .* inside character
+  classes.
+rule:
+  kind: regex_pattern
+  regex: '\.\*.*\.\*'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
