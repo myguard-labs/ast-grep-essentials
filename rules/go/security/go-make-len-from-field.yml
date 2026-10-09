@@ -1,0 +1,10 @@
+id: go-make-len-from-field
+language: go
+severity: warning
+message: A make call for a byte slice whose length argument is a field selector such
+  as x.Size, not a constant.
+note: Allocating a buffer from a size read out of an untrusted container lets a crafted
+  file force huge or negative allocations. Whether a bound check precedes it needs
+  a guard elsewhere, so it is recorded as taint.
+rule:
+  pattern: make([]byte, $OBJ.$FIELD)
