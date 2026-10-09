@@ -1,0 +1,21 @@
+id: prefs-save-missing-key-cpp
+language: cpp
+severity: warning
+message: A function that writes a preferences dictionary with Set calls for some member
+  flags but omits a member flag that sibling writers persist.
+note: Detecting the omitted key needs the full member list and the sibling writers,
+  so it is cross-function. Originates from a CVE fix where a security flag was not
+  saved, so its restored state was lost. Record as rejected.
+# Narrow, function-scoped check: flags a function that saves kNodeIntegration but
+# never saves kNodeIntegrationInWorker. The sibling key is hardcoded from the CVE fix,
+# so this catches only that omission. It does not generalize to other member flags.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        pattern: $DICT.Set(options::kNodeIntegration, $$$ARGS)
+        stopBy: end
+    - not:
+        has:
+          pattern: $DICT.Set(options::kNodeIntegrationInWorker, $$$REST)
+          stopBy: end
