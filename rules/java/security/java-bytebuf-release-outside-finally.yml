@@ -1,0 +1,18 @@
+id: java-bytebuf-release-outside-finally
+language: java
+severity: warning
+message: An expression statement calling release() on a ByteBuf variable that is not
+  nested inside a finally block.
+note: Reference-counted buffers leak when an earlier call throws and the release is
+  skipped. The same try/finally repair applies to any ByteBuf handoff. Type and ownership
+  knowledge is needed to confirm a leak.
+rule:
+  all:
+    - pattern: $BUF.release();
+    - not:
+        inside:
+          kind: finally_clause
+          stopBy: end
+constraints:
+  BUF:
+    regex: '(?i)buf'

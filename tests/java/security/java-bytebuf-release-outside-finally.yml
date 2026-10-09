@@ -1,0 +1,7 @@
+id: java-bytebuf-release-outside-finally
+valid:
+- class A { void f(ByteBuf buf) { try { process(buf); } finally { buf.release(); } } }
+- // class A { void f(ByteBuf buf) { process(buf); buf.release(); } }
+- class AstgrepFixture { String value = "class A { void f(ByteBuf buf) { process(buf); buf.release(); } }"; }
+invalid:
+- class A { void f(ByteBuf buf) { process(buf); buf.release(); } }
