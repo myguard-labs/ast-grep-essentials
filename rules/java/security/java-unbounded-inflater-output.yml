@@ -1,0 +1,11 @@
+id: java-unbounded-inflater-output
+language: java
+severity: warning
+message: A while loop that calls Inflater.inflate and writes the output into a buffer,
+  with no size comparison against a limit in the loop body, is reported.
+note: An Inflater loop with no output cap is the decompression-bomb shape. It generalises
+  to any inflate loop (zlib, gzip, deflate-based protocols). The limit check is the
+  fix.
+rule:
+  pattern: while (!inf.finished()) { int $V0 = inf.inflate($V1); out.write($V1, 0,
+    $V0); }
