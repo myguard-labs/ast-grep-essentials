@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-regex-double-dotstar-backtracking
+language: javascript
+severity: warning
+message: >-
+  Regex literal with two unbounded .* quantifiers is tested against input and
+  may backtrack quadratically.
+note: >-
+  Syntactic check only. It flags a regex literal whose source text contains
+  two .* sequences and is passed directly to .test(). It does not check
+  whether the input is attacker-controlled or long, and it does not analyze
+  regex semantics such as escaped dots or character classes.
+rule:
+  pattern: '$RE.test($X)'
+constraints:
+  RE:
+    kind: regex
+    regex: '\.\*.*\.\*'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
