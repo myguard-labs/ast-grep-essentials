@@ -1,0 +1,25 @@
+id: java-spring-getresource-unchecked-path
+language: java
+severity: warning
+message: >-
+  A call to getResource(...) on an ApplicationContext whose argument is a non-literal
+  identifier, with no ResourceHandlerUtils path check on that identifier earlier in
+  the method.
+note: >-
+  The fix validates a user-influenced location with ResourceHandlerUtils before
+  resolving it. Whether a value is attacker-controlled and whether a sanitizer dominates
+  the call needs dataflow, so a syntactic rule would flag most getResource calls.
+  Recorded as taint so it is not re-mined.
+constraints:
+  ARG:
+    kind: identifier
+rule:
+  all:
+    - pattern: $CTX.getResource($ARG)
+    - not:
+        inside:
+          kind: method_declaration
+          stopBy: end
+          has:
+            pattern: ResourceHandlerUtils.$M($$$)
+            stopBy: end
