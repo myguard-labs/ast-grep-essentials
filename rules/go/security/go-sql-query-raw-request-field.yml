@@ -1,0 +1,21 @@
+id: go-sql-query-raw-request-field
+language: go
+severity: warning
+message: A call to a method named Query whose SQL argument is a selector reading a
+  RawQuery field, passed without a literal or validated value.
+note: Request-supplied SQL reaching a query call is injection. Whether the field is
+  user-controlled needs source tracking, so this is recorded as taint rather than
+  a syntactic rule. Same ground as go-sql-sprintf.
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        kind: selector_expression
+        has: {field: field, regex: '^Query$'}
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          kind: selector_expression
+          has: {field: field, regex: '^RawQuery$'}
