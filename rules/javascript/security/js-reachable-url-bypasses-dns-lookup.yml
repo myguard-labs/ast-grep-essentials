@@ -1,0 +1,11 @@
+id: js-reachable-url-bypasses-dns-lookup
+language: javascript
+severity: warning
+message: A require or import of the reachable-url package, which bundles got 11 and
+  ignores the externalRequest dnsLookup hook.
+note: Requests made through reachable-url skip the DNS-rebinding check that the app's
+  HTTP client installs, so URLs it probes can resolve to internal addresses. Any module
+  that loads this package for outbound probing has the same gap, so flagging the import
+  covers the shape.
+rule:
+  pattern: const $V0 = require('reachable-url');
