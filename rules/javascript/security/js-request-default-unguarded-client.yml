@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-request-default-unguarded-client
+language: javascript
+severity: warning
+message: >-
+  Nullish default falls back to a raw required HTTP package instead of an
+  injected, guarded client.
+note: >-
+  Syntactic only. It flags `x ?? require('<bare package>')` where the
+  specifier does not start with '.' or '/'. It cannot tell whether the package
+  is actually an unguarded HTTP client, or whether some other code applies an
+  internal-address guard.
+rule:
+  pattern: '$CLIENT ?? require($PKG)'
+constraints:
+  PKG:
+    regex: '^[''"][^./]'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
