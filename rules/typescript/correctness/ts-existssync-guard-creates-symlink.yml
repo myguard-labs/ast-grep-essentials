@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-existssync-guard-creates-symlink
+language: typescript
+severity: warning
+message: >-
+  A negated existsSync check guards symlinkSync on the same path; existsSync
+  follows symlinks, so a dangling link reads as absent and the create fails
+  with EEXIST. Use an lstat-based check instead.
+note: >-
+  Syntactic only. It matches an if statement whose condition is exactly
+  !existsSync(P) and whose consequence contains symlinkSync(T, P) with the
+  same path text P. It does not resolve imports, aliases, or other ways the
+  path could be computed.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        field: condition
+        has:
+          pattern: '!existsSync($P)'
+    - has:
+        field: consequence
+        stopBy: end
+        pattern: 'symlinkSync($T, $P)'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

@@ -1,0 +1,13 @@
+id: ts-existssync-guard-creates-symlink
+valid:
+  - |-
+    import { existsSync, symlinkSync } from 'node:fs'
+    export function link (target: string, dest: string) {
+      if (!existsSync(dest)) mkdirSync(dest)
+    }
+invalid:
+  - |-
+    import { existsSync, symlinkSync } from 'node:fs'
+    export function link (target: string, dest: string) {
+      if (!existsSync(dest)) symlinkSync(target, dest)
+    }
