@@ -1,0 +1,27 @@
+id: go-unguarded-first-element-field
+language: go
+severity: warning
+message: An index literal 0 applied to a field selector expression x.F[0] in a function
+  with no preceding len check on that same field.
+note: Excelize extractors index parsed XML slice fields such as Formula[0] and Cfvo[1]
+  with no length guard, so an empty element panics. Needs slice typing and guard flow,
+  so recorded as taint.
+rule:
+  all:
+    - pattern: '$X.$F[0]'
+    - not:
+        inside:
+          kind: function_declaration
+          has:
+            pattern: 'len($X.$F)'
+            stopBy: end
+          stopBy: end
+    - not:
+        inside:
+          kind: method_declaration
+          has:
+            pattern: 'len($X.$F)'
+            stopBy: end
+          stopBy: end
+
+Not written to disk: this session has no file-write tool, and the Serena query tool is read-only. The fixture at `tests/go/security/go-unguarded-first-element-field.yml` already has the right valid and invalid cases, so it needs no change. I have not run the probe, because there is no shell or ast-grep here.
