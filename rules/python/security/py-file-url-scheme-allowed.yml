@@ -1,0 +1,18 @@
+id: py-file-url-scheme-allowed
+language: python
+severity: warning
+message: "A URL scheme test that returns allowed for scheme 'file' with no path-containment check in the same branch."
+note: "Allowing file URLs is safe only when the resolved path is confined to an allowed base. The confinement lives in a helper or config, so this needs dataflow and is recorded as rejected for syntax-only matching."
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        kind: comparison_operator
+        has:
+          kind: string
+          regex: '^["'']file["'']$'
+        stopBy: end
+    - not:
+        has:
+          regex: 'commonpath|is_relative_to|realpath|startswith'
+          stopBy: end
