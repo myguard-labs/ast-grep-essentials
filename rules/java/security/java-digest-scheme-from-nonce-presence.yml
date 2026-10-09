@@ -1,0 +1,46 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: java-digest-scheme-from-nonce-presence
+language: java
+severity: warning
+message: >-
+  Authentication scheme is chosen from whether a nonce is present instead of
+  from the declared challenge scheme; a Digest challenge without a nonce falls
+  back to Basic and sends the password in cleartext.
+note: >-
+  Syntactic match only. Flags a ternary whose condition is
+  isNonEmpty(<nonce-named expression>) and whose branches are
+  AuthScheme.DIGEST and AuthScheme.BASIC. It does not check how the nonce was
+  obtained or whether the challenge scheme is validated elsewhere.
+rule:
+  kind: ternary_expression
+  all:
+    - has:
+        field: condition
+        kind: method_invocation
+        all:
+          - has:
+              field: name
+              regex: '^isNonEmpty$'
+          - has:
+              field: arguments
+              has:
+                kind: identifier
+                regex: '(?i)nonce'
+                stopBy: end
+    - has:
+        field: consequence
+        kind: field_access
+        regex: '^AuthScheme\s*\.\s*DIGEST$'
+    - has:
+        field: alternative
+        kind: field_access
+        regex: '^AuthScheme\s*\.\s*BASIC$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
