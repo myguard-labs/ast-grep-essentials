@@ -1,0 +1,18 @@
+id: py-forwarded-for-header-trusted-ungated
+snapshots:
+  ? |-
+    def client_ip(request, settings):
+        fwd = request.headers.get('X-Forwarded-For')
+        if fwd:
+            return fwd.split(',')[0].strip()
+        return request.client.host
+  : labels:
+    - source: |-
+        def client_ip(request, settings):
+            fwd = request.headers.get('X-Forwarded-For')
+            if fwd:
+                return fwd.split(',')[0].strip()
+            return request.client.host
+      style: primary
+      start: 0
+      end: 166

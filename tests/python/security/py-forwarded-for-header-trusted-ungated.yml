@@ -1,0 +1,23 @@
+id: py-forwarded-for-header-trusted-ungated
+valid:
+- |-
+  def client_ip(request, settings):
+      if settings.trust_proxy:
+          fwd = request.headers.get('X-Forwarded-For')
+          if fwd:
+              return fwd.split(',')[0].strip()
+      return request.client.host
+- |-
+  # def client_ip(request, settings):
+  #     fwd = request.headers.get('X-Forwarded-For')
+  #     if fwd:
+  #         return fwd.split(',')[0].strip()
+  #     return request.client.host
+- astgrep_fixture = "def client_ip(request, settings):\n    fwd = request.headers.get('X-Forwarded-For')\n    if fwd:\n        return fwd.split(',')[0].strip()\n    return request.client.host"
+invalid:
+- |-
+  def client_ip(request, settings):
+      fwd = request.headers.get('X-Forwarded-For')
+      if fwd:
+          return fwd.split(',')[0].strip()
+      return request.client.host

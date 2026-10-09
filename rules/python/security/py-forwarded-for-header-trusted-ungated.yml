@@ -1,0 +1,11 @@
+id: py-forwarded-for-header-trusted-ungated
+language: python
+severity: warning
+message: A function returns a client address taken from request.headers.get('X-Forwarded-For')
+  without a branch on a trusted-proxy setting.
+note: A client-supplied forwarding header decides the caller's identity, which lets
+  a remote caller spoof a loopback address. Any locality or allowlist check built
+  on this helper inherits the flaw.
+rule:
+  pattern: "def $V0($V1, $V2):\n    $V3 = request.headers.get('X-Forwarded-For')\n\
+    \    if $V3:\n        return fwd.split(',')[0].strip()\n    return request.client.host"
