@@ -1,0 +1,7 @@
+id: py-zip-parallel-no-strict
+language: python
+severity: warning
+message: A zip() call over two sequences without strict=True, which silently truncates mismatched parallel lists.
+note: The defect only matters when the sequences come from a caller and can differ in length. The commit rejects mismatched parallel multimodal fields before handoff. Proving the input is caller-controlled needs dataflow, so this is a taint claim.
+rule:
+  pattern: zip($A, $B)
