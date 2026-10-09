@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-string-agg-without-order-by
+language: typescript
+severity: warning
+message: >-
+  string_agg call without ORDER BY produces nondeterministic ordering; add
+  ORDER BY inside the aggregate.
+note: >-
+  Text-based check on template literals only. It flags a template that
+  contains string_agg( where no ORDER BY appears before the first closing
+  parenthesis. Nested parentheses, SQL built from several strings, and a
+  template that has both an ordered and an unordered string_agg may be
+  misjudged. Plain quoted strings are not covered.
+rule:
+  kind: template_string
+  all:
+    - regex: '(?i)string_agg\s*\('
+    - not:
+        regex: '(?i)string_agg\s*\([^)]*\bORDER\s+BY\b'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
