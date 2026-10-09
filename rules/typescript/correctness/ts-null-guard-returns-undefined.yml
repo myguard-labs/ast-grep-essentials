@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-null-guard-returns-undefined
+language: typescript
+severity: warning
+message: 'Null guard returns undefined, erasing the null-versus-undefined distinction.'
+note: >-
+  Syntactic only. It flags an if statement whose condition contains a strict
+  `=== null` comparison and whose direct consequent is `return undefined`. It
+  cannot tell whether callers actually depend on telling null apart from
+  undefined, and it does not look inside block consequents.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        field: condition
+        has:
+          pattern: '$X === null'
+          stopBy: end
+    - has:
+        field: consequence
+        pattern: return undefined
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
