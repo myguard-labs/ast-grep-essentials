@@ -1,0 +1,18 @@
+id: ts-deep-merge-forin-unguarded-proto-key
+valid:
+  - |-
+    function merge(target: any, source: any) {
+      for (const key in source) {
+        if (key === '__proto__') continue;
+        target[key] = source[key];
+      }
+      return target;
+    }
+invalid:
+  - |-
+    function merge(target: any, source: any) {
+      for (const key in source) {
+        target[key] = source[key];
+      }
+      return target;
+    }

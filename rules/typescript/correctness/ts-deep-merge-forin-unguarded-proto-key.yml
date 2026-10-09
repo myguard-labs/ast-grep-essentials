@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-deep-merge-forin-unguarded-proto-key
+language: typescript
+severity: warning
+message: >-
+  for...in loop assigns target[key] from source keys without a guard against
+  __proto__, constructor, or prototype.
+note: >-
+  Single-file syntactic heuristic only. It cannot prove that the source keys
+  are attacker-controlled, determine the target's type, or see guards outside
+  the loop. Any mention of __proto__, constructor, or prototype inside the
+  loop suppresses the match.
+rule:
+  all:
+    - pattern: 'for (const $K in $SRC) $BODY'
+    - has:
+        stopBy: end
+        pattern: '$T[$K] = $V'
+    - not:
+        has:
+          stopBy: end
+          regex: '__proto__|constructor|prototype'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
