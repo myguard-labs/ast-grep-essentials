@@ -1,0 +1,34 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-deref-index-missing-lower-bound
+language: go
+severity: warning
+message: >-
+  Dereferenced index is checked only against len(...) with no 0 <= lower bound
+  in the same && chain.
+note: >-
+  This is a syntax-only check. It looks for a `*x < len(s)` comparison inside
+  an && chain where no enclosing && expression has a `0 <= *x` term. It cannot
+  see lower bounds enforced elsewhere, unsigned types, or values that are
+  proven non-negative.
+rule:
+  all:
+    - pattern: '*$X < len($S)'
+    - inside:
+        pattern: '$A && $B'
+        stopBy: end
+    - not:
+        inside:
+          pattern: '$C && $D'
+          has:
+            pattern: '0 <= *$X'
+            stopBy: end
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
