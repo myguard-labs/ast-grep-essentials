@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-payload-count-result-as-boolean
+language: typescript
+severity: warning
+message: >-
+  Awaited count() result is used directly as a conditional test; count results
+  are objects and are always truthy.
+note: >-
+  Syntactic only. Matches a ternary whose test is the exact identifier bound
+  by a preceding sibling-scope `const X = await obj.count(...)` declaration;
+  it does not verify the receiver type, the actual return shape of count(),
+  aliasing, or reassignment.
+rule:
+  pattern: '$X ? $A : $B'
+  inside:
+    stopBy: end
+    follows:
+      stopBy: end
+      pattern: 'const $X = await $O.count($$$)'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
