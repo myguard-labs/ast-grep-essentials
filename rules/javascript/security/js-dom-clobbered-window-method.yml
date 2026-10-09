@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-dom-clobbered-window-method
+language: javascript
+severity: warning
+message: >-
+  Method called on a window global after only an existence check; a clobbering
+  DOM element can stand in for the object.
+note: >-
+  Syntactic only. Matches a window.<name>.<method>() call inside an if whose
+  condition is exactly window.<name> !== void 0. It does not check whether the
+  global can actually be clobbered, and it does not handle truthiness checks
+  or other guard forms.
+rule:
+  pattern: 'window.$N.$M($$$ARGS)'
+  inside:
+    pattern: 'if (window.$N !== void 0) $BODY'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
