@@ -1,0 +1,26 @@
+id: java-exception-message-embeds-uri
+language: java
+severity: warning
+message: A throw of a new exception whose message is built by concatenating a variable
+  into a string literal.
+note: Exception messages get logged and returned. Concatenating an input such as a
+  connection URI can leak embedded credentials. Whether the variable holds a secret
+  needs dataflow, so the syntax alone is only a candidate.
+rule:
+  all:
+    - kind: throw_statement
+    - has:
+        kind: object_creation_expression
+        stopBy: end
+        has:
+          kind: binary_expression
+          stopBy: end
+          all:
+            - has:
+                kind: string_literal
+                stopBy: end
+            - has:
+                kind: identifier
+                stopBy: end
+
+Note: I could not write this to the rule file or run the probe. This session has no file-write or shell tool; the only write-capable tools here are Docs and memory, which don't reach the Essentials checkout. Pasting the YAML above into `rules/java/security/java-exception-message-embeds-uri.yml` and rerunning the probe will settle it. I also did not run ast-grep, so the match and near-miss behavior is unverified.
