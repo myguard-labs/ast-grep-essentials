@@ -1,0 +1,11 @@
+id: js-anchored-pem-header-regex
+language: javascript
+severity: warning
+message: A regex literal that starts with ^ and matches a -----BEGIN PEM header is
+  passed to .test, .match or .search on a key value, so leading bytes before the header
+  defeat the match.
+note: Anchored PEM header regexes fail when key text has leading whitespace, BOM or
+  wrapper bytes. The unanchored matcher is the generalisable form, and the shape recurs
+  in key-type detection.
+rule:
+  pattern: const $V0 = /^-----BEGIN PUBLIC KEY-----/.test($V1)
