@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-loop-overflow-check-after-accumulate
+language: go
+severity: warning
+message: >-
+  Loop accumulates with += and scales a multiplier with *= but performs no
+  bounds check inside the loop body; the value can overflow before any later
+  check runs.
+note: >-
+  Syntactic only. Matches a for loop that contains both a += accumulation and
+  a *= multiplier update and no if statement anywhere in it. It does not check
+  that the operands are related, that the multiplier is a constant, that a
+  comparison follows the loop, or whether overflow is actually possible for
+  the value ranges involved.
+rule:
+  kind: for_statement
+  all:
+    - has:
+        pattern: '$ACC += $VAL'
+        stopBy: end
+    - has:
+        pattern: '$MUL *= $K'
+        stopBy: end
+    - not:
+        has:
+          kind: if_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

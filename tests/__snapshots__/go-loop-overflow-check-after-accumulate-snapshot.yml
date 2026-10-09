@@ -1,0 +1,16 @@
+id: go-loop-overflow-check-after-accumulate
+snapshots:
+  ? func colNum(name string) (int, error) { col, multi := 0, 1; for i := len(name) - 1; i >= 0; i-- { col += int(name[i]-'A'+1) * multi; multi *= 26 }; if col > 16384 { return -1, errBad }; return col, nil }
+  : labels:
+    - source: for i := len(name) - 1; i >= 0; i-- { col += int(name[i]-'A'+1) * multi; multi *= 26 }
+      style: primary
+      start: 60
+      end: 146
+    - source: col += int(name[i]-'A'+1) * multi
+      style: secondary
+      start: 98
+      end: 131
+    - source: multi *= 26
+      style: secondary
+      start: 133
+      end: 144

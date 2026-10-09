@@ -1,0 +1,11 @@
+id: go-loop-overflow-check-after-accumulate
+valid:
+  - >-
+    func colNum(name string) (int, error) { col, multi := 0, 1; for i :=
+    len(name) - 1; i >= 0; i-- { col += int(name[i]-'A'+1) * multi; if col >
+    16384 { return -1, errBad }; multi *= 26 }; return col, nil }
+invalid:
+  - >-
+    func colNum(name string) (int, error) { col, multi := 0, 1; for i :=
+    len(name) - 1; i >= 0; i-- { col += int(name[i]-'A'+1) * multi; multi *= 26
+    }; if col > 16384 { return -1, errBad }; return col, nil }
