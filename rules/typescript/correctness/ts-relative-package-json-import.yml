@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-relative-package-json-import
+language: typescript
+severity: warning
+message: >-
+  Default import of package.json through a relative path that climbs two or
+  more parent directories ties the module to the build layout.
+note: >-
+  Syntactic only. This matches a default import whose source is a literal
+  relative path that climbs two or more parent directories to a package.json.
+  It cannot tell whether the layout is stable or whether the import is
+  intended, so some legitimate imports will match.
+rule:
+  kind: import_statement
+  all:
+    - has:
+        kind: import_clause
+        has:
+          kind: identifier
+    - has:
+        field: source
+        kind: string
+        regex: '^["''](\.\./){2,}([^"'']*/)?package\.json["'']$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
