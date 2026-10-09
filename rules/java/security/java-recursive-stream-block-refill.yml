@@ -1,0 +1,28 @@
+id: java-recursive-stream-block-refill
+language: java
+severity: warning
+message: A method whose body calls itself directly, on a branch taken after a stream
+  read, is reported.
+note: Recursing once per input record can overflow the stack on long runs of empty
+  records. The loop refactor generalises to any record-skipping reader. Reachability
+  depends on input data, so this is taint.
+rule:
+  kind: method_declaration
+  all:
+    - has:
+        field: name
+        pattern: $NAME
+    - has:
+        kind: if_statement
+        stopBy: end
+        all:
+          - has:
+              field: condition
+              pattern: readBlock($$$)
+              stopBy: end
+          - has:
+              field: consequence
+              pattern: $NAME($$$)
+              stopBy: end
+
+Not written to disk: this session has no file-write tool, so `rules/java/security/java-recursive-stream-block-refill.yml` is unchanged and the probe has not been run. The fixture already has the positive `refill()` case and the `refillNext()` near-miss, so no fixture edit is needed.
