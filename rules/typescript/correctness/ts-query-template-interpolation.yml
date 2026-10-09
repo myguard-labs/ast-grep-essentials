@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-query-template-interpolation
+language: typescript
+severity: warning
+message: >-
+  SQL text passed to .query() is built with a template literal substitution;
+  use bound parameters instead.
+note: >-
+  Syntactic only. Matches a template literal with at least one substitution
+  that is the first argument of a .query( member call. It does not check the
+  receiver's type, whether interpolated values are trusted, or SQL built
+  elsewhere and passed in as a variable.
+rule:
+  kind: template_string
+  nthChild: 1
+  has:
+    kind: template_substitution
+  inside:
+    kind: arguments
+    inside:
+      kind: call_expression
+      has:
+        field: function
+        kind: member_expression
+        has:
+          field: property
+          regex: '^query$'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
