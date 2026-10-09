@@ -3,9 +3,7 @@
 [ast-grep security rules pack](https://deb.myguard.nl/articles/ast-grep-security-rules-pack/)
 
 Public, curated ast-grep security and correctness rules with their fixtures,
-scan configuration, licenses, and a pinned ast-grep engine. Rule creation,
-enrichment, planning, and validation tooling live in the private MyGuard
-harness.
+scan configuration, licenses, and a pinned ast-grep engine.
 
 The pack covers Bash, C, C++, C#, Go, HTML, Java, JavaScript, Kotlin, Lua, PHP,
 Python, Ruby, Rust, Scala, Swift, and TypeScript, including checks for nginx
