@@ -1,0 +1,11 @@
+id: js-script-embed-unescaped-json
+language: javascript
+severity: warning
+message: A string literal containing '<script' is concatenated with a JSON.stringify(...)
+  result that is not passed through an escape of '<', so a '</script>' or '<!--' in
+  the data ends or alters the enclosing script element.
+note: Inlining JSON into a script element without escaping '<' lets '</script>' in
+  the data break out of the element. The shape generalises to any JS or JSON inlined
+  into HTML.
+rule:
+  pattern: const $V0 = '<script>var data = ' + JSON.stringify($V1) + ';</script>';
