@@ -1,0 +1,10 @@
+id: py-plugin-entrypoint-load-before-gate
+language: python
+severity: warning
+message: In one function, a plugin entry-point loading call runs before an if-statement
+  that tests an allow_external flag.
+note: Importing a plugin module runs its top-level code, so the policy check must
+  come before the load. The ordering error recurs in any loader that gates after import.
+rule:
+  pattern: "def load(self, $V0):\n    self.manager.load_setuptools_entrypoints(self.group)\n\
+    \    if not $V0:\n        return"

@@ -1,0 +1,19 @@
+id: py-plugin-entrypoint-load-before-gate
+valid:
+- |-
+  def load(self, allow_external_plugins):
+      if not allow_external_plugins:
+          return
+      self.manager.load_setuptools_entrypoints(self.group)
+- |-
+  # def load(self, allow_external_plugins):
+  #     self.manager.load_setuptools_entrypoints(self.group)
+  #     if not allow_external_plugins:
+  #         return
+- astgrep_fixture = "def load(self, allow_external_plugins):\n    self.manager.load_setuptools_entrypoints(self.group)\n    if not allow_external_plugins:\n        return"
+invalid:
+- |-
+  def load(self, allow_external_plugins):
+      self.manager.load_setuptools_entrypoints(self.group)
+      if not allow_external_plugins:
+          return
