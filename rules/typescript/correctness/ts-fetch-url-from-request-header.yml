@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-fetch-url-from-request-header
+language: typescript
+severity: warning
+message: >-
+  fetch URL is built from a template literal that interpolates a value read
+  from request headers; use a fixed, trusted base instead.
+note: >-
+  Syntactic only. Matches a fetch call whose template-literal argument
+  interpolates an identifier declared in the enclosing block as `const X =
+  <expr>.headers.get(...)`. It does not track reassignment, aliasing, values
+  passed across functions, or headers read some other way, and it does not
+  check which header name is used.
+rule:
+  all:
+    - pattern: 'fetch($URL)'
+    - inside:
+        stopBy: end
+        kind: statement_block
+        has:
+          stopBy: end
+          pattern: 'const $B = $R.headers.get($H)'
+    - has:
+        stopBy: end
+        kind: template_substitution
+        has:
+          kind: identifier
+          pattern: '$B'
+metadata:
+  rule_modified_at: '2026-10-09'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-09'
+  created_at: '2026-10-09'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
