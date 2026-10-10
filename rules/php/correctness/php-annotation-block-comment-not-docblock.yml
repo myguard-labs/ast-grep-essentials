@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-annotation-block-comment-not-docblock
+language: php
+severity: warning
+message: >-
+  Block comment opened with /* carries @-annotation tags before a class
+  declaration; only /** docblocks are read by annotation tools, so this
+  annotation is ignored.
+note: >-
+  Syntactic check only. It confirms a comment that starts with /* (not /**),
+  contains @tag text, and directly precedes a class declaration in the same
+  file. It does not verify that any tool reads the annotation or evaluate
+  comment semantics.
+rule:
+  all:
+    - kind: comment
+    - regex: '^/\*[^*]'
+    - regex: '@[A-Za-z]'
+    - precedes:
+        kind: class_declaration
+        stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
