@@ -1,0 +1,13 @@
+id: php-kinvariant-utf8-cpp
+valid:
+  - |-
+    #include <unicode/unistr.h>
+    UnicodeString make(const char *buf, int32_t len) {
+      return UnicodeString::fromUTF8(StringPiece(buf, len));
+    }
+invalid:
+  - |-
+    #include <unicode/unistr.h>
+    UnicodeString make(const char *buf, int32_t len) {
+      return UnicodeString(buf, len, UnicodeString::kInvariant);
+    }
