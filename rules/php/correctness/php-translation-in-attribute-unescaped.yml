@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-translation-in-attribute-unescaped
+language: php
+severity: warning
+message: >-
+  Translation echo inside a double-quoted HTML attribute should use
+  esc_attr_e().
+note: >-
+  Single-file syntactic approximation. The rule only checks that a bare _e()
+  expression statement directly follows an inline PHP open tag whose preceding
+  inline HTML text ends with an open attribute quote (="). It does not verify
+  that the attribute is still open, that the quote is double-quoted in all
+  cases, or that the output is unescaped elsewhere.
+rule:
+  pattern: '_e($$$ARGS)'
+  inside:
+    kind: expression_statement
+    follows:
+      kind: php_tag
+      follows:
+        regex: '="$'
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
