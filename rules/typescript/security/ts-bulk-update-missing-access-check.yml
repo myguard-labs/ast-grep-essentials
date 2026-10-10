@@ -1,0 +1,11 @@
+id: ts-bulk-update-missing-access-check
+language: typescript
+severity: warning
+message: A for-of loop that calls a payload update operation per entry is reported
+  when the same function contains no access-execution call.
+note: Batch writes that skip per-document access checks let callers update records
+  they cannot update individually. The fix runs access checks per update before writing.
+  The loop-plus-write shape recurs in batch endpoints.
+rule:
+  pattern: 'async function $V0($V1: any, $V2: any[]) { for (const { $V3, $V4 } of
+    $V2) { await req.payload.update({ $V3, $V4 }) } }'
