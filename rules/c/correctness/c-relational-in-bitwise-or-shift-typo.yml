@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-relational-in-bitwise-or-shift-typo
+language: c
+severity: warning
+message: >-
+  Relational comparison of a masked value used as a bitwise OR operand; a
+  shift may have been intended.
+note: >-
+  Single-file syntactic match only. Flags a right operand of | written as a
+  parenthesized masked value compared with < to an integer literal, e.g. (x &
+  MASK) < N. Cannot verify types, operand widths, or the author's intent.
+rule:
+  pattern: '$A | (($X & $M) < $N)'
+constraints:
+  'N':
+    regex: '^(0[xX][0-9a-fA-F]+|[0-9]+)$'
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
