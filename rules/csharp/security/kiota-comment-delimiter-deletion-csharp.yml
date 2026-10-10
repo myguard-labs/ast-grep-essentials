@@ -1,11 +1,21 @@
 id: kiota-comment-delimiter-deletion-csharp
 language: csharp
 severity: warning
-message: A string.Replace call whose old value is the block-comment terminator "*/"
+message: >-
+  A string.Replace call whose old value is the block-comment terminator "*/"
   and whose replacement is empty ("" or string.Empty) is reported.
-note: Deleting a two-character delimiter in one pass lets neighbouring characters
-  re-form it (for example **// becomes */), so untrusted text can still break out
-  of a generated comment. Replacing with a non-joining variant avoids this. The same
-  shape recurs in any generator that sanitizes comment text.
+note: >-
+  Deleting a two-character delimiter in one pass lets neighbouring characters
+  re-form it (for example **// becomes */), so untrusted text can still break
+  out of a generated comment. Replacing with a non-joining variant avoids
+  this. The same shape recurs in any generator that sanitizes comment text.
+  This is a single-file syntactic match on the shown call shape only; it does
+  not prove the result reaches a generated comment.
 rule:
-  pattern: string $V0 = description.Replace("*/", string.Empty);
+  any:
+    - pattern: 'string $V0 = description.Replace("*/", string.Empty);'
+    - pattern: 'string $V0 = description.Replace("*/", "");'
+metadata:
+  rule_modified_at: '2026-10-11'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-11'
