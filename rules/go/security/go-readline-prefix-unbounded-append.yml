@@ -1,12 +1,22 @@
 id: go-readline-prefix-unbounded-append
 language: go
 severity: warning
-message: A loop repeatedly calls ReadLine, appends each returned chunk onto one slice
-  with append(x, line...), and stops only when isPrefix is false, with no size cap.
-note: The moby group parser grows a line buffer across ReadLine prefix chunks with
-  no bound, so one huge line exhausts memory. The fix uses bufio.Scanner with a capped
-  buffer. Any reader loop with this shape shares the defect.
+message: >-
+  A loop repeatedly calls ReadLine, appends each returned chunk onto one slice
+  with append(x, line...), and stops only when isPrefix is false, with no size
+  cap.
+note: >-
+  This is a single-file syntactic match on one statement shape. It does not
+  check types, aliasing, runtime sizes, reachability, or whether a size cap
+  exists outside the matched loop, so it cannot prove memory exhaustion. The
+  moby group parser grows a line buffer across ReadLine prefix chunks with no
+  bound; the usual fix is a capped bufio.Scanner buffer.
 rule:
-  pattern: func $V0($V1 *bufio.Reader) []byte { var whole []byte; for { $V2, $V3,
-    $V4 := rd.ReadLine(); if $V4 != nil { return whole }; whole = append(whole, line...);
-    if !$V3 { return whole } } }
+  pattern: >-
+    func $NAME($RECV *bufio.Reader) []byte { var $ACC []byte; for { $CHUNK,
+    $MORE, $ERR := $RECV.ReadLine(); if $ERR != nil { return $ACC }; $ACC =
+    append($ACC, $CHUNK...); if !$MORE { return $ACC } } }
+metadata:
+  rule_modified_at: '2026-10-11'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-11'

@@ -1,7 +1,27 @@
 id: go-readline-prefix-unbounded-append
 valid:
-- func f(rd *bufio.Reader) []byte { var whole []byte; for { line, isPrefix, err := rd.ReadLine(); if err != nil { return whole }; whole = line; if !isPrefix { return whole } } }
-- // func f(rd *bufio.Reader) []byte { var whole []byte; for { line, isPrefix, err := rd.ReadLine(); if err != nil { return whole }; whole = append(whole, line...); if !isPrefix { return whole } } }
-- var astgrepFixture = "func f(rd *bufio.Reader) []byte { var whole []byte; for { line, isPrefix, err := rd.ReadLine(); if err != nil { return whole }; whole = append(whole, line...); if !isPrefix { return whole } } }"
+  - >-
+    func f(rd *bufio.Reader) []byte { var whole []byte; for { line, isPrefix,
+    err := rd.ReadLine(); if err != nil { return whole }; whole = line; if
+    !isPrefix { return whole } } }
+  - >-
+    // func f(rd *bufio.Reader) []byte { var whole []byte; for { line, isPrefix,
+    err := rd.ReadLine(); if err != nil { return whole }; whole = append(whole,
+    line...); if !isPrefix { return whole } } }
+  - >-
+    var astgrepFixture = "func f(rd *bufio.Reader) []byte { var whole []byte;
+    for { line, isPrefix, err := rd.ReadLine(); if err != nil { return whole };
+    whole = append(whole, line...); if !isPrefix { return whole } } }"
+  - >-
+    func g(r *bufio.Reader) []byte { var buf []byte; for { chunk, more, err :=
+    r.ReadLine(); if err != nil { return buf }; buf = append(buf, chunk...); if
+    len(buf) > 4096 { return buf } } }
 invalid:
-- func f(rd *bufio.Reader) []byte { var whole []byte; for { line, isPrefix, err := rd.ReadLine(); if err != nil { return whole }; whole = append(whole, line...); if !isPrefix { return whole } } }
+  - >-
+    func f(rd *bufio.Reader) []byte { var whole []byte; for { line, isPrefix,
+    err := rd.ReadLine(); if err != nil { return whole }; whole = append(whole,
+    line...); if !isPrefix { return whole } } }
+  - >-
+    func g(r *bufio.Reader) []byte { var buf []byte; for { chunk, more, err :=
+    r.ReadLine(); if err != nil { return buf }; buf = append(buf, chunk...); if
+    !more { return buf } } }
