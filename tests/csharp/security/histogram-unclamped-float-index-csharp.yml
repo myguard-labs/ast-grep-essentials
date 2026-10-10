@@ -1,7 +1,13 @@
 id: histogram-unclamped-float-index-csharp
 valid:
-- histogram[(int)MathF.Round(Math.Clamp(Vector4.Dot(vector, weights), 0F, 1F) * 255)]++;
-- // histogram[(int)MathF.Round(Vector4.Dot(vector, weights) * 255)]++;
-- class AstgrepFixture { string value = "histogram[(int)MathF.Round(Vector4.Dot(vector, weights) * 255)]++;"; }
+  - >-
+    histogram[(int)MathF.Round(Math.Clamp(Vector4.Dot(vector, weights), 0F, 1F)
+    * 255)]++;
+  - '// histogram[(int)MathF.Round(Vector4.Dot(vector, weights) * 255)]++;'
+  - >-
+    class AstgrepFixture { string value =
+    "histogram[(int)MathF.Round(Vector4.Dot(vector, weights) * 255)]++;"; }
+  - 'lut[(int)MathF.Round(Vector4.Dot(color, weights) * 255)] = 0;'
 invalid:
-- histogram[(int)MathF.Round(Vector4.Dot(vector, weights) * 255)]++;
+  - 'histogram[(int)MathF.Round(Vector4.Dot(vector, weights) * 255)]++;'
+  - 'lut[(int)MathF.Round(Vector4.Dot(color, weights) * 255)]++;'
