@@ -1,0 +1,25 @@
+id: php-curl-error-return-without-close
+snapshots:
+  ? |-
+    <?php
+    function f($handle) {
+        if ($curl_error = curl_error($handle)) {
+            return new WP_Error('http_request_failed', $curl_error);
+        }
+    }
+  : labels:
+    - source: |-
+        if ($curl_error = curl_error($handle)) {
+                return new WP_Error('http_request_failed', $curl_error);
+            }
+      style: primary
+      start: 32
+      end: 143
+    - source: curl_error($handle)
+      style: secondary
+      start: 50
+      end: 69
+    - source: return new WP_Error('http_request_failed', $curl_error);
+      style: secondary
+      start: 81
+      end: 137
