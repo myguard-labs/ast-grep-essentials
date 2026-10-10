@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-magic-quotes-runtime-call
+language: php
+severity: error
+message: >-
+  Call to removed PHP function get_magic_quotes_runtime or
+  set_magic_quotes_runtime.
+note: >-
+  Single-file syntactic check on the called function name only. It does not
+  verify that the call resolves to the global PHP builtin, and it cannot check
+  the runtime PHP version.
+rule:
+  kind: function_call_expression
+  has:
+    field: function
+    regex: '(?i)^\\?(get|set)_magic_quotes_runtime$'
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
