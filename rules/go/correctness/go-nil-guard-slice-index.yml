@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-nil-guard-slice-index
+language: go
+severity: warning
+message: >-
+  A nil check on a slice does not guarantee it has an element; the constant
+  index [0] inside the guard can panic on an empty non-nil slice.
+note: >-
+  Syntactic only: matches an if statement whose condition is `X != nil` and
+  whose body contains `X[0]` for the same selector expression. It cannot
+  verify that X is a slice, that its length is non-zero, or that the body does
+  not reassign X. A length check such as len(X) > 0 is needed to rule out the
+  panic.
+rule:
+  all:
+    - pattern: |
+        if $X != nil {
+          $$$BODY
+        }
+    - has:
+        pattern: '$X[0]'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
