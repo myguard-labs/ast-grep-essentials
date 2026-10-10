@@ -1,0 +1,16 @@
+id: py-sync-permission-returns-awaitable
+valid:
+- |
+  class IsAuthed:
+      async def has_permission(self, source, info, **kwargs):
+          return check_token_async(info)
+- |-
+  # class IsAuthed:
+  #     def has_permission(self, source, info, **kwargs):
+  #         return check_token_async(info)
+- astgrep_fixture = "class IsAuthed:\n    def has_permission(self, source, info, **kwargs):\n        return check_token_async(info)\n"
+invalid:
+- |
+  class IsAuthed:
+      def has_permission(self, source, info, **kwargs):
+          return check_token_async(info)

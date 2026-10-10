@@ -1,0 +1,21 @@
+id: py-sync-permission-returns-awaitable
+language: python
+severity: warning
+message: A non-async has_permission method returns the result of a call without a
+  boolean conversion, so an awaitable from a coroutine callee would be returned as
+  a truthy value.
+note: A sync has_permission that returns a coroutine is truthy, so access is granted
+  without the check running. The fix fails closed with a dedicated exception. Whether
+  the callee is a coroutine needs type or call-graph information, so this is recorded
+  as taint, not a syntactic rule.
+rule:
+  kind: function_definition
+  regex: '^def has_permission\('
+  has:
+    kind: return_statement
+    stopBy: end
+    has:
+      kind: call
+      stopBy: neighbor
+      not:
+        regex: '^bool\('
