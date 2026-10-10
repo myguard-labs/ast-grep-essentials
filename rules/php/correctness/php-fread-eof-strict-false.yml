@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-fread-eof-strict-false
+language: php
+severity: warning
+message: >-
+  fread() result is compared with === false as the end-of-stream check;
+  fread() can return an empty string without signalling EOF, so use feof()
+  instead.
+note: >-
+  Syntactic only: matches an if whose condition is exactly VAR === false,
+  where the immediately preceding sibling statement assigns VAR from
+  fread(...). It does not check the stream type, whether VAR is reassigned in
+  between, reachability, or any feof() call elsewhere in the function.
+rule:
+  all:
+    - pattern: 'if ($VAR === false) { $$$BODY }'
+    - follows:
+        stopBy: neighbor
+        kind: expression_statement
+        has:
+          pattern: '$VAR = fread($$$ARGS)'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
