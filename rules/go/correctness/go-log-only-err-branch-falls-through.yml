@@ -1,0 +1,47 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-log-only-err-branch-falls-through
+language: go
+severity: warning
+message: >-
+  Error is only logged and execution continues into following statements; the
+  error branch does not return, panic, or exit.
+note: >-
+  Syntactic check only. It flags a bare `if err != nil` block whose sole
+  statement is a log.Print* call, that has no return, panic, or os.Exit inside
+  the block, and that is followed by a sibling statement. It cannot determine
+  whether later code uses the value, whether the error is handled elsewhere,
+  or whether the log call is intentional. No types, dataflow, aliasing, or
+  reachability are checked.
+rule:
+  all:
+    - pattern: |
+        if err != nil {
+          log.$F($$$ARGS)
+        }
+    - precedes:
+        stopBy: neighbor
+        pattern: '$_'
+    - not:
+        has:
+          stopBy: end
+          kind: return_statement
+    - not:
+        has:
+          stopBy: end
+          pattern: 'panic($$$)'
+    - not:
+        has:
+          stopBy: end
+          pattern: 'os.Exit($$$)'
+constraints:
+  F:
+    regex: '^Print'
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
