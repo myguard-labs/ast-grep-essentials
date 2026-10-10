@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-untranslated-wp-error-message
+language: php
+severity: warning
+message: >-
+  WP_Error message is a bare single-quoted string literal; wrap it in __() or
+  another translation function.
+note: >-
+  Syntactic check only. Matches new WP_Error(code, message) where the second
+  argument text is a single-quoted string literal. It cannot tell whether the
+  message is user-facing, does not check translation context, and does not
+  match double-quoted strings, variables, or other non-literal messages.
+rule:
+  pattern: 'new WP_Error($CODE, $MSG)'
+constraints:
+  MSG:
+    regex: '^''[^'']*''$'
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
