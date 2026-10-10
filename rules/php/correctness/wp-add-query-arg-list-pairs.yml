@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-add-query-arg-list-pairs
+language: php
+severity: error
+message: >-
+  add_query_arg() is given a positional two-element list array instead of key
+  => value pairs.
+note: >-
+  Syntactic check only: matches add_query_arg() calls whose first argument is
+  a two-element array literal with no '=>' in either element. It does not
+  verify the function is WordPress's, does not check types or runtime values,
+  and does not catch other list shapes.
+rule:
+  pattern: 'add_query_arg(array($A, $B), $$$REST)'
+constraints:
+  A:
+    not:
+      regex: '=>'
+  B:
+    not:
+      regex: '=>'
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
