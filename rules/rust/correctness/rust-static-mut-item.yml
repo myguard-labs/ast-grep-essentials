@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: rust-static-mut-item
+language: rust
+severity: warning
+message: >-
+  Global `static mut` item: its uses require unsafe access; consider a safer
+  alternative such as a Mutex, RwLock, OnceLock, or atomic.
+note: >-
+  Single-file syntactic check only. It flags any static_item whose direct
+  child is a mutable specifier. It cannot tell whether the static is required
+  by FFI or otherwise justified, so treat matches as review hints.
+rule:
+  kind: static_item
+  has:
+    kind: mutable_specifier
+    stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
