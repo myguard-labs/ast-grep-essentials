@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-free-guard-checks-other-member
+language: c
+severity: warning
+message: >-
+  Null guard tests one struct member but free() releases a different member of
+  the same pointer.
+note: >-
+  Syntactic single-file check only. It flags an if statement whose subtree
+  contains a comparison of p->a against NULL and a free call on a different
+  field p->b of the same pointer. It does not model ownership flags, aliasing,
+  types, or reachability, so legitimate cases may be reported.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        pattern: '$P->a != NULL'
+        stopBy: end
+    - has:
+        pattern: 'free($P->$B)'
+        stopBy: end
+constraints:
+  B:
+    regex: '^(?:[^a]|a.+)$'
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

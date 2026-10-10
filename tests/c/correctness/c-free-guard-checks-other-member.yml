@@ -1,0 +1,9 @@
+id: c-free-guard-checks-other-member
+valid:
+  - |-
+    struct s { char *a; char *b; };
+    void f(struct s *p) { if (p->a != NULL) { free(p->a); } }
+invalid:
+  - |-
+    struct s { char *a; char *b; };
+    void f(struct s *p) { if (p->a != NULL) { free(p->b); } }

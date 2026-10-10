@@ -1,0 +1,18 @@
+id: c-free-guard-checks-other-member
+snapshots:
+  ? |-
+    struct s { char *a; char *b; };
+    void f(struct s *p) { if (p->a != NULL) { free(p->b); } }
+  : labels:
+    - source: if (p->a != NULL) { free(p->b); }
+      style: primary
+      start: 54
+      end: 87
+    - source: p->a != NULL
+      style: secondary
+      start: 58
+      end: 70
+    - source: free(p->b)
+      style: secondary
+      start: 74
+      end: 84
