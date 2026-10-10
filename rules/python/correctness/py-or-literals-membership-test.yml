@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-or-literals-membership-test
+language: python
+severity: warning
+message: >-
+  Parenthesized boolean `or` of two string literals is the left operand of an
+  `in` / `not in` test, so only the first literal is checked.
+note: >-
+  Syntactic match only: it requires a comparison whose text starts with a
+  parenthesized `"..." or "..."` (single or double quoted string literals)
+  followed by `in` or `not in`. It does not verify types, runtime values, or
+  that the author intended a tuple; it does not match tuples or non-literal
+  operands.
+rule:
+  all:
+    - kind: comparison_operator
+    - regex: >-
+        ^\(\s*(?:"[^"\n]*"|'[^'\n]*')\s+or\s+(?:"[^"\n]*"|'[^'\n]*')\s*\)\s+(?:not\s+)?in\s
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
