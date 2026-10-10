@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: rust-bool-literal-comparison
+language: rust
+severity: warning
+message: >-
+  Comparing with a boolean literal is redundant; use the expression directly
+  or negate it with !.
+note: >-
+  Syntactic check only. Flags a binary == or != whose right operand is a true
+  or false literal. It does not check types, does not inspect a literal on the
+  left-hand side, and does not verify that the other operand is bool.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^(==|!=)$'
+    - has:
+        field: right
+        kind: boolean_literal
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
