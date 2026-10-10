@@ -1,0 +1,10 @@
+id: ts-raw-request-url-includes
+language: typescript
+severity: warning
+message: A `.includes(` call applied directly to a `req.url` string to make a routing
+  or access decision, without first extracting the pathname.
+note: Substring checks on the raw URL also match the query string and fragment, which
+  lets crafted URLs bypass path-based decisions. The shape is syntactic, but the rule
+  will be noisy across non-security uses.
+rule:
+  pattern: const $V0 = req.url.includes('/_next');
