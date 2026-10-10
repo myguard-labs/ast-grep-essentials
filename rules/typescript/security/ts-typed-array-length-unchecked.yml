@@ -1,0 +1,21 @@
+id: ts-typed-array-length-unchecked
+language: typescript
+severity: warning
+message: A typed array or ArrayBuffer is constructed from a length read from a node
+  field in a function with no comparison against a cap.
+note: Attacker-controlled lengths in deserialization cause memory exhaustion. Whether
+  node.l is untrusted depends on the input source, so this needs taint analysis to confirm.
+rule:
+  all:
+    - pattern: new $CTOR(node.l)
+    - not:
+        inside:
+          kind: statement_block
+          stopBy: end
+          has:
+            kind: binary_expression
+            stopBy: end
+            regex: "[<>]"
+constraints:
+  CTOR:
+    regex: "^(ArrayBuffer|DataView|Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array)$"
