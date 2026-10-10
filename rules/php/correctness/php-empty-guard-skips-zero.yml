@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-empty-guard-skips-zero
+language: php
+severity: warning
+message: >-
+  empty() on an array element treats the string '0' as empty, so a valid
+  payload of '0' can be dropped. Use is_null() or a strict comparison for
+  string payloads.
+note: >-
+  Syntactic only: this matches every empty() call whose argument is an array
+  element. It cannot determine whether the value is a string, so it may flag
+  non-string uses where empty() is intended.
+rule:
+  pattern: 'empty($ARR[$KEY])'
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
