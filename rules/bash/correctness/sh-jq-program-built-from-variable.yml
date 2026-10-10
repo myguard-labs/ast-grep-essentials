@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-jq-program-built-from-variable
+language: bash
+severity: warning
+message: >-
+  jq filter argument interpolates a shell variable; pass the value with --arg
+  instead.
+note: >-
+  Syntactic only, single file. Flags a jq command with a double-quoted
+  argument that has literal text before a shell expansion. Cannot confirm the
+  argument is the jq program or that the value is unsafe, and --arg values may
+  also match.
+rule:
+  kind: command
+  all:
+    - has:
+        field: name
+        regex: '^jq$'
+    - has:
+        kind: string
+        regex: '^"[^"$]+\$[A-Za-z_{]'
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
