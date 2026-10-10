@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-ignored-lognos-added-without-remove
+language: python
+severity: warning
+message: >-
+  Function calls add_ignored_lognos but has no remove_ignored_lognos call, so
+  the ignored log numbers stay set after the function returns.
+note: >-
+  Single-file syntactic check only: it matches a function definition that
+  contains an add_ignored_lognos call and no remove_ignored_lognos call
+  anywhere in its body. It does not verify that the receiver is the same
+  object, the control flow or exception paths, or whether cleanup happens in a
+  fixture teardown or another file.
+rule:
+  kind: function_definition
+  has:
+    pattern: '$OBJ.add_ignored_lognos($$$ARGS)'
+    stopBy: end
+  not:
+    has:
+      pattern: '$REM.remove_ignored_lognos($$$RARGS)'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
