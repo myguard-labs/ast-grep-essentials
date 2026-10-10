@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-shebang-hardcoded-bash-path
+language: bash
+severity: warning
+message: >-
+  Shebang hardcodes /bin/bash; use #!/usr/bin/env bash so bash is resolved
+  from PATH.
+note: >-
+  Syntactic check only: flags a first-child comment whose text is exactly
+  #!/bin/bash. It cannot confirm where bash is installed on the target system
+  or how the file is executed.
+rule:
+  kind: comment
+  regex: '^#!/bin/bash$'
+  nthChild: 1
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
