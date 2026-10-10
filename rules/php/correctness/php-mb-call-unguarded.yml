@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-mb-call-unguarded
+language: php
+severity: warning
+message: >-
+  Call to an mb_* function is not inside a && expression whose left operand is
+  function_exists(); it will fatal where mbstring is missing.
+note: >-
+  Syntactic single-file check only. It excludes any mb_* call that has an
+  ancestor && expression whose left operand is a function_exists() call,
+  without confirming that the guard names the same function. It does not see
+  guards in separate if-blocks, early returns, or extension_loaded() checks.
+  Whether mbstring is actually optional at runtime is not verified.
+rule:
+  kind: function_call_expression
+  has:
+    field: function
+    regex: '^mb_'
+  not:
+    inside:
+      pattern: 'function_exists($_) && $_'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
