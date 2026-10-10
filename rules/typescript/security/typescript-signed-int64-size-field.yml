@@ -1,0 +1,12 @@
+id: typescript-signed-int64-size-field
+language: typescript
+severity: warning
+message: An object property whose key names a size, length, offset, or pointer is
+  assigned the result of a call to a `.INT64_LE.get(...)` member, which reads an unsigned
+  length field as signed.
+note: Size and pointer fields in binary container formats are unsigned, so a signed
+  64-bit read yields negative values for large or malformed inputs. The visible hunk
+  swaps INT64_LE for UINT64_LE on fileSize and metadataPointer, and the same mistake
+  recurs wherever such getters are used for lengths.
+rule:
+  pattern: 'const $V0 = { $V1: Token.INT64_LE.get($V2, $V3) };'
