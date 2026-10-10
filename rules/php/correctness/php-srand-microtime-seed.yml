@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-srand-microtime-seed
+language: php
+severity: warning
+message: >-
+  srand() or mt_srand() is seeded from microtime(), so the PRNG sequence is
+  predictable from the request time.
+note: >-
+  Single-file syntactic check only. Matches a srand or mt_srand call whose
+  single seed argument contains a microtime() call anywhere in its subtree. It
+  does not resolve namespaces, prove the seed reaches security-sensitive
+  output, or track seeds assigned to variables from microtime() earlier.
+rule:
+  pattern: '$FN($SEED)'
+constraints:
+  FN:
+    regex: '^(srand|mt_srand)$'
+  SEED:
+    has:
+      pattern: 'microtime($$$ARGS)'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
