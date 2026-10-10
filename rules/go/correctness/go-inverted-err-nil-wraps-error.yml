@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-inverted-err-nil-wraps-error
+language: go
+severity: warning
+message: >-
+  Error is wrapped inside an err == nil branch, which may indicate an inverted
+  error check.
+note: >-
+  Syntactic match only. It does not confirm that err has an error type, that
+  the branch is unintended, or that the branch is reachable. Review the
+  surrounding logic before changing the condition.
+rule:
+  pattern: |
+    if err == nil {
+      return fmt.Errorf($MSG, err)
+    }
+metadata:
+  rule_modified_at: '2026-10-10'
+  ast_grep_tested_version: 0.45.3
+  validated_at: '2026-10-10'
+  created_at: '2026-10-10'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
