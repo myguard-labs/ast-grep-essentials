@@ -76,7 +76,17 @@ python3 ci/promote.py tag              # clean tree, HEAD == origin/main only
 clears acknowledgements. `tag` reruns `check` on HEAD, creates the signed tag
 with the gate summary as its message, and prints the push command; it never
 pushes. PowerShell rules get the fixture gate but their snapshot tests need
-the separately built parser (`sgconfig.powershell.yml`).
+the separately built parser (`sgconfig.powershell.yml`). With ast-grep 0.50.0,
+load that trusted native parser explicitly for each invocation:
+
+```bash
+node_modules/.bin/ast-grep test -c sgconfig.powershell.yml --custom-languages allow
+node_modules/.bin/ast-grep scan -c sgconfig.powershell.yml --custom-languages allow <path>
+```
+
+Without this opt-in, ast-grep ignores native custom-language libraries and the
+PowerShell configuration fails to parse its rules. The default native-language
+configuration needs no custom-language opt-in.
 
 The corpus is MyGuard-authored source, copied from the commits listed in
 `ci/corpus/SOURCES.md` or written for it under `ci/corpus/samples/`; it is
