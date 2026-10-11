@@ -1,5 +1,29 @@
 id: js-recursive-decoder-no-depth-bound
 snapshots:
+  ? |-
+    function readArray(buf, n) {
+      const out = [];
+      for (let i = 0; i < n; i++) out.push(readArray(buf, n));
+      return out;
+    }
+  : labels:
+    - source: |-
+        function readArray(buf, n) {
+          const out = [];
+          for (let i = 0; i < n; i++) out.push(readArray(buf, n));
+          return out;
+        }
+      style: primary
+      start: 0
+      end: 121
+    - source: readArray
+      style: secondary
+      start: 9
+      end: 18
+    - source: readArray(buf, n)
+      style: secondary
+      start: 86
+      end: 103
   function readArray(buf, n) { const out = []; for (let i = 0; i < n; i++) out.push(readArray(buf, n)); return out }:
     labels:
     - source: function readArray(buf, n) { const out = []; for (let i = 0; i < n; i++) out.push(readArray(buf, n)); return out }

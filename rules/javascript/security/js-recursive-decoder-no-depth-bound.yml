@@ -1,25 +1,26 @@
 id: js-recursive-decoder-no-depth-bound
 language: javascript
 severity: warning
-message: A function that calls itself on nested input with no depth parameter and
-  no depth comparison.
-note: Recursive decoding with no depth bound exhausts the stack on deeply nested input.
-  Confirming the bound needs the whole decoder, so the rule is cross-function.
+message: Recursive function with no depth parameter or depth check.
+note: >-
+  Syntactic heuristic: matches self-calls without 'depth' in parameters or
+  body.
 rule:
   kind: function_declaration
   all:
     - has:
         field: name
-        pattern: $NAME
+        pattern: '$NAME'
     - has:
         kind: call_expression
-        pattern: $NAME($$$ARGS)
+        pattern: '$NAME($$$)'
         stopBy: end
     - not:
         has:
-          kind: formal_parameters
+          kind: identifier
           regex: depth
-    - not:
-        has:
-          kind: binary_expression
-          regex: depth
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-11'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-11'
