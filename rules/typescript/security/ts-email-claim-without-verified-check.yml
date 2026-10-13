@@ -1,10 +1,19 @@
 id: ts-email-claim-without-verified-check
 language: typescript
 severity: warning
-message: An object literal property `email:` read from a `.email` member in a function
-  that never reads `email_verified`.
-note: Trusting an unverified email claim lets a user claim another address and link
-  to that account. Gating the email on the provider's verified flag is needed wherever
-  OIDC or OAuth claims map to profiles.
+message: >-
+  Object literal maps email directly from a parameter's .email claim with no
+  email_verified check in the same expression.
+note: >-
+  Single-file syntactic match only. It matches a returned object literal whose
+  nested property email is set directly to a single-parameter .email member,
+  in any function name and parameter name. It does not resolve types, imports,
+  or aliases, and it does not prove that the rest of the function lacks an
+  email_verified guard. Unverified email claims can link a user to another
+  account.
 rule:
-  pattern: 'function $V0($V1) { return { $V0: { email: u.email } } }'
+  pattern: 'function $F($P) { return { $K: { email: $P.email } } }'
+metadata:
+  rule_modified_at: '2026-10-13'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-13'
