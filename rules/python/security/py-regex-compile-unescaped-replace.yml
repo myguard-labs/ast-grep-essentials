@@ -1,9 +1,17 @@
 id: py-regex-compile-unescaped-replace
 language: python
 severity: warning
-message: re.compile is applied to a string built by str.replace() over an input value,
-  with no re.escape() around that input.
-note: Input text reaches the regex engine as syntax, so metacharacters can cause backtracking
-  blowup. The same shape appears wherever glob or wildcard text becomes a regex.
+message: >-
+  re.compile is applied to a string built by str.replace() over an input
+  value, with no re.escape() around that input.
+note: >-
+  Syntactic match on the literal wildcard receiver only. Input text reaches
+  the regex engine as syntax, so metacharacters can cause backtracking blowup.
+  It does not check types, aliasing, or whether the value is escaped
+  elsewhere.
 rule:
-  pattern: $V0 = re.compile(wildcard.replace('*', '(?:.*?)'))
+  pattern: 're.compile(wildcard.replace(''*'', ''(?:.*?)''))'
+metadata:
+  rule_modified_at: '2026-10-13'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-13'
