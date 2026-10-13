@@ -1,9 +1,15 @@
 id: py-wtforms-urlfield-without-url-validator
 language: python
 severity: warning
-message: A URLField declared with a validator list that has no URL() validator.
-note: DataRequired only checks presence, so any string is accepted as a link target.
-  The commit adds URL() to each link field. The same omission can recur in any wtforms
-  form that stores a URL from user input.
+message: 'A URLField declared with a validator list that has no URL() validator.'
+note: >-
+  Matches a URLField assignment whose validator list is exactly
+  [DataRequired()], whatever the label argument is. This is a single-file
+  syntactic check. It does not confirm that the field stores a link, and it
+  does not see URL validation added elsewhere in the form.
 rule:
-  pattern: $V0 = URLField('URL', [DataRequired()])
+  pattern: '$V0 = URLField($LABEL, [DataRequired()])'
+metadata:
+  rule_modified_at: '2026-10-13'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-13'
