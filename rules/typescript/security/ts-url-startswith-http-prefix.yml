@@ -1,12 +1,18 @@
 id: ts-url-startswith-http-prefix
 language: typescript
 severity: warning
-message: A call `<identifier>.startsWith('http')` whose argument is the bare string
-  literal 'http' with no colon is reported.
-note: A bare 'http' prefix accepts hosts such as httpbin.example and scheme-less input,
-  and treating a match as same-server or absolute skips the scheme and origin checks.
-  The fix parses with new URL and allowlists http/https. The shape is syntactic; whether
-  the value is a fetch target needs context.
+message: >-
+  A call to startsWith with the bare string literal 'http' (no colon) is
+  reported. Treat the value as a possible URL target and parse it with new URL
+  before allowing it.
+note: >-
+  This matches the literal receiver and argument syntax only. It does not
+  resolve types, aliases, or runtime values, and it does not show whether the
+  value is a fetch target or whether a scheme and origin check follows. Those
+  need review in context.
 rule:
-  pattern: 'function $V0(url: string) { if (!url.startsWith(''http'')) { return url
-    } }'
+  pattern: '$RECV.startsWith(''http'')'
+metadata:
+  rule_modified_at: '2026-10-13'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-13'
