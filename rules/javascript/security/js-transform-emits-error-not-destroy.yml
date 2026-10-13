@@ -1,11 +1,20 @@
 id: js-transform-emits-error-not-destroy
 language: javascript
 severity: warning
-message: A _transform method that calls this.emit('error', ...) directly instead of
+message: >-
+  A _transform method calls this.emit('error', ...) directly instead of
   this.destroy(...).
-note: Emitting 'error' by hand leaves the stream's state and buffers live, so it can
-  keep accepting or holding data after failing. destroy() tears the stream down and
-  is the documented path. The shape is specific to Transform subclasses.
+note: >-
+  Syntactic match only. Any X.prototype._transform function whose sole
+  statement is this.emit('error', ...) with one argument is reported. It does
+  not check that X is a Transform stream or resolve types, aliases, or
+  inheritance.
 rule:
-  pattern: "Decoder.prototype._transform = function ($V0, $V1, $V2) {\n  this.emit('error',\
-    \ new Error('bad'))\n}"
+  pattern: |
+    $CLS.prototype._transform = function ($$$ARGS) {
+      this.emit('error', $ERR)
+    }
+metadata:
+  rule_modified_at: '2026-10-13'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-13'

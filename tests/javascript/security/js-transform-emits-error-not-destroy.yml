@@ -1,16 +1,24 @@
 id: js-transform-emits-error-not-destroy
 valid:
-- |-
-  Decoder.prototype._transform = function (buf, enc, done) {
-    this.destroy(new Error('bad'))
-  }
-- |-
-  // Decoder.prototype._transform = function (buf, enc, done) {
-  //   this.emit('error', new Error('bad'))
-  // }
-- const astgrepFixture = "Decoder.prototype._transform = function (buf, enc, done) {\n  this.emit('error', new Error('bad'))\n}";
+  - |-
+    Decoder.prototype._transform = function (buf, enc, done) {
+      this.destroy(new Error('bad'))
+    }
+  - |-
+    // Decoder.prototype._transform = function (buf, enc, done) {
+    //   this.emit('error', new Error('bad'))
+    // }
+  - 'const astgrepFixture = "Decoder.prototype._transform = function (buf, enc, done) {\n  this.emit(''error'', new Error(''bad''))\n}";'
+  - |-
+    Parser.prototype._transform = function (chunk, encoding, callback) {
+      this.push(new TypeError('oops'))
+    }
 invalid:
-- |-
-  Decoder.prototype._transform = function (buf, enc, done) {
-    this.emit('error', new Error('bad'))
-  }
+  - |-
+    Decoder.prototype._transform = function (buf, enc, done) {
+      this.emit('error', new Error('bad'))
+    }
+  - |-
+    Parser.prototype._transform = function (chunk, encoding, callback) {
+      this.emit('error', new TypeError('oops'))
+    }
