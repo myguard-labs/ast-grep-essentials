@@ -1,19 +1,27 @@
 id: py-semaphore-acquire-without-finally
 valid:
-- |
-  async def handle(limiter):
-      await limiter.acquire()
-      try:
-          await work()
-      finally:
-          limiter.release()
-- |-
-  # async def handle(limiter):
-  #     await limiter.acquire()
-  #     await work()
-- astgrep_fixture = "async def handle(limiter):\n    await limiter.acquire()\n    await work()\n"
+  - |
+    async def handle(limiter):
+        await limiter.acquire()
+        try:
+            await work()
+        finally:
+            limiter.release()
+  - |-
+    # async def handle(limiter):
+    #     await limiter.acquire()
+    #     await work()
+  - 'astgrep_fixture = "async def handle(limiter):\n    await limiter.acquire()\n    await work()\n"'
+  - |
+    async def fetch_page(limiter):
+        async with limiter:
+            await fetch()
 invalid:
-- |
-  async def handle(limiter):
-      await limiter.acquire()
-      await work()
+  - |
+    async def handle(limiter):
+        await limiter.acquire()
+        await work()
+  - |
+    async def fetch_page(limiter):
+        await limiter.acquire()
+        await fetch()

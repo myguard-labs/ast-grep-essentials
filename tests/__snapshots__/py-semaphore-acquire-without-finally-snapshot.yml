@@ -1,6 +1,18 @@
 id: py-semaphore-acquire-without-finally
 snapshots:
   ? |
+    async def fetch_page(limiter):
+        await limiter.acquire()
+        await fetch()
+  : labels:
+    - source: |-
+        async def fetch_page(limiter):
+            await limiter.acquire()
+            await fetch()
+      style: primary
+      start: 0
+      end: 76
+  ? |
     async def handle(limiter):
         await limiter.acquire()
         await work()
