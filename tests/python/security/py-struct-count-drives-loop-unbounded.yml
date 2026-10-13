@@ -1,0 +1,15 @@
+id: py-struct-count-drives-loop-unbounded
+valid:
+  - |-
+    import struct
+    def parse(buf):
+        n = struct.unpack('<I', buf[:4])[0]
+        if n > 1000:
+            raise ValueError('too many geometries')
+        return [buf[4 + 4 * i:8 + 4 * i] for i in range(n)]
+invalid:
+  - |-
+    import struct
+    def parse(buf):
+        n = struct.unpack('<I', buf[:4])[0]
+        return [buf[4 + 4 * i:8 + 4 * i] for i in range(n)]

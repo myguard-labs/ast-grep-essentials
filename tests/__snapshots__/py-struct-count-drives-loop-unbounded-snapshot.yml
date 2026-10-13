@@ -1,0 +1,23 @@
+id: py-struct-count-drives-loop-unbounded
+snapshots:
+  ? |-
+    import struct
+    def parse(buf):
+        n = struct.unpack('<I', buf[:4])[0]
+        return [buf[4 + 4 * i:8 + 4 * i] for i in range(n)]
+  : labels:
+    - source: range(n)
+      style: primary
+      start: 116
+      end: 124
+    - source: struct.unpack('<I', buf[:4])
+      style: secondary
+      start: 38
+      end: 66
+    - source: |-
+        def parse(buf):
+            n = struct.unpack('<I', buf[:4])[0]
+            return [buf[4 + 4 * i:8 + 4 * i] for i in range(n)]
+      style: secondary
+      start: 14
+      end: 125
