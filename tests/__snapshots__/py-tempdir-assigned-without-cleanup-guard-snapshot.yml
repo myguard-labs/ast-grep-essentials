@@ -14,3 +14,25 @@ snapshots:
       style: primary
       start: 0
       end: 109
+    - source: self.temp_dir = tempfile.TemporaryDirectory()
+      style: secondary
+      start: 25
+      end: 70
+  ? |-
+    def __enter__(self):
+        self.workdir = tempfile.TemporaryDirectory()
+        self.load_config()
+        return self.workdir
+  : labels:
+    - source: |-
+        def __enter__(self):
+            self.workdir = tempfile.TemporaryDirectory()
+            self.load_config()
+            return self.workdir
+      style: primary
+      start: 0
+      end: 116
+    - source: self.workdir = tempfile.TemporaryDirectory()
+      style: secondary
+      start: 25
+      end: 69

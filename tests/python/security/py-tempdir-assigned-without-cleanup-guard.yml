@@ -1,23 +1,42 @@
 id: py-tempdir-assigned-without-cleanup-guard
 valid:
-- |-
-  def __enter__(self):
-      self.temp_dir = tempfile.TemporaryDirectory()
-      try:
-          self.setup()
-      except Exception:
-          self.temp_dir.cleanup()
-          raise
-      return self.files
-- |-
-  # def __enter__(self):
-  #     self.temp_dir = tempfile.TemporaryDirectory()
-  #     self.setup()
-  #     return self.files
-- astgrep_fixture = "def __enter__(self):\n    self.temp_dir = tempfile.TemporaryDirectory()\n    self.setup()\n    return self.files"
+  - |-
+    def __enter__(self):
+        self.temp_dir = tempfile.TemporaryDirectory()
+        try:
+            self.setup()
+        except Exception:
+            self.temp_dir.cleanup()
+            raise
+        return self.files
+  - |-
+    # def __enter__(self):
+    #     self.temp_dir = tempfile.TemporaryDirectory()
+    #     self.setup()
+    #     return self.files
+  - 'astgrep_fixture = "def __enter__(self):\n    self.temp_dir = tempfile.TemporaryDirectory()\n    self.setup()\n    return self.files"'
+  - |-
+    def __enter__(self):
+        self.workdir = tempfile.TemporaryDirectory()
+        try:
+            self.load_config()
+        except Exception:
+            self.workdir.cleanup()
+            raise
+        return self.workdir
+  - |-
+    # def __enter__(self):
+    #     self.workdir = tempfile.TemporaryDirectory()
+    #     self.load_config()
+    #     return self.workdir
 invalid:
-- |-
-  def __enter__(self):
-      self.temp_dir = tempfile.TemporaryDirectory()
-      self.setup()
-      return self.files
+  - |-
+    def __enter__(self):
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.setup()
+        return self.files
+  - |-
+    def __enter__(self):
+        self.workdir = tempfile.TemporaryDirectory()
+        self.load_config()
+        return self.workdir
