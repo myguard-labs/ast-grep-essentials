@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-backslash-scan-without-dbcs-guard
+language: c
+severity: warning
+message: >-
+  Backslash comparison on a byte index without an IsDBCSLeadByte check on the
+  preceding byte; DBCS trail bytes can equal 0x5C.
+note: >-
+  Single-file syntactic match on an if condition comparing an indexed byte to
+  a backslash literal. It does not resolve types, encodings, or whether a DBCS
+  check exists elsewhere in the function; it can produce noise outside
+  multibyte-aware code.
+rule:
+  all:
+    - pattern: 'if ($P[$I] == ''\\'') { $$$BODY }'
+    - not:
+        inside:
+          pattern: 'if ($P[$I] == ''\\'' && !IsDBCSLeadByte($P[$I - 1])) { $$$BODY2 }'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

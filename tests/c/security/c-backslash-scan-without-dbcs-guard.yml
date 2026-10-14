@@ -1,0 +1,15 @@
+id: c-backslash-scan-without-dbcs-guard
+valid:
+  - |-
+    void strip(char *p, int i) {
+        if (p[i] == '\\' && !IsDBCSLeadByte(p[i - 1])) {
+            p[i] = '\0';
+        }
+    }
+invalid:
+  - |-
+    void strip(char *p, int i) {
+        if (p[i] == '\\') {
+            p[i] = '\0';
+        }
+    }
