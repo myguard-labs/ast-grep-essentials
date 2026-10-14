@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-contradictory-negated-mask-conjunction
+language: c
+severity: warning
+message: >-
+  This AND tests the same bitmask both negated and non-negated, so the
+  condition is always false.
+note: >-
+  Syntactic match only. Requires the left and right operands to be textually
+  identical bitmask tests with the same variable and mask; does not check
+  types, macro values, or aliasing.
+rule:
+  any:
+    - pattern: '!($E & $M) && ($E & $M)'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
