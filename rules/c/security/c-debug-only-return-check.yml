@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-debug-only-return-check
+language: c
+severity: warning
+message: >-
+  This error-returning if block is inside a preprocessor guard that release
+  builds may compile out.
+note: >-
+  Single-file syntactic match on an if statement whose body contains a return
+  inside a preprocessor block; it does not resolve macro definitions or prove
+  that ZEND_DEBUG is undefined in release builds.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        pattern: 'return FAILURE;'
+        stopBy: end
+    - inside:
+        kind: preproc_if
+        has:
+          field: condition
+          regex: '^ZEND_DEBUG$'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

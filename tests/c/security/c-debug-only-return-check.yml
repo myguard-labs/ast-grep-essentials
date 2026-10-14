@@ -1,0 +1,17 @@
+id: c-debug-only-return-check
+valid:
+  - |-
+    static int f(void *p) {
+    #if ZEND_DEBUG
+    if (p == NULL) { puts("debug"); }
+    #endif
+    return SUCCESS;
+    }
+invalid:
+  - |-
+    static int f(void *p) {
+    #if ZEND_DEBUG
+    if (p == NULL) { return FAILURE; }
+    #endif
+    return SUCCESS;
+    }
