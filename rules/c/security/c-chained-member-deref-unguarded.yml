@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-chained-member-deref-unguarded
+language: c
+severity: warning
+message: >-
+  Chained member dereference in an if-condition has no NULL test on the
+  intermediate pointer.
+note: >-
+  Syntactic single-file match only. It checks that the condition reads a
+  chained member through a literal receiver and has no && guard in the same
+  condition; it does not resolve types, aliasing, or runtime values.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        pattern: '$P->$A->$B'
+        stopBy: end
+    - not:
+        has:
+          kind: binary_expression
+          pattern: '$X && $Y'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
