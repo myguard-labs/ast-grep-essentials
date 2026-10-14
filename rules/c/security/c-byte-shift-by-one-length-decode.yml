@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-byte-shift-by-one-length-decode
+language: c
+severity: warning
+message: >-
+  Length assigned from a dereferenced byte shifted left by 1; check for a
+  byte-order slip (expected shift of 8 for the high byte).
+note: >-
+  Purely syntactic match on an assignment to a variable named len whose right
+  side is a dereference shifted left by literal 1. It does not resolve types,
+  dataflow, or whether the byte is actually a high-order length byte.
+rule:
+  pattern: 'len = (*($P) << 1)'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
