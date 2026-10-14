@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bitmask-equals-one
+language: c
+severity: warning
+message: >-
+  Equality test of a bitwise-AND result against 1 never matches a flag that is
+  not bit 0; check the mask or use a truth test.
+note: >-
+  Syntactic match only. Flags a binary equality whose left operand is a
+  parenthesized bitwise-AND with a literal mask other than 1 and whose right
+  operand is literal 1. It does not resolve types, macros, or runtime values.
+rule:
+  all:
+    - kind: binary_expression
+    - has:
+        kind: parenthesized_expression
+        has:
+          kind: binary_expression
+          pattern: '$X & $MASK'
+    - pattern: '($X & $MASK) == 1'
+    - not:
+        pattern: '($X & 1) == 1'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
