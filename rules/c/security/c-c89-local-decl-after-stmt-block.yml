@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-c89-local-decl-after-stmt-block
+language: c
+severity: warning
+message: >-
+  Local declaration follows an executable statement in the same block; this
+  breaks C89 builds.
+note: >-
+  Purely syntactic single-file check on the shown block order. It does not
+  resolve types, scopes, or compiler flags, and it does not account for
+  declarations nested in other blocks.
+rule:
+  kind: declaration
+  inside:
+    kind: compound_statement
+    stopBy: end
+  follows:
+    kind: expression_statement
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
