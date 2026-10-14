@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-deref-postincrement-discarded
+language: c
+severity: warning
+message: >-
+  Dereferenced pointer post-increment is an expression statement whose value
+  is discarded; the read may be unintended.
+note: >-
+  Syntactic match only on a bare expression statement of the form *ident++; it
+  does not resolve types, aliasing, or whether the discarded read was
+  intended.
+rule:
+  kind: expression_statement
+  has:
+    kind: pointer_expression
+    pattern: '*$ID++'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
