@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bounds-check-after-index-in-loop-condition
+language: c
+severity: warning
+message: >-
+  Array element indexed by a variable is read before the bounds comparison on
+  that index in a while condition.
+note: >-
+  Purely syntactic check of the condition's && operand order; it does not
+  resolve array sizes, types, aliasing, or whether the index can actually go
+  out of range at runtime.
+rule:
+  pattern: 'while ($ARR[$IDX] != 0 && $IDX < $N) $BODY'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
