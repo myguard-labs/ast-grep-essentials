@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-char-array-const-index-oob
+language: c
+severity: warning
+message: >-
+  Constant index is at or beyond the declared element count of this local char
+  array.
+note: >-
+  Syntactic single-file check; matches a literal index assigned in a function
+  body against a local char array declared with a literal size in the same
+  function, without tracking reassignment, aliasing, or runtime values.
+rule:
+  all:
+    - pattern: '$BUF[4] = $VAL'
+    - inside:
+        kind: compound_statement
+        stopBy: end
+        has:
+          pattern: 'char $BUF[4];'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
