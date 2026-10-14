@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-apr-sleep-absolute-time-delta
+language: c
+severity: warning
+message: >-
+  apr_sleep() receives a difference that subtracts apr_time_now() directly
+  from a duration, yielding a large negative value; reduce the epoch time
+  modulo APR_USEC_PER_SEC first.
+note: >-
+  Purely syntactic check for a literal apr_time_now() call as the right
+  operand of a subtraction inside apr_sleep(); it does not resolve types,
+  aliasing, or runtime values.
+rule:
+  pattern: 'apr_sleep($A - apr_time_now())'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
