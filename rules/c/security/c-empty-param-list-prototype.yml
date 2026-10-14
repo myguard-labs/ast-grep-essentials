@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-empty-param-list-prototype
+language: c
+severity: warning
+message: >-
+  Function declared or defined with an empty parameter list; use (void) to
+  declare no parameters.
+note: >-
+  Purely syntactic check for an empty parameter list written as (). It does
+  not determine whether a declaration is a prototype elsewhere or resolve
+  calls or types.
+rule:
+  kind: function_declarator
+  all:
+    - has:
+        field: declarator
+        regex: '^[A-Za-z_][A-Za-z0-9_]*$'
+    - has:
+        field: parameters
+        kind: parameter_list
+        not:
+          has:
+            kind: parameter_declaration
+    - not:
+        has:
+          field: parameters
+          regex: void
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
