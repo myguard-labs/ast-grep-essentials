@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-backslash-escape-checks-previous-char
+language: c
+severity: warning
+message: >-
+  Comparing the previous byte against a backslash to detect an escaped
+  delimiter ignores runs of escaped backslashes; review this check.
+note: >-
+  Purely syntactic match on a binary comparison of a p[-1] subscript against a
+  backslash character literal. It does not resolve pointer types, aliasing, or
+  whether the surrounding loop actually detects escapes, so it can
+  over-report.
+rule:
+  pattern: '$P[-1] != ''\\'''
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
