@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-compare-by-subtraction
+language: c
+severity: warning
+message: >-
+  Comparator returns a difference of the same member from two pointers;
+  subtraction can overflow or truncate. Use explicit comparisons.
+note: >-
+  Syntactic match only on a return of a->f - b->f through pointer member
+  access with the same member name; does not check types, overflow ranges, or
+  whether the function is used as a sort comparator.
+rule:
+  pattern: 'return $A->$F - $B->$F;'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
