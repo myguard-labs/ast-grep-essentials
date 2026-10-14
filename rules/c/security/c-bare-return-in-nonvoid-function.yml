@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bare-return-in-nonvoid-function
+language: c
+severity: warning
+message: >-
+  Bare return statement inside a function whose declared return type is not
+  void.
+note: >-
+  Syntactic match only on a bare return statement inside a function definition
+  whose declared type text is not void; it does not resolve typedefs, macros,
+  or whether the return is reachable.
+rule:
+  all:
+    - pattern: 'return;'
+    - inside:
+        kind: function_definition
+        stopBy: end
+        pattern: 'static int f($$$PARAMS) { $$$BODY }'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
