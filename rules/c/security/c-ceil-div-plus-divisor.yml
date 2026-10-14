@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ceil-div-plus-divisor
+language: c
+severity: warning
+message: >-
+  Parenthesised sum with the same literal as the divisor is divided by that
+  divisor; this overcounts by one when the base value is a multiple of the
+  divisor. Review whether this is intentional.
+note: >-
+  Syntactic check only. Matches a division whose left operand is a
+  parenthesised sum of any expression and the same integer literal as the
+  divisor. It does not verify the left operand's value, types, or whether
+  headroom is intended.
+rule:
+  pattern: '($E + 8) / 8'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
