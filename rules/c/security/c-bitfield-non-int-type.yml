@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bitfield-non-int-type
+language: c
+severity: warning
+message: >-
+  Bit-field declared with a non-int type; C99 only portably allows int,
+  unsigned int, signed int, or _Bool.
+note: >-
+  Syntactic check only. Matches struct field declarations whose type is
+  written as unsigned char with a bit-field width; it does not resolve
+  typedefs or other integer types.
+rule:
+  kind: field_declaration
+  all:
+    - has:
+        kind: bitfield_clause
+    - has:
+        kind: sized_type_specifier
+        regex: '^unsigned char$'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
