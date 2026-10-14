@@ -1,0 +1,9 @@
+id: c-deref-before-bounds-check
+valid:
+  - >-
+    void f(char *buf) { char *p; for (p = buf; p < buf + 8 && *p != 0; ) { p++;
+    } }
+invalid:
+  - >-
+    void f(char *buf) { char *p; for (p = buf; *p != 0 && p < buf + 8; ) { p++;
+    } }
