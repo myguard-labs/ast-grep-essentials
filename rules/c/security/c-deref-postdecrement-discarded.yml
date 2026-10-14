@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-deref-postdecrement-discarded
+language: c
+severity: warning
+message: >-
+  Dereferenced pointer with postfix decrement in an expression statement moves
+  the pointer and discards the value; parenthesize as (*p)-- if the pointee
+  was meant to be decremented.
+note: >-
+  Syntactic match only on a bare expression statement whose expression is a
+  pointer identifier dereferenced with postfix decrement; does not resolve
+  types, aliasing, or whether the pointer is intended to advance.
+rule:
+  pattern: '*$P--;'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
