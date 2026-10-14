@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-empty-null-check-body
+language: c
+severity: warning
+message: 'This NULL check has an empty body, so the failure path is silently dropped.'
+note: >-
+  Syntactic single-file match on an if statement whose condition is a literal
+  negated identifier with an empty compound body. It does not resolve types or
+  confirm the identifier is a pointer, and deliberate empty branches will also
+  match.
+rule:
+  pattern: |
+    if (!$P) {
+    }
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
