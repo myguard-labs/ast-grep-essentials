@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-dotdot-strstr-path-guard
+language: c
+severity: warning
+message: >-
+  This strstr(..., "..") check rejects any name containing two dots, not only
+  real traversal segments; review the path validation.
+note: >-
+  Syntactic match on a literal strstr call with a literal ".." needle used as
+  a boolean test. It does not resolve whether the first argument is a path,
+  does not normalise paths, and does not establish whether traversal is
+  actually possible.
+rule:
+  pattern: 'strstr($PATH, "..")'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
