@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-assert-on-fallible-call-status
+language: c
+severity: warning
+message: >-
+  Status from an apr_ call is checked with an assert instead of returning the
+  error to the caller.
+note: >-
+  Syntactic match only. Matches an ap_assert call whose argument compares a
+  variable with APR_SUCCESS; it does not verify that the variable was assigned
+  from an apr_ call or that the assert is in the same function.
+rule:
+  pattern: 'ap_assert($RC == APR_SUCCESS)'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
