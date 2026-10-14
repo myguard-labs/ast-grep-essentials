@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-base64-space-remapped-to-plus
+language: c
+severity: warning
+message: >-
+  This if-statement remaps a space character to '+', which silently accepts
+  input the base64 spec forbids.
+note: >-
+  Purely syntactic single-file match on an if-statement comparing a identifier
+  to a space literal whose body assigns '+' to that same identifier. It does
+  not check types, aliasing, or whether the variable is a decoder input.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        pattern: '$CH == '' '''
+        stopBy: end
+    - has:
+        pattern: '$CH = ''+'''
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
