@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-commented-out-refcount-placeholder
+language: c
+severity: warning
+message: >-
+  Line comment with a ??? placeholder marker stands in for a statement; review
+  whether a refcount or ownership operation was disabled.
+note: >-
+  Purely syntactic match on a line comment whose text starts with the ???
+  marker. It does not verify that the commented code is a refcount operation,
+  nor that any refcount is actually unbalanced; reachability and ownership
+  need manual review.
+rule:
+  kind: comment
+  regex: '^//\?\?\?'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
