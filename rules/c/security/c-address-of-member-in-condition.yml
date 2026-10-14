@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-address-of-member-in-condition
+language: c
+severity: warning
+message: Address-of expression used directly as a boolean condition is always true.
+note: >-
+  Syntactic check only. Matches an address-of member or array element used
+  directly as an if condition in parentheses. It does not resolve types,
+  aliasing, or runtime values.
+rule:
+  kind: pointer_expression
+  pattern: '&$X'
+  inside:
+    kind: parenthesized_expression
+    inside:
+      kind: if_statement
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
