@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-cast-narrowing-before-limit-add
+language: c
+severity: warning
+message: >-
+  Compound addition whose right operand is an explicit cast to uint32_t may
+  narrow the value before adding, so large values can wrap.
+note: >-
+  Single-file syntactic match on a literal compound assignment with a
+  (uint32_t) cast on the right operand. It does not resolve types, width of
+  the cast operand, or whether the sum can actually overflow.
+rule:
+  pattern: '$LHS += (uint32_t) $RHS'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
