@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-adjacent-same-destination-overwrite
+language: c
+severity: warning
+message: >-
+  Consecutive calls write the same first argument; the first write may be dead
+  or a copy-paste target error.
+note: >-
+  Single-file syntactic check for two adjacent SET_RESULT calls sharing a
+  literal identical first argument. It does not prove the first write is dead,
+  and intentional overwrites need review.
+rule:
+  all:
+    - pattern: 'SET_RESULT($DEST, $_);'
+    - precedes:
+        pattern: 'SET_RESULT($DEST, $_);'
+        stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
