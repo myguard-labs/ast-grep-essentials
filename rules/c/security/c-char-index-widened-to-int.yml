@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-char-index-widened-to-int
+language: c
+severity: warning
+message: >-
+  Plain char pointer element is initialized into an int without an unsigned
+  char cast; bytes above 0x7f may become negative.
+note: >-
+  Syntactic single-file check only. It matches a declaration whose initializer
+  is a direct subscript of an identifier with no cast; it does not verify that
+  the pointer is char-typed or that the value is used in a way that matters.
+rule:
+  pattern: 'int $VAR = $ARR[$IDX];'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
