@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-backward-lookback-without-start-bound
+language: c
+severity: warning
+message: >-
+  Backward pointer offset read in an if-condition without a start-bound
+  comparison in the same condition.
+note: >-
+  Syntactic check only. It flags an if-condition containing a dereference of a
+  backward offset (p - k) and no comparison in the same condition; it does not
+  resolve types, buffer bounds, or whether the bound is checked elsewhere.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        pattern: '*($P - $K)'
+        stopBy: end
+    - not:
+        has:
+          kind: binary_expression
+          regex: '[<>]'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
