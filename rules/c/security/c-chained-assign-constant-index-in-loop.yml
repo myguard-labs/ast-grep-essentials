@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-chained-assign-constant-index-in-loop
+language: c
+severity: warning
+message: >-
+  Chained assignment inside a for loop stores to a constant index instead of
+  the loop index.
+note: >-
+  Syntactic match only. Matches an assignment expression whose right-hand side
+  is a chained assignment to a literal index 0 subscript, located inside a for
+  statement; does not verify that the loop variable is the intended index or
+  resolve array types.
+rule:
+  kind: assignment_expression
+  pattern: '$A[$I] = $B[0] = $V'
+  inside:
+    kind: for_statement
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
