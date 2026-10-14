@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-alignment-literal-round-up
+language: c
+severity: warning
+message: >-
+  Round-up-to-alignment uses a hard-coded integer literal instead of sizeof
+  the aligned type.
+note: >-
+  Purely syntactic match on the shape ((E + sizeof(T) - 1) / 4) * 4 + 4 with
+  literal 4 as the divisor, multiplier, and addend; it does not resolve types
+  or confirm the literal is wrong for the target platform.
+rule:
+  pattern: '(($E + sizeof($T) - 1) / 4) * 4 + 4'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
