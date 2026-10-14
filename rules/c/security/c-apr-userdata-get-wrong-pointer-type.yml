@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-apr-userdata-get-wrong-pointer-type
+language: c
+severity: warning
+message: >-
+  Pointer passed to apr_pool_userdata_get() is declared as a non-void pointer;
+  its out-parameter expects void **.
+note: >-
+  Purely syntactic check on a literal &identifier argument in a single call to
+  apr_pool_userdata_get, paired with a declaration of that identifier in the
+  same enclosing function; it does not resolve typedefs, macros, or other
+  declarations, and does not verify the call target beyond the name.
+rule:
+  pattern: 'apr_pool_userdata_get(&$V, $$$ARGS)'
+  inside:
+    stopBy: end
+    has:
+      pattern: '$T * $V;'
+      kind: declaration
+      not:
+        pattern: 'void * $V;'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
