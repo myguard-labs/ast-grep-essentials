@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bitand-bitor-no-parens
+language: c
+severity: warning
+message: >-
+  Bitwise & is combined with | in one unparenthesised expression; add
+  parentheses to make the precedence explicit.
+note: >-
+  Syntactic check only. It flags a binary | whose direct operand is an
+  unparenthesised binary & in the shown source; it does not verify intent,
+  types, or whether a mask is deliberate.
+rule:
+  pattern: '$A | $B'
+  has:
+    field: left
+    pattern: '$C & $D'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
