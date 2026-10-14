@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ascii-letter-range-rejects-digits
+language: c
+severity: warning
+message: >-
+  This comparison tests only the uppercase letter range 'A' to 'Z' and may
+  reject digits in names that should allow them.
+note: >-
+  Matches a literal logical-or of a less-than test against 'A' and a
+  greater-than test against 'Z' on the same dereferenced operand, inside an if
+  condition. This is a syntactic check only and does not establish how the
+  surrounding code uses the value.
+rule:
+  pattern: 'if (*$P < ''A'' || *$P > ''Z'') $$$BODY'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
