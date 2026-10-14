@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-comparator-subtraction-overflow
+language: c
+severity: warning
+message: >-
+  Returning a difference of two variables from an int function may overflow
+  and misorder comparisons.
+note: >-
+  Syntactic match only: flags a return of a binary subtraction of two
+  identifiers in any function; it does not verify the function is a
+  comparator, the operand types, or whether values can reach the type limits.
+rule:
+  kind: return_statement
+  has:
+    kind: binary_expression
+    pattern: '$A - $B'
+    all:
+      - has:
+          kind: identifier
+          pattern: '$A'
+      - has:
+          kind: identifier
+          pattern: '$B'
+metadata:
+  rule_modified_at: '2026-10-14'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-14'
+  created_at: '2026-10-14'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
