@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-success-flag-set-after-unchecked-call
+language: c
+severity: warning
+message: >-
+  ZEND_TRY_ASSIGN_REF_TRUE follows a call assignment whose result is not
+  tested, so the out-flag may report success on a failure path.
+note: >-
+  Syntactic only. Matches a ZEND_TRY_ASSIGN_REF_TRUE statement directly
+  preceded by an assignment from a call expression statement, with no
+  intervening if. It does not resolve whether the callee can fail or whether
+  control flow guards the flag elsewhere.
+rule:
+  all:
+    - pattern: 'ZEND_TRY_ASSIGN_REF_TRUE($$$ARGS);'
+    - follows:
+        pattern: '$VAR = $CALL($$$CARGS);'
+        stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
