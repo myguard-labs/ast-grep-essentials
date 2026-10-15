@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-update-meta-fallback-add
+language: php
+severity: warning
+message: >-
+  This if-not update_post_meta() call falls back to add_post_meta() for the
+  same key; a no-op update returns false, so review whether the add is
+  correct.
+note: >-
+  Syntactic match only. It checks for an if-not update_post_meta() call whose
+  body directly calls add_post_meta() and does not verify the key or value
+  match, unique flags, return-value semantics, or runtime state.
+rule:
+  pattern: |
+    if ( ! update_post_meta( $ID, $KEY, $VAL ) ) add_post_meta( $ID, $KEY, $VAL, $$$REST );
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
