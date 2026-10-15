@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-ternary-unguarded-index-read
+language: php
+severity: warning
+message: >-
+  Ternary tests an array element and then reads the same element without an
+  isset() or array_key_exists() guard.
+note: >-
+  Single-file syntactic match on a literal variable subscript in a ternary
+  condition and true branch. It does not resolve types, aliasing, or whether
+  the key can be absent at runtime, and it does not recognise other guard
+  forms.
+rule:
+  pattern: '$ARR[$KEY] ? $ARR[$KEY] : $FALLBACK'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
