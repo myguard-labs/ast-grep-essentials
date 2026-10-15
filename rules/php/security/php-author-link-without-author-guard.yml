@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-author-link-without-author-guard
+language: php
+severity: warning
+message: >-
+  This conditional wraps the Author value in an anchor tag but only checks
+  AuthorURI; an empty Author can produce an empty link.
+note: >-
+  Syntactic single-file match only. It checks for an if statement whose
+  condition tests AuthorURI with empty() and whose body assigns an anchor
+  built from Author without a matching empty() check on Author; it does not
+  resolve runtime values or aliasing.
+rule:
+  pattern: >-
+    if ( ! empty($d['AuthorURI']) ) $d['Author'] = '<a href="' . $d['AuthorURI']
+    . '">' . $d['Author'] . '</a>';
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
