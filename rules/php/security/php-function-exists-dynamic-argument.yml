@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-function-exists-dynamic-argument
+language: php
+severity: warning
+message: >-
+  function_exists() receives a non-literal argument; review whether the
+  dynamic callable check is correct.
+note: >-
+  Syntactic check only. Matches a function_exists call whose single argument
+  is a variable, without resolving runtime values, types, or whether the
+  argument is a callable array or class method.
+rule:
+  pattern: 'function_exists($ARG)'
+  has:
+    kind: variable_name
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
