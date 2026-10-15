@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-assign-literal-in-or-condition
+language: php
+severity: warning
+message: >-
+  Assignment inside a boolean || chain of literal comparisons; use == or a
+  switch if a comparison was intended.
+note: >-
+  Purely syntactic match on an assignment_expression whose right-hand side is
+  a binary || expression with a string literal operand, inside an if
+  condition. It does not resolve types, values, or runtime behaviour.
+rule:
+  all:
+    - kind: assignment_expression
+    - has:
+        kind: binary_expression
+        pattern: '$A || $B'
+        stopBy: end
+    - inside:
+        kind: if_statement
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
