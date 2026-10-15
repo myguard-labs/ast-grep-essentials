@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-nav-menu-no-fallback-cb
+language: php
+severity: warning
+message: >-
+  This wp_nav_menu() call passes an argument array without a 'fallback_cb'
+  key, so an empty or missing menu may fall back to the default page list.
+note: >-
+  Syntactic check only. It flags a literal wp_nav_menu(array(...)) call whose
+  array literal has no 'fallback_cb' key; it does not resolve runtime menu
+  values, arguments built elsewhere, or whether the menu is actually empty.
+rule:
+  all:
+    - pattern: 'wp_nav_menu(array($$$ARGS))'
+    - not:
+        has:
+          pattern: '''fallback_cb'' => $_'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
