@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-html-href-raw-ampersand
+language: php
+severity: warning
+message: >-
+  This href string appears to contain a raw ampersand in its query string;
+  encode it as &amp;.
+note: >-
+  Single-file syntactic match on a PHP string literal whose text contains
+  href= followed later by a raw ampersand. Uses a regex without look-around,
+  so the not-followed-by-amp check is approximated by a separate pattern arm;
+  it does not resolve whether the string is emitted as HTML or whether the URL
+  is otherwise valid.
+rule:
+  kind: string
+  regex: 'href=[^>]*\?[^"]*&[^a]'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
