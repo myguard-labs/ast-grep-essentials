@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-manual-main-site-check
+language: php
+severity: warning
+message: >-
+  Hand-rolled main-site comparison of site and blog domain plus path; consider
+  is_main_site().
+note: >-
+  Purely syntactic match on the literal concatenated receiver expressions
+  $current_site->domain.$current_site->path compared with
+  $current_blog->domain.$current_blog->path using ==. It does not resolve
+  types, aliases, or whether the values come from the multisite lookup, so it
+  may flag equivalent checks written differently.
+rule:
+  pattern: >-
+    $current_site->domain.$current_site->path ==
+    $current_blog->domain.$current_blog->path
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
