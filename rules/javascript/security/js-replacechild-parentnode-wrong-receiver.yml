@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-replacechild-parentnode-wrong-receiver
+language: javascript
+severity: warning
+message: >-
+  replaceChild receives node.parentNode as the old child but the receiver is
+  not that node's parentNode.
+note: >-
+  Syntactic check only. It matches a literal receiver chain that differs from
+  the old child's parentNode expression; it does not resolve runtime DOM
+  structure, aliasing, or types.
+rule:
+  pattern: '$RECV.replaceChild($NEW, $E.parentNode)'
+  not:
+    pattern: '$E.parentNode.parentNode.replaceChild($NEW, $E.parentNode)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
