@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-widget-instance-unguarded-read
+language: php
+severity: warning
+message: >-
+  Subscript read of $instance used directly as a ternary condition without an
+  empty() or isset() guard.
+note: >-
+  Purely syntactic match on a literal $instance subscript used as a ternary
+  condition; it does not verify that the key is absent at runtime, the array
+  type, or any guard established elsewhere in the function.
+rule:
+  kind: conditional_expression
+  has:
+    pattern: '$instance[$KEY]'
+    field: condition
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
