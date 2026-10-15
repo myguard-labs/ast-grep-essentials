@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-round-float-equality
+language: php
+severity: warning
+message: >-
+  Equality comparison between two round() results; rounded floats may still
+  differ in the last bit, so consider a tolerance comparison.
+note: >-
+  Syntactic match only. Detects an == comparison whose both operands are
+  literal round(...) calls; does not verify that the operands are floats or
+  check runtime values, types, or aliasing.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^==$'
+    - has:
+        kind: function_call_expression
+        pattern: 'round($$$ARGS)'
+        stopBy: neighbor
+    - pattern: 'round($$$A) == round($$$B)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
