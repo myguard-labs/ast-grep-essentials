@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-predictable-temp-path-literal
+language: php
+severity: warning
+message: >-
+  Temp path is built from a directory and a fixed literal filename, which is
+  predictable on shared filesystems.
+note: >-
+  Syntactic match only. Matches an assignment whose right side is a
+  double-quoted string that interpolates a variable followed by a fixed
+  literal filename segment starting with an underscore. It does not check
+  whether the directory is a shared temp location, and does not resolve types
+  or aliasing.
+rule:
+  kind: assignment_expression
+  all:
+    - has:
+        field: right
+        kind: encapsed_string
+        regex: '^"\$[A-Za-z_][A-Za-z0-9_]*/_[A-Za-z0-9_]*"$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
