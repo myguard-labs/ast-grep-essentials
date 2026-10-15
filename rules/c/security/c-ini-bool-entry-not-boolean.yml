@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ini-bool-entry-not-boolean
+language: c
+severity: warning
+message: >-
+  STD_PHP_INI_ENTRY is used with OnUpdateBool; consider STD_PHP_INI_BOOLEAN so
+  on/off values are parsed as booleans.
+note: >-
+  Single-file syntactic match on the literal macro name STD_PHP_INI_ENTRY with
+  OnUpdateBool as an argument. It does not verify the macro expansion, type of
+  the bound global, or that the entry is intended as boolean.
+rule:
+  any:
+    - pattern: 'STD_PHP_INI_ENTRY($$$ARGS, OnUpdateBool, $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
