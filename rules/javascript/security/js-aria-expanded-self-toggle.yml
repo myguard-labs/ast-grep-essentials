@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-aria-expanded-self-toggle
+language: javascript
+severity: warning
+message: >-
+  This sets aria-expanded from a comparison against the element's own previous
+  aria-expanded value, which can keep a missing attribute stuck at 'false'.
+note: >-
+  Matches only the literal single-file syntax of an attr('aria-expanded', ...)
+  call whose value is a ternary comparing the same receiver's
+  attr('aria-expanded') to 'false'. It does not resolve receiver identity,
+  types, or runtime attribute state.
+rule:
+  pattern: '$EL.attr(''aria-expanded'', $EL.attr(''aria-expanded'') === ''false'' ? $A : $B)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
