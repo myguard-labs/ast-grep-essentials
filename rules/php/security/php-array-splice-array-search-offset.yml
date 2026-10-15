@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-array-splice-array-search-offset
+language: php
+severity: warning
+message: >-
+  array_splice() receives a direct array_search() result as its offset; a
+  false result (value not found) is treated as offset 0.
+note: >-
+  Single-file syntactic match on a direct array_search() call nested as the
+  second argument of array_splice(). Does not check whether the search result
+  was validated before the call, and does not resolve types or aliasing.
+rule:
+  pattern: 'array_splice($ARR, array_search($$$SEARCH), $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
