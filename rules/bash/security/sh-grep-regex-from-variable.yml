@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-grep-regex-from-variable
+language: bash
+severity: warning
+message: >-
+  grep runs in regex mode with a pattern built from a shell variable;
+  metacharacters in the value change the match. Use -F for literal matching.
+note: >-
+  Single-file syntactic check only. It flags grep invocations using -E whose
+  argument contains a variable expansion; it does not verify the value is
+  untrusted or that a regex was unintended.
+rule:
+  pattern: 'grep -qE $ARG $$$REST'
+  has:
+    regex: '\$\{?[A-Za-z_]'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
