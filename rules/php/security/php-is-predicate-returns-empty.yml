@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-is-predicate-returns-empty
+language: php
+severity: warning
+message: >-
+  A function named is_* returns empty() on an array element, which inverts the
+  predicate. Review the return value.
+note: >-
+  Syntactic check only. Matches a method whose name starts with is_ and whose
+  body contains a return of empty() applied to a subscript expression. It does
+  not resolve types, aliases, or runtime values.
+rule:
+  all:
+    - kind: method_declaration
+    - has:
+        field: name
+        regex: '^is_'
+    - has:
+        pattern: 'return empty($ARG[$KEY]);'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
