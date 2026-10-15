@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-preg-bare-whitespace-class-no-u
+language: php
+severity: warning
+message: >-
+  This preg_* call uses a literal pattern with \s and no u modifier; review
+  whether byte-wise matching is intended.
+note: >-
+  Syntactic check only. Matches a preg_ call whose first argument is a literal
+  string containing \s and whose literal pattern does not end with the u
+  modifier before the closing delimiter; it does not verify delimiter parsing,
+  runtime input encoding, or whether the call processes UTF-8 text.
+rule:
+  all:
+    - kind: function_call_expression
+    - has:
+        kind: name
+        regex: '^preg_'
+        stopBy: end
+    - has:
+        kind: string
+        regex: '\\s'
+        stopBy: end
+    - not:
+        has:
+          kind: string
+          regex: 'u[\"''"''"'']?$|#u$'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
