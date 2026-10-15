@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-mixed-and-or-without-grouping
+language: php
+severity: warning
+message: >-
+  This boolean expression mixes && and || without parentheses; review the
+  intended grouping.
+note: >-
+  Purely syntactic check on a binary expression whose operator is || and whose
+  left operand is an unparenthesized && expression. It does not resolve types,
+  runtime values, or operator intent, and it may flag intentional code.
+rule:
+  kind: binary_expression
+  pattern: '$A || $C'
+  all:
+    - has:
+        kind: binary_expression
+        pattern: '$X && $Y'
+        stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
