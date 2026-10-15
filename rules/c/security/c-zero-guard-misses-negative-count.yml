@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-zero-guard-misses-negative-count
+language: c
+severity: warning
+message: >-
+  Ternary guarded by an equality-to-zero check computes n - 1 in its false
+  branch; a negative count passes the guard.
+note: >-
+  Purely syntactic match on a conditional expression whose condition is
+  literally n == 0 and whose false branch is n - 1. It does not resolve types,
+  value ranges, or whether n can actually be negative at runtime.
+rule:
+  pattern: '($N == 0 ? $_ : $N - 1)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
