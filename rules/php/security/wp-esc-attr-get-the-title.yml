@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-esc-attr-get-the-title
+language: php
+severity: warning
+message: >-
+  esc_attr() wraps get_the_title(); the title may contain inline HTML that is
+  escaped rather than stripped. Consider the_title_attribute().
+note: >-
+  Single-file syntactic match on the literal call esc_attr(get_the_title()).
+  It does not resolve functions, imports, or runtime values, and does not
+  check whether the result is used in an attribute.
+rule:
+  pattern: 'esc_attr(get_the_title())'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
