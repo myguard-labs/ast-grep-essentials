@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-single-backslash-escape-check
+language: go
+severity: warning
+message: >-
+  This condition checks only one preceding backslash for escape parity; an
+  even backslash run is misread as escaped.
+note: >-
+  Single-file syntactic match on an index expression s[i-1] compared with a
+  backslash rune literal inside an if condition in a for loop. It does not
+  resolve types, aliasing, or the true length of the backslash run.
+rule:
+  all:
+    - pattern: '$S[$I - 1] == ''\\'''
+    - inside:
+        kind: if_statement
+        stopBy: end
+        inside:
+          kind: for_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
