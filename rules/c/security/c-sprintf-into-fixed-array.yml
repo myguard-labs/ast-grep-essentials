@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-sprintf-into-fixed-array
+language: c
+severity: warning
+message: >-
+  Unbounded sprintf writes into a fixed-size buffer; use snprintf with the
+  buffer size.
+note: >-
+  Purely syntactic match on a direct sprintf call with a plain identifier
+  destination. It does not verify that the identifier is a fixed-size char
+  array, nor check the formatted output length or aliasing.
+rule:
+  pattern: 'sprintf($BUF, $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
