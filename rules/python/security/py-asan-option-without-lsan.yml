@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-asan-option-without-lsan
+language: python
+severity: warning
+message: >-
+  This function sets ASAN_OPTIONS in an environment mapping without setting
+  LSAN_OPTIONS.
+note: >-
+  Purely syntactic single-function check on literal subscript assignments; it
+  does not resolve aliases, runtime values, or whether LSAN_OPTIONS is set
+  elsewhere.
+rule:
+  all:
+    - pattern: '$ENV[''ASAN_OPTIONS''] = $VAL'
+    - inside:
+        kind: function_definition
+        stopBy: end
+        has:
+          pattern: '$ENV2[''ASAN_OPTIONS''] = $VAL2'
+          stopBy: end
+    - not:
+        inside:
+          kind: function_definition
+          stopBy: end
+          has:
+            pattern: '$ENV3[''LSAN_OPTIONS''] = $VAL3'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
