@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-macro-unparenthesized-shift
+language: c
+severity: warning
+message: >-
+  Object-like macro body is an unparenthesized shift expression; wrap it in
+  parentheses.
+note: >-
+  Syntactic match only. Flags object-like preprocessor macros whose body is a
+  bare shift expression; it does not check how the macro is used or whether
+  the expansion is actually reached.
+rule:
+  kind: preproc_def
+  has:
+    field: value
+    regex: '<<'
+    not:
+      regex: '^\s*\('
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
