@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-size-compare-0xffffffff-no-header
+language: c
+severity: warning
+message: >-
+  Comparison against bare 0xffffffff with no header-size subtraction; verify
+  the 32-bit size field bound accounts for the box header.
+note: >-
+  Syntactic match only on the literal comparison (uint64_t) X > (uint64_t)
+  0xffffffff. It does not resolve types, values, or whether a header is added
+  elsewhere, so correct bare bounds may match and need review.
+rule:
+  pattern: '(uint64_t) $X > (uint64_t) 0xffffffff'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
