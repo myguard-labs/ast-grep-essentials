@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: zend-bool-minus-one-sentinel-cpp
+language: cpp
+severity: warning
+message: >-
+  A zend_bool is initialized from the cast (zend_bool)-1, which yields 255 and
+  can collide with a real value used as a sentinel.
+note: >-
+  Purely syntactic match on a C-style cast of the literal -1 to zend_bool
+  inside a declaration initializer. It does not verify that the variable is
+  used as a sentinel or resolve the zend_bool type.
+rule:
+  pattern: 'zend_bool $VAR = (zend_bool)-1;'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
