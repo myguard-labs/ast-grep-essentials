@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-permalink-concat-missing-trailingslash
+language: php
+severity: warning
+message: >-
+  get_permalink() result is concatenated directly without trailingslashit();
+  review the joined URL.
+note: >-
+  Syntactic match only. Flags a literal get_permalink() call used as the left
+  operand of a concatenation; it does not resolve types, aliases, or whether
+  the result already ends in a slash, and may also flag query-string joins.
+rule:
+  pattern: 'get_permalink() . $I'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
