@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-memcpy-then-nul-at-len-minus-one
+language: c
+severity: warning
+message: >-
+  This NUL terminator is written at index N - 1 right after memcpy copied N
+  bytes, so it overwrites the last copied byte.
+note: >-
+  Purely syntactic single-statement match on the literal pattern buf[n - 1] =
+  '\0'; it does not verify that the preceding memcpy used the same N, that buf
+  is the memcpy destination, or any aliasing, types, or reachability.
+rule:
+  pattern: '$DST[$N - 1] = ''\0'';'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
