@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-empty-parameter-list-prototype
+language: c
+severity: warning
+message: >-
+  Function declarator uses an empty parameter list `()`, which in C leaves
+  arguments unchecked; use `(void)` or a typed parameter list.
+note: >-
+  Matches a function declarator whose parameter list is literally empty. It
+  does not distinguish definitions from declarations, does not resolve calls,
+  and cannot tell whether a call site is actually mismatched; review hits in
+  legacy code.
+rule:
+  kind: function_declarator
+  all:
+    - has:
+        field: declarator
+        kind: identifier
+    - not:
+        has:
+          kind: parameter_list
+          has:
+            kind: parameter_declaration
+    - not:
+        has:
+          kind: parameter_list
+          has:
+            kind: variadic_parameter
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
