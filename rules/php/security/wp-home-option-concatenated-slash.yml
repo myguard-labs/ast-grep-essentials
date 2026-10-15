@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-home-option-concatenated-slash
+language: php
+severity: warning
+message: >-
+  The home option is concatenated with a string literal without
+  trailingslashit(); a stored trailing slash will produce a double slash.
+note: >-
+  Syntactic check only. Matches a literal get_option('home') call directly
+  concatenated with a string literal; it does not resolve the option value or
+  confirm it lacks a trailing slash.
+rule:
+  pattern: 'get_option( ''home'' ) . $LIT'
+  inside:
+    kind: function_definition
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
