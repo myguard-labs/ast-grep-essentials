@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-strpos-suffix-check
+language: php
+severity: warning
+message: >-
+  Loose comparison of strpos() with strlen() minus a constant is used as an
+  end-of-string test; strpos returns the first match, so this can be wrong.
+note: >-
+  Purely syntactic check on the literal shape strpos(H, N) == strlen(H) - K.
+  It does not resolve types, values, or whether the comparison is loose at
+  runtime beyond the written operator.
+rule:
+  pattern: 'strpos($H, $N) == strlen($H) - $K'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
