@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-size-narrowed-to-int
+language: c
+severity: warning
+message: >-
+  strlen() result is stored in a 32-bit int or unsigned int variable, which
+  can truncate lengths above 2 GiB.
+note: >-
+  Syntactic single-file check for a literal strlen(...) call initializing an
+  int or unsigned int declaration. It does not resolve typedefs, macros, or
+  types beyond the literal spelling, and does not track later assignments or
+  casts.
+rule:
+  pattern: 'int $VAR = strlen($$$ARGS);'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
