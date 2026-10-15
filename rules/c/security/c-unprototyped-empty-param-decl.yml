@@ -1,0 +1,38 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-unprototyped-empty-param-decl
+language: c
+severity: warning
+message: >-
+  Function declared with an empty parameter list `()` instead of `(void)`;
+  pre-C23 this leaves arguments unchecked.
+note: >-
+  Syntactic match only on function declarations whose parameter list is
+  literally empty. It does not resolve types, definitions elsewhere, or the C
+  language standard in effect; it cannot confirm whether a declaration is a
+  prototype-less function at build time.
+rule:
+  kind: function_declarator
+  all:
+    - has:
+        field: declarator
+        kind: identifier
+    - not:
+        has:
+          kind: parameter_list
+          has:
+            kind: parameter_declaration
+    - has:
+        field: parameters
+        kind: parameter_list
+        not:
+          has:
+            kind: parameter_declaration
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
