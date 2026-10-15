@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-scan-lookahead-stops-before-delimiter
+language: c
+severity: warning
+message: >-
+  This while loop tests the character one past the cursor as its stop
+  condition, so it can stop before the delimiter.
+note: >-
+  Syntactic match only on a while loop whose condition compares *(p + 1)
+  against a literal character. It does not check types, aliasing,
+  reachability, or whether the caller re-enters at the same position.
+rule:
+  pattern: 'while ($COND) $BODY'
+  has:
+    pattern: '*($P + 1) != $CH'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
