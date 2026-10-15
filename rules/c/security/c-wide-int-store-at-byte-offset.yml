@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-wide-int-store-at-byte-offset
+language: c
+severity: warning
+message: >-
+  Multi-byte integer access through a pointer cast applied to a char-pointer
+  byte offset may be misaligned.
+note: >-
+  Matches the literal syntax of a cast to a multi-byte unsigned int pointer
+  applied to a buf + offset expression. It does not resolve types, alignment,
+  or whether the offset is actually unaligned at runtime.
+rule:
+  pattern: '*(unsigned int *)($BUF + $OFF)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
