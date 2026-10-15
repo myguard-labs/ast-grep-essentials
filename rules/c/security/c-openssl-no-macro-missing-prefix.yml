@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-no-macro-missing-prefix
+language: c
+severity: warning
+message: >-
+  Preprocessor test of a bare NO_<ALGO> macro; OpenSSL's disable flag is
+  OPENSSL_NO_<ALGO>, so this guard may always be true.
+note: >-
+  Matches only a preprocessor ifndef line whose identifier begins with the
+  literal bare NO_ prefix. It does not resolve macro definitions, includes, or
+  build configuration.
+rule:
+  pattern: '#ifndef NO_DSA'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
