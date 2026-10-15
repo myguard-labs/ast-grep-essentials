@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-add-before-divide-overflow
+language: c
+severity: warning
+message: >-
+  This divides a sum of the operand and its remainder by 2, so the addition
+  can overflow before the division; consider (X / 2) + (X % 2).
+note: >-
+  Single-file syntactic match on the literal shape (X + X % 2) / 2 with
+  identical operand text. It does not check types, value ranges, or whether
+  the operand can actually approach the type maximum.
+rule:
+  pattern: '($X + $X % 2) / 2'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
