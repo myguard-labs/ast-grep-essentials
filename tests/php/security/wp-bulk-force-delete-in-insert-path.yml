@@ -1,0 +1,10 @@
+id: wp-bulk-force-delete-in-insert-path
+valid:
+  - >-
+    <?php function make_draft( $t ) { return wp_insert_post( array( 'post_title'
+    => $t ) ); }
+invalid:
+  - >-
+    <?php function make_draft( $t ) { $old = $wpdb->get_col( 'SELECT ID FROM p'
+    ); foreach ( (array) $old as $d ) wp_delete_post( $d, true ); return
+    wp_insert_post( array( 'post_title' => $t ) ); }

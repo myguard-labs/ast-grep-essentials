@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-bulk-force-delete-in-insert-path
+language: php
+severity: warning
+message: >-
+  Function calls wp_insert_post and also runs a foreach loop calling
+  wp_delete_post with force-delete true; move bulk permanent deletion out of
+  the record-creation path.
+note: >-
+  Single-file syntactic match on literal wp_insert_post and wp_delete_post
+  calls inside one function with a foreach loop. Does not resolve imports,
+  aliases, runtime values, or whether the force flag is truly true.
+rule:
+  all:
+    - kind: function_definition
+    - has:
+        pattern: 'wp_insert_post($$$ARGS)'
+        stopBy: end
+    - has:
+        kind: foreach_statement
+        stopBy: end
+        has:
+          pattern: 'wp_delete_post($$$DARGS, true)'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
