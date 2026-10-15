@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-foreach-ref-binding
+language: php
+severity: warning
+message: >-
+  This foreach binds its value variable by reference; the variable stays
+  aliased to the last array element after the loop.
+note: >-
+  Syntactic match only. Matches a foreach whose value binding is written as a
+  reference (&$var) in the loop header; it does not check whether the variable
+  is reused later or whether the alias is ever unset.
+rule:
+  kind: foreach_statement
+  has:
+    kind: by_ref
+    pattern: '&$VAR'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
