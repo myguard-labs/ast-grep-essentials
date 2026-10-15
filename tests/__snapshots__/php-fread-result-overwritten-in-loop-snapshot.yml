@@ -1,0 +1,25 @@
+id: php-fread-result-overwritten-in-loop
+snapshots:
+  ? |-
+    <?php
+    $fp = fopen($file_name, 'r');
+    while (!feof($fp)) {
+        $file_content = fread($fp, 8192);
+    }
+    fclose($fp);
+  : labels:
+    - source: $file_content = fread($fp, 8192)
+      style: primary
+      start: 61
+      end: 93
+    - source: fread($fp, 8192)
+      style: secondary
+      start: 77
+      end: 93
+    - source: |-
+        while (!feof($fp)) {
+            $file_content = fread($fp, 8192);
+        }
+      style: secondary
+      start: 36
+      end: 96

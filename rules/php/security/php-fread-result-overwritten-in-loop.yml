@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-fread-result-overwritten-in-loop
+language: php
+severity: warning
+message: >-
+  Assignment of a fread() result inside a while loop overwrites the chunk read
+  on the previous iteration; accumulate instead.
+note: >-
+  Single-file syntactic match on a plain assignment whose right-hand side is a
+  fread() call inside a while loop body. It does not resolve types, aliases,
+  reachability, or whether the variable is read elsewhere before being
+  overwritten.
+rule:
+  all:
+    - kind: assignment_expression
+    - has:
+        kind: function_call_expression
+        pattern: 'fread($$$ARGS)'
+        field: right
+    - inside:
+        kind: while_statement
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
