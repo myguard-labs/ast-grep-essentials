@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-timeval-usec-unnormalized-assign
+language: c
+severity: warning
+message: >-
+  Assignment to tv_usec from a non-constant expression without modulo 1000000
+  reduction; verify the value is normalized below one million.
+note: >-
+  Syntactic check only. Matches a literal tv.tv_usec assignment whose
+  right-hand side is not a modulo expression; it does not resolve types, prove
+  the value is unnormalized, or track upstream normalization.
+rule:
+  all:
+    - pattern: '$TV.tv_usec = $VAL'
+    - not:
+        pattern: '$TV.tv_usec = $X % 1000000'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
