@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-or-inequality-same-operand-tautology
+language: php
+severity: warning
+message: >-
+  This `||` joins two `!=` checks of the same operand against different
+  literals, so the condition is always true.
+note: >-
+  Syntactic check only. Matches a literal variable compared with != against
+  two different string literals joined by ||. It does not resolve aliasing,
+  types, or runtime values.
+rule:
+  all:
+    - kind: binary_expression
+    - pattern: '$A || $B'
+    - has:
+        pattern: '$X != ''http'''
+        stopBy: end
+    - has:
+        pattern: '$X != ''https'''
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
