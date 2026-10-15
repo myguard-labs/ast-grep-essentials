@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-substr-strpos-unchecked-offset
+language: php
+severity: warning
+message: >-
+  strpos() result is used directly as the length argument of substr(); a
+  missing needle returns false and yields a wrong substring.
+note: >-
+  Syntactic match only. Detects a literal substr() call whose third argument
+  is a direct strpos() call; it does not check whether the strpos() result is
+  validated elsewhere or whether the value can be false at runtime.
+rule:
+  pattern: 'substr($S, $OFF, strpos($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
