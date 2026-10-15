@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-keypress-event-mismatched-identifier
+language: javascript
+severity: warning
+message: >-
+  The keypress type check and the keyCode check read different identifiers;
+  verify the key check uses the same event object.
+note: >-
+  Syntactic only. Matches a literal && expression whose left side compares a
+  literal 'keypress' with <a>.type and whose right side compares the keyCode
+  of a different identifier; does not resolve scope, aliases, or runtime event
+  objects.
+rule:
+  pattern: '''keypress'' == $A.type && $_ != $B.keyCode'
+  not:
+    pattern: '''keypress'' == $A.type && $_ != $A.keyCode'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
