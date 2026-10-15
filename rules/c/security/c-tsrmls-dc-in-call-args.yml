@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-tsrmls-dc-in-call-args
+language: c
+severity: warning
+message: >-
+  Call argument list ends with TSRMLS_DC, which is the declaration form; call
+  sites should pass TSRMLS_CC.
+note: >-
+  Purely syntactic match on a call whose last argument is the identifier
+  TSRMLS_DC. It does not resolve the callee, confirm ZTS context, or check
+  macro expansion.
+rule:
+  pattern: '$F($$$ARGS, TSRMLS_DC)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
