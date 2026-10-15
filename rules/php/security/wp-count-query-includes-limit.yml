@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-count-query-includes-limit
+language: php
+severity: warning
+message: >-
+  This COUNT query passed to get_var interpolates a LIMIT clause variable, so
+  the total may reflect only one page of rows.
+note: >-
+  Syntactic match only. It flags a single-quoted SQL string containing
+  COUNT(*) and the literal text query_limit; it does not resolve runtime
+  values or confirm the variable holds a LIMIT fragment.
+rule:
+  pattern: '$wpdb->get_var(''SELECT COUNT(*) FROM $wpdb->users $this->query_limit'')'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
