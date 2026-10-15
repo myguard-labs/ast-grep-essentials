@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-term-link-wp-error-truthy
+language: php
+severity: warning
+message: >-
+  Assignment from get_term_link() is used as a truthy condition without an
+  is_wp_error() check; a WP_Error would pass.
+note: >-
+  Syntactic match only: flags an if-assignment from a literal
+  get_term_link(...) call whose condition lacks an is_wp_error() call on the
+  variable. Does not verify the return type or aliasing.
+rule:
+  kind: if_statement
+  has:
+    pattern: '$VAR = get_term_link($$$ARGS)'
+    stopBy: end
+  not:
+    has:
+      pattern: 'is_wp_error($VAR)'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
