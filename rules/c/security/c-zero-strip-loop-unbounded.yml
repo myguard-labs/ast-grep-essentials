@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-zero-strip-loop-unbounded
+language: c
+severity: warning
+message: >-
+  This while loop skips zero bytes by stepping a pointer backward with no
+  separate length bound in its condition.
+note: >-
+  Purely syntactic check of a while loop whose condition is only a
+  dereferenced zero test and whose body decrements a pointer. It does not
+  verify buffer bounds, aliasing, or whether another guard exists outside the
+  shown syntax.
+rule:
+  all:
+    - kind: while_statement
+    - has:
+        kind: unary_expression
+        pattern: '!*$P'
+        stopBy: end
+    - has:
+        pattern: '$P--'
+        stopBy: end
+    - not:
+        has:
+          kind: binary_expression
+          stopBy: end
+          pattern: '$A && $B'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
