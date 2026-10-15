@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-jquery-is-bare-class-name
+language: javascript
+severity: warning
+message: >-
+  This .is() call passes a bare lowercase word with no selector prefix; it is
+  parsed as a tag selector, so a class check may silently never match.
+note: >-
+  Syntactic check only. Matches a literal bare lowercase word string argument
+  to a .is() call on a literal receiver; it cannot tell whether the word is
+  intended as a tag name, so tag checks may be false positives.
+rule:
+  all:
+    - pattern: '$OBJ.is( $ARG )'
+    - kind: call_expression
+    - has:
+        field: arguments
+        kind: arguments
+        regex: '^\(\s*''[a-z]+''\s*\)$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
