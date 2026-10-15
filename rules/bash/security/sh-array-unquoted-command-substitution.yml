@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-array-unquoted-command-substitution
+language: bash
+severity: warning
+message: >-
+  Unquoted command substitution inside an array literal is subject to word
+  splitting and pathname expansion; quote it or use mapfile/readarray.
+note: >-
+  Purely syntactic match on a command substitution that is a direct child of
+  an array assignment's element list; it does not check whether the command
+  output can actually contain spaces or glob characters, nor resolve types or
+  aliases.
+rule:
+  pattern: '$(list_versions)'
+  inside:
+    kind: variable_assignment
+    stopBy: end
+    has:
+      kind: array
+      stopBy: end
+  not:
+    inside:
+      kind: string
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
