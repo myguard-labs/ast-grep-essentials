@@ -1,0 +1,39 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-unittest-setup-missing-parent-call
+language: php
+severity: warning
+message: >-
+  This setUp method in a WP_UnitTestCase subclass does not call
+  parent::setUp().
+note: >-
+  Single-file syntactic check. It matches a literal setUp method inside a
+  class whose text declares extends WP_UnitTestCase and whose body has no
+  parent::setUp() call text; it does not resolve inheritance, aliases, or
+  runtime behavior.
+rule:
+  all:
+    - kind: method_declaration
+    - has:
+        field: name
+        regex: '^setUp$'
+        stopBy: end
+    - inside:
+        kind: class_declaration
+        stopBy: end
+        has:
+          kind: base_clause
+          regex: '^extends\s+WP_UnitTestCase$'
+          stopBy: end
+    - not:
+        has:
+          pattern: 'parent::setUp()'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
