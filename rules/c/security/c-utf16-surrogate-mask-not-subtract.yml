@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-utf16-surrogate-mask-not-subtract
+language: c
+severity: warning
+message: >-
+  Code point reduced with &= 0xFFFF in the else branch of a c < 0x10000 test;
+  surrogate encoding requires subtracting 0x10000.
+note: >-
+  Syntactic single-file match only. It flags a literal &= 0xFFFF compound
+  assignment inside an else clause whose enclosing if_statement contains a
+  literal less-than comparison against 0x10000; it does not verify variable
+  identity, types, or that the value feeds a surrogate split.
+rule:
+  all:
+    - pattern: '$X &= 0xFFFF'
+    - inside:
+        kind: else_clause
+        stopBy: end
+    - inside:
+        kind: if_statement
+        stopBy: end
+        has:
+          pattern: '$X < 0x10000'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
