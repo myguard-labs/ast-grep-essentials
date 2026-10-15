@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-int-length-parameter
+language: c
+severity: warning
+message: >-
+  Length or size parameter is declared with a 32-bit int type instead of
+  size_t.
+note: >-
+  Syntactic check only. Matches parameter declarations whose identifier ends
+  in _len, _length or size and whose type is int, uint or unsigned int; does
+  not verify caller values or type aliases.
+rule:
+  all:
+    - kind: parameter_declaration
+    - has:
+        field: declarator
+        regex: '(_len|_length|size)$'
+    - has:
+        field: type
+        regex: '^(int|uint|unsigned int)$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
