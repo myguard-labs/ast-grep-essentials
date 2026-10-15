@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-double-quoted-unknown-escape
+language: php
+severity: warning
+message: >-
+  Double-quoted PHP string contains a backslash escape that is not a valid PHP
+  escape sequence; use single quotes or a valid escape.
+note: >-
+  Syntactic check only. It matches double-quoted string literals containing a
+  backslash followed by a letter that is not a PHP escape letter (n, t, r, v,
+  e, f, $, ", \, u, x, 0-7). It does not verify runtime values, interpolation
+  context, or intent.
+rule:
+  kind: encapsed_string
+  regex: '\\[a-zA-Z]'
+  not:
+    regex: '\\[ntrvef$"\\\\u x0-7]'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
