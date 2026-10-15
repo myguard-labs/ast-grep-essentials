@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-isset-or-header-key-fallback
+language: php
+severity: warning
+message: >-
+  Two negated isset() checks on the same array with different literal keys are
+  joined by ||; review whether a differently cased header can be overwritten.
+note: >-
+  Purely syntactic match on literal receiver and key spellings within one if
+  condition. It does not resolve array aliasing, case-insensitive header
+  semantics, runtime values, or whether the fallback is intentional.
+rule:
+  pattern: >-
+    if ( ! isset($ARR['user-agent']) || ! isset($ARR['User-Agent']) ) { $$$BODY
+    }
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
