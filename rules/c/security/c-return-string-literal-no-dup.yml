@@ -1,0 +1,21 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-return-string-literal-no-dup
+language: c
+severity: warning
+message: >-
+  RETURN_STRING is called with a string literal and duplicate flag 0, so the
+  engine may free read-only literal memory.
+note: >-
+  Syntactic match only on a literal first argument with duplicate flag 0; does
+  not verify the macro definition, types, or runtime ownership.
+rule:
+  pattern: 'RETURN_STRING("$$$LIT", 0)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
