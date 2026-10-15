@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-count-guard-slices-other-array
+language: php
+severity: warning
+message: >-
+  This guard compares against count() of a different array than the one sliced
+  in the body.
+note: >-
+  Syntactic single-file match only. It cannot prove the mismatch is
+  unintended, so intentional cases may be false positives.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        pattern: '$N > count($OTHER)'
+        stopBy: end
+    - has:
+        pattern: 'array_slice($LIST, $$$ARGS)'
+        stopBy: end
+    - not:
+        has:
+          pattern: 'count($LIST)'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
