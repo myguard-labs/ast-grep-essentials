@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-stub-missing-return-type
+language: php
+severity: warning
+message: >-
+  Function declaration with an empty body and no native return type; add a
+  native return type declaration.
+note: >-
+  Single-file syntactic match on a function declaration with an empty body and
+  no return type node. It does not know whether the file is a stub or resolve
+  types, and it does not check PHPDoc.
+rule:
+  pattern: 'function $NAME($$$PARAMS) {}'
+  not:
+    has:
+      field: return_type
+      kind: union_type
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
