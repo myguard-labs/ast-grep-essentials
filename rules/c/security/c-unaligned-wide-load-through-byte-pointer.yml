@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-unaligned-wide-load-through-byte-pointer
+language: c
+severity: warning
+message: >-
+  Dereference of a byte pointer cast to a wide unsigned integer pointer may be
+  an unaligned load.
+note: >-
+  Purely syntactic match on a unary dereference of a cast to a wide unsigned
+  integer pointer type; it does not check alignment, aliasing, or the
+  pointer's actual origin, so aligned buffers will produce false positives.
+rule:
+  pattern: '*(unsigned long long *)$P'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
