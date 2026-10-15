@@ -1,0 +1,15 @@
+id: go-jsonrpc-err-wraps-fmt-errorf
+valid:
+  - |
+    package p
+
+    func f(err error) any {
+        return jsonrpc.Err(jsonrpc.InternalError, fmt.Sprintf("failed: %v", err))
+    }
+invalid:
+  - |
+    package p
+
+    func f(err error) any {
+        return jsonrpc.Err(jsonrpc.InternalError, fmt.Errorf("failed: %v", err))
+    }
