@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-store-indexes-from-destination
+language: c
+severity: warning
+message: >-
+  Assignment through a pointer that is post-incremented reads the same pointer
+  inside its index expression.
+note: >-
+  Syntactic check only. Matches a store to *p++ whose right-hand side indexes
+  a table with a read of *p, without verifying aliasing, types, or runtime
+  values.
+rule:
+  pattern: '*$P++ = $TAB[*$P & $MASK];'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
