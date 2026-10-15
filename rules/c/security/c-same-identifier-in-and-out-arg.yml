@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-same-identifier-in-and-out-arg
+language: c
+severity: warning
+message: >-
+  This call passes the same identifier as its first and second argument, so an
+  output buffer may alias its input.
+note: >-
+  Purely syntactic check for a call whose first two arguments are the same
+  plain identifier. It does not resolve types, aliasing, or whether the callee
+  actually writes to its second argument, so intentional same-name calls may
+  be flagged.
+rule:
+  pattern: '$F($X, $X)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
