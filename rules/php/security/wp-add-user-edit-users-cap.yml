@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-add-user-edit-users-cap
+language: php
+severity: warning
+message: >-
+  User creation is guarded by current_user_can('edit_users') instead of
+  current_user_can('create_users').
+note: >-
+  Single-file syntactic match on the literal guard call and a creation call in
+  the if body. It does not resolve capability state set elsewhere, role
+  mappings, or aliased functions.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        pattern: 'current_user_can(''edit_users'')'
+        stopBy: end
+    - has:
+        kind: function_call_expression
+        pattern: 'add_user($$$ARGS)'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
