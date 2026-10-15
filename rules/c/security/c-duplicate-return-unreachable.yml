@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-duplicate-return-unreachable
+language: c
+severity: warning
+message: >-
+  This statement follows a return statement in the same block and is
+  unreachable.
+note: >-
+  Matches a return statement whose next named sibling in the same compound
+  block is a statement, purely by syntax; does not account for labels,
+  preprocessor branches, or control-flow semantics beyond that shape.
+rule:
+  kind: return_statement
+  follows:
+    kind: return_statement
+    stopBy: neighbor
+  any:
+    - pattern: 'return $$$ARGS;'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
