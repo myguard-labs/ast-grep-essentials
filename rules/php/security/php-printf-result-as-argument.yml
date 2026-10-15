@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-printf-result-as-argument
+language: php
+severity: warning
+message: >-
+  printf() is nested as an argument to another call, so its echoed output and
+  integer return value are passed along as the message.
+note: >-
+  Single-file syntactic match on a literal printf call directly inside another
+  call's argument list. It does not resolve whether the outer function is
+  wp_die or whether the output is otherwise unsafe.
+rule:
+  pattern: '$FUNC(printf($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
