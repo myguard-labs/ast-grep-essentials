@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-bareword-array-key
+language: php
+severity: warning
+message: >-
+  Array literal key is a bare identifier; use a quoted string key if a string
+  key was intended.
+note: >-
+  Syntactic only. Matches a bare identifier used as the key of an array(...)
+  element before =>; it does not check whether a constant with that name
+  exists or resolve types or runtime values.
+rule:
+  kind: array_element_initializer
+  has:
+    kind: name
+    stopBy: neighbor
+  not:
+    has:
+      kind: string
+      stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
