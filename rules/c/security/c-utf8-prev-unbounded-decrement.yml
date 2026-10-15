@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-utf8-prev-unbounded-decrement
+language: c
+severity: warning
+message: >-
+  Pointer is decremented and dereferenced inside a do-while loop with no
+  lower-bound comparison in the loop body.
+note: >-
+  Single-file syntactic approximation. It checks for a do-while whose body
+  decrements a pointer and dereferences it, and whose body has no relational
+  comparison against a start bound. It does not resolve types, aliasing, or
+  buffer bounds, so it may miss or over-report bounds checks performed outside
+  the loop.
+rule:
+  all:
+    - kind: do_statement
+    - has:
+        pattern: '$P--'
+        stopBy: end
+    - has:
+        pattern: '*$P'
+        stopBy: end
+    - not:
+        has:
+          pattern: '$P < $S'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

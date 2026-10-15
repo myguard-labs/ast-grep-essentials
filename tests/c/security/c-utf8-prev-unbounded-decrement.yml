@@ -1,0 +1,28 @@
+id: c-utf8-prev-unbounded-decrement
+valid:
+  - |-
+    static const u_char *
+    prev(const u_char *p, const u_char *start)
+    {
+        u_char c;
+        do {
+            p--;
+            if (p < start) {
+                break;
+            }
+            c = *p;
+        } while ((c & 0xc0) == 0x80);
+        return p;
+    }
+invalid:
+  - |-
+    static const u_char *
+    prev(const u_char *p, const u_char *start)
+    {
+        u_char c;
+        do {
+            p--;
+            c = *p;
+        } while ((c & 0xc0) == 0x80);
+        return p;
+    }
