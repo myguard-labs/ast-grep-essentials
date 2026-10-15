@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-elseif-negated-condition-dead-branch
+language: php
+severity: warning
+message: >-
+  This elseif tests the negation of the variable already tested by the
+  preceding if, so the branch is dead or misleading.
+note: >-
+  Single-file syntactic match on a literal variable tested by an if and
+  negated in the following elseif; it does not resolve types, aliasing, or
+  runtime values.
+rule:
+  pattern: |
+    if ($VAR) { $$$BODY1 } elseif (! $VAR) { $$$BODY2 }
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
