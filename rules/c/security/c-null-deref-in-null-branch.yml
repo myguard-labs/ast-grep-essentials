@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-deref-in-null-branch
+language: c
+severity: warning
+message: >-
+  Pointer is dereferenced with -> inside the block entered when that same
+  pointer tested null.
+note: >-
+  Syntactic single-file check only. Matches a literal negated identifier test
+  in an if condition and a literal arrow dereference of the same identifier
+  inside the consequence block; it does not resolve aliasing, reassignment,
+  types, or reachability.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        kind: parenthesized_expression
+        has:
+          kind: unary_expression
+          pattern: '!$P'
+    - has:
+        kind: compound_statement
+        has:
+          kind: return_statement
+          has:
+            pattern: '$P->$F'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
