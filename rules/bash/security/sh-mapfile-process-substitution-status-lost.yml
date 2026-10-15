@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-mapfile-process-substitution-status-lost
+language: bash
+severity: warning
+message: >-
+  mapfile or readarray reads from a process substitution, so the exit status
+  of the producing command is discarded.
+note: >-
+  Single-file syntactic match on literal mapfile or readarray commands whose
+  input redirect is a process substitution. It does not check whether the
+  substituted command can fail or whether its status is checked elsewhere.
+rule:
+  pattern: 'mapfile $$$ARGS < <($CMD)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
