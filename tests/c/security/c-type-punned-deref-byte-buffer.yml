@@ -1,0 +1,9 @@
+id: c-type-punned-deref-byte-buffer
+valid:
+  - >-
+    static void f(unsigned char *out, const unsigned char *in) { memcpy(out, in,
+    sizeof(size_t)); }
+invalid:
+  - >-
+    static void f(unsigned char *out, const unsigned char *in) { *(size_t
+    *)(out) = *(const size_t *)(in); }

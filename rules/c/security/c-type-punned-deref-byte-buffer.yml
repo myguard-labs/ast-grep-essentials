@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-type-punned-deref-byte-buffer
+language: c
+severity: warning
+message: >-
+  Word-sized type-punned access through a cast of a byte-buffer pointer;
+  consider memcpy or a typed union.
+note: >-
+  Matches the literal syntax of a dereferenced cast to a size_t pointer in an
+  expression or assignment. It does not resolve types, aliasing, or whether
+  the source pointer really refers to a byte buffer.
+rule:
+  pattern: '*(size_t *)($P)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
