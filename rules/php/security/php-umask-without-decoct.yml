@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-umask-without-decoct
+language: php
+severity: warning
+message: >-
+  umask() result is used without decoct(); the raw integer is not an octal
+  mode string.
+note: >-
+  Syntactic check only. Matches a bare umask() call with no arguments whose
+  parent is not a decoct() call; it does not track where the value flows or
+  resolve function identity.
+rule:
+  all:
+    - pattern: 'umask()'
+    - not:
+        inside:
+          pattern: 'decoct($$$ARGS)'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
