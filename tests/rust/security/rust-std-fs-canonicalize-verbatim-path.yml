@@ -1,0 +1,11 @@
+id: rust-std-fs-canonicalize-verbatim-path
+valid:
+  - >-
+    use std::path::Path; fn store(pkg_root: &Path) -> std::path::PathBuf { let
+    Ok(p) = dunce::canonicalize(pkg_root) else { return pkg_root.to_path_buf();
+    }; p }
+invalid:
+  - >-
+    use std::fs; use std::path::Path; fn store(pkg_root: &Path) ->
+    std::path::PathBuf { let Ok(p) = fs::canonicalize(pkg_root) else { return
+    pkg_root.to_path_buf(); }; p }

@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: rust-std-fs-canonicalize-verbatim-path
+language: rust
+severity: warning
+message: >-
+  Std fs::canonicalize may return a Windows verbatim path; consider
+  dunce::canonicalize for user-visible paths.
+note: >-
+  Purely syntactic match on literal fs::canonicalize or std::fs::canonicalize
+  calls; does not resolve imports, aliases, or whether the result is
+  user-visible, so verbatim output may be intended in some cases.
+rule:
+  pattern: 'fs::canonicalize($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
