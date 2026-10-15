@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-ftp-call-missing-connection
+language: php
+severity: warning
+message: >-
+  This ftp_* call passes no arguments, so the required connection resource is
+  missing.
+note: >-
+  Matches only a direct ftp_-prefixed function call with zero arguments in
+  this file. It does not resolve function identity, imports, or runtime
+  connection values.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '^ftp_'
+    - not:
+        has:
+          field: arguments
+          has:
+            kind: argument
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
