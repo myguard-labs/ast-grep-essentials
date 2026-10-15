@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-direct-dom-handler-property-assignment
+language: javascript
+severity: warning
+message: >-
+  Assigning a function to an element's onblur or onfocus property replaces any
+  existing listener for that event; consider addEventListener.
+note: >-
+  Syntactic match only on a member assignment whose property is onblur or
+  onfocus and whose right side is a function expression. It does not resolve
+  the receiver's type, detect other listeners, or confirm that a listener
+  would be clobbered at runtime.
+rule:
+  kind: assignment_expression
+  all:
+    - has:
+        field: left
+        kind: member_expression
+        has:
+          field: property
+          regex: '^(onblur|onfocus)$'
+    - has:
+        field: right
+        kind: function_expression
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
