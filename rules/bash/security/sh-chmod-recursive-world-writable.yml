@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-chmod-recursive-world-writable
+language: bash
+severity: warning
+message: >-
+  Recursive chmod sets a world-writable mode; review whether every file under
+  the tree should be writable by any account.
+note: >-
+  Matches only literal chmod command syntax with a -R argument and a 1777 mode
+  word as direct arguments. It does not resolve paths, symbolic modes such as
+  a+w, or runtime file contents.
+rule:
+  pattern: 'chmod -R 1777 $$$ARGS'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
