@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-first-byte-nul-as-emptiness-check
+language: c
+severity: warning
+message: >-
+  This compares the first byte of a counted string with NUL to test emptiness;
+  check the length field instead.
+note: >-
+  Syntactic match only on a literal x->val[0] compared with '\0' using a !=
+  operator. It does not resolve types or confirm the value is a zend_string or
+  buffer, and it does not check the surrounding control flow.
+rule:
+  pattern: '$X->val[0] != ''\0'''
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
