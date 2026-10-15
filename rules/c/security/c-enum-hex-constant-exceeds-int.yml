@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-enum-hex-constant-exceeds-int
+language: c
+severity: warning
+message: >-
+  Enumerator initializer is an 8-digit hex literal with a leading digit 8-F,
+  so its value exceeds INT_MAX and does not fit int.
+note: >-
+  Syntactic match on the literal text only; it checks for an 8-digit hex
+  literal starting with 8-F inside an enumerator initializer and does not
+  evaluate constant values, macros, or types.
+rule:
+  kind: enumerator
+  has:
+    field: value
+    regex: '^0[xX][89a-fA-F][0-9a-fA-F]{7}$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
