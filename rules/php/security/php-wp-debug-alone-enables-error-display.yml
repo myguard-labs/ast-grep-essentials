@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-wp-debug-alone-enables-error-display
+language: php
+severity: warning
+message: >-
+  show_errors() is guarded by WP_DEBUG alone; review whether WP_DEBUG_DISPLAY
+  should also gate error display.
+note: >-
+  Syntactic check only. It matches an enclosing if whose condition is the bare
+  WP_DEBUG constant; it does not resolve constants, configuration, or runtime
+  values, and it does not verify that errors are actually displayed.
+rule:
+  all:
+    - pattern: '$OBJ->show_errors()'
+    - inside:
+        kind: if_statement
+        has:
+          field: condition
+          regex: '^\(?\s*WP_DEBUG\s*\)?$'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
