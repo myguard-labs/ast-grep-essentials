@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-printf-literal-format-not-translated
+language: php
+severity: warning
+message: >-
+  Untranslated printf format string literal; wrap it in a translation function
+  such as __().
+note: >-
+  Syntactic check only. Matches a direct printf call whose first argument is a
+  string literal containing a % placeholder. Does not resolve whether the call
+  is user-facing, whether printf is the global function, or whether an
+  allowlist applies.
+rule:
+  pattern: 'printf(''$FMT'', $$$ARGS)'
+  regex: '%'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
