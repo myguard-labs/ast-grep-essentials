@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-backbone-route-param-free-text
+language: javascript
+severity: warning
+message: >-
+  Backbone route key ends in a single-segment :param; free-text values
+  containing '/' will not match.
+note: >-
+  Syntactic only. Matches a literal object pair whose string key ends in a
+  :name segment; it does not verify the object is a Backbone routes hash or
+  the handler's runtime behavior.
+rule:
+  kind: pair
+  all:
+    - has:
+        kind: string
+        regex: ':[A-Za-z_][A-Za-z0-9_]*[''"]?$'
+    - not:
+        has:
+          kind: string
+          regex: '\*'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
