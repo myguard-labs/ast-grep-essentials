@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-compound-assign-in-rvalue
+language: c
+severity: warning
+message: >-
+  Compound assignment used as the right operand of another assignment; review
+  the side effect on the operand.
+note: >-
+  Syntactic shape only. Matches a compound assignment (such as ^=) appearing
+  directly as the right side of a plain assignment in one statement; it does
+  not prove the mutated value is read incorrectly or resolve aliasing, types,
+  or evaluation order.
+rule:
+  kind: assignment_expression
+  all:
+    - has:
+        field: right
+        kind: assignment_expression
+        pattern: '$X ^= $Y'
+    - pattern: '$LHS = $RHS'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
