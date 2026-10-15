@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-caller-get-posts-query-arg
+language: php
+severity: warning
+message: >-
+  The deprecated WP_Query argument 'caller_get_posts' is used; use
+  ignore_sticky_posts instead.
+note: >-
+  Syntactic match only on a single-quoted string key 'caller_get_posts' as an
+  array element key with a value. It does not verify that the array is passed
+  to WP_Query or resolve types, aliases, or runtime values.
+rule:
+  kind: array_creation_expression
+  has:
+    kind: array_element_initializer
+    pattern: '''caller_get_posts'' => $VAL'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
