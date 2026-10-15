@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-last-byte-index-empty-string
+language: go
+severity: warning
+message: >-
+  This condition indexes a string at x[len(x)-1] or x[0] without a preceding
+  len(x) > 0 guard in the same && chain; an empty string will panic.
+note: >-
+  Single-file syntactic check only. It matches a literal identifier receiver
+  inside a binary && expression and does not verify types, value ranges, or
+  that the string is non-empty by other means.
+rule:
+  pattern: '$X[len($X)-1] == $C && $REST'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
