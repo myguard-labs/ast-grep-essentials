@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-for-positive-bound-increment
+language: c
+severity: warning
+message: >-
+  This for loop tests a counter with greater-than-zero but increments it, so
+  the loop may never terminate or may index past bounds.
+note: >-
+  Matches only the literal single-file syntax of a for statement whose
+  condition is `i > 0` and whose update is `i++` on the same identifier. It
+  does not check types, value ranges, aliasing, or reachability.
+rule:
+  pattern: 'for ($I = $_; $I > 0; $I++) $BODY'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
