@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-extension-strrpos-unchecked-offset
+language: php
+severity: warning
+message: >-
+  substr() is given a strrpos() offset without checking for false; a dotless
+  name yields a wrong extension slice.
+note: >-
+  Syntactic match only. Matches a literal substr call whose second argument is
+  a literal strrpos call; it does not verify that the strrpos result is
+  unchecked elsewhere or resolve types or aliases.
+rule:
+  pattern: 'substr($S, strrpos($S, $D))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
