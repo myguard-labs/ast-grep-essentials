@@ -8,19 +8,23 @@ message: >-
   before the cast.
 note: >-
   Syntactic match only. It matches a cast applied to a parenthesized
-  subtraction of an integer literal from an indexed or plain expression; it
-  does not check operand types, value ranges, or whether the check is
-  reachable or guarded.
+  subtraction of an integer literal from an indexed or plain expression. A
+  non-literal subtrahend such as a pointer difference (last - p) is out of
+  scope. It does not check operand types, value ranges, or whether the check
+  is reachable or guarded.
 rule:
   pattern: '(size_t)($X - $K)'
   inside:
     kind: binary_expression
     pattern: '$_ < $_'
     stopBy: end
+constraints:
+  K:
+    kind: number_literal
 metadata:
-  rule_modified_at: '2026-10-14'
+  rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-14'
+  validated_at: '2026-10-15'
   created_at: '2026-10-14'
   source: 'MyGuard'
   modified_by: MyGuard
