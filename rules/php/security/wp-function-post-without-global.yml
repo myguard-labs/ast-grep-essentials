@@ -1,0 +1,34 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-function-post-without-global
+language: php
+severity: warning
+message: >-
+  This function reads $post without declaring global $post or receiving it as
+  a parameter.
+note: >-
+  Syntactic single-file check only. It flags any function whose body contains
+  a $post variable without a global $post statement or a $post parameter in
+  the function header; it does not verify runtime scope, assignments, or
+  whether the function is called in a WordPress context.
+rule:
+  all:
+    - pattern: '$post'
+    - inside:
+        kind: function_definition
+        stopBy: end
+    - not:
+        inside:
+          kind: function_definition
+          stopBy: end
+          has:
+            pattern: 'global $post'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
