@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-tsrmls-dc-macro-in-call-args-not-cc
+language: c
+severity: warning
+message: >-
+  TSRMLS_DC is used as a trailing call argument; the call form TSRMLS_CC is
+  expected here.
+note: >-
+  Purely syntactic check for a literal TSRMLS_DC identifier as the last
+  argument of a call expression. It does not verify the callee signature,
+  macro expansion, or ZTS configuration.
+rule:
+  pattern: '$F($$$ARGS, TSRMLS_DC)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
