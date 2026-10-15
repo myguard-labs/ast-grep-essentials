@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-count-fetched-rows-for-total
+language: php
+severity: warning
+message: >-
+  count() wraps a get_*() query call inline, so all matching rows are loaded
+  only to be counted. Consider a COUNT query instead.
+note: >-
+  Syntactic match only. It flags count() directly wrapping a get_*() call with
+  a literal function name. It does not verify the callee is a WordPress query
+  function, its return type, or whether the result is used elsewhere.
+rule:
+  pattern: 'count($GET_CALL)'
+  has:
+    pattern: 'get_terms($$$ARGS)'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
