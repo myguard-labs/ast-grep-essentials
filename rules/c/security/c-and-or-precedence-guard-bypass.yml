@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-and-or-precedence-guard-bypass
+language: c
+severity: warning
+message: >-
+  Unparenthesized && inside || may bypass the length guard before the array
+  subscript on the right.
+note: >-
+  Syntactic check only. Matches a || whose left operand is a bare && binary
+  expression and whose right operand contains a subscript expression; it does
+  not prove the index is out of bounds or resolve types or values.
+rule:
+  pattern: '$A && $B || $C'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
