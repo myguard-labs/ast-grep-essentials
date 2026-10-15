@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: reactorkit-asyncafter-fixed-delay-swift
+language: swift
+severity: warning
+message: >-
+  DispatchQueue.main.asyncAfter with a fixed delay fulfils an expectation;
+  await a deterministic signal instead of sleeping.
+note: >-
+  Purely syntactic match on a literal DispatchQueue.main.asyncAfter call with
+  a .now() + delay deadline whose trailing closure calls
+  expectation.fulfill(). It does not resolve types, imports, or runtime
+  values.
+rule:
+  pattern: |
+    DispatchQueue.main.asyncAfter(deadline: .now() + $DELAY) {
+      expectation.fulfill()
+    }
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
