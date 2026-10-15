@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-string-literal-to-nonconst-char-ptr
+language: c
+severity: warning
+message: >-
+  Non-const char pointer is initialized directly from a string literal;
+  consider declaring it const char *.
+note: >-
+  Syntactic check only. Matches a declarator whose type is a plain char
+  pointer initialized with a string literal; it does not resolve types,
+  aliases, or whether the pointer is ever written through.
+rule:
+  pattern: 'char *$VAR = "$$$LIT";'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
