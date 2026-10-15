@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-noop-translation-through-slice
+language: php
+severity: warning
+message: >-
+  A _n_noop() call is passed directly to wp_array_slice_assoc(), so its
+  strings are not translated at this call site.
+note: >-
+  Matches the literal call syntax wp_array_slice_assoc(_n_noop(...)) only. It
+  does not resolve function identity, imports, or runtime values, and does not
+  check whether the strings are later translated elsewhere.
+rule:
+  pattern: 'wp_array_slice_assoc(_n_noop($$$ARGS), $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
