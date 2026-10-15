@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: nginx-exit-check-missing-exiting
+language: c
+severity: warning
+message: This exit check tests ngx_terminate and ngx_quit but not ngx_exiting.
+note: >-
+  Syntactic match on the literal identifiers ngx_terminate || ngx_quit in a
+  condition without ngx_exiting; it does not resolve types, values, or whether
+  the condition is in a worker loop.
+rule:
+  pattern: 'ngx_terminate || ngx_quit'
+  not:
+    inside:
+      pattern: 'ngx_terminate || ngx_quit || ngx_exiting'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
