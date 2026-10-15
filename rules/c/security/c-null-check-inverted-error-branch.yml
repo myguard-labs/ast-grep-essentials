@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-check-inverted-error-branch
+language: c
+severity: warning
+message: >-
+  This if/else tests a bare pointer for truth, returns in the then-branch, and
+  dereferences the same pointer in the else-branch; verify the null-check
+  branch is not inverted.
+note: >-
+  Purely syntactic single-file match on a bare identifier condition with a
+  return in the then-branch and a read of the same identifier in the
+  else-branch. It does not resolve types, aliasing, or whether the pointer can
+  actually be NULL at runtime.
+rule:
+  kind: if_statement
+  has:
+    field: condition
+    kind: parenthesized_expression
+    has:
+      kind: identifier
+      pattern: buf
+  any:
+    - pattern: 'if (buf) { return $$$A; } else { $$$B }'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
