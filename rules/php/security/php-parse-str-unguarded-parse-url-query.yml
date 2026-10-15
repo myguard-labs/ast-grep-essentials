@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-parse-str-unguarded-parse-url-query
+language: php
+severity: warning
+message: >-
+  parse_str() is called on a parse_url() query element without a visible
+  non-empty or set check.
+note: >-
+  Single-file syntactic match on a literal parse_url()-assigned variable
+  indexed by 'query'; it does not resolve types, aliases, or reachability and
+  cannot prove the guard is absent on every path.
+rule:
+  all:
+    - pattern: 'parse_str($PARSED[''query''], $OUT)'
+    - not:
+        inside:
+          kind: if_statement
+          stopBy: end
+          has:
+            pattern: 'empty($PARSED[''query''])'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
