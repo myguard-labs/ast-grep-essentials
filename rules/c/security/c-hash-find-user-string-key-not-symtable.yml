@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-find-user-string-key-not-symtable
+language: c
+severity: warning
+message: >-
+  zend_hash_find is called with a string offset from Z_STRVAL; numeric-string
+  keys are not normalised here, so use zend_symtable_find instead.
+note: >-
+  Purely syntactic match on a zend_hash_find call whose key argument is
+  Z_STRVAL_P(...). It does not verify the offset is user-supplied, the hash
+  type, or whether normalisation is needed at runtime.
+rule:
+  pattern: 'zend_hash_find($HT, Z_STRVAL_P($OFF), $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
