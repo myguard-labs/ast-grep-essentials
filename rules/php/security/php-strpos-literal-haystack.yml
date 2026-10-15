@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-strpos-literal-haystack
+language: php
+severity: warning
+message: >-
+  strpos() receives a string literal as haystack and a non-literal needle;
+  check that the arguments are not reversed.
+note: >-
+  Purely syntactic check on a literal first argument and a non-literal second
+  argument in a single call; it does not resolve types, runtime values, or
+  whether the call is reachable.
+rule:
+  pattern: 'strpos("$LIT", $NEEDLE)'
+  inside:
+    kind: program
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
