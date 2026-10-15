@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-test-inverted-deref-ternary
+language: c
+severity: warning
+message: >-
+  This conditional dereferences the pointer in the branch taken when it is
+  NULL.
+note: >-
+  Syntactic match only: it recognizes a ternary whose condition is literally
+  `x == NULL` and whose true branch is `x->...`. It does not resolve aliasing,
+  types, or reachability.
+rule:
+  pattern: '($P == NULL) ? $P->$F : $$$REST'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
