@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-literal-range-empty-conjunction
+language: c
+severity: warning
+message: >-
+  This && joins two comparisons of the same identifier against integer
+  literals, which may leave no integer satisfying both so the branch is dead.
+note: >-
+  Syntactic check only. It matches a single && whose left operand is
+  identifier < integer literal and whose right operand is identifier > integer
+  literal. It does not evaluate bounds, macros, types, or runtime values.
+rule:
+  pattern: '$X < $A && $X > $B'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
