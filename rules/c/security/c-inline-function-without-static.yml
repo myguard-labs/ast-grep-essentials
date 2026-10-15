@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-inline-function-without-static
+language: c
+severity: warning
+message: >-
+  File-scope function is declared inline without static or extern, so it gets
+  external inline linkage.
+note: >-
+  Syntactic check only. It flags a file-scope function definition whose
+  specifiers include inline and lack static or extern; it does not check other
+  declarations of the same function or link-time behavior.
+rule:
+  all:
+    - kind: function_definition
+    - pattern: 'inline $TYPE $NAME($$$ARGS) { $$$BODY }'
+    - inside:
+        kind: translation_unit
+        stopBy: end
+    - not:
+        pattern: 'static $$$REST'
+    - not:
+        pattern: 'extern $$$REST'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
