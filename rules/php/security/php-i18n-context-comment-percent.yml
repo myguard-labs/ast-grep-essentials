@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-i18n-context-comment-percent
+language: php
+severity: warning
+message: >-
+  A printf-style %s conversion appears after the pipe context separator in a
+  _c() string, so it lands in the translator comment rather than as a format
+  argument.
+note: >-
+  Syntactic match only. Flags any _c() call whose literal argument contains a
+  pipe followed by a %s conversion; it does not resolve the function's
+  definition or verify how the translation tooling interprets the string.
+rule:
+  pattern: '_c($STR)'
+  has:
+    regex: '\|.*%s'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
