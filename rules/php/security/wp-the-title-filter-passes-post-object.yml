@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-the-title-filter-passes-post-object
+language: php
+severity: warning
+message: >-
+  apply_filters('the_title') receives a bare $post variable as its third
+  argument; pass $post->ID if the filter expects a post ID.
+note: >-
+  Syntactic match only on a literal apply_filters call with the hook
+  'the_title' and a bare $post variable as the third argument. It does not
+  resolve types, aliasing, or whether the variable actually holds a post
+  object.
+rule:
+  pattern: 'apply_filters(''the_title'', $A, $post)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
