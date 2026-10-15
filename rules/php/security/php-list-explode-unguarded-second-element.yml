@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-list-explode-unguarded-second-element
+language: php
+severity: warning
+message: >-
+  This list() destructuring of explode() names more than one target; if the
+  delimiter is missing, the later targets are undefined.
+note: >-
+  Syntactic match only. It cannot confirm that the input lacks the delimiter
+  or that a guard exists elsewhere; it matches the literal list() call with an
+  explode() right-hand side and two or more targets.
+rule:
+  pattern: 'list($A, $B) = explode($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
