@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-double-close-same-receiver
+language: go
+severity: warning
+message: >-
+  This call passes a receiver's Close method value as an argument, and the
+  same Close value may be passed again in the same block.
+note: >-
+  Syntactic check only. It matches literal receiver.Close method values passed
+  as call arguments inside assignment statements, without verifying control
+  flow, branches, aliasing, or runtime types.
+rule:
+  pattern: '$LHS = $CALL($RECV.Close, $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

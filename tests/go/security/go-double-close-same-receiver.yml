@@ -1,0 +1,5 @@
+id: go-double-close-same-receiver
+valid:
+  - "package p\n\nfunc f(it iter) error {\n\terr := step()\n\tif err := run(it.Close, err); err != nil {\n\t\treturn err\n\t}\n\treturn nil\n}"
+invalid:
+  - "package p\n\nfunc f(it iter) error {\n\terr := step()\n\terr = run(it.Close, err)\n\tif err := run(it.Close, err); err != nil {\n\t\treturn err\n\t}\n\treturn nil\n}"
