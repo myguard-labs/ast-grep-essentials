@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-datetime-constructor-unguarded-input
+language: php
+severity: warning
+message: >-
+  new DateTime() with a variable argument outside a try block can throw on
+  malformed input; validate the input or use date_create().
+note: >-
+  Syntactic single-file check only. It flags a literal new DateTime($var) call
+  with a bare variable argument that is not nested inside any try statement;
+  it does not resolve types, dataflow, or whether the input is actually
+  malformed or validated earlier.
+rule:
+  all:
+    - pattern: 'new DateTime($ARG)'
+    - not:
+        inside:
+          kind: try_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
