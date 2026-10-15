@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-strlcpy-size-not-sizeof-dest
+language: c
+severity: warning
+message: strlcpy size argument does not reference sizeof of the destination buffer.
+note: >-
+  Syntactic check only. It flags strlcpy calls whose third argument has no
+  sizeof(...) subexpression; it does not verify that the sizeof operand is the
+  destination or resolve types, macros, or aliases.
+rule:
+  all:
+    - pattern: 'strlcpy($DST, $SRC, $N)'
+    - not:
+        has:
+          kind: sizeof_expression
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
