@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-header-funcptr-global-without-extern
+language: c
+severity: warning
+message: >-
+  File-scope function-pointer variable without extern or static may be defined
+  in every including translation unit.
+note: >-
+  Single-file syntactic check for a file-scope declaration whose declarator is
+  a parenthesized pointer to function with no extern or static storage class;
+  it does not verify that the declaration is in a header or resolve linkage
+  across files.
+rule:
+  all:
+    - kind: declaration
+    - pattern: 'void (*$NAME)($$$ARGS);'
+    - not:
+        has:
+          kind: storage_class_specifier
+          regex: '^(extern|static)$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
