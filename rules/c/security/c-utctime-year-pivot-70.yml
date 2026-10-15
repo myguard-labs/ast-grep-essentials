@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-utctime-year-pivot-70
+language: c
+severity: warning
+message: >-
+  Two-digit year is adjusted with pivot 70 instead of the UTCTime pivot 50;
+  review the year window.
+note: >-
+  Matches the literal digit-pair parse followed by an if (i < 70) adjustment
+  by 100. It does not resolve data origin, ASN.1 usage, or whether the value
+  is a UTCTime field; the pivot may be valid in other contexts.
+rule:
+  pattern: 'if ($I < 70) $I += 100;'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
