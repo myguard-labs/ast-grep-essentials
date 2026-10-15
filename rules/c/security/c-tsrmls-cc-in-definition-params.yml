@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-tsrmls-cc-in-definition-params
+language: c
+severity: warning
+message: >-
+  TSRMLS_CC appears in a function definition's parameter list where the
+  declaration form TSRMLS_DC is required.
+note: >-
+  Purely syntactic check on a single file. It flags a TSRMLS_CC parameter in a
+  function definition regardless of ZTS configuration or macro expansion; it
+  does not resolve macros, types, or whether the build is ZTS.
+rule:
+  all:
+    - kind: parameter_declaration
+    - has:
+        pattern: TSRMLS_CC
+        kind: identifier
+        stopBy: end
+    - inside:
+        kind: parameter_list
+        stopBy: end
+        inside:
+          kind: function_definition
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
