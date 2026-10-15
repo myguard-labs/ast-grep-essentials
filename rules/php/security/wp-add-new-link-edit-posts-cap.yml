@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-add-new-link-edit-posts-cap
+language: php
+severity: warning
+message: >-
+  This current_user_can() check gates the add-new link on edit_posts; creating
+  posts needs create_posts.
+note: >-
+  Syntactic match only on a literal $obj->cap->edit_posts argument inside
+  current_user_can(); it does not resolve runtime capability values or confirm
+  the guarded body is an add-new link.
+rule:
+  pattern: |
+    if ( current_user_can( $OBJ->cap->edit_posts ) ) { $$$BODY }
+  inside:
+    pattern: 'function $F( $$$ARGS ) { $$$FBODY }'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
