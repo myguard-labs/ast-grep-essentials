@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-remove-action-hook-as-callback
+language: php
+severity: warning
+message: >-
+  remove_action is called with the same variable as hook name and callback;
+  this removal likely matches nothing.
+note: >-
+  Single-file syntactic check only. It matches a literal remove_action call
+  whose first two arguments are the same metavariable; it does not resolve
+  registered callbacks or runtime values.
+rule:
+  pattern: 'remove_action($HOOK, $HOOK, $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
