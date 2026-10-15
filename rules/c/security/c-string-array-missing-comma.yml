@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-string-array-missing-comma
+language: c
+severity: warning
+message: >-
+  String literals are adjacent inside an array initializer with no comma, so C
+  concatenates them into one element.
+note: >-
+  Syntactic match only. It flags an initializer_list in which a string_literal
+  is directly followed by another string_literal with no comma between them;
+  it does not resolve types, macros, or intent.
+rule:
+  pattern: '$A'
+  inside:
+    kind: initializer_list
+    stopBy: end
+  all:
+    - kind: string_literal
+    - follows:
+        kind: string_literal
+        stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
