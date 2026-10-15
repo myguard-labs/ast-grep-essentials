@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-upload-bits-deprecated-second-arg
+language: php
+severity: warning
+message: >-
+  The second argument to wp_upload_bits() is deprecated and ignored; remove
+  the mime-type value.
+note: >-
+  Matches a literal wp_upload_bits call whose second argument is a non-null
+  expression. It does not check WordPress version, imports, or whether the
+  function is resolved at runtime.
+rule:
+  pattern: 'wp_upload_bits($A, $B, $$$REST)'
+  not:
+    pattern: 'wp_upload_bits($A, null, $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
