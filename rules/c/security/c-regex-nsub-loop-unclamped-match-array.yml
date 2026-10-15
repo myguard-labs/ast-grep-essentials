@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-regex-nsub-loop-unclamped-match-array
+language: c
+severity: warning
+message: >-
+  This loop is bounded by re_nsub and indexes a match array without an
+  additional bound check.
+note: >-
+  Syntactic match only. It flags for-loops whose condition compares against
+  re.re_nsub and contains no further clamp in the loop condition; it does not
+  resolve the array's declared size, the regex's actual group count, or
+  whether the loop body is guarded elsewhere.
+rule:
+  kind: for_statement
+  has:
+    pattern: '$I <= re.re_nsub'
+    stopBy: end
+  not:
+    has:
+      pattern: '$I < $N'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
