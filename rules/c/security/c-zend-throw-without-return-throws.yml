@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-zend-throw-without-return-throws
+language: c
+severity: warning
+message: >-
+  zend_throw_error(...) is not immediately followed by RETURN_THROWS() or
+  return in the same block.
+note: >-
+  Single-file syntactic check on the literal call statement only; it does not
+  prove control flow after the throw, cleanup paths, or runtime exception
+  state, so review hits.
+rule:
+  all:
+    - pattern: 'zend_throw_error($$$ARGS);'
+    - not:
+        follows:
+          pattern: 'RETURN_THROWS();'
+          stopBy: neighbor
+    - not:
+        follows:
+          pattern: 'return $$$RET;'
+          stopBy: neighbor
+    - not:
+        inside:
+          kind: compound_statement
+          has:
+            pattern: 'RETURN_THROWS();'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
