@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-static-local-filter-state
+language: c
+severity: warning
+message: >-
+  Static local variable inside a function whose parameter list includes an
+  ap_filter_t pointer; its state persists across filter instances and
+  requests.
+note: >-
+  Single-file syntactic match on a static local declaration inside a
+  function_definition whose text contains the literal ap_filter_t pointer
+  parameter. It does not resolve types, aliasing, or whether the function is
+  actually a filter callback.
+rule:
+  all:
+    - kind: declaration
+      pattern: 'static $TYPE $VAR = $INIT;'
+      inside:
+        kind: compound_statement
+        inside:
+          kind: function_definition
+          pattern: 'static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { $$$BODY }'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
