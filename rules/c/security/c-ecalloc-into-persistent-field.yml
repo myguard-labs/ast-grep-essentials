@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ecalloc-into-persistent-field
+language: c
+severity: warning
+message: >-
+  Request-scoped ecalloc/emalloc result is assigned to a struct member; verify
+  the allocation lifetime matches the struct's persistence.
+note: >-
+  Syntactic single-file match on a literal assignment of mnd_ecalloc or
+  emalloc to a field access. It does not verify the persistence flag, types,
+  aliasing, or runtime lifetime.
+rule:
+  pattern: '$LHS->$FIELD = mnd_ecalloc($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
