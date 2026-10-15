@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-fallback-after-pipeline-masks-failure
+language: bash
+severity: warning
+message: >-
+  A `||` fallback after a pipeline only runs when the last command fails; an
+  earlier pipeline stage failure is ignored.
+note: >-
+  Syntactic match only. Flags a command substitution whose body is a pipeline
+  ending in a `|| ...` fallback; it does not check pipefail settings, set -o
+  pipefail, or runtime exit statuses.
+rule:
+  pattern: '$($A | $B || $C)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
