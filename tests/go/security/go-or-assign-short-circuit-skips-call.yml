@@ -1,0 +1,17 @@
+id: go-or-assign-short-circuit-skips-call
+valid:
+  - |-
+    package p
+
+    func f(attached bool, bind func() bool) bool {
+        attached = bind() || attached
+        return attached
+    }
+invalid:
+  - |-
+    package p
+
+    func f(attached bool, bind func() bool) bool {
+        attached = attached || bind()
+        return attached
+    }

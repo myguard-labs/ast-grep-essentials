@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-or-assign-short-circuit-skips-call
+language: go
+severity: warning
+message: >-
+  This assignment short-circuits a call on the right side of `||` when the
+  assigned variable is already true; the call is skipped.
+note: >-
+  Syntactic check only. Matches an assignment whose right side is a binary
+  `||` with the assigned identifier as the left operand and a call as the
+  right operand. It does not verify that the call has side effects or that
+  skipping it matters at runtime.
+rule:
+  pattern: '$X = $X || $F($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
