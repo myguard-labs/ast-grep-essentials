@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-direct-user-blog-count-query
+language: php
+severity: warning
+message: >-
+  Direct COUNT query on the users or blogs table; consider the cached
+  get_user_count() or get_blog_count() helpers.
+note: >-
+  Syntactic match only. It flags a $wpdb->get_var call whose literal SQL
+  string contains COUNT and the literal {$wpdb->users} or {$wpdb->blogs} table
+  reference. It does not verify runtime values, query caching, or whether the
+  helper is appropriate.
+rule:
+  pattern: '$wpdb->get_var("$$$SQL")'
+  has:
+    regex: 'COUNT\(.*FROM \{\$wpdb->(users|blogs)\}'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
