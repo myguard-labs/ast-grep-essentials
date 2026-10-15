@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-single-quoted-variable-array-key
+language: php
+severity: warning
+message: >-
+  Array key is a single-quoted string containing a variable name, so the
+  literal text is used instead of the variable's value.
+note: >-
+  Syntactic match only. It flags single-quoted string subscripts whose text
+  starts with $ and does not resolve variables, types, or runtime values.
+rule:
+  kind: string
+  regex: '^''\$[A-Za-z_][A-Za-z0-9_]*''$'
+  inside:
+    kind: subscript_expression
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
