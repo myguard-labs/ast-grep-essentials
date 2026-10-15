@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-logical-and-arithmetic-operand
+language: c
+severity: warning
+message: >-
+  Arithmetic expression used directly as an && operand; the condition tests
+  its truthiness rather than a comparison.
+note: >-
+  Single-file syntactic match on a logical_expression whose right operand is a
+  bare arithmetic binary_expression (+, -, *, /) with no comparison. Does not
+  resolve types, values, or whether the result is intentionally truth-tested.
+rule:
+  kind: binary_expression
+  pattern: '$A && $L + $R'
+  inside:
+    kind: return_statement
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
