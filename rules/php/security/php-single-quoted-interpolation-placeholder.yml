@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-single-quoted-interpolation-placeholder
+language: php
+severity: warning
+message: >-
+  A single-quoted string literal contains a {$variable} placeholder that PHP
+  will not interpolate.
+note: >-
+  Syntactic check only. Matches single-quoted string literals whose text
+  contains a {$...} placeholder; it does not resolve whether the string is
+  later used as a hook name or key, and does not check types or runtime
+  values.
+rule:
+  pattern: '''$$$TEXT'''
+  regex: '\{\$[A-Za-z_][A-Za-z0-9_]*\}'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
