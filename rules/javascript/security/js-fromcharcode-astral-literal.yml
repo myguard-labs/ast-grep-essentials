@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-fromcharcode-astral-literal
+language: javascript
+severity: warning
+message: >-
+  String.fromCharCode is called with a numeric literal above 0xFFFF; it
+  truncates to a UTF-16 code unit. Use String.fromCodePoint instead.
+note: >-
+  Single-file syntactic match on a literal String.fromCharCode receiver and a
+  single hexadecimal numeric literal argument with at least five hex digits.
+  Does not resolve imports, aliases, or runtime values, and does not verify
+  the numeric value beyond its digit count.
+rule:
+  kind: call_expression
+  all:
+    - pattern: 'String.fromCharCode($NUM)'
+    - has:
+        field: arguments
+        kind: arguments
+        has:
+          kind: number
+          regex: '^0[xX][0-9a-fA-F]{5,}$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
