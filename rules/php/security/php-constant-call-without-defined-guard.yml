@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-constant-call-without-defined-guard
+language: php
+severity: warning
+message: >-
+  constant() called with a non-literal name without a defined() guard for the
+  same name.
+note: >-
+  Single-file syntactic check only. It matches constant() calls with a
+  non-literal argument inside an if condition and does not verify whether the
+  name is defined at runtime, resolve aliases, or check guards outside the
+  shown expression.
+rule:
+  pattern: 'constant($NAME)'
+  inside:
+    kind: if_statement
+    stopBy: end
+  not:
+    inside:
+      kind: binary_expression
+      has:
+        pattern: 'defined($NAME)'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
