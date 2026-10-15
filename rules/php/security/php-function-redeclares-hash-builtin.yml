@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-function-redeclares-hash-builtin
+language: php
+severity: warning
+message: >-
+  This top-level function is named hash, which redeclares the ext/hash
+  builtin.
+note: >-
+  Matches only a top-level function declaration whose literal name is hash. It
+  does not check namespaces, whether ext/hash is loaded, or any other file;
+  namespaced declarations are not excluded by this syntax alone.
+rule:
+  kind: function_definition
+  has:
+    field: name
+    regex: '^hash$'
+  not:
+    inside:
+      kind: compound_statement
+      stopBy: end
+      has:
+        kind: function_definition
+        stopBy: end
+        pattern: '$X'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
