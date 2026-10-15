@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-sprintf-no-placeholder-args
+language: php
+severity: warning
+message: >-
+  sprintf() receives extra arguments but its translated format string literal
+  has no % placeholders; the arguments are ignored.
+note: >-
+  Matches only a literal sprintf call whose first argument is a literal __()
+  string with no % characters and at least one further argument. It does not
+  inspect runtime translations, verify the gettext catalog, or resolve the
+  function identity.
+rule:
+  pattern: 'sprintf(__($FMT), $$$ARGS)'
+  not:
+    has:
+      regex: '%'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
