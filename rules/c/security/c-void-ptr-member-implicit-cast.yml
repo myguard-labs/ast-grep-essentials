@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-void-ptr-member-implicit-cast
+language: c
+severity: warning
+message: >-
+  Member _private (void *) is assigned to a typed pointer without an explicit
+  cast.
+note: >-
+  Syntactic match only. Matches a declarator initialized directly from a
+  member access named _private with no cast; it does not verify the member's
+  declared type or any type information.
+rule:
+  pattern:
+    context: 'struct t *p = $OBJ->_private;'
+    selector: init_declarator
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
