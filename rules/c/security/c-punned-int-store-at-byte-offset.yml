@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-punned-int-store-at-byte-offset
+language: c
+severity: warning
+message: >-
+  Integer store through a cast of a pointer-plus-offset expression may be a
+  type-punned write; consider memcpy.
+note: >-
+  Syntactic match only on a literal cast of a pointer-plus-offset dereference
+  assignment. It does not resolve types, aliasing, alignment, or whether the
+  pointer really refers to a byte buffer.
+rule:
+  pattern: '*(int *) ($P + $K) = $V'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
