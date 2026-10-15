@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-attr-interpolated-post-title
+language: php
+severity: warning
+message: >-
+  post_title is interpolated into a double-quoted string that builds an HTML
+  title attribute without an escaping call.
+note: >-
+  Syntactic check only. Matches a double-quoted PHP string containing a title
+  attribute and a {$...post_title} interpolation; it does not resolve types,
+  data flow, or whether escaping happens elsewhere.
+rule:
+  kind: encapsed_string
+  pattern: '"<a title=''{$post->post_title}''>x</a>"'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
