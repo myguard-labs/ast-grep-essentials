@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-strrchr-extension-keeps-dot
+language: php
+severity: warning
+message: >-
+  This assignment stores strrchr() output with a dot needle directly, so the
+  extension keeps its leading dot.
+note: >-
+  Syntactic match only: flags a direct assignment whose value is a strrchr()
+  call with a literal '.' needle and no ltrim() wrapper. Does not prove the
+  variable is used as an extension or that the dot is unintended.
+rule:
+  kind: assignment_expression
+  all:
+    - has:
+        field: right
+        pattern: 'strrchr($NAME, ''.'')'
+    - not:
+        has:
+          field: right
+          pattern: 'ltrim($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
