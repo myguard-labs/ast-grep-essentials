@@ -1,0 +1,11 @@
+id: ts-build-script-rewrites-manifest-in-place
+valid:
+  - |-
+    const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'))
+    delete manifest.dependencies
+    fs.writeFileSync(OUT_PATH, `${JSON.stringify(manifest, undefined, 2)}\n`)
+invalid:
+  - |-
+    const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'))
+    delete manifest.dependencies
+    fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, undefined, 2)}\n`)
