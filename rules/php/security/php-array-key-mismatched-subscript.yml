@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-array-key-mismatched-subscript
+language: php
+severity: warning
+message: >-
+  This array entry's key does not match the $args subscript it reads; check
+  for a key typo.
+note: >-
+  Syntactic only. Matches a literal array(...) entry whose single-quoted
+  string key differs from the single-quoted $args subscript name in its value.
+  Does not check runtime values, aliasing, or whether $args is the same array.
+rule:
+  all:
+    - pattern: 'array(''$KEY'' => $args[''$VAL''])'
+    - not:
+        pattern: 'array(''$VAL'' => $args[''$VAL''])'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
