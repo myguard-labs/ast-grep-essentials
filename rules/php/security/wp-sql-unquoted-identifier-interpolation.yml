@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-sql-unquoted-identifier-interpolation
+language: php
+severity: warning
+message: >-
+  Table or column name interpolated unquoted into a double-quoted SQL string;
+  wrap the identifier in backticks.
+note: >-
+  Syntactic match only. It flags a double-quoted PHP string containing INSERT
+  INTO, UPDATE or FROM followed directly by a variable with no backtick; it
+  does not resolve whether the variable holds tainted or reserved-word input.
+rule:
+  kind: encapsed_string
+  regex: '(?i)(INSERT\s+INTO|UPDATE|FROM)\s+\$[A-Za-z_][A-Za-z0-9_]*\s'
+  not:
+    regex: '(?i)(INSERT\s+INTO|UPDATE|FROM)\s+`'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
