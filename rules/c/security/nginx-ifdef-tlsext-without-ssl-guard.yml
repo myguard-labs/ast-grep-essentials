@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: nginx-ifdef-tlsext-without-ssl-guard
+language: c
+severity: warning
+message: >-
+  SSL_CTRL_SET_TLSEXT_HOSTNAME is tested without also testing the NGX_HTTP_SSL
+  build flag.
+note: >-
+  Single-file syntactic check on preprocessor lines only; it does not resolve
+  macro definitions, includes, or whether the guarded code is reachable in a
+  given build.
+rule:
+  kind: preproc_ifdef
+  has:
+    field: name
+    regex: '^SSL_CTRL_SET_TLSEXT_HOSTNAME$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

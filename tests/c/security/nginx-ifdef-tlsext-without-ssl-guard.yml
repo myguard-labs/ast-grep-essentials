@@ -1,0 +1,11 @@
+id: nginx-ifdef-tlsext-without-ssl-guard
+valid:
+  - |-
+    #if (NGX_HTTP_SSL && defined SSL_CTRL_SET_TLSEXT_HOSTNAME)
+    int ngx_http_ssl_servername(void);
+    #endif
+invalid:
+  - |-
+    #ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME
+    int ngx_http_ssl_servername(void);
+    #endif
