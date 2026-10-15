@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-has-post-format-missing-post-arg
+language: php
+severity: warning
+message: >-
+  has_post_format() is called with a single argument inside a function that
+  declares a $post parameter; the check may fall back to the global post
+  instead of the local one.
+note: >-
+  Single-file syntactic match on a one-argument has_post_format() call only.
+  It does not verify that the function signature declares $post, resolve the
+  WordPress function signature, or check whether the global fallback is
+  intended.
+rule:
+  all:
+    - pattern: 'has_post_format($ARG)'
+    - not:
+        pattern: 'has_post_format($ARG, $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
