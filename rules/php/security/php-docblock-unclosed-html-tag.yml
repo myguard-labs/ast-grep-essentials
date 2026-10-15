@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-docblock-unclosed-html-tag
+language: php
+severity: warning
+message: This docblock opens a tt tag that is not closed within the same comment.
+note: >-
+  Single-file syntactic check on the comment text only. It matches a docblock
+  comment containing a literal opening tt tag and no literal closing tt tag,
+  without verifying how generated documentation renders the HTML or inspecting
+  tags closed outside the comment.
+rule:
+  all:
+    - kind: comment
+    - regex: '^/\*\*[\s\S]*<tt>'
+    - not:
+        regex: '</tt>'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
