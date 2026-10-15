@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-zend-read-property-exception-unchecked
+language: c
+severity: warning
+message: >-
+  The result of zend_read_property is used without a preceding EG(exception)
+  check.
+note: >-
+  Purely syntactic match on a declaration initialised from zend_read_property
+  whose next statement is a ZVAL_DEREF of the same variable. It does not check
+  for an EG(exception) test anywhere in the function, and does not resolve
+  types, aliasing, or control flow.
+rule:
+  kind: declaration
+  all:
+    - has:
+        kind: call_expression
+        regex: '^zend_read_property\('
+        stopBy: end
+    - not:
+        follows:
+          kind: if_statement
+          regex: 'EG\(exception\)'
+          stopBy: end
+    - precedes:
+        kind: expression_statement
+        regex: '^ZVAL_DEREF\('
+        stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
