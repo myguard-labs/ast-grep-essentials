@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-logical-or-in-bitmask-flags
+language: c
+severity: warning
+message: >-
+  A logical || is used inside a parenthesized operand of a bitwise & test;
+  this is likely a typo for |.
+note: >-
+  Matches the literal syntax of a || binary expression directly inside a
+  parenthesized operand of a & binary expression. It does not resolve that the
+  operands are flag constants or check types, aliasing, or runtime values.
+rule:
+  pattern: '$A & ($B || $C)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
