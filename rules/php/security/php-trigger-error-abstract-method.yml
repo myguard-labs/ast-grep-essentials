@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-trigger-error-abstract-method
+language: php
+severity: warning
+message: >-
+  This method body is a fatal trigger_error stub standing in for an abstract
+  method declaration. Prefer a real abstract declaration.
+note: >-
+  Single-file syntactic match on a method whose body is exactly one
+  trigger_error call with E_USER_ERROR and the literal message 'Abstract
+  method'. It does not verify inheritance, subclass overrides, or runtime
+  behavior.
+rule:
+  kind: method_declaration
+  has:
+    kind: compound_statement
+    has:
+      kind: expression_statement
+      has:
+        kind: function_call_expression
+        pattern: 'trigger_error(''Abstract method'', E_USER_ERROR)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

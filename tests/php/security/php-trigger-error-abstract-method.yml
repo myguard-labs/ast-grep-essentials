@@ -1,0 +1,16 @@
+id: php-trigger-error-abstract-method
+valid:
+  - |-
+    <?php
+    abstract class Op {
+        abstract function &reverse();
+    }
+invalid:
+  - |-
+    <?php
+    class Op {
+        function &reverse()
+        {
+            trigger_error('Abstract method', E_USER_ERROR);
+        }
+    }
