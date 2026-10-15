@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pointer-postincrement-as-condition
+language: c
+severity: warning
+message: >-
+  Post-increment of a pointer is used directly as an if condition, so the
+  pointer advances even when it is NULL.
+note: >-
+  Single-file syntactic match on an if condition whose expression is a
+  post-increment of an identifier. It does not resolve types, confirm the
+  operand is a pointer, or check reachability or aliasing.
+rule:
+  kind: if_statement
+  has:
+    field: condition
+    kind: parenthesized_expression
+    has:
+      kind: update_expression
+      pattern: '$X++'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
