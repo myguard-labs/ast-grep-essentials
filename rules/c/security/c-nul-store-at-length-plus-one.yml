@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-nul-store-at-length-plus-one
+language: c
+severity: warning
+message: >-
+  Assignment of a NUL terminator at index expr + 1; verify the buffer has room
+  for that index.
+note: >-
+  Purely syntactic match on an assignment of '\0' to a subscript of the form
+  buf[expr + 1]. It does not check buffer size, whether a read call filled the
+  buffer, or whether the buffer is intentionally sized n + 1.
+rule:
+  pattern: '$BUF[$N + 1] = ''\0'';'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
