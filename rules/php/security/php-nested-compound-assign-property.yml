@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-nested-compound-assign-property
+language: php
+severity: warning
+message: >-
+  Compound assignment to a property is used as the value of another
+  assignment; review the hidden side effect.
+note: >-
+  Syntactic match only. Matches a literal property receiver with a compound .=
+  assignment nested as the right-hand value of an assignment; it does not
+  resolve types, aliasing, or whether the side effect is intended.
+rule:
+  kind: assignment_expression
+  pattern: '$VAR = $OBJ->$PROP .= $VALUE'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
