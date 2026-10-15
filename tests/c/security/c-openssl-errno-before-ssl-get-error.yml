@@ -1,0 +1,11 @@
+id: c-openssl-errno-before-ssl-get-error
+valid:
+  - |-
+    n = SSL_read(ssl, buf, want);
+    err = SSL_get_error(ssl, (int) n);
+    if (errno == EINTR) { return -1; }
+invalid:
+  - |-
+    n = SSL_read(ssl, buf, want);
+    if (errno == EINTR) { return -1; }
+    err = SSL_get_error(ssl, (int) n);

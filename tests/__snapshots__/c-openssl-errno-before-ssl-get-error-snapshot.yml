@@ -1,0 +1,19 @@
+id: c-openssl-errno-before-ssl-get-error
+snapshots:
+  ? |-
+    n = SSL_read(ssl, buf, want);
+    if (errno == EINTR) { return -1; }
+    err = SSL_get_error(ssl, (int) n);
+  : labels:
+    - source: if (errno == EINTR) { return -1; }
+      style: primary
+      start: 30
+      end: 64
+    - source: n = SSL_read(ssl, buf, want);
+      style: secondary
+      start: 0
+      end: 29
+    - source: err = SSL_get_error(ssl, (int) n);
+      style: secondary
+      start: 65
+      end: 99

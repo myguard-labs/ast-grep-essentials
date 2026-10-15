@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-errno-before-ssl-get-error
+language: c
+severity: warning
+message: >-
+  errno is tested before SSL_get_error() on the same TLS I/O result; a stale
+  errno may mask a fatal TLS error as a retry.
+note: >-
+  Single-file syntactic match only. It flags an errno == EINTR check that
+  appears before a SSL_get_error() call in the same file; it does not prove
+  errno is stale, does not resolve types or aliasing, and does not check
+  control-flow reachability or that both calls refer to the same SSL object.
+rule:
+  all:
+    - pattern: 'if (errno == EINTR) { $$$BODY }'
+    - follows:
+        pattern: 'n = SSL_read(ssl, buf, want);'
+        stopBy: neighbor
+    - precedes:
+        pattern: 'err = SSL_get_error(ssl, (int) n);'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
