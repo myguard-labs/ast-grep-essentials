@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-argv-unchecked-index-read
+language: php
+severity: warning
+message: >-
+  Direct $argv index read assigned without a default; a missing trailing
+  argument yields null or a notice.
+note: >-
+  Syntactic match on an assignment whose right side is a direct $argv[...]
+  read with no ?? operator. It does not check isset guards, surrounding
+  control flow, or whether the index is in range at runtime.
+rule:
+  kind: assignment_expression
+  all:
+    - has:
+        field: right
+        kind: subscript_expression
+        pattern: '$argv[$IDX]'
+    - not:
+        has:
+          kind: binary_expression
+          pattern: '$argv[$IDX] ?? $DEF'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
