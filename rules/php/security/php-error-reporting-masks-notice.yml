@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-error-reporting-masks-notice
+language: php
+severity: warning
+message: >-
+  This error_reporting() call masks E_NOTICE, which can hide undefined
+  variable and undefined index bugs.
+note: >-
+  Matches only the literal error_reporting call syntax with a bitwise XOR or
+  AND-NOT argument naming E_NOTICE or E_USER_NOTICE. It does not resolve
+  constants, runtime values, or whether the call runs in a bootstrap path.
+rule:
+  pattern: 'error_reporting($A ^ E_NOTICE)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
