@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-strpos-identity-true
+language: php
+severity: warning
+message: >-
+  strpos() is compared with identity to true, which can never hold because
+  strpos returns an int offset or false. Review this comparison.
+note: >-
+  Single-file syntactic match on a literal strpos(...) call compared with ===
+  true. It does not resolve whether strpos is the global PHP function or a
+  namespaced/user-defined function, and it does not check runtime values.
+rule:
+  pattern: 'strpos($$$ARGS) === true'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
