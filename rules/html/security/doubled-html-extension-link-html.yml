@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: doubled-html-extension-link-html
+language: html
+severity: warning
+message: >-
+  This link's href contains a doubled .html extension, which is likely a typo
+  and may produce a dead link.
+note: >-
+  Matches the literal substring .html.html in the href attribute value of an a
+  element. It does not check whether the target file exists or resolve the
+  link.
+rule:
+  kind: element
+  has:
+    kind: start_tag
+    all:
+      - has:
+          kind: tag_name
+          regex: '^a$'
+      - has:
+          kind: attribute
+          regex: 'href="[^"]*\.html\.html[^"]*"'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
