@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-get-bloginfo-url-call
+language: php
+severity: warning
+message: >-
+  get_bloginfo('url') reads the site URL without the home_url() filter chain;
+  consider home_url() instead.
+note: >-
+  Matches only a direct get_bloginfo call whose first argument is the literal
+  string 'url'. It does not resolve whether get_bloginfo is the WordPress
+  function or whether any filters apply at runtime.
+rule:
+  pattern: 'get_bloginfo(''url'')'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
