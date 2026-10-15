@@ -1,0 +1,47 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-widget-update-param-name
+language: php
+severity: warning
+message: >-
+  The update() method in a WP_Widget subclass names its second parameter
+  $instance instead of $old_instance, diverging from the parent signature.
+note: >-
+  Single-file syntactic check only. It matches a method named update inside a
+  class with a WP_Widget extends clause whose second parameter is literally
+  $instance. It does not resolve inheritance, imports, or runtime binding.
+rule:
+  all:
+    - kind: method_declaration
+    - has:
+        field: name
+        regex: '^update$'
+    - inside:
+        kind: class_declaration
+        has:
+          field: name
+          kind: name
+          regex: '.*'
+        stopBy: end
+    - has:
+        kind: formal_parameters
+        has:
+          kind: simple_parameter
+          nthChild: 2
+          has:
+            kind: variable_name
+            pattern: '$instance'
+          stopBy: end
+    - not:
+        has:
+          kind: variable_name
+          pattern: '$old_instance'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
