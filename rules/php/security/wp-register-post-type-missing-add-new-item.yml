@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-register-post-type-missing-add-new-item
+language: php
+severity: warning
+message: >-
+  This register_post_type() call passes a labels array without an
+  'add_new_item' key.
+note: >-
+  Syntactic check only. It matches a literal register_post_type call whose
+  labels array literal contains no 'add_new_item' key; it does not resolve the
+  post type, imports, or runtime label values.
+rule:
+  pattern: 'register_post_type($NAME, $ARGS)'
+  has:
+    pattern: 'array(''labels'' => $LABELS, $$$REST)'
+    stopBy: end
+  not:
+    has:
+      pattern: '''add_new_item'' => $VAL'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
