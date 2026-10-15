@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-url-as-command-name
+language: bash
+severity: warning
+message: >-
+  A URL is used as the command name of a simple command, so it will be
+  executed as a program.
+note: >-
+  Syntactic match only. Flags a bash command whose command word is a literal
+  http:// or https:// URL; it does not check whether the command exists or
+  resolve runtime behavior.
+rule:
+  kind: command
+  pattern: '$URL'
+  has:
+    field: name
+    regex: '^https?://'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
