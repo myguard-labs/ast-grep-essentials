@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-find-symlinked-start-path
+language: bash
+severity: warning
+message: >-
+  This find starts at a variable that was only checked with -d, and it has no
+  -H or -L flag, so a symlinked starting directory may match nothing.
+note: >-
+  Syntactic check only. It matches a literal -d test on a variable followed by
+  a find whose starting path is that variable and that has no -H or -L flag in
+  the matched command. It does not resolve whether the variable is a symlink
+  at runtime or whether the test and find use the same value.
+rule:
+  pattern: 'find $ARG $$$REST'
+  inside:
+    pattern: 'if [ -d $ARG ]; then $$$BODY; fi'
+    stopBy: end
+  not:
+    has:
+      pattern: '$FLAG'
+      regex: '^-[HL]$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
