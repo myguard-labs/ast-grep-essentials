@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-evp-pkey-ctx-negated-status-test
+language: c
+severity: warning
+message: >-
+  Negated truth test on an EVP_PKEY_CTX status call treats negative codes such
+  as -2 (unsupported operation) as success; compare against <= 0 instead.
+note: >-
+  Syntactic match only on a literal EVP_PKEY_CTX_ call name under a
+  logical-not in an if condition. It does not verify the callee return
+  convention, argument types, or whether the call is reached at runtime.
+rule:
+  pattern: |
+    if (!EVP_PKEY_CTX_get_rsa_pss_saltlen($$$ARGS)) $$$BODY
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
