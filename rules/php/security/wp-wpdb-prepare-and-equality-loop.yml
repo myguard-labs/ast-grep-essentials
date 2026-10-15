@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-wpdb-prepare-and-equality-loop
+language: php
+severity: warning
+message: >-
+  This loop appends an AND equality test on the same column for each item, so
+  the combined condition requires all values to match at once.
+note: >-
+  Syntactic match only on a literal $wpdb->prepare call with an AND string
+  literal inside a foreach body. It does not resolve types, aliasing, or
+  whether the result is used in a query.
+rule:
+  all:
+    - pattern: '$wpdb->prepare('' AND post_status = %s'', $status)'
+    - inside:
+        kind: foreach_statement
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
