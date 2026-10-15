@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-gettext-nonliteral-sprintf
+language: php
+severity: warning
+message: >-
+  The first argument of this translation call is a sprintf() call, so the
+  message cannot be extracted for translation. Wrap the literal in the
+  translation call and apply sprintf() outside it.
+note: >-
+  Single-file syntactic match on a direct __() call whose first argument is a
+  direct sprintf() call, written as a literal function name with an
+  unqualified call. It does not resolve whether __ is the WordPress gettext
+  function or check imports or aliases.
+rule:
+  pattern: '__(sprintf($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
