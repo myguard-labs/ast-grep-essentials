@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-parse-url-result-subscript
+language: php
+severity: warning
+message: 'Subscript read applied directly to parse_url() result without a false check.'
+note: >-
+  Syntactic match only on a literal parse_url(...) call subscripted in place;
+  does not check for a prior false guard, variable flow, or aliasing.
+rule:
+  kind: subscript_expression
+  has:
+    kind: function_call_expression
+    pattern: 'parse_url($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
