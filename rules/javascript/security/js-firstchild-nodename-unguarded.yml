@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-firstchild-nodename-unguarded
+language: javascript
+severity: warning
+message: >-
+  Reading a property of firstChild without checking it first may throw when
+  the node has no children.
+note: >-
+  Syntactic check only. It flags a literal `<expr>.firstChild.nodeName` read
+  in an if condition with no preceding `<expr>.firstChild` truthiness test in
+  the same && chain; it does not resolve types, aliases, or runtime values.
+rule:
+  pattern: '$E.firstChild.nodeName == $V'
+  inside:
+    kind: if_statement
+    stopBy: end
+  not:
+    inside:
+      kind: binary_expression
+      has:
+        pattern: '$E.firstChild'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
