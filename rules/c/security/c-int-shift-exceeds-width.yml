@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-int-shift-exceeds-width
+language: c
+severity: warning
+message: >-
+  Left shift of unsuffixed literal 1 by an amount of 32 or more is undefined
+  behaviour for a 32-bit int.
+note: >-
+  Purely syntactic check on literal operands; it does not resolve types,
+  macros, or whether the shift is reachable. Only a literal shift count of 32
+  or more on a literal 1 is flagged.
+rule:
+  kind: binary_expression
+  pattern: '1 << $N'
+  all:
+    - has:
+        field: right
+        regex: '^(3[2-9]|[4-9][0-9]|[1-9][0-9]{2,})$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
