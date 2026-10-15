@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-directory-exists-skips-extraction
+language: bash
+severity: warning
+message: >-
+  Extraction is skipped whenever the directory exists; a partial directory
+  from an interrupted run will not be re-extracted.
+note: >-
+  Syntactic match only on a literal `[ -d ... ] || tar ...` line. It does not
+  verify archive integrity, whether the directory is complete, or any other
+  control flow.
+rule:
+  pattern: '[ -d $DIR ] || tar $$$ARGS'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
