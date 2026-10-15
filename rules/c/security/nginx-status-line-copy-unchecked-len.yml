@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: nginx-status-line-copy-unchecked-len
+language: c
+severity: warning
+message: >-
+  Copy of status_line into headers_in without a length guard on
+  status_line->len.
+note: >-
+  Syntactic check only. Matches a status_line struct copy assignment not
+  inside an if whose condition text contains status_line->len > 3; it does not
+  verify the guard's semantics, aliasing, or reachability.
+rule:
+  pattern: '$X.status_line = *status_line;'
+  not:
+    inside:
+      kind: if_statement
+      stopBy: end
+      has:
+        pattern: 'status_line->len > 3'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
