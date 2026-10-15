@@ -1,0 +1,14 @@
+id: c-hash-index-loop-over-count
+valid:
+  - >-
+    long cnt = 0; HashPosition pos; zval **element; int f(zval *array) { for
+    (zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(array), &pos);
+    zend_hash_get_current_data_ex(Z_ARRVAL_P(array), (void **) &element, &pos)
+    == SUCCESS; zend_hash_move_forward_ex(Z_ARRVAL_P(array), &pos)) { cnt += 1;
+    } return cnt; }
+invalid:
+  - >-
+    long i; zval **element; int f(zval *array) { long cnt = 0; for (i = 0; i <
+    zend_hash_num_elements(Z_ARRVAL_P(array)); i++) { if
+    (zend_hash_index_find(Z_ARRVAL_P(array), i, (void **) &element) == SUCCESS)
+    { cnt += 1; } } return cnt; }

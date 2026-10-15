@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-index-loop-over-count
+language: c
+severity: warning
+message: >-
+  Hash entry read by integer key inside a for loop bounded by
+  zend_hash_num_elements; iterate by position instead.
+note: >-
+  Syntactic match only. It checks a for loop whose condition calls
+  zend_hash_num_elements on a hash and whose body calls zend_hash_index_find
+  on the same hash expression. It does not verify key sequencing, aliasing,
+  types, or runtime values.
+rule:
+  kind: for_statement
+  all:
+    - has:
+        pattern: 'zend_hash_index_find(Z_ARRVAL_P(array), $IDX, $$$REST)'
+        stopBy: end
+    - has:
+        pattern: 'zend_hash_num_elements(Z_ARRVAL_P(array))'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
