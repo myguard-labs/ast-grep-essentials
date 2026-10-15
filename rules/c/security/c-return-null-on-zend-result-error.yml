@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-return-null-on-zend-result-error
+language: c
+severity: warning
+message: >-
+  An error branch comparing a call result against SUCCESS returns NULL instead
+  of signalling the pending exception.
+note: >-
+  Syntactic match only. Matches an if-statement whose condition compares a
+  call result against SUCCESS and whose body is RETURN_NULL(). Does not verify
+  that an exception is pending, that the callee sets one, or that the
+  enclosing function is a PHP extension entry point; those require semantic
+  analysis.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        pattern: 'RETURN_NULL()'
+        stopBy: end
+    - has:
+        pattern: '$CALL != SUCCESS'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
