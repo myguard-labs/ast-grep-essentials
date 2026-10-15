@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-misaligned-cast-of-byte-array-member
+language: c
+severity: warning
+message: >-
+  Cast of a byte-array member plus a variable offset to a non-char pointer
+  type may be misaligned.
+note: >-
+  Purely syntactic match on a cast of the form (T *) (x->member + expr) where
+  T is not unsigned char. The member is not checked to be a byte array, and
+  the offset is not proven non-constant or aligned; types, alignment, and
+  aliasing are not resolved.
+rule:
+  all:
+    - pattern: '(long *) ($RECV->data + $OFF)'
+    - any:
+        - pattern: '(long *) ($RECV->data + $OFF)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

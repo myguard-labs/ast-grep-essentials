@@ -1,0 +1,10 @@
+id: c-misaligned-cast-of-byte-array-member
+valid:
+  - >-
+    struct node { unsigned short key_len; unsigned char data[1]; }; unsigned
+    char *ring(struct node *n) { return (unsigned char *) (n->data +
+    n->key_len); }
+invalid:
+  - >-
+    struct node { unsigned short key_len; unsigned char data[1]; }; long
+    *ring(struct node *n) { return (long *) (n->data + n->key_len); }
