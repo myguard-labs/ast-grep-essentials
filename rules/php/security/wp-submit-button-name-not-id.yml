@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-submit-button-name-not-id
+language: php
+severity: warning
+message: >-
+  submit_button() is given a non-false name as its third argument; review
+  whether the button should carry an id via other_attributes instead.
+note: >-
+  Single-file syntactic check on a literal submit_button call with a non-false
+  third argument. It does not verify whether scripts depend on the name or
+  whether the call is WordPress core's function.
+rule:
+  pattern: 'submit_button($A, $B, $C, $D)'
+  not:
+    pattern: 'submit_button($A, $B, false, $D)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
