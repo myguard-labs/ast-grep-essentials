@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-strrchr-offset-underflow
+language: c
+severity: warning
+message: >-
+  Pointer difference from a strrchr result minus (base + 1) can underflow to
+  -1 when the match is at index 0.
+note: >-
+  Syntactic match only. Matches a literal subtraction whose right operand is
+  parenthesized base plus one; it does not resolve that the left operand comes
+  from strrchr or check that the match can be at index 0.
+rule:
+  pattern: '$CWD - ($BASE + 1)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
