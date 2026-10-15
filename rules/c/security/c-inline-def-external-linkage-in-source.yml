@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-inline-def-external-linkage-in-source
+language: c
+severity: warning
+message: >-
+  Function defined with inline but without static or extern may lack an
+  external definition for linking.
+note: >-
+  Syntactic check only. Flags function definitions whose declaration
+  specifiers include inline and no static or extern storage class; it does not
+  resolve whether a matching external definition exists elsewhere in the
+  program or verify the translation unit's language mode.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        kind: storage_class_specifier
+        regex: '^inline$'
+        stopBy: end
+    - not:
+        has:
+          kind: storage_class_specifier
+          regex: '^(static|extern)$'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
