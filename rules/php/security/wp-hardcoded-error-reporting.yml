@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-hardcoded-error-reporting
+language: php
+severity: warning
+message: >-
+  Hard-coded numeric error_reporting() level overrides site debug settings;
+  remove the literal so core defaults apply.
+note: >-
+  Matches a direct error_reporting() call whose single argument is an integer
+  literal. Does not resolve runtime values, constants, or whether the call is
+  overridden elsewhere.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '^error_reporting$'
+    - has:
+        field: arguments
+        has:
+          kind: integer
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
