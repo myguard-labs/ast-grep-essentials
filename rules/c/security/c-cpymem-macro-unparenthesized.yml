@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-cpymem-macro-unparenthesized
+language: c
+severity: warning
+message: >-
+  Function-like macro body is an unparenthesized binary expression with a cast
+  left operand.
+note: >-
+  Syntactic match only on a preprocessor define whose body starts with a
+  cast-parenthesized expression followed by +. It does not check macro usage
+  sites or expansion types.
+rule:
+  kind: preproc_function_def
+  has:
+    field: value
+    regex: '^\(\s*\(\s*u_char\s*\*\s*\)'
+  all:
+    - has:
+        field: value
+        regex: '\)\s*\+\s*\([^()]*\)\s*$'
+    - not:
+        has:
+          field: value
+          regex: '^\(\s*\(.*\)\s*\)\s*$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
