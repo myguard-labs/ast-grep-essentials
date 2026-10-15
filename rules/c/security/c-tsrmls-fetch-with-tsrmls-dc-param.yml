@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-tsrmls-fetch-with-tsrmls-dc-param
+language: c
+severity: warning
+message: >-
+  This function takes TSRMLS_DC and also calls TSRMLS_FETCH() in its body,
+  which is redundant.
+note: >-
+  Single-file syntactic check only. Matches a function whose parameter list
+  contains TSRMLS_DC and whose body contains a TSRMLS_FETCH() call; it does
+  not verify macro expansion, types, or runtime thread-local behavior.
+rule:
+  all:
+    - kind: function_definition
+    - has:
+        pattern: 'TSRMLS_FETCH()'
+        stopBy: end
+    - has:
+        pattern: TSRMLS_DC
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
