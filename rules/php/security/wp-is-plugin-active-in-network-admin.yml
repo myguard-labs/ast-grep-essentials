@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-is-plugin-active-in-network-admin
+language: php
+severity: warning
+message: >-
+  is_plugin_active() is used alongside is_network_admin(); in network admin,
+  use is_plugin_active_for_network() to check network-wide activation.
+note: >-
+  Syntactic match only. It flags a literal is_plugin_active() call inside an
+  if condition that also contains a literal is_network_admin() call; it does
+  not resolve runtime values, types, or whether the plugin is
+  network-activated.
+rule:
+  pattern: 'is_plugin_active($F)'
+  inside:
+    kind: parenthesized_expression
+    stopBy: end
+    has:
+      pattern: 'is_network_admin()'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
