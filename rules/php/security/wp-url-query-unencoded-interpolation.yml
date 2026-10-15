@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-url-query-unencoded-interpolation
+language: php
+severity: warning
+message: >-
+  Variable interpolated into a hand-built URL query string without encoding;
+  wrap it in urlencode() or build the query with http_build_query().
+note: >-
+  Syntactic match only. Flags double-quoted PHP strings containing a literal
+  ?name=$var pattern with an interpolated variable; it does not resolve
+  whether the value is already encoded, sanitized, or built elsewhere.
+rule:
+  kind: encapsed_string
+  regex: '\?[A-Za-z_][A-Za-z0-9_]*=\$[A-Za-z_]'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
