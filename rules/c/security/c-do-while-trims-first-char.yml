@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-do-while-trims-first-char
+language: c
+severity: warning
+message: >-
+  This do-while body decrements an index before its condition reads the
+  element, so the first iteration removes an element unconditionally.
+note: >-
+  Single-file syntactic match on a do-while whose body contains a decrement of
+  an identifier before the loop condition. It does not prove the index is used
+  for a trim or that the decrement is unconditional at runtime.
+rule:
+  kind: do_statement
+  has:
+    kind: update_expression
+    pattern: '$I--'
+    stopBy: end
+  all:
+    - has:
+        pattern: '$I--'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
