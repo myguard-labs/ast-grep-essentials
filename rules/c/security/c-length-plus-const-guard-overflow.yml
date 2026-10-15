@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-length-plus-const-guard-overflow
+language: c
+severity: warning
+message: >-
+  Length-plus-constant guard may wrap on attacker-controlled length; compare
+  with the constant moved to the other side.
+note: >-
+  Syntactic match only on an if-condition whose left side is an identifier
+  plus an integer literal compared with > (no >= arm). It does not prove the
+  length is attacker-controlled or that wrap is reachable; many such guards
+  are safe, so review each hit.
+rule:
+  pattern: 'if ($LEN + 20 > $EXPR) $$$BODY'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
