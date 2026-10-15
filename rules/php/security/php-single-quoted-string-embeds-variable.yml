@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-single-quoted-string-embeds-variable
+language: php
+severity: warning
+message: >-
+  Single-quoted string passed as a function argument contains a $variable-like
+  sequence; PHP will not interpolate it. Review whether double quotes were
+  intended.
+note: >-
+  Purely syntactic check on a single-quoted string literal argument containing
+  $identifier text. It does not know whether the call or string is intentional
+  (for example regex or SQL), and does not resolve types or runtime values.
+rule:
+  all:
+    - pattern: '$FN(''$TEXT'')'
+    - kind: function_call_expression
+    - regex: '\$[A-Za-z_]'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
