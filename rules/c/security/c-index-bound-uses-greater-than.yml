@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-index-bound-uses-greater-than
+language: c
+severity: warning
+message: >-
+  Index is checked with '>' instead of '>=' before an array subscript; the
+  index equal to the bound is accepted and reads one element past the end.
+note: >-
+  Syntactic check only. Matches an if-condition of the literal form identifier
+  > identifier followed by a return; it does not resolve array sizes, types,
+  or whether the index is used with the same array.
+rule:
+  pattern: |
+    if ($I > $N) return $$$RET;
+  inside:
+    kind: function_definition
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
