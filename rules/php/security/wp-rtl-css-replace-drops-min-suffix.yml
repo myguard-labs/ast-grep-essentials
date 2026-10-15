@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-rtl-css-replace-drops-min-suffix
+language: php
+severity: warning
+message: >-
+  This str_replace() turns a .css filename into a -rtl.css name, which drops
+  the .min segment of minified assets.
+note: >-
+  Purely syntactic match on a literal str_replace call with '.css' as search
+  string and a replacement literal containing '-rtl.css'. It does not check
+  the subject value, whether the file is minified, or whether the derived file
+  exists.
+rule:
+  kind: function_call_expression
+  pattern: 'str_replace( ''.css'', $REPL, $PATH )'
+  all:
+    - has:
+        pattern: '''-rtl.css'''
+        kind: string
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
