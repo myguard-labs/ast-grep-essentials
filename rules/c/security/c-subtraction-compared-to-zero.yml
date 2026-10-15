@@ -1,0 +1,38 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-subtraction-compared-to-zero
+language: c
+severity: warning
+message: >-
+  Parenthesized subtraction compared against 0; with unsigned operands this
+  wraps and may not mean the intended ordering.
+note: >-
+  Syntactic check only. Matches a parenthesized binary subtraction of two
+  identifiers compared with literal 0 using a relational operator. Does not
+  verify operand types, signedness, or values.
+rule:
+  kind: parenthesized_expression
+  has:
+    kind: binary_expression
+    pattern: '$A - $B'
+    all:
+      - has:
+          kind: identifier
+          pattern: '$A'
+      - has:
+          kind: identifier
+          pattern: '$B'
+  inside:
+    kind: binary_expression
+    has:
+      field: right
+      kind: number_literal
+      regex: '^0$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
