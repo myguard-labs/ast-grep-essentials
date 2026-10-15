@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-dirname-concat-dot-path
+language: php
+severity: warning
+message: >-
+  Concatenating a dirname(...) result with a relative literal starting with
+  "." produces a malformed path; review this concatenation.
+note: >-
+  Syntactic match only. Checks a literal dirname(...) call concatenated on the
+  left with a string literal whose text starts with a dot; does not resolve
+  function identity, aliasing, or runtime path values.
+rule:
+  all:
+    - kind: binary_expression
+    - has:
+        pattern: 'dirname($$$ARGS)'
+        stopBy: end
+    - has:
+        kind: string
+        regex: '^[''"]\.'
+        stopBy: end
+    - pattern: 'dirname($$$ARGS) . $LIT'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
