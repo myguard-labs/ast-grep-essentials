@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-variable-class-static-call
+language: php
+severity: warning
+message: >-
+  Static call through a variable class name ($var::method()) fails to parse on
+  PHP 5.2; use call_user_func with an array callable if the project targets
+  PHP 5.2.
+note: >-
+  Matches the literal syntax of a scoped call whose receiver is a single
+  variable and whose method name is a plain identifier; it does not resolve
+  the variable's runtime value, the PHP version targeted, or whether the
+  method is static.
+rule:
+  kind: scoped_call_expression
+  all:
+    - has:
+        field: scope
+        kind: variable_name
+    - has:
+        field: name
+        kind: name
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
