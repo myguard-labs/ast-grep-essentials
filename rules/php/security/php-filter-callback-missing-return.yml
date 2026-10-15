@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-filter-callback-missing-return
+language: php
+severity: warning
+message: >-
+  This add_filter() callback has no return statement, so the filtered value
+  becomes null.
+note: >-
+  Syntactic check only. Matches a literal add_filter call whose
+  second-argument closure body contains no return statement; does not resolve
+  named callbacks, nested closures, or runtime filter values.
+rule:
+  pattern: 'add_filter($HOOK, static function ($$$PARAMS) { $$$BODY })'
+  not:
+    has:
+      kind: return_statement
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
