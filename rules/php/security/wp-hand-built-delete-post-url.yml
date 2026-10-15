@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-hand-built-delete-post-url
+language: php
+severity: warning
+message: >-
+  Build the delete-post link with get_delete_post_link() instead of
+  hand-assembling it with add_query_arg() and wp_nonce_url().
+note: >-
+  Syntactic match only. Flags a wp_nonce_url() call whose first argument is a
+  direct add_query_arg() call; it does not verify the action names, the post
+  ID source, or runtime values.
+rule:
+  pattern: 'wp_nonce_url(add_query_arg($$$ARGS), $NONCE)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
