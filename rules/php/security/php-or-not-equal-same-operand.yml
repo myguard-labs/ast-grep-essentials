@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-or-not-equal-same-operand
+language: php
+severity: warning
+message: >-
+  Two inequality checks on the same operand against different literals are
+  joined by '||', so the condition is always true.
+note: >-
+  Purely syntactic single-file match on a parenthesized if condition with a
+  '$var' operand compared with '!=' against two string literals joined by
+  '||'. Does not resolve types, values, aliasing, or reachability.
+rule:
+  pattern: 'if ( ''$A'' != $X || ''$B'' != $X ) { $$$BODY }'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
