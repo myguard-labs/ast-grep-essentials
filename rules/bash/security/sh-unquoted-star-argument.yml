@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-unquoted-star-argument
+language: bash
+severity: warning
+message: >-
+  Unquoted $* as a command argument word-splits and globs; quote it as "$*" or
+  use "$@" where appropriate.
+note: >-
+  Syntactic match only on a bare $* word outside double quotes; does not
+  verify that the enclosing command or variable context is actually
+  problematic.
+rule:
+  kind: simple_expansion
+  regex: '^\$\*$'
+  inside:
+    kind: command
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
