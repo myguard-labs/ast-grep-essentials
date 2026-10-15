@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-unprototyped-function-definition
+language: c
+severity: warning
+message: >-
+  Function definition has an empty parameter list; declare parameters
+  explicitly or use (void).
+note: >-
+  Syntactic match only: flags function definitions whose parameter list is
+  empty parentheses with no parameter_declaration. It does not check
+  prototypes elsewhere, call sites, or whether the definition is reached.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        kind: function_declarator
+        has:
+          kind: parameter_list
+          not:
+            has:
+              kind: parameter_declaration
+    - not:
+        has:
+          kind: parameter_declaration
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
