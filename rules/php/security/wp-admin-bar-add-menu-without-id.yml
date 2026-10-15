@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-admin-bar-add-menu-without-id
+language: php
+severity: warning
+message: >-
+  This add_menu() array literal has no 'id' key; add a stable id so the item
+  can be targeted later.
+note: >-
+  Syntactic check only. Matches a literal $wp_admin_bar->add_menu() call whose
+  array argument lacks an 'id' key by text; it does not resolve the receiver
+  type or verify the array contents beyond the shown pattern.
+rule:
+  all:
+    - pattern: '$wp_admin_bar->add_menu(array($$$ARGS))'
+    - not:
+        has:
+          pattern: '''id'' => $$$V'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
