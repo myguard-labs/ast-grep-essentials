@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-echo-unescaped-template-var
+language: php
+severity: warning
+message: >-
+  Bare echo of a variable inside an inline PHP tag in template output; review
+  whether it needs an esc_* wrapper.
+note: >-
+  Purely syntactic. Matches an echo statement whose argument is a plain
+  variable, with no esc_* call wrapping it. It cannot tell trusted values from
+  request-derived ones, so hits require review.
+rule:
+  kind: echo_statement
+  has:
+    kind: variable_name
+    pattern: '$VAR'
+  not:
+    has:
+      kind: function_call_expression
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
