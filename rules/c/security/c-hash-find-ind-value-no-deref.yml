@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-find-ind-value-no-deref
+language: c
+severity: warning
+message: >-
+  Pointer from zend_hash_find_ind is copied without ZVAL_DEREF; it may still
+  be a reference wrapper.
+note: >-
+  Single-file syntactic check only. It matches a ZVAL_COPY of a variable
+  assigned from zend_hash_find_ind in an if condition; it does not prove the
+  pointer is never dereferenced elsewhere, and does not resolve types or
+  aliasing.
+rule:
+  pattern: |
+    if ((v = zend_hash_find_ind($$$ARGS)) != NULL) { ZVAL_COPY($$$COPYARGS, v); }
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
