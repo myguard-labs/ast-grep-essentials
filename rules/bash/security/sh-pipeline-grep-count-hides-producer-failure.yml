@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-pipeline-grep-count-hides-producer-failure
+language: bash
+severity: warning
+message: >-
+  This command substitution pipes a producer into grep -c and ends with ||
+  true, so a failing producer is silently treated as a count of 0.
+note: >-
+  Syntactic match only. It flags a command substitution whose pipeline has a
+  producer piped into grep -c and ends with || true. It does not verify that
+  the producer can fail or resolve which tool is invoked.
+rule:
+  pattern: '$($A | grep -c $$$ARGS || true)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
