@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-legacy-user-id-global-check
+language: php
+severity: warning
+message: >-
+  Legacy $user_ID truthiness test used for logged-in state; prefer
+  is_user_logged_in().
+note: >-
+  Syntactic match on a bare $user_ID variable used as an if condition. It does
+  not resolve globals, imports, or runtime values, and does not verify that
+  the variable holds a user ID.
+rule:
+  pattern: 'if ( $user_ID ) : $$$BODY endif;'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
