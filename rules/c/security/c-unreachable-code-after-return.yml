@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-unreachable-code-after-return
+language: c
+severity: warning
+message: Statement follows a return in the same block and can never execute.
+note: >-
+  Syntactic check only; it flags a statement directly preceded by a return
+  statement within the same compound block and does not analyze reachability
+  through goto, labels, or preprocessor configuration.
+rule:
+  kind: compound_statement
+  has:
+    stopBy: end
+    kind: return_statement
+    follows:
+      kind: return_statement
+      stopBy: end
+      nthChild: 1
+  any:
+    - pattern: '{ return $A; $B }'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
