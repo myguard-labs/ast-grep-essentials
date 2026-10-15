@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bitand-unparenthesized-comparison
+language: c
+severity: warning
+message: >-
+  Bitwise-and operand is an unparenthesized equality comparison; the
+  comparison binds first in C.
+note: >-
+  Syntactic check only. Matches a binary & whose right operand is a != or ==
+  binary expression written without parentheses; does not resolve types or
+  values.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^&$'
+    - has:
+        field: right
+        kind: binary_expression
+        has:
+          field: operator
+          regex: '^(!=|==)$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
