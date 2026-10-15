@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bn-carry-add-without-mask
+language: c
+severity: warning
+message: >-
+  Assignment of a word plus carry without BN_MASK2 masking; the subsequent
+  carry comparison may be incorrect.
+note: >-
+  Syntactic check only. Matches a plain assignment whose right-hand side is a
+  bare addition of tp[num] and c0, with no masking operator in that
+  expression. It does not resolve types, verify that the variables are
+  BN_ULONG, or confirm the carry is used later.
+rule:
+  pattern: '$V = tp[num] + c0;'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
