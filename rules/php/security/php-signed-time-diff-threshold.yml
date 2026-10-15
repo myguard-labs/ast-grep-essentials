@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-signed-time-diff-threshold
+language: php
+severity: warning
+message: >-
+  Signed time() difference compared against an upper bound without abs();
+  future timestamps will pass this check.
+note: >-
+  Single-file syntactic match on a literal time() - expression compared with
+  less-than. It does not resolve whether the timestamp can be in the future or
+  whether the value is ever negative at runtime.
+rule:
+  pattern: '(time() - $T) < $N'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
