@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-error-log-var-export-dump
+language: php
+severity: warning
+message: >-
+  Logging a whole variable dump with error_log() may write sensitive fields
+  such as passwords to the log. Log only the named fields needed.
+note: >-
+  Purely syntactic match on a literal error_log call whose sole argument is a
+  var_export or print_r call. It does not resolve function identity, aliases,
+  or the runtime contents of the dumped variable.
+rule:
+  pattern: 'error_log(var_export($VAR, $$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
