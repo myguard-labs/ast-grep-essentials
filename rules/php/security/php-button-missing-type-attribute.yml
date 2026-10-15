@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-button-missing-type-attribute
+language: php
+severity: warning
+message: >-
+  This literal HTML button start tag in PHP output has no type attribute;
+  review whether it should declare type explicitly.
+note: >-
+  Syntactic match on a literal button start tag inside a PHP string only. It
+  does not check whether the button is inside a form, whether it is
+  intentionally a submit button, or any runtime or template-generated markup.
+rule:
+  all:
+    - pattern: '''<button id="wp-link-close"><span>Close</span></button>'''
+    - not:
+        pattern: '''<button type="button" id="wp-link-close"><span>Close</span></button>'''
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
