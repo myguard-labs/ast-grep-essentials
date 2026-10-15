@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pow2-bittrick-missing-zero-guard
+language: c
+severity: warning
+message: >-
+  This power-of-two test x == (x & -x) has no guard excluding zero, so zero
+  passes.
+note: >-
+  Purely syntactic match on the literal expression x == (x & -x) with no
+  enclosing zero guard checked; it does not verify that zero is invalid for
+  the caller or resolve types, values, or reachability.
+rule:
+  pattern: '$X == ($X & -$X)'
+  not:
+    inside:
+      pattern: '$Y != 0 && $$$REST'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
