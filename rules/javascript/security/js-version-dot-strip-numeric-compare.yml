@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-version-dot-strip-numeric-compare
+language: javascript
+severity: warning
+message: >-
+  A version string with dots removed is converted to a number and compared
+  with an ordering operator; dot removal makes version ordering ambiguous.
+note: >-
+  Single-file syntactic match on a literal .replace(/\./g, '') followed by - 0
+  used as an operand of an ordering comparison. It does not resolve whether
+  the value is a version string or check types, values, or aliasing.
+rule:
+  pattern: '$X.replace(/\./g, '''') - 0'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
