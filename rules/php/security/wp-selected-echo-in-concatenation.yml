@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-selected-echo-in-concatenation
+language: php
+severity: warning
+message: >-
+  selected() or checked() called with two arguments echoes by default; using
+  its return value in string concatenation emits the markup twice. Pass false
+  as the third argument to get the return value only.
+note: >-
+  Syntactic match only. Matches a literal selected or checked call with
+  exactly two arguments written directly as an operand of a concatenation. It
+  does not resolve function identity, imports, or runtime values.
+rule:
+  all:
+    - kind: function_call_expression
+    - pattern: 'selected($A, $B)'
+    - inside:
+        kind: binary_expression
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
