@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-guard-deref-in-null-branch
+language: c
+severity: warning
+message: Pointer is dereferenced inside the branch that runs only when it is NULL.
+note: >-
+  Single-file syntactic match on a negated pointer test whose body
+  dereferences the same identifier; does not check aliasing, reassignment
+  inside the body, or reachability.
+rule:
+  all:
+    - pattern: 'if (!$P) { $$$BODY }'
+    - has:
+        pattern: '*$P'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
