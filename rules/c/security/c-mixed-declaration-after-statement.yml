@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-mixed-declaration-after-statement
+language: c
+severity: warning
+message: >-
+  Declaration appears after a statement in the same block; this is rejected by
+  C89-mode compilers.
+note: >-
+  Syntactic only. Matches a declaration that has an earlier expression
+  statement as a sibling in the same compound_statement. Does not check the
+  project's C standard setting or nested blocks.
+rule:
+  kind: declaration
+  follows:
+    kind: expression_statement
+    stopBy: end
+  inside:
+    kind: compound_statement
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
