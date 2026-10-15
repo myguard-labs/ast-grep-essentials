@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-apply-filter-bypasses-accessor
+language: php
+severity: warning
+message: >-
+  This applies the intermediate_image_sizes filter with a hardcoded default
+  list; call get_intermediate_image_sizes() instead so registered custom sizes
+  are included.
+note: >-
+  Matches only the literal hook name 'intermediate_image_sizes' passed to a
+  direct apply_filters call. It does not resolve whether the hook is wrapped,
+  aliased, or whether the default list is intended.
+rule:
+  pattern: 'apply_filters( ''intermediate_image_sizes'', $_ )'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
