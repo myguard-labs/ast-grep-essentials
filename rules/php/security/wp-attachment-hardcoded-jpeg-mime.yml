@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-attachment-hardcoded-jpeg-mime
+language: php
+severity: warning
+message: >-
+  A literal 'image/jpeg' is assigned to post_mime_type; the stored type may
+  not match the actual image format.
+note: >-
+  Matches only the literal key 'post_mime_type' paired with the literal string
+  'image/jpeg' inside an array literal in a single file. It does not resolve
+  the real image type, runtime values, or whether the record is an attachment.
+rule:
+  kind: array_creation_expression
+  has:
+    kind: array_element_initializer
+    all:
+      - has:
+          kind: string
+          regex: '^[''"]post_mime_type[''"]$'
+      - has:
+          kind: string
+          regex: '^[''"]image/jpeg[''"]$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
