@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-apply-function-pointer-cast
+language: c
+severity: warning
+message: >-
+  Function is cast to a generic apply callback type in a hash apply call;
+  review that the callback signature matches the hash element type.
+note: >-
+  Syntactic match only on a cast inside zend_hash_apply or
+  zend_hash_apply_with_argument calls. It does not verify callback parameter
+  types, element types, or whether the cast hides a real mismatch.
+rule:
+  pattern: '$FN($$$ARGS, (apply_func_arg_t) $CB, $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

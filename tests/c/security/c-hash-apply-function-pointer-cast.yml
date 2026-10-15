@@ -1,0 +1,9 @@
+id: c-hash-apply-function-pointer-cast
+valid:
+  - |-
+    static int cb(zval *e, void *arg) { return 0; }
+    void f(HashTable *h) { zend_hash_apply_with_argument(h, cb, NULL); }
+invalid:
+  - |-
+    static int cb(module_t *m, void *arg) { return 0; }
+    void f(HashTable *h) { zend_hash_apply_with_argument(h, (apply_func_arg_t) cb, NULL); }
