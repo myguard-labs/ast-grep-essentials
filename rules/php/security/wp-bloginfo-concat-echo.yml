@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-bloginfo-concat-echo
+language: php
+severity: warning
+message: >-
+  bloginfo() echoes its value and returns nothing; using it as a concatenation
+  operand yields a null operand and prints output out of order.
+note: >-
+  Single-file syntactic match on a literal bloginfo( call used as a direct
+  operand of the concatenation operator. It does not resolve function
+  identity, namespaces, or whether bloginfo is redefined elsewhere.
+rule:
+  pattern: '$A . bloginfo($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
