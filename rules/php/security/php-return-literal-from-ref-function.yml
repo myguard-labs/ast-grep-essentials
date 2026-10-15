@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-return-literal-from-ref-function
+language: php
+severity: warning
+message: >-
+  This function is declared to return by reference but returns a literal
+  value.
+note: >-
+  Single-file syntactic match on a by-reference function whose return operand
+  is a literal false; does not resolve types, runtime values, or reachability.
+rule:
+  all:
+    - kind: function_definition
+    - has:
+        kind: reference_modifier
+        stopBy: end
+    - has:
+        kind: return_statement
+        stopBy: end
+        has:
+          kind: boolean
+          regex: '^(?i)false$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
