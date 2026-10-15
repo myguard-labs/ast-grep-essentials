@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: nginx-unaligned-time-cast-from-data
+language: c
+severity: warning
+message: >-
+  Casting a byte-array member offset to a stricter pointer type may be
+  misaligned.
+note: >-
+  Syntactic match only. Flags a cast to a pointer type of a sum involving the
+  data member; it does not verify the target type's alignment requirement or
+  the runtime offset.
+rule:
+  pattern: '(time_t *) ($X->data + $Y)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

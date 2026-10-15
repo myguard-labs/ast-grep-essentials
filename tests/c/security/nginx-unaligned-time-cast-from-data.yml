@@ -1,0 +1,9 @@
+id: nginx-unaligned-time-cast-from-data
+valid:
+  - >-
+    typedef struct { unsigned short key_len; unsigned char data[1]; } node_t;
+    static char *ev(node_t *n) { return (char *) (n->data + n->key_len); }
+invalid:
+  - >-
+    typedef struct { unsigned short key_len; unsigned char data[1]; } node_t;
+    static time_t *ev(node_t *n) { return (time_t *) (n->data + n->key_len); }
