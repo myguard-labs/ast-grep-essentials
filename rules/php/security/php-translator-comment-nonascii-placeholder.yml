@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-translator-comment-nonascii-placeholder
+language: php
+severity: warning
+message: >-
+  This translators comment has a printf-style placeholder whose conversion
+  character is a non-ASCII byte.
+note: >-
+  Purely lexical check on comment text; it matches a percent sign followed by
+  a non-ASCII byte inside a translators comment and does not verify that the
+  comment is actually used by string extraction or that the placeholder is
+  printed at runtime.
+rule:
+  kind: comment
+  regex: '(?i)translators:.*%[\x80-\xFF]'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
