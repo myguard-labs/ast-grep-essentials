@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: missing-return-value-cpp
+language: cpp
+severity: warning
+message: This non-void function has no return statement in its body.
+note: >-
+  Syntactic approximation only. Matches a function definition with a non-void
+  return type whose body contains no return_statement node anywhere; it does
+  not analyse control flow, so functions that always throw or exit, or that
+  return via nested lambdas, are not distinguished.
+rule:
+  all:
+    - kind: function_definition
+    - not:
+        has:
+          kind: return_statement
+          stopBy: end
+    - not:
+        has:
+          pattern: 'void $NAME($$$ARGS) $$$BODY'
+          stopBy: end
+    - has:
+        kind: compound_statement
+    - not:
+        has:
+          kind: type_identifier
+          regex: '^void$'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
