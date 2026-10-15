@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-sql-unqualified-id-concat
+language: php
+severity: warning
+message: >-
+  Unqualified ID column in a concatenated SQL WHERE fragment; qualify it with
+  the table name to avoid ambiguity in joined queries.
+note: >-
+  Purely syntactic check for a string literal ending in an unqualified " AND
+  ID = " concatenated with a variable. It does not resolve joins, schema, or
+  runtime values, so it cannot confirm that the query is actually joined or
+  that ambiguity occurs.
+rule:
+  pattern: ''' AND ID = '' . $VAR'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
