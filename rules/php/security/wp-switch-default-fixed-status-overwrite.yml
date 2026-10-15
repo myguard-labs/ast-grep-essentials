@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-switch-default-fixed-status-overwrite
+language: php
+severity: warning
+message: >-
+  A switch default arm overwrites an array element with a fixed string
+  literal, discarding the caller-supplied value.
+note: >-
+  Purely syntactic match on a default arm assigning a string literal to a
+  subscript element inside a switch default. It does not check whether the
+  existing value was valid or resolve types, aliasing, or guards outside the
+  shown syntax.
+rule:
+  all:
+    - pattern: '$ARR[$KEY] = ''draft'';'
+    - inside:
+        kind: default_statement
+        stopBy: end
+    - not:
+        inside:
+          kind: if_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
