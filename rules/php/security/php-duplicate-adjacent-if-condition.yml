@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-duplicate-adjacent-if-condition
+language: php
+severity: warning
+message: >-
+  This if statement has the same condition as the directly preceding sibling
+  if; review whether they can be merged.
+note: >-
+  Purely textual syntactic match on an if statement whose condition is a
+  literal current_user_can('edit_post', $id) call and that directly follows a
+  sibling if with the same condition text. It does not resolve whether the
+  condition calls are pure or whether the branches interact, so it flags a
+  merge candidate, not a confirmed bug.
+rule:
+  pattern: 'if (current_user_can(''edit_post'', $id)) { $$$BODY }'
+  follows:
+    kind: if_statement
+    pattern: 'if (current_user_can(''edit_post'', $id)) { $$$PREV }'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
