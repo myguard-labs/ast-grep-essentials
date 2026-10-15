@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-taxonomy-object-property-unguarded
+language: php
+severity: warning
+message: >-
+  Property read directly on the return value of get_taxonomy() or
+  get_post_type_object() without a null or false check.
+note: >-
+  Syntactic single-file match only. It flags a literal get_taxonomy(...) or
+  get_post_type_object(...) call whose result is immediately
+  property-accessed; it does not resolve types or detect guards elsewhere in
+  the function.
+rule:
+  pattern: 'get_taxonomy($$$ARGS)->$PROP'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
