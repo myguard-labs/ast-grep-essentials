@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-compact-variable-args
+language: php
+severity: warning
+message: >-
+  compact() is called with bare variable arguments; pass quoted variable names
+  instead.
+note: >-
+  Purely syntactic match on a compact() call whose arguments are plain
+  variables. It does not resolve runtime values, types, or whether the
+  variables are defined.
+rule:
+  pattern: 'compact($$$ARGS)'
+  has:
+    kind: variable_name
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
