@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-grep-q-pipeline-early-exit
+language: bash
+severity: warning
+message: >-
+  Piping printf or echo output into grep -q can SIGPIPE the writer; under
+  pipefail this may report a false failure. Consider a here-string.
+note: >-
+  Matches only the literal syntactic shape of a printf or echo command piped
+  directly into grep -q. It does not verify pipefail is set, the output size,
+  or runtime SIGPIPE behavior.
+rule:
+  pattern: 'printf $$$A | grep -q $$$ARGS'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
