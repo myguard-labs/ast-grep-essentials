@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-regex-slash-star-quantifier
+language: php
+severity: warning
+message: >-
+  Regex literal ends with "/*", so the star quantifies the slash rather than
+  matching any tail. Use "/.*" if an arbitrary suffix was intended.
+note: >-
+  Purely syntactic check on a single-quoted PHP string literal whose content
+  ends in "/*" before the closing delimiter. It does not verify that the
+  string is used as a regex or that the slash was meant as a quantified
+  any-tail.
+rule:
+  kind: string
+  regex: '^''#.*/\*#[a-zA-Z]*''$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
