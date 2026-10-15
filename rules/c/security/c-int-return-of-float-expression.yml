@@ -1,0 +1,34 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-int-return-of-float-expression
+language: c
+severity: warning
+message: >-
+  Return statement in an int-returning function contains a decimal
+  floating-point literal; the fractional part will be truncated.
+note: >-
+  Syntactic approximation only. Matches a return inside a function whose
+  declared return type is literally int and whose return expression contains a
+  decimal float literal. Does not resolve types, macros, or whether the
+  truncation is intended.
+rule:
+  all:
+    - kind: return_statement
+    - inside:
+        kind: function_definition
+        has:
+          field: type
+          regex: '^int$'
+        stopBy: end
+    - has:
+        kind: number_literal
+        regex: '[0-9]\.[0-9]*|\.[0-9]+'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
