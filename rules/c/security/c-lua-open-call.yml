@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-lua-open-call
+language: c
+severity: warning
+message: >-
+  Call to lua_open(), which was removed in Lua 5.2; use luaL_newstate()
+  instead.
+note: >-
+  Matches the literal call syntax lua_open(...) only; it does not check the
+  Lua version, included headers, macros, or whether the callee resolves to the
+  Lua API.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    kind: identifier
+    regex: '^lua_open$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
