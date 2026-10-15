@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-empty-home-env-override
+language: typescript
+severity: warning
+message: >-
+  Object literal sets HOME to an empty string; child processes may resolve
+  home to root.
+note: >-
+  Matches an object literal pair whose key is the literal property HOME and
+  whose value is an empty string literal. This is a syntactic check only; it
+  does not verify that the object is passed as a child process environment or
+  resolve runtime values.
+rule:
+  kind: pair
+  all:
+    - has:
+        field: key
+        regex: '^HOME$'
+    - has:
+        field: value
+        kind: string
+        regex: '^(''''|"")$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
