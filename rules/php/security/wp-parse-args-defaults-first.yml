@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-parse-args-defaults-first
+language: php
+severity: warning
+message: >-
+  wp_parse_args() is called with a $defaults variable as its first argument;
+  the caller's arguments are treated as defaults and may be ignored. Check the
+  argument order.
+note: >-
+  Purely syntactic match on a literal variable named $defaults as the first
+  argument of a direct wp_parse_args() call. It does not resolve what the
+  variables contain, whether the call is the WordPress function, or whether
+  caller options are actually dropped.
+rule:
+  pattern: 'wp_parse_args( $defaults, $ARGS )'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
