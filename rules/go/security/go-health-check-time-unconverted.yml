@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-health-check-time-unconverted
+language: go
+severity: warning
+message: >-
+  Duration field copied directly from upstream HealthCheck without
+  generateTime conversion.
+note: >-
+  Syntactic match only on the literal assignment shape hc.<Field> =
+  upstream.HealthCheck.<Field>; it does not resolve types, aliases, or whether
+  the struct field is a duration, and does not verify that generateTime is
+  absent elsewhere in the file.
+rule:
+  pattern: '$OBJ.$FIELD = upstream.HealthCheck.$FIELD2'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
