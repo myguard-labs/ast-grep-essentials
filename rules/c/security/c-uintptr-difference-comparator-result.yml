@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-uintptr-difference-comparator-result
+language: c
+severity: warning
+message: >-
+  Return value is a difference of uintptr_t casts; unsigned wraparound can
+  flip the sign when converted to int. Prefer an ordering expression such as
+  (a > b) - (a < b).
+note: >-
+  Syntactic match only on a return statement whose expression is a subtraction
+  of two uintptr_t casts. Does not resolve types, aliases, or whether the
+  function is used as a comparator.
+rule:
+  pattern: 'return (uintptr_t) $A - (uintptr_t) $B;'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
