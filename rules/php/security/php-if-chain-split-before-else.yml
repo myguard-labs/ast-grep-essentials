@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-if-chain-split-before-else
+language: php
+severity: warning
+message: >-
+  This if statement follows another if with no else between them, so its
+  trailing else pairs only with this second if; the first branch's action also
+  runs on the else path.
+note: >-
+  Single-file syntactic match on a literal if statement with an else directly
+  after a preceding sibling if. It does not resolve the compared values,
+  types, or runtime control flow.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        field: alternative
+        kind: else_clause
+    - follows:
+        kind: if_statement
+        stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
