@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-is-dir-without-writable-check
+language: php
+severity: warning
+message: >-
+  A directory checked only with is_dir() is used without an is_writable()
+  check in the same condition.
+note: >-
+  Single-file syntactic match only. It flags an if condition whose sole check
+  is is_dir($x) with no is_writable() call; it does not resolve runtime
+  values, aliasing, or whether writability is checked elsewhere.
+rule:
+  all:
+    - pattern: 'if (is_dir($DIR)) $$$BODY'
+    - not:
+        has:
+          pattern: 'is_writable($$$ARGS)'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
