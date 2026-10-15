@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-hand-written-selected-attribute
+language: php
+severity: warning
+message: >-
+  Hand-written selected attribute; consider using the selected() helper
+  instead.
+note: >-
+  Single-file syntactic match on a ternary whose true branch is the literal
+  string ' selected="selected"'. It does not verify that the operands are form
+  values or that the comparison is an option selection.
+rule:
+  kind: conditional_expression
+  all:
+    - has:
+        kind: string
+        regex: 'selected="selected"'
+    - not:
+        has:
+          kind: string
+          regex: 'class='
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
