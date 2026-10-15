@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-struct-pointer-offset-idiom
+language: c
+severity: warning
+message: >-
+  Member access through a null-cast struct pointer computes an offset; use
+  offsetof() instead.
+note: >-
+  Syntactic match only. Matches a member access whose object is a cast of
+  literal 0 to a pointer type; does not verify the cast target type, macro
+  context, or any runtime value.
+rule:
+  pattern: '((struct $T *)0)->$M'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

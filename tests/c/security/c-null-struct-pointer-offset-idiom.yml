@@ -1,0 +1,11 @@
+id: c-null-struct-pointer-offset-idiom
+valid:
+  - |-
+    #include <stddef.h>
+    struct s { int a; char b[4]; };
+    size_t f(struct s *p) { return (size_t)(((struct s *)p)->b); }
+invalid:
+  - |-
+    #include <stddef.h>
+    struct s { int a; char b[4]; };
+    size_t f(void) { return (size_t)(((struct s *)0)->b); }
