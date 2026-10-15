@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-int-cast-divide-before-multiply
+language: c
+severity: warning
+message: >-
+  Integer division of an int-cast operand is multiplied afterward, so the
+  fraction is truncated before scaling.
+note: >-
+  Syntactic match only on the literal shape int-cast divided then multiplied;
+  it does not resolve types, value ranges, or whether the truncation is
+  intentional.
+rule:
+  pattern: 'int r = (int) $A / $B * $C;'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
