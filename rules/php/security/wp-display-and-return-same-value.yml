@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-display-and-return-same-value
+language: php
+severity: warning
+message: >-
+  This function echoes a value in an if-branch and also returns the same value
+  at function level, so callers that echo the result will output it twice.
+note: >-
+  Single-file syntactic match only. It flags a function whose body contains an
+  if-statement with an echo of an expression and a later function-level return
+  of that same expression text. It does not resolve call sites, types, or
+  runtime control flow.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        kind: compound_statement
+        has:
+          kind: if_statement
+          has:
+            kind: echo_statement
+            pattern: 'echo $X;'
+    - has:
+        kind: compound_statement
+        has:
+          kind: return_statement
+          pattern: 'return $X;'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
