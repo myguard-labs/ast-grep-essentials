@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-scan-loop-to-nul-no-delimiter
+language: c
+severity: warning
+message: >-
+  This while loop scans a pointer until NUL with no other loop condition;
+  review whether trailing input is over-consumed.
+note: >-
+  Syntactic single-file match only. It checks for a while loop whose condition
+  is a dereferenced pointer compared to NUL and whose body is a single
+  increment of that pointer; it does not verify parser semantics, types, or
+  aliasing.
+rule:
+  kind: while_statement
+  all:
+    - has:
+        field: condition
+        pattern: '$C'
+    - has:
+        field: condition
+        regex: '^\(\*\*\w+ != ''\\0''\)$'
+    - has:
+        field: body
+        regex: '^\{ \+\+\*\w+; \}$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
