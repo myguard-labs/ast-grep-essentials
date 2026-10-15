@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-upload-mime-map-php-extension
+language: php
+severity: warning
+message: >-
+  This upload MIME map key includes php while mapping to a non-PHP type;
+  review whether PHP files can be uploaded.
+note: >-
+  Matches only a literal single-quoted array key containing a php alternation
+  segment (e.g. txt|c|php) mapped to text/plain in a PHP array entry. Does not
+  resolve runtime values, WordPress allowlist usage, or whether the type is
+  applied to uploads.
+rule:
+  kind: string
+  regex: '^''[^'']*php[^'']*''$'
+  inside:
+    kind: array_creation_expression
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
