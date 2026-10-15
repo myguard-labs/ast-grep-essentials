@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-reentrant-errno-after-r-call
+language: c
+severity: warning
+message: >-
+  errno is compared after a POSIX *_r call; these functions return the error
+  number directly, so check the return value instead.
+note: >-
+  Single-file syntactic check for a literal errno comparison in an if
+  condition; it does not verify that the compared call is a *_r function or
+  that errno is stale, and does not track the call's result across statements.
+rule:
+  pattern: |
+    if (errno == $ERR) $$$BODY
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
