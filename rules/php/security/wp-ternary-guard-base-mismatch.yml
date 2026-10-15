@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-ternary-guard-base-mismatch
+language: php
+severity: warning
+message: >-
+  The ternary guard reads a property from one base variable while the
+  else-branch reads the same property name from a different base variable;
+  verify this is not a stale variable.
+note: >-
+  Purely syntactic check on identifier comparison within one ternary
+  expression. It does not resolve types, aliases, or runtime values, so it
+  cannot confirm the two bases refer to different objects.
+rule:
+  pattern: 'empty( $BASE1->$PROP ) ? $$$THEN : $$$ELSE'
+  all:
+    - has:
+        pattern: '$ELSE_BASE->$PROP'
+        stopBy: end
+        inside:
+          kind: binary_expression
+    - not:
+        has:
+          pattern: '$BASE1->$PROP'
+          stopBy: end
+          inside:
+            kind: binary_expression
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
