@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-echo-literal-string-without-i18n
+language: php
+severity: warning
+message: >-
+  Echo outputs a bare string literal without a translation wrapper; review
+  whether it needs __() or _e().
+note: >-
+  Syntactic match only on an echo statement whose direct argument is a single
+  string literal. It does not verify that the file is an admin template, does
+  not check path scoping to wp-admin, and does not resolve whether the string
+  is user-facing or already translated elsewhere.
+rule:
+  kind: echo_statement
+  has:
+    kind: parenthesized_expression
+    has:
+      kind: string
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
