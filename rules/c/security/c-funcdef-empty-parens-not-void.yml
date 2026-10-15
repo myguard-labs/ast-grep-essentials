@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-funcdef-empty-parens-not-void
+language: c
+severity: warning
+message: >-
+  Function definition uses empty parentheses instead of (void), leaving the
+  parameter list unspecified.
+note: >-
+  Syntactic match only on function definitions whose declarator has an empty
+  parameter list written as (). It does not check for prototypes elsewhere,
+  macros, or type information.
+rule:
+  kind: function_definition
+  has:
+    kind: function_declarator
+    has:
+      kind: identifier
+      field: declarator
+      regex: '^[A-Za-z_][A-Za-z0-9_]*$'
+    all:
+      - has:
+          field: parameters
+          kind: parameter_list
+          not:
+            has:
+              kind: parameter_declaration
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
