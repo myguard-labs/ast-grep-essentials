@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-by-ref-param-self-recursion
+language: php
+severity: warning
+message: >-
+  This function takes a by-reference parameter and calls itself by plain name;
+  review the recursive call for shared array state.
+note: >-
+  Syntactic check only. It matches a function declaring a &$ parameter whose
+  body contains a plain-name call to the same function; it does not verify
+  that the passed argument is the same by-reference variable, nor runtime
+  iteration state.
+rule:
+  all:
+    - kind: function_definition
+    - has:
+        kind: formal_parameters
+        has:
+          kind: reference_modifier
+          stopBy: end
+        stopBy: end
+    - has:
+        pattern: 'walk($$$ARGS)'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
