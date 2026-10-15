@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-length-accumulator-assigned-in-loop
+language: c
+severity: warning
+message: >-
+  A length variable is assigned from a list element's length inside a loop;
+  use += to accumulate the total.
+note: >-
+  Single-file syntactic match on an assignment with a member-access length
+  expression inside a while loop; it does not verify the variable is a size
+  accumulator, the loop advances a list, or that the value is used in an
+  allocation.
+rule:
+  kind: assignment_expression
+  pattern: 'len = $X.len + 2'
+  inside:
+    kind: while_statement
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
