@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-fnptr-cast-unprototyped-empty-params
+language: c
+severity: warning
+message: >-
+  Function-pointer cast uses an empty parameter list, which disables prototype
+  checking.
+note: >-
+  Matches only the literal syntax of a cast whose function-pointer type has an
+  empty parameter list. It does not resolve the cast target's real signature,
+  the source expression's type, or whether the call is actually made through
+  an incompatible signature.
+rule:
+  kind: cast_expression
+  has:
+    kind: abstract_function_declarator
+    pattern: '$FN'
+    stopBy: end
+    all:
+      - has:
+          kind: parameter_list
+          not:
+            has:
+              kind: parameter_declaration
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
