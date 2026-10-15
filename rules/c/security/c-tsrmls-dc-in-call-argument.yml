@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-tsrmls-dc-in-call-argument
+language: c
+severity: warning
+message: >-
+  TSRMLS_DC is a declaration-form macro used as a call argument; use TSRMLS_CC
+  when passing the thread-safe context.
+note: >-
+  Purely syntactic check for a call whose last argument is the identifier
+  TSRMLS_DC. It does not verify macro definitions, types, or whether the call
+  is in a ZTS build.
+rule:
+  pattern: 'g(p TSRMLS_DC)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
