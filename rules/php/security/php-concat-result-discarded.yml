@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-concat-result-discarded
+language: php
+severity: warning
+message: This string concatenation result is computed and then discarded.
+note: >-
+  Syntactic check only. It matches a bare expression statement whose top-level
+  expression is a '.' concatenation; it does not verify runtime values, types,
+  or whether a side effect exists elsewhere.
+rule:
+  kind: expression_statement
+  has:
+    kind: binary_expression
+    pattern: '$A . $B'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
