@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-md5-email-without-lowercase
+language: php
+severity: warning
+message: >-
+  md5() is applied directly to $email without strtolower(); mixed-case
+  addresses will hash differently from their normalised form.
+note: >-
+  Single-file syntactic match on a direct md5() call whose sole argument is
+  the literal variable $email. It does not resolve types, aliases, or whether
+  normalisation happens elsewhere before the call.
+rule:
+  pattern: 'md5($email)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
