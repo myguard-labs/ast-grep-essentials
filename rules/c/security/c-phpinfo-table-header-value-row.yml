@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-phpinfo-table-header-value-row
+language: c
+severity: warning
+message: >-
+  php_info_print_table_header is given a computed value as its last argument;
+  a key/value row should use php_info_print_table_row.
+note: >-
+  Single-file syntactic match on a literal call to php_info_print_table_header
+  whose last argument is a direct function-call expression. It does not
+  resolve the callee, verify the PHP API version, or check runtime values.
+rule:
+  pattern: 'php_info_print_table_header($$$ARGS, $LAST($$$CALLARGS))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
