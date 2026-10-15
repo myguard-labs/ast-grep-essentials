@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-get-user-meta-missing-single-compare
+language: php
+severity: warning
+message: >-
+  get_user_meta() called with two arguments returns an array; comparing it
+  with == to a scalar will not behave as intended. Pass true as the third
+  argument.
+note: >-
+  Syntactic check only. It matches a two-argument get_user_meta call written
+  directly as the left operand of ==; it does not resolve the function, check
+  types, or verify the comparison value at runtime.
+rule:
+  all:
+    - kind: binary_expression
+    - has:
+        pattern: 'get_user_meta($$$ARGS)'
+        field: left
+    - pattern: 'get_user_meta($A, $B) == $C'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
