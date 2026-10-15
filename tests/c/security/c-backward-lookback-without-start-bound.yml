@@ -21,6 +21,9 @@ valid:
   - >-
     struct s { int b; }; int f(struct s *a, char *buf, char *p) { if (a->b &&
     buf + 1 <= p && *(p - 1) == '/') return 1; return 0; }
+  - >-
+    void f(unsigned char *start, unsigned char *p) { while (start != p) { if (*(p - 1) ==
+    ' ') return; p--; } }
 invalid:
   - >-
     int f(char *buf, char *p, int state) { if (state == 2 && *(p-1) == 'm' &&
@@ -37,3 +40,9 @@ invalid:
   - >-
     int f(char *p, unsigned n) { if ((n >> 1) == 0 && *(p - 1) == ',') return 1;
     return 0; }
+  - >-
+    void f(unsigned char *start, unsigned char *p) { while (p >= start) { if (*(p - 1) ==
+    ' ') return; p--; } }
+  - >-
+    void f(unsigned char *start, unsigned char *p) { while (start <= p) { if (*(p - 1) ==
+    ' ') return; p--; } }
