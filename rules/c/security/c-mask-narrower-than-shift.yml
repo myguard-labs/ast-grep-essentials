@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-mask-narrower-than-shift
+language: c
+severity: warning
+message: >-
+  Right shift applied directly to a masked value; verify the shift amount
+  against the mask width, since the result may always be zero.
+note: >-
+  Syntactic match only. Matches a right shift whose left operand is a
+  parenthesized bitwise-and with a literal numeric mask, and a literal numeric
+  shift amount. It does not compare the mask bit width with the shift amount
+  or resolve types, so it cannot confirm the result is always zero.
+rule:
+  all:
+    - pattern: '($X & $MASK) >> $N'
+    - has:
+        field: right
+        kind: number_literal
+        pattern: '$N'
+    - has:
+        field: left
+        kind: parenthesized_expression
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
