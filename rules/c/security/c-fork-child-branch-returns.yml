@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-fork-child-branch-returns
+language: c
+severity: warning
+message: >-
+  This fork child branch (pid == 0) ends with return instead of exit, so the
+  child may resume the parent's control flow.
+note: >-
+  Syntactic match only. Matches an if_statement whose condition is the literal
+  text pid == 0 and whose consequence block contains a return_statement; it
+  does not resolve fork calls, check reachability, or verify that the return
+  is the final statement.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        field: condition
+        regex: '^\(\s*pid\s*==\s*0\s*\)$'
+    - has:
+        field: consequence
+        has:
+          kind: return_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
