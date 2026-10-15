@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-token-get-all-unguarded
+language: php
+severity: warning
+message: >-
+  token_get_all() is called in a function with no earlier
+  function_exists('token_get_all') guard in that function.
+note: >-
+  Single-file syntactic check only. It looks for a literal token_get_all( call
+  inside a function body and a missing function_exists guard earlier in the
+  same function; it does not resolve namespaces, aliases, or runtime extension
+  state.
+rule:
+  pattern: 'token_get_all($$$ARGS)'
+  inside:
+    kind: function_definition
+    stopBy: end
+    all:
+      - not:
+          has:
+            pattern: 'function_exists(''token_get_all'')'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
