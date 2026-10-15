@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-ternary-assignment-statement
+language: php
+severity: warning
+message: >-
+  Ternary used as a statement with assignments in its arms; use an if/else
+  statement or assign the ternary result instead.
+note: >-
+  Single-file syntactic match on an expression statement whose top-level
+  ternary has assignment expressions in its consequence and alternative arms.
+  It does not resolve types, aliasing, or runtime values.
+rule:
+  kind: expression_statement
+  has:
+    kind: conditional_expression
+    all:
+      - has:
+          field: body
+          kind: assignment_expression
+      - has:
+          field: alternative
+          kind: assignment_expression
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
