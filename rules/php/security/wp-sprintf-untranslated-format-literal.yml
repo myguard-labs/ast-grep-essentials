@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-sprintf-untranslated-format-literal
+language: php
+severity: warning
+message: >-
+  This sprintf format string is a bare string literal with a % specifier and
+  is not wrapped in a translation call; consider wrapping it in __().
+note: >-
+  Syntactic check only. Matches a direct sprintf call whose first argument is
+  a bare string literal containing a % specifier, and skips calls where that
+  literal is the direct argument of __(). It does not know whether the output
+  is user-visible or whether the format is translated elsewhere.
+rule:
+  pattern: 'sprintf($FMT, $$$ARGS)'
+  all:
+    - has:
+        kind: string
+        regex: '%'
+        stopBy: end
+    - not:
+        has:
+          pattern: '__($$$_)'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
