@@ -1,0 +1,5 @@
+id: go-unsafe-address-of-param-as-handle
+valid:
+  - "package p\n\nimport \"unsafe\"\n\nfunc handle(tx *T) uint64 {\n\treturn *(*uint64)(unsafe.Pointer(tx))\n}"
+invalid:
+  - "package p\n\nimport \"unsafe\"\n\nfunc handle(tx T) uint64 {\n\treturn *(*uint64)(unsafe.Pointer(&tx))\n}"

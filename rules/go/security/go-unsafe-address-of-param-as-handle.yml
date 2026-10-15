@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-unsafe-address-of-param-as-handle
+language: go
+severity: warning
+message: >-
+  Address of a value parameter is reinterpreted through unsafe.Pointer; the
+  address is local to the call and must not be used as a handle.
+note: >-
+  Syntactic match only. Matches the literal expression unsafe.Pointer(&x) cast
+  to *uint64 for any identifier x; it does not verify that x is a value
+  parameter or resolve types, aliasing, or lifetime.
+rule:
+  pattern: '*(*uint64)(unsafe.Pointer(&$X))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
