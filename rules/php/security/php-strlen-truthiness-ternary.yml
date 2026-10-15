@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-strlen-truthiness-ternary
+language: php
+severity: warning
+message: >-
+  A bare strlen() call is used as the condition of a ternary; review whether
+  the string itself should be the truthiness test.
+note: >-
+  Syntactic match only. Truthiness of strlen() differs from the string's
+  truthiness (for example '0' is falsy but strlen('0') is 1), so this is
+  advisory and not auto-fixed.
+rule:
+  pattern: 'strlen($$$ARGS) ? $$$THEN : $$$ELSE'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
