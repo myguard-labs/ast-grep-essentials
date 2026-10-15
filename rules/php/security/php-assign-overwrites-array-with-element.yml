@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-assign-overwrites-array-with-element
+language: php
+severity: warning
+message: >-
+  This assignment overwrites a variable with an element read from that same
+  variable, discarding the array.
+note: >-
+  Syntactic single-file match only. It flags an assignment whose right-hand
+  side is a call with one argument that is an index read of the same literal
+  variable name, and does not resolve whether the array is used later,
+  aliased, or reassigned.
+rule:
+  kind: assignment_expression
+  all:
+    - has:
+        field: left
+        kind: variable_name
+        pattern: '$EXCERPT'
+    - has:
+        field: right
+        kind: function_call_expression
+        pattern: 'trim($EXCERPT[1])'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
