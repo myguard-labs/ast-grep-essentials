@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-unicode-escape-without-braces
+language: php
+severity: warning
+message: >-
+  Double-quoted PHP string uses a \uXXXX escape without braces; PHP keeps this
+  as literal text, not a code point. Use \u{XXXX} instead.
+note: >-
+  Syntactic check only. Matches double-quoted string literals whose text
+  contains a backslash-u followed by four hex digits and no opening brace; it
+  does not evaluate runtime values or resolve string concatenation.
+rule:
+  kind: encapsed_string
+  regex: '\\u[0-9a-fA-F]{4}'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
