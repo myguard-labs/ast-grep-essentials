@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-sql-double-quoted-literal
+language: php
+severity: warning
+message: >-
+  Single-quoted PHP string contains a double-quoted SQL value; MySQL in ANSI
+  mode may read it as an identifier.
+note: >-
+  Syntactic match only. Flags single-quoted PHP string literals containing a
+  double-quoted token; does not verify that the string is concatenated into
+  SQL or that ANSI mode is enabled.
+rule:
+  kind: string
+  pattern: '''$$$BODY'''
+  has:
+    regex: '\"[A-Za-z_][A-Za-z0-9_]*\"'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
