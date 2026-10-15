@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-guard-contradicts-enclosing-null-check
+language: php
+severity: warning
+message: 'Nested guard on the same variable contradicts the enclosing is_null() check.'
+note: >-
+  Syntactic match only. Matches an if whose condition is a direct is_null()
+  call on a variable with a nested if testing the same variable under a
+  negated is_string() call. Does not resolve types, aliasing, or runtime
+  values.
+rule:
+  pattern: |
+    if (is_null($VAR)) { if (! is_string($VAR)) { $$$BODY } }
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
