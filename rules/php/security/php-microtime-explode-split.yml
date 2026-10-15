@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-microtime-explode-split
+language: php
+severity: warning
+message: >-
+  This splits microtime() output on a space to compute elapsed time;
+  microtime(true) returns a float directly.
+note: >-
+  Matches only the literal call shape explode(' ', microtime()) with no
+  argument to microtime. It does not resolve types, aliases, or whether the
+  parts are later used for timing.
+rule:
+  pattern: 'explode('' '', microtime())'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
