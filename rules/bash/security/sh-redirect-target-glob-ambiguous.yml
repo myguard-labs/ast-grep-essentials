@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-redirect-target-glob-ambiguous
+language: bash
+severity: warning
+message: >-
+  Output redirection target contains an unquoted glob wildcard; it may fail
+  with an ambiguous redirect or write to an unintended file.
+note: >-
+  Syntactic check only. Matches a file_redirect whose destination word
+  contains a literal * or ? glob character; it does not resolve filesystem
+  matches, variable values, or quoting context beyond the shown syntax.
+rule:
+  kind: file_redirect
+  all:
+    - has:
+        field: destination
+        regex: '[*?]'
+    - not:
+        has:
+          kind: string
+    - not:
+        has:
+          kind: raw_string
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
