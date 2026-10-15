@@ -1,0 +1,5 @@
+id: c-apply-func-cast-hides-signature
+valid:
+  - "static int unlink_filename(zval *el) { return 0; }\nvoid destroy(HashTable *h) {\n\tzend_hash_apply(h, unlink_filename);\n}"
+invalid:
+  - "static int unlink_filename(char **f) { return 0; }\nvoid destroy(HashTable *h) {\n\tzend_hash_apply(h, (apply_func_t) unlink_filename);\n}"

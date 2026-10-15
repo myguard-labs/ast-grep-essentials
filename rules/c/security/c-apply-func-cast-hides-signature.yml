@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-apply-func-cast-hides-signature
+language: c
+severity: warning
+message: >-
+  Callback is cast to apply_func_t, which hides a possible signature mismatch
+  with the hash apply API.
+note: >-
+  Single-file syntactic match on a cast expression of the form (apply_func_t)
+  identifier passed as an argument. It does not verify the callback's real
+  parameter types, the API's expected signature, or whether the cast is
+  otherwise safe.
+rule:
+  pattern: 'zend_hash_apply($H, (apply_func_t) $F)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
