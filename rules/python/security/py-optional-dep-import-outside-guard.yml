@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-optional-dep-import-outside-guard
+language: python
+severity: warning
+message: >-
+  Unguarded import from a langchain_* package; wrap it in a try block or guard
+  it so a missing optional extra does not break module import.
+note: >-
+  Syntactic check only. Matches a from-import whose module starts with
+  langchain_ and that has no try ancestor in this file; it does not verify
+  that the package is an optional extra or that a guard exists elsewhere.
+rule:
+  kind: import_from_statement
+  pattern: 'from langchain_core.runnables import $$$NAMES'
+  not:
+    inside:
+      kind: try_statement
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
