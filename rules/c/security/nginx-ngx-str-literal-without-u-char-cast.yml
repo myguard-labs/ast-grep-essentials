@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: nginx-ngx-str-literal-without-u-char-cast
+language: c
+severity: warning
+message: 'String literal in a brace initializer lacks a (u_char *) cast.'
+note: >-
+  Syntactic match only on a brace initializer whose second element is a bare
+  string literal following a leading length. It does not resolve the declared
+  type or confirm the enclosing field is an ngx_str_t.
+rule:
+  kind: initializer_list
+  has:
+    kind: string_literal
+    regex: '^"GET '
+    stopBy: end
+  not:
+    has:
+      kind: cast_expression
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
