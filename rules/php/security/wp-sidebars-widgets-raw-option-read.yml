@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-sidebars-widgets-raw-option-read
+language: php
+severity: warning
+message: >-
+  Reading the sidebars_widgets option with get_option() bypasses
+  normalization; use wp_get_sidebars_widgets() instead.
+note: >-
+  Matches only a literal get_option call whose first argument is the string
+  'sidebars_widgets'. It does not resolve function identity, imports, or
+  namespaces, and cannot see indirect or dynamic option names.
+rule:
+  pattern: 'get_option(''sidebars_widgets'', $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
