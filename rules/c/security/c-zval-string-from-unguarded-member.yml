@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-zval-string-from-unguarded-member
+language: c
+severity: warning
+message: >-
+  ZVAL_STRING is given a struct member or global as its source without a
+  visible guard; a NULL value will crash.
+note: >-
+  Syntactic single-file match on a ZVAL_STRING call whose second argument is a
+  MyG(...) global call. It does not check enclosing if-tests for the same
+  expression by type or dataflow, and cannot prove the value is actually NULL
+  at runtime.
+rule:
+  all:
+    - pattern: 'ZVAL_STRING($RET, MyG($FIELD), $FLAG)'
+    - not:
+        inside:
+          kind: if_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
