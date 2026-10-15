@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-sprintf-into-sized-alloc
+language: c
+severity: warning
+message: >-
+  sprintf writes into a buffer sized by a separate allocation expression; use
+  a bounded or allocation-aware formatter.
+note: >-
+  Syntactic match only. Matches a literal sprintf call whose destination is a
+  variable; it does not verify that the buffer was allocated with emalloc or
+  malloc, nor that the computed size is wrong.
+rule:
+  pattern: 'sprintf($BUF, $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
