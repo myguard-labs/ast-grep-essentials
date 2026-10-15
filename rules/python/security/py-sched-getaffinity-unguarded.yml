@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-sched-getaffinity-unguarded
+language: python
+severity: warning
+message: >-
+  os.sched_getaffinity(...) is called outside a try block; it can raise
+  OSError on some kernels and containers.
+note: >-
+  Syntactic check only. Matches a literal os.sched_getaffinity call not nested
+  in any try block; it does not verify whether an enclosing handler catches
+  OSError, nor resolve the os alias or runtime platform support.
+rule:
+  all:
+    - pattern: 'os.sched_getaffinity($$$ARGS)'
+    - not:
+        inside:
+          kind: try_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
