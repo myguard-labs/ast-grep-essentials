@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-negated-did-action-init-user-load
+language: php
+severity: warning
+message: >-
+  This negated did_action('init') guard wraps a wp_get_current_user() call;
+  review whether the user refresh runs before init has fired.
+note: >-
+  Syntactic single-block check only. It matches a literal negated
+  did_action('init') if-condition enclosing a wp_get_current_user() call in
+  the same block; it does not resolve function identity, control flow beyond
+  the block, or runtime hook timing.
+rule:
+  pattern: |
+    if ( ! did_action('init') ) {
+      $$$BODY
+    }
+  has:
+    pattern: 'wp_get_current_user()'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
