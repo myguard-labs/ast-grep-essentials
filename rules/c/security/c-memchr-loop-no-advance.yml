@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-memchr-loop-no-advance
+language: c
+severity: warning
+message: >-
+  This while loop reassigns the memchr result to the same pointer it searched
+  from, and the body writes through that pointer without advancing it, so the
+  same match may repeat indefinitely.
+note: >-
+  Single-file syntactic match on a while condition of the form (p = memchr(p,
+  ...)) != NULL whose body contains a write through *p with no p++ in the same
+  statement. Does not prove that p is not advanced elsewhere in the body or
+  that the loop never terminates; no type or alias resolution.
+rule:
+  all:
+    - kind: while_statement
+    - has:
+        pattern: '$P = memchr($P, $$$ARGS)'
+        stopBy: end
+    - has:
+        pattern: '*$P = $V'
+        stopBy: end
+    - not:
+        has:
+          pattern: '$P++'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
