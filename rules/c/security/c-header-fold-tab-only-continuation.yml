@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-header-fold-tab-only-continuation
+language: c
+severity: warning
+message: >-
+  Header continuation check accepts only a tab as the folding character; RFC
+  7230 obs-fold also allows a space.
+note: >-
+  Syntactic match on a literal tab-only comparison of a dereferenced byte
+  inside a parenthesized condition. It does not prove the byte is in a
+  header-folding context and cannot see the surrounding parser; it may flag
+  legitimate tab-only code.
+rule:
+  pattern: 'if ((len > 0) && (*field == ''\t'')) { }'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
