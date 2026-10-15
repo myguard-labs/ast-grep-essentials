@@ -1,0 +1,13 @@
+id: c-hash-key-status-compared-to-failure
+valid:
+  - |-
+    if (zend_hash_get_current_key_ex(ht, &key, NULL, &num_key, 0, &pos) != HASH_KEY_IS_STRING) {
+      continue;
+    }
+    use(key);
+invalid:
+  - |-
+    if (zend_hash_get_current_key_ex(ht, &key, NULL, NULL, 0, &pos) == FAILURE) {
+      continue;
+    }
+    use(key);

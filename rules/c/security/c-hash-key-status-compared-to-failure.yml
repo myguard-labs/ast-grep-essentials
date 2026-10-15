@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-key-status-compared-to-failure
+language: c
+severity: warning
+message: >-
+  The return value of zend_hash_get_current_key_ex is compared against
+  FAILURE; compare it against HASH_KEY_IS_STRING or the other key type
+  constants instead.
+note: >-
+  Syntactic match only on a literal call with a literal FAILURE comparison;
+  does not verify the hash table type, the key usage, or runtime values.
+rule:
+  pattern: 'zend_hash_get_current_key_ex($$$ARGS) == FAILURE'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
