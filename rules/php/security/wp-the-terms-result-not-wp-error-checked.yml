@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-the-terms-result-not-wp-error-checked
+language: php
+severity: warning
+message: >-
+  Result of get_the_terms() is checked only for truthiness; a WP_Error return
+  would be treated as a term list. Add an is_wp_error() check.
+note: >-
+  Syntactic single-statement heuristic only. It matches an assignment from
+  get_the_terms() whose variable is later used in a negated truthiness
+  if-test, without any is_wp_error() call in the file. It does not resolve
+  types, dataflow, or control flow.
+rule:
+  all:
+    - kind: assignment_expression
+    - pattern: '$C = get_the_terms( $$$ARGS )'
+    - inside:
+        kind: program
+        stopBy: end
+        has:
+          pattern: 'if ( ! $C ) $$$BODY'
+          stopBy: end
+    - not:
+        has:
+          pattern: 'is_wp_error( $C )'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
