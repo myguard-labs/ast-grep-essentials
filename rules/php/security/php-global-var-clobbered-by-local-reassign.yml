@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-global-var-clobbered-by-local-reassign
+language: php
+severity: warning
+message: >-
+  This function declares a global variable and then assigns to that same
+  variable, overwriting shared global state.
+note: >-
+  Single-file syntactic match on a global declaration followed by a plain
+  assignment to the same variable inside the same function body. It does not
+  resolve aliases, runtime values, or whether the assignment is reached on
+  every path.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        kind: global_declaration
+        stopBy: end
+        has:
+          kind: variable_name
+          pattern: '$NAME'
+    - has:
+        kind: assignment_expression
+        stopBy: end
+        has:
+          kind: variable_name
+          pattern: '$NAME'
+          field: left
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
