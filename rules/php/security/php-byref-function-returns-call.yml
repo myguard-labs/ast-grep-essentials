@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-byref-function-returns-call
+language: php
+severity: warning
+message: >-
+  A function declared to return by reference returns a function-call result
+  directly; assign it to a variable first.
+note: >-
+  Syntactic single-file check only. Matches a by-reference function whose
+  return statement directly returns a call expression; it does not resolve
+  whether the callee actually returns by reference or inspect runtime values.
+rule:
+  all:
+    - kind: function_definition
+    - has:
+        kind: reference_modifier
+        stopBy: end
+    - has:
+        kind: return_statement
+        stopBy: end
+        has:
+          kind: function_call_expression
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
