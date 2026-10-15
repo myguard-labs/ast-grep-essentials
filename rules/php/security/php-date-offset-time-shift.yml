@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-date-offset-time-shift
+language: php
+severity: warning
+message: >-
+  date() receives a time() expression with a manual hour offset, which can
+  shift the timezone twice.
+note: >-
+  Syntactic match only: flags a literal date(...) call whose second argument
+  is a time() call plus a product. It does not verify the server timezone or
+  runtime values.
+rule:
+  pattern: 'date($FMT, time() + $OFFSET)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
