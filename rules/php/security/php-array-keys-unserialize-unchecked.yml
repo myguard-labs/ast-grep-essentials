@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-array-keys-unserialize-unchecked
+language: php
+severity: warning
+message: >-
+  array_keys() is applied directly to unserialize() output without checking
+  that the result is an array.
+note: >-
+  Matches only the literal nesting array_keys(unserialize(...)) in a single
+  file. It does not resolve types, check for a later is_array() guard, or
+  track values through variables.
+rule:
+  pattern: 'array_keys(unserialize($ARG))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
