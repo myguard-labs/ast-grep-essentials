@@ -1,0 +1,42 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-redirect-without-exit
+language: php
+severity: warning
+message: >-
+  wp_redirect() is not followed by exit or die in the same block; execution
+  continues after the redirect.
+note: >-
+  Single-file syntactic check only. It looks at the next sibling statement in
+  the same block and does not verify control flow, reachability, or whether a
+  later call exits.
+rule:
+  all:
+    - kind: expression_statement
+    - has:
+        pattern: 'wp_redirect($$$ARGS)'
+        stopBy: end
+    - not:
+        follows:
+          pattern: 'exit;'
+          stopBy: end
+    - not:
+        precedes:
+          kind: exit_statement
+          stopBy: end
+    - not:
+        follows:
+          pattern: 'die;'
+          stopBy: end
+    - not:
+        precedes:
+          pattern: 'die;'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
