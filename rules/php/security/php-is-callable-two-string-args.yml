@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-is-callable-two-string-args
+language: php
+severity: warning
+message: >-
+  is_callable() receives two string arguments; the second string is read as
+  the syntax_only flag, not as a method name.
+note: >-
+  Syntactic check only. Matches a direct is_callable call whose first two
+  arguments are both string literals; it does not resolve classes, methods, or
+  runtime values.
+rule:
+  pattern: 'is_callable($C, $D)'
+  kind: function_call_expression
+  has:
+    field: arguments
+    kind: arguments
+    has:
+      kind: argument
+      pattern: '$C'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
