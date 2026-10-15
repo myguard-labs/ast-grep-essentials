@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-sql-get-post-types-unfiltered
+language: php
+severity: warning
+message: >-
+  get_post_types() is called with no arguments and its result is concatenated
+  into a SQL IN list; pass explicit arguments to make the post type set
+  deliberate.
+note: >-
+  Single-file syntactic match on a zero-argument get_post_types() call
+  concatenated into a string literal. It does not resolve types, aliases, or
+  whether the query is reachable or sanitized elsewhere.
+rule:
+  pattern: 'join( "'', ''", get_post_types() )'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
