@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-dir-concat-missing-separator
+language: php
+severity: warning
+message: >-
+  __DIR__ is concatenated with a string literal that does not start with a
+  slash; the path may resolve to the wrong file.
+note: >-
+  Syntactic check only. It matches a literal __DIR__ . "..." concatenation
+  whose string literal does not begin with a slash; it does not verify
+  intentional suffixes, runtime values, or how the path is used.
+rule:
+  pattern: '__DIR__ . "$LIT"'
+  not:
+    regex: '^(?:__DIR__ \. "/)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
