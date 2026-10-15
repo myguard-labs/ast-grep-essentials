@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-schedule-event-once-recurrence
+language: php
+severity: warning
+message: >-
+  wp_schedule_event is called with the recurrence 'once', which is not a
+  recurring schedule; use wp_schedule_single_event for one-off events.
+note: >-
+  Single-file syntactic match on a direct wp_schedule_event call whose second
+  argument is the literal string 'once'. Does not resolve function identity,
+  imports, or runtime values.
+rule:
+  pattern: 'wp_schedule_event($A, ''once'', $B)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
