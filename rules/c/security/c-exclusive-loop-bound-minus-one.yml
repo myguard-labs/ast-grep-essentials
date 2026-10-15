@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-exclusive-loop-bound-minus-one
+language: c
+severity: warning
+message: >-
+  Loop bound uses '<' against (x + (n - 1)), which may exclude the last
+  element of a span; review the bound.
+note: >-
+  Single-file syntactic match on a for loop whose condition is a '<' binary
+  expression whose right side is a parenthesized sum containing a
+  parenthesized subtraction of 1. It does not resolve types, aliasing, or
+  whether the exclusion is intentional.
+rule:
+  kind: for_statement
+  has:
+    kind: binary_expression
+    pattern: '$VAR < ($BASE + ($N - 1))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
