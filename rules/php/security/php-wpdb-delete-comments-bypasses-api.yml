@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-wpdb-delete-comments-bypasses-api
+language: php
+severity: warning
+message: >-
+  Raw DELETE against the comments table via wpdb query() bypasses the comment
+  delete API and its meta cleanup; use wp_delete_comment() instead.
+note: >-
+  Matches only a literal $wpdb->query() call whose first argument is a
+  double-quoted string literal beginning with DELETE FROM $wpdb->comments. It
+  does not resolve variables, aliases, or runtime SQL, so dynamically built or
+  differently named queries are not detected.
+rule:
+  all:
+    - pattern: '$wpdb->query($SQL)'
+    - has:
+        kind: encapsed_string
+        regex: '^"DELETE FROM \$wpdb->comments\b'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
