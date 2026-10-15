@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-wrapper-method-used-not-inner-ssl
+language: c
+severity: warning
+message: >-
+  Method is read from the outer handle instead of the inner object that holds
+  the real method table.
+note: >-
+  Single-file syntactic match on a literal outer receiver member chain ending
+  in method->enc->export_keying; it does not verify that the outer and inner
+  objects are related or that a local is derived from the outer handle.
+rule:
+  pattern: '$S->method->enc->export_keying($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
