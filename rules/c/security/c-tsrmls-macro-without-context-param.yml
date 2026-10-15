@@ -1,0 +1,39 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-tsrmls-macro-without-context-param
+language: c
+severity: warning
+message: >-
+  This function passes TSRMLS_CC to a call but has no TSRMLS_DC or TSRMLS_CC
+  parameter and no TSRMLS_FETCH in its body.
+note: >-
+  Single-file syntactic check only. It looks for a literal TSRMLS_CC argument
+  in a function body whose signature lacks TSRMLS_DC or TSRMLS_CC and whose
+  body lacks TSRMLS_FETCH; it does not resolve macro definitions, callers, or
+  thread context at runtime.
+rule:
+  all:
+    - kind: function_definition
+    - has:
+        pattern: TSRMLS_CC
+        stopBy: end
+    - not:
+        has:
+          pattern: TSRMLS_DC
+          stopBy: end
+    - not:
+        has:
+          pattern: TSRMLS_CC
+          stopBy: neighbor
+    - not:
+        has:
+          pattern: TSRMLS_FETCH
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
