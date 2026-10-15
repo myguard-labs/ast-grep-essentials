@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-host-name-max-buffer-no-nul
+language: c
+severity: warning
+message: >-
+  Buffer sized exactly HOST_NAME_MAX is used as the gethostname destination;
+  it has no room for the terminating NUL.
+note: >-
+  Matches a local array declared with the literal size HOST_NAME_MAX whose
+  declaration is followed by an if-statement calling gethostname on the same
+  identifier. It does not verify same-function usage, buffer aliasing, or
+  runtime hostname length.
+rule:
+  pattern: 'char $BUF[HOST_NAME_MAX];'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
