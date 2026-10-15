@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-register-sidebar-name-untranslated
+language: php
+severity: warning
+message: >-
+  The sidebar 'name' is a bare string literal; wrap it in __() so it can be
+  translated.
+note: >-
+  Single-file syntactic match on a register_sidebar( array( 'name' =>
+  'literal' ) ) call. It does not resolve whether register_sidebar is the
+  WordPress function or check types, imports, or runtime values.
+rule:
+  pattern: 'register_sidebar(array(''name'' => $NAME, $$$REST))'
+  has:
+    pattern: '''name'' => ''$LIT'''
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
