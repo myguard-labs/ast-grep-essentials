@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-translatable-string-embedded-url
+language: php
+severity: warning
+message: >-
+  Translatable string embeds a hardcoded http URL in markup; move the URL into
+  a placeholder so it can be localized.
+note: >-
+  Syntactic match only. Flags a single-quoted string literal passed directly
+  to __() whose text contains an http:// URL; it does not resolve function
+  identity, imports, or whether the call is a WordPress translation function.
+  Only __() is covered by this proposal.
+rule:
+  pattern: '__(''$A'')'
+  has:
+    regex: 'http://'
+    kind: string_content
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
