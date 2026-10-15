@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-http-response-header-unglobaled-read
+language: php
+severity: warning
+message: >-
+  This function reads $http_response_header without a global declaration in
+  the same function body.
+note: >-
+  Single-file syntactic check. It looks only for a function body that contains
+  the $http_response_header variable and no global statement naming it in that
+  function; it does not verify local assignments, reachability, or the runtime
+  scope that the HTTP stream wrapper uses.
+rule:
+  all:
+    - kind: function_definition
+    - has:
+        pattern: '$http_response_header'
+        stopBy: end
+    - not:
+        has:
+          pattern: 'global $http_response_header;'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
