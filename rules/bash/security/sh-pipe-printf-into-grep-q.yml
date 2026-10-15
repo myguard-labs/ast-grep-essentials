@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-pipe-printf-into-grep-q
+language: bash
+severity: warning
+message: >-
+  Piping printf output into grep -q can fail under pipefail when grep exits
+  early and SIGPIPE hits the producer; use a here-string or file instead.
+note: >-
+  Syntactic match only: flags a literal printf of a variable piped directly
+  into a grep command with a -q-style flag. Does not verify pipefail is set,
+  grep's exact flag semantics, or input size.
+rule:
+  pattern: 'printf $FMT $VAR | grep $$$ARGS'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

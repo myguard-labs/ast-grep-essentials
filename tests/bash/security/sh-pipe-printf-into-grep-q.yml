@@ -1,0 +1,9 @@
+id: sh-pipe-printf-into-grep-q
+valid:
+  - |-
+    set -o pipefail
+    grep -qvE '^//' <<< "$changed"
+invalid:
+  - |-
+    set -o pipefail
+    printf "%s" "$changed" | grep -qvE '^//'
