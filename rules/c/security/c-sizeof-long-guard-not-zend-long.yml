@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-sizeof-long-guard-not-zend-long
+language: c
+severity: warning
+message: >-
+  This preprocessor guard tests SIZEOF_LONG; if the code uses zend_long, test
+  SIZEOF_ZEND_LONG instead.
+note: >-
+  Purely syntactic match on a literal SIZEOF_LONG token inside a preprocessor
+  condition. It does not check whether the surrounding code actually uses
+  zend_long or resolve types.
+rule:
+  kind: preproc_if
+  has:
+    pattern: SIZEOF_LONG
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
