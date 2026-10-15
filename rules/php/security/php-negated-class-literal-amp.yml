@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-negated-class-literal-amp
+language: php
+severity: warning
+message: >-
+  This preg_replace pattern uses a negated character class containing the
+  letters a, m, p, which excludes single characters rather than the intended
+  entity text.
+note: >-
+  Syntactic match on a literal pattern string containing a negated class with
+  the members amp; it does not resolve runtime values, aliasing, or whether
+  the regex is used for escaping.
+rule:
+  pattern: 'preg_replace(''#&([^amp;])#is'', $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
