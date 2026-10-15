@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-logical-and-on-flag-macro
+language: c
+severity: warning
+message: >-
+  Logical && is applied to an ALL_CAPS flag macro; a bitwise & may have been
+  intended.
+note: >-
+  Syntactic match only. Matches a binary && whose right operand is an ALL_CAPS
+  identifier; it does not verify that the left operand is an integer flags
+  variable or that the macro is a bit flag.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^&&$'
+    - has:
+        field: right
+        kind: identifier
+        regex: '^[A-Z][A-Z0-9_]*$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
