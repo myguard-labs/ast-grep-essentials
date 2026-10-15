@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-preg-replace-anchored-negated-class
+language: php
+severity: warning
+message: >-
+  This preg_replace call uses an anchored negated character class with an
+  empty replacement, so it removes characters only when the whole subject is
+  invalid and can pass mixed-content input through.
+note: >-
+  Purely syntactic match on a literal preg_replace call whose first argument
+  is a single-quoted pattern starting with ^ and ending with $ before the
+  closing delimiter, with an empty single-quoted replacement. It does not
+  resolve the call target, the subject value, or runtime behavior.
+rule:
+  kind: function_call_expression
+  all:
+    - pattern: 'preg_replace($PAT, '''', $SUBJ)'
+    - has:
+        kind: string
+        regex: '^''/\^\[\^.*\]\+\$/i''$'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
