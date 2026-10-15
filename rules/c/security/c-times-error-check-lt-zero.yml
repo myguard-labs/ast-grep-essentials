@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-times-error-check-lt-zero
+language: c
+severity: warning
+message: >-
+  Error test on times() result uses '< 0', but times() signals failure as
+  (clock_t)-1, which an unsigned clock_t never makes negative. Compare against
+  -1 instead.
+note: >-
+  Syntactic match only on an assignment of a times(...) call compared with '<
+  0'. Does not resolve clock_t signedness, types, or whether the result is
+  used elsewhere.
+rule:
+  pattern: '($X = times($$$ARGS)) < 0'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

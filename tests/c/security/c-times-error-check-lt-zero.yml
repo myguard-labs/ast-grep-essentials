@@ -1,0 +1,9 @@
+id: c-times-error-check-lt-zero
+valid:
+  - |-
+    #include <sys/times.h>
+    long f(struct tms *t) { long ticks; if ((ticks = times(t)) == -1) return -1; return ticks; }
+invalid:
+  - |-
+    #include <sys/times.h>
+    long f(struct tms *t) { long ticks; if ((ticks = times(t)) < 0) return -1; return ticks; }
