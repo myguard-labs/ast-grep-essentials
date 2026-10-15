@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-bitwise-or-preg-match-condition
+language: php
+severity: warning
+message: >-
+  Two preg_match calls are combined with bitwise | inside a condition; use
+  logical || instead.
+note: >-
+  Single-file syntactic match on a bitwise_expression whose operator is | and
+  whose both operands are preg_match calls written directly. It does not
+  resolve function identity, types, or runtime values.
+rule:
+  all:
+    - kind: binary_expression
+    - has:
+        field: operator
+        regex: '^\|$'
+    - pattern: 'preg_match($$$A) | preg_match($$$B)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
