@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-getter-macro-uses-set-command
+language: c
+severity: warning
+message: >-
+  This getter-style macro passes a SET control command to the control
+  dispatcher.
+note: >-
+  Single-file syntactic check on macro text only; it matches the literal name
+  pattern and the presence of a _SET_ token in the macro body and does not
+  verify the runtime command value, the dispatcher semantics, or whether the
+  macro is ever used as a getter.
+rule:
+  kind: preproc_function_def
+  regex: '^#define\s+\w*_get_\w*\s*\('
+  has:
+    pattern: '$ARG'
+    regex: _SET_
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
