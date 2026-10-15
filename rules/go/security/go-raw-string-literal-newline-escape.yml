@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-raw-string-literal-newline-escape
+language: go
+severity: warning
+message: >-
+  Backtick raw string contains a backslash escape sequence such as \n or \r\n,
+  which stays literal text and is not interpreted as a newline.
+note: >-
+  Matches raw string literals whose text contains a backslash followed by n or
+  by r and n. It is purely syntactic and cannot tell intentional uses such as
+  regex or template strings from accidental escape misuse, so reviewers must
+  judge intent.
+rule:
+  kind: raw_string_literal
+  regex: '\\(r\\n|n)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
