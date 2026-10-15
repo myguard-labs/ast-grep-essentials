@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-macro-multi-statement-no-do-while
+language: c
+severity: warning
+message: >-
+  This macro body contains a statement-terminating semicolon and is not
+  wrapped in do { ... } while (0), so it may expand to multiple statements.
+note: >-
+  Single-file syntactic match on preprocessor definitions whose text contains
+  a semicolon and no do-while wrapper. It does not verify macro usage,
+  expansion context, or whether the semicolons are inside nested braces or
+  strings.
+rule:
+  kind: preproc_def
+  regex: ';'
+  not:
+    regex: 'do\s*\{'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
