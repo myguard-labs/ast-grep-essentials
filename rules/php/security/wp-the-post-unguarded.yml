@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-the-post-unguarded
+language: php
+severity: warning
+message: >-
+  the_post() is called as a bare top-level statement with no enclosing guard;
+  verify a have_posts() check protects it.
+note: >-
+  Syntactic approximation only. Matches a bare the_post() expression statement
+  that has no enclosing if, loop, or block in the shown syntax; it does not
+  verify that a guard exists elsewhere or that posts are present.
+rule:
+  all:
+    - pattern: 'the_post();'
+    - not:
+        inside:
+          kind: if_statement
+    - not:
+        inside:
+          kind: while_statement
+    - not:
+        inside:
+          kind: foreach_statement
+    - not:
+        inside:
+          kind: compound_statement
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
