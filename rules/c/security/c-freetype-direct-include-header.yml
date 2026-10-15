@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-freetype-direct-include-header
+language: c
+severity: warning
+message: >-
+  Include ft2build.h first and then FT_FREETYPE_H instead of including
+  freetype/freetype.h directly.
+note: >-
+  Matches the literal preprocessor include text freetype/freetype.h in a
+  single file; it does not resolve include paths, configuration headers, or
+  build layout.
+rule:
+  kind: preproc_include
+  has:
+    field: path
+    regex: 'freetype/freetype\.h'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
