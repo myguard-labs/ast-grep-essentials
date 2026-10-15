@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-alloc-null-check-wrong-object
+language: c
+severity: warning
+message: >-
+  A pointer field was assigned from an allocator, but the next NULL check
+  tests the enclosing object instead of that field.
+note: >-
+  Single-file syntactic match on literal receiver and field names; it does not
+  resolve types, aliasing, or whether the allocator can return NULL.
+rule:
+  kind: compound_statement
+  has:
+    stopBy: end
+    kind: if_statement
+    pattern: 'if (r == NULL) $$$BODY'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

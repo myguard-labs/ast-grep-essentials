@@ -1,0 +1,9 @@
+id: c-alloc-null-check-wrong-object
+valid:
+  - >-
+    typedef struct { void *c; } R; void *alloc(void); int f(R *r) { r->c =
+    alloc(); if (r->c == NULL) return -1; return 0; }
+invalid:
+  - >-
+    typedef struct { void *c; } R; void *alloc(void); int f(R *r) { r->c =
+    alloc(); if (r == NULL) return -1; return 0; }
