@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-unprototyped-definition-empty-parens
+language: c
+severity: warning
+message: >-
+  Function definition uses an empty parameter list `()`; use `(void)` to
+  declare that it takes no arguments.
+note: >-
+  Syntactic check only. Matches function definitions whose parameter list is
+  literally empty; it does not verify calls, prototypes elsewhere in the
+  translation unit, or macro-generated declarations.
+rule:
+  kind: function_definition
+  has:
+    field: declarator
+    kind: function_declarator
+    has:
+      field: parameters
+      kind: parameter_list
+      pattern: '()'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
