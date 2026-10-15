@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-call-arg-assignment
+language: php
+severity: warning
+message: >-
+  Assignment inside a call argument list overwrites a variable as a side
+  effect; review this call.
+note: >-
+  Syntactic only. Matches a method call whose argument list directly contains
+  an assignment expression. Does not resolve receiver types, function
+  identity, or whether the assignment is intentional.
+rule:
+  kind: argument
+  has:
+    kind: assignment_expression
+    stopBy: end
+  inside:
+    kind: arguments
+    stopBy: end
+    inside:
+      kind: member_call_expression
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
