@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-implicit-int-function-definition
+language: c
+severity: warning
+message: >-
+  Function definition has a storage class but no return type, so it relies on
+  implicit int.
+note: >-
+  Purely syntactic match on a file-scope static definition with no visible
+  return type; it does not check types, macros, or whether the declaration is
+  in a header or a call site.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        kind: storage_class_specifier
+        regex: '^static$'
+    - not:
+        has:
+          kind: primitive_type
+    - not:
+        has:
+          kind: type_identifier
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
