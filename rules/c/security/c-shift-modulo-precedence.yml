@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-shift-modulo-precedence
+language: c
+severity: warning
+message: >-
+  The shift count is an unparenthesized modulo expression, so % binds before
+  >> and the modulo applies to the count.
+note: >-
+  Single-file syntactic match on a right-shift whose right operand is a bare %
+  binary expression. Does not verify operand types, value ranges, or whether
+  the author intended this precedence.
+rule:
+  pattern: '$X >> $A % $B'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
