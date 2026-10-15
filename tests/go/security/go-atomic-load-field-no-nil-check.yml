@@ -1,0 +1,9 @@
+id: go-atomic-load-field-no-nil-check
+valid:
+  - |-
+    type proposer struct{ state atomic.Pointer[build] }
+    func (p *proposer) Pre() *Pre { if s := p.state.Load(); s != nil { return s.Pre }; return nil }
+invalid:
+  - |-
+    type proposer struct{ state atomic.Pointer[build] }
+    func (p *proposer) Pre() *Pre { return p.state.Load().Pre }
