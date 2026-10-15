@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-inclusive-bound-index-check
+language: c
+severity: warning
+message: >-
+  Inclusive upper-bound check guards an array subscript with the same index;
+  verify the bound is an element count rather than a last-valid index.
+note: >-
+  Syntactic match only. Cannot confirm that the macro is an element count or
+  that the subscripted array has that size; intended for review, not proof of
+  an off-by-one.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        pattern: '$IDX <= $MAX'
+        stopBy: end
+    - has:
+        pattern: '$ARR[$IDX]'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
