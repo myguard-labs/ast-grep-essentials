@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-bitwise-and-boolean-operands
+language: php
+severity: warning
+message: >-
+  Bitwise & is used with a negation operand inside an if condition; check
+  whether logical && was intended.
+note: >-
+  Purely syntactic check. It matches a binary & whose right operand is a
+  direct ! negation, inside an if statement, without resolving types, runtime
+  values, or whether the operands are booleans.
+rule:
+  all:
+    - kind: binary_expression
+      pattern: '$LEFT & !$X'
+      inside:
+        kind: if_statement
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
