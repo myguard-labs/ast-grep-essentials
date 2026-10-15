@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-zobjce-before-object-type-check
+language: c
+severity: warning
+message: >-
+  Z_OBJCE_PP is used in a condition without a preceding Z_TYPE_PP type check
+  guarding it with a short-circuit &&.
+note: >-
+  Syntactic single-file check only; it matches the literal Z_OBJCE_PP(x) call
+  inside an instanceof_function call within an if condition and does not
+  resolve types, aliasing, or runtime values.
+rule:
+  pattern: 'instanceof_function(Z_OBJCE_PP($X), $$$ARGS)'
+  inside:
+    kind: if_statement
+    stopBy: end
+  not:
+    inside:
+      kind: binary_expression
+      stopBy: end
+      has:
+        pattern: 'Z_TYPE_PP($X) == IS_OBJECT'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

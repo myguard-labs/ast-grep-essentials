@@ -1,0 +1,12 @@
+id: c-zobjce-before-object-type-check
+valid:
+  - >-
+    static int f(zval **parameter, zend_class_entry *ce TSRMLS_DC) { if
+    (Z_TYPE_PP(parameter) == IS_OBJECT &&
+    instanceof_function(Z_OBJCE_PP(parameter), ce TSRMLS_CC)) { return 1; }
+    return 0; }
+invalid:
+  - >-
+    static int f(zval **parameter, zend_class_entry *ce TSRMLS_DC) { if
+    (!instanceof_function(Z_OBJCE_PP(parameter), ce TSRMLS_CC)) { return 0; }
+    return 1; }
