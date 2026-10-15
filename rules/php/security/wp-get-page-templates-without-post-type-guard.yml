@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-get-page-templates-without-post-type-guard
+language: php
+severity: warning
+message: >-
+  This if condition calls get_page_templates() without a post_type comparison
+  in the same condition.
+note: >-
+  Syntactic single-node check only. It looks for an if statement whose
+  condition contains a get_page_templates() call and no post_type comparison
+  in that condition; it does not resolve types, dataflow, or whether a guard
+  exists elsewhere.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        pattern: 'get_page_templates()'
+        stopBy: end
+    - not:
+        has:
+          pattern: '$POST->post_type'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
