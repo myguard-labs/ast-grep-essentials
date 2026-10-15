@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-translated-post-name-unsanitized
+language: php
+severity: warning
+message: >-
+  Translated string assigned to 'post_name' without sanitize_title() wrapping
+  it.
+note: >-
+  Single-file syntactic check for a literal 'post_name' array key whose value
+  is a direct _x(), __() or _e() call. It does not resolve imports, types, or
+  runtime values, and does not verify that the translated string is sanitized
+  elsewhere.
+rule:
+  kind: array_element_initializer
+  all:
+    - has:
+        kind: string
+        regex: '^[''"]post_name[''"]$'
+    - has:
+        kind: function_call_expression
+        pattern: '_x($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
