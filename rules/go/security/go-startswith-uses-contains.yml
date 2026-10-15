@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-startswith-uses-contains
+language: go
+severity: warning
+message: >-
+  Function named *StartsWith returns strings.Contains; a prefix check should
+  use strings.HasPrefix.
+note: >-
+  Matches only a literal strings.Contains call inside a Go function
+  declaration whose name ends in StartsWith. It does not resolve imports or
+  aliases and cannot confirm the call is semantically a prefix check.
+rule:
+  kind: function_declaration
+  all:
+    - has:
+        field: name
+        regex: 'StartsWith$'
+    - has:
+        kind: return_statement
+        pattern: 'return strings.Contains($$$ARGS)'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
