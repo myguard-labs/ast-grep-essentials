@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-opcode-rewrite-without-kind-check
+language: c
+severity: warning
+message: >-
+  Opcode of a previously emitted op is rewritten without first checking its
+  current opcode.
+note: >-
+  Syntactic only. Matches assignments of the form X->opcode = ... with no
+  enclosing if-check in the same file; it does not resolve types, aliasing, or
+  whether the guard tests the same op.
+rule:
+  pattern: '$OP->opcode = $VAL'
+  not:
+    inside:
+      kind: if_statement
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
