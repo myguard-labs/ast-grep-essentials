@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-copy-source-from-tmp
+language: bash
+severity: warning
+message: >-
+  This cp or mv copies a file whose literal source path starts under /tmp/, a
+  shared writable directory.
+note: >-
+  Matches only a literal /tmp/ source operand in a cp or mv command by syntax;
+  does not check file ownership, permissions, symlinks, or runtime values.
+rule:
+  all:
+    - kind: command
+    - pattern: '$CMD $$$ARGS'
+    - has:
+        field: name
+        regex: '^(cp|mv)$'
+    - has:
+        kind: word
+        regex: '^/tmp/'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
