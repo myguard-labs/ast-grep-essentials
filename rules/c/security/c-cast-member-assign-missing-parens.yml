@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-cast-member-assign-missing-parens
+language: c
+severity: warning
+message: >-
+  Cast applied directly to a member access on the left of an assignment; the
+  cast binds to the member expression, not the base pointer. Add parentheses
+  if the base pointer was meant to be cast.
+note: >-
+  Syntactic match only. Matches an assignment whose left side is a cast
+  expression with a member access operand written without parentheses. Does
+  not resolve types or confirm that the parse is invalid for the specific
+  compiler.
+rule:
+  pattern: '($T)$P->$M = $V'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
