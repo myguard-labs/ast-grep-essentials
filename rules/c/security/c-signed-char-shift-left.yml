@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-signed-char-shift-left
+language: c
+severity: warning
+message: >-
+  Left shift of a subscripted plain char pointer may sign-extend before the
+  shift.
+note: >-
+  Syntactic match only. Matches a left shift whose left operand is a subscript
+  of a direct (char *) cast; it does not verify the pointer's signedness,
+  aliasing, or actual byte values at runtime.
+rule:
+  pattern: '((char *)$P)[$I] << $N'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
