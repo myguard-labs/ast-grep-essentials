@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-sprintf-strlen-sum-heap-overflow
+language: c
+severity: warning
+message: >-
+  sprintf writes into a destination with no bound; verify the destination
+  allocation covers the formatted output.
+note: >-
+  Single-file syntactic match on a sprintf call whose format argument is a
+  literal string and whose destination is a plain identifier. It does not
+  verify that the destination came from malloc, that its size is
+  strlen-derived, or that the write exceeds the allocation; those need
+  dataflow or type information.
+rule:
+  pattern: 'sprintf($DST, "$$$FMT", $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
