@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-nonstatic-inline-definition
+language: c
+severity: warning
+message: >-
+  File-scope inline function definition without static storage class may cause
+  link-time external linkage issues.
+note: >-
+  Syntactic single-file match only. It flags file-scope function definitions
+  whose specifiers include inline and no static; it does not check whether the
+  function is declared elsewhere, uses extern, or is defined in a header.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        kind: storage_class_specifier
+        regex: '^inline$'
+        stopBy: end
+    - not:
+        has:
+          kind: storage_class_specifier
+          regex: '^static$'
+          stopBy: end
+    - inside:
+        kind: translation_unit
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
