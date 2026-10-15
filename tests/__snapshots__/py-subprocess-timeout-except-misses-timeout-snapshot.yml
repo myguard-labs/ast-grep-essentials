@@ -1,0 +1,23 @@
+id: py-subprocess-timeout-except-misses-timeout
+snapshots:
+  ? |
+    import subprocess
+
+    def f():
+        try:
+            subprocess.run(["yr", "check"], timeout=10)
+        except OSError:
+            pass
+  : labels:
+    - source: |-
+        try:
+                subprocess.run(["yr", "check"], timeout=10)
+            except OSError:
+                pass
+      style: primary
+      start: 32
+      end: 121
+    - source: subprocess.run(["yr", "check"], timeout=10)
+      style: secondary
+      start: 45
+      end: 88
