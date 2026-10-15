@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-wpdb-blogs-direct-update
+language: php
+severity: warning
+message: >-
+  Direct $wpdb->update() on the blogs table bypasses update_blog_details();
+  use the blog-details API instead.
+note: >-
+  Single-file syntactic match on a literal $wpdb->blogs table argument in a
+  $wpdb->update() call. It does not resolve receiver identity, imports, or
+  whether a wrapper already handles cache and hooks.
+rule:
+  pattern: '$WPDB->update($wpdb->blogs, $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
