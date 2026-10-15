@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-flags-field-assigned-masked-value
+language: c
+severity: warning
+message: >-
+  Plain assignment of a bitmask-ANDed value to a flags member overwrites bits
+  outside the mask.
+note: >-
+  Syntactic match only on a literal OG(flags) receiver-style assignment whose
+  right side is a bitwise AND. It does not verify types, aliasing, or whether
+  the full overwrite is intended.
+rule:
+  pattern: 'OG(flags) = $A & $B'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
