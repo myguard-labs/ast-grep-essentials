@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-decimal-literal-exceeds-int
+language: c
+severity: warning
+message: >-
+  Decimal integer literal has no L or U suffix and may exceed INT_MAX; its
+  type is implementation-dependent.
+note: >-
+  Syntactic check only. Matches decimal integer literals with no suffix and
+  does not evaluate the literal's value, so literals at or below INT_MAX and
+  hex literals are not distinguished by magnitude here; it does not resolve
+  target type sizes or context.
+rule:
+  pattern: '$LIT'
+  kind: number_literal
+  regex: '^[1-9][0-9]*$'
+  not:
+    regex: '^[0-9]{1,9}$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
