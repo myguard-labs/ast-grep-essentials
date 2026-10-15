@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-update-user-option-empty-delete
+language: php
+severity: warning
+message: >-
+  update_user_option() is called with a literal empty string value; consider
+  delete_user_option() to remove the option.
+note: >-
+  Matches only the literal call shape with a literal empty string as the third
+  argument. It does not resolve WordPress functions, verify the option is
+  meant to be removed, or check imports, aliases, or runtime values.
+rule:
+  pattern: 'update_user_option($USER, $KEY, '''')'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
