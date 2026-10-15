@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-single-quoted-var-in-string
+language: php
+severity: warning
+message: >-
+  A single-quoted PHP string contains a $variable token that PHP will not
+  interpolate; the literal text is emitted instead.
+note: >-
+  Syntactic check only. Flags single-quoted string literals whose text
+  contains a $identifier token; it does not confirm the variable exists or
+  that the literal is intended as plain text.
+rule:
+  all:
+    - kind: string
+    - regex: '^''[^'']*\$[A-Za-z_][A-Za-z0-9_]*[^'']*''$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
