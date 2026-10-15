@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-byte-compare-nbsp-literal
+language: go
+severity: warning
+message: >-
+  A string byte index is compared with 160 (0xA0), a UTF-8 continuation byte,
+  not the non-breaking space character U+00A0.
+note: >-
+  Purely syntactic match on an index expression compared with the literal 160.
+  It does not resolve types or prove the operand is a string, and it does not
+  check surrounding code for correct UTF-8 handling.
+rule:
+  pattern: '$X[$I] == 160'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
