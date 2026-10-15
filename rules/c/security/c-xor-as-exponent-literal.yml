@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-xor-as-exponent-literal
+language: c
+severity: warning
+message: >-
+  Binary '^' between two integer literals is XOR in C, not exponentiation;
+  verify the intended operation.
+note: >-
+  Matches only a binary '^' whose left and right operands are both number
+  literals in the syntax tree. It does not check types, context, or whether
+  the expression is a bitmask constant, so it may flag intentional XOR.
+rule:
+  pattern: '$A ^ $B'
+  all:
+    - has:
+        field: left
+        kind: number_literal
+    - has:
+        field: right
+        kind: number_literal
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
