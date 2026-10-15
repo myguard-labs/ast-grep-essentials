@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-enum-member-windows-macro-name
+language: c
+severity: warning
+message: >-
+  Enumerator named ERROR collides with a macro defined by Windows wingdi.h;
+  rename or prefix it.
+note: >-
+  Syntactic match only on an enumerator whose identifier is exactly ERROR
+  inside an enum body. It does not check whether wingdi.h or any Windows
+  header is included, and it does not resolve macros or types.
+rule:
+  kind: enumerator
+  has:
+    field: name
+    regex: '^ERROR$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
