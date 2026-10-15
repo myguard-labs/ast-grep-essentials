@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-int32-bound-off-by-one-literal
+language: c
+severity: warning
+message: >-
+  Comparison against 2147483648 admits 2^31, one past INT32_MAX; review
+  whether the intended signed 32-bit limit is off by one.
+note: >-
+  Purely syntactic match on a '>' comparison with the literal 2147483648. It
+  does not resolve types, so legitimate unsigned or 64-bit uses of the same
+  literal will also match and need review.
+rule:
+  pattern: '$X > 2147483648'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
