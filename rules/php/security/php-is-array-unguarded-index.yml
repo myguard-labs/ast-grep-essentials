@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-is-array-unguarded-index
+language: php
+severity: warning
+message: >-
+  is_array() is called on an array index without an isset() or
+  array_key_exists() guard in the same condition; a missing index may emit an
+  undefined-index notice.
+note: >-
+  Single-file syntactic check only. It matches a literal is_array() call whose
+  argument is a literal $x[0] index and does not look for isset() or
+  array_key_exists() guards elsewhere in the condition or resolve whether the
+  index can be absent at runtime.
+rule:
+  pattern: 'is_array($ARR[0])'
+  not:
+    inside:
+      pattern: 'isset($ARR[0]) && $$$_'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
