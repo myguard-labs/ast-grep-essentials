@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-error-suppress-file-operation
+language: php
+severity: warning
+message: >-
+  Error suppression with @ on a filesystem call hides the failure; check the
+  return value or handle errors explicitly.
+note: >-
+  Syntactic match only. It flags a direct @-prefixed call to rename, unlink or
+  copy with a literal function name; it does not resolve aliases, wrappers, or
+  whether the callee actually touches the filesystem.
+rule:
+  pattern: '@rename($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
