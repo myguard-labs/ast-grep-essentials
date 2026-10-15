@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-zend-list-insert-missing-tsrmls
+language: c
+severity: warning
+message: >-
+  zend_list_insert is called with two arguments and no trailing TSRMLS_CC
+  argument; this breaks ZTS builds.
+note: >-
+  Matches the literal call syntax of zend_list_insert with exactly two
+  arguments where the second argument is a plain identifier, so a trailing
+  TSRMLS_CC is not present. It does not resolve macros, types, or build
+  configuration.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^zend_list_insert$'
+    - has:
+        field: arguments
+        kind: argument_list
+        regex: '^\(\s*[A-Za-z_][A-Za-z0-9_]*\s*,\s*[A-Za-z_][A-Za-z0-9_]*\s*\)$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
