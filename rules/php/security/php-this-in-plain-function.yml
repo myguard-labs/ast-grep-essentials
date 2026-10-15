@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-this-in-plain-function
+language: php
+severity: warning
+message: >-
+  $this is used inside a plain function that is not nested in a class; $this
+  is undefined here.
+note: >-
+  Syntactic check only. Matches a $this-> member access inside a function
+  declaration with no class declaration ancestor; it does not verify runtime
+  binding, closures, or traits.
+rule:
+  all:
+    - pattern: '$this->get_var($$$ARGS)'
+    - inside:
+        kind: function_definition
+        stopBy: end
+    - not:
+        inside:
+          kind: class_declaration
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
