@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-hardcoded-table-prefix-sql
+language: php
+severity: warning
+message: >-
+  SQL string uses a hardcoded wp_ table name; use $wpdb->prefix or a $wpdb
+  table property instead.
+note: >-
+  Syntactic single-file match only. It flags PHP string literals whose text
+  contains FROM or JOIN followed by a literal wp_ table name; it does not
+  resolve $wpdb, table prefixes, or runtime SQL construction.
+rule:
+  kind: string
+  regex: '(?i)\b(FROM|JOIN)\s+wp_[A-Za-z0-9_]+'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
