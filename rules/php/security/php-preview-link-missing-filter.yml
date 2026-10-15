@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-preview-link-missing-filter
+language: php
+severity: warning
+message: >-
+  Preview URL built with add_query_arg and get_permalink is not passed through
+  the preview_post_link filter.
+note: >-
+  This is a single-file syntactic check for the literal
+  add_query_arg('preview', 'true', get_permalink(...)) call shape. It does not
+  resolve whether a preview_post_link hook exists or whether the call is
+  reached at runtime.
+rule:
+  pattern: 'add_query_arg(''preview'', ''true'', get_permalink($$$ARGS))'
+  not:
+    inside:
+      pattern: 'apply_filters(''preview_post_link'', $$$_)'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
