@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-logical-not-before-mask-test
+language: c
+severity: warning
+message: >-
+  Logical ! is applied to the left operand of & in a flag test; the test reads
+  (!mask) & FLAG rather than the flag bit.
+note: >-
+  Single-file syntactic match on a binary_expression whose left operand is a
+  unary ! applied to a bare identifier and whose operator is &. It does not
+  resolve types or confirm that the identifier is a bitmask.
+rule:
+  pattern: '! $MASK & $FLAG'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
