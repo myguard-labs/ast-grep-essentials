@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-term-link-href-unescaped
+language: php
+severity: warning
+message: >-
+  get_term_link() output is concatenated into an HTML string without an
+  escaping wrapper such as esc_attr or esc_url.
+note: >-
+  Syntactic check only. It matches a literal get_term_link( ... ) call used as
+  a direct operand of string concatenation and does not verify the surrounding
+  HTML context, resolve the function identity, or track values through
+  variables.
+rule:
+  all:
+    - pattern: '''<a href="'' . get_term_link($$$ARGS)'
+    - not:
+        inside:
+          pattern: 'esc_attr($$$INNER)'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
