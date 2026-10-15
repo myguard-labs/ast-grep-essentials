@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-switch-blog-without-restore
+language: php
+severity: warning
+message: >-
+  This function calls switch_to_blog() without a restore_current_blog() call
+  in the same function body.
+note: >-
+  Single-file syntactic check only. It looks for a switch_to_blog() call and
+  the absence of a restore_current_blog() call within the enclosing function;
+  it does not prove that a return path is reached after the switch, nor check
+  control flow, aliasing, or runtime blog state.
+rule:
+  all:
+    - kind: function_definition
+    - has:
+        pattern: 'switch_to_blog($$$ARGS)'
+        stopBy: end
+    - not:
+        has:
+          pattern: 'restore_current_blog()'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
