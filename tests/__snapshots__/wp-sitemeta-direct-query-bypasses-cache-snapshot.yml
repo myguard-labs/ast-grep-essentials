@@ -1,0 +1,16 @@
+id: wp-sitemeta-direct-query-bypasses-cache
+snapshots:
+  ? function f( $option ) { global $wpdb; return $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s AND site_id = %d", $option, $wpdb->siteid ) ); }
+  : labels:
+    - source: $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s AND site_id = %d", $option, $wpdb->siteid ) )
+      style: primary
+      start: 45
+      end: 182
+    - source: $wpdb->prepare( "SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s AND site_id = %d", $option, $wpdb->siteid )
+      style: secondary
+      start: 61
+      end: 180
+    - source: $wpdb->sitemeta
+      style: secondary
+      start: 101
+      end: 116

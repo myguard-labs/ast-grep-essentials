@@ -1,0 +1,8 @@
+id: wp-sitemeta-direct-query-bypasses-cache
+valid:
+  - 'function f( $option ) { global $wpdb; return get_site_option( $option ); }'
+invalid:
+  - >-
+    function f( $option ) { global $wpdb; return $wpdb->get_row( $wpdb->prepare(
+    "SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s AND site_id =
+    %d", $option, $wpdb->siteid ) ); }
