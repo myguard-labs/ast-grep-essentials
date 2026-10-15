@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-clear-scheduled-hook-scalar-args
+language: php
+severity: warning
+message: >-
+  wp_clear_scheduled_hook() second argument is not an array literal; the args
+  may not match the scheduled event.
+note: >-
+  Syntactic check only. Flags any second argument that is not written as an
+  array( ) literal, so a variable that already holds an array will also be
+  flagged. Does not resolve types or values.
+rule:
+  pattern: 'wp_clear_scheduled_hook($HOOK, $ARG)'
+  not:
+    pattern: 'wp_clear_scheduled_hook($HOOK, array($$$ITEMS))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
