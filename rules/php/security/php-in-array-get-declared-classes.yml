@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-in-array-get-declared-classes
+language: php
+severity: warning
+message: >-
+  in_array() is scanning get_declared_classes() to test class existence; use
+  class_exists() instead.
+note: >-
+  Matches the literal in_array call whose second argument is a direct
+  get_declared_classes() call. It does not resolve aliases, namespaces, or
+  runtime values, and does not verify that the class is loaded or absent.
+rule:
+  pattern: 'in_array($ARG, get_declared_classes())'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
