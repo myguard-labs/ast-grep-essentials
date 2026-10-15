@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-discarded-translation-call
+language: php
+severity: warning
+message: >-
+  Translation call used as a bare statement; its returned string is discarded
+  and nothing is printed. Wrap it in echo if output was intended.
+note: >-
+  Purely syntactic match on a bare __() call expression statement. It does not
+  resolve the function identity, imports, or whether the surrounding context
+  expects output; echo, return, and assignment forms are not matched.
+rule:
+  kind: expression_statement
+  has:
+    kind: function_call_expression
+    pattern: '__($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
