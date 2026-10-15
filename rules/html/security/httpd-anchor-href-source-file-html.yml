@@ -1,0 +1,39 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: httpd-anchor-href-source-file-html
+language: html
+severity: warning
+message: >-
+  This anchor links to a C source file; link to the rendered documentation
+  page instead.
+note: >-
+  Syntactic check only. Matches an anchor element whose href attribute value
+  ends in .c; it does not verify the target file exists or that a
+  documentation page is intended.
+rule:
+  kind: element
+  all:
+    - has:
+        kind: start_tag
+        has:
+          kind: tag_name
+          regex: '^a$'
+    - has:
+        kind: start_tag
+        has:
+          kind: attribute
+          has:
+            kind: attribute_name
+            regex: '^href$'
+          all:
+            - has:
+                kind: quoted_attribute_value
+                regex: '\.c"$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
