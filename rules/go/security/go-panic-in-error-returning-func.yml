@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-panic-in-error-returning-func
+language: go
+severity: warning
+message: >-
+  Panic with a literal message inside a function whose results include error;
+  consider returning the error instead.
+note: >-
+  Single-file syntactic match on a panic call with a string literal argument
+  inside a function_declaration whose source text includes error in its result
+  list. It does not resolve types, check whether the panic guards a true
+  invariant, or verify reachability.
+rule:
+  all:
+    - pattern: 'panic("invalid line")'
+    - inside:
+        kind: function_declaration
+        has:
+          field: result
+          regex: error
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
