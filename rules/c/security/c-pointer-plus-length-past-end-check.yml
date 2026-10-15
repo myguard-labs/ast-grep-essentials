@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pointer-plus-length-past-end-check
+language: c
+severity: warning
+message: >-
+  Pointer offset compared against an end pointer; compare the length against
+  the remaining span instead.
+note: >-
+  Single-file syntactic match on a literal binary '+' inside a '>' comparison
+  with a bare identifier end pointer. It does not verify pointer types,
+  aliasing, or that the offset expression is an integer; it may miss other
+  forms and may flag non-pointer arithmetic.
+rule:
+  pattern: '$P + $N > $END'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
