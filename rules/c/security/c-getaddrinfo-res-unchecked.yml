@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-getaddrinfo-res-unchecked
+language: c
+severity: warning
+message: >-
+  The getaddrinfo result pointer is used after a failure check that only tests
+  the return code; add a res == NULL check before dereferencing.
+note: >-
+  Syntactic single-file heuristic only. It matches an if-condition calling
+  getaddrinfo with a bare return-code test whose body dereferences a pointer
+  with the arrow operator; it does not verify that getaddrinfo can return
+  success with a NULL result, nor track aliasing or reachability.
+rule:
+  pattern: |
+    if (getaddrinfo($$$ARGS)) {
+      $$$BODY
+    }
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

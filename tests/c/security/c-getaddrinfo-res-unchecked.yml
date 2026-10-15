@@ -1,0 +1,21 @@
+id: c-getaddrinfo-res-unchecked
+valid:
+  - |-
+    #include <netdb.h>
+    int f(const char *host) {
+     struct addrinfo hints, *res;
+     if (getaddrinfo(host, NULL, &hints, &res) || res == NULL) {
+     return 0;
+     }
+     return res->ai_family;
+    }
+invalid:
+  - |-
+    #include <netdb.h>
+    int f(const char *host) {
+     struct addrinfo hints, *res;
+     if (getaddrinfo(host, NULL, &hints, &res)) {
+     return 0;
+     }
+     return res->ai_family;
+    }
