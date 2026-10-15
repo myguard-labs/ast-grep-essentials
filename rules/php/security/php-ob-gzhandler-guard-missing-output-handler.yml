@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-ob-gzhandler-guard-missing-output-handler
+language: php
+severity: warning
+message: >-
+  This gzip-enable condition checks ob_gzhandler and zlib.output_compression
+  but does not check output_handler, so output may be double-encoded.
+note: >-
+  Single-file syntactic match on the literal function_exists and ini_get calls
+  in an if condition; it does not resolve runtime ini values, aliasing, or
+  whether output_handler is set elsewhere.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        pattern: 'function_exists(''ob_gzhandler'')'
+        stopBy: end
+    - has:
+        pattern: '!ini_get(''zlib.output_compression'')'
+        stopBy: end
+    - not:
+        has:
+          pattern: 'ini_get(''output_handler'')'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
