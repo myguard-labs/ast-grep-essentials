@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-defined-constant-truthiness
+language: php
+severity: warning
+message: >-
+  This defined() check is used as a bare condition, so the constant counts as
+  enabled whenever it exists, even if its value is false.
+note: >-
+  Syntactic check only. It matches a bare defined('NAME') call inside a
+  parenthesized condition that is not combined with a further && operand in
+  the same expression. It does not evaluate the constant's value, resolve
+  definitions, or track aliasing.
+rule:
+  all:
+    - pattern: 'defined(''FTP_SSL'')'
+    - inside:
+        kind: parenthesized_expression
+        stopBy: end
+    - not:
+        inside:
+          kind: binary_expression
+          stopBy: end
+          has:
+            pattern: FTP_SSL
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
