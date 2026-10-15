@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pcfg-openfile-old-signature
+language: c
+severity: warning
+message: >-
+  This call uses the pointer-returning form of ap_pcfg_openfile; the
+  status-returning apr_status_t out-parameter form is expected.
+note: >-
+  Matches the literal call syntax of a direct ap_pcfg_openfile assignment with
+  the result tested against NULL in the same snippet. It does not resolve
+  types, declarations, or the actual API version of the header in use.
+rule:
+  pattern: '$FP = ap_pcfg_openfile($P, $F)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
