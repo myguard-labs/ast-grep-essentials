@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-unsigned-int-sum-bounds-check
+language: c
+severity: warning
+message: >-
+  Sum of two values cast to unsigned int is used in a comparison and may wrap
+  before the bound check.
+note: >-
+  Syntactic match only. It checks a literal relational expression whose left
+  operand adds two (unsigned int) casts; it does not resolve types, value
+  ranges, or whether the wrap is reachable.
+rule:
+  pattern: '$A > $B'
+  all:
+    - has:
+        pattern: '(unsigned int) $X'
+        stopBy: end
+    - has:
+        pattern: '(unsigned int) $Y'
+        stopBy: end
+    - inside:
+        kind: return_statement
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
