@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-hardcoded-http-scheme-href
+language: php
+severity: warning
+message: >-
+  This sprintf format string hardcodes an http:// scheme inside an href
+  attribute; build the scheme from the current request or site URL instead.
+note: >-
+  Matches only string literals containing an href attribute with a literal
+  http:// scheme passed as a sprintf format argument. It is purely syntactic
+  and does not resolve the value at runtime or check whether the site is
+  served over HTTPS.
+rule:
+  pattern: 'sprintf(''$FMT'', $$$ARGS)'
+  has:
+    regex: 'href=\\?"http://'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
