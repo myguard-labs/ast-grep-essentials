@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-check-after-deref-in-or
+language: c
+severity: warning
+message: >-
+  A pointer is dereferenced in an earlier operand of a || condition than its
+  null test.
+note: >-
+  Syntactic check only. Matches a literal p->field comparison that precedes a
+  !p operand in the same || chain; it does not resolve types, aliasing, or
+  whether p can actually be null.
+rule:
+  pattern: '$A || !$P'
+  all:
+    - has:
+        pattern: '$P->$F'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
