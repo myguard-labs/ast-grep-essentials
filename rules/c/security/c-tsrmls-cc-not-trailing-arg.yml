@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-tsrmls-cc-not-trailing-arg
+language: c
+severity: warning
+message: >-
+  TSRMLS_CC appears in a call argument list before another argument; it must
+  be the final argument.
+note: >-
+  Syntactic check only. Matches a call whose argument list has TSRMLS_CC as an
+  identifier followed by a further argument; it does not resolve macros,
+  types, or whether the callee is a ZTS-aware function.
+rule:
+  pattern: '$F($$$BEFORE, TSRMLS_CC, $$$AFTER)'
+  all:
+    - has:
+        pattern: TSRMLS_CC
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
