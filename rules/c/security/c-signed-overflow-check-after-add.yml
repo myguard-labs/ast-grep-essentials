@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-signed-overflow-check-after-add
+language: c
+severity: warning
+message: >-
+  This relational check compares an additive expression with an integer
+  literal; signed overflow in the addition is undefined behaviour and the
+  check may be optimized away.
+note: >-
+  Single-file syntactic match on a binary comparison whose left operand is a
+  binary addition with an integer literal. Does not verify that the operands
+  are signed, that overflow is possible, or that the check is a range check;
+  those need types and value analysis.
+rule:
+  pattern: '$A + $LIT < $B'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
