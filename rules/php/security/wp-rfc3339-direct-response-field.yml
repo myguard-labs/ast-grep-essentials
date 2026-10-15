@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-rfc3339-direct-response-field
+language: php
+severity: warning
+message: >-
+  The result of mysql_to_rfc3339() is stored directly into an array element
+  without checking for false.
+note: >-
+  Syntactic match only. It flags a direct array element assignment whose
+  right-hand side is a mysql_to_rfc3339() call; it does not check whether a
+  false guard exists elsewhere or resolve the function at runtime.
+rule:
+  pattern: '$ARR[$KEY] = mysql_to_rfc3339($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
