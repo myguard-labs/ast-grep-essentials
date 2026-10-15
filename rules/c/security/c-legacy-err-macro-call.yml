@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-legacy-err-macro-call
+language: c
+severity: warning
+message: >-
+  Legacy library-prefixed error macro call with an _F_ function code; removed
+  in OpenSSL 3, use ERR_raise.
+note: >-
+  Purely syntactic match on a call whose callee name ends in err and whose
+  first argument is an identifier containing _F_. It does not verify that the
+  macro comes from OpenSSL headers or resolve types or aliases.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^[A-Z][A-Z0-9]*err$'
+    - has:
+        field: arguments
+        has:
+          kind: identifier
+          regex: _F_
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
