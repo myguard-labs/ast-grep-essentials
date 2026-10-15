@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-range-check-empty-on-overlong-length
+language: c
+severity: warning
+message: >-
+  This if returns early when offset is at or past the total or length exceeds
+  the total, so an overlong length yields an empty result instead of being
+  clamped.
+note: >-
+  Purely syntactic match on an if condition ORing an offset-vs-total check
+  with a length-vs-total check, whose consequence is a return statement. It
+  does not resolve types, values, or whether the total is the same buffer; it
+  may flag intentional error returns.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        kind: parenthesized_expression
+        has:
+          kind: binary_expression
+          pattern: '$OFF >= $TOTAL || $LEN > $TOTAL'
+    - has:
+        kind: return_statement
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
