@@ -1,0 +1,21 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-kses-wraps-trim-with-extra-arg
+language: php
+severity: warning
+message: >-
+  wp_kses() receives a trim() call with two arguments, so the allowed-tags
+  value is passed to trim() as a character mask.
+note: >-
+  Single-file syntactic match on the literal wp_kses(trim(..., ...)) shape
+  only. It does not resolve function identity, imports, or runtime values.
+rule:
+  pattern: 'wp_kses(trim($A, $B))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
