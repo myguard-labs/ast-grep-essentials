@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-unescape-backslash-read-past-end
+language: c
+severity: warning
+message: >-
+  This backslash check reads the next byte with no bound check between the two
+  reads, which can go past the end of the buffer.
+note: >-
+  Syntactic match only. It matches an if-condition of the form *p++ == '\\'
+  whose body reads *p++ again, with no bound check in the same condition. It
+  does not verify buffer bounds, aliasing, or reachability.
+rule:
+  pattern: |
+    if (*$P++ == '\\') { $$$BODY }
+  has:
+    pattern: '*$P++'
+    stopBy: end
+    inside:
+      kind: compound_statement
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
