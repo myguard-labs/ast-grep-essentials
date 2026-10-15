@@ -12,7 +12,9 @@ note: >-
   It does not resolve whether the string is a shortcode at runtime, whether
   the value is later escaped, or the data flow of the variable.
 rule:
-  pattern: '''[caption caption="'' . addslashes( $VAR ) . ''"]'''
+  pattern:
+    context: '<?php ''[caption caption="'' . addslashes( $VAR ) . ''"]'';'
+    selector: binary_expression
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0

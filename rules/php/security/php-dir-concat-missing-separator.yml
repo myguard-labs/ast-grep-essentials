@@ -11,7 +11,9 @@ note: >-
   whose string literal does not begin with a slash; it does not verify
   intentional suffixes, runtime values, or how the path is used.
 rule:
-  pattern: '__DIR__ . "$LIT"'
+  pattern:
+    context: '<?php __DIR__ . "$LIT";'
+    selector: binary_expression
   not:
     regex: '^(?:__DIR__ \. "/)'
 metadata:
