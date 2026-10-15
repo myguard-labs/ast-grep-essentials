@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-negated-is-callable-guard-calls-target
+language: php
+severity: warning
+message: >-
+  This negated is_callable() guard's body calls the same function it just
+  checked is not callable.
+note: >-
+  Syntactic single-file match only. It matches a literal is_callable('f')
+  string argument negated in an if condition and a direct call to f in the
+  body; it does not resolve runtime definitions, fallback definitions, or
+  aliasing.
+rule:
+  kind: if_statement
+  pattern: 'if ( ! is_callable( ''$NAME'' ) ) { $$$BODY }'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
