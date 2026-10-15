@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-valid-predicate-negation-missing
+language: c
+severity: warning
+message: >-
+  A call whose name contains "valid" is used as a bare truth test guarding a
+  return; verify the predicate polarity.
+note: >-
+  Syntactic heuristic only. Matches a bare call to a function whose name
+  contains "valid" used directly as an if condition with a return in the body;
+  it does not resolve the callee, its return semantics, or whether the if is a
+  correct guard.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        field: condition
+        kind: parenthesized_expression
+        has:
+          kind: call_expression
+          pattern: '$CALL'
+          has:
+            field: function
+            regex: valid
+    - has:
+        kind: compound_statement
+        has:
+          kind: return_statement
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
