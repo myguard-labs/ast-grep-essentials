@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-strlen-end-pointer-as-last-char
+language: c
+severity: warning
+message: >-
+  Pointer assigned to one past the end of a string (s + strlen(s));
+  dereferencing it reads the NUL terminator, not the last character.
+note: >-
+  Syntactic match only on the literal assignment of `value + strlen(value)` to
+  a pointer. It does not resolve types or aliasing, and legitimate
+  one-past-end sentinels also match, so review hits manually.
+rule:
+  pattern: '$P = $S + strlen($S)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
