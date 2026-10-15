@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-rewrite-php-file-anchor
+language: php
+severity: warning
+message: >-
+  Rewrite-map key string ends in a PHP filename anchor, so a trailing path
+  after the file is not matched.
+note: >-
+  Syntactic match on a single array-literal key string whose text ends in
+  \.php$ with no trailing path group. Does not resolve runtime rewrite
+  behavior, WP_Rewrite handling, or whether the key is used for security
+  decisions.
+rule:
+  kind: string
+  regex: '\\\.php\$''$'
+  inside:
+    kind: array_element_initializer
+    stopBy: end
+    has:
+      kind: string
+      stopBy: end
+      regex: '\\\.php\$''$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
