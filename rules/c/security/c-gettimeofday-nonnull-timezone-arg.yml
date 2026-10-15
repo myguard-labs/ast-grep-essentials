@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-gettimeofday-nonnull-timezone-arg
+language: c
+severity: warning
+message: >-
+  gettimeofday is passed a non-NULL timezone argument; the timezone argument
+  is obsolete and ignored on most platforms, so pass NULL instead.
+note: >-
+  Single-file syntactic match on a gettimeofday call whose second argument is
+  an address-of expression. It does not resolve the callee's declaration,
+  includes, or platform behavior, and does not match a timezone variable
+  passed by name.
+rule:
+  pattern: 'gettimeofday($A, &$B)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
