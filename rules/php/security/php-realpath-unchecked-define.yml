@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-realpath-unchecked-define
+language: php
+severity: warning
+message: >-
+  A define() value is a direct realpath() call with no false check; realpath()
+  can return false.
+note: >-
+  Syntactic match only. Matches a literal define() call whose second argument
+  is a direct realpath() call; it does not verify that no surrounding check
+  exists or resolve runtime values.
+rule:
+  pattern: 'define($NAME, realpath($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
