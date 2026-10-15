@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-free-null-result-after-self-reassign
+language: c
+severity: warning
+message: >-
+  This variable is assigned the result of a call over its own input and then
+  freed inside a NULL check, so the original pointer may be leaked.
+note: >-
+  Syntactic match only. Matches a literal self-assignment from a call followed
+  by an if-NULL branch that frees the same variable; it does not verify types,
+  aliasing, or runtime values.
+rule:
+  pattern: |
+    if ($X == NULL) {
+      xmlFreeNode($X);
+    }
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
