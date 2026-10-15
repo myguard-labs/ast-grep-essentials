@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-is-array-unguarded-offset
+language: php
+severity: warning
+message: >-
+  is_array() is called on an array offset read without an isset() guard on
+  that offset.
+note: >-
+  Syntactic single-file match only. It flags is_array($var[N]) calls whose
+  argument is a literal offset read; it does not check for isset() or
+  array_key_exists() elsewhere in the condition, nor resolve types or runtime
+  values.
+rule:
+  pattern: 'is_array($VAR[$IDX])'
+  not:
+    inside:
+      pattern: 'isset($VAR[$IDX]) && $$$REST'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
