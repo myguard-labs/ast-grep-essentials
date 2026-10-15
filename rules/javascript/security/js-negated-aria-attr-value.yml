@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-negated-aria-attr-value
+language: javascript
+severity: warning
+message: >-
+  This .attr call on an aria-* attribute writes a logical negation of an
+  attribute read; jQuery will not write 'true' or 'false' for it.
+note: >-
+  Single-file syntactic match on a literal receiver with a literal aria-*
+  attribute name and a negated .attr read of the same receiver and name. Does
+  not resolve receiver identity, aliasing, or runtime values.
+rule:
+  pattern: '$EL.attr($NAME, !$EL.attr($NAME))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
