@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-ssh2-sftp-call-with-session-link
+language: php
+severity: warning
+message: >-
+  This ssh2_sftp_* call passes $this->link, which is the SSH2 session resource
+  rather than the SFTP subsystem resource from ssh2_sftp().
+note: >-
+  Syntactic check only. Matches a direct ssh2_sftp_* call whose first argument
+  is the literal $this->link; it does not resolve what $this->link holds at
+  runtime or confirm the property's assigned value.
+rule:
+  pattern: 'ssh2_sftp_rename($this->link, $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
