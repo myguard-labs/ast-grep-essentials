@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-get-pages-number-without-hierarchical
+language: php
+severity: warning
+message: >-
+  get_pages() call sets a 'number' limit without an explicit 'hierarchical'
+  key; review whether the limit should apply to the flat page list.
+note: >-
+  Single-file syntactic check only. It matches a literal get_pages call whose
+  array literal has a 'number' key and no 'hierarchical' key; it does not
+  resolve the function, evaluate values, or know the WordPress default at
+  runtime.
+rule:
+  all:
+    - pattern: 'get_pages($$$ARGS)'
+    - has:
+        pattern: '''number'' => $_'
+        stopBy: end
+    - not:
+        has:
+          pattern: '''hierarchical'' => $_'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
