@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-linked-list-walk-without-null-check
+language: c
+severity: warning
+message: >-
+  This empty-body for-loop walks a pointer via ->next with no NULL test in its
+  condition; the search may dereference NULL if the target is absent.
+note: >-
+  Purely syntactic single-file match on a for-loop whose condition compares a
+  pointer member (->tag != value) and whose update advances via ->next. It
+  does not prove the pointer can be NULL at runtime, does not check for guards
+  elsewhere in the function, and does not resolve types or aliasing.
+rule:
+  pattern: 'for (; $P->tag != $W; $P = $P->next);'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
