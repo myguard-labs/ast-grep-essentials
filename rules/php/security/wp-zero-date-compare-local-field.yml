@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-zero-date-compare-local-field
+language: php
+severity: warning
+message: >-
+  Comparing the zero-date sentinel against post_date (local time) is
+  suspicious; the sentinel belongs to post_date_gmt.
+note: >-
+  Syntactic match only on a literal '0000-00-00 00:00:00' compared with a
+  ->post_date property access. It does not resolve receiver types, aliasing,
+  or runtime values, and does not verify draft semantics.
+rule:
+  pattern: '''0000-00-00 00:00:00'' == $X->post_date'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
