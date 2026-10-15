@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-get-page-in-foreach
+language: php
+severity: warning
+message: >-
+  A get_page() call runs inside a foreach loop, so one lookup executes per
+  iteration.
+note: >-
+  Single-file syntactic match on a literal get_page() call inside a foreach
+  body; it does not verify that the call is a database lookup, that the loop
+  is hot, or that the call cannot be hoisted.
+rule:
+  pattern: 'get_page($$$ARGS)'
+  inside:
+    kind: foreach_statement
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
