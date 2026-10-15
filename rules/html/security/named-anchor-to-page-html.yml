@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: named-anchor-to-page-html
+language: html
+severity: warning
+message: >-
+  Anchor uses a name attribute whose value ends in .html; this is not a
+  navigable link target.
+note: >-
+  Syntactic check only. Matches a literal name attribute with a value ending
+  in .html on an a element; it does not verify the page exists or how the link
+  is used.
+rule:
+  kind: start_tag
+  all:
+    - has:
+        kind: tag_name
+        regex: '^a$'
+    - has:
+        kind: attribute
+        all:
+          - has:
+              kind: attribute_name
+              regex: '^name$'
+          - has:
+              kind: quoted_attribute_value
+              regex: '\.html"$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
