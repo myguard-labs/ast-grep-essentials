@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-int-literal-shift-variable-count
+language: c
+severity: warning
+message: >-
+  Unsuffixed integer literal 1 is shifted by a variable count in a compound
+  bitwise-or assignment; the shift is performed in int.
+note: >-
+  Purely syntactic match on a compound |= whose right operand is a literal 1
+  shifted by a non-constant count. Does not resolve types or verify that the
+  count is out of range for int or that the target is wider than int.
+rule:
+  pattern: '$LHS |= 1 << $COUNT'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
