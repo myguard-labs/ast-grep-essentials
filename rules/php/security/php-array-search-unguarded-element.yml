@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-array-search-unguarded-element
+language: php
+severity: warning
+message: >-
+  array_search() receives a subscript expression as haystack without a ??
+  fallback; a missing key passes null.
+note: >-
+  Syntactic check only. Matches array_search calls whose haystack argument is
+  a subscript expression with no ?? operator; it does not verify that the key
+  is actually unset at runtime or resolve types.
+rule:
+  all:
+    - pattern: 'array_search($$$ARGS, $ARR[$KEY])'
+    - not:
+        pattern: 'array_search($$$ARGS, $ARR[$KEY] ?? $FALLBACK)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
