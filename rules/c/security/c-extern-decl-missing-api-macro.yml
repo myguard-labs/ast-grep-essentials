@@ -1,0 +1,34 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-extern-decl-missing-api-macro
+language: c
+severity: warning
+message: >-
+  Extern variable declared inside a function body without an export macro
+  before its type; verify it matches the exported definition.
+note: >-
+  Purely syntactic single-file match on a function-local extern declaration
+  with a plain type specifier; it does not resolve the definition, linkage, or
+  whether the symbol is actually exported, and it may flag plain externs that
+  need no macro.
+rule:
+  kind: declaration
+  all:
+    - has:
+        kind: storage_class_specifier
+        regex: '^extern$'
+    - inside:
+        kind: function_definition
+        stopBy: end
+    - not:
+        has:
+          kind: type_identifier
+          regex: '^ZEND_API$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
