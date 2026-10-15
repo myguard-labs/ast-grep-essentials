@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-curl-exit-masked-by-pipe
+language: bash
+severity: warning
+message: >-
+  A curl call piped into another command inside a command substitution hides
+  curl's exit status.
+note: >-
+  Single-file syntactic match on a literal curl command used as the left side
+  of a pipeline inside $(...). It does not check pipefail settings,
+  exit-status handling, or whether the result is used.
+rule:
+  pattern: '$(curl $$$ARGS | $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
