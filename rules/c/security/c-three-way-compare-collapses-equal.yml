@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-three-way-compare-collapses-equal
+language: c
+severity: warning
+message: >-
+  This ternary returns -1 for non-positive operands, so equal operands do not
+  yield 0.
+note: >-
+  Syntactic match only on a two-arm ternary whose condition is a greater-than
+  test and whose false arm is a literal -1. It does not verify operand types,
+  runtime values, or that the function is used as a comparator.
+rule:
+  pattern: '$X > 0 ? 1 : -1'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
