@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-template-option-default-theme-stylesheet
+language: php
+severity: warning
+message: >-
+  The template key is set to WP_DEFAULT_THEME, which is a stylesheet slug; the
+  parent template must be resolved from the theme header instead.
+note: >-
+  Single-file syntactic match on an array entry whose key is the literal
+  string 'template' and whose value is the literal WP_DEFAULT_THEME constant.
+  It does not resolve constant values, theme headers, or runtime data flow.
+rule:
+  kind: array_element_initializer
+  all:
+    - has:
+        kind: string
+        regex: '^[''"]template[''"]$'
+        stopBy: end
+    - has:
+        kind: name
+        regex: '^WP_DEFAULT_THEME$'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
