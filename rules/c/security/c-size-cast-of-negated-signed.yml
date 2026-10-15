@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-size-cast-of-negated-signed
+language: c
+severity: warning
+message: >-
+  Casting a negated plain identifier to an unsigned type; negating the
+  most-negative signed value is undefined behavior, so review the operand.
+note: >-
+  Syntactic match only on a cast whose operand is a parenthesized unary
+  negation of a plain identifier. Does not check the identifier's type, value
+  range, or whether it can be the most-negative value.
+rule:
+  pattern: '(size_t)(-$ID)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
