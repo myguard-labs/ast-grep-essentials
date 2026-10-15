@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-badge-label-untranslated
+language: php
+severity: warning
+message: >-
+  Array value under the 'label' key is a bare string literal instead of a
+  translation call.
+note: >-
+  Single-file syntactic match on a literal 'label' key whose value is a bare
+  string literal inside an array literal. It does not resolve whether the
+  array is user-facing or whether a translation wrapper is applied elsewhere.
+rule:
+  kind: array_creation_expression
+  has:
+    kind: array_element_initializer
+    all:
+      - has:
+          kind: string
+          pattern: '''label'''
+      - not:
+          has:
+            kind: function_call_expression
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
