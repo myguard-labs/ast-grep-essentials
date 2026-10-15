@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-current-user-can-legacy-edit-themes
+language: php
+severity: warning
+message: >-
+  current_user_can() is checked against the literal capability 'edit_themes';
+  verify the gate matches the menu or link that leads to it.
+note: >-
+  Matches only the literal string 'edit_themes' passed directly to a
+  current_user_can() call in this file. It does not resolve the function at
+  runtime, check the capability registry, or confirm that the gate and menu
+  are consistent.
+rule:
+  pattern: 'current_user_can(''edit_themes'')'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
