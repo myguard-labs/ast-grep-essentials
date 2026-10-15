@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-zero-skip-loop-unbounded
+language: c
+severity: warning
+message: >-
+  This while loop tests a pointer dereference against zero with no bound in
+  the condition while advancing the pointer.
+note: >-
+  Single-file syntactic check only. It matches a while loop whose condition is
+  a literal dereference compared to zero and does not verify buffer bounds,
+  aliasing, or reachability.
+rule:
+  pattern: 'while (*$P == 0) $BODY'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
