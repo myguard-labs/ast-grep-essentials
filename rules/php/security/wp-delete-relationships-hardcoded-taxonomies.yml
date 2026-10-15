@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-delete-relationships-hardcoded-taxonomies
+language: php
+severity: warning
+message: >-
+  wp_delete_object_term_relationships() is given a literal array of taxonomy
+  names; custom taxonomies may be skipped.
+note: >-
+  Syntactic match only. Matches a direct call whose second argument is a
+  literal array(...) literal; it does not check which taxonomies are
+  registered, whether the array is complete, or whether the call is reachable.
+rule:
+  pattern: 'wp_delete_object_term_relationships($ID, array($$$TAXS))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
