@@ -1,0 +1,11 @@
+id: c-function-pointer-cast-to-other-signature
+valid:
+  - |-
+    typedef int (*cb_t)(void *ctx, int v);
+    int use(cb_t fn, void *ctx);
+    int run(void *ctx) { return use((void *)ctx, ctx); }
+invalid:
+  - |-
+    typedef int (*cb_t)(void *ctx, int v);
+    int use(cb_t fn, void *ctx);
+    int run(void *ctx) { return use((cb_t)ctx, ctx); }
