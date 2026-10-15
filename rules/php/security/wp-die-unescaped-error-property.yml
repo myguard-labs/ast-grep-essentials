@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-die-unescaped-error-property
+language: php
+severity: warning
+message: >-
+  wp_die receives a ->ERROR property directly as its message without an
+  escaping function.
+note: >-
+  Single-file syntactic check on the literal call shape wp_die($x->ERROR). It
+  does not resolve the receiver's type or prove the value is server-supplied,
+  and it does not track values through variables.
+rule:
+  pattern: 'wp_die($OBJ->ERROR)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
