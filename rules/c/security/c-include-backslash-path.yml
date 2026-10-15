@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-include-backslash-path
+language: c
+severity: warning
+message: >-
+  Include path uses a backslash separator; this resolves only on Windows-style
+  hosts and breaks cross-platform or case-sensitive builds.
+note: >-
+  Purely syntactic check on the literal angle-bracket include text; it does
+  not verify that the header exists or how the build resolves paths.
+rule:
+  kind: preproc_include
+  has:
+    kind: system_lib_string
+    regex: '\\'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
