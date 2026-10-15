@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-responsewriter-optional-iface-assertion
+language: go
+severity: warning
+message: >-
+  Direct type assertion to http.Flusher, http.Hijacker, or http.Pusher misses
+  writers that expose the interface only through Unwrap; consider
+  http.NewResponseController.
+note: >-
+  Syntactic check only. Matches a comma-ok type assertion whose target is the
+  literal qualified type http.Flusher, http.Hijacker, or http.Pusher. It does
+  not resolve the receiver's type or whether an Unwrap chain exists at
+  runtime.
+rule:
+  pattern: '$W.(http.Flusher)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

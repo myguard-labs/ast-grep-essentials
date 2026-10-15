@@ -1,0 +1,5 @@
+id: go-responsewriter-optional-iface-assertion
+valid:
+  - "package p\nimport (\n\t\"io\"\n\t\"net/http\"\n)\nfunc f(w http.ResponseWriter) {\n\tif c, ok := w.(io.Closer); ok {\n\t\t_ = c\n\t}\n\t_ = http.NewResponseController(w).Flush()\n}"
+invalid:
+  - "package p\nimport \"net/http\"\nfunc f(w http.ResponseWriter) {\n\tif fl, ok := w.(http.Flusher); ok {\n\t\tfl.Flush()\n\t}\n}"
