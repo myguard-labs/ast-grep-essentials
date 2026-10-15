@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-sprintf-href-unescaped-url
+language: php
+severity: warning
+message: >-
+  URL-producing call passed unescaped into an href sprintf format; wrap it in
+  esc_url().
+note: >-
+  Syntactic only. Matches a sprintf call whose format string literally
+  contains href=%s and whose URL argument is a direct get_permalink() call
+  with no esc_url() wrapper. Does not resolve function identity, aliases, or
+  runtime values.
+rule:
+  all:
+    - pattern: 'sprintf( $FMT, get_permalink( $$$A ) )'
+    - has:
+        kind: string
+        regex: 'href=%s'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
