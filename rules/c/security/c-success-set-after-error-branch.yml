@@ -1,0 +1,42 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-success-set-after-error-branch
+language: c
+severity: warning
+message: >-
+  An if-block reports an error without exiting, and a success assignment
+  follows it.
+note: >-
+  Syntactic approximation only. Matches an if-block whose body calls
+  report_error() with no return, goto, or break, followed by a RETVAL_TRUE;
+  statement in the same block. Does not check types, dataflow, or
+  reachability; review each hit since log-only branches may be intentional.
+rule:
+  all:
+    - pattern:
+        context: |
+          if ($COND) {
+            report_error();
+          }
+          RETVAL_TRUE;
+        selector: if_statement
+    - not:
+        has:
+          pattern: 'return $$$ARGS'
+          stopBy: end
+    - not:
+        has:
+          pattern: 'goto $LABEL'
+          stopBy: end
+    - not:
+        has:
+          pattern: break
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
