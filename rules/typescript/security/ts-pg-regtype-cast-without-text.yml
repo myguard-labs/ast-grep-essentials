@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-pg-regtype-cast-without-text
+language: typescript
+severity: warning
+message: >-
+  SQL string casts an expression to regtype without a following ::text cast;
+  the driver returns a non-text value.
+note: >-
+  Syntactic check on string literal text only. It matches a literal regtype
+  cast in the same string and does not resolve types, dataflow, or whether the
+  query runs against PostgreSQL.
+rule:
+  kind: string
+  has:
+    kind: string_fragment
+    regex: '::"regtype"'
+  not:
+    has:
+      kind: string_fragment
+      regex: '::"regtype"::text'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
