@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-suppressed-dl-call
+language: php
+severity: warning
+message: >-
+  A dl() call is prefixed with the @ error-suppression operator, hiding load
+  failures.
+note: >-
+  Matches the literal syntax of an @-prefixed dl() call only. It does not
+  verify that dl() is available in the SAPI or that the extension actually
+  loaded; guard with function_exists() and extension_loaded() instead.
+rule:
+  pattern: '@dl($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
