@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-tsrmls-cc-in-parameter-list
+language: c
+severity: warning
+message: >-
+  TSRMLS_CC appears as a trailing parameter in a function definition; the
+  declaration form TSRMLS_DC is required here.
+note: >-
+  Syntactic match only. It flags a parameter list whose last identifier is
+  TSRMLS_CC after another parameter; it does not verify that the function is a
+  definition in a ZTS build or resolve macro definitions.
+rule:
+  kind: parameter_list
+  has:
+    kind: identifier
+    regex: '^TSRMLS_CC$'
+    stopBy: end
+  inside:
+    kind: function_definition
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
