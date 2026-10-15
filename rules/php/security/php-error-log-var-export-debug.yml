@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-error-log-var-export-debug
+language: php
+severity: warning
+message: >-
+  Avoid logging variable dumps via error_log(); this may write
+  request-controlled data to the server log.
+note: >-
+  Syntactic match only: flags error_log() whose sole argument is a literal
+  var_export(...) or print_r(...) call. It does not check whether the dumped
+  value is sensitive, reachable, or whether the call is in debug-only code.
+rule:
+  pattern: 'error_log(var_export($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
