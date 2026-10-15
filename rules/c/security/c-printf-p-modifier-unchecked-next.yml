@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-printf-p-modifier-unchecked-next
+language: c
+severity: warning
+message: >-
+  Format parser advances the format pointer after 'p' without checking the
+  next character is a valid conversion.
+note: >-
+  Syntactic match only. Flags a case 'p' whose body is a bare fmt++ statement;
+  it does not verify the parser context, the type of fmt, or whether later
+  checks exist elsewhere.
+rule:
+  pattern: |
+    case 'p':
+      fmt++;
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
