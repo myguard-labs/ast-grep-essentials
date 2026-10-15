@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-wpdb-db-version-property-not-called
+language: php
+severity: warning
+message: >-
+  $wpdb->db_version is read without calling it; db_version is a method and
+  needs parentheses.
+note: >-
+  Matches the literal receiver syntax $wpdb->db_version without a following
+  call; it does not resolve runtime types or confirm that $wpdb is a wpdb
+  instance.
+rule:
+  pattern: '$wpdb->db_version'
+  not:
+    inside:
+      kind: member_call_expression
+      stopBy: neighbor
+      has:
+        field: name
+        regex: '^db_version$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
