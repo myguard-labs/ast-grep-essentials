@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-raw-blog-options-query
+language: php
+severity: warning
+message: >-
+  Raw $wpdb query reads an options table directly; use get_blog_option() or
+  get_option() instead.
+note: >-
+  Matches only a literal $wpdb get_var call whose SQL string text contains the
+  word options and option_value. It does not resolve table prefixes, runtime
+  SQL values, or whether the call is in multisite code.
+rule:
+  pattern: '$wpdb->get_var($SQL)'
+  has:
+    regex: 'option_value.*options'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
