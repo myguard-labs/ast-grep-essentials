@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-switch-theme-nonce-uses-template
+language: php
+severity: warning
+message: >-
+  The switch-theme nonce action is keyed on $template instead of $stylesheet;
+  child theme activation will fail.
+note: >-
+  Purely syntactic match on a wp_nonce_url call whose action is a
+  'switch-theme_' string concatenated with a $template variable. Does not
+  verify that the call is a switch-theme link or resolve variable values.
+rule:
+  pattern: 'wp_nonce_url($$$ARGS, ''switch-theme_'' . $template)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
