@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-comment-pages-nav-without-page-comments-guard
+language: php
+severity: warning
+message: >-
+  Comment pagination navigation is gated only by get_comment_pages_count() > 1
+  without checking the page_comments option.
+note: >-
+  Single-file syntactic match on the literal get_comment_pages_count() call
+  compared with > 1 inside an if-condition. It does not resolve whether
+  get_option('page_comments') is checked elsewhere in the template, and does
+  not verify runtime values.
+rule:
+  pattern: 'if ( get_comment_pages_count() > 1 ) { $$$BODY }'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
