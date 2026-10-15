@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-entity-decode-before-truncate
+language: php
+severity: warning
+message: >-
+  html_entity_decode() output is passed directly into a byte-count truncation;
+  the cut can split a decoded entity.
+note: >-
+  Syntactic single-file match only. It matches a literal html_entity_decode()
+  call nested directly as the first argument of mb_strcut or substr; it does
+  not track variables, aliases, or whether the decoded value is later
+  re-encoded.
+rule:
+  pattern: 'mb_strcut(html_entity_decode($$$DECODE_ARGS), $$$CUT_ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
