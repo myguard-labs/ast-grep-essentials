@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-md2-unguarded-call
+language: c
+severity: warning
+message: >-
+  Call to EVP_md2() outside a preprocessor feature-test guard; MD2 may be
+  absent from the OpenSSL build.
+note: >-
+  Syntactic check only. It matches a literal EVP_md2 call and does not verify
+  OpenSSL build configuration, includes, or types. Calls inside any enclosing
+  preprocessor conditional are not reported, but the check does not inspect
+  the guard condition itself.
+rule:
+  all:
+    - pattern: 'EVP_md2()'
+    - not:
+        inside:
+          kind: preproc_if
+          stopBy: end
+    - not:
+        inside:
+          kind: preproc_ifdef
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
