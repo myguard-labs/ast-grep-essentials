@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-dns-lookup-relative-name
+language: php
+severity: warning
+message: >-
+  gethostbyname is called with a concatenated hostname ending in a domain
+  without a trailing dot, so the resolver may append search domains.
+note: >-
+  Syntactic match only. It flags a gethostbyname call whose argument is a
+  binary concatenation ending in a literal string ending in '.org'; it does
+  not resolve the resolver configuration, search domains, or runtime values.
+rule:
+  pattern: 'gethostbyname($A . ''.opm.example.org'')'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
