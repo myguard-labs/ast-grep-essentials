@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-cache-key-ambient-post-id
+language: php
+severity: warning
+message: >-
+  Cache write keys on the ambient $post->ID instead of the function's own id
+  argument.
+note: >-
+  Syntactic match only. Flags a wp_cache_add call whose key is literally
+  $post->ID inside a function; it does not resolve whether $id differs from
+  the current post or whether the function has an $id parameter.
+rule:
+  pattern: 'wp_cache_add($post->ID, $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
