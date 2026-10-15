@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-tautological-inequality-disjunction
+language: c
+severity: warning
+message: >-
+  This condition ORs inequality tests of the same operand against different
+  constants, so it is always true.
+note: >-
+  Matches a literal logical-or of two inequality tests of the same literal
+  lvalue against two different literals within a parenthesized condition. It
+  does not resolve aliasing, side effects, or runtime values.
+rule:
+  all:
+    - kind: parenthesized_expression
+    - has:
+        kind: binary_expression
+        pattern: '$A || $B'
+        stopBy: end
+    - has:
+        pattern: '$X != '':'''
+        stopBy: end
+    - has:
+        pattern: '$X != '','''
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
