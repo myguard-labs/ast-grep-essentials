@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-buffer-writepos-without-readpos
+language: c
+severity: warning
+message: >-
+  Buffered-data check uses writepos alone; buffered byte count is writepos
+  minus readpos.
+note: >-
+  Syntactic check only. Flags a comparison of a writepos member against a
+  literal inside a return statement that contains no readpos; it does not
+  prove the struct uses readpos or resolve types or aliases.
+rule:
+  all:
+    - pattern: '$OBJ->writepos > 0'
+    - not:
+        inside:
+          kind: binary_expression
+          stopBy: end
+          has:
+            pattern: readpos
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
