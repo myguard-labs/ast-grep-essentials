@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-nonvoid-function-empty-body
+language: c
+severity: warning
+message: Non-void function has an empty body and no return statement.
+note: >-
+  Syntactic check only. Matches a function_definition with a non-void declared
+  type and an empty compound body; does not resolve types, reachability, or
+  callers.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        field: body
+        kind: compound_statement
+        regex: '^\{\s*\}$'
+    - not:
+        has:
+          kind: primitive_type
+          regex: '^void$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
