@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-array-search-index-truthiness
+language: php
+severity: warning
+message: >-
+  array_search() result is used directly as a truthiness condition; index 0 is
+  a valid match but evaluates as false. Compare with false using a strict
+  check.
+note: >-
+  Single-file syntactic match on a bare array_search() call used directly as
+  an if condition. Does not resolve types, aliasing, or whether the result is
+  stored in a variable first.
+rule:
+  pattern: 'if ( array_search($$$ARGS) ) { $$$BODY }'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
