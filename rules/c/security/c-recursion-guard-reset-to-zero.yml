@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-recursion-guard-reset-to-zero
+language: c
+severity: warning
+message: >-
+  This recursion guard counter is reset to 0 inside the if-branch after being
+  incremented in the condition; decrementing it would restore the outer
+  frame's count.
+note: >-
+  Purely syntactic match on a literal field receiver in an if-condition
+  containing ++ and a branch assigning 0 to the same field. It does not verify
+  that the field is a recursion counter, resolve aliasing, or check
+  reachability.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        pattern: '++$OBJ->$FIELD'
+        stopBy: end
+    - has:
+        pattern: '$OBJ->$FIELD = 0'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
