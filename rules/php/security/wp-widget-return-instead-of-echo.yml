@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-widget-return-instead-of-echo
+language: php
+severity: warning
+message: >-
+  This widget() method returns a value instead of echoing output, so the
+  widget markup may be dropped.
+note: >-
+  Single-file syntactic match on a method declaration named widget whose body
+  contains a return statement with a value. It does not verify WP_Widget
+  inheritance, caching logic, or that the caller discards the return value.
+rule:
+  kind: method_declaration
+  all:
+    - has:
+        field: name
+        regex: '^widget$'
+        stopBy: end
+    - has:
+        kind: return_statement
+        pattern: 'return $VAL'
+        stopBy: end
+    - not:
+        has:
+          kind: echo_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
