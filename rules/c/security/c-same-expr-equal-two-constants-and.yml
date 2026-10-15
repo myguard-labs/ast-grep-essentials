@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-same-expr-equal-two-constants-and
+language: c
+severity: warning
+message: >-
+  This && joins two equality tests of the same identifier against different
+  constants, so the condition can never be true.
+note: >-
+  Purely syntactic check on a single && expression whose operands are equality
+  tests of one identifier against two literal numbers. It does not resolve
+  macros, types, aliasing, or runtime values, and it cannot confirm the
+  variable is unchanged between the tests.
+rule:
+  kind: binary_expression
+  pattern: '$X == $A && $X == $B'
+  all:
+    - has:
+        pattern: '$X == $A'
+        stopBy: end
+    - not:
+        has:
+          kind: identifier
+          regex: '^$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
