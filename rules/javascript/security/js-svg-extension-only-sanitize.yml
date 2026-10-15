@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-svg-extension-only-sanitize
+language: javascript
+severity: warning
+message: >-
+  This SVG sanitization gate checks only the file extension; review whether
+  content-type or content-based detection is also needed.
+note: >-
+  Single-file syntactic match on an if condition whose literal req.file.ext
+  comparisons are against '.svg' or '.svgz' and that contains no req.file.type
+  comparison. It does not resolve runtime values, storage adapters, or whether
+  the upload's content type is checked elsewhere.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        pattern: 'req.file.ext === ''.svg'''
+        stopBy: end
+    - not:
+        has:
+          pattern: req.file.type
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
