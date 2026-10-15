@@ -8,7 +8,8 @@ message: >-
   comparison in the same condition.
 note: >-
   Syntactic check only. It flags an if-condition containing a dereference of a
-  backward offset (p - k) and no comparison in the same condition. It skips an
+  backward offset (p - k) and no relational comparison (<, <=, >, >=) in the
+  same condition; member access (->) and shifts do not count. It skips an
   if-statement inside a for or while loop whose condition compares the same
   pointer (p > start, start < p, p != start), since the loop bounds the
   lookback. It does not resolve types, buffer bounds, or other guards.
@@ -20,9 +21,13 @@ rule:
         stopBy: end
     - not:
         has:
-          kind: binary_expression
-          regex: '[<>]'
           stopBy: end
+          kind: binary_expression
+          any:
+            - pattern: '$_ < $_'
+            - pattern: '$_ <= $_'
+            - pattern: '$_ > $_'
+            - pattern: '$_ >= $_'
     - not:
         inside:
           any:

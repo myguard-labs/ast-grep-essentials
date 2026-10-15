@@ -3,6 +3,11 @@ valid:
   - 'void f(int *a, int *b) { a[0] = b[0]; }'
   - 'void f(int *a, int m) { count(a, m == 1); }'
   - 'void f(int *a, int m) { count(a, m == 1), count(a, m == 2); }'
+  - 'void f(int *a, int m) { count(a, m != 1); }'
+  - 'void f(int *a, int m) { count(a, m != 1), count(a, m != 2); }'
+  - 'int f(int *a, int *b) { int r = a[0] != b[0]; if (a[1] != b[1]) r++; return r; }'
 invalid:
   - 'void f(int *a, int *b) { a[0] == b[0]; }'
   - 'void f(int *a, int m) { a[m] == count(a, m); }'
+  - 'void f(int *a, int *b) { a[0] != b[0]; }'
+  - 'void f(char *p) { p != 0; }'
