@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-two-digit-year-plus-1900
+language: c
+severity: warning
+message: >-
+  Review this two-digit year adjustment that adds 1900 to the same variable it
+  compares against 100.
+note: >-
+  Single-file syntactic match on an if statement whose condition is a
+  less-than comparison of a variable against 100 and whose body adds 1900 to
+  that same variable. It does not resolve types, data flow, or intent;
+  legitimate two-digit year parsing may match and needs human review.
+rule:
+  pattern: 'if ($Y < 100) $Y += 1900;'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
