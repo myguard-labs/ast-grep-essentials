@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-define-guard-redefines-false-constant
+language: php
+severity: warning
+message: >-
+  This guard redefines a constant when it is already defined with a falsy
+  value.
+note: >-
+  Syntactic match only on the literal guard shape !defined('NAME') || !NAME
+  wrapping a define call; it does not resolve runtime constant values,
+  includes, or aliasing.
+rule:
+  pattern: 'if ( !defined(''FOO'') || !FOO ) define(''FOO'', $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
