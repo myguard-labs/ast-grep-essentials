@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: selenium-ipv6-only-socket-bind-csharp
+language: csharp
+severity: warning
+message: >-
+  Socket is constructed with AddressFamily.InterNetworkV6 and no IPv4
+  fallback; this can break on hosts without IPv6 support.
+note: >-
+  Matches the literal AddressFamily.InterNetworkV6 argument in a Socket
+  constructor call. It does not check whether a bind occurs, whether an IPv4
+  path or fallback exists, or whether dual-mode IPv6 is intended, and it does
+  not resolve types or runtime values.
+rule:
+  pattern: 'new Socket(AddressFamily.InterNetworkV6, $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
