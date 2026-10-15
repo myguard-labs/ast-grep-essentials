@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-quote-check-skips-escaping
+language: c
+severity: warning
+message: >-
+  This if condition checks both the first and last character for a quote
+  before escaping, so an already-quoted value skips escaping.
+note: >-
+  Purely syntactic single-statement check on the literal condition shape; it
+  does not resolve types, aliasing, or runtime values, and does not prove the
+  value reaches a connection string unescaped.
+rule:
+  pattern: 'if ($A && $B) { escape(pw); }'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
