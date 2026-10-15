@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-pear-raiseerror-code-as-message
+language: php
+severity: warning
+message: >-
+  PEAR raiseError receives an ALL_CAPS constant as the message and null as the
+  code; the error code appears to be passed in the message slot.
+note: >-
+  Single-file syntactic check on literal call shape only. It does not resolve
+  PEAR::raiseError or raiseError to the PEAR library, and it does not verify
+  the constant's value or runtime behavior.
+rule:
+  pattern: 'PEAR::raiseError($CONST, null, $$$REST)'
+constraints:
+  CONST:
+    regex: '^[A-Z][A-Z0-9_]*$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
