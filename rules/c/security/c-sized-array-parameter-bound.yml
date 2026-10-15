@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-sized-array-parameter-bound
+language: c
+severity: warning
+message: >-
+  This parameter declares a fixed-size array bound, which decays to a pointer
+  and does not enforce the declared size at call sites.
+note: >-
+  Matches a function parameter declared with a numeric array bound
+  syntactically; it does not check what callers actually pass or resolve types
+  across files.
+rule:
+  kind: array_declarator
+  all:
+    - has:
+        field: size
+        kind: number_literal
+    - inside:
+        kind: parameter_declaration
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
