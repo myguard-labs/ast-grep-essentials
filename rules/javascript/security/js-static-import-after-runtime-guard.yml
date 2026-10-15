@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-static-import-after-runtime-guard
+language: javascript
+severity: warning
+message: >-
+  Top-level static import follows a process.exit guard; the import still
+  evaluates first because imports are hoisted.
+note: >-
+  Syntactic check only. It matches a top-level import statement that follows
+  an if-statement containing a process.exit call in its own subtree, without
+  verifying that the guard is reached or relevant.
+rule:
+  all:
+    - pattern: 'import ''./dist/app.mjs'''
+    - inside:
+        kind: program
+        stopBy: end
+    - follows:
+        kind: if_statement
+        has:
+          pattern: 'process.exit($$$ARGS)'
+          stopBy: end
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
