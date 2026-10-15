@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-ternary-statement-call-branches
+language: php
+severity: warning
+message: >-
+  This ternary is used as a bare statement with function calls in both
+  branches, so its value is discarded.
+note: >-
+  Single-file syntactic match on a bare ternary expression statement whose
+  branches are function calls. It does not resolve function identity, runtime
+  values, or whether side effects matter.
+rule:
+  all:
+    - kind: expression_statement
+    - has:
+        kind: conditional_expression
+        stopBy: end
+    - has:
+        kind: function_call_expression
+        stopBy: end
+    - not:
+        has:
+          kind: assignment_expression
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
