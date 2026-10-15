@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-assign-logical-operand-in-if
+language: php
+severity: warning
+message: >-
+  An assignment inside an if condition is combined with && or || without
+  parentheses, so the variable receives a boolean instead of the call result.
+note: >-
+  Single-file syntactic match on an assignment whose right operand is a bare
+  && or || expression inside an if condition, with no parentheses around the
+  assignment. It does not resolve types, dataflow, or whether the assigned
+  function result is used later.
+rule:
+  kind: if_statement
+  has:
+    kind: parenthesized_expression
+    has:
+      stopBy: end
+      kind: assignment_expression
+      pattern: '$VAR = $CALL && $RIGHT'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
