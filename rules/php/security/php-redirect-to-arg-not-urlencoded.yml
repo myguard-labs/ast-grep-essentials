@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-redirect-to-arg-not-urlencoded
+language: php
+severity: warning
+message: >-
+  The 'redirect_to' array entry is assigned a bare variable without urlencode;
+  query characters in the URL may not be encoded.
+note: >-
+  Single-file syntactic check for an assignment of a bare variable to the
+  'redirect_to' array key. It does not resolve types, aliasing, or whether the
+  value is encoded elsewhere.
+rule:
+  pattern: '$args[''redirect_to''] = $VAR'
+  not:
+    has:
+      kind: function_call_expression
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
