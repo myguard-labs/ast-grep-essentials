@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-date-z-offset-server-tz
+language: php
+severity: warning
+message: >-
+  date('Z') returns the server timezone offset; avoid deriving a GMT offset
+  from it.
+note: >-
+  Syntactic match only on a literal date('Z') call used as the left operand of
+  a division. It does not verify the server timezone configuration or runtime
+  values.
+rule:
+  pattern: 'date(''Z'') / $DIV'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
