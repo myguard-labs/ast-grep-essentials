@@ -1,0 +1,47 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-logical-or-same-operand-unequal-constants
+language: c
+severity: warning
+message: >-
+  This logical OR compares the same identifier with != against two different
+  number literals, so the condition is always true.
+note: >-
+  Purely syntactic check on a single C expression. It matches a binary ||
+  whose both sides are != comparisons of the same identifier against different
+  number literals. It does not resolve types, macros, aliasing, or runtime
+  values.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^\|\|$'
+    - has:
+        field: left
+        kind: binary_expression
+        all:
+          - has:
+              field: operator
+              regex: '^!=$'
+          - has:
+              field: right
+              kind: number_literal
+    - has:
+        field: right
+        kind: binary_expression
+        all:
+          - has:
+              field: operator
+              regex: '^!=$'
+          - has:
+              field: right
+              kind: number_literal
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
