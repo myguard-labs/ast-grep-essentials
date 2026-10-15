@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-translate-url-literal
+language: php
+severity: warning
+message: >-
+  Avoid wrapping a URL string literal in a translation call; translators may
+  alter or break the link.
+note: >-
+  This is a single-file syntactic match on a literal call to __() whose first
+  argument is a string literal beginning with http:// or https://. It does not
+  resolve whether the function is WordPress's translation function or whether
+  the string is later used as a link.
+rule:
+  pattern: '__( $URL )'
+  all:
+    - has:
+        kind: string
+        regex: '^[''"]https?://'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
