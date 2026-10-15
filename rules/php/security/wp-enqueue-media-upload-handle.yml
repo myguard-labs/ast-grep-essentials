@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-enqueue-media-upload-handle
+language: php
+severity: warning
+message: >-
+  Enqueuing the bare 'media-upload' handle with wp_enqueue_script does not set
+  up the media modal; call wp_enqueue_media() instead.
+note: >-
+  Matches only the literal wp_enqueue_script call with the string
+  'media-upload' as its first argument. It does not resolve function identity,
+  imports, or aliases, and does not check whether wp_enqueue_media() is also
+  called.
+rule:
+  pattern: 'wp_enqueue_script(''media-upload'' $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
