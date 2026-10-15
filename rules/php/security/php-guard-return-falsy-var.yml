@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-guard-return-falsy-var
+language: php
+severity: warning
+message: >-
+  This guard returns the same falsy variable it tested; confirm callers accept
+  that value instead of an error.
+note: >-
+  Purely syntactic. Matches an if whose condition is a negated variable and
+  whose body is a bare return of that same variable. It does not check the
+  function's documented contract, types, or whether null or false is an
+  accepted return value, so review is needed before treating matches as
+  defects.
+rule:
+  pattern: |
+    if ( !$VAR ) return $VAR;
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
