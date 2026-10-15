@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-get-option-blogname-over-bloginfo
+language: php
+severity: warning
+message: >-
+  get_option('blogname') is used for the site name; consider
+  get_bloginfo('name') instead.
+note: >-
+  Matches the literal call shape get_option with the string key 'blogname'
+  only. It does not resolve function identity, namespaces, or whether a
+  filter-aware accessor is intended at runtime.
+rule:
+  pattern: 'get_option(''blogname'')'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
