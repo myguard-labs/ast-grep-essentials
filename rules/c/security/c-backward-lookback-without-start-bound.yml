@@ -12,7 +12,8 @@ note: >-
   same condition; member access (->) and shifts do not count. It skips an
   if-statement inside a for or while loop whose condition compares the same
   pointer (p > start, start < p, p != start), since the loop bounds the
-  lookback. It does not resolve types, buffer bounds, or other guards.
+  lookback; >= and <= loop bounds do not count because they admit
+  p == start. It does not resolve types, buffer bounds, or other guards.
 rule:
   all:
     - kind: if_statement
@@ -38,9 +39,7 @@ rule:
             stopBy: end
             any:
               - pattern: '$P > $_'
-              - pattern: '$P >= $_'
               - pattern: '$_ < $P'
-              - pattern: '$_ <= $P'
               - pattern: '$P != $_'
               - pattern: '$_ != $P'
           stopBy: end
