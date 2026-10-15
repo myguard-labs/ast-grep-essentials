@@ -1,0 +1,11 @@
+id: php-cron-unschedule-loop-per-event
+valid:
+  - >-
+    <?php $cron_array = _get_cron_array(); unset(
+    $cron_array['wp_batch_split_terms'] ); _set_cron_array( $cron_array );
+invalid:
+  - >-
+    <?php foreach ( $cron_array['wp_batch_split_terms'] as $timestamp_hook =>
+    $cron_data ) { foreach ( $cron_data as $key => $args ) {
+    wp_unschedule_event( 'wp_batch_split_terms', $timestamp_hook, $args['args']
+    ); } }

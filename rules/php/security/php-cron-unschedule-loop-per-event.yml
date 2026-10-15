@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-cron-unschedule-loop-per-event
+language: php
+severity: warning
+message: >-
+  wp_unschedule_event() is called inside a foreach loop, removing cron events
+  one at a time. Review whether the cron array can be edited in a single pass.
+note: >-
+  Syntactic match only. It flags a wp_unschedule_event() call nested inside a
+  foreach loop and does not verify the loop iterates cron data, resolve types,
+  or prove performance impact.
+rule:
+  all:
+    - pattern: 'wp_unschedule_event($$$ARGS)'
+    - inside:
+        pattern: 'foreach ($ITER as $K => $V) { $$$BODY }'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
