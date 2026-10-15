@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-option-read-compared-to-time
+language: php
+severity: warning
+message: >-
+  Direct get_option or get_site_option result is compared with time(); a
+  missing option returns false, which compares as 0.
+note: >-
+  Single-file syntactic match on a direct call result as the left operand of <
+  or > against time(). It does not resolve the function identity, check for a
+  false guard, or track values through variables.
+rule:
+  pattern: '$F($$$ARGS) < time()'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
