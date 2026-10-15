@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-exported-fortest-seam-in-production
+language: go
+severity: warning
+message: >-
+  Exported ForTest function declared in non-test source may ship test seam in
+  production binary.
+note: >-
+  Syntactic match only on the function name suffix ForTest with an uppercase
+  first letter; does not check whether the file is a _test.go file or whether
+  the function is actually used by tests.
+rule:
+  kind: function_declaration
+  has:
+    field: name
+    regex: '^[A-Z][A-Za-z0-9_]*ForTest$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
