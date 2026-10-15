@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-error-code-overwritten-unchecked
+language: c
+severity: warning
+message: >-
+  A variable assigned from one call is overwritten by a second call's result
+  in the next statement without being read, so the first return value may be
+  dropped.
+note: >-
+  Syntactic single-file match only. It matches a bare identifier assigned from
+  one call and then reassigned from a call in the immediately following
+  expression statement, without checking whether the first value is read. It
+  does not resolve types, dataflow, aliasing, or whether the callee is
+  fallible.
+rule:
+  pattern: '$VAR = $CALL1($$$A1);'
+  inside:
+    kind: compound_statement
+    has:
+      pattern: '$VAR = $CALL2($$$A2);'
+      follows:
+        pattern: '$VAR = $CALL1($$$A1);'
+        kind: expression_statement
+        stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
