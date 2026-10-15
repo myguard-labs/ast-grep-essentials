@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-admin-page-untranslated-title
+language: php
+severity: warning
+message: >-
+  Admin menu page title is a bare string literal; wrap user-visible menu text
+  in __() or _e() for translation.
+note: >-
+  Single-file syntactic check. Matches a literal first argument to
+  add_theme_page() only; it does not resolve the function's origin, other
+  add_*_page wrappers, or whether the string is already translated elsewhere.
+rule:
+  pattern: 'add_theme_page(''$TITLE'', $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
