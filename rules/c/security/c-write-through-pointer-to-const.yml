@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-write-through-pointer-to-const
+language: c
+severity: warning
+message: >-
+  Subscript assignment writes through a pointer declared as pointer to const
+  char.
+note: >-
+  Single-file syntactic check. Matches a literal declaration of a const char
+  pointer local and a subscript assignment through that same name; it does not
+  resolve aliasing, reassignment, or types across files.
+rule:
+  all:
+    - pattern: 'const char *$P = $INIT;'
+    - inside:
+        kind: compound_statement
+        has:
+          pattern: '$P[$IDX] = $VAL'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
