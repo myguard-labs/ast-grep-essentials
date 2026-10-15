@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-sslverify-disabled-literal
+language: php
+severity: warning
+message: >-
+  This array pair sets 'sslverify' to false, which disables TLS certificate
+  verification for the HTTP request.
+note: >-
+  Matches only a single-file syntactic array pair with the key 'sslverify' and
+  the literal false value. It does not resolve whether the array is passed to
+  an HTTP call, whether the value is overridden later, or any runtime or
+  filter behavior.
+rule:
+  kind: array_element_initializer
+  all:
+    - has:
+        kind: string
+        regex: '^[''"]sslverify[''"]$'
+    - has:
+        kind: boolean
+        regex: '^(?i)false$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
