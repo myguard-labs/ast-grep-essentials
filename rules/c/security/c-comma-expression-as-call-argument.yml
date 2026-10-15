@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-comma-expression-as-call-argument
+language: c
+severity: warning
+message: >-
+  This call argument is a parenthesized comma expression; only the last value
+  is passed.
+note: >-
+  Syntactic match only. It flags a parenthesized comma expression used
+  directly as a sole or listed call argument and does not check types, macro
+  expansion, or whether the sequence operator was intended.
+rule:
+  kind: call_expression
+  has:
+    kind: argument_list
+    has:
+      kind: parenthesized_expression
+      has:
+        kind: comma_expression
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
