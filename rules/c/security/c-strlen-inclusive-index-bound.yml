@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-strlen-inclusive-index-bound
+language: c
+severity: warning
+message: >-
+  This if condition uses an inclusive bound (<=) before indexing the buffer,
+  so an index equal to the length reads one past the end.
+note: >-
+  Purely syntactic match on an if whose condition is IDX <= LEN with a
+  subscript read of BUF[IDX] in the consequence. It does not resolve types,
+  aliasing, or whether LEN is the real buffer length, and does not check
+  reachability or guards outside the shown syntax.
+rule:
+  all:
+    - pattern: 'if ($IDX <= $LEN) { $$$BODY }'
+    - has:
+        pattern: '$BUF[$IDX]'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
