@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-urlencode-literal-plus
+language: php
+severity: warning
+message: >-
+  urlencode() is called on a string literal containing '+'; this yields %2B.
+  Check whether the '+' was meant as a space substitute.
+note: >-
+  Purely syntactic match on a direct urlencode() call whose argument is a
+  string literal containing a literal '+'. It does not resolve whether
+  urlencode is the PHP builtin, whether the '+' is intentional, or whether the
+  value was already encoded.
+rule:
+  pattern: 'urlencode(''$$$S'')'
+  regex: '\+'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
