@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-global-post-id-in-nonce
+language: php
+severity: warning
+message: >-
+  Nonce action interpolates a global $post_ID; pass the post ID explicitly
+  instead.
+note: >-
+  Syntactic only. Matches a wp_create_nonce call whose double-quoted action
+  string interpolates $post_ID inside a function that declares global
+  $post_ID. It does not resolve runtime values or confirm the global is the
+  one used at call time.
+rule:
+  all:
+    - pattern: 'wp_create_nonce("set_post_thumbnail-$post_ID")'
+    - inside:
+        pattern: 'function $F() { global $post_ID; $$$BODY }'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
