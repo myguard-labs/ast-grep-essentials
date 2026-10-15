@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-nul-terminator-index-sizeof
+language: c
+severity: warning
+message: >-
+  Subscript write uses sizeof of the same array as its index, which is one
+  element past the end.
+note: >-
+  Syntactic match only. Requires the indexed array and the sizeof operand to
+  be the same literal identifier; does not check array types, aliasing, or
+  reachability.
+rule:
+  pattern: '$ARR[sizeof($ARR)] = $VAL'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
