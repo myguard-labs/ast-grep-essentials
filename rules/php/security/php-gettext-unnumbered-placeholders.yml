@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-gettext-unnumbered-placeholders
+language: php
+severity: warning
+message: >-
+  Translatable string passed to sprintf() uses unnumbered placeholders; use
+  positional placeholders such as %1$d so translators can reorder arguments.
+note: >-
+  Single-file syntactic match on a literal sprintf(__('...'), ...) call whose
+  string literal contains an unnumbered %d or %s. It does not resolve the __
+  function identity, verify the placeholder count against arguments, or check
+  for positional placeholders beyond the literal text.
+rule:
+  pattern: 'sprintf(__($STR), $$$ARGS)'
+  has:
+    regex: '%[ds]'
+    stopBy: end
+  not:
+    has:
+      regex: '%[0-9]+\$'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
