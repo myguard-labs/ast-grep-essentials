@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-delete-array-mismatch-cpp
+language: cpp
+severity: warning
+message: >-
+  Pointer initialized with new[] is released with plain delete instead of
+  delete[].
+note: >-
+  Single-file syntactic match only. It requires a literal same-function
+  declaration initialized with new[] and a plain delete of that same
+  identifier; it does not track aliasing, reassignment, or allocations made in
+  other functions.
+rule:
+  all:
+    - pattern: 'delete $P'
+    - inside:
+        kind: function_definition
+        stopBy: end
+        has:
+          pattern: 'int *$P = new $T[$N]'
+          stopBy: end
+    - not:
+        pattern: 'delete [] $P'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
