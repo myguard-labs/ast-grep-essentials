@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-ini-get-all-unguarded
+language: php
+severity: warning
+message: >-
+  Call to ini_get_all() without a function_exists('ini_get_all') guard; hosts
+  may disable this function.
+note: >-
+  Syntactic check only. It treats any enclosing if statement as a guard
+  without verifying that its condition is exactly
+  function_exists('ini_get_all'), and it does not resolve aliases, namespaces,
+  or runtime disable_functions settings.
+rule:
+  all:
+    - pattern: 'ini_get_all($$$ARGS)'
+    - not:
+        inside:
+          kind: if_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
