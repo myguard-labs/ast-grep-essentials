@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-string-literal-unknown-escape
+language: c
+severity: warning
+message: >-
+  This C string literal has a backslash before a character that is not a valid
+  escape letter, so the backslash is silently dropped.
+note: >-
+  Syntactic check on the literal's bytes only. It flags a backslash followed
+  by a non-escape character inside a string literal and does not know whether
+  the string is used as a regex or path.
+rule:
+  kind: string_literal
+  regex: '(^|[^\\])(\\\\)*\\[^abfnrtv''"?\\xuU0-7]'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
