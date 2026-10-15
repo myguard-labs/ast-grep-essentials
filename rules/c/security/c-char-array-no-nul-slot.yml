@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-char-array-no-nul-slot
+language: c
+severity: warning
+message: >-
+  This char array has an explicit size equal to the string literal length,
+  leaving no room for the terminating NUL.
+note: >-
+  Matches the literal text of a sized char array whose string initializer has
+  exactly N characters; it does not evaluate escapes or prove the initializer
+  is otherwise unused.
+rule:
+  kind: init_declarator
+  all:
+    - has:
+        kind: array_declarator
+        regex: '\[16\]'
+    - has:
+        kind: string_literal
+        regex: '^"0123456789abcdef"$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
