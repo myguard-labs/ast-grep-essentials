@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-require-not-once-in-function
+language: php
+severity: warning
+message: >-
+  Plain require of an ABSPATH-based file inside a function body; a repeated
+  call may re-include a file that declares functions or classes.
+note: >-
+  Syntactic match only. Matches a plain require whose argument starts with
+  ABSPATH inside any function body. It does not check whether the included
+  file declares functions or classes, whether the function can run more than
+  once, or whether an include guard exists, so review hits by hand.
+rule:
+  all:
+    - pattern: 'require $PATH'
+    - inside:
+        kind: function_definition
+        stopBy: end
+    - has:
+        pattern: 'ABSPATH . $REST'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
