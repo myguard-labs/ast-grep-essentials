@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pointer-return-boolean-expr
+language: c
+severity: warning
+message: >-
+  Pointer-returning function returns a bare logical && or || expression, which
+  yields an int truth value.
+note: >-
+  Single-file syntactic match on a return statement whose value is a logical
+  && or || expression inside a function with a pointer return type; does not
+  check types, the actual return type of called helpers, or runtime values.
+rule:
+  all:
+    - pattern: 'return $A && $B'
+    - inside:
+        kind: function_definition
+        has:
+          kind: pointer_declarator
+          stopBy: neighbor
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
