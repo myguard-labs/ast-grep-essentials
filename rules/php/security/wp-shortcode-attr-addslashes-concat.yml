@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-shortcode-attr-addslashes-concat
+language: php
+severity: warning
+message: >-
+  addslashes() output is concatenated into a double-quoted shortcode
+  attribute; use an attribute-escaping function instead.
+note: >-
+  Single-file syntactic match on a string literal that starts with a
+  double-quoted attribute and concatenates addslashes( $x ) directly after it.
+  It does not resolve whether the string is a shortcode at runtime, whether
+  the value is later escaped, or the data flow of the variable.
+rule:
+  pattern: '''[caption caption="'' . addslashes( $VAR ) . ''"]'''
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
