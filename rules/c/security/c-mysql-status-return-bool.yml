@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-mysql-status-return-bool
+language: c
+severity: warning
+message: >-
+  RETURN_BOOL wraps a MySQL C API call that returns 0 on success; the result
+  is inverted without negation.
+note: >-
+  Single-file syntactic match on a literal RETURN_BOOL(mysql_...(...)) call
+  whose sole argument is the call itself, with no negation. It does not
+  resolve types, macros, or aliases, and does not verify the MySQL function's
+  return convention at runtime.
+rule:
+  pattern: 'RETURN_BOOL(mysql_rollback($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
