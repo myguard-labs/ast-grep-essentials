@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-raw-post-content-emptiness-check
+language: php
+severity: warning
+message: >-
+  strlen() is applied to the raw post_content property as an emptiness check;
+  filtered output may differ.
+note: >-
+  Syntactic match only on the literal $post->post_content receiver inside
+  strlen() compared with zero. It does not resolve types, filters, or whether
+  the value is a WordPress post object, and does not check reachability.
+rule:
+  pattern: 'strlen($post->post_content) > 0'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
