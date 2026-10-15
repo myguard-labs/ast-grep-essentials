@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-assign-comparison-precedence
+language: php
+severity: warning
+message: >-
+  An assignment's right operand is a comparison, so the variable stores a
+  boolean instead of the call result.
+note: >-
+  Purely syntactic check. Matches an assignment expression whose right operand
+  is a comparison with !==, !=, ===, or ==. It does not resolve the called
+  function or verify runtime values.
+rule:
+  kind: assignment_expression
+  has:
+    field: right
+    kind: binary_expression
+    pattern: '$L !== $R'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
