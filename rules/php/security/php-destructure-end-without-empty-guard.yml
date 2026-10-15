@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-destructure-end-without-empty-guard
+language: php
+severity: warning
+message: >-
+  Destructuring the result of end() without an emptiness check can silently
+  produce null values when the array is empty.
+note: >-
+  Syntactic match only. Detects list() destructuring assigned directly from
+  end(...) in the same assignment; it does not resolve types, verify the
+  argument is an array, or check for guards elsewhere in the function.
+rule:
+  pattern: 'list($$$LEFT) = end($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
