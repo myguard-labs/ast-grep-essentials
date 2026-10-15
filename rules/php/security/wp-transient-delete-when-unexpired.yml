@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-transient-delete-when-unexpired
+language: php
+severity: warning
+message: >-
+  This branch deletes an option-backed transient while its timeout has not yet
+  expired.
+note: >-
+  Single-file syntactic match on a literal get_option() call compared with
+  time() using > inside an if condition whose body calls delete_option(). It
+  does not resolve function identity, option semantics, or runtime values.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        pattern: 'get_option($ARG) > time()'
+        stopBy: end
+    - has:
+        pattern: 'delete_option($$$ARGS)'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

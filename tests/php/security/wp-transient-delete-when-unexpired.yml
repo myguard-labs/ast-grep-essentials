@@ -1,0 +1,9 @@
+id: wp-transient-delete-when-unexpired
+valid:
+  - >-
+    <?php if ( get_option( $transient_timeout ) < time() ) { delete_option(
+    $transient_option ); delete_option( $transient_timeout ); return false; }
+invalid:
+  - >-
+    <?php if ( get_option( $transient_timeout ) > time() ) { delete_option(
+    $transient_option ); delete_option( $transient_timeout ); return false; }
