@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-uint-cast-of-length-difference
+language: c
+severity: warning
+message: >-
+  A 32-bit unsigned integer cast is applied directly to a subtraction, which
+  may truncate a larger size or length difference.
+note: >-
+  Syntactic check only. It matches a literal unsigned int cast around a binary
+  subtraction and does not verify value ranges, types of the operands, or
+  whether the result is guarded before use.
+rule:
+  pattern: '(unsigned int) ($A - $B)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
