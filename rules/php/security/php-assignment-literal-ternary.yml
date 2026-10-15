@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-assignment-literal-ternary
+language: php
+severity: warning
+message: >-
+  Assignment uses a ternary whose condition is a bare string literal, so the
+  condition is always truthy.
+note: >-
+  Syntactic single-file check only. Matches an assignment whose right-hand
+  side is a ternary with a string literal condition; it does not resolve
+  runtime values or types.
+rule:
+  kind: assignment_expression
+  all:
+    - has:
+        kind: conditional_expression
+        field: right
+        pattern: '''Y'' ? $A : $B'
+    - has:
+        field: right
+        kind: conditional_expression
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
