@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-date-default-timezone-literal-restore
+language: php
+severity: warning
+message: >-
+  date_default_timezone_set is restored to a hard-coded 'UTC' literal; save
+  the prior value from date_default_timezone_get and restore that instead.
+note: >-
+  Single-file syntactic match on a literal 'UTC' argument to
+  date_default_timezone_set. It does not verify that a timezone change
+  preceded the call, that the function is the same at runtime, or that the
+  prior zone was not already UTC.
+rule:
+  all:
+    - pattern: 'date_default_timezone_set(''UTC'')'
+    - inside:
+        kind: function_definition
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
