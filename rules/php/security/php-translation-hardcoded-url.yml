@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-translation-hardcoded-url
+language: php
+severity: warning
+message: >-
+  Move the URL out of the translatable string so translators do not
+  re-translate the whole sentence when the link changes.
+note: >-
+  Single-file syntactic match on a literal string argument to __() or _e()
+  whose text contains http:// or https://. Does not resolve whether the
+  function is the WordPress translation function, nor verify runtime string
+  values.
+rule:
+  pattern: '__($STR)'
+  regex: 'https?://'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
