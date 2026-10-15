@@ -1,0 +1,21 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-esc-html-wrapping-url-builder
+language: php
+severity: warning
+message: 'esc_html() is wrapping a URL-building call; use esc_url() for URLs.'
+note: >-
+  Purely syntactic check for a direct esc_html() call whose single argument is
+  a direct add_query_arg or *_url call. It does not resolve function identity,
+  imports, or runtime return values, and does not track URLs assigned to
+  variables first.
+rule:
+  pattern: 'esc_html(add_query_arg($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
