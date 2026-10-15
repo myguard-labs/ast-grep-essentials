@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-array-diff-scandir-unchecked
+language: php
+severity: warning
+message: >-
+  The return value of scandir() is passed directly to array_diff() without a
+  check; a failed scandir() returns false.
+note: >-
+  Single-file syntactic match on a direct scandir(...) call nested as the
+  first argument of array_diff(...). It does not verify the directory path,
+  resolve aliases, or detect guards elsewhere in the function, so it may
+  report cases that are already checked.
+rule:
+  pattern: 'array_diff(scandir($$$SCANARGS), $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
