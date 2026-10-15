@@ -1,0 +1,21 @@
+id: c-linked-cursor-unlink-without-free
+valid:
+  - |-
+    void scan(bucket **b, int key) {
+     while (*b) {
+     if ((*b)->key == key) {
+     return;
+     }
+     b = &(*b)->next;
+     }
+    }
+invalid:
+  - |-
+    void scan(bucket **b, int key) {
+     while (*b) {
+     if ((*b)->key == key) {
+     return;
+     }
+     *b = (*b)->next;
+     }
+    }

@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-linked-cursor-unlink-without-free
+language: c
+severity: warning
+message: >-
+  This assignment advances a pointer-to-pointer cursor by overwriting the list
+  link, which unlinks the node without freeing it.
+note: >-
+  Purely syntactic match on the literal statement *b = (*b)->next; it does not
+  verify that the node is unused, aliased, or freed elsewhere, and does not
+  check reachability or runtime values.
+rule:
+  pattern: '*$P = (*$P)->next;'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
