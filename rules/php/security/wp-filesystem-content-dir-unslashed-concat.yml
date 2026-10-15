@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-filesystem-content-dir-unslashed-concat
+language: php
+severity: warning
+message: >-
+  The wp_content_dir() return value is concatenated directly without
+  trailingslashit().
+note: >-
+  Syntactic single-file check only. It matches a literal
+  $wp_filesystem->wp_content_dir() receiver with no arguments used as the left
+  operand of a concatenation; it does not resolve types or confirm the
+  returned path lacks a trailing slash.
+rule:
+  pattern: '$wp_filesystem->wp_content_dir() . $RHS'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
