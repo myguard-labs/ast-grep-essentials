@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-zpp-failure-branch-no-return
+language: c
+severity: warning
+message: >-
+  This zend_parse_parameters FAILURE branch has no return, so execution
+  continues with unparsed arguments.
+note: >-
+  Single-file syntactic check for an if-statement comparing a
+  zend_parse_parameters call to FAILURE whose consequence block has no return
+  statement. It does not verify control flow beyond the block, reachability,
+  or whether later code actually reads the outputs.
+rule:
+  all:
+    - pattern: |
+        if (zend_parse_parameters($$$ARGS) == FAILURE) { $$$BODY }
+    - not:
+        has:
+          kind: return_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
