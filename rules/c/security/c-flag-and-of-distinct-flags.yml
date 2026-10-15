@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-flag-and-of-distinct-flags
+language: c
+severity: warning
+message: >-
+  A parenthesized bitwise AND combines two flag macros; for disjoint bits the
+  result is zero, so the check may never fire.
+note: >-
+  Purely syntactic match on a parenthesized binary & whose two operands are
+  both identifiers. It cannot verify that the macros are distinct flag
+  constants, resolve their values, or confirm that | was intended.
+rule:
+  kind: parenthesized_expression
+  has:
+    kind: binary_expression
+    pattern: '$A & $B'
+    all:
+      - has:
+          kind: identifier
+          pattern: '$A'
+      - has:
+          kind: identifier
+          pattern: '$B'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
