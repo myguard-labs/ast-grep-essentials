@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-xml-cdata-assign-overwrite
+language: php
+severity: warning
+message: >-
+  Assigning trimmed character data overwrites earlier chunks; append with .=
+  instead.
+note: >-
+  Single-file syntactic match on an element assignment of trim($data) inside a
+  function whose second parameter is $data. It does not verify the callback is
+  registered with an XML parser or that earlier chunks exist.
+rule:
+  all:
+    - pattern: '$X[$K] = trim($data)'
+    - inside:
+        kind: function_definition
+        has:
+          field: parameters
+          pattern: '$XP'
+          stopBy: end
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
