@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-instanceof-negated-left-operand
+language: javascript
+severity: warning
+message: >-
+  Negated left operand of instanceof is a precedence trap; the negation
+  applies before instanceof.
+note: >-
+  Single-file syntactic match on a binary instanceof whose left operand is a
+  unary ! expression written without parentheses. Does not resolve types or
+  runtime values.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^instanceof$'
+    - has:
+        field: left
+        kind: unary_expression
+        regex: '^!'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
