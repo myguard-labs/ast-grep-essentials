@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-wpdb-prepare-concatenated-query
+language: php
+severity: warning
+message: >-
+  $wpdb->prepare() is called with a concatenated query string instead of a
+  literal template; review for SQL injection.
+note: >-
+  Purely syntactic check on a literal $wpdb receiver. It does not resolve
+  types, aliases, or whether the concatenated parts are actually
+  user-controlled.
+rule:
+  pattern: '$wpdb->prepare($A . $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
