@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-array-search-unguarded-dim
+language: php
+severity: warning
+message: >-
+  array_search() receives its haystack directly from an array dimension access
+  without a null-coalescing default.
+note: >-
+  Syntactic single-file check only. It matches a literal array_search call
+  whose second argument is a subscript expression with no ?? in that argument;
+  it does not prove the key is missing or the value is non-array at runtime,
+  and it does not check guards outside the call.
+rule:
+  pattern: 'array_search($KEY, $ARR[$IDX])'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
