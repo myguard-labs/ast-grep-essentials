@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-superadmin-early-return-skips-caps
+language: php
+severity: warning
+message: >-
+  Early return for multisite super admins skips map_meta_cap, so a
+  do_not_allow result is never honoured.
+note: >-
+  Syntactic match only. It flags a literal if-condition is_multisite() &&
+  is_super_admin() whose body returns true without checking map_meta_cap
+  output; it does not resolve function identity, types, or runtime values.
+rule:
+  pattern: |
+    if (is_multisite() && is_super_admin()) { return true; }
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

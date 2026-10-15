@@ -1,0 +1,10 @@
+id: wp-superadmin-early-return-skips-caps
+valid:
+  - >-
+    function has_cap( $cap ) { if ( is_multisite() && is_super_admin() ) {
+    return ! in_array( 'do_not_allow', map_meta_cap( $cap, 1 ), true ); } return
+    map_meta_cap( $cap, 1 ); }
+invalid:
+  - >-
+    function has_cap( $cap ) { if ( is_multisite() && is_super_admin() ) {
+    return true; } return map_meta_cap( $cap, 1 ); }
