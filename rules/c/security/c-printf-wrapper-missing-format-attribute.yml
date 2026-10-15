@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-printf-wrapper-missing-format-attribute
+language: c
+severity: warning
+message: 'Variadic function with a const char *fmt parameter lacks a format attribute.'
+note: >-
+  Syntactic single-file check on the declaration text only; it matches a
+  declaration whose fixed parameter list ends with const char *fmt followed by
+  variadic arguments, and it does not verify attributes placed elsewhere or
+  that fmt is forwarded to a printf-style sink.
+rule:
+  all:
+    - pattern: 'void log_line(int level, const char *fmt, ...);'
+    - not:
+        pattern: >-
+          void log_line(int level, const char *fmt, ...)
+          __attribute__((format(printf,2,3)));
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
