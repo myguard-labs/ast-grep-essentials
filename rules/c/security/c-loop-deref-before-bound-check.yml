@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-loop-deref-before-bound-check
+language: c
+severity: warning
+message: >-
+  Array subscript is read in a for-loop condition before the bound on the same
+  index is checked.
+note: >-
+  Syntactic check only. It matches a for-loop condition whose && operands
+  place a subscript comparison on the left of a bound comparison; it does not
+  prove the array is actually out of bounds or resolve types or aliasing.
+rule:
+  kind: for_statement
+  has:
+    field: condition
+    kind: binary_expression
+    all:
+      - pattern: '$A[$I] != ''\0'' && $B'
+      - has:
+          pattern: '$I < $N'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
