@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-adjacent-literals-merged-in-list
+language: php
+severity: warning
+message: >-
+  A '.' concatenates two string literals inside an array literal; a ','
+  separator may have been intended.
+note: >-
+  Syntactic check only. Matches a binary concatenation of two string literals
+  whose parent is an array literal; it does not verify intent or resolve
+  runtime values.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: left
+        kind: string
+    - has:
+        field: right
+        kind: string
+    - inside:
+        kind: array_creation_expression
+        stopBy: end
+    - pattern: '$A . $B'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
