@@ -1,0 +1,21 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-stream-liveness-zero-timeout
+language: c
+severity: warning
+message: >-
+  php_stream_set_option is called with PHP_STREAM_OPTION_CHECK_LIVENESS and a
+  literal 0 value, which is a zero timeout.
+note: >-
+  Syntactic single-call check on the literal argument text only; it does not
+  resolve the stream, macro definitions, or runtime values.
+rule:
+  pattern: 'php_stream_set_option($S, PHP_STREAM_OPTION_CHECK_LIVENESS, 0, $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
