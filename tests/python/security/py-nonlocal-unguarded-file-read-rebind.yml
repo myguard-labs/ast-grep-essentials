@@ -1,0 +1,20 @@
+id: py-nonlocal-unguarded-file-read-rebind
+valid:
+  - |-
+    from pathlib import Path
+    def outer():
+        saved = None
+        def record():
+            nonlocal saved
+            if saved is None:
+                saved = Path('pkg.json').read_bytes()
+        record()
+invalid:
+  - |-
+    from pathlib import Path
+    def outer():
+        saved = None
+        def record():
+            nonlocal saved
+            saved = Path('pkg.json').read_bytes()
+        record()
