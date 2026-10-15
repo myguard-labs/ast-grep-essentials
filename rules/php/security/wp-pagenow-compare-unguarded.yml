@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-pagenow-compare-unguarded
+language: php
+severity: warning
+message: >-
+  Global $pagenow is compared with a string literal in an if-condition without
+  an isset($pagenow) guard.
+note: >-
+  Purely syntactic single-file match on a literal string compared with
+  $pagenow inside an if condition. It does not verify that the global is
+  absent at runtime, that no earlier guard exists outside the condition, or
+  the variable's scope.
+rule:
+  pattern: '''$LIT'' == $pagenow'
+  inside:
+    kind: if_statement
+    stopBy: end
+    not:
+      has:
+        pattern: 'isset($pagenow)'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
