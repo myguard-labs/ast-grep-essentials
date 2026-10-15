@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-glob-interpolated-path
+language: php
+severity: warning
+message: >-
+  glob() is called with a double-quoted pattern containing interpolated
+  variables; review whether externally influenced path parts can add glob
+  metacharacters.
+note: >-
+  Syntactic check only. Matches glob calls whose first argument is a
+  double-quoted string with interpolation; does not resolve variable values,
+  trust boundaries, or whether the interpolated parts are actually
+  attacker-controlled.
+rule:
+  pattern: 'glob("$$$PARTS")'
+  inside:
+    kind: program
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
