@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: nginx-queue-loop-advance-wrong-node
+language: c
+severity: warning
+message: >-
+  This queue for-loop advances with ngx_queue_next on an argument other than
+  the loop cursor.
+note: >-
+  Syntactic match only. It checks that a for-loop step assigns the cursor from
+  ngx_queue_next applied to a different expression, using the shown syntax. It
+  does not resolve types, aliasing, or whether the argument is a list head or
+  sentinel.
+rule:
+  kind: for_statement
+  has:
+    pattern: 'q = ngx_queue_next(&h->pushing)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

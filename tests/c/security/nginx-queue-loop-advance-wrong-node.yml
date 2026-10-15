@@ -1,0 +1,9 @@
+id: nginx-queue-loop-advance-wrong-node
+valid:
+  - >-
+    ngx_queue_t *q; for (q = ngx_queue_head(&h->pushing); q !=
+    ngx_queue_sentinel(&h->pushing); q = ngx_queue_next(q)) { ; }
+invalid:
+  - >-
+    ngx_queue_t *q; for (q = ngx_queue_head(&h->pushing); q !=
+    ngx_queue_sentinel(&h->pushing); q = ngx_queue_next(&h->pushing)) { ; }
