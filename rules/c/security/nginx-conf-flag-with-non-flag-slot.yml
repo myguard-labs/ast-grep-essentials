@@ -1,0 +1,21 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: nginx-conf-flag-with-non-flag-slot
+language: c
+severity: warning
+message: >-
+  This nginx command entry uses NGX_CONF_FLAG with a set handler other than
+  ngx_conf_set_flag_slot.
+note: >-
+  Matches the literal table-entry syntax only; it does not resolve macros,
+  types, or whether the handler is used at runtime.
+rule:
+  pattern: '{ ngx_string($NAME), NGX_CONF_FLAG, ngx_conf_set_enum_slot, $$$REST }'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
