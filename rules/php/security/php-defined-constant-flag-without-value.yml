@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-defined-constant-flag-without-value
+language: php
+severity: warning
+message: >-
+  This if-condition only checks that the constant is defined and never tests
+  its value; review whether a false constant should pass.
+note: >-
+  Syntactic check only. It matches an if-condition that is exactly a
+  defined('NAME') call and does not evaluate the constant's runtime value,
+  type, or whether it is defined elsewhere. Many legitimate guards are bare
+  defined() checks, so matches need manual review.
+rule:
+  kind: if_statement
+  has:
+    field: condition
+    kind: parenthesized_expression
+    has:
+      pattern: 'defined($NAME)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
