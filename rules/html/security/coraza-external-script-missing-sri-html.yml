@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: coraza-external-script-missing-sri-html
+language: html
+severity: warning
+message: >-
+  External script loaded from an absolute http(s) URL without an integrity
+  attribute; add a Subresource Integrity hash.
+note: >-
+  Syntactic check only. Matches a script element whose src starts with http://
+  or https:// and that has no integrity attribute on the same start tag. It
+  does not verify the hash value, the crossorigin attribute, or whether the
+  script is loaded elsewhere.
+rule:
+  pattern: '<script src="$SRC"></script>'
+  all:
+    - regex: 'src="https?://'
+    - not:
+        has:
+          pattern: 'integrity="$INT"'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
