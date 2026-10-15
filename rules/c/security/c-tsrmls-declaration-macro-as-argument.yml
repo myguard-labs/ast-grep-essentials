@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-tsrmls-declaration-macro-as-argument
+language: c
+severity: warning
+message: >-
+  TSRMLS_DC is a parameter declaration macro and is used here as a call
+  argument; pass TSRMLS_CC instead.
+note: >-
+  Syntactic match only. Flags a call whose final argument is the literal
+  identifier TSRMLS_DC; does not resolve callees, macro definitions, or ZTS
+  configuration.
+rule:
+  pattern: '$F($$$ARGS, TSRMLS_DC)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
