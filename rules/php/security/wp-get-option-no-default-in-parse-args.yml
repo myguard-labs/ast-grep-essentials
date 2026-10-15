@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-get-option-no-default-in-parse-args
+language: php
+severity: warning
+message: >-
+  get_option() is called with no default and its result is passed directly to
+  wp_parse_args(); a missing option yields false instead of an array.
+note: >-
+  Syntactic check only. Matches a literal wp_parse_args call whose first
+  argument is a single-argument get_option call; it does not verify the option
+  value, runtime type, or whether get_option is the WordPress function.
+rule:
+  pattern: 'wp_parse_args(get_option($ARG), $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
