@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: slprintf-const-cast-dest-cpp
+language: cpp
+severity: warning
+message: >-
+  C-style cast to non-const char pointer passed as the destination of
+  slprintf; review for writes into read-only memory.
+note: >-
+  Purely syntactic check on a literal slprintf call whose first argument is a
+  C-style cast to char pointer. It does not resolve types, const-ness of the
+  cast operand, or whether the destination is writable at runtime.
+rule:
+  pattern: 'slprintf((char*)$DST, $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
