@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-inverted-cap-check-wp-die
+language: php
+severity: warning
+message: >-
+  A positive current_user_can() check directly guards wp_die(), which may deny
+  access to users who hold the capability. Review whether the check is
+  inverted.
+note: >-
+  Purely syntactic single-statement match on a bare current_user_can() if
+  condition whose body calls wp_die(). It does not resolve capabilities,
+  roles, or runtime user state, and some legitimate uses may need manual
+  review.
+rule:
+  all:
+    - pattern: |
+        if ( current_user_can( $CAP ) ) { wp_die( $$$ARGS ); }
+    - not:
+        pattern: |
+          if ( ! current_user_can( $CAP ) ) { wp_die( $$$ARGS ); }
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
