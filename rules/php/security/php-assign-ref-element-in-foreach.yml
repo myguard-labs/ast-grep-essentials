@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-assign-ref-element-in-foreach
+language: php
+severity: warning
+message: >-
+  Reference assignment of an element of the iterated array inside a foreach
+  loop; later writes can alias across entries.
+note: >-
+  Syntactic single-file match only. Matches a reference assignment whose right
+  side is a subscript of a literal array variable inside a foreach body; it
+  does not resolve whether the arrays are the same at runtime or whether the
+  alias causes harm.
+rule:
+  all:
+    - pattern: '$A[$K] =& $B[$I]'
+    - inside:
+        kind: foreach_statement
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
