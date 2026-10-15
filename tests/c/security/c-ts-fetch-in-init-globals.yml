@@ -1,0 +1,5 @@
+id: c-ts-fetch-in-init-globals
+valid:
+  - "#ifdef ZTS\nstatic void php_ora_init_globals(php_ora_globals *ora_globals)\n{\n\tora_globals->x = 0;\n}\n#endif"
+invalid:
+  - "#ifdef ZTS\nstatic void php_ora_init_globals(php_ora_globals *ora_globals)\n{\n\tELS_FETCH();\n\tora_globals->x = 0;\n}\n#endif"

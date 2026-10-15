@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ts-fetch-in-init-globals
+language: c
+severity: warning
+message: >-
+  Function named *_init_globals calls a TSRM/ELS fetch macro in its body;
+  review for startup-time thread-state access.
+note: >-
+  Syntactic single-file match only. Matches a function whose declarator name
+  ends in _init_globals and whose body contains a call to ELS_FETCH or
+  TSRMLS_FETCH. Does not verify the ZTS guard, macro definitions, or runtime
+  deadlock behavior.
+rule:
+  all:
+    - kind: function_definition
+    - has:
+        field: declarator
+        regex: '_init_globals\s*\('
+    - has:
+        pattern: 'ELS_FETCH()'
+        stopBy: end
+    - not:
+        has:
+          pattern: 'TSRMLS_FETCH()'
+          stopBy: end
+    - inside:
+        kind: preproc_ifdef
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
