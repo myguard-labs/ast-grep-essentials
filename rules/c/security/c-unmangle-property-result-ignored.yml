@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-unmangle-property-result-ignored
+language: c
+severity: warning
+message: >-
+  The int status of zend_unmangle_property_name is discarded as a bare
+  statement; the out-pointer may be unset when the key is not mangled.
+note: >-
+  Syntactic check only. Matches a bare call expression statement to
+  zend_unmangle_property_name; it does not verify the out-pointer is used
+  afterwards or resolve types or aliases.
+rule:
+  pattern: 'zend_unmangle_property_name($$$ARGS);'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
