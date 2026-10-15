@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-branch-deref-member-write
+language: c
+severity: warning
+message: >-
+  Member assignment through a pointer inside an if (!p) branch dereferences a
+  pointer that was just shown to be NULL.
+note: >-
+  Single-file syntactic match on a literal `if (!p)` test with a `p->field =
+  ...` assignment somewhere in its body. It does not resolve types, aliasing,
+  reassignment before the write, or reachability, so it may report paths where
+  the pointer is not actually NULL.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        pattern: '!$P'
+        stopBy: end
+    - has:
+        pattern: '$P->$F = $V'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
