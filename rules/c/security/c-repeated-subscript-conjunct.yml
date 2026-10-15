@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-repeated-subscript-conjunct
+language: c
+severity: warning
+message: >-
+  This && chain compares the same subscripted element to the same literal
+  twice; the second index may not have been advanced.
+note: >-
+  Purely syntactic check on a single && expression whose two operands are
+  identical subscript-equals-literal comparisons with the same index text;
+  does not verify index intent, types, or aliasing.
+rule:
+  pattern: '$X[$I] == $L && $X[$I] == $L'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
