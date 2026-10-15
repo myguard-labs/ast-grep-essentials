@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-unreachable-statement-after-return
+language: php
+severity: warning
+message: A call statement follows a return in the same block and can never execute.
+note: >-
+  Single-file syntactic check matching an expression statement that directly
+  follows a return statement via the neighboring sibling. It does not model
+  control flow, finally blocks, or runtime values.
+rule:
+  all:
+    - kind: expression_statement
+    - follows:
+        kind: return_statement
+        stopBy: neighbor
+    - has:
+        kind: function_call_expression
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
