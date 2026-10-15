@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-ob-get-level-unbounded-loop
+language: php
+severity: warning
+message: >-
+  This while loop is conditioned on ob_get_level() and calls ob_end_clean() in
+  its body without a bound, so it may never terminate if a buffer cannot be
+  removed.
+note: >-
+  Syntactic single-file match only. It matches a literal while statement whose
+  condition is ob_get_level() and whose body contains an ob_end_clean() call;
+  it does not verify that a buffer can fail to be removed at runtime or check
+  for any other exit path.
+rule:
+  pattern: 'while (ob_get_level()) { $$$BODY }'
+  inside:
+    kind: program
+    stopBy: end
+  has:
+    pattern: 'ob_end_clean($$$ARGS)'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
