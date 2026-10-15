@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-url-allowlist-regex-unanchored
+language: typescript
+severity: warning
+message: >-
+  URL allowlist regex built from a template literal is not anchored;
+  attacker-controlled hosts may match as substrings.
+note: >-
+  Single-file syntactic check only. Matches template literals whose text
+  starts with https?: and do not start with a ^ anchor. It does not resolve
+  whether the value reaches a regex sink or check trailing $ anchors beyond
+  the shown contrasts.
+rule:
+  kind: template_string
+  regex: '^`https\?:'
+  not:
+    regex: '^`\^'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
