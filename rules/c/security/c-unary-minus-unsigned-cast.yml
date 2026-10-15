@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-unary-minus-unsigned-cast
+language: c
+severity: warning
+message: >-
+  Unary minus applied to an unsigned integer cast; consider the explicit 0 -
+  form to make the wraparound intent clear.
+note: >-
+  Purely syntactic match on a unary minus whose operand is a parenthesized
+  cast to an unsigned type name. Does not resolve typedefs, macros, or the
+  real type of the operand, and does not judge overflow semantics (unsigned
+  wraparound is defined).
+rule:
+  kind: unary_expression
+  pattern: '-(unsigned long)$V'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
