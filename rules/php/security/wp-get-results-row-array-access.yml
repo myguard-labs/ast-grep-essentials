@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-get-results-row-array-access
+language: php
+severity: warning
+message: >-
+  Array-style access on a $wpdb->get_results() result reads a stdClass row as
+  an array; use property access or get_row().
+note: >-
+  Syntactic match only. It flags a literal $wpdb->get_results(...) call
+  directly indexed with [..]; it does not track variables assigned from
+  get_results or confirm the returned type at runtime.
+rule:
+  pattern: '$wpdb->get_results($$$ARGS)[$KEY]'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
