@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-gettext-wrapped-file-extension
+language: php
+severity: warning
+message: >-
+  Gettext call wraps a string literal beginning with a dot, which looks like a
+  file extension or code token rather than translatable prose. Review whether
+  it should be localized.
+note: >-
+  Purely syntactic check on a literal first argument to __() or _e() whose
+  text starts with a dot. It does not verify that the string is used as a file
+  extension or code token, and does not resolve whether the functions are
+  WordPress gettext functions.
+rule:
+  pattern: '__(''$S'')'
+  regex: '^__\(\s*[''"]\.'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
