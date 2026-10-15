@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-preg-replace-high-byte-strip
+language: php
+severity: warning
+message: >-
+  preg_replace strips a high-byte \xHH escape from a non-UTF-8 pattern; this
+  can corrupt multibyte text.
+note: >-
+  Syntactic match only. Checks a literal single-quoted pattern containing a
+  \xHH escape with HH >= 80 and no u modifier, and an empty replacement. Does
+  not determine whether the input is multibyte or whether the pattern is
+  applied to such input.
+rule:
+  pattern: 'preg_replace(''$PAT'', '''', $$$ARGS)'
+  has:
+    kind: string_content
+    regex: '\\x[89a-fA-F][0-9a-fA-F]'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
