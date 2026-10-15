@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-gettext-concatenated-fragment
+language: php
+severity: warning
+message: >-
+  A translation call is concatenated with other strings, so the translatable
+  sentence is split into fragments.
+note: >-
+  Matches a literal __() call that is directly an operand of a '.'
+  concatenation. It does not resolve whether __ is the WordPress gettext
+  function or check types, imports, or dataflow.
+rule:
+  pattern: '__($$$ARGS)'
+  inside:
+    kind: binary_expression
+    has:
+      field: operator
+      regex: '^\.$'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
