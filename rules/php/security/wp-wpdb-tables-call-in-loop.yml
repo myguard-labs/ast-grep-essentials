@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-wpdb-tables-call-in-loop
+language: php
+severity: warning
+message: >-
+  This $wpdb->tables() call with a constant argument is inside a loop; hoist
+  it out so the list is not rebuilt on every iteration.
+note: >-
+  Syntactic check only. It matches a literal $wpdb->tables( ... ) call inside
+  a foreach body and does not verify the receiver's type, the argument's
+  runtime value, or that the result is unchanged across iterations.
+rule:
+  pattern: '$wpdb->tables($ARG)'
+  inside:
+    kind: foreach_statement
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
