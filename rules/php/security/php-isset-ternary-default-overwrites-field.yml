@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-isset-ternary-default-overwrites-field
+language: php
+severity: warning
+message: >-
+  Assignment defaults an absent input to an empty string through an isset
+  ternary, which can overwrite an existing field value.
+note: >-
+  Syntactic match only. It cannot confirm that the target field already holds
+  a value or that the input is absent at runtime; no types, dataflow, or
+  aliasing are resolved.
+rule:
+  pattern: '$A[$B] = isset( $C[$D] ) ? $C[$D] : '''';'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
