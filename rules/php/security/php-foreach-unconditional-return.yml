@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-foreach-unconditional-return
+language: php
+severity: warning
+message: >-
+  This foreach loop returns unconditionally in its body, so it never runs a
+  second iteration.
+note: >-
+  Matches a foreach whose body block has a return statement as a direct child.
+  It is purely syntactic and does not prove the return is reached on every
+  iteration or account for runtime values or control flow outside the shown
+  syntax.
+rule:
+  all:
+    - kind: foreach_statement
+    - has:
+        kind: compound_statement
+        has:
+          kind: return_statement
+          stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
