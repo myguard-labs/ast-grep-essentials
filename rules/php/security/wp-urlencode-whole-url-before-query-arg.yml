@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-urlencode-whole-url-before-query-arg
+language: php
+severity: warning
+message: >-
+  A urlencode() call is passed directly as the URL argument of a query-arg
+  helper, so the whole URL is percent-encoded before parsing.
+note: >-
+  Single-file syntactic match on literal remove_query_arg( calls whose second
+  argument is directly a urlencode( call. It does not resolve function
+  identity, imports, or runtime values, and does not cover add_query_arg.
+rule:
+  pattern: 'remove_query_arg($KEY, urlencode($URL))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
