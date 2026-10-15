@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-mysql-api-removed-call
+language: php
+severity: warning
+message: >-
+  This calls a removed mysql_* extension function, which no longer exists in
+  PHP 7 and later. Migrate to mysqli, PDO, or $wpdb.
+note: >-
+  Matches a direct call whose function name is literally mysql_ followed by an
+  identifier in the shown syntax. It does not confirm the function is defined,
+  resolve namespaces or aliases, or check runtime PHP version.
+rule:
+  pattern: 'mysql_query($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
