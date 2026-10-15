@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-ssh2-ltrim-root-stream-path
+language: php
+severity: warning
+message: >-
+  This ssh2.sftp stream URL is built from a path passed through ltrim(...,
+  '/'), so a root path can collapse to an empty suffix.
+note: >-
+  Single-file syntactic match on a concatenation containing a literal
+  'ssh2.sftp://' string and an ltrim call with a literal '/' argument. It does
+  not resolve types, runtime values, or whether the path can actually be root.
+rule:
+  pattern: 'file_get_contents(''ssh2.sftp://'' . $A . ''/'' . ltrim($B, ''/''))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
