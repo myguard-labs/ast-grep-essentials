@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-self-assignment
+language: c
+severity: warning
+message: This assignment copies a value from the same expression it assigns to.
+note: >-
+  Matches only assignments whose right-hand side is textually identical to the
+  left-hand side; it does not resolve aliasing, types, or runtime values.
+rule:
+  kind: assignment_expression
+  all:
+    - has:
+        field: left
+        pattern: '$LHS'
+    - has:
+        field: right
+        pattern: '$LHS'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
