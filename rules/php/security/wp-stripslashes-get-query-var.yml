@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-stripslashes-get-query-var
+language: php
+severity: warning
+message: >-
+  stripslashes() is applied to get_query_var(), which may already be unslashed
+  by WordPress; review for double unslashing.
+note: >-
+  Single-file syntactic match on a direct stripslashes(get_query_var(...))
+  call with a literal function name. It does not verify that the query var is
+  unslashed upstream, resolve aliases, or track values through variables.
+rule:
+  pattern: 'stripslashes(get_query_var($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
