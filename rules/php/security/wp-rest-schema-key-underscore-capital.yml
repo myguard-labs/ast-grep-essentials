@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-rest-schema-key-underscore-capital
+language: php
+severity: warning
+message: >-
+  Array key uses an underscore before a capital letter; schema property names
+  are expected to be snake_case.
+note: >-
+  Matches only single-quoted string literals whose text starts with a
+  lowercase letter and contains an underscore followed by an uppercase letter.
+  Does not check whether the array is a REST schema or resolve types.
+rule:
+  kind: string
+  regex: '^''[a-z][A-Za-z0-9]*_[A-Z][A-Za-z0-9_]*''$'
+  inside:
+    kind: array_element_initializer
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
