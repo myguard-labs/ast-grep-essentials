@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-legacy-same-name-constructor
+language: php
+severity: warning
+message: >-
+  Method has the same name as its enclosing class, which is a PHP 4-style
+  constructor deprecated and removed in PHP 8. Use __construct instead.
+note: >-
+  Single-file syntactic check only. It matches a method whose name equals the
+  literal enclosing class name; it does not resolve inheritance, namespaces,
+  or whether the class is a test fixture.
+rule:
+  all:
+    - kind: method_declaration
+    - has:
+        field: name
+        regex: '^[A-Za-z_][A-Za-z0-9_]*$'
+    - inside:
+        kind: class_declaration
+        stopBy: end
+        has:
+          field: name
+          pattern: '$CLASS'
+    - has:
+        field: name
+        pattern: '$CLASS'
+metadata:
+  rule_modified_at: '2026-10-15'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-15'
+  created_at: '2026-10-15'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
