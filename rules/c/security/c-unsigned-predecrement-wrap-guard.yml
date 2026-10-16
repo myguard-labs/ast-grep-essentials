@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-unsigned-predecrement-wrap-guard
+language: c
+severity: warning
+message: >-
+  This loop pre-decrements an unsigned counter inside its condition and relies
+  on wraparound to SIZE_MAX; check the boundary handling.
+note: >-
+  Syntactic match only on a pre-decrement inside a while condition compared
+  against SIZE_MAX. It does not prove the counter is unsigned or that
+  wraparound is unintended; types and values are not resolved.
+rule:
+  pattern: 'while ((--$N < SIZE_MAX) && $COND) { $$$BODY }'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
