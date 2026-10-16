@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-comment-nested-opener
+language: c
+severity: warning
+message: >-
+  This block comment contains a nested /* opener, so the comment may swallow
+  following code up to the next */.
+note: >-
+  Purely syntactic check for a comment whose text contains a literal /*
+  sequence. It cannot confirm that the comment actually extends past intended
+  code, and it does not account for comments ending on the same line or for /*
+  inside string literals.
+rule:
+  kind: comment
+  regex: '^/\*.*/\*'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
