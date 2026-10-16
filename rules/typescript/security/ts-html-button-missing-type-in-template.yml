@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-html-button-missing-type-in-template
+language: typescript
+severity: warning
+message: >-
+  Button markup in a template literal has no explicit type attribute; add
+  type="button" or type="submit" so it does not default to submit inside a
+  form.
+note: >-
+  Purely syntactic match on a literal button start tag inside a template
+  string. It does not check whether the template is rendered inside a form,
+  whether the tag is a real HTML element at runtime, or whether a type is set
+  dynamically.
+rule:
+  all:
+    - kind: template_string
+    - has:
+        regex: '<button[\s>]'
+        stopBy: end
+    - not:
+        has:
+          regex: 'type\s*='
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
