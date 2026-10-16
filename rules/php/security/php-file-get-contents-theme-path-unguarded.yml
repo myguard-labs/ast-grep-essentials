@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-file-get-contents-theme-path-unguarded
+language: php
+severity: warning
+message: >-
+  file_get_contents() reads a get_theme_file_path() result without a visible
+  file_exists() guard.
+note: >-
+  Purely syntactic check for a direct get_theme_file_path() argument inside
+  file_get_contents(). It does not verify that the file exists, resolve the
+  path at runtime, or see guards in other functions or files.
+rule:
+  pattern: 'file_get_contents(get_theme_file_path($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
