@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-self-signal-relay-in-own-handler
+language: typescript
+severity: warning
+message: >-
+  This signal handler re-sends the same signal to its own process, which can
+  re-invoke the handler.
+note: >-
+  Syntactic match only on a literal process.kill(process.pid, ...) call inside
+  a process.on handler. Does not resolve whether the handler is actually
+  registered for that signal or whether the call recurses at runtime.
+rule:
+  pattern: 'process.kill(process.pid, $SIG)'
+  inside:
+    pattern: 'process.on($SIGNAL, $HANDLER)'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
