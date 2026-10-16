@@ -1,0 +1,13 @@
+id: c-bio-read-smtp-multiline-loop
+valid:
+  - |-
+    int n;
+    do {
+        n = BIO_gets(fbio, buf, 1024);
+    } while (n > 3 && buf[3] == '-');
+invalid:
+  - |-
+    int n;
+    do {
+        n = BIO_read(sbio, buf, 1024);
+    } while (n > 3 && buf[3] == '-');

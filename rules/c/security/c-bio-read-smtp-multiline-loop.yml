@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bio-read-smtp-multiline-loop
+language: c
+severity: warning
+message: >-
+  This do-while loop reads with BIO_read() and tests a fixed buffer byte in
+  its continuation condition, which assumes line-delimited input that
+  BIO_read() does not provide.
+note: >-
+  Purely syntactic match on a do-while whose body assigns BIO_read() and whose
+  condition compares buf[3] to '-'. It does not prove the buffer holds a
+  complete line, the protocol, or the runtime value of n; reads may split
+  responses across chunks.
+rule:
+  kind: do_statement
+  all:
+    - has:
+        pattern: 'n = BIO_read(sbio, buf, 1024);'
+        stopBy: end
+    - has:
+        pattern: 'buf[3] == ''-'''
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
