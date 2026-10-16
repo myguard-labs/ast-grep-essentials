@@ -1,0 +1,14 @@
+id: py-os-follow-symlinks-unguarded
+valid:
+  - |
+    import os
+
+    def restore(src, dst):
+        if os.link in os.supports_follow_symlinks:
+            os.link(src, dst, follow_symlinks=False)
+invalid:
+  - |
+    import os
+
+    def restore(src, dst):
+        os.link(src, dst, follow_symlinks=False)

@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-os-follow-symlinks-unguarded
+language: python
+severity: warning
+message: >-
+  This os call passes follow_symlinks without a visible
+  supports_follow_symlinks check; it may raise NotImplementedError on some
+  platforms.
+note: >-
+  Matches a direct os.<func>(...) call with a follow_symlinks keyword argument
+  in the same file. It does not verify that a guard exists in an enclosing
+  scope or that the platform lacks support; it is a syntactic heuristic.
+rule:
+  pattern: 'os.link($$$ARGS, follow_symlinks=$VAL)'
+  not:
+    inside:
+      pattern: 'if os.link in os.supports_follow_symlinks: $$$BODY'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
