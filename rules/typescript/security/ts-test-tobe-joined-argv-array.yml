@@ -1,0 +1,21 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-test-tobe-joined-argv-array
+language: typescript
+severity: warning
+message: >-
+  This expect(...).toBe(...) compares against a joined string; assert the
+  exact array elements instead.
+note: >-
+  Purely syntactic match on a literal expect(...).toBe(x.join(...)) chain; it
+  does not verify that the receiver is an array or resolve types or aliases.
+rule:
+  pattern: 'expect($ACTUAL).toBe($RECV.join($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
