@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-layout-effect-mount-without-cleanup
+language: typescript
+severity: warning
+message: >-
+  A .mount() call inside a useLayoutEffect if-block is not returned, so its
+  unmount cleanup is dropped.
+note: >-
+  Purely syntactic. Matches a literal useLayoutEffect callback containing an
+  if-block with a bare expression-statement .mount() call; does not verify
+  that mount returns an unmount function or resolve receiver types.
+rule:
+  pattern: |
+    useLayoutEffect(() => {
+      if ($COND) {
+        $$$BEFORE
+        $RECV.mount($$$ARGS)
+        $$$AFTER
+      }
+    }, $$$DEPS)
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

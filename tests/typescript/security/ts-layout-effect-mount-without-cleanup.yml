@@ -1,0 +1,16 @@
+id: ts-layout-effect-mount-without-cleanup
+valid:
+  - |-
+    useLayoutEffect(() => {
+      if (openAlert) {
+        return logic.mount()
+      }
+    }, [openAlert])
+invalid:
+  - |-
+    useLayoutEffect(() => {
+      if (openAlert) {
+        logic.mount()
+        logic.actions.openEditor(openAlert)
+      }
+    }, [openAlert])
