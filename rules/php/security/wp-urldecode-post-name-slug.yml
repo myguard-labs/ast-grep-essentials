@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-urldecode-post-name-slug
+language: php
+severity: warning
+message: >-
+  urldecode() is applied directly to a post_name property; WordPress slugs are
+  already stored decoded, so this may double-decode.
+note: >-
+  Purely syntactic match on a direct urldecode call whose sole argument is a
+  property access named post_name. It does not verify the object is a
+  WordPress post, resolve aliases, or check runtime values.
+rule:
+  pattern: 'urldecode($X->post_name)'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
