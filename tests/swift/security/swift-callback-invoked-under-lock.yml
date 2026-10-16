@@ -1,0 +1,22 @@
+id: swift-callback-invoked-under-lock
+valid:
+  - |-
+    final class Manager {
+      let modelLock = NSLock()
+      var pressureCallback: (() -> Void)?
+      func register() {
+        let callback = modelLock.withLock { pressureCallback }
+        callback?()
+      }
+    }
+invalid:
+  - |-
+    final class Manager {
+      let modelLock = NSLock()
+      var pressureCallback: (() -> Void)?
+      func register() {
+        modelLock.withLock {
+          pressureCallback?()
+        }
+      }
+    }

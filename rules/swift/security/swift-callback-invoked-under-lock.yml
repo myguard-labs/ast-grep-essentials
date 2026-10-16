@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: swift-callback-invoked-under-lock
+language: swift
+severity: warning
+message: >-
+  Optional callback is invoked inside a withLock closure; capture it under the
+  lock and call it after releasing the lock.
+note: >-
+  Purely syntactic match on a call of the form name?() located inside a
+  withLock trailing closure body. It does not resolve whether name is a stored
+  closure property, whether the receiver is a lock, or whether the callback
+  re-enters the same object.
+rule:
+  all:
+    - pattern: '$CB?()'
+      inside:
+        pattern: '$LOCK.withLock { $$$BODY }'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
