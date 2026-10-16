@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-echo-string-embeds-php-open-tag
+language: php
+severity: warning
+message: >-
+  Double-quoted string echoed with an embedded PHP open tag; the tag will be
+  printed as text instead of executed.
+note: >-
+  Syntactic check only. Matches an echo statement whose double-quoted string
+  literal text contains the characters "<?php". It does not verify runtime
+  output, template context, or whether the string is ever reached.
+rule:
+  all:
+    - kind: echo_statement
+    - has:
+        kind: encapsed_string
+        regex: '<\?php'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
