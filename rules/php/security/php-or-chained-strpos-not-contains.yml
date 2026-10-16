@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-or-chained-strpos-not-contains
+language: php
+severity: warning
+message: >-
+  Two negated strpos containment checks on the same subject are joined with
+  ||; this branch fires when either needle is missing. Review whether && was
+  intended.
+note: >-
+  Purely syntactic match on a literal strpos(...) === false operand joined by
+  || to another such operand with the same first argument text. It does not
+  resolve function identity, types, or runtime values, and it does not check
+  the needles' semantics.
+rule:
+  pattern: 'strpos($S, $A) === false || strpos($S, $B) === false'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
