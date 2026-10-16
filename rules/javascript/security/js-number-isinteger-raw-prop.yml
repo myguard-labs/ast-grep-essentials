@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-number-isinteger-raw-prop
+language: javascript
+severity: warning
+message: >-
+  Number.isInteger is applied to a raw this.<prop> value without numeric
+  coercion.
+note: >-
+  Purely syntactic check for Number.isInteger(x) where x is a bare identifier;
+  it does not track that x was assigned from this.<prop> and does not resolve
+  types or runtime values, so string props may still be flagged or missed.
+rule:
+  pattern: 'Number.isInteger($ARG)'
+  inside:
+    stopBy: end
+    has:
+      pattern: 'const $VAR = this.$PROP;'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
