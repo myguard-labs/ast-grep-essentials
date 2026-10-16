@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: rust-write-str-within-capacity-delegation
+language: rust
+severity: warning
+message: >-
+  This fmt::Write write_str delegates to a within_capacity method, so writes
+  may fail once reserved capacity is exhausted.
+note: >-
+  Purely syntactic match on a literal method call whose name contains
+  within_capacity inside a write_str body; it does not verify the receiver's
+  type, the trait impl, or whether the callee actually refuses to grow the
+  buffer.
+rule:
+  pattern: 'self.append_within_capacity($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

@@ -1,0 +1,15 @@
+id: rust-write-str-within-capacity-delegation
+snapshots:
+  ? |-
+    use core::fmt;
+    struct W(Vec<u8>);
+    impl fmt::Write for W {
+        fn write_str(&mut self, s: &str) -> fmt::Result {
+            self.append_within_capacity(s).map_err(|_| fmt::Error)
+        }
+    }
+  : labels:
+    - source: self.append_within_capacity(s)
+      style: primary
+      start: 120
+      end: 150
