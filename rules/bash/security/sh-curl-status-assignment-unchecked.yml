@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-curl-status-assignment-unchecked
+language: bash
+severity: warning
+message: Command substitution from curl is assigned without checking its exit status.
+note: >-
+  Syntactic match only on a plain assignment whose value is a command
+  substitution containing a curl call; the same statement has no || or &&. It
+  does not resolve whether set -e, later status checks, or function context
+  make the exit status handled.
+rule:
+  kind: variable_assignment
+  all:
+    - has:
+        kind: command_substitution
+        has:
+          kind: command
+          pattern: 'curl $$$ARGS'
+    - not:
+        inside:
+          kind: list
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
