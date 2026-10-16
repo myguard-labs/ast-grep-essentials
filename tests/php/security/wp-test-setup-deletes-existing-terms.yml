@@ -1,0 +1,13 @@
+id: wp-test-setup-deletes-existing-terms
+valid:
+  - >-
+    <?php class T extends WC_Unit_Test_Case { public function build_tree(): void
+    { parent::setUp(); foreach ( get_terms( array( 'taxonomy' => 'product_cat',
+    'hide_empty' => false ) ) as $t ) { wp_delete_term( $t->term_id,
+    'product_cat' ); } } } ?>
+invalid:
+  - >-
+    <?php class T extends WC_Unit_Test_Case { public function setUp(): void {
+    parent::setUp(); foreach ( get_terms( array( 'taxonomy' => 'product_cat',
+    'hide_empty' => false ) ) as $t ) { wp_delete_term( $t->term_id,
+    'product_cat' ); } } } ?>

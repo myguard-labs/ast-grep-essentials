@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-test-setup-deletes-existing-terms
+language: php
+severity: warning
+message: >-
+  Bulk deletion of taxonomy terms inside setUp() removes existing shared data;
+  create and delete only test-owned terms.
+note: >-
+  Syntactic match only. It flags wp_delete_term() calls inside a setUp()
+  method body and does not verify that the deleted terms were pre-existing or
+  shared, nor resolve types or the taxonomy's contents.
+rule:
+  all:
+    - pattern: 'wp_delete_term($$$ARGS)'
+    - inside:
+        kind: method_declaration
+        has:
+          field: name
+          regex: '^setUp$'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
