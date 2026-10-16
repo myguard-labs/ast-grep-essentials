@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-tarfile-wgz-nondeterministic-header
+language: python
+severity: warning
+message: >-
+  tarfile.open with mode 'w:gz' writes a gzip header timestamp, so the output
+  may not be byte-stable across runs.
+note: >-
+  Matches only the literal receiver syntax tarfile.open(...) with a keyword
+  argument mode='w:gz' in the same call. It does not resolve whether tarfile
+  is the standard library module, does not track aliases or imports, and does
+  not check whether the timestamp matters to the output.
+rule:
+  pattern: 'tarfile.open($$$ARGS, mode=''w:gz'')'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
