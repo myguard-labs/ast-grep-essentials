@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-strncpy-manual-nul-use-strlcpy
+language: c
+severity: warning
+message: >-
+  This strncpy call is followed by a manual NUL store into the last byte of
+  the destination; consider a bounded copy helper such as strlcpy.
+note: >-
+  Purely syntactic match on a literal strncpy call whose length is sizeof(X) -
+  1 and a following statement storing '\0' into X[sizeof(X) - 1]. It does not
+  resolve types, aliasing, or whether the destination is actually a fixed-size
+  array, and does not check that the NUL store is adjacent or reachable.
+rule:
+  pattern: 'strncpy($DST, $SRC, sizeof($DST) - 1)'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
