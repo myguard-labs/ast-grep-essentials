@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-admin-url-concat-html-without-esc
+language: php
+severity: warning
+message: >-
+  admin_url() result is concatenated into an HTML string without esc_url();
+  wrap it in esc_url().
+note: >-
+  Single-file syntactic match on a literal admin_url( call used directly as an
+  operand of a concatenation whose parent is a string-literal concatenation.
+  It does not resolve whether the concatenated string is HTML, whether the
+  call is shadowed, or whether the value is escaped elsewhere.
+rule:
+  pattern: 'admin_url($$$ARGS)'
+  inside:
+    kind: binary_expression
+    all:
+      - has:
+          kind: string
+          stopBy: end
+      - not:
+          inside:
+            pattern: 'esc_url($$$E)'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
