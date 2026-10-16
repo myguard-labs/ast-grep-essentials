@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-macro-statement-no-do-while
+language: c
+severity: warning
+message: >-
+  Function-like macro body is a bare if/else statement not wrapped in do { }
+  while (0).
+note: >-
+  Syntactic check only. It flags function-like preprocessor macros whose
+  replacement text begins with a bare if statement; it does not verify the
+  macro is used in statement context or that the body is multi-statement.
+rule:
+  kind: preproc_function_def
+  has:
+    field: value
+    regex: '^\s*if\b'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
