@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-entrypoint-file-url-string-compare
+language: javascript
+severity: warning
+message: >-
+  Entrypoint check compares import.meta.url with a hand-built file:// string;
+  URL percent-encoding can make this comparison fail.
+note: >-
+  Syntactic match only on a literal `===` comparison between import.meta.url
+  and a template literal starting with file:// and interpolating
+  process.argv[1]. It does not resolve runtime values, aliases, or whether the
+  path needs encoding.
+rule:
+  pattern: 'import.meta.url === `file://${process.argv[1]}`'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
