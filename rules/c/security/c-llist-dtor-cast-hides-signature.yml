@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-llist-dtor-cast-hides-signature
+language: c
+severity: warning
+message: >-
+  Casting the destructor argument of zend_llist_init to llist_dtor_func_t may
+  hide a mismatched function signature.
+note: >-
+  Matches only the literal syntax of a zend_llist_init call whose third
+  argument is a parenthesized llist_dtor_func_t cast. It does not resolve the
+  real signature of the cast function, so it cannot confirm a mismatch.
+rule:
+  pattern: 'zend_llist_init($A, $B, ($TYPE) $FN, $C)'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
