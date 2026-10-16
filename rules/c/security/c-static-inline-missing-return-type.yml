@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-static-inline-missing-return-type
+language: c
+severity: warning
+message: >-
+  This function has static inline storage class but no return type, relying on
+  implicit int.
+note: >-
+  Matches the literal syntax of a static inline function definition with no
+  type specifier before the declarator. It does not verify that the code is
+  parsed as a function definition by the compiler or resolve macros such as
+  ELS_D.
+rule:
+  pattern: 'static inline $NAME($$$ARGS) { $$$BODY }'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
