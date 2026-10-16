@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-backward-scan-starts-at-length
+language: c
+severity: warning
+message: >-
+  This backward loop starts its pointer at base + len, one past the end of the
+  buffer; dereferencing it reads out of bounds.
+note: >-
+  Purely syntactic. Matches a for-loop whose initializer assigns base + len
+  (no - 1) to a pointer. Does not verify that len is the buffer length or that
+  the pointer is dereferenced at that position at runtime.
+rule:
+  pattern: |
+    for ($P = $BASE + $LEN; $$$HEAD) {
+      $$$BODY
+    }
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
