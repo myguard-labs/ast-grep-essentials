@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-catch-error-message-unguarded
+language: typescript
+severity: warning
+message: >-
+  Catch parameter .message is read without an instanceof Error guard in the
+  same catch block.
+note: >-
+  Purely syntactic check for a catch parameter's .message read inside a catch
+  block with no instanceof guard in that block. It does not resolve types,
+  confirm the thrown value is an Error, or track aliases, so it may flag safe
+  code and miss unsafe reads.
+rule:
+  all:
+    - pattern: 'try { $$$BODY } catch ($E) { $$$CATCHBODY }'
+    - has:
+        pattern: '$E.message'
+        stopBy: end
+    - not:
+        has:
+          pattern: '$E instanceof Error'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
