@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-module-level-int-env-cast
+language: python
+severity: warning
+message: >-
+  Module-level int(os.environ.get(...)) runs at import time; a malformed value
+  raises ValueError and stops the process.
+note: >-
+  Syntactic match only: requires a literal int(os.environ.get(...)) assignment
+  whose enclosing scope is the module. It does not check whether a try/except
+  surrounds it or whether os is the real os module.
+rule:
+  all:
+    - pattern: '$NAME = int(os.environ.get($$$ARGS))'
+    - inside:
+        kind: module
+        stopBy: end
+    - not:
+        inside:
+          kind: function_definition
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
