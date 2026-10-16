@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-comment-query-meta-cache-disabled
+language: php
+severity: warning
+message: >-
+  Comment query disables the comment meta cache; per-comment meta reads may
+  each issue a separate query.
+note: >-
+  Matches an array literal entry with the literal key
+  'update_comment_meta_cache' set to false. It does not resolve whether the
+  array is passed to a comment query, whether meta is read later, or whether
+  lazy loading is intended.
+rule:
+  kind: array_creation_expression
+  has:
+    kind: array_element_initializer
+    all:
+      - has:
+          kind: string
+          regex: '^[''"]update_comment_meta_cache[''"]$'
+      - has:
+          kind: boolean
+          regex: '^[Ff][Aa][Ll][Ss][Ee]$'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
