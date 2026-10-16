@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-jquery-context-ignored-jquery-selector
+language: javascript
+severity: warning
+message: >-
+  A jQuery $() call wraps a method-chain result and also passes a context
+  argument, which jQuery ignores.
+note: >-
+  Syntactic match only. It flags $() calls whose first argument is a member
+  call with a second argument; it does not verify that the first argument is a
+  jQuery object, so string-returning calls may be flagged.
+rule:
+  pattern: '$($RECV.$METHOD($$$ARGS), $CTX)'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
