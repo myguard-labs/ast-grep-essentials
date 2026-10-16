@@ -1,0 +1,5 @@
+id: go-comma-ok-flusher-hijacker-no-responsecontroller
+valid:
+  - "package p\n\nimport \"net/http\"\n\nfunc flush(w http.ResponseWriter) {\n\t_ = http.NewResponseController(w).Flush()\n}"
+invalid:
+  - "package p\n\nimport \"net/http\"\n\nfunc flush(w http.ResponseWriter) {\n\tif fl, ok := w.(http.Flusher); ok {\n\t\tfl.Flush()\n\t}\n}"
