@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-settings-value-indexed-without-coercion
+language: typescript
+severity: warning
+message: >-
+  Value from getSetting(...) is indexed with a computed key without an
+  object-type coercion.
+note: >-
+  Purely syntactic check on a literal getSetting call assigned to a variable
+  and then indexed. It cannot tell whether the plugin-supplied value is
+  actually a non-object at runtime, and it does not track aliasing,
+  reassignment, or type information.
+rule:
+  pattern: 'const $VAR = getSetting($$$ARGS);'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
