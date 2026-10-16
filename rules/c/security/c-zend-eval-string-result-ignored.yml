@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-zend-eval-string-result-ignored
+language: c
+severity: warning
+message: >-
+  The return value of zend_eval_string() is ignored as a bare expression
+  statement; check it for FAILURE.
+note: >-
+  Syntactic check only. Matches a standalone call statement to
+  zend_eval_string with no enclosing comparison, assignment, or return. It
+  does not verify the callee identity, the return type, or whether the result
+  is checked elsewhere.
+rule:
+  pattern: 'zend_eval_string($$$ARGS);'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
