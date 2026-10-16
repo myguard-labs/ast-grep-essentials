@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-object-schema-empty-array-default
+language: php
+severity: warning
+message: >-
+  Schema sets type to object but uses an empty array() as default, which
+  serialises to [] rather than {}.
+note: >-
+  Matches only a single array literal containing both the literal 'type' =>
+  'object' pair and a 'default' => array() pair. It does not resolve
+  variables, types, or schema objects defined elsewhere, and it does not
+  verify how the value is serialised.
+rule:
+  kind: array_creation_expression
+  has:
+    pattern: '''type'' => ''object'''
+    stopBy: end
+  all:
+    - has:
+        pattern: '''default'' => array()'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
