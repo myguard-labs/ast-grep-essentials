@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-module-level-cuda-availability-assert
+language: python
+severity: warning
+message: >-
+  Module-level assert on torch.cuda.is_available() runs a hardware check at
+  import time.
+note: >-
+  Matches a top-level assert whose test contains the literal call
+  torch.cuda.is_available(). It does not resolve aliases or imports, and does
+  not verify runtime device state.
+rule:
+  all:
+    - pattern: 'assert $TEST'
+    - has:
+        pattern: 'torch.cuda.is_available()'
+        stopBy: end
+    - inside:
+        kind: module
+        stopBy: end
+    - not:
+        inside:
+          kind: function_definition
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
