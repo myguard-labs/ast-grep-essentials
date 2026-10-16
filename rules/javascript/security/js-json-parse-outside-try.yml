@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-json-parse-outside-try
+language: javascript
+severity: warning
+message: >-
+  JSON.parse is called outside a try statement; malformed input will throw an
+  unhandled error.
+note: >-
+  Syntactic check only. It flags a literal JSON.parse call with no try
+  ancestor in the file; it does not verify the input source, trust level, or
+  whether a caller handles the error.
+rule:
+  all:
+    - pattern: 'JSON.parse($$$ARGS)'
+    - not:
+        inside:
+          kind: try_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
