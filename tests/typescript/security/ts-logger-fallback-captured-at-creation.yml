@@ -1,0 +1,12 @@
+id: ts-logger-fallback-captured-at-creation
+valid:
+  - |-
+    static create(prefix: string, logger: Logger | null = null) {
+      return { info: (...object: any[]) => (logger ?? this.globalLogger).log(LogLevel.Info, prefix, ...object) };
+    }
+invalid:
+  - |-
+    static create(prefix: string, logger: Logger | null = null) {
+      const target = logger ?? this.globalLogger;
+      return { info: (...object: any[]) => target.log(LogLevel.Info, prefix, ...object) };
+    }

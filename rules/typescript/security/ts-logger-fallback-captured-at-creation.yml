@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-logger-fallback-captured-at-creation
+language: typescript
+severity: warning
+message: >-
+  This fallback is captured once at creation; the closure will not see later
+  changes to the global default.
+note: >-
+  Syntactic approximation only. Matches a const initialised from a `??
+  this.<member>` fallback; it does not verify that the global is reassigned
+  later or that the closure is returned from a factory.
+rule:
+  pattern: 'const $T = $LOGGER ?? this.$GLOBAL;'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
