@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-zend-hash-find-result-ignored
+language: c
+severity: warning
+message: >-
+  The return value of zend_hash_index_find is discarded before the out-pointer
+  is dereferenced.
+note: >-
+  Syntactic approximation only. Matches a bare zend_hash_index_find expression
+  statement followed by a dereference in the next statement; it does not
+  verify types, the hash table semantics, or that the key is absent.
+rule:
+  all:
+    - pattern: 'zend_hash_index_find($$$ARGS);'
+    - precedes:
+        pattern: '$NEW = *$PTR;'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
