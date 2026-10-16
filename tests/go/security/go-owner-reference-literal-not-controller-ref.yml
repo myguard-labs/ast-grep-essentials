@@ -1,0 +1,5 @@
+id: go-owner-reference-literal-not-controller-ref
+valid:
+  - "package main\n\nfunc build(src *Source, svc *Service, scheme *runtime.Scheme) error {\n\treturn controllerutil.SetControllerReference(src, svc, scheme)\n}"
+invalid:
+  - "package main\n\nfunc build(src *Source, svc *Service) {\n\tsvc.OwnerReferences = []metav1.OwnerReference{{APIVersion: src.APIVersion, Kind: src.Kind, Name: src.Name, UID: src.UID}}\n}"
