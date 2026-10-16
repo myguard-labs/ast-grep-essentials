@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-strings-split-index-one-unchecked
+language: go
+severity: warning
+message: >-
+  Indexing strings.Split(...) at [1] without a length check panics when the
+  separator is absent.
+note: >-
+  Matches the literal syntax strings.Split(...)[1] applied directly to the
+  call result. It does not check for a preceding length guard, and it does not
+  resolve whether strings refers to the standard library package or whether
+  the separator can occur in the input.
+rule:
+  pattern: 'strings.Split($$$ARGS)[1]'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
