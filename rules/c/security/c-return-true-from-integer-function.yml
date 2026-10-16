@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-return-true-from-integer-function
+language: c
+severity: warning
+message: >-
+  Returning the macro true from a function with a non-bool integer return
+  type; verify a boolean value was intended.
+note: >-
+  Purely syntactic check. It matches a return of the literal identifier true
+  inside a function definition whose type specifier text begins with an
+  integer keyword. It does not resolve typedefs, macros, or the true
+  definition, and it cannot tell whether a 0/1 flag is intended.
+rule:
+  all:
+    - pattern: 'return true;'
+    - inside:
+        kind: function_definition
+        stopBy: end
+        has:
+          field: type
+          regex: '^(unsigned|signed|int|short|long|char)'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
