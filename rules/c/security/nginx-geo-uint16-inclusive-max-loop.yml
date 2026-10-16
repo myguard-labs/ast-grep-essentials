@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: nginx-geo-uint16-inclusive-max-loop
+language: c
+severity: warning
+message: >-
+  This for loop tests the counter with <= 0xffff; if the counter is 16-bit,
+  incrementing past 0xffff wraps to zero and the loop may never terminate.
+note: >-
+  Purely syntactic match on a for loop whose condition is a less-than-or-equal
+  comparison against the literal 0xffff. It does not verify the counter's
+  type, so it cannot confirm the counter is 16-bit or that it wraps.
+rule:
+  pattern: 'for ($H = 0; $H <= 0xffff; $H++) $BODY'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
