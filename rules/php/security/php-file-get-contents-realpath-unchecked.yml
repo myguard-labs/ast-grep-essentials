@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-file-get-contents-realpath-unchecked
+language: php
+severity: warning
+message: >-
+  The result of realpath() is passed directly to file_get_contents() without a
+  check for false.
+note: >-
+  Syntactic match only: flags a literal file_get_contents(realpath(...)) call
+  in one expression. It does not verify that no false check exists elsewhere,
+  and does not resolve aliases or runtime values.
+rule:
+  pattern: 'file_get_contents(realpath($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
