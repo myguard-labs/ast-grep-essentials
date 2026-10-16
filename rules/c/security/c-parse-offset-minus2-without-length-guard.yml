@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-parse-offset-minus2-without-length-guard
+language: c
+severity: warning
+message: >-
+  Indexing buf with a length minus 2 in a condition may underflow when the
+  length is less than 2; add a length check first.
+note: >-
+  Purely syntactic match on an if-condition containing a buf[x - 2] index with
+  no length >= 2 test in the same condition. It does not resolve types, value
+  ranges, or whether the length is guarded elsewhere in the function.
+rule:
+  all:
+    - pattern: 'if ($COND) $BODY'
+    - has:
+        pattern: 'buf[total - 2]'
+        stopBy: end
+    - not:
+        has:
+          pattern: 'total >= 2'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
