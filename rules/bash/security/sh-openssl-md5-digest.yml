@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-openssl-md5-digest
+language: bash
+severity: warning
+message: >-
+  An openssl command uses the MD5 digest option; MD5 is collision-broken, so
+  prefer SHA-256.
+note: >-
+  Matches a literal openssl command word followed by a -md5 argument in the
+  same command. It does not resolve command names held in variables, aliases,
+  wrappers, or other files, and does not verify that the digest actually
+  affects the output.
+rule:
+  pattern: 'openssl $$$ARGS -md5 $$$REST'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
