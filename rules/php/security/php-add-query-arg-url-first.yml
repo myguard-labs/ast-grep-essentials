@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-add-query-arg-url-first
+language: php
+severity: warning
+message: >-
+  add_query_arg() appears to receive a URL-producing call as its first
+  argument, which reverses the (key, value, url) order.
+note: >-
+  Purely syntactic check. It matches a direct add_query_arg call whose first
+  argument is a function call and whose second argument is a string literal.
+  It does not resolve the callee's return value, types, or whether the call is
+  the WordPress function.
+rule:
+  pattern: 'add_query_arg($URL, $KEY, $$$REST)'
+  has:
+    kind: function_call_expression
+    field: arguments
+    stopBy: end
+  all:
+    - pattern: 'add_query_arg($CALL($$$CARGS), $STR, $$$REST)'
+    - pattern: 'add_query_arg($CALL($$$CARGS), ''preview'', $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
