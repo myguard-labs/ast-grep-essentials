@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-gh-api-list-missing-paginate
+language: typescript
+severity: warning
+message: >-
+  This gh api call requests a per_page list page without --paginate, so only
+  the first page may be returned.
+note: >-
+  Syntactic approximation only. Matches an array literal containing "api" and
+  a template or string with per_page and no --paginate element; it does not
+  verify the endpoint is a list endpoint or resolve the gh function.
+rule:
+  all:
+    - pattern: 'gh([$$$ARGS])'
+    - has:
+        pattern: '"api"'
+        stopBy: end
+    - has:
+        regex: 'per_page='
+        stopBy: end
+    - not:
+        has:
+          regex: '--paginate'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
