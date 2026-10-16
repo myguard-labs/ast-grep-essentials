@@ -1,0 +1,20 @@
+id: js-unbounded-polling-loop
+valid:
+  - |-
+    async pollResult($, id, timeoutMs = 600000) {
+      const deadline = Date.now() + timeoutMs;
+      while (Date.now() < deadline) {
+        const result = await this.getResult($, id);
+        if (result.status === "completed") return result.outputs;
+        await new Promise((r) => setTimeout(r, 3000));
+      }
+    }
+invalid:
+  - |-
+    async pollResult($, id) {
+      while (true) {
+        const result = await this.getResult($, id);
+        if (result.status === "completed") return result.outputs;
+        await new Promise((r) => setTimeout(r, 3000));
+      }
+    }

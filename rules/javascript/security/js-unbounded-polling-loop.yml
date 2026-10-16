@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-unbounded-polling-loop
+language: javascript
+severity: warning
+message: >-
+  This while (true) loop awaits a call inside its body and has no deadline or
+  counter in its condition; it may poll forever if the upstream job stalls.
+note: >-
+  Syntactic approximation only. Matches a literal while (true) loop whose body
+  contains an await. It does not verify that the awaited call is a status
+  fetch, that no break or timeout exists inside the body, or that the loop is
+  reachable.
+rule:
+  all:
+    - kind: while_statement
+    - has:
+        field: condition
+        regex: '^\(\s*true\s*\)$'
+    - has:
+        kind: await_expression
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

@@ -1,0 +1,28 @@
+id: js-unbounded-polling-loop
+snapshots:
+  ? |-
+    async pollResult($, id) {
+      while (true) {
+        const result = await this.getResult($, id);
+        if (result.status === "completed") return result.outputs;
+        await new Promise((r) => setTimeout(r, 3000));
+      }
+    }
+  : labels:
+    - source: |-
+        while (true) {
+            const result = await this.getResult($, id);
+            if (result.status === "completed") return result.outputs;
+            await new Promise((r) => setTimeout(r, 3000));
+          }
+      style: primary
+      start: 28
+      end: 207
+    - source: (true)
+      style: secondary
+      start: 34
+      end: 40
+    - source: await this.getResult($, id)
+      style: secondary
+      start: 62
+      end: 89
