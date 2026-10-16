@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-md5-mt-rand-token
+language: php
+severity: warning
+message: >-
+  md5() is called on an expression that includes mt_rand(); the result is
+  predictable and should not be used as a security token.
+note: >-
+  Syntactic check only. It matches a md5( call whose argument contains a
+  direct mt_rand( call in the same expression; it does not resolve function
+  identity, imports, or whether the value is used for security.
+rule:
+  pattern: 'md5($$$ARGS)'
+  has:
+    pattern: 'mt_rand($$$RANDARGS)'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
