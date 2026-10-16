@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-negated-preg-match-allow
+language: php
+severity: warning
+message: >-
+  Negating preg_match() treats a false return (PCRE error) as a successful
+  match; compare explicitly with 0 === preg_match(...) instead.
+note: >-
+  Purely syntactic. Matches a unary ! applied directly to a literal
+  preg_match( call. It does not verify the value is used as an allow check,
+  does not resolve aliases or imports, and cannot tell whether a PCRE error is
+  possible at runtime.
+rule:
+  pattern: '! preg_match($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
