@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-weak-mock-calls-stringify-assertion
+language: typescript
+severity: warning
+message: >-
+  Asserting on JSON.stringify of mock.calls with toContain is a weak check;
+  assert the exact call arguments instead.
+note: >-
+  Matches the literal syntax
+  expect(JSON.stringify(<x>.mock.calls)).toContain(...) only. It does not
+  verify the mock's identity, the call routing, or argument positions, and it
+  does not resolve types or aliases.
+rule:
+  pattern: 'expect(JSON.stringify($MOCK.mock.calls)).toContain($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
