@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-number-isnan-only-id-validation
+language: javascript
+severity: warning
+message: >-
+  This id guard only checks Number.isNaN on the converted value; fractional or
+  non-positive ids will pass.
+note: >-
+  Syntactic match only. It flags an if-statement whose condition calls
+  Number.isNaN on a value and has no Number.isInteger check in the same
+  condition; it does not resolve types, runtime values, or whether the value
+  is later validated elsewhere.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        pattern: 'Number.isNaN($X)'
+        stopBy: end
+    - not:
+        has:
+          pattern: 'Number.isInteger($$$ARGS)'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
