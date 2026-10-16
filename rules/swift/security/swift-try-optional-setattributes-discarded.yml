@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: swift-try-optional-setattributes-discarded
+language: swift
+severity: warning
+message: >-
+  A try? expression discards the error from FileManager.default.setAttributes;
+  handle the failure so file permissions are known to be applied.
+note: >-
+  Matches the literal receiver syntax FileManager.default.setAttributes
+  wrapped in try? without resolving types, imports, or runtime values; it
+  cannot confirm the receiver is a FileManager instance.
+rule:
+  pattern: 'try? FileManager.default.setAttributes($$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
