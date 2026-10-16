@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-forin-key-strict-number-compare
+language: javascript
+severity: warning
+message: >-
+  For-in keys are strings; comparing the loop variable to a number literal
+  with a strict operator never matches as intended.
+note: >-
+  Purely syntactic check on a literal numeric comparison inside a for-in body.
+  It does not resolve types or confirm the iterated object's keys; the loop
+  variable is matched by name only within the loop body.
+rule:
+  kind: for_in_statement
+  has:
+    kind: binary_expression
+    pattern: '$K === 0'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
