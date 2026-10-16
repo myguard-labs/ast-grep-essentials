@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-str-replace-quote-entity-attr
+language: php
+severity: warning
+message: >-
+  Hand-rolled attribute escaping with str_replace for double quotes; use
+  esc_attr() or an equivalent HTML attribute escaper.
+note: >-
+  Matches the literal call shape str_replace('"', '&quot;', ...)
+  syntactically. It does not verify that the result is used in an HTML
+  attribute, and does not resolve types, aliases, or whether str_replace is
+  the PHP built-in.
+rule:
+  pattern: 'str_replace(''"'', ''&quot;'', $$$ARGS)'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
