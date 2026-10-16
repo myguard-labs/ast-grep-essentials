@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-import-from-dist-internal-path
+language: typescript
+severity: warning
+message: >-
+  Import specifier deep-imports a package's build output under a /dist/ path
+  segment; import from the package's public entry instead.
+note: >-
+  Purely syntactic check on the import module specifier string. It does not
+  verify the package's exports map, resolve the module, or confirm that the
+  path is actually a build output directory.
+rule:
+  kind: import_statement
+  has:
+    field: source
+    regex: '/dist/'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
