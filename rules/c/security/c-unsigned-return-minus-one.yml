@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-unsigned-return-minus-one
+language: c
+severity: warning
+message: >-
+  Function with an unsigned return type returns literal -1 without an explicit
+  cast.
+note: >-
+  Syntactic check only. It matches a function whose declared return type is
+  literally size_t and whose return statement is literally -1; it does not
+  resolve typedefs, macros, or other unsigned types.
+rule:
+  all:
+    - pattern: 'return -1;'
+    - inside:
+        kind: function_definition
+        has:
+          field: type
+          regex: '^size_t$'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
