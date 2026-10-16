@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-count-minus-index-unguarded
+language: php
+severity: warning
+message: >-
+  Array read at an index computed as count(...) minus a constant; an empty or
+  short array may trigger an undefined-index notice.
+note: >-
+  Syntactic match only on a literal array read whose index is count(...) minus
+  a constant. It does not check for a bounds comparison elsewhere in the
+  function, does not resolve types, and cannot prove the array is non-empty.
+rule:
+  pattern: '$ARR[count($X) - $N]'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
