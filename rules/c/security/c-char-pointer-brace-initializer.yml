@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-char-pointer-brace-initializer
+language: c
+severity: warning
+message: >-
+  Pointer variable initialized with a brace-enclosed list; use an array
+  declaration instead.
+note: >-
+  Matches the literal syntax of a declaration whose declarator is a pointer
+  and whose initializer is a brace list. It does not check types, aliasing, or
+  whether the pointer is used elsewhere in the file.
+rule:
+  kind: init_declarator
+  all:
+    - has:
+        field: declarator
+        kind: pointer_declarator
+    - has:
+        field: value
+        kind: initializer_list
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
