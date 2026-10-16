@@ -1,0 +1,9 @@
+id: c-zval-copy-property-without-deref
+valid:
+  - >-
+    ZEND_METHOD(exception, getFile) { zval *prop; prop = GET_PROPERTY(getThis(),
+    ZEND_STR_FILE); ZVAL_DEREF(prop); ZVAL_COPY(return_value, prop); }
+invalid:
+  - >-
+    ZEND_METHOD(exception, getFile) { zval rv; ZVAL_COPY(return_value,
+    GET_PROPERTY(getThis(), ZEND_STR_FILE)); }
