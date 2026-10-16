@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-wpdb-prepare-in-list-percent-s
+language: php
+severity: warning
+message: >-
+  This $wpdb->prepare() call puts a %s placeholder inside an IN( ) list; a
+  single quoted value will not match each ID separately.
+note: >-
+  Syntactic match only on a literal $wpdb->prepare call whose query string
+  contains IN(%s). It does not resolve types, runtime values, or whether the
+  query is otherwise safe.
+rule:
+  pattern: '$wpdb->prepare($QUERY, $$$ARGS)'
+  has:
+    regex: 'IN\(%s\)'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
