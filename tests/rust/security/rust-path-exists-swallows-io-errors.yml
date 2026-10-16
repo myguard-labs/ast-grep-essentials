@@ -1,0 +1,13 @@
+id: rust-path-exists-swallows-io-errors
+valid:
+  - |-
+    use std::path::Path;
+    fn present(p: &Path) -> std::io::Result<bool> {
+        p.try_exists()
+    }
+invalid:
+  - |-
+    use std::path::Path;
+    fn present(p: &Path) -> bool {
+        p.exists()
+    }

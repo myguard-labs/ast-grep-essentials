@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: rust-path-exists-swallows-io-errors
+language: rust
+severity: warning
+message: >-
+  Path::exists() returns false on I/O errors; use try_exists() to distinguish
+  a missing path from an inaccessible one.
+note: >-
+  Matches the literal method-call syntax `.exists()` with no arguments. It
+  does not resolve the receiver type, so non-Path types with an exists()
+  method would also match.
+rule:
+  pattern: '$RECV.exists()'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
