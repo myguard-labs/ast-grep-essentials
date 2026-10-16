@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bitfield-refcount-narrow
+language: c
+severity: warning
+message: >-
+  Counter-named member is declared as a narrow (8-bit or less) unsigned
+  bitfield and may overflow.
+note: >-
+  Syntactic check only. Matches a field declaration whose name contains
+  'count' and whose bitfield width is 1-8 literal bits. It does not resolve
+  types, verify that the field is a reference counter, or check runtime
+  overflow behaviour.
+rule:
+  kind: field_declaration
+  all:
+    - has:
+        field: declarator
+        regex: count
+    - has:
+        kind: bitfield_clause
+        regex: '^:\s*[1-8]$'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
