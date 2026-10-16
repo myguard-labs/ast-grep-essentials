@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-exported-global-regexp-shared-state
+language: typescript
+severity: warning
+message: >-
+  Exported module-level RegExp built with the global flag shares lastIndex
+  state across importers.
+note: >-
+  Syntactic match only on a literal new RegExp(..., 'g'-containing flags)
+  inside an exported top-level const declaration. Does not verify that the
+  regex is actually used with test or exec, nor resolve imports or runtime
+  values.
+rule:
+  all:
+    - pattern: 'export const $NAME = new RegExp($$$ARGS)'
+    - has:
+        pattern: '''$FLAGS'''
+        stopBy: end
+        regex: g
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
