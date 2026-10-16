@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-at-least-one-truthy-guard
+language: javascript
+severity: warning
+message: >-
+  Bare truthiness checks on optional fields treat valid falsy values such as 0
+  or false as missing. Compare against undefined explicitly.
+note: >-
+  Syntactic match only. It flags a negated member-expression pair joined by &&
+  in an if-statement condition, without resolving types or whether the fields
+  are optional or whether the guarded branch throws a ConfigurationError.
+rule:
+  all:
+    - pattern: 'if (!$A && !$B) { $$$BODY }'
+    - not:
+        has:
+          pattern: '$X === undefined'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
