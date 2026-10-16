@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-test-setup-writes-before-parent-setup
+language: php
+severity: warning
+message: >-
+  Option write in setUp() appears before parent::setUp(), so it may run
+  outside the test transaction.
+note: >-
+  Syntactic ordering check only. It flags an update_option() statement that
+  textually precedes a parent::setUp() call inside the same setUp method; it
+  does not resolve types, inheritance, or runtime transaction behavior.
+rule:
+  pattern: 'update_option($$$ARGS);'
+  inside:
+    kind: method_declaration
+    regex: setUp
+    stopBy: end
+    has:
+      pattern: 'parent::setUp();'
+      stopBy: end
+      follows:
+        pattern: 'update_option($$$ARGS);'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

@@ -1,0 +1,20 @@
+id: wp-test-setup-writes-before-parent-setup
+snapshots:
+  ? '<?php class T extends WC_Unit_Test_Case { protected function setUp(): void { update_option( ''wc_feature'', ''yes'' ); parent::setUp(); } } ?>'
+  : labels:
+    - source: update_option( 'wc_feature', 'yes' );
+      style: primary
+      start: 77
+      end: 114
+    - source: update_option( 'wc_feature', 'yes' );
+      style: secondary
+      start: 77
+      end: 114
+    - source: parent::setUp();
+      style: secondary
+      start: 115
+      end: 131
+    - source: 'protected function setUp(): void { update_option( ''wc_feature'', ''yes'' ); parent::setUp(); }'
+      style: secondary
+      start: 42
+      end: 133
