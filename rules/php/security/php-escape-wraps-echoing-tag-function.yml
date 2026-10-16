@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-escape-wraps-echoing-tag-function
+language: php
+severity: warning
+message: >-
+  An esc_* function wraps a template tag that echoes its output, so the
+  escaping receives no value.
+note: >-
+  Matches the literal call header_image() nested directly inside an esc_url
+  call. It does not verify that header_image echoes rather than returns; the
+  known-tag list is a syntactic approximation.
+rule:
+  pattern: 'esc_url(header_image())'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
