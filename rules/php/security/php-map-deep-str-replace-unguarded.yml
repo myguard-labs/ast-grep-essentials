@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-map-deep-str-replace-unguarded
+language: php
+severity: warning
+message: >-
+  str_replace() is called inside a map_deep() callback without an is_string()
+  guard; non-string leaves may reach a string function.
+note: >-
+  Syntactic match only. It looks for a map_deep() call whose closure body
+  contains a str_replace() call and no is_string() check in the same closure.
+  It does not resolve types, aliases, or whether the callback is reached with
+  non-string values at runtime.
+rule:
+  all:
+    - pattern: 'map_deep($$$ARGS)'
+    - has:
+        pattern: 'str_replace($$$STR_ARGS)'
+        stopBy: end
+    - not:
+        has:
+          pattern: 'is_string($$$CHECK_ARGS)'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
