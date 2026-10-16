@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-object-entries-transformed-key-assignment
+language: typescript
+severity: warning
+message: >-
+  Assigning to an object with a transformed key inside a for-of over
+  Object.entries can silently overwrite entries when distinct keys map to the
+  same output key.
+note: >-
+  Syntactic match only. It checks for a for-of over Object.entries(...) whose
+  body assigns to an index with a call-expression key. It does not verify that
+  the transform is lossy, that keys collide, or that the target object is the
+  same one being iterated.
+rule:
+  pattern: |
+    for (const [$K, $V] of Object.entries($OBJ)) {
+      $OUT[$FN($K)] = $V;
+    }
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
