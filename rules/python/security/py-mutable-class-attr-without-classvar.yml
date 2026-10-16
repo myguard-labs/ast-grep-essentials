@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-mutable-class-attr-without-classvar
+language: python
+severity: warning
+message: >-
+  Mutable dict or list literal assigned as a class attribute without a
+  ClassVar annotation; this value is shared across instances.
+note: >-
+  Single-file syntactic match on a bare class-body assignment of a dict or
+  list literal. It does not resolve types, imports, or whether the attribute
+  is later mutated or reassigned per instance.
+rule:
+  kind: expression_statement
+  all:
+    - has:
+        kind: assignment
+        all:
+          - has:
+              field: left
+              pattern: '$NAME'
+          - has:
+              field: right
+              kind: dictionary
+    - inside:
+        kind: class_definition
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
