@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-includes-two-constants-timeout-assertion
+language: typescript
+severity: warning
+message: >-
+  This assertion accepts either of two constants; check the one specific
+  expected value instead.
+note: >-
+  Purely syntactic match on an array literal of two identifiers calling
+  includes inside an expect(...).toBe(true) chain. It does not resolve
+  constant values, types, or runtime behavior.
+rule:
+  pattern: 'expect($$$ARGS).toBe(true)'
+  has:
+    pattern: '[$A, $B].includes($C)'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
