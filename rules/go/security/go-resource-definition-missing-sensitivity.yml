@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-resource-definition-missing-sensitivity
+language: go
+severity: warning
+message: >-
+  ResourceDefinitionSpec literal in ResourceDefinition has no Sensitivity key;
+  review whether sensitive data needs it.
+note: >-
+  Syntactic check only. It matches a method or function named
+  ResourceDefinition whose body returns a meta.ResourceDefinitionSpec literal
+  lacking a Sensitivity key; it does not verify types, imports, or runtime
+  values.
+rule:
+  kind: method_declaration
+  all:
+    - has:
+        field: name
+        regex: '^ResourceDefinition$'
+    - has:
+        kind: composite_literal
+        pattern: 'meta.ResourceDefinitionSpec{$$$BODY}'
+        stopBy: end
+    - not:
+        has:
+          kind: keyed_element
+          regex: 'Sensitivity\s*:'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
