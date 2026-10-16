@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-adjacent-duplicate-call-statement
+language: php
+severity: warning
+message: >-
+  This function call statement is immediately repeated with identical
+  arguments; confirm the duplicate is intended.
+note: >-
+  Syntactic check only. It matches a literal show_message(__('WordPress
+  updated successfully')) call statement that directly follows an identical
+  call statement. It does not verify side effects, intent, types, or aliasing.
+rule:
+  pattern: 'show_message( __(''WordPress updated successfully'') );'
+  inside:
+    kind: program
+    has:
+      pattern: 'show_message( __(''WordPress updated successfully'') );'
+      stopBy: neighbor
+  follows:
+    kind: expression_statement
+    pattern: 'show_message( __(''WordPress updated successfully'') );'
+    stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
