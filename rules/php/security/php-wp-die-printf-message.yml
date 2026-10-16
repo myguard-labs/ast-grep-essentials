@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-wp-die-printf-message
+language: php
+severity: warning
+message: >-
+  wp_die() receives a printf() call as its message; printf() returns a byte
+  count, not the formatted string. Use sprintf() instead.
+note: >-
+  Matches the literal syntax wp_die(printf(...)) with a direct printf call as
+  the first argument. It does not verify that wp_die or printf are the
+  WordPress functions, nor resolve aliases, namespaces, or runtime values.
+rule:
+  pattern: 'wp_die(printf($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
