@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-urlsplit-netloc-host-compare
+language: python
+severity: warning
+message: >-
+  Host identity is compared using urlsplit(...).netloc on both sides; netloc
+  keeps port and userinfo, so equivalent hosts may compare unequal.
+note: >-
+  Syntactic match only on a literal urlsplit(...).netloc ==
+  urlsplit(...).netloc comparison in one file. It does not resolve imports,
+  aliases, or runtime values, and cannot confirm that the compared values are
+  used for host identity.
+rule:
+  pattern: 'urlsplit($A).netloc == urlsplit($B).netloc'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
