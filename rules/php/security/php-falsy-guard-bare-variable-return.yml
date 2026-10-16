@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-falsy-guard-bare-variable-return
+language: php
+severity: warning
+message: >-
+  Bare negated variable guard returns a literal; a valid value such as the
+  string '0' is falsy and would take this branch.
+note: >-
+  Purely syntactic. Matches an if whose condition is a bare negated variable
+  and whose body only returns a literal. Whether the variable can hold '0' or
+  other falsy values depends on types and runtime values, which this rule does
+  not check, so some reports may be false positives.
+rule:
+  pattern: 'if ( ! $VAR ) return $LIT;'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
