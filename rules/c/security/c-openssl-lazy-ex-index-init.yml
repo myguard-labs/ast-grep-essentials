@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-lazy-ex-index-init
+language: c
+severity: warning
+message: >-
+  SSL_get_ex_new_index() is assigned inside a negative-index guard; review for
+  lazy, possibly unsynchronized ex-data index allocation.
+note: >-
+  Syntactic match only. It flags an assignment from SSL_get_ex_new_index()
+  located inside an if statement whose condition tests a value for being
+  negative. It does not verify that the code runs per request, is
+  multithreaded, or is unsynchronized.
+rule:
+  all:
+    - pattern: '$VAR = SSL_get_ex_new_index($$$ARGS)'
+    - inside:
+        kind: if_statement
+        has:
+          field: condition
+          regex: '<\s*0'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

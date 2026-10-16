@@ -1,0 +1,15 @@
+id: c-openssl-lazy-ex-index-init
+valid:
+  - |-
+    static int app_idx = -1;
+    void init_app_idx(void) {
+        app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
+    }
+invalid:
+  - |-
+    static int app_idx = -1;
+    void get_app_idx(void) {
+        if (app_idx < 0) {
+            app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
+        }
+    }
