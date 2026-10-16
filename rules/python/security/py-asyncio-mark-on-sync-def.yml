@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-asyncio-mark-on-sync-def
+language: python
+severity: warning
+message: >-
+  This pytest.mark.asyncio decorator is on a synchronous def; the test should
+  be async def.
+note: >-
+  Syntactic match only. It flags a decorated function whose definition is a
+  plain def, and does not check whether the function is a test, whether the
+  marker is applied through other means, or runtime pytest-asyncio behavior.
+rule:
+  all:
+    - pattern: |
+        @pytest.mark.asyncio($$$ARGS)
+        def $NAME($$$PARAMS):
+          $$$BODY
+    - not:
+        pattern: |
+          @pytest.mark.asyncio($$$ARGS)
+          async def $NAME($$$PARAMS):
+            $$$BODY
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
