@@ -1,0 +1,42 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-missing-break-before-next-case
+language: c
+severity: warning
+message: >-
+  This case body appears to fall through into the next case label without
+  break, return, or goto. Review whether the fall-through is intentional.
+note: >-
+  Syntactic approximation only. It flags a case_statement whose body has an
+  expression statement and is directly followed by another case label, without
+  checking for break, return, goto, or intentional fall-through comments.
+  Control flow, reachability, and macros are not analyzed.
+rule:
+  all:
+    - kind: case_statement
+    - has:
+        kind: expression_statement
+        stopBy: end
+    - not:
+        has:
+          kind: break_statement
+          stopBy: end
+    - not:
+        has:
+          kind: return_statement
+          stopBy: end
+    - not:
+        has:
+          kind: goto_statement
+          stopBy: end
+    - precedes:
+        kind: case_statement
+        stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
