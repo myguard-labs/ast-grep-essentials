@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-this-in-static-closure
+language: php
+severity: warning
+message: >-
+  A static closure references $this in its body, which is unavailable at
+  runtime.
+note: >-
+  Matches syntactically a static closure node containing a $this variable
+  anywhere in its body; does not resolve nested closures, bindings, or runtime
+  behaviour.
+rule:
+  kind: anonymous_function
+  all:
+    - has:
+        kind: static_modifier
+    - has:
+        pattern: '$this'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
