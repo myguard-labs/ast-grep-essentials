@@ -1,0 +1,13 @@
+id: c-alloc-null-return-zero-no-error
+valid:
+  - |-
+    x = OPENSSL_malloc(len);
+    if (x == NULL) {
+        SSLfatal(s, SSL_AD_INTERNAL_ERROR, ERR_R_CRYPTO_LIB);
+        return 0;
+    }
+invalid:
+  - |-
+    x = OPENSSL_malloc(len);
+    if (x == NULL)
+        return 0;

@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-alloc-null-return-zero-no-error
+language: c
+severity: warning
+message: >-
+  OPENSSL_malloc result is checked for NULL and the branch returns without
+  reporting an error.
+note: >-
+  Purely syntactic match on an if-statement testing a variable against NULL
+  whose body is a bare return of 0 or NULL. It does not resolve that the
+  variable came from OPENSSL_malloc, and it does not verify that no error is
+  reported elsewhere in the function.
+rule:
+  pattern: |
+    if ($X == NULL)
+        return 0;
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
