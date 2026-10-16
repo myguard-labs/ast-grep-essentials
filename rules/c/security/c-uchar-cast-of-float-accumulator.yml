@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-uchar-cast-of-float-accumulator
+language: c
+severity: warning
+message: >-
+  Compound assignment accumulates a value truncated by an (unsigned char)
+  cast; review for lost precision or wraparound in weighted sums.
+note: >-
+  Purely syntactic match on a compound assignment whose right-hand side is an
+  (unsigned char) cast of a parenthesized product. It does not verify operand
+  types, value ranges, or whether the product is actually floating-point.
+rule:
+  pattern: '$ACC += (unsigned char)($A * $B)'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
