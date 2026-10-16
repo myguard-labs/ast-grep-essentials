@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-ob-end-clean-after-ob-get-clean
+language: php
+severity: warning
+message: >-
+  ob_end_clean() directly follows ob_get_clean(), so it targets a buffer that
+  was already closed.
+note: >-
+  Single-file syntactic match on a literal ob_end_clean() expression statement
+  whose immediately preceding sibling statement is a literal ob_get_clean()
+  call. Does not resolve runtime buffer state, nested buffers, or whether the
+  calls share a scope.
+rule:
+  pattern: 'ob_end_clean()'
+  inside:
+    kind: expression_statement
+    follows:
+      kind: expression_statement
+      has:
+        pattern: 'ob_get_clean()'
+        stopBy: end
+    stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
