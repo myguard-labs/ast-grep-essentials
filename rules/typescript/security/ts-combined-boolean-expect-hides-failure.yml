@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-combined-boolean-expect-hides-failure
+language: typescript
+severity: warning
+message: >-
+  This expect call asserts a combined && or || condition to be true, so a
+  failure does not show which comparison failed. Split it into separate expect
+  calls.
+note: >-
+  Syntactic check only. It matches a literal expect(...) call whose first
+  argument is a binary && or || expression and whose matcher chain ends in
+  toBe(true). It does not resolve types, runtime values, or whether the
+  assertion is intended.
+rule:
+  pattern: 'expect($A && $B, $$$ARGS).toBe(true)'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
