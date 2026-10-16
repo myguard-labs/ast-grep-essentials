@@ -1,0 +1,5 @@
+id: go-context-withvalue-slog-attr
+valid:
+  - "package p\n\nimport (\n\t\"context\"\n\t\"log/slog\"\n)\n\nfunc f(ctx context.Context, id string) context.Context {\n\treturn context.WithValue(ctx, correlationKey, id)\n}\n"
+invalid:
+  - "package p\n\nimport (\n\t\"context\"\n\t\"log/slog\"\n)\n\nfunc f(ctx context.Context, id string) context.Context {\n\treturn context.WithValue(ctx, correlationKey, slog.Any(\"correlation_id\", id))\n}\n"

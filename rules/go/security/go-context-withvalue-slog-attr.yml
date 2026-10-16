@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-context-withvalue-slog-attr
+language: go
+severity: warning
+message: >-
+  context.WithValue stores an slog.Attr constructor result as the context
+  value; store the raw value instead.
+note: >-
+  Syntactic match only. Checks that the third argument of a literal
+  context.WithValue call is a literal slog.Any, slog.String, or similar slog
+  attribute constructor call. Does not resolve imports, aliases, or the
+  runtime type of the stored value.
+rule:
+  pattern: 'context.WithValue($CTX, $KEY, slog.$ATTR($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
