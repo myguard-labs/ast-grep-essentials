@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-by-ref-array-func-on-call-result
+language: php
+severity: warning
+message: >-
+  A by-reference array function is called on a call result; assign the result
+  to a variable first.
+note: >-
+  Syntactic check only. Matches a literal array_pop call whose single argument
+  is a method call on a variable. It does not verify that the function is a
+  by-reference array function at runtime, nor resolve namespaces or aliases.
+rule:
+  pattern: 'array_pop( $OBJ->$METHOD($$$ARGS) )'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
