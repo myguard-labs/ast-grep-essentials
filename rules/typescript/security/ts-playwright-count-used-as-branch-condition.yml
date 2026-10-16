@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-playwright-count-used-as-branch-condition
+language: typescript
+severity: warning
+message: >-
+  Playwright locator.count() is used directly as an if condition; it does not
+  wait for rendering, so this branch may take the wrong UI path.
+note: >-
+  Syntactic match only. Matches an awaited .count() call with zero arguments
+  used as the whole if-condition on a literal receiver; it does not verify the
+  receiver is a Playwright locator or check for surrounding waits.
+rule:
+  kind: if_statement
+  has:
+    field: condition
+    kind: parenthesized_expression
+    has:
+      pattern: 'await $RECV.count()'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
