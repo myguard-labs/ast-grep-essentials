@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-conditional-spread-truthy-shorthand
+language: typescript
+severity: warning
+message: >-
+  Conditional spread gated by truthiness of a shorthand property may drop
+  valid falsy values such as 0 or empty string. Compare explicitly against
+  undefined.
+note: >-
+  Syntactic match only. It flags a ternary whose condition is a bare
+  identifier and whose true branch is an object literal containing that same
+  identifier as a shorthand property, spread into an object. It does not check
+  value types, so falsy values may be valid or intended in some cases.
+rule:
+  pattern: '{ ...($VAR ? { $VAR } : {}) }'
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
