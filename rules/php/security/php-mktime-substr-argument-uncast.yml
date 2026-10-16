@@ -1,0 +1,20 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-mktime-substr-argument-uncast
+language: php
+severity: warning
+message: 'A bare substr() call is passed to mktime() without an (int) cast.'
+note: >-
+  Matches only the literal syntax mktime(substr(...), ...) with a direct
+  substr call as an argument; it does not resolve function identity, types, or
+  whether the cast is applied elsewhere.
+rule:
+  pattern: 'mktime(substr($$$SUBARGS), $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
