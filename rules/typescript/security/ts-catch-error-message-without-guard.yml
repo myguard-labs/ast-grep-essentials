@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-catch-error-message-without-guard
+language: typescript
+severity: warning
+message: >-
+  This catch clause reads .message from its caught error without an instanceof
+  check in the same catch body.
+note: >-
+  Single-file syntactic check only. It matches a literal catch binding whose
+  .message is read directly and does not inspect whether the thrown value is
+  an Error; it cannot resolve types, aliases, or guards outside the catch
+  body.
+rule:
+  kind: catch_clause
+  all:
+    - has:
+        field: parameter
+        pattern: '$ERR'
+        stopBy: end
+    - has:
+        pattern: '$ERR.message'
+        stopBy: end
+    - not:
+        has:
+          pattern: '$ERR instanceof $_'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
