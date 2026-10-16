@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-decode-uri-component-unguarded
+language: javascript
+severity: warning
+message: >-
+  decodeURIComponent is called outside a try block; a malformed percent-escape
+  will throw URIError.
+note: >-
+  Syntactic check only. Flags a direct decodeURIComponent call with a
+  non-literal argument that has no try ancestor in the same file. It does not
+  verify whether the input is user-controlled, whether a caller catches the
+  error, or whether the value is pre-validated.
+rule:
+  all:
+    - pattern: 'decodeURIComponent($ARG)'
+    - not:
+        inside:
+          kind: try_statement
+          stopBy: end
+    - not:
+        has:
+          kind: string
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
