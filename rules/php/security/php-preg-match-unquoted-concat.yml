@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-preg-match-unquoted-concat
+language: php
+severity: warning
+message: >-
+  preg_match pattern concatenates a variable without preg_quote();
+  metacharacters in the value can alter the regex.
+note: >-
+  Syntactic only. Matches a preg_match call whose first argument is a binary
+  concatenation containing a variable and no preg_quote call in that argument.
+  Does not check whether the value is attacker-controlled or resolve types or
+  taint.
+rule:
+  pattern: 'preg_match($PAT, $S)'
+  has:
+    kind: binary_expression
+    stopBy: end
+    has:
+      kind: variable_name
+      stopBy: end
+    not:
+      has:
+        pattern: 'preg_quote($$$ARGS)'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
