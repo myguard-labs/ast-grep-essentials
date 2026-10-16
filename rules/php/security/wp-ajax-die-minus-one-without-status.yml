@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-ajax-die-minus-one-without-status
+language: php
+severity: warning
+message: >-
+  wp_die(-1) without an explicit status returns HTTP 200 and a body of -1,
+  which looks like success to clients.
+note: >-
+  Syntactic match only on a literal wp_die call with a single -1 argument. It
+  does not verify that the call sits in an AJAX handler or resolve whether
+  wp_die is the WordPress function.
+rule:
+  pattern: 'wp_die( -1 )'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
