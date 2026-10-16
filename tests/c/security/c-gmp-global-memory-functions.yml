@@ -1,0 +1,9 @@
+id: c-gmp-global-memory-functions
+valid:
+  - 'static void startup(void) { mp_get_memory_functions(&a, &r, &f); }'
+invalid:
+  - |-
+    static void *my_alloc(size_t n) { return emalloc(n); }
+    static void my_free(void *p, size_t n) { efree(p); }
+    static void *my_realloc(void *p, size_t o, size_t n) { return erealloc(p, n); }
+    static void startup(void) { mp_set_memory_functions(my_alloc, my_realloc, my_free); }

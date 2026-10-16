@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-gmp-global-memory-functions
+language: c
+severity: warning
+message: >-
+  Call to mp_set_memory_functions replaces the process-wide GMP allocator;
+  review for cross-library allocation mismatches.
+note: >-
+  Matches the literal call syntax mp_set_memory_functions(...) only; it does
+  not check argument values, whether callbacks are non-NULL, or whether the
+  call runs in extension startup code, and does not resolve types or linkage.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: '^mp_set_memory_functions$'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
