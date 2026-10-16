@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-timelib-get-nr-no-width-check
+language: c
+severity: warning
+message: >-
+  timelib_get_nr result is compared only to TIMELIB_UNSET; verify the pointer
+  advanced by the requested digit count.
+note: >-
+  Syntactic approximation only. It matches a literal timelib_get_nr call with
+  a fixed digit count whose result is compared to TIMELIB_UNSET inside an if
+  condition, without verifying pointer advancement, which requires dataflow
+  outside the shown syntax.
+rule:
+  all:
+    - pattern: 'if ((f = timelib_get_nr((char **) &ptr, 6)) == TIMELIB_UNSET) { error(); }'
+    - not:
+        pattern: >-
+          if ((f = timelib_get_nr((char **) &ptr, 6)) == TIMELIB_UNSET || ptr - tptr
+          != 6) { error(); }
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
