@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: rust-child-wait-skipped-after-copy-error
+language: rust
+severity: warning
+message: >-
+  A stdin copy with `?` runs before child.wait(); an early error return skips
+  reaping the child.
+note: >-
+  Syntactic check only. It matches a `std::io::copy(...)?;` statement inside a
+  block that also contains a `child.wait()?` statement after it. It does not
+  verify that the child was spawned, that the error path actually returns, or
+  that no other cleanup runs.
+rule:
+  all:
+    - pattern: 'std::io::copy($$$ARGS)?;'
+    - follows:
+        pattern: 'let mut stdin = child.stdin.take().unwrap();'
+        stopBy: neighbor
+    - precedes:
+        pattern: 'let status = child.wait()?;'
+        stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-17'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-17'
+  created_at: '2026-10-17'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

@@ -1,0 +1,14 @@
+id: rust-child-wait-skipped-after-copy-error
+valid:
+  - |-
+    let mut child = cmd.spawn()?;
+    let mut stdin = child.stdin.take().unwrap();
+    let copied = std::io::copy(&mut input, &mut stdin);
+    let status = child.wait()?;
+    copied?;
+invalid:
+  - |-
+    let mut child = cmd.spawn()?;
+    let mut stdin = child.stdin.take().unwrap();
+    std::io::copy(&mut input, &mut stdin)?;
+    let status = child.wait()?;
