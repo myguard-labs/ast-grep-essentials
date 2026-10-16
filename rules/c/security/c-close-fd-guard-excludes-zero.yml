@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-close-fd-guard-excludes-zero
+language: c
+severity: warning
+message: >-
+  This close() call sits under a strict "> 0" guard, so a descriptor value of
+  0 is never closed.
+note: >-
+  Syntactic only. Matches an if-statement whose condition is a literal "> 0"
+  comparison around a close() call on the same identifier. It does not resolve
+  whether the variable holds a file descriptor, its type, aliasing, or
+  reachability.
+rule:
+  pattern: |
+    if ($FD > 0) {
+      close($FD);
+    }
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
