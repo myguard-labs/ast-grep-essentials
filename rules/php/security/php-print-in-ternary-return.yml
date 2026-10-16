@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-print-in-ternary-return
+language: php
+severity: warning
+message: >-
+  print is used as a branch of a conditional expression; it outputs and yields
+  1 instead of the intended value.
+note: >-
+  Syntactic match only. Detects a ternary whose true or false branch is a
+  print expression; does not verify runtime behavior, types, or intent.
+rule:
+  kind: conditional_expression
+  has:
+    kind: print_intrinsic
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
