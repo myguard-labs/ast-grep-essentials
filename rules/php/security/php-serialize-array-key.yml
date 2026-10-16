@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-serialize-array-key
+language: php
+severity: warning
+message: >-
+  A serialize() call is used directly as an array key; the key depends on the
+  serialized form of the value.
+note: >-
+  Purely syntactic match on a serialize(...) call used as a subscript index.
+  It does not check whether the argument is an object or closure, nor resolve
+  types, aliasing, or runtime values.
+rule:
+  pattern: '$ARR[serialize($$$ARGS)]'
+metadata:
+  rule_modified_at: '2026-10-16'
+  ast_grep_tested_version: 0.50.0
+  validated_at: '2026-10-16'
+  created_at: '2026-10-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
