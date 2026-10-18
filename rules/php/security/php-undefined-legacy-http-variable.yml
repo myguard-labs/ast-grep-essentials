@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-undefined-legacy-http-variable
+language: php
+severity: warning
+message: >-
+  Bare legacy HTTP_ prefixed variable is read directly; it is undefined in
+  modern PHP. Read from the SERVER superglobal with a subscript instead.
+note: >-
+  Matches variable names by literal text only; it does not check whether the
+  variable was assigned elsewhere or register_globals semantics.
+rule:
+  all:
+    - kind: variable_name
+    - regex: '^\$HTTP_'
+    - not:
+        regex: '^\$HTTP_SERVER_VARS$'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
