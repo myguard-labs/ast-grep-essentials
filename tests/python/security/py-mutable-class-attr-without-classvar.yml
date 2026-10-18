@@ -25,7 +25,58 @@ valid:
         def outer(self):
             seen = {}
             return seen
+  - |-
+    class T:
+        def m(self):
+            items = []
+            return items
+  - |-
+    class T:
+        def m(self):
+            tags: set[str] = {"a"}
+            return tags
+  - |-
+    from typing import ClassVar
+    class T:
+        items: ClassVar[list] = []
+  - |-
+    class T:
+        PAIRS = ("a", "b")
+  - |-
+    class T:
+        pass
+  - |-
+    import typing
+    class T:
+        items: typing.ClassVar[dict] = {}
+  - |-
+    from typing import ClassVar
+    class T:
+        x: ClassVar = {}
+  - |-
+    from typing import ClassVar
+    class T:
+        x: ClassVar[set] = {1}
+  - |
+    from typing import ClassVar
+    class T:
+        items: ClassVar [list] = []
+  - |
+    class T:
+        x: "ClassVar[list]" = []
+  - |
+    class T:
+        y: 'ClassVar[dict]' = {}
 invalid:
+  - |-
+    class C:
+        items = []
+  - |-
+    class C:
+        items: list = [1, 2]
+  - |-
+    class C:
+        tags = {"a", "b"}
   - |-
     class Harness:
         EXTRA_KWARGS = {"apply_chat_template": True}
@@ -51,3 +102,9 @@ invalid:
         def m(self):
             class B:
                 x = {}
+  - |
+    class C:
+        x: list = []  # ClassVar
+  - |
+    class C:
+        x: MyClassVarHolder = []
