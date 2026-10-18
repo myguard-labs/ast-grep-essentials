@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-superglobal-arithmetic-unsanitized
+language: php
+severity: warning
+message: >-
+  Raw GET superglobal value used directly as an arithmetic operand; cast or
+  sanitize it first (for example with absint).
+note: >-
+  Syntactic only; matches a literal GET superglobal subscript that is a direct
+  operand of an arithmetic operator. It does not track values copied into
+  variables or sanitized elsewhere.
+rule:
+  all:
+    - kind: subscript_expression
+    - regex: '^\$_GET\s*\['
+    - inside:
+        kind: binary_expression
+        has:
+          field: operator
+          regex: '^(\+|-|\*|/|%)$'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
