@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-server-key-unguarded-read
+language: php
+severity: warning
+message: >-
+  Server superglobal key is read inside strlen() without an isset() guard; the
+  key may be missing.
+note: >-
+  Syntactic only; it does not check whether the key is guarded elsewhere or
+  whether the host sets it. Only the strlen() form is matched, and the guard
+  check is a text match on an enclosing ternary.
+rule:
+  all:
+    - kind: subscript_expression
+    - regex: '^\$_SERVER\['
+    - inside:
+        stopBy: end
+        kind: function_call_expression
+        regex: '^strlen\s*\('
+    - not:
+        inside:
+          stopBy: end
+          kind: conditional_expression
+          regex: 'isset\(\s*\$_SERVER'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
