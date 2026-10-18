@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-referer-strpos-authorization
+language: php
+severity: warning
+message: >-
+  strpos() is applied to wp_get_referer(), a client-controlled header; do not
+  branch on it.
+note: >-
+  Syntactic match only. It flags a strpos() call whose first argument is a
+  literal wp_get_referer() call. It does not verify how the result is used or
+  whether any other check exists.
+rule:
+  pattern: 'strpos(wp_get_referer(), $NEEDLE)'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
