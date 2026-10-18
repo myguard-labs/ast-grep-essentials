@@ -215,6 +215,59 @@ class ValidateChangedRulesTests(unittest.TestCase):
         )
         self.assertEqual(self.non_matching(self.BASE, two)[0], frozenset())
 
+    def test_yaml_coercion_equal_matchers_are_not_exempt(self) -> None:
+        for key in ("rule", "constraints"):
+            for old, new in (
+                ("1.0", "1.00"),
+                ("0x10", "16"),
+                ("yes", "true"),
+                ("~", "null"),
+            ):
+                with self.subTest(key=key, old=old, new=new):
+                    head = "id: py-one\nlanguage: python\nmessage: m\n"
+                    base = head + f"{key}:\n  pattern: {old}\n"
+                    text = head + f"{key}:\n  pattern: {new}\n" + "note: x\n"
+                    self.assertEqual(self.non_matching(base, text)[0], frozenset())
+
+    def test_identical_coercible_matchers_stay_exempt(self) -> None:
+        base = self.BASE + "constraints:\n  X: {regex: yes}\n"
+        exempt, _ = self.non_matching(base, base + "metadata: {a: 1}\n")
+        self.assertEqual(exempt, frozenset({self.PATH}))
+
+    def test_duplicate_merge_and_alias_documents_are_not_exempt(self) -> None:
+        extra = "metadata: {a: 1}\n"
+        cases = {
+            "duplicate rule": self.BASE + "rule: {kind: other}\n" + extra,
+            "duplicate inside rule": (
+                "id: py-one\nlanguage: python\nmessage: m\n"
+                "rule:\n  kind: call\n  kind: call\n" + extra
+            ),
+            "merge under metadata": (
+                self.BASE + "metadata:\n  base: &a {x: 1}\n  <<: *a\n"
+            ),
+            "plain alias": self.BASE + "metadata:\n  a: &a 1\n  b: *a\n",
+            "anchor only": self.BASE + "metadata:\n  a: &a 1\n",
+        }
+        for label, text in cases.items():
+            with self.subTest(label):
+                self.assertEqual(self.non_matching(text, text)[0], frozenset())
+                self.assertEqual(self.non_matching(self.BASE, text)[0], frozenset())
+
+    def test_hash_line_inside_block_scalar_is_not_exempt(self) -> None:
+        base = self.BASE.replace("kind: call}", "pattern: x}") + "fix: |\n  a\n"
+        for added in ("  # b\n", "  b\n"):
+            with self.subTest(added=added):
+                exempt, _ = self.non_matching(base, base + added)
+                self.assertEqual(exempt, frozenset())
+        pattern = (
+            "id: py-one\nlanguage: python\nmessage: m\nrule:\n  pattern: |\n    a\n"
+        )
+        exempt, _ = self.non_matching(pattern, pattern + "    # b\n")
+        self.assertEqual(exempt, frozenset())
+        # A comment line outside any scalar stays exempt.
+        exempt, _ = self.non_matching(pattern, pattern + "# b\n")
+        self.assertEqual(exempt, frozenset({self.PATH}))
+
     def test_missing_pyyaml_fails_closed(self) -> None:
         with patch.dict(sys.modules, {"yaml": None}):
             exempt, _ = self.non_matching(self.BASE, self.BASE + "metadata: {a: 1}\n")

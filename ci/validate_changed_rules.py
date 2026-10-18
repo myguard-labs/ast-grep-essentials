@@ -20,6 +20,7 @@ import tempfile
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from pathlib import Path, PurePosixPath
+from typing import Any
 
 SUPPORTED_LANGUAGES = frozenset(
     {
@@ -168,20 +169,58 @@ def header_only_rule_changes(
 NON_MATCHING_KEYS = frozenset({"metadata", "note"})
 
 
+def _strict_documents(data: bytes) -> list[object]:
+    """Parse ``data`` with no implicit typing, aliasing or key ambiguity.
+
+    ``yaml.BaseLoader`` keeps every scalar a string, so distinct matcher text
+    such as ``1.0``/``1.00``, ``0x10``/``16``, ``yes``/``true`` or ``~``/``null``
+    never compares equal. Any anchor, alias, ``<<`` merge key or duplicate
+    mapping key (at any depth) raises ``ValueError``.
+    """
+    import yaml  # pylint: disable=import-outside-toplevel
+
+    for event in yaml.parse(data, Loader=yaml.BaseLoader):
+        if isinstance(event, yaml.AliasEvent) or getattr(event, "anchor", None):
+            raise ValueError("anchors and aliases are not compared")
+
+    class StrictLoader(yaml.BaseLoader):
+        """BaseLoader that refuses duplicate and merge keys."""
+
+        def construct_mapping(self, node: Any, deep: bool = False) -> Any:
+            keys = [
+                self.construct_object(key_node, deep=True)  # type: ignore[no-untyped-call]
+                for key_node, _ in node.value
+            ]
+            if "<<" in keys or len(set(map(str, keys))) != len(keys):
+                raise ValueError("duplicate or merge mapping key")
+            return super().construct_mapping(node, deep)
+
+    loader = StrictLoader(data)
+    try:
+        documents = []
+        while loader.check_data():  # type: ignore[no-untyped-call]
+            documents.append(loader.get_data())  # type: ignore[no-untyped-call]
+        return documents
+    finally:
+        loader.dispose()  # type: ignore[no-untyped-call]
+
+
 def _matcher_document(data: bytes) -> dict[object, object] | None:
     """The single YAML mapping in ``data`` minus the non-matching keys.
 
     ``metadata`` and ``note`` are ignored by the ast-grep matcher, so a fixture
-    cannot test them. Anything that is not exactly one mapping document (a
-    parse failure, an empty or scalar document, a multi-document file, or a
-    missing PyYAML) returns ``None`` and is therefore never exempt.
+    cannot test them. The comparison is string-only (no YAML 1.1 coercion).
+    Anything that is not exactly one plain mapping document (a parse failure,
+    an empty or scalar document, a multi-document file, a duplicate or merge
+    key, an anchor or alias, or a missing PyYAML) returns ``None`` and is
+    therefore never exempt.
     """
     try:
         import yaml  # pylint: disable=import-outside-toplevel
     except ImportError:
         return None
     try:
-        documents = list(yaml.safe_load_all(data))
+        documents = _strict_documents(data)
     except (yaml.YAMLError, ValueError, RecursionError):
         return None
     if len(documents) != 1 or not isinstance(documents[0], dict):
