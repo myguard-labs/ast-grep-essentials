@@ -1,0 +1,24 @@
+id: sh-background-server-port-poll-no-liveness
+snapshots:
+  "serve --port 8080 &\nPID=$!\nfor i in 1 2 3; do\n  if (exec 3<>\"/dev/tcp/127.0.0.1/8080\") 2>/dev/null; then break; fi\n  sleep 0.1\ndone":
+    labels:
+    - source: |-
+        for i in 1 2 3; do
+          if (exec 3<>"/dev/tcp/127.0.0.1/8080") 2>/dev/null; then break; fi
+          sleep 0.1
+        done
+      style: primary
+      start: 27
+      end: 131
+    - source: |-
+        do
+          if (exec 3<>"/dev/tcp/127.0.0.1/8080") 2>/dev/null; then break; fi
+          sleep 0.1
+        done
+      style: secondary
+      start: 43
+      end: 131
+    - source: PID=$!
+      style: secondary
+      start: 20
+      end: 26
