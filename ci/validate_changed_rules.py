@@ -20,6 +20,7 @@ import tempfile
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from pathlib import Path, PurePosixPath
+from typing import Any
 
 SUPPORTED_LANGUAGES = frozenset(
     {
@@ -161,6 +162,98 @@ def header_only_rule_changes(
             continue  # An added rule, or an unreadable base, is never exempt.
         body = _rule_body(current.read_bytes())
         if body and body == _rule_body(previous):
+            exempt.add(value)
+    return frozenset(exempt)
+
+
+NON_MATCHING_KEYS = frozenset({"metadata", "note"})
+
+
+def _strict_documents(data: bytes) -> list[object]:
+    """Parse ``data`` with no implicit typing, aliasing or key ambiguity.
+
+    ``yaml.BaseLoader`` keeps every scalar a string, so distinct matcher text
+    such as ``1.0``/``1.00``, ``0x10``/``16``, ``yes``/``true`` or ``~``/``null``
+    never compares equal. Any anchor, alias, ``<<`` merge key or duplicate
+    mapping key (at any depth) raises ``ValueError``.
+    """
+    import yaml  # pylint: disable=import-outside-toplevel
+
+    for event in yaml.parse(data, Loader=yaml.BaseLoader):
+        if isinstance(event, yaml.AliasEvent) or getattr(event, "anchor", None):
+            raise ValueError("anchors and aliases are not compared")
+
+    class StrictLoader(yaml.BaseLoader):
+        """BaseLoader that refuses duplicate and merge keys."""
+
+        def construct_mapping(self, node: Any, deep: bool = False) -> Any:
+            keys = [
+                self.construct_object(key_node, deep=True)  # type: ignore[no-untyped-call]
+                for key_node, _ in node.value
+            ]
+            if "<<" in keys or len(set(map(str, keys))) != len(keys):
+                raise ValueError("duplicate or merge mapping key")
+            return super().construct_mapping(node, deep)
+
+    loader = StrictLoader(data)
+    try:
+        documents = []
+        while loader.check_data():  # type: ignore[no-untyped-call]
+            documents.append(loader.get_data())  # type: ignore[no-untyped-call]
+        return documents
+    finally:
+        loader.dispose()  # type: ignore[no-untyped-call]
+
+
+def _matcher_document(data: bytes) -> dict[object, object] | None:
+    """The single YAML mapping in ``data`` minus the non-matching keys.
+
+    ``metadata`` and ``note`` are ignored by the ast-grep matcher, so a fixture
+    cannot test them. The comparison is string-only (no YAML 1.1 coercion).
+    Anything that is not exactly one plain mapping document (a parse failure,
+    an empty or scalar document, a multi-document file, a duplicate or merge
+    key, an anchor or alias, or a missing PyYAML) returns ``None`` and is
+    therefore never exempt.
+    """
+    try:
+        import yaml  # pylint: disable=import-outside-toplevel
+    except ImportError:
+        return None
+    try:
+        documents = _strict_documents(data)
+    except (yaml.YAMLError, ValueError, RecursionError):
+        return None
+    if len(documents) != 1 or not isinstance(documents[0], dict):
+        return None
+    return {k: v for k, v in documents[0].items() if k not in NON_MATCHING_KEYS}
+
+
+def non_matching_rule_changes(
+    root: Path, base: str, paths: Sequence[str]
+) -> frozenset[str]:
+    """Changed rules whose parsed document differs from ``base`` only in the
+    non-matching keys ``metadata`` and ``note``.
+
+    Only the mirrored-fixture requirement is waived: ``validate_changed`` still
+    runs ``validate_rule`` on every exempt rule. An added rule, an unreadable
+    base, a parse failure, a multi-document file, or a change to any other key
+    (rule, constraints, utils, transform, fix, language, id, severity, message,
+    files, ignores, ...) is never exempt.
+    """
+    exempt = set()
+    for value in paths:
+        path = _safe_path(value)
+        if path is None or len(path.parts) != 4 or path.parts[0] != "rules":
+            continue
+        current = root / path
+        if not current.exists():
+            continue
+        _require_contained_regular(root, current, "rule")
+        previous = _base_blob(root, base, path)
+        if previous is None:
+            continue
+        document = _matcher_document(current.read_bytes())
+        if document is not None and document == _matcher_document(previous):
             exempt.add(value)
     return frozenset(exempt)
 
@@ -376,7 +469,12 @@ def latest_engine() -> Iterator[tuple[Path, str]]:
 def validate_changed(
     root: Path, engine: Path, paths: Sequence[str], base: str | None = None
 ) -> int:
-    exempt = header_only_rule_changes(root, base, paths) if base else frozenset()
+    exempt = (
+        header_only_rule_changes(root, base, paths)
+        | non_matching_rule_changes(root, base, paths)
+        if base
+        else frozenset()
+    )
     missing = missing_fixture_changes(paths, exempt)
     if missing:
         raise ValidationError(

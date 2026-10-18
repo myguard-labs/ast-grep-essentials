@@ -105,15 +105,16 @@ class ValidateChangedRulesTests(unittest.TestCase):
         changes = {
             "matcher": "# b\n" + body.replace("call", "call_expression"),
             "comment inside a block scalar": (
-                "# b\n" + body + "note: |\n  # changed\n"
+                "# b\n" + body + "message: |\n  # changed\n"
             ),
-            "comment below the first key": "# b\nid: py-one\n# moved\n" + body[11:],
             "banner emptied the rule": "# b\n",
         }
         for label, text in changes.items():
             with self.subTest(label), tempfile.TemporaryDirectory() as name:
                 root = Path(name)
-                rule, path = self.header_rule(root, "# a\n", body + "note: |\n  # x\n")
+                rule, path = self.header_rule(
+                    root, "# a\n", body + "message: |\n  # x\n"
+                )
                 if label != "comment inside a block scalar":
                     rule.write_text("# a\n" + body)
                 base = self.commit_base(root)
@@ -125,6 +126,162 @@ class ValidateChangedRulesTests(unittest.TestCase):
                     gate.validate_changed(root, engine, [path], base)
 
                 self.assertEqual(exempt, frozenset())
+
+    def non_matching(
+        self, base_text: str, current_text: str | None
+    ) -> tuple[frozenset[str], int | None]:
+        """Exempt set and, when exempt, the validated count (None otherwise)."""
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            rule, path = self.header_rule(root, "", base_text)
+            if current_text is None:
+                (root / "README").write_text("x\n")
+                rule.unlink()
+            base = self.commit_base(root)
+            if current_text is not None:
+                rule.write_text(current_text)
+            else:
+                rule.parent.mkdir(parents=True, exist_ok=True)
+                rule.write_text(base_text)
+            exempt = gate.non_matching_rule_changes(root, base, [path])
+            count = None
+            if exempt:
+                engine = self.make_engine(root, "test result: ok. 1 passed; 0 failed;")
+                with redirect_stdout(io.StringIO()):
+                    count = gate.validate_changed(root, engine, [path], base)
+            return exempt, count
+
+    BASE = "id: py-one\nlanguage: python\nrule: {kind: call}\nmessage: m\n"
+    PATH = "rules/python/security/py-one.yml"
+
+    def test_metadata_only_added_keys_are_exempt_but_still_validated(self) -> None:
+        text = self.BASE + "metadata:\n  cwe: [CWE-79]\n  category: security\n"
+        exempt, count = self.non_matching(self.BASE, text)
+        self.assertEqual(exempt, frozenset({self.PATH}))
+        self.assertEqual(count, 1)  # validate_rule still ran
+
+    def test_note_only_change_is_exempt(self) -> None:
+        exempt, _ = self.non_matching(
+            self.BASE + "note: |\n  old\n", self.BASE + "note: |\n  new\n"
+        )
+        self.assertEqual(exempt, frozenset({self.PATH}))
+
+    def test_comment_only_change_is_document_equal_and_exempt(self) -> None:
+        exempt, _ = self.non_matching(
+            self.BASE, "# c\nid: py-one\n# moved\n" + self.BASE[11:]
+        )
+        self.assertEqual(exempt, frozenset({self.PATH}))
+
+    def test_metadata_plus_other_key_change_is_not_exempt(self) -> None:
+        for label, text in {
+            "rule": self.BASE.replace("call", "call_expression") + "metadata: {a: 1}\n",
+            "message": self.BASE.replace("m\n", "n\n") + "metadata: {a: 1}\n",
+            "severity": self.BASE + "severity: error\nnote: x\n",
+            "removed key": "id: py-one\nlanguage: python\nrule: {kind: call}\nnote: x\n",
+        }.items():
+            with self.subTest(label):
+                self.assertEqual(self.non_matching(self.BASE, text)[0], frozenset())
+
+    def test_message_change_is_not_exempt(self) -> None:
+        exempt, _ = self.non_matching(self.BASE, self.BASE.replace("m\n", "other\n"))
+        self.assertEqual(exempt, frozenset())
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            rule, path = self.header_rule(root, "", self.BASE)
+            base = self.commit_base(root)
+            rule.write_text(self.BASE.replace("m\n", "other\n"))
+            engine = self.make_engine(root, "test result: ok. 1 passed; 0 failed;")
+            with self.assertRaisesRegex(gate.ValidationError, "mirrored fixtures"):
+                gate.validate_changed(root, engine, [path], base)
+
+    def test_added_rule_is_not_non_matching_exempt(self) -> None:
+        self.assertEqual(self.non_matching(self.BASE, None)[0], frozenset())
+
+    def test_malformed_and_non_mapping_documents_are_not_exempt(self) -> None:
+        for label, (base_text, text) in {
+            "malformed current": (self.BASE, "id: [unclosed\nmetadata: {\n"),
+            "malformed both": ("id: [a\n", "id: [a\nmetadata: {\n"),
+            "scalar both": ("just text\n", "just text\n"),
+            "list both": ("- a\n", "- a\n"),
+            "empty both": ("", ""),
+        }.items():
+            with self.subTest(label):
+                self.assertEqual(self.non_matching(base_text, text)[0], frozenset())
+
+    def test_multi_document_files_are_not_exempt(self) -> None:
+        two = self.BASE + "---\n" + self.BASE
+        self.assertEqual(
+            self.non_matching(two, two + "metadata: {a: 1}\n")[0], frozenset()
+        )
+        self.assertEqual(self.non_matching(self.BASE, two)[0], frozenset())
+
+    def test_yaml_coercion_equal_matchers_are_not_exempt(self) -> None:
+        for key in ("rule", "constraints"):
+            for old, new in (
+                ("1.0", "1.00"),
+                ("0x10", "16"),
+                ("yes", "true"),
+                ("~", "null"),
+            ):
+                with self.subTest(key=key, old=old, new=new):
+                    head = "id: py-one\nlanguage: python\nmessage: m\n"
+                    base = head + f"{key}:\n  pattern: {old}\n"
+                    text = head + f"{key}:\n  pattern: {new}\n" + "note: x\n"
+                    self.assertEqual(self.non_matching(base, text)[0], frozenset())
+
+    def test_identical_coercible_matchers_stay_exempt(self) -> None:
+        base = self.BASE + "constraints:\n  X: {regex: yes}\n"
+        exempt, _ = self.non_matching(base, base + "metadata: {a: 1}\n")
+        self.assertEqual(exempt, frozenset({self.PATH}))
+
+    def test_duplicate_merge_and_alias_documents_are_not_exempt(self) -> None:
+        extra = "metadata: {a: 1}\n"
+        cases = {
+            "duplicate rule": self.BASE + "rule: {kind: other}\n" + extra,
+            "duplicate inside rule": (
+                "id: py-one\nlanguage: python\nmessage: m\n"
+                "rule:\n  kind: call\n  kind: call\n" + extra
+            ),
+            "merge under metadata": (
+                self.BASE + "metadata:\n  base: &a {x: 1}\n  <<: *a\n"
+            ),
+            "plain alias": self.BASE + "metadata:\n  a: &a 1\n  b: *a\n",
+            "anchor only": self.BASE + "metadata:\n  a: &a 1\n",
+        }
+        for label, text in cases.items():
+            with self.subTest(label):
+                self.assertEqual(self.non_matching(text, text)[0], frozenset())
+                self.assertEqual(self.non_matching(self.BASE, text)[0], frozenset())
+
+    def test_hash_line_inside_block_scalar_is_not_exempt(self) -> None:
+        base = self.BASE.replace("kind: call}", "pattern: x}") + "fix: |\n  a\n"
+        for added in ("  # b\n", "  b\n"):
+            with self.subTest(added=added):
+                exempt, _ = self.non_matching(base, base + added)
+                self.assertEqual(exempt, frozenset())
+        pattern = (
+            "id: py-one\nlanguage: python\nmessage: m\nrule:\n  pattern: |\n    a\n"
+        )
+        exempt, _ = self.non_matching(pattern, pattern + "    # b\n")
+        self.assertEqual(exempt, frozenset())
+        # A comment line outside any scalar stays exempt.
+        exempt, _ = self.non_matching(pattern, pattern + "# b\n")
+        self.assertEqual(exempt, frozenset({self.PATH}))
+
+    def test_missing_pyyaml_fails_closed(self) -> None:
+        with patch.dict(sys.modules, {"yaml": None}):
+            exempt, _ = self.non_matching(self.BASE, self.BASE + "metadata: {a: 1}\n")
+        self.assertEqual(exempt, frozenset())
+
+    def test_banner_only_still_exempt_through_the_combined_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            rule, path = self.header_rule(root, "# old\n", self.BASE)
+            base = self.commit_base(root)
+            rule.write_text("# new\n" + self.BASE)
+            engine = self.make_engine(root, "test result: ok. 1 passed; 0 failed;")
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(gate.validate_changed(root, engine, [path], base), 1)
 
     def test_added_rule_is_never_exempt(self) -> None:
         with tempfile.TemporaryDirectory() as name:
