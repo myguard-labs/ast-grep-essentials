@@ -119,6 +119,21 @@ class HostLoadabilityTests(unittest.TestCase):
         with self.assertRaisesRegex(gate.GateError, "expected ast-grep 0.45.2"):
             gate.check(self.root, self.fake("0.50.0"))
 
+    def test_version_probe_exit_code_is_named(self) -> None:
+        self.rule("python/security/a.yml")
+        script = self.tmp / "failing-ast-grep"
+        script.write_text(
+            f"#!{sys.executable}\nimport sys\n"
+            "print('ast-grep 0.45.2')\nsys.stderr.write('broken install')\n"
+            "raise SystemExit(3)\n",
+            encoding="utf-8",
+        )
+        script.chmod(script.stat().st_mode | stat.S_IXUSR)
+        with self.assertRaisesRegex(
+            gate.GateError, r"--version exited 3.*broken install"
+        ):
+            gate.check(self.root, [str(script)])
+
     def test_missing_binary_is_a_gate_error(self) -> None:
         self.rule("python/security/a.yml")
         with self.assertRaisesRegex(gate.GateError, "cannot run"):

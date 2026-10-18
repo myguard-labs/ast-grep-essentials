@@ -87,6 +87,10 @@ def check(root: Path, ast_grep: Sequence[str | Path]) -> int:
         raise GateError("no non-PowerShell rules found; refusing to pass")
     with tempfile.TemporaryDirectory(prefix="host-loadability-") as scratch:
         version = _run([*ast_grep, "--version"], Path(scratch))
+        if version.returncode:
+            raise GateError(
+                f"ast-grep --version exited {version.returncode}: {_tail(version)}"
+            )
         if version.stdout.strip().split()[-1:] != [MIN_VERSION]:
             raise GateError(f"expected ast-grep {MIN_VERSION}, got: {_tail(version)}")
         target = Path(scratch)
