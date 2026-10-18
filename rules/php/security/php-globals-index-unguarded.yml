@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-globals-index-unguarded
+language: php
+severity: warning
+message: >-
+  Element of the GLOBALS array is read in an if condition without an isset()
+  guard.
+note: >-
+  Syntactic check only; it looks for isset text in the same if condition and
+  does not track earlier guards, aliasing, or runtime values.
+rule:
+  all:
+    - kind: subscript_expression
+    - regex: '^\$GLOBALS\s*\['
+    - inside:
+        kind: parenthesized_expression
+        stopBy: end
+        inside:
+          kind: if_statement
+    - not:
+        inside:
+          kind: parenthesized_expression
+          stopBy: end
+          regex: 'isset\s*\('
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
