@@ -1,0 +1,34 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-is-array-unguarded-superglobal-read
+language: php
+severity: warning
+message: >-
+  is_array() is applied directly to a POST or GET superglobal index read with
+  no isset() or empty() guard in the same condition.
+note: >-
+  Syntactic only. It checks for an isset or empty call inside an enclosing
+  binary expression and does not track guards elsewhere or runtime key
+  presence.
+rule:
+  all:
+    - pattern: 'is_array($ARG)'
+    - not:
+        inside:
+          stopBy: end
+          kind: binary_expression
+          has:
+            stopBy: end
+            kind: function_call_expression
+            regex: '^(isset|empty)\s*\('
+constraints:
+  ARG:
+    regex: '^\$_(POST|GET)\s*\['
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
