@@ -1,0 +1,11 @@
+id: php-global-set-after-callback
+valid:
+  - >-
+    <?php function start_el( $comment, $args ) { $GLOBALS['comment'] = $comment;
+    if ( !empty($args['callback']) ) { call_user_func($args['callback'],
+    $comment, $args); return; } }
+invalid:
+  - >-
+    <?php function start_el( $comment, $args ) { if ( !empty($args['callback'])
+    ) { call_user_func($args['callback'], $comment, $args); return; }
+    $GLOBALS['comment'] = $comment; }
