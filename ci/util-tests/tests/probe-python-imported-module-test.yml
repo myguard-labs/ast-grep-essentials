@@ -1,0 +1,22 @@
+id: probe-python-imported-module
+valid:
+  - 'from __future__ import annotations'
+  - '__import__("os")'
+  - 'importlib.import_module("os")'
+  - 'os.path.join(a, b)'
+  - 'x = 1'
+invalid:
+  - 'import os'
+  - 'import os.path'
+  - 'import os.path as p'
+  - 'import os, sys'
+  - 'import os.path as p, sys as s, json'
+  - 'from os import path'
+  - 'from os import path as p'
+  - 'from os import (path, sep)'
+  - 'from os import *'
+  - 'from . import x'
+  - 'from .a.b import c'
+  - |
+    def f():
+        import json
