@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-home-url-request-uri
+language: php
+severity: warning
+message: >-
+  home_url() is called with the REQUEST_URI superglobal as its path argument;
+  this can duplicate the base path on subdirectory installs.
+note: >-
+  Matches the literal call syntax only; it does not resolve aliases, wrappers,
+  or whether the value is sanitized.
+rule:
+  all:
+    - kind: function_call_expression
+    - has:
+        field: function
+        regex: '^home_url$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          regex: '^\$_SERVER\[[''"]REQUEST_URI[''"]\]$'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
