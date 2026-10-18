@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-server-superglobal-unguarded-read
+language: php
+severity: warning
+message: >-
+  Assignment reads a key of the server superglobal by subscript; confirm the
+  key is guarded with isset or empty.
+note: >-
+  Purely syntactic; it does not detect isset or empty guards elsewhere in the
+  function, so guarded reads also match.
+rule:
+  kind: subscript_expression
+  regex: '^\$_SERVER\['
+  inside:
+    kind: assignment_expression
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
