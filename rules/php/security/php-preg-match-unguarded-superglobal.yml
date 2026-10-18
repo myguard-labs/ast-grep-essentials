@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-preg-match-unguarded-superglobal
+language: php
+severity: warning
+message: >-
+  preg_match is called on a direct GET or REQUEST superglobal index inside an
+  if condition that has no isset or empty guard.
+note: >-
+  Only checks the syntax of the enclosing if condition; a guard placed
+  elsewhere, such as an earlier statement or an outer block, is not detected.
+rule:
+  all:
+    - kind: function_call_expression
+    - regex: '^preg_match\s*\('
+    - has:
+        kind: arguments
+        has:
+          kind: argument
+          nthChild: 2
+          regex: '^\$_(GET|REQUEST)\s*\[[^\]]*\]$'
+    - inside:
+        stopBy: end
+        kind: parenthesized_expression
+        inside:
+          kind: if_statement
+        not:
+          regex: '\b(isset|empty)\s*\('
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
