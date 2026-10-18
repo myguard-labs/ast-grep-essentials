@@ -666,6 +666,37 @@ class CheckTests(unittest.TestCase):
                     any(reason in line for line in report.failures), report.failures
                 )
 
+    def test_engine_gate_names_the_comparison_that_failed(self) -> None:
+        def stale_baseline(fx: Fixture) -> None:
+            data = promote.load_baseline(fx.repo)
+            data["engine"] = "0.45.2"
+            promote.write_baseline(fx.repo, data)
+
+        def both(fx: Fixture) -> None:
+            stale_baseline(fx)
+            fx.set(version="0.45.4")
+
+        cases = [
+            (
+                stale_baseline,
+                (
+                    "baseline engine 0.45.2 differs from engine 0.45.3; "
+                    "rerun `promote.py baseline` and review"
+                ),
+                "package.json",
+            ),
+            (both, "engine 0.45.4 differs from package.json pin 0.45.3", "baseline"),
+        ]
+        for breaker, reason, absent in cases:
+            with self.subTest(reason=reason), fixture() as fx:
+                self.ready(fx)
+                breaker(fx)
+                report = promote.run_checks(fx.repo, fx.repo, fx.engine, None, 1)
+                failures = [line for line in report.failures if "engine" in line]
+                self.assertEqual(len(failures), 1, report.failures)
+                self.assertIn(reason, failures[0])
+                self.assertNotIn(absent, failures[0])
+
     def test_acknowledged_findings_pass_and_are_reported(self) -> None:
         with fixture() as fx:
             self.ready(fx)
