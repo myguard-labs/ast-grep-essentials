@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-ternary-unguarded-array-read
+language: php
+severity: warning
+message: >-
+  Ternary reads the same array key in its condition and then-branch without an
+  isset() guard.
+note: >-
+  Purely syntactic match on a literal subscript repeated in the ternary
+  condition and then-branch; it does not verify the array type, key existence
+  at runtime, or that the key is not set elsewhere.
+rule:
+  kind: conditional_expression
+  all:
+    - has:
+        pattern: '$_REQUEST[''_ajax_nonce'']'
+        stopBy: end
+    - pattern: '$_REQUEST[''_ajax_nonce''] ? $_REQUEST[''_ajax_nonce''] : $$$REST'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
