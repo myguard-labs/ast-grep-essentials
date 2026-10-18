@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-request-isset-flag
+language: php
+severity: warning
+message: >-
+  isset() on a request-superglobal element is assigned to a variable; this
+  flag can be set from GET, POST or cookies, and is true for any value.
+note: >-
+  Matches the literal request-superglobal isset assignment syntax only; it
+  does not resolve whether the variable is used as a security-sensitive flag.
+rule:
+  kind: assignment_expression
+  has:
+    field: right
+    regex: '^isset\s*\('
+    has:
+      kind: variable_name
+      regex: '^\$_REQUEST$'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
