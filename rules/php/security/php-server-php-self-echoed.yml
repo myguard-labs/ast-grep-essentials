@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-server-php-self-echoed
+language: php
+severity: warning
+message: >-
+  The PHP_SELF server variable is echoed into page output; it is
+  attacker-influenced and can cause reflected XSS.
+note: >-
+  Syntactic only; matches the literal superglobal server array read of the
+  PHP_SELF key inside an echo statement and does not track aliasing, escaping,
+  print, or dataflow.
+rule:
+  all:
+    - kind: subscript_expression
+    - regex: '^\$_SERVER\[\s*(''PHP_SELF''|"PHP_SELF")\s*\]$'
+    - inside:
+        kind: echo_statement
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
