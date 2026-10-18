@@ -1,13 +1,90 @@
 id: ssl-verify-none-rust
 snapshots:
-  ? |
-    use openssl::ssl::{
-      SslMethod,
-      SslConnectorBuilder,
-      SSL_VERIFY_NONE
-    };
-    connector.builder_mut().set_verify(SSL_VERIFY_NONE);
-  : labels:
+  "connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE);\n":
+    fixed: |
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
+    - source: connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE)
+      style: primary
+      start: 0
+      end: 65
+  "use openssl::ssl::SSL_VERIFY_NONE as NO_VERIFY;\nconnector.builder_mut().set_verify(NO_VERIFY);\n":
+    fixed: |
+      use openssl::ssl::SSL_VERIFY_NONE as NO_VERIFY;
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
+    - source: connector.builder_mut().set_verify(NO_VERIFY)
+      style: primary
+      start: 48
+      end: 93
+    - source: use openssl::ssl::SSL_VERIFY_NONE as NO_VERIFY;
+      style: secondary
+      start: 0
+      end: 47
+    - source: use openssl::ssl::SSL_VERIFY_NONE as NO_VERIFY;
+      style: secondary
+      start: 0
+      end: 47
+  "use openssl::ssl::SSL_VERIFY_NONE;\nconnector.builder_mut().set_verify(SSL_VERIFY_NONE);\n":
+    fixed: |
+      use openssl::ssl::SSL_VERIFY_NONE;
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
+    - source: connector.builder_mut().set_verify(SSL_VERIFY_NONE)
+      style: primary
+      start: 35
+      end: 86
+    - source: use openssl::ssl::SSL_VERIFY_NONE;
+      style: secondary
+      start: 0
+      end: 34
+    - source: use openssl::ssl::SSL_VERIFY_NONE;
+      style: secondary
+      start: 0
+      end: 34
+  "use openssl::ssl::SSL_VERIFY_NONE;\nconnector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE);\n":
+    fixed: |
+      use openssl::ssl::SSL_VERIFY_NONE;
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
+    - source: connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE)
+      style: primary
+      start: 35
+      end: 100
+    - source: use openssl::ssl::SSL_VERIFY_NONE;
+      style: secondary
+      start: 0
+      end: 34
+    - source: use openssl::ssl::SSL_VERIFY_NONE;
+      style: secondary
+      start: 0
+      end: 34
+  "use openssl::ssl::SSL_VERIFY_NONE;\nconnector.builder_mut().set_verify(ssl::SSL_VERIFY_NONE);\n":
+    fixed: |
+      use openssl::ssl::SSL_VERIFY_NONE;
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
+    - source: connector.builder_mut().set_verify(ssl::SSL_VERIFY_NONE)
+      style: primary
+      start: 35
+      end: 91
+    - source: use openssl::ssl::SSL_VERIFY_NONE;
+      style: secondary
+      start: 0
+      end: 34
+    - source: use openssl::ssl::SSL_VERIFY_NONE;
+      style: secondary
+      start: 0
+      end: 34
+  "use openssl::ssl::{\n  SslMethod,\n  SslConnectorBuilder,\n  SSL_VERIFY_NONE\n};\nconnector.builder_mut().set_verify(SSL_VERIFY_NONE);\n":
+    fixed: |
+      use openssl::ssl::{
+        SslMethod,
+        SslConnectorBuilder,
+        SSL_VERIFY_NONE
+      };
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
     - source: connector.builder_mut().set_verify(SSL_VERIFY_NONE)
       style: primary
       start: 77
@@ -47,10 +124,102 @@ snapshots:
       style: secondary
       start: 0
       end: 76
-  ? |
-    use openssl::ssl::{SslMethod, SslConnectorBuilder, SSL_VERIFY_NONE};
-    connector.builder_mut().set_verify(SSL_VERIFY_NONE);
-  : labels:
+  "use openssl::ssl::{SslMethod, SSL_VERIFY_NONE as NO_VERIFY};\nconnector.builder_mut().set_verify(NO_VERIFY);\n":
+    fixed: |
+      use openssl::ssl::{SslMethod, SSL_VERIFY_NONE as NO_VERIFY};
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
+    - source: connector.builder_mut().set_verify(NO_VERIFY)
+      style: primary
+      start: 61
+      end: 106
+    - source: SSL_VERIFY_NONE
+      style: secondary
+      start: 30
+      end: 45
+    - source: NO_VERIFY
+      style: secondary
+      start: 49
+      end: 58
+    - source: SSL_VERIFY_NONE as NO_VERIFY
+      style: secondary
+      start: 30
+      end: 58
+    - source: "{SslMethod, SSL_VERIFY_NONE as NO_VERIFY}"
+      style: secondary
+      start: 18
+      end: 59
+    - source: use openssl::ssl::{SslMethod, SSL_VERIFY_NONE as NO_VERIFY};
+      style: secondary
+      start: 0
+      end: 60
+    - source: use openssl::ssl::{SslMethod, SSL_VERIFY_NONE as NO_VERIFY};
+      style: secondary
+      start: 0
+      end: 60
+  "use openssl::ssl::{SslMethod, SSL_VERIFY_NONE};\nconnector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE);\n":
+    fixed: |
+      use openssl::ssl::{SslMethod, SSL_VERIFY_NONE};
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
+    - source: connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE)
+      style: primary
+      start: 48
+      end: 113
+    - source: SSL_VERIFY_NONE
+      style: secondary
+      start: 30
+      end: 45
+    - source: "{SslMethod, SSL_VERIFY_NONE}"
+      style: secondary
+      start: 18
+      end: 46
+    - source: openssl::ssl
+      style: secondary
+      start: 4
+      end: 16
+    - source: use openssl::ssl::{SslMethod, SSL_VERIFY_NONE};
+      style: secondary
+      start: 0
+      end: 47
+    - source: use openssl::ssl::{SslMethod, SSL_VERIFY_NONE};
+      style: secondary
+      start: 0
+      end: 47
+  "use openssl::ssl::{SslMethod, SSL_VERIFY_NONE};\nconnector.builder_mut().set_verify(ssl::SSL_VERIFY_NONE);\n":
+    fixed: |
+      use openssl::ssl::{SslMethod, SSL_VERIFY_NONE};
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
+    - source: connector.builder_mut().set_verify(ssl::SSL_VERIFY_NONE)
+      style: primary
+      start: 48
+      end: 104
+    - source: SSL_VERIFY_NONE
+      style: secondary
+      start: 30
+      end: 45
+    - source: "{SslMethod, SSL_VERIFY_NONE}"
+      style: secondary
+      start: 18
+      end: 46
+    - source: openssl::ssl
+      style: secondary
+      start: 4
+      end: 16
+    - source: use openssl::ssl::{SslMethod, SSL_VERIFY_NONE};
+      style: secondary
+      start: 0
+      end: 47
+    - source: use openssl::ssl::{SslMethod, SSL_VERIFY_NONE};
+      style: secondary
+      start: 0
+      end: 47
+  "use openssl::ssl::{SslMethod, SslConnectorBuilder, SSL_VERIFY_NONE};\nconnector.builder_mut().set_verify(SSL_VERIFY_NONE);\n":
+    fixed: |
+      use openssl::ssl::{SslMethod, SslConnectorBuilder, SSL_VERIFY_NONE};
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
     - source: connector.builder_mut().set_verify(SSL_VERIFY_NONE)
       style: primary
       start: 69
@@ -59,7 +228,7 @@ snapshots:
       style: secondary
       start: 51
       end: 66
-    - source: '{SslMethod, SslConnectorBuilder, SSL_VERIFY_NONE}'
+    - source: "{SslMethod, SslConnectorBuilder, SSL_VERIFY_NONE}"
       style: secondary
       start: 18
       end: 67
@@ -75,10 +244,45 @@ snapshots:
       style: secondary
       start: 0
       end: 68
-  ? |
-    use openssl::ssl;
-    connector.builder_mut().set_verify(ssl::SSL_VERIFY_NONE);
-  : labels:
+  "use openssl::ssl;\nconnector.builder_mut().set_verify(SSL_VERIFY_NONE);\n":
+    fixed: |
+      use openssl::ssl;
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
+    - source: connector.builder_mut().set_verify(SSL_VERIFY_NONE)
+      style: primary
+      start: 18
+      end: 69
+    - source: use openssl::ssl;
+      style: secondary
+      start: 0
+      end: 17
+    - source: use openssl::ssl;
+      style: secondary
+      start: 0
+      end: 17
+  "use openssl::ssl;\nconnector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE);\n":
+    fixed: |
+      use openssl::ssl;
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
+    - source: connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE)
+      style: primary
+      start: 18
+      end: 83
+    - source: use openssl::ssl;
+      style: secondary
+      start: 0
+      end: 17
+    - source: use openssl::ssl;
+      style: secondary
+      start: 0
+      end: 17
+  "use openssl::ssl;\nconnector.builder_mut().set_verify(ssl::SSL_VERIFY_NONE);\n":
+    fixed: |
+      use openssl::ssl;
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
     - source: connector.builder_mut().set_verify(ssl::SSL_VERIFY_NONE)
       style: primary
       start: 18
@@ -91,10 +295,28 @@ snapshots:
       style: secondary
       start: 0
       end: 17
-  ? |
-    use openssl;
-    connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE);
-  : labels:
+  "use openssl;\nconnector.builder_mut().set_verify(SSL_VERIFY_NONE);\n":
+    fixed: |
+      use openssl;
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
+    - source: connector.builder_mut().set_verify(SSL_VERIFY_NONE)
+      style: primary
+      start: 13
+      end: 64
+    - source: use openssl;
+      style: secondary
+      start: 0
+      end: 12
+    - source: use openssl;
+      style: secondary
+      start: 0
+      end: 12
+  "use openssl;\nconnector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE);\n":
+    fixed: |
+      use openssl;
+      connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_PEER);
+    labels:
     - source: connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE)
       style: primary
       start: 13

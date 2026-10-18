@@ -5,6 +5,11 @@ valid:
   - |
     use openssl::ssl::SSL_VERIFY_NONE;
     connector.builder_mut().set_verify(SSL_VERIFY_PEER);
+  - |
+    connector.builder_mut().set_verify(SSL_VERIFY_NONE);
+  - |
+    use openssl::ssl::SSL_VERIFY_NONE;
+    connector.builder_mut().set_verify(flags);
 invalid:
   - |
     use openssl;
@@ -22,3 +27,35 @@ invalid:
       SSL_VERIFY_NONE
     };
     connector.builder_mut().set_verify(SSL_VERIFY_NONE);
+  - |
+    use openssl::ssl::SSL_VERIFY_NONE as NO_VERIFY;
+    connector.builder_mut().set_verify(NO_VERIFY);
+  - |
+    use openssl::ssl::SSL_VERIFY_NONE;
+    connector.builder_mut().set_verify(SSL_VERIFY_NONE);
+  - |
+    connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE);
+  - |
+    use openssl::ssl::SSL_VERIFY_NONE;
+    connector.builder_mut().set_verify(ssl::SSL_VERIFY_NONE);
+  - |
+    use openssl::ssl::{SslMethod, SSL_VERIFY_NONE};
+    connector.builder_mut().set_verify(ssl::SSL_VERIFY_NONE);
+  - |
+    use openssl;
+    connector.builder_mut().set_verify(SSL_VERIFY_NONE);
+  - |
+    use openssl::ssl;
+    connector.builder_mut().set_verify(SSL_VERIFY_NONE);
+  - |
+    use openssl::ssl::{SslMethod, SSL_VERIFY_NONE as NO_VERIFY};
+    connector.builder_mut().set_verify(NO_VERIFY);
+  - |
+    use openssl::ssl;
+    connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE);
+  - |
+    use openssl::ssl::SSL_VERIFY_NONE;
+    connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE);
+  - |
+    use openssl::ssl::{SslMethod, SSL_VERIFY_NONE};
+    connector.builder_mut().set_verify(openssl::ssl::SSL_VERIFY_NONE);
