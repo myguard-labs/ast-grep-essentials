@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-preg-unescaped-dot-before-extension
+language: php
+severity: warning
+message: >-
+  preg_match pattern has an unescaped dot before a file extension; the dot
+  matches any character.
+note: >-
+  Checks only literal string text inside a preg_match call for a dot not
+  preceded by a backslash before "php"; it does not resolve variables,
+  concatenation, argument position, or regex context such as character
+  classes.
+rule:
+  all:
+    - kind: string
+    - regex: '(^|[^\\])\.php'
+    - inside:
+        pattern: 'preg_match($$$ARGS)'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
