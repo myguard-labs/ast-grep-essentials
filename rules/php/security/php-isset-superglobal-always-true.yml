@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-isset-superglobal-always-true
+language: php
+severity: warning
+message: >-
+  isset() on a bare superglobal array is always true; test a specific key
+  instead.
+note: >-
+  Matches literal isset() calls whose single argument is the bare POST, GET or
+  REQUEST superglobal variable; it does not resolve scope, aliasing, or
+  whether the code runs in a web request.
+rule:
+  pattern: 'isset($ARG)'
+constraints:
+  ARG:
+    regex: '^\$_(POST|GET|REQUEST)$'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
