@@ -11,6 +11,16 @@ valid:
         println(decoded)
       }
     }
+  - |
+    import pdi.jwt.{JwtJson, JwtAlgorithm}
+    object EnvSecret {
+      def run(token: String) = {
+        val secretKey = sys.env("JWT_SECRET")
+        val decoded = JwtJson.decodeJson(token, secretKey, Seq(JwtAlgorithm.HS256))
+        println(decoded)
+      }
+    }
+
 invalid:
   - |
     import pdi.jwt.{JwtJson, JwtAlgorithm, JwtArgonaut}
@@ -91,5 +101,13 @@ invalid:
         val algo = JwtAlgorithm.HS256
         val decodedAll = JwtJson.decodeAll(token, this.secretKey, Seq(algo))
         println(decodedAll)
+      }
+    }
+  - |
+    import pdi.jwt.{JwtJson, JwtAlgorithm}
+    object LiteralDecode {
+      def run(token: String) = {
+        val decoded = JwtJson.decodeJson(token, "hard-coded-secret", Seq(JwtAlgorithm.HS256))
+        println(decoded)
       }
     }

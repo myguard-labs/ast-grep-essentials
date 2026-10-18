@@ -9,7 +9,7 @@ message: >-
 note: >-
   Single-file syntactic match on a bare class-body assignment of a dict,
   list or set literal (not set(), list() or dict() calls, tuples or
-  comprehensions). An annotation of ClassVar, typing.ClassVar or a quoted
+  comprehensions; those are known misses tracked in metadata.todo_cases). An annotation of ClassVar, typing.ClassVar or a quoted
   ClassVar forward reference is not flagged. The assignment must not sit
   inside a function (a method or a nested def) between it and its nearest enclosing class; assignments in
   if, try or with blocks of the class body still match. It does not resolve
@@ -50,3 +50,22 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  todo_cases:
+    - |-
+      class T:
+          items = list()
+    - |-
+      class T:
+          tags = set()
+    - |-
+      class T:
+          mapping = dict()
+    - |-
+      class T:
+          values = [i for i in range(2)]
+    - |-
+      class T:
+          values = {i for i in range(2)}
+    - |-
+      class T:
+          values = {i: i for i in range(2)}

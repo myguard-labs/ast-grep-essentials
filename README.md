@@ -44,6 +44,14 @@ fixture. Fixtures need positive examples, near misses, comment and string
 lookalikes, and relevant boundary cases. Keep every example inert: validation
 parses fixtures and never needs to execute them.
 
+A rule that should match some code but does not yet records it in
+`metadata.todo_cases`, a known-miss ledger of 1 to 16 non-empty source
+snippets in the rule's language (ast-grep has no `todoruleid`). The harness PR
+gate runs `tools/rule-todo-cases.py <corpus>/rules --check` against the pinned
+corpus and fails, naming the rule ID and snippet index, when a ledger is
+malformed or a todo case starts matching; promote such a snippet to a real
+fixture case and drop it from the ledger.
+
 Rule enrichment uses one pull request per rule ID. A rule PR may include that
 rule's fixture and snapshot, but never a second rule.
 
