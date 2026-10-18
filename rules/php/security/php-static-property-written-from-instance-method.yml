@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-static-property-written-from-instance-method
+language: php
+severity: warning
+message: >-
+  Instance method assigns to a static property via self:: or static::, storing
+  per-object state in class-wide state.
+note: >-
+  Syntactic only; matches literal self::/static:: property assignment inside a
+  non-static method and does not resolve whether the property is actually
+  static or intended to be shared.
+rule:
+  all:
+    - kind: assignment_expression
+    - has:
+        field: left
+        kind: scoped_property_access_expression
+        regex: '^(self|static)::'
+    - inside:
+        kind: method_declaration
+        stopBy: end
+        not:
+          has:
+            kind: static_modifier
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
