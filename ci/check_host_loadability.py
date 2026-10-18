@@ -4,9 +4,10 @@
 Consumers scan with a host ast-grep that can be older than the version the
 rules are authored with. ast-grep aborts the whole scan when a single rule
 fails to load, so this gate stages every non-PowerShell rule into an isolated
-config, scans a trivial tree with the pinned binary and fails on any load or
-parse error. PowerShell rules need a built grammar and live in their own
-config, so they are excluded.
+config, scans an empty tree with the pinned binary and fails on any non-zero
+exit. The tree holds no source files so an error-severity rule cannot match
+and exit non-zero for a reason other than a load or parse error. PowerShell
+rules need a built grammar and live in their own config, so they are excluded.
 """
 
 from __future__ import annotations
@@ -65,14 +66,12 @@ def collect_rules(rules_dir: Path) -> list[Path]:
 
 
 def stage(rules_dir: Path, rules: Sequence[Path], target: Path) -> Path:
-    """Copy ``rules`` and a trivial source tree into ``target``; return config."""
+    """Copy ``rules`` and an empty source tree into ``target``; return config."""
     for rule in rules:
         destination = target / "rules" / rule.relative_to(rules_dir)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(rule, destination)
-    tree = target / "tree"
-    tree.mkdir()
-    (tree / "trivial.py").write_text("x = 1\n", encoding="utf-8")
+    (target / "tree").mkdir()
     config = target / "sgconfig.yml"
     config.write_text("ruleDirs:\n  - rules\n", encoding="utf-8")
     return config

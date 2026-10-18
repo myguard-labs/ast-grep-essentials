@@ -33,6 +33,12 @@ bad = [n for n in names if "malformed" in n]
 if bad:
     print("Cannot parse rule " + bad[0], file=sys.stderr)
     raise SystemExit(8)
+tree = __import__("pathlib").Path(config).parent / "tree"
+files = sorted(str(p.relative_to(tree)) for p in tree.rglob("*") if p.is_file())
+open({log!r} + ".tree", "w").write("\\n".join(files))
+if files and any("severity: error" in p.read_text() for p in root.rglob("*.yml")):
+    print("error-severity rule matched " + files[0], file=sys.stderr)
+    raise SystemExit(1)
 """
 
 
@@ -72,6 +78,21 @@ class HostLoadabilityTests(unittest.TestCase):
         self.rule("python/security/malformed.yml")
         with self.assertRaisesRegex(gate.GateError, r"exit 8.*malformed"):
             gate.check(self.root, self.fake())
+
+    def test_staged_tree_has_no_source_files(self) -> None:
+        self.rule("python/security/a.yml")
+        gate.check(self.root, self.fake())
+        self.assertEqual(Path(f"{self.log}.tree").read_text(encoding="utf-8"), "")
+
+    def test_error_severity_rule_does_not_fail_on_empty_tree(self) -> None:
+        path = self.root / "rules/python/security/error.yml"
+        path.parent.mkdir(parents=True)
+        path.write_text(
+            "id: error\nlanguage: python\nseverity: error\nrule:\n  pattern: foo($A)\n",
+            encoding="utf-8",
+        )
+        self.assertEqual(gate.check(self.root, self.fake()), 1)
+        self.assertEqual(Path(f"{self.log}.tree").read_text(encoding="utf-8"), "")
 
     def test_no_rules_is_refused(self) -> None:
         with self.assertRaisesRegex(gate.GateError, "no non-PowerShell rules"):
@@ -122,6 +143,16 @@ class HostLoadabilityTests(unittest.TestCase):
         path.write_text(path.read_text().replace("foo($A)", '__DIR__ . "$LIT"'))
         with self.assertRaisesRegex(gate.GateError, "AST kinds"):
             gate.check(self.root, [os.environ["AST_GREP_045"]])
+
+    @unittest.skipUnless(os.environ.get("AST_GREP_045"), "needs AST_GREP_045")
+    def test_real_binary_error_severity_rule_passes_on_empty_tree(self) -> None:
+        path = self.root / "rules/python/security/int.yml"
+        path.parent.mkdir(parents=True)
+        path.write_text(
+            "id: int\nlanguage: python\nseverity: error\n"
+            "rule:\n  kind: integer\nmessage: m\n"
+        )
+        self.assertEqual(gate.check(self.root, [os.environ["AST_GREP_045"]]), 1)
 
 
 if __name__ == "__main__":
