@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-ls-glob-output-parsed
+language: bash
+severity: warning
+message: 'Avoid parsing ls output of a glob; iterate the glob directly instead.'
+note: >-
+  Matches a literal ls command whose argument contains a glob-style wildcard
+  inside a process substitution. It does not resolve runtime values,
+  filenames, or whether the substitution is used for parsing.
+rule:
+  all:
+    - pattern: 'ls $$$ARGS'
+    - inside:
+        kind: process_substitution
+        stopBy: end
+    - has:
+        pattern: '$GLOB'
+        stopBy: end
+        regex: '\*'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
