@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-globals-misspelled-superglobal
+language: php
+severity: warning
+message: >-
+  Variable named _GLOBALS (with a leading dollar sign) is not a PHP
+  superglobal; did you mean GLOBALS?
+note: >-
+  Matches the literal variable name _GLOBALS used with an index access by
+  syntax only; it does not check whether the variable was deliberately defined
+  as a local.
+rule:
+  kind: subscript_expression
+  has:
+    all:
+      - kind: variable_name
+      - regex: '^\$_GLOBALS$'
+      - nthChild: 1
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
