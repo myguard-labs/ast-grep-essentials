@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-foreach-request-no-array-cast
+language: php
+severity: warning
+message: 'foreach iterates a request superglobal element without an (array) cast.'
+note: >-
+  Syntactic only; matches a direct superglobal subscript as the iterated
+  expression and cannot know the runtime value type or other guards.
+rule:
+  kind: foreach_statement
+  has:
+    kind: subscript_expression
+    regex: '^\$_(POST|GET|REQUEST|COOKIE)\b'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
