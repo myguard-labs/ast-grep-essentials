@@ -49,6 +49,11 @@ MUTANTS: dict[str, Mutants] = {
         match_nothing=("kind: string\n", "kind: integer\n"),
         malformed=("kind: string\n", "kind: [\n"),
     ),
+    "python/python-error-free.yml": Mutants(
+        over_accepting=("          stopBy: end\n", "          stopBy: neighbor\n"),
+        match_nothing=("rule:\n", "rule:\n  kind: comment\n"),
+        malformed=("rule:\n", "rule:\n  kind: [\n"),
+    ),
     "python/python-imported-module.yml": Mutants(
         over_accepting=(
             "  any:\n",

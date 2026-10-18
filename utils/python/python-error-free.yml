@@ -1,0 +1,28 @@
+# Global util: a Python node that tree-sitter parsed without error recovery,
+# so a rule can refuse to fire on unparsable regions. It constrains a node but
+# names no kind, so combine it with one (`all: [{kind: call},
+# {matches: python-error-free}]` or `kind:` plus `matches:` in one rule); a
+# rule whose only matcher is this util has no kind to search for and fails to
+# load.
+#
+# Decisions:
+# - A node with an ERROR descendant at any depth does not match, so every
+#   ancestor of an ERROR node is refused, up to the module.
+# - An ERROR node itself does not match, even when its own children parsed.
+# - Only the node's own subtree counts: an ERROR elsewhere in the file (a
+#   sibling statement or another function) does not stop a clean node from
+#   matching, including a clean function nested inside a broken one.
+# - Tree-sitter can also recover by inserting a zero-width MISSING token
+#   (`def f(:` gets a MISSING `)`) without any ERROR node. MISSING tokens are
+#   not visible to rules, so such a node still matches; the util refuses only
+#   ERROR nodes.
+# - `kind: ERROR` loads on ast-grep 0.45.2, 0.50.0 and 0.51.0.
+id: python-error-free
+language: python
+rule:
+  not:
+    any:
+      - kind: ERROR
+      - has:
+          kind: ERROR
+          stopBy: end

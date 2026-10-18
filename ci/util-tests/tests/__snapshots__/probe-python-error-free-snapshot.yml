@@ -1,0 +1,45 @@
+id: probe-python-error-free
+snapshots:
+  ? |
+    def f():
+        def g():
+            pass
+        return f(1,,2)
+  : labels:
+    - source: |-
+        def g():
+                pass
+      style: primary
+      start: 13
+      end: 34
+  ? |
+    def f():
+        pass
+  : labels:
+    - source: |-
+        def f():
+            pass
+      style: primary
+      start: 0
+      end: 17
+  ? |
+    def f():
+        return 1
+    x = )
+  : labels:
+    - source: |-
+        def f():
+            return 1
+      style: primary
+      start: 0
+      end: 21
+  ? |
+    def f(:
+        pass
+  : labels:
+    - source: |-
+        def f(:
+            pass
+      style: primary
+      start: 0
+      end: 16
