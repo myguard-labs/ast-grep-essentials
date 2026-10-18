@@ -45,6 +45,18 @@ valid:
   - |-
     class T:
         pass
+  - |-
+    import typing
+    class T:
+        items: typing.ClassVar[dict] = {}
+  - |-
+    from typing import ClassVar
+    class T:
+        x: ClassVar = {}
+  - |-
+    from typing import ClassVar
+    class T:
+        x: ClassVar[set] = {1}
 invalid:
   - |-
     class C:
@@ -80,3 +92,6 @@ invalid:
         def m(self):
             class B:
                 x = {}
+  - |
+    class C:
+        x: MyClassVarHolder = []
