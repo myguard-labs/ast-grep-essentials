@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-fsockopen-server-port
+language: php
+severity: warning
+message: >-
+  fsockopen() is called with the inbound request's SERVER_PORT as the port
+  argument; derive the port from the target URL or use a fixed default.
+note: >-
+  Matches the literal fsockopen call whose second argument is the literal
+  SERVER_PORT superglobal subscript; it does not resolve aliases, namespaces,
+  or values assigned through variables.
+rule:
+  pattern: 'fsockopen($HOST, $PORT, $$$REST)'
+constraints:
+  PORT:
+    regex: '^\$_SERVER\[\s*[''"]SERVER_PORT[''"]\s*\]$'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
