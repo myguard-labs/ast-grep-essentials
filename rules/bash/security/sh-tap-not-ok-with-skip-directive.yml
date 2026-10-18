@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-tap-not-ok-with-skip-directive
+language: bash
+severity: warning
+message: >-
+  TAP line starts with "not ok" but carries a "# SKIP" directive; some
+  consumers count it as skipped, hiding a failure.
+note: >-
+  Purely syntactic match on the literal echo argument text; it does not
+  resolve variables, other output paths, or whether the output is consumed as
+  TAP.
+rule:
+  kind: command
+  all:
+    - has:
+        field: name
+        regex: '^echo$'
+    - has:
+        kind: string
+        regex: '^"not ok\b.*# SKIP'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
