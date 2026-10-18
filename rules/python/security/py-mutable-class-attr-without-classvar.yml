@@ -9,9 +9,9 @@ message: >-
 note: >-
   Single-file syntactic match on a bare class-body assignment of a dict,
   list or set literal (not set(), list() or dict() calls, tuples or
-  comprehensions). An annotation of ClassVar or typing.ClassVar is not
-  flagged. The assignment must not sit inside a function (a method or a
-  nested def) between it and its nearest enclosing class; assignments in
+  comprehensions). An annotation of ClassVar, typing.ClassVar or a quoted
+  ClassVar forward reference is not flagged. The assignment must not sit
+  inside a function (a method or a nested def) between it and its nearest enclosing class; assignments in
   if, try or with blocks of the class body still match. It does not resolve
   types, imports, or whether the attribute is later mutated or reassigned
   per instance.
@@ -33,7 +33,7 @@ rule:
           - not:
               has:
                 field: type
-                regex: '(^|\.)ClassVar(\[|$)'
+                regex: '^["'']?(\w+\s*\.\s*)*ClassVar\s*(\[|["'']?$)'
     - inside:
         kind: class_definition
         stopBy: end
