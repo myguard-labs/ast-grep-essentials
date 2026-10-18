@@ -4,12 +4,13 @@
 Consumers scan with a host ast-grep that can be older than the version the
 rules are authored with. ast-grep aborts the whole scan when a single rule
 fails to load, so this gate stages every non-PowerShell rule into an isolated
-config (plus each existing directory named under ``utilDirs`` in the root
+config (plus each directory named under ``utilDirs`` in the root
 ``sgconfig.yml``, minus PowerShell utils), scans an empty tree with the pinned
-binary and fails on any non-zero exit. The tree holds no source files so an
-error-severity rule cannot match and exit non-zero for a reason other than a
-load or parse error. PowerShell rules need a built grammar and live in their
-own config, so they are excluded.
+binary and fails on any non-zero exit. A declared ``utilDirs`` entry that does
+not exist, or is not a directory, fails the gate by name, as the engine does.
+The tree holds no source files so an error-severity rule cannot match and exit
+non-zero for a reason other than a load or parse error. PowerShell rules need
+a built grammar and live in their own config, so they are excluded.
 """
 
 from __future__ import annotations
@@ -196,14 +197,23 @@ def stage(
 
 
 def check(root: Path, ast_grep: Sequence[str | Path]) -> int:
-    """Load every non-PowerShell rule; return how many rules were loaded."""
+    """Load every non-PowerShell rule; return how many rules were loaded.
+
+    Raises GateError when a declared utilDir is missing or not a directory.
+    """
     rules_dir = root / "rules"
     if not rules_dir.is_dir():
         raise GateError(f"no rules directory at {rules_dir}")
     rules = collect_rules(rules_dir)
     if not rules:
         raise GateError("no non-PowerShell rules found; refusing to pass")
-    declared = [entry for entry in declared_util_dirs(root) if (root / entry).is_dir()]
+    declared = declared_util_dirs(root)
+    for entry in declared:
+        if not (root / entry).is_dir():
+            raise GateError(
+                f"declared utilDir {entry!r} in {SGCONFIG} does not exist "
+                "or is not a directory"
+            )
     utils = collect_utils(root, declared)
     with tempfile.TemporaryDirectory(prefix="host-loadability-") as scratch:
         version = _run([*ast_grep, "--version"], Path(scratch))

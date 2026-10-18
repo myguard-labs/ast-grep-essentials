@@ -59,6 +59,7 @@ class HostLoadabilityTests(unittest.TestCase):
         (self.root / "rules").mkdir(parents=True)
         self.log = self.tmp / "staged.txt"
         self.declare("utils")
+        (self.root / "utils").mkdir()
 
     def rule(self, relative: str, language: str = "python") -> None:
         path = self.root / "rules" / relative
@@ -134,7 +135,8 @@ class HostLoadabilityTests(unittest.TestCase):
         self.assertEqual(self.staged_utils(), ["python/good.yml"])
         self.assertIn("utilDirs:\n  - utils\n", self.staged_config())
 
-    def test_no_utils_dir_means_no_util_dirs_entry(self) -> None:
+    def test_no_declared_util_dirs_means_no_util_dirs_entry(self) -> None:
+        self.declare()
         self.rule("python/security/a.yml")
         self.assertEqual(gate.check(self.root, self.fake()), 1)
         self.assertEqual(self.staged_utils(), [])
@@ -209,6 +211,41 @@ class HostLoadabilityTests(unittest.TestCase):
         self.rule("python/security/a.yml")
         with self.assertRaisesRegex(gate.GateError, "escapes the repository"):
             gate.check(self.root, self.fake())
+
+    def test_declared_missing_util_dir_fails_the_gate(self) -> None:
+        self.declare("utils", "shared/absent")
+        self.rule("python/security/a.yml")
+        self.util("python/good.yml")
+        with self.assertRaisesRegex(gate.GateError, "declared utilDir 'shared/absent'"):
+            gate.check(self.root, self.fake())
+        self.assertFalse(self.log.exists())
+
+    def test_declared_missing_util_dir_is_named_in_main(self) -> None:
+        self.declare("nowhere")
+        self.rule("python/security/a.yml")
+        out, err = io.StringIO(), io.StringIO()
+        argv = ["--root", str(self.root), "--ast-grep", *self.fake()]
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            self.assertEqual(gate.main(argv), 1)
+        self.assertEqual(out.getvalue(), "")
+        self.assertIn("error: declared utilDir 'nowhere'", err.getvalue())
+        self.assertIn("does not exist or is not a directory", err.getvalue())
+
+    def test_declared_util_dir_that_is_a_file_fails_the_gate(self) -> None:
+        (self.root / "shared").mkdir()
+        (self.root / "shared" / "file.yml").write_text(
+            "id: f\nlanguage: python\n", encoding="utf-8"
+        )
+        self.declare("utils", "shared/file.yml")
+        self.rule("python/security/a.yml")
+        with self.assertRaisesRegex(gate.GateError, "is not a directory"):
+            gate.check(self.root, self.fake())
+
+    def test_declared_empty_util_dir_passes(self) -> None:
+        self.rule("python/security/a.yml")
+        self.assertEqual(gate.check(self.root, self.fake()), 1)
+        self.assertEqual(self.staged_utils(), [])
+        self.assertIn("utilDirs:\n  - utils\n", self.staged_config())
 
     def test_missing_util_dirs_key_stages_nothing(self) -> None:
         (self.root / "sgconfig.yml").write_text(
