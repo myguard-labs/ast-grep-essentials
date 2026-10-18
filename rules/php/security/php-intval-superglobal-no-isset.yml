@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-intval-superglobal-no-isset
+language: php
+severity: warning
+message: >-
+  intval() is applied directly to a request superglobal index without an
+  isset()/empty() guard in the same expression.
+note: >-
+  Syntactic only; a guard in a separate statement is not recognized, and the
+  check only looks for isset/empty text inside an enclosing ternary.
+rule:
+  all:
+    - pattern: 'intval($A[$K])'
+    - not:
+        inside:
+          kind: conditional_expression
+          stopBy: end
+          regex: '(isset|empty)\s*\('
+constraints:
+  A:
+    regex: '^\$_(REQUEST|GET|POST)$'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
