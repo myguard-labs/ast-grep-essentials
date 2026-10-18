@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-html-entity-decode-request-no-quotes
+language: php
+severity: warning
+message: >-
+  Review unsafe HTML entity decoding of untrusted input; missing ENT_QUOTES
+  flag causes quotes to not be decoded.
+note: >-
+  Matches the syntactic pattern of html_entity_decode() on request globals
+  without a second argument; does not validate security implications or
+  downstream sanitization.
+rule:
+  pattern: 'html_entity_decode($VAR)'
+  not:
+    any:
+      - pattern: 'html_entity_decode($VAR, $$$)'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
