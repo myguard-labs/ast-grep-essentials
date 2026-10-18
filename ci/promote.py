@@ -542,8 +542,10 @@ def gate_corpus(engine: Path, tree: Path, runs: int, report: Report) -> None:
     pinned = pinned_engine_version(tree)
     if version != pinned or version != baseline["engine"]:
         raise PromotionError(
-            f"engine {version} differs from package.json pin {pinned} "
-            f"or baseline {baseline['engine']}"
+            f"engine {version} differs from package.json pin {pinned}"
+            if version != pinned
+            else f"baseline engine {baseline['engine']} differs from engine "
+            f"{version}; rerun `promote.py baseline` and review"
         )
     digest, files = corpus_digest(tree)
     if digest != baseline["corpus"]["digest"]:
