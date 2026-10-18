@@ -11,7 +11,7 @@ note: >-
   return via nested lambdas, are not distinguished.
 rule:
   all:
-    - kind: function_definition
+    - kind: 'function_definition:has(> compound_statement)'
     - not:
         has:
           kind: return_statement
@@ -20,8 +20,6 @@ rule:
         has:
           pattern: 'void $NAME($$$ARGS) $$$BODY'
           stopBy: end
-    - has:
-        kind: compound_statement
     - not:
         has:
           kind: type_identifier
