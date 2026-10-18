@@ -14,6 +14,34 @@ note: >-
   aliases under other names are not resolved. A scan of a host with a known-bad
   certificate is the only routine dismissal; it should not reach production
   code.
+transform:
+  FIXED:
+    rewrite:
+      rewriters: [verify-false-to-true]
+      source: $CALL
+rewriters:
+  - id: verify-false-to-true
+    rule:
+      kind: keyword_argument
+      all:
+        - has: { field: name, regex: ^verify$ }
+        - has: { field: value, regex: ^False$ }
+      inside:
+        kind: argument_list
+        inside:
+          kind: call
+          has:
+            field: function
+            kind: attribute
+            all:
+              - has:
+                  field: object
+                  matches: request-receiver
+              - has:
+                  field: attribute
+                  regex: '^(get|post|put|patch|delete|head|options|request)$'
+    fix: verify=True
+fix: $FIXED
 utils:
   requests-module:
     any:
@@ -46,6 +74,7 @@ utils:
           matches: requests-session-constructor
 rule:
   kind: call
+  pattern: $CALL
   all:
     - has:
         field: function
