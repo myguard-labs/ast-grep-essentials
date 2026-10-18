@@ -8,7 +8,8 @@ message: >-
   ClassVar annotation; this value is shared across instances.
 note: >-
   Single-file syntactic match on a bare class-body assignment of a dict or
-  list literal. It does not resolve types, imports, or whether the attribute
+  list literal directly in the class body; assignments inside a method,
+  nested function or lambda are ignored. It does not resolve types, imports, or whether the attribute
   is later mutated or reassigned per instance.
 rule:
   kind: expression_statement
@@ -25,6 +26,13 @@ rule:
     - inside:
         kind: class_definition
         stopBy: end
+    - not:
+        inside:
+          any:
+            - kind: function_definition
+            - kind: lambda
+          stopBy:
+            kind: class_definition
 metadata:
   rule_modified_at: '2026-10-17'
   ast_grep_tested_version: 0.50.0

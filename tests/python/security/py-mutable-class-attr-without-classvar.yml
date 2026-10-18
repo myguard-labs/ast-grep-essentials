@@ -3,7 +3,47 @@ valid:
   - |-
     class Harness:
         EXTRA_KWARGS = ("apply_chat_template", True)
+  - |-
+    class T:
+        def test_x(self):
+            seen: dict[str, int] = {}
+            return seen
+  - |-
+    class T:
+        def test_x(self):
+            seen: list[int] = []
+            return seen
+  - |-
+    class T:
+        def test_x(self):
+            seen: set[int] = set()
+            return seen
+  - |-
+    class T:
+        def outer(self):
+            def inner():
+                seen: dict[str, int] = {}
+                return seen
+            return inner
+  - |-
+    class T:
+        def outer(self):
+            seen = {}
+            return seen
 invalid:
   - |-
     class Harness:
         EXTRA_KWARGS = {"apply_chat_template": True}
+  - |-
+    class C:
+        cache: dict = {}
+  - |-
+    def make():
+        class Inner:
+            cache: dict = {}
+        return Inner
+  - |-
+    class T:
+        def m(self):
+            return 1
+        cache: dict = {}
