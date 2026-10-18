@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-nonce-check-nested-in-request-branch
+language: php
+severity: warning
+message: >-
+  Nonce check is nested in an if body whose condition tests a POST or REQUEST
+  superglobal key; requests omitting the key skip the check.
+note: >-
+  Heuristic syntactic match only; it does not verify the nonce check is
+  actually bypassed or that another check exists elsewhere.
+rule:
+  kind: function_call_expression
+  regex: '^check_(admin|ajax)_referer\s*\('
+  inside:
+    kind: compound_statement
+    stopBy: end
+    inside:
+      kind: if_statement
+      has:
+        field: condition
+        has:
+          kind: subscript_expression
+          regex: '^\$_(POST|REQUEST)\s*\['
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
