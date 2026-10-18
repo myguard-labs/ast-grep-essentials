@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-superglobal-index-unguarded
+language: php
+severity: warning
+message: >-
+  Superglobal element is read without an isset, empty or null-coalescing
+  guard.
+note: >-
+  Purely syntactic; does not detect guards elsewhere in control flow (e.g. a
+  prior isset check in an if condition) and cannot know whether the key is
+  always present at runtime.
+rule:
+  all:
+    - kind: subscript_expression
+    - regex: '^\$_(ENV|SERVER|GET|POST|COOKIE|REQUEST)\s*\['
+    - not:
+        inside:
+          kind: binary_expression
+          regex: '\?\?'
+    - not:
+        inside:
+          regex: '^(isset|empty)\s*\('
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
