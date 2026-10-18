@@ -7,15 +7,19 @@ message: >-
   __DIR__ is concatenated with a string literal that does not start with a
   slash; the path may resolve to the wrong file.
 note: >-
-  Syntactic check only. It matches a literal __DIR__ . "..." concatenation
+  Syntactic check only. It matches a literal __DIR__ . "..." or '...' concatenation
   whose string literal does not begin with a slash; it does not verify
   intentional suffixes, runtime values, or how the path is used.
 rule:
-  pattern:
-    context: '<?php __DIR__ . "$LIT";'
-    selector: binary_expression
+  any:
+    - pattern:
+        context: '<?php __DIR__ . "$LIT";'
+        selector: binary_expression
+    - pattern:
+        context: "<?php __DIR__ . '$LIT';"
+        selector: binary_expression
   not:
-    regex: '^(?:__DIR__\s*\.\s*"/)'
+    regex: '^(?:__DIR__\s*\.\s*["'']/)'
 metadata:
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.50.0

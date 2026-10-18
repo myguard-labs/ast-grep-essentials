@@ -22,6 +22,11 @@ npx ast-grep scan -c sgconfig.yml /path/to/source
 Warnings and informational findings are advisory. Verify a rule ID against
 known positive and negative examples before making it block commits or CI.
 
+CI also loads every non-PowerShell rule on ast-grep 0.45.2, the lowest consumer
+version this pack supports, in the `host-loadability` job of
+`.github/workflows/validate-rules.yml`; a rule that version cannot load fails
+that job.
+
 Native rules live under `rules/<language>/<category>/<id>.yml`; matching YAML
 fixtures live under `tests/<language>/<category>/<id>.yml`. Import the explicit
 native-language `ruleDirs` from `sgconfig.yml`, not the parent `rules/`

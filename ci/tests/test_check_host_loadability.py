@@ -27,7 +27,7 @@ if args == ["--version"]:
     raise SystemExit(0)
 config = args[args.index("-c") + 1]
 root = __import__("pathlib").Path(config).parent / "rules"
-names = sorted(str(p.relative_to(root)) for p in root.rglob("*.yml"))
+names = sorted(str(p.relative_to(root)) for p in root.rglob("*") if p.suffix in (".yml", ".yaml"))
 open({log!r}, "w").write("\\n".join(names))
 bad = [n for n in names if "malformed" in n]
 if bad:
@@ -36,7 +36,7 @@ if bad:
 tree = __import__("pathlib").Path(config).parent / "tree"
 files = sorted(str(p.relative_to(tree)) for p in tree.rglob("*") if p.is_file())
 open({log!r} + ".tree", "w").write("\\n".join(files))
-if files and any("severity: error" in p.read_text() for p in root.rglob("*.yml")):
+if files and any("severity: error" in p.read_text() for p in root.rglob("*") if p.suffix in (".yml", ".yaml")):
     print("error-severity rule matched " + files[0], file=sys.stderr)
     raise SystemExit(1)
 """
@@ -72,6 +72,20 @@ class HostLoadabilityTests(unittest.TestCase):
         self.rule("php/security/b.yml", "php")
         self.assertEqual(gate.check(self.root, self.fake()), 2)
         self.assertEqual(self.staged(), ["php/security/b.yml", "python/security/a.yml"])
+
+    def test_yaml_rule_is_collected_and_sorted_across_suffixes(self) -> None:
+        self.rule("python/b.yaml")
+        self.rule("python/a.yml")
+        self.rule("php/c.yaml")
+        self.assertEqual(gate.check(self.root, self.fake()), 3)
+        self.assertEqual(self.staged(), ["php/c.yaml", "python/a.yml", "python/b.yaml"])
+
+    def test_yaml_powershell_rules_stay_excluded(self) -> None:
+        self.rule("python/security/a.yaml")
+        self.rule("powershell/security/p.yaml", "powershell")
+        self.rule("misc/lang.yaml", "PowerShell")
+        self.assertEqual(gate.check(self.root, self.fake()), 1)
+        self.assertEqual(self.staged(), ["python/security/a.yaml"])
 
     def test_rule_that_fails_to_load_fails_the_gate(self) -> None:
         self.rule("python/security/ok.yml")

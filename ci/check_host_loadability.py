@@ -56,12 +56,25 @@ def is_powershell(relative: Path, path: Path) -> bool:
     return match is not None and match.group(1).lower() == "powershell"
 
 
+RULE_SUFFIXES = ("*.yml", "*.yaml")
+
+
 def collect_rules(rules_dir: Path) -> list[Path]:
-    """Return the non-PowerShell rule files under ``rules_dir``, sorted."""
+    """Return the non-PowerShell rule files under ``rules_dir``, sorted.
+
+    ast-grep loads both ``.yml`` and ``.yaml`` rules from a ruleDir, so both
+    suffixes are gated; the set removes any overlap between the globs.
+    """
+    candidates = {
+        path
+        for pattern in RULE_SUFFIXES
+        for path in rules_dir.rglob(pattern)
+        if path.is_file()
+    }
     return sorted(
         path
-        for path in rules_dir.rglob("*.yml")
-        if path.is_file() and not is_powershell(path.relative_to(rules_dir), path)
+        for path in candidates
+        if not is_powershell(path.relative_to(rules_dir), path)
     )
 
 
