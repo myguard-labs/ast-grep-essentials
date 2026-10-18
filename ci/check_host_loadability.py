@@ -123,7 +123,9 @@ def declared_util_dirs(root: Path) -> list[str]:
     if not config.is_file():
         return []
     try:
-        data = yaml.load(config.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+        # BaseLoader builds only str, list and dict, so the file cannot run
+        # constructors; keeping every scalar a string is the point of this read.
+        data = yaml.load(config.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)  # nosec B506
     except yaml.YAMLError as error:
         raise GateError(f"cannot parse {SGCONFIG}: {error}") from error
     if data is None:
