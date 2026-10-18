@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-global-constant-name
+language: php
+severity: warning
+message: 'A global statement names a bare identifier instead of a $variable.'
+note: >-
+  Text-based syntactic match on a function or block body containing a line
+  that starts with global followed by a bare identifier; it does not check
+  whether the identifier is a defined constant, may also match text inside
+  strings or comments, and only covers the first name in the statement.
+rule:
+  kind: compound_statement
+  regex: '(?m)^\s*global\s+[A-Za-z_]'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
