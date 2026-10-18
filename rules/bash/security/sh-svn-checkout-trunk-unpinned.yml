@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-svn-checkout-trunk-unpinned
+language: bash
+severity: warning
+message: >-
+  svn checkout from a trunk path follows a moving head; pin to a tag or
+  revision.
+note: >-
+  Matches literal command syntax only (svn, checkout/co, an argument with a
+  trunk path segment); it does not resolve aliases, wrappers, or whether a
+  revision is pinned by other flags.
+rule:
+  all:
+    - pattern: 'svn $SUB $$$ARGS'
+    - has:
+        regex: '(^|/)trunk(/|$)'
+constraints:
+  SUB:
+    regex: '^(checkout|co)$'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
