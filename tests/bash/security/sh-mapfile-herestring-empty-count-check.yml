@@ -1,0 +1,9 @@
+id: sh-mapfile-herestring-empty-count-check
+valid:
+  - |-
+    [ -n "$FILES_LIST" ] || exit 0
+    mapfile -t FILES <<<"$FILES_LIST"
+invalid:
+  - |-
+    mapfile -t FILES <<<"$FILES_LIST"
+    [ "${#FILES[@]}" -gt 0 ] || exit 0
