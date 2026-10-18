@@ -1,0 +1,54 @@
+# Global util: the module name of a static Python import, one node per
+# imported module. Reference it from a rule with
+# `matches: python-imported-module` and narrow it with a `regex:` on the
+# module text. A file gate that requires an import of `requests` reads:
+#   inside:
+#     stopBy: end
+#     has:
+#       stopBy: end
+#       matches: python-imported-module
+#       regex: '^requests(\.|$)'
+#
+# Decisions:
+# - ast-grep utils take no parameters, so the util matches the module name
+#   node and leaves the module choice to the caller's regex. The matched text
+#   is the dotted module path as written (`os.path`), never the whole
+#   statement, so an anchored regex cannot be fooled by an imported name.
+# - `import a, b` yields one match per module. `import os.path as p` matches
+#   `os.path`; the alias is never matched.
+# - `from os import path` matches `os` only. Imported names, `as` aliases,
+#   parenthesized name lists and `*` are not modules and never match.
+# - Relative imports match the whole relative module including its dots
+#   (`.`, `.a.b`), so a regex anchored on a top-level package (`^requests`)
+#   ignores local modules.
+# - `from __future__ import x` is a compiler directive, not a module import,
+#   and does not match.
+# - Imports nested in functions, classes or try/if blocks match like
+#   top-level ones.
+# - Every dotted_name directly under an import statement, or under an
+#   aliased_import of one, is a module (aliases are plain identifiers), so
+#   those branches need no `field:`. Only `from` imports name their module by
+#   field (`module_name`), which is never repeated; ast-grep's `field:` test
+#   inside `inside:` only sees the first child of a field, so it is not used
+#   for the repeated `name` field.
+# - Dynamic imports (`__import__("x")`, `importlib.import_module("x")`) and
+#   bare attribute use (`os.path.join`) are not import statements and do not
+#   match.
+id: python-imported-module
+language: python
+rule:
+  any:
+    - kind: dotted_name
+      inside:
+        kind: import_statement
+    - kind: dotted_name
+      inside:
+        kind: aliased_import
+        inside:
+          kind: import_statement
+    - any:
+        - kind: dotted_name
+        - kind: relative_import
+      inside:
+        kind: import_from_statement
+        field: module_name

@@ -37,6 +37,19 @@ MUTANTS: dict[str, Mutants] = {
         match_nothing=("kind: string\n", "kind: integer\n"),
         malformed=("kind: string\n", "kind: [\n"),
     ),
+    "python/python-imported-module.yml": Mutants(
+        over_accepting=(
+            "  any:\n",
+            (
+                "  any:\n"
+                "    - kind: dotted_name\n"
+                "      inside:\n"
+                "        kind: future_import_statement\n"
+            ),
+        ),
+        match_nothing=("rule:\n", "rule:\n  kind: comment\n"),
+        malformed=("rule:\n", "rule:\n  kind: [\n"),
+    ),
 }
 
 
@@ -55,6 +68,11 @@ def util_id(path: Path) -> str:
     if found is None:
         raise ValueError(f"{path}: no top-level id")
     return found.group(1)
+
+
+def failed_probe(path: Path) -> str:
+    """Return a regex for the FAIL line of the util's own probe."""
+    return rf"(?m)^FAIL probe-{re.escape(util_id(path))}\s"
 
 
 def run_tests(config: Path) -> subprocess.CompletedProcess[str]:
@@ -111,7 +129,9 @@ class UtilFixtureTests(unittest.TestCase):
     def test_shipped_utils_pass_their_fixtures(self) -> None:
         result = run_tests(CONFIG_DIR / "sgconfig.yml")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn(f"{len(shipped_utils())} passed; 0 failed", result.stdout)
+        probes = len(list((CONFIG_DIR / "tests").glob("probe-*-test.yml")))
+        self.assertGreaterEqual(probes, len(shipped_utils()))
+        self.assertIn(f"{probes} passed; 0 failed", result.stdout)
 
     def test_over_accepting_util_fails_the_fixtures(self) -> None:
         for name, path in shipped_utils().items():
@@ -119,7 +139,7 @@ class UtilFixtureTests(unittest.TestCase):
                 config = self.mutant_config(name, *MUTANTS[name].over_accepting)
                 result = run_tests(config)
                 self.assertNotEqual(result.returncode, 0)
-                self.assertIn(f"FAIL probe-{util_id(path)}", result.stdout)
+                self.assertRegex(result.stdout, failed_probe(path))
 
     def test_util_matching_nothing_fails_the_fixtures(self) -> None:
         for name, path in shipped_utils().items():
@@ -127,7 +147,7 @@ class UtilFixtureTests(unittest.TestCase):
                 config = self.mutant_config(name, *MUTANTS[name].match_nothing)
                 result = run_tests(config)
                 self.assertNotEqual(result.returncode, 0)
-                self.assertIn(f"FAIL probe-{util_id(path)}", result.stdout)
+                self.assertRegex(result.stdout, failed_probe(path))
 
     def test_malformed_util_aborts_the_run(self) -> None:
         for name in shipped_utils():
