@@ -1,0 +1,21 @@
+# Global util: a Python string literal that carries literal (non-interpolated)
+# content. Reference it from a rule with `matches: non-empty-string-literal`.
+#
+# Decisions:
+# - Empty strings ("", '', """""", b"", f"") have no string_content child and
+#   do not match.
+# - Byte strings and raw strings follow the same rule as plain strings, so
+#   b"x" and r"\n" match.
+# - f-strings match only when they hold literal text: f"x{a}" matches, while
+#   f"{a}" (interpolation only) does not.
+# - Implicit concatenation ("" "y") is a concatenated_string of separate
+#   string nodes. The util matches each non-empty part, never the combined
+#   node, so "" "y" yields one match for "y" and "" "" yields none.
+# - An escape sequence is content: "\n" matches.
+id: non-empty-string-literal
+language: python
+rule:
+  kind: string
+  has:
+    kind: string_content
+    stopBy: neighbor

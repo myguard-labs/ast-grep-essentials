@@ -29,7 +29,12 @@ config = args[args.index("-c") + 1]
 root = __import__("pathlib").Path(config).parent / "rules"
 names = sorted(str(p.relative_to(root)) for p in root.rglob("*") if p.suffix in (".yml", ".yaml"))
 open({log!r}, "w").write("\\n".join(names))
-bad = [n for n in names if "malformed" in n]
+cfg = __import__("pathlib").Path(config)
+open({log!r} + ".config", "w").write(cfg.read_text())
+udir = cfg.parent / "utils"
+unames = sorted(str(p.relative_to(udir)) for p in udir.rglob("*") if p.is_file())
+open({log!r} + ".utils", "w").write("\\n".join(unames))
+bad = [n for n in names + unames if "malformed" in n]
 if bad:
     print("Cannot parse rule " + bad[0], file=sys.stderr)
     raise SystemExit(8)
@@ -67,6 +72,12 @@ class HostLoadabilityTests(unittest.TestCase):
     def staged(self) -> list[str]:
         return self.log.read_text().splitlines()
 
+    def staged_config(self) -> str:
+        return Path(f"{self.log}.config").read_text(encoding="utf-8")
+
+    def staged_utils(self) -> list[str]:
+        return Path(f"{self.log}.utils").read_text(encoding="utf-8").splitlines()
+
     def test_loads_every_rule_and_reports_count(self) -> None:
         self.rule("python/security/a.yml")
         self.rule("php/security/b.yml", "php")
@@ -92,6 +103,54 @@ class HostLoadabilityTests(unittest.TestCase):
         self.rule("python/security/malformed.yml")
         with self.assertRaisesRegex(gate.GateError, r"exit 8.*malformed"):
             gate.check(self.root, self.fake())
+
+    def util(self, relative: str, body: str = "id: u\nlanguage: python\n") -> None:
+        path = self.root / "utils" / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(body, encoding="utf-8")
+
+    def test_utils_are_staged_and_declared(self) -> None:
+        self.rule("python/security/a.yml")
+        self.util("python/good.yml")
+        self.assertEqual(gate.check(self.root, self.fake()), 1)
+        self.assertEqual(self.staged_utils(), ["python/good.yml"])
+        self.assertIn("utilDirs:\n  - utils\n", self.staged_config())
+
+    def test_no_utils_dir_means_no_util_dirs_entry(self) -> None:
+        self.rule("python/security/a.yml")
+        self.assertEqual(gate.check(self.root, self.fake()), 1)
+        self.assertEqual(self.staged_utils(), [])
+        self.assertNotIn("utilDirs", self.staged_config())
+        self.assertEqual(self.staged(), ["python/security/a.yml"])
+
+    def test_stage_without_utils_writes_rules_only_config(self) -> None:
+        self.rule("python/security/a.yml")
+        target = self.tmp / "target"
+        target.mkdir()
+        rules_dir = self.root / "rules"
+        config = gate.stage(rules_dir, gate.collect_rules(rules_dir), target)
+        self.assertEqual(config.read_text(encoding="utf-8"), "ruleDirs:\n  - rules\n")
+        self.assertFalse((target / "utils").exists())
+
+    def test_broken_util_fails_the_gate(self) -> None:
+        self.rule("python/security/a.yml")
+        self.util("python/good.yml")
+        self.util("python/malformed.yml")
+        with self.assertRaisesRegex(gate.GateError, r"exit 8.*malformed"):
+            gate.check(self.root, self.fake())
+
+    @unittest.skipUnless(os.environ.get("AST_GREP_045"), "needs AST_GREP_045")
+    def test_real_binary_rejects_broken_util(self) -> None:
+        self.rule("python/security/a.yml")
+        self.util("python/broken.yml", "id: u\nlanguage: python\nrule:\n  kind: [\n")
+        with self.assertRaises(gate.GateError):
+            gate.check(self.root, [os.environ["AST_GREP_045"]])
+
+    @unittest.skipUnless(os.environ.get("AST_GREP_045"), "needs AST_GREP_045")
+    def test_real_binary_loads_a_valid_util(self) -> None:
+        self.rule("python/security/a.yml")
+        self.util("python/ok.yml", "id: u\nlanguage: python\nrule:\n  kind: string\n")
+        self.assertEqual(gate.check(self.root, [os.environ["AST_GREP_045"]]), 1)
 
     def test_staged_tree_has_no_source_files(self) -> None:
         self.rule("python/security/a.yml")
