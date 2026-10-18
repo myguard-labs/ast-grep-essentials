@@ -1,0 +1,40 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-superglobal-index-unguarded-compare
+language: php
+severity: warning
+message: >-
+  Equality comparison reads a GET superglobal index directly without an
+  isset() or empty() guard in the same condition.
+note: >-
+  Purely syntactic; a guard performed earlier in the function is not seen, and
+  only isset() or empty() calls inside an enclosing binary expression are
+  recognized.
+rule:
+  all:
+    - kind: binary_expression
+    - has:
+        field: operator
+        regex: '^(==|===)$'
+    - has:
+        stopBy: end
+        kind: subscript_expression
+        has:
+          kind: variable_name
+          regex: '^\$_GET$'
+    - not:
+        inside:
+          stopBy: end
+          kind: binary_expression
+          has:
+            stopBy: end
+            kind: function_call_expression
+            regex: '^(isset|empty)\s*\('
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
