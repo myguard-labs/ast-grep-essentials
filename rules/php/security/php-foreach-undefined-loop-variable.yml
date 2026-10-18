@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-foreach-undefined-loop-variable
+language: php
+severity: warning
+message: >-
+  Array index inside a key/value foreach uses a variable other than the loop
+  key or value; it may be a stale or renamed loop variable.
+note: >-
+  Syntactic only; it cannot tell whether the differing index variable is bound
+  elsewhere before the loop, so it may flag legitimately defined variables.
+rule:
+  all:
+    - pattern: 'foreach ($A as $K => $V) $BODY'
+    - has:
+        stopBy: end
+        all:
+          - kind: variable_name
+          - nthChild: 2
+          - inside:
+              kind: subscript_expression
+          - not:
+              pattern: '$K'
+          - not:
+              pattern: '$V'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
