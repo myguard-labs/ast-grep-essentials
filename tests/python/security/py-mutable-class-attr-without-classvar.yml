@@ -67,6 +67,30 @@ valid:
   - |
     class T:
         y: 'ClassVar[dict]' = {}
+  - |-
+    class T:
+        A = tuple()
+  - |-
+    class T:
+        A = frozenset()
+  - |-
+    class T:
+        A = (i for i in range(2))
+  - |-
+    class T:
+        A = x.list()
+  - |-
+    class T:
+        A = mylist()
+  - |-
+    class T:
+        def m(self):
+            items = list()
+            vals = [i for i in range(2)]
+  - |-
+    from typing import ClassVar
+    class T:
+        items: ClassVar[list] = list()
 invalid:
   - |-
     class C:
@@ -108,3 +132,21 @@ invalid:
   - |
     class C:
         x: MyClassVarHolder = []
+  - |
+    class T:
+        items = list()
+  - |
+    class T:
+        tags = set()
+  - |
+    class T:
+        mapping = dict()
+  - |
+    class T:
+        values = [i for i in range(2)]
+  - |
+    class T:
+        values = {i for i in range(2)}
+  - |
+    class T:
+        values = {i: i for i in range(2)}
