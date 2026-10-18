@@ -8,10 +8,11 @@ message: >-
   Modern PyYAML versions require an explicit Loader; unsafe loaders can construct
   arbitrary Python objects. Prefer yaml.safe_load() for untrusted input.
 note: >-
-  Candidate: accepts the recognized SafeLoader/CSafeLoader spellings only.
-  Loader aliases and positional loaders require review. Modern PyYAML requires
-  an explicit Loader argument; missing Loader may be an API error rather than
-  unsafe deserialization. Prefer yaml.safe_load for untrusted input.
+  Candidate: accepts the recognized SafeLoader/CSafeLoader and
+  BaseLoader/CBaseLoader spellings only. Loader aliases and positional loaders
+  require review. Modern PyYAML requires an explicit Loader argument; missing
+  Loader may be an API error rather than unsafe deserialization. Prefer
+  yaml.safe_load for untrusted input.
 rule:
   kind: call
   all:
@@ -35,11 +36,11 @@ utils:
   safe-loader:
     any:
       - kind: identifier
-        regex: ^C?SafeLoader$
+        regex: ^C?(Safe|Base)Loader$
       - kind: attribute
         all:
           - has: {field: object, regex: ^yaml$}
-          - has: {field: attribute, regex: '^C?SafeLoader$'}
+          - has: {field: attribute, regex: '^C?(Safe|Base)Loader$'}
   safe-loader-value:
     any:
       - matches: safe-loader
