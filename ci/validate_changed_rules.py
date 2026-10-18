@@ -165,6 +165,60 @@ def header_only_rule_changes(
     return frozenset(exempt)
 
 
+NON_MATCHING_KEYS = frozenset({"metadata", "note"})
+
+
+def _matcher_document(data: bytes) -> dict[object, object] | None:
+    """The single YAML mapping in ``data`` minus the non-matching keys.
+
+    ``metadata`` and ``note`` are ignored by the ast-grep matcher, so a fixture
+    cannot test them. Anything that is not exactly one mapping document (a
+    parse failure, an empty or scalar document, a multi-document file, or a
+    missing PyYAML) returns ``None`` and is therefore never exempt.
+    """
+    try:
+        import yaml  # pylint: disable=import-outside-toplevel
+    except ImportError:
+        return None
+    try:
+        documents = list(yaml.safe_load_all(data))
+    except (yaml.YAMLError, ValueError, RecursionError):
+        return None
+    if len(documents) != 1 or not isinstance(documents[0], dict):
+        return None
+    return {k: v for k, v in documents[0].items() if k not in NON_MATCHING_KEYS}
+
+
+def non_matching_rule_changes(
+    root: Path, base: str, paths: Sequence[str]
+) -> frozenset[str]:
+    """Changed rules whose parsed document differs from ``base`` only in the
+    non-matching keys ``metadata`` and ``note``.
+
+    Only the mirrored-fixture requirement is waived: ``validate_changed`` still
+    runs ``validate_rule`` on every exempt rule. An added rule, an unreadable
+    base, a parse failure, a multi-document file, or a change to any other key
+    (rule, constraints, utils, transform, fix, language, id, severity, message,
+    files, ignores, ...) is never exempt.
+    """
+    exempt = set()
+    for value in paths:
+        path = _safe_path(value)
+        if path is None or len(path.parts) != 4 or path.parts[0] != "rules":
+            continue
+        current = root / path
+        if not current.exists():
+            continue
+        _require_contained_regular(root, current, "rule")
+        previous = _base_blob(root, base, path)
+        if previous is None:
+            continue
+        document = _matcher_document(current.read_bytes())
+        if document is not None and document == _matcher_document(previous):
+            exempt.add(value)
+    return frozenset(exempt)
+
+
 def missing_fixture_changes(
     paths: Sequence[str], exempt: frozenset[str] = frozenset()
 ) -> list[str]:
@@ -376,7 +430,12 @@ def latest_engine() -> Iterator[tuple[Path, str]]:
 def validate_changed(
     root: Path, engine: Path, paths: Sequence[str], base: str | None = None
 ) -> int:
-    exempt = header_only_rule_changes(root, base, paths) if base else frozenset()
+    exempt = (
+        header_only_rule_changes(root, base, paths)
+        | non_matching_rule_changes(root, base, paths)
+        if base
+        else frozenset()
+    )
     missing = missing_fixture_changes(paths, exempt)
     if missing:
         raise ValidationError(
