@@ -16,6 +16,7 @@ a built grammar and live in their own config, so they are excluded.
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import shutil
 import subprocess
@@ -24,13 +25,14 @@ import tempfile
 from collections.abc import Sequence
 from pathlib import Path
 
+import yaml
+
 MIN_VERSION = "0.45.2"
 LANGUAGE = re.compile(r"(?m)^language:\s*['\"]?([A-Za-z0-9_+-]+)")
 TIMEOUT = 600
 RULE_SUFFIXES = ("*.yml", "*.yaml")
 SGCONFIG = "sgconfig.yml"
 UTIL_DIRS_KEY = "utilDirs"
-UTIL_DIRS_ITEM = re.compile(r"^\s+-\s+(?P<value>\S.*?)\s*(?:\s#.*)?$")
 # Names the staged layout already uses; a util directory may not shadow them.
 RESERVED_STAGE_NAMES = frozenset({"rules", "tree", SGCONFIG})
 
@@ -88,12 +90,6 @@ def collect_rules(rules_dir: Path) -> list[Path]:
     )
 
 
-def _unquote(value: str) -> str:
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
-        return value[1:-1]
-    return value
-
-
 def _contained(root: Path, entry: str) -> str:
     """Return ``entry`` when it names a directory strictly inside ``root``."""
     relative = Path(entry)
@@ -116,35 +112,37 @@ def _contained(root: Path, entry: str) -> str:
 def declared_util_dirs(root: Path) -> list[str]:
     """Return the ``utilDirs`` entries of ``root``'s sgconfig.yml, in order.
 
-    A missing file or a missing key declares nothing. Only the block-list form
-    is read; any other form is refused rather than guessed, so no util
-    directory is silently left unchecked.
+    The file is parsed with PyYAML under the BaseLoader, so every scalar stays a
+    string and block lists, flow lists, quoted entries and comments read alike.
+    A missing file, an empty file or a missing key declares nothing. Any other
+    shape (a scalar or mapping, a nested list, an empty or non-string entry) is
+    refused rather than guessed, so no util directory is silently left unchecked.
     """
     root = root.resolve()
     config = root / SGCONFIG
     if not config.is_file():
         return []
+    try:
+        data = yaml.load(config.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+    except yaml.YAMLError as error:
+        raise GateError(f"cannot parse {SGCONFIG}: {error}") from error
+    if data is None:
+        return []
+    if not isinstance(data, dict):
+        raise GateError(f"{SGCONFIG} must be a mapping at its top level")
+    if UTIL_DIRS_KEY not in data:
+        return []
+    value = data[UTIL_DIRS_KEY]
+    if not isinstance(value, list):
+        raise GateError(f"{UTIL_DIRS_KEY} must be a list of strings in {SGCONFIG}")
     entries: list[str] = []
-    in_block = False
-    for line in config.read_text(encoding="utf-8").splitlines():
-        if not in_block:
-            if not line.startswith(f"{UTIL_DIRS_KEY}:"):
-                continue
-            if line.strip() != f"{UTIL_DIRS_KEY}:":
-                raise GateError(f"{UTIL_DIRS_KEY} must be a block list in {SGCONFIG}")
-            in_block = True
-            continue
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-        if not line[:1].isspace():
-            break
-        item = UTIL_DIRS_ITEM.match(line)
-        if item is None:
+    for item in value:
+        if not isinstance(item, str) or not item:
             raise GateError(
-                f"unsupported {UTIL_DIRS_KEY} line in {SGCONFIG}: {stripped!r}"
+                f"{UTIL_DIRS_KEY} entries must be non-empty strings in {SGCONFIG}: "
+                f"{item!r}"
             )
-        entries.append(_contained(root, _unquote(item.group("value"))))
+        entries.append(_contained(root, item))
     return entries
 
 
@@ -191,7 +189,11 @@ def stage(
     config = target / SGCONFIG
     text = "ruleDirs:\n  - rules\n"
     if util_dirs:
-        text += f"{UTIL_DIRS_KEY}:\n" + "".join(f"  - {entry}\n" for entry in util_dirs)
+        # json.dumps yields a double-quoted scalar, which is valid YAML, so a
+        # name such as "odd #dir" or "a: b" keeps its exact text.
+        text += f"{UTIL_DIRS_KEY}:\n" + "".join(
+            f"  - {json.dumps(entry)}\n" for entry in util_dirs
+        )
     config.write_text(text, encoding="utf-8")
     return config
 
