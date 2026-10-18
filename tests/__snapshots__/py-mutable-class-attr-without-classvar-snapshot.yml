@@ -1,8 +1,38 @@
 id: py-mutable-class-attr-without-classvar
 snapshots:
-  "class C:\n    cache: dict = {}":
-    labels:
-    - source: "cache: dict = {}"
+  ? |
+    class A:
+        def m(self):
+            class B:
+                x = {}
+  : labels:
+    - source: x = {}
+      style: primary
+      start: 55
+      end: 61
+    - source: x
+      style: secondary
+      start: 55
+      end: 56
+    - source: '{}'
+      style: secondary
+      start: 59
+      end: 61
+    - source: x = {}
+      style: secondary
+      start: 55
+      end: 61
+    - source: |-
+        class B:
+                    x = {}
+      style: secondary
+      start: 34
+      end: 61
+  ? |-
+    class C:
+        cache: dict = {}
+  : labels:
+    - source: 'cache: dict = {}'
       style: primary
       start: 13
       end: 29
@@ -10,11 +40,11 @@ snapshots:
       style: secondary
       start: 13
       end: 18
-    - source: "{}"
+    - source: '{}'
       style: secondary
       start: 27
       end: 29
-    - source: "cache: dict = {}"
+    - source: 'cache: dict = {}'
       style: secondary
       start: 13
       end: 29
@@ -24,9 +54,39 @@ snapshots:
       style: secondary
       start: 0
       end: 29
-  "class Harness:\n    EXTRA_KWARGS = {\"apply_chat_template\": True}":
-    labels:
-    - source: "EXTRA_KWARGS = {\"apply_chat_template\": True}"
+  ? |-
+    class C:
+        if True:
+            cache: dict = {}
+  : labels:
+    - source: 'cache: dict = {}'
+      style: primary
+      start: 30
+      end: 46
+    - source: cache
+      style: secondary
+      start: 30
+      end: 35
+    - source: '{}'
+      style: secondary
+      start: 44
+      end: 46
+    - source: 'cache: dict = {}'
+      style: secondary
+      start: 30
+      end: 46
+    - source: |-
+        class C:
+            if True:
+                cache: dict = {}
+      style: secondary
+      start: 0
+      end: 46
+  ? |-
+    class Harness:
+        EXTRA_KWARGS = {"apply_chat_template": True}
+  : labels:
+    - source: 'EXTRA_KWARGS = {"apply_chat_template": True}'
       style: primary
       start: 19
       end: 63
@@ -34,11 +94,11 @@ snapshots:
       style: secondary
       start: 19
       end: 31
-    - source: "{\"apply_chat_template\": True}"
+    - source: '{"apply_chat_template": True}'
       style: secondary
       start: 34
       end: 63
-    - source: "EXTRA_KWARGS = {\"apply_chat_template\": True}"
+    - source: 'EXTRA_KWARGS = {"apply_chat_template": True}'
       style: secondary
       start: 19
       end: 63
@@ -48,9 +108,13 @@ snapshots:
       style: secondary
       start: 0
       end: 63
-  "class T:\n    def m(self):\n        return 1\n    cache: dict = {}":
-    labels:
-    - source: "cache: dict = {}"
+  ? |-
+    class T:
+        def m(self):
+            return 1
+        cache: dict = {}
+  : labels:
+    - source: 'cache: dict = {}'
       style: primary
       start: 47
       end: 63
@@ -58,11 +122,11 @@ snapshots:
       style: secondary
       start: 47
       end: 52
-    - source: "{}"
+    - source: '{}'
       style: secondary
       start: 61
       end: 63
-    - source: "cache: dict = {}"
+    - source: 'cache: dict = {}'
       style: secondary
       start: 47
       end: 63
@@ -74,9 +138,13 @@ snapshots:
       style: secondary
       start: 0
       end: 63
-  "def make():\n    class Inner:\n        cache: dict = {}\n    return Inner":
-    labels:
-    - source: "cache: dict = {}"
+  ? |-
+    def make():
+        class Inner:
+            cache: dict = {}
+        return Inner
+  : labels:
+    - source: 'cache: dict = {}'
       style: primary
       start: 37
       end: 53
@@ -84,11 +152,11 @@ snapshots:
       style: secondary
       start: 37
       end: 42
-    - source: "{}"
+    - source: '{}'
       style: secondary
       start: 51
       end: 53
-    - source: "cache: dict = {}"
+    - source: 'cache: dict = {}'
       style: secondary
       start: 37
       end: 53

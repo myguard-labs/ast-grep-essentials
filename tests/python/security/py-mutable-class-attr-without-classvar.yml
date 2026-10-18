@@ -11,13 +11,8 @@ valid:
   - |-
     class T:
         def test_x(self):
-            seen: list[int] = []
-            return seen
-  - |-
-    class T:
-        def test_x(self):
-            seen: set[int] = set()
-            return seen
+            cache: dict[str, int] = {"a": 1}
+            return cache
   - |-
     class T:
         def outer(self):
@@ -38,6 +33,10 @@ invalid:
     class C:
         cache: dict = {}
   - |-
+    class C:
+        if True:
+            cache: dict = {}
+  - |-
     def make():
         class Inner:
             cache: dict = {}
@@ -47,3 +46,8 @@ invalid:
         def m(self):
             return 1
         cache: dict = {}
+  - |
+    class A:
+        def m(self):
+            class B:
+                x = {}

@@ -7,10 +7,12 @@ message: >-
   Mutable dict or list literal assigned as a class attribute without a
   ClassVar annotation; this value is shared across instances.
 note: >-
-  Single-file syntactic match on a bare class-body assignment of a dict or
-  list literal directly in the class body; assignments inside a method,
-  nested function or lambda are ignored. It does not resolve types, imports, or whether the attribute
-  is later mutated or reassigned per instance.
+  Single-file syntactic match on a bare class-body assignment of a dict
+  literal. The assignment must not sit inside a function (a method or a
+  nested def) between it and its nearest enclosing class; assignments in
+  if, try or with blocks of the class body still match. It does not resolve
+  types, imports, or whether the attribute is later mutated or reassigned
+  per instance.
 rule:
   kind: expression_statement
   all:
@@ -28,9 +30,7 @@ rule:
         stopBy: end
     - not:
         inside:
-          any:
-            - kind: function_definition
-            - kind: lambda
+          kind: function_definition
           stopBy:
             kind: class_definition
 metadata:
