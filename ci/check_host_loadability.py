@@ -5,9 +5,10 @@ Consumers scan with a host ast-grep that can be older than the version the
 rules are authored with. ast-grep aborts the whole scan when a single rule
 fails to load, so this gate stages every non-PowerShell rule into an isolated
 config (plus the ``utils`` directory as ``utilDirs`` when present), scans an
-empty tree with the pinned binary and fails on any non-zero exit. The tree holds no source files so an error-severity rule cannot match
-and exit non-zero for a reason other than a load or parse error. PowerShell
-rules need a built grammar and live in their own config, so they are excluded.
+empty tree with the pinned binary and fails on any non-zero exit. The tree
+holds no source files so an error-severity rule cannot match and exit non-zero
+for a reason other than a load or parse error. PowerShell rules need a built
+grammar and live in their own config, so they are excluded.
 """
 
 from __future__ import annotations
