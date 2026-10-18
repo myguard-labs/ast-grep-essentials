@@ -34,6 +34,8 @@ open({log!r} + ".config", "w").write(cfg.read_text())
 udir = cfg.parent / "utils"
 unames = sorted(str(p.relative_to(udir)) for p in udir.rglob("*") if p.is_file())
 open({log!r} + ".utils", "w").write("\\n".join(unames))
+allf = sorted(str(p.relative_to(cfg.parent)) for p in cfg.parent.rglob("*") if p.is_file() and p.relative_to(cfg.parent).parts[0] not in ("rules", "tree", "sgconfig.yml"))
+open({log!r} + ".all", "w").write("\\n".join(allf))
 bad = [n for n in names + unames if "malformed" in n]
 if bad:
     print("Cannot parse rule " + bad[0], file=sys.stderr)
@@ -47,6 +49,7 @@ if files and any("severity: error" in p.read_text() for p in root.rglob("*") if 
 """
 
 
+# pylint: disable=too-many-public-methods
 class HostLoadabilityTests(unittest.TestCase):
     def setUp(self) -> None:
         scratch = tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
@@ -55,11 +58,18 @@ class HostLoadabilityTests(unittest.TestCase):
         self.root = self.tmp / "repo"
         (self.root / "rules").mkdir(parents=True)
         self.log = self.tmp / "staged.txt"
+        self.declare("utils")
 
     def rule(self, relative: str, language: str = "python") -> None:
         path = self.root / "rules" / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(RULE.format(id=path.stem, language=language))
+
+    def declare(self, *entries: str) -> None:
+        body = "".join(f"  - {entry}\n" for entry in entries)
+        (self.root / "sgconfig.yml").write_text(
+            "ruleDirs:\n  - rules\nutilDirs:\n" + body, encoding="utf-8"
+        )
 
     def fake(self, version: str = gate.MIN_VERSION) -> list[str]:
         script = self.tmp / "fake-ast-grep"
@@ -77,6 +87,9 @@ class HostLoadabilityTests(unittest.TestCase):
 
     def staged_utils(self) -> list[str]:
         return Path(f"{self.log}.utils").read_text(encoding="utf-8").splitlines()
+
+    def staged_all(self) -> list[str]:
+        return Path(f"{self.log}.all").read_text(encoding="utf-8").splitlines()
 
     def test_loads_every_rule_and_reports_count(self) -> None:
         self.rule("python/security/a.yml")
@@ -104,8 +117,13 @@ class HostLoadabilityTests(unittest.TestCase):
         with self.assertRaisesRegex(gate.GateError, r"exit 8.*malformed"):
             gate.check(self.root, self.fake())
 
-    def util(self, relative: str, body: str = "id: u\nlanguage: python\n") -> None:
-        path = self.root / "utils" / relative
+    def util(
+        self,
+        relative: str,
+        body: str = "id: u\nlanguage: python\n",
+        directory: str = "utils",
+    ) -> None:
+        path = self.root / directory / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(body, encoding="utf-8")
 
@@ -138,6 +156,87 @@ class HostLoadabilityTests(unittest.TestCase):
         self.util("python/malformed.yml")
         with self.assertRaisesRegex(gate.GateError, r"exit 8.*malformed"):
             gate.check(self.root, self.fake())
+
+    def test_declared_non_utils_dir_is_staged(self) -> None:
+        self.declare("shared/helpers")
+        self.rule("python/security/a.yml")
+        self.util("python/h.yml", directory="shared/helpers")
+        self.assertEqual(gate.check(self.root, self.fake()), 1)
+        self.assertEqual(self.staged_all(), ["shared/helpers/python/h.yml"])
+        self.assertIn("utilDirs:\n  - shared/helpers\n", self.staged_config())
+
+    def test_undeclared_dirs_are_ignored(self) -> None:
+        self.declare("shared")
+        self.rule("python/security/a.yml")
+        self.util("s.yml", directory="shared")
+        self.util("y.yml")
+        self.assertEqual(gate.check(self.root, self.fake()), 1)
+        self.assertEqual(self.staged_all(), ["shared/s.yml"])
+        self.assertNotIn("utils", self.staged_config())
+
+    def test_quoted_and_commented_util_dir_entry_is_read(self) -> None:
+        (self.root / "sgconfig.yml").write_text(
+            "utilDirs:\n  - 'shared/helpers'  # shared\nlanguageGlobs: {}\n",
+            encoding="utf-8",
+        )
+        self.rule("python/security/a.yml")
+        self.util("python/h.yml", directory="shared/helpers")
+        self.assertEqual(gate.check(self.root, self.fake()), 1)
+        self.assertIn("utilDirs:\n  - shared/helpers\n", self.staged_config())
+        self.assertEqual(self.staged_all(), ["shared/helpers/python/h.yml"])
+
+    def test_powershell_utils_are_excluded_from_declared_dirs(self) -> None:
+        self.rule("python/security/a.yml")
+        self.util("python/ok.yml")
+        self.util("powershell/p.yml", "id: p\nlanguage: powershell\n")
+        self.util("misc/lang.yml", "id: l\nlanguage: PowerShell\n")
+        self.assertEqual(gate.check(self.root, self.fake()), 1)
+        self.assertEqual(self.staged_all(), ["utils/python/ok.yml"])
+
+    def test_escaping_or_reserved_util_dir_is_refused(self) -> None:
+        self.rule("python/security/a.yml")
+        for entry in ("../x", "/abs", "shared/../../x", ".", "rules", "tree/x"):
+            with self.subTest(entry=entry):
+                self.declare(entry)
+                with self.assertRaisesRegex(gate.GateError, "utilDirs entry"):
+                    gate.check(self.root, self.fake())
+
+    def test_symlink_util_dir_escaping_the_repository_is_refused(self) -> None:
+        outside = self.tmp / "outside"
+        outside.mkdir()
+        (self.root / "link").symlink_to(outside, target_is_directory=True)
+        self.declare("link")
+        self.rule("python/security/a.yml")
+        with self.assertRaisesRegex(gate.GateError, "escapes the repository"):
+            gate.check(self.root, self.fake())
+
+    def test_missing_util_dirs_key_stages_nothing(self) -> None:
+        (self.root / "sgconfig.yml").write_text(
+            "ruleDirs:\n  - rules\n", encoding="utf-8"
+        )
+        self.rule("python/security/a.yml")
+        self.util("python/good.yml")
+        self.assertEqual(gate.check(self.root, self.fake()), 1)
+        self.assertEqual(self.staged_all(), [])
+        self.assertNotIn("utilDirs", self.staged_config())
+
+    def test_missing_sgconfig_stages_nothing(self) -> None:
+        (self.root / "sgconfig.yml").unlink()
+        self.rule("python/security/a.yml")
+        self.util("python/good.yml")
+        self.assertEqual(gate.check(self.root, self.fake()), 1)
+        self.assertEqual(self.staged_all(), [])
+
+    def test_unsupported_util_dirs_forms_are_refused(self) -> None:
+        self.rule("python/security/a.yml")
+        for body, pattern in (
+            ("utilDirs: [utils]\n", "block list"),
+            ("utilDirs:\n  utils\n", "unsupported utilDirs line"),
+        ):
+            with self.subTest(body=body):
+                (self.root / "sgconfig.yml").write_text(body, encoding="utf-8")
+                with self.assertRaisesRegex(gate.GateError, pattern):
+                    gate.check(self.root, self.fake())
 
     @unittest.skipUnless(os.environ.get("AST_GREP_045"), "needs AST_GREP_045")
     def test_real_binary_rejects_broken_util(self) -> None:

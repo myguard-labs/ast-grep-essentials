@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Check that every non-PowerShell rule and global util loads on the oldest ast-grep.
+"""Check that every non-PowerShell rule and declared global util loads on the oldest ast-grep.
 
 Consumers scan with a host ast-grep that can be older than the version the
 rules are authored with. ast-grep aborts the whole scan when a single rule
 fails to load, so this gate stages every non-PowerShell rule into an isolated
-config (plus the ``utils`` directory as ``utilDirs`` when present), scans an
-empty tree with the pinned binary and fails on any non-zero exit. The tree
-holds no source files so an error-severity rule cannot match and exit non-zero
-for a reason other than a load or parse error. PowerShell rules need a built
-grammar and live in their own config, so they are excluded.
+config (plus each existing directory named under ``utilDirs`` in the root
+``sgconfig.yml``, minus PowerShell utils), scans an empty tree with the pinned
+binary and fails on any non-zero exit. The tree holds no source files so an
+error-severity rule cannot match and exit non-zero for a reason other than a
+load or parse error. PowerShell rules need a built grammar and live in their
+own config, so they are excluded.
 """
 
 from __future__ import annotations
@@ -25,6 +26,12 @@ from pathlib import Path
 MIN_VERSION = "0.45.2"
 LANGUAGE = re.compile(r"(?m)^language:\s*['\"]?([A-Za-z0-9_+-]+)")
 TIMEOUT = 600
+RULE_SUFFIXES = ("*.yml", "*.yaml")
+SGCONFIG = "sgconfig.yml"
+UTIL_DIRS_KEY = "utilDirs"
+UTIL_DIRS_ITEM = re.compile(r"^\s+-\s+(?P<value>\S.*?)\s*(?:\s#.*)?$")
+# Names the staged layout already uses; a util directory may not shadow them.
+RESERVED_STAGE_NAMES = frozenset({"rules", "tree", SGCONFIG})
 
 
 class GateError(RuntimeError):
@@ -57,52 +64,133 @@ def is_powershell(relative: Path, path: Path) -> bool:
     return match is not None and match.group(1).lower() == "powershell"
 
 
-RULE_SUFFIXES = ("*.yml", "*.yaml")
+def _rule_files(directory: Path) -> set[Path]:
+    """Return every ``.yml`` and ``.yaml`` file under ``directory``.
+
+    ast-grep loads both suffixes from a ruleDir or utilDir, so both are gated;
+    the set removes any overlap between the globs.
+    """
+    return {
+        path
+        for pattern in RULE_SUFFIXES
+        for path in directory.rglob(pattern)
+        if path.is_file()
+    }
 
 
 def collect_rules(rules_dir: Path) -> list[Path]:
-    """Return the non-PowerShell rule files under ``rules_dir``, sorted.
-
-    ast-grep loads both ``.yml`` and ``.yaml`` rules from a ruleDir, so both
-    suffixes are gated; the set removes any overlap between the globs.
-    """
-    candidates = {
-        path
-        for pattern in RULE_SUFFIXES
-        for path in rules_dir.rglob(pattern)
-        if path.is_file()
-    }
+    """Return the non-PowerShell rule files under ``rules_dir``, sorted."""
     return sorted(
         path
-        for path in candidates
+        for path in _rule_files(rules_dir)
         if not is_powershell(path.relative_to(rules_dir), path)
     )
 
 
-UTILS_DIRNAME = "utils"
+def _unquote(value: str) -> str:
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
+        return value[1:-1]
+    return value
+
+
+def _contained(root: Path, entry: str) -> str:
+    """Return ``entry`` when it names a directory strictly inside ``root``."""
+    relative = Path(entry)
+    if (
+        not entry
+        or not relative.parts
+        or relative.is_absolute()
+        or ".." in relative.parts
+        or relative.parts[0] in RESERVED_STAGE_NAMES
+    ):
+        raise GateError(
+            f"utilDirs entry escapes the repository or is reserved: {entry!r}"
+        )
+    target = (root / relative).resolve()
+    if target == root or not target.is_relative_to(root):
+        raise GateError(f"utilDirs entry escapes the repository: {entry!r}")
+    return entry
+
+
+def declared_util_dirs(root: Path) -> list[str]:
+    """Return the ``utilDirs`` entries of ``root``'s sgconfig.yml, in order.
+
+    A missing file or a missing key declares nothing. Only the block-list form
+    is read; any other form is refused rather than guessed, so no util
+    directory is silently left unchecked.
+    """
+    root = root.resolve()
+    config = root / SGCONFIG
+    if not config.is_file():
+        return []
+    entries: list[str] = []
+    in_block = False
+    for line in config.read_text(encoding="utf-8").splitlines():
+        if not in_block:
+            if not line.startswith(f"{UTIL_DIRS_KEY}:"):
+                continue
+            if line.strip() != f"{UTIL_DIRS_KEY}:":
+                raise GateError(f"{UTIL_DIRS_KEY} must be a block list in {SGCONFIG}")
+            in_block = True
+            continue
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if not line[:1].isspace():
+            break
+        item = UTIL_DIRS_ITEM.match(line)
+        if item is None:
+            raise GateError(
+                f"unsupported {UTIL_DIRS_KEY} line in {SGCONFIG}: {stripped!r}"
+            )
+        entries.append(_contained(root, _unquote(item.group("value"))))
+    return entries
+
+
+def collect_utils(root: Path, entries: Sequence[str]) -> list[tuple[Path, Path]]:
+    """Return ``(staged, source)`` pairs for the non-PowerShell utils in ``entries``.
+
+    ``staged`` is relative to the staging target and keeps the declared
+    directory name, so the staged ``utilDirs`` entries resolve unchanged.
+    """
+    pairs: list[tuple[Path, Path]] = []
+    for entry in entries:
+        directory = root / entry
+        for path in _rule_files(directory):
+            relative = path.relative_to(directory)
+            if not is_powershell(relative, path):
+                pairs.append((Path(entry) / relative, path))
+    return sorted(pairs)
 
 
 def stage(
     rules_dir: Path,
     rules: Sequence[Path],
     target: Path,
-    utils_dir: Path | None = None,
+    utils: Sequence[tuple[Path, Path]] = (),
+    util_dirs: Sequence[str] = (),
 ) -> Path:
-    """Copy ``rules`` and an empty source tree into ``target``; return config.
+    """Copy ``rules``, ``utils`` and an empty source tree into ``target``.
 
-    When ``utils_dir`` is given it is copied to ``target/utils`` and declared
-    as ``utilDirs`` so a global util that fails to load fails the gate too.
+    ``utils`` holds ``(staged, source)`` pairs with ``staged`` relative to
+    ``target``. Every name in ``util_dirs`` is created under ``target`` and
+    declared as ``utilDirs``. Returns the staged config path.
     """
     for rule in rules:
         destination = target / "rules" / rule.relative_to(rules_dir)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(rule, destination)
     (target / "tree").mkdir()
-    config = target / "sgconfig.yml"
+    for entry in util_dirs:
+        (target / entry).mkdir(parents=True, exist_ok=True)
+    for staged, source in utils:
+        destination = target / staged
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
+    config = target / SGCONFIG
     text = "ruleDirs:\n  - rules\n"
-    if utils_dir is not None:
-        shutil.copytree(utils_dir, target / UTILS_DIRNAME)
-        text += f"utilDirs:\n  - {UTILS_DIRNAME}\n"
+    if util_dirs:
+        text += f"{UTIL_DIRS_KEY}:\n" + "".join(f"  - {entry}\n" for entry in util_dirs)
     config.write_text(text, encoding="utf-8")
     return config
 
@@ -115,6 +203,8 @@ def check(root: Path, ast_grep: Sequence[str | Path]) -> int:
     rules = collect_rules(rules_dir)
     if not rules:
         raise GateError("no non-PowerShell rules found; refusing to pass")
+    declared = [entry for entry in declared_util_dirs(root) if (root / entry).is_dir()]
+    utils = collect_utils(root, declared)
     with tempfile.TemporaryDirectory(prefix="host-loadability-") as scratch:
         version = _run([*ast_grep, "--version"], Path(scratch))
         if version.returncode:
@@ -124,10 +214,7 @@ def check(root: Path, ast_grep: Sequence[str | Path]) -> int:
         if version.stdout.strip().split()[-1:] != [MIN_VERSION]:
             raise GateError(f"expected ast-grep {MIN_VERSION}, got: {_tail(version)}")
         target = Path(scratch)
-        utils_dir = root / UTILS_DIRNAME
-        config = stage(
-            rules_dir, rules, target, utils_dir if utils_dir.is_dir() else None
-        )
+        config = stage(rules_dir, rules, target, utils, declared)
         result = _run([*ast_grep, "scan", "-c", config, target / "tree"], cwd=target)
         if result.returncode:
             raise GateError(
