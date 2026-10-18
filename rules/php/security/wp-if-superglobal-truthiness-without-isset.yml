@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-if-superglobal-truthiness-without-isset
+language: php
+severity: warning
+message: >-
+  The if condition tests a bare POST superglobal index without isset or empty;
+  an absent key raises an undefined-index notice.
+note: >-
+  Matches only the literal syntax of a POST superglobal subscript as the whole
+  if condition; it does not check for earlier guards or other superglobals.
+rule:
+  all:
+    - kind: subscript_expression
+    - regex: '^\$_POST\s*\['
+    - inside:
+        kind: parenthesized_expression
+        inside:
+          kind: if_statement
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
