@@ -1,0 +1,38 @@
+# Global util: the qualified name of a Java import declaration, one node per
+# declaration. Reference it from a rule with `matches: java-imported-name`
+# and narrow it with a `regex:` on the name. A file gate that requires an
+# import from the javax.crypto package reads:
+#   inside:
+#     stopBy: end
+#     has:
+#       stopBy: end
+#       matches: java-imported-name
+#       regex: '^javax\.crypto(\.|$)'
+#
+# Decisions:
+# - ast-grep utils take no parameters, so the util matches the imported name
+#   and leaves the package choice to the caller's regex. The matched text is
+#   the name as written in the source.
+# - Single-type imports match the full type name: `import a.b.C;` matches
+#   `a.b.C`.
+# - On-demand imports match the package or type before `.*`: `import a.b.*;`
+#   matches `a.b`, so `^a\.b(\.|$)` covers both import styles.
+# - Static imports are imports from a package too and match the same way:
+#   `import static a.B.m;` matches `a.B.m`, `import static a.B.*;` matches
+#   `a.B`. A rule that must exclude them adds
+#   `not: {inside: {kind: import_declaration, regex: '^import\s+static\s'}}`
+#   (`static` is an anonymous token, so `kind: static` is rejected).
+# - A single-identifier import (`import Foo;`) matches `Foo`.
+# - Only the outermost name of a declaration matches; its qualifier prefixes
+#   (`a.b` inside `a.b.C`) never match on their own.
+# - `package` declarations, module `requires` directives and fully qualified
+#   names used in code are not imports and do not match, so a file gate built
+#   on this util misses code that only uses fully qualified names.
+id: java-imported-name
+language: java
+rule:
+  any:
+    - kind: scoped_identifier
+    - kind: identifier
+  inside:
+    kind: import_declaration

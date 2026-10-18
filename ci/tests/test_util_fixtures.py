@@ -32,6 +32,18 @@ class Mutants:
 
 
 MUTANTS: dict[str, Mutants] = {
+    "java/java-imported-name.yml": Mutants(
+        over_accepting=(
+            "    kind: import_declaration\n",
+            (
+                "    any:\n"
+                "      - kind: import_declaration\n"
+                "      - kind: package_declaration\n"
+            ),
+        ),
+        match_nothing=("rule:\n", "rule:\n  kind: line_comment\n"),
+        malformed=("rule:\n", "rule:\n  kind: [\n"),
+    ),
     "python/non-empty-string-literal.yml": Mutants(
         over_accepting=("kind: string_content", "kind: string_start"),
         match_nothing=("kind: string\n", "kind: integer\n"),
