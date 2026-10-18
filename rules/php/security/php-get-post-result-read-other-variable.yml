@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-get-post-result-read-other-variable
+language: php
+severity: warning
+message: >-
+  A property is read from a variable that is never assigned in this function,
+  although another variable is assigned from get_post().
+note: >-
+  Syntactic approximation within one function body; does not resolve globals,
+  scope imports, references, or dataflow.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        pattern: '$A = get_post($$$ARGS)'
+        stopBy: end
+    - has:
+        pattern: '$B->$P'
+        stopBy: end
+    - not:
+        has:
+          pattern: '$B = $$$V'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
