@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Check that every non-PowerShell rule loads on the lowest consumer ast-grep.
+"""Check that every non-PowerShell rule and global util loads on the oldest ast-grep.
 
 Consumers scan with a host ast-grep that can be older than the version the
 rules are authored with. ast-grep aborts the whole scan when a single rule
 fails to load, so this gate stages every non-PowerShell rule into an isolated
-config, scans an empty tree with the pinned binary and fails on any non-zero
-exit. The tree holds no source files so an error-severity rule cannot match
-and exit non-zero for a reason other than a load or parse error. PowerShell
-rules need a built grammar and live in their own config, so they are excluded.
+config (plus the ``utils`` directory as ``utilDirs`` when present), scans an
+empty tree with the pinned binary and fails on any non-zero exit. The tree
+holds no source files so an error-severity rule cannot match and exit non-zero
+for a reason other than a load or parse error. PowerShell rules need a built
+grammar and live in their own config, so they are excluded.
 """
 
 from __future__ import annotations
@@ -78,15 +79,31 @@ def collect_rules(rules_dir: Path) -> list[Path]:
     )
 
 
-def stage(rules_dir: Path, rules: Sequence[Path], target: Path) -> Path:
-    """Copy ``rules`` and an empty source tree into ``target``; return config."""
+UTILS_DIRNAME = "utils"
+
+
+def stage(
+    rules_dir: Path,
+    rules: Sequence[Path],
+    target: Path,
+    utils_dir: Path | None = None,
+) -> Path:
+    """Copy ``rules`` and an empty source tree into ``target``; return config.
+
+    When ``utils_dir`` is given it is copied to ``target/utils`` and declared
+    as ``utilDirs`` so a global util that fails to load fails the gate too.
+    """
     for rule in rules:
         destination = target / "rules" / rule.relative_to(rules_dir)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(rule, destination)
     (target / "tree").mkdir()
     config = target / "sgconfig.yml"
-    config.write_text("ruleDirs:\n  - rules\n", encoding="utf-8")
+    text = "ruleDirs:\n  - rules\n"
+    if utils_dir is not None:
+        shutil.copytree(utils_dir, target / UTILS_DIRNAME)
+        text += f"utilDirs:\n  - {UTILS_DIRNAME}\n"
+    config.write_text(text, encoding="utf-8")
     return config
 
 
@@ -107,7 +124,10 @@ def check(root: Path, ast_grep: Sequence[str | Path]) -> int:
         if version.stdout.strip().split()[-1:] != [MIN_VERSION]:
             raise GateError(f"expected ast-grep {MIN_VERSION}, got: {_tail(version)}")
         target = Path(scratch)
-        config = stage(rules_dir, rules, target)
+        utils_dir = root / UTILS_DIRNAME
+        config = stage(
+            rules_dir, rules, target, utils_dir if utils_dir.is_dir() else None
+        )
         result = _run([*ast_grep, "scan", "-c", config, target / "tree"], cwd=target)
         if result.returncode:
             raise GateError(
