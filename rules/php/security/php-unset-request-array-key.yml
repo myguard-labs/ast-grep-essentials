@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-unset-request-array-key
+language: php
+severity: warning
+message: >-
+  unset() uses a request superglobal (GET, POST or REQUEST) directly as the
+  array key.
+note: >-
+  Matches only the literal superglobal syntax in the index expression; it does
+  not track values assigned through variables or aliases.
+rule:
+  pattern: 'unset($ARR[$IDX])'
+constraints:
+  IDX:
+    regex: '^\$_(GET|POST|REQUEST)\['
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
