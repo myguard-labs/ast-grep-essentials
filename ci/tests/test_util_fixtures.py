@@ -92,6 +92,20 @@ def failed_probe(path: Path) -> str:
     return rf"(?m)^FAIL probe-{re.escape(util_id(path))}\s"
 
 
+def anchored_replace(text: str, old: str, new: str, where: str) -> str:
+    """Replace the one occurrence of the anchor ``old``.
+
+    A missing or repeated anchor would make the mutant something other than
+    the intended change, so either case fails with the util and the anchor.
+    """
+    count = text.count(old)
+    if count != 1:
+        raise AssertionError(
+            f"{where}: anchor {old!r} occurs {count} times, expected exactly 1"
+        )
+    return text.replace(old, new)
+
+
 def run_tests(config: Path) -> subprocess.CompletedProcess[str]:
     assert BINARY is not None
     return subprocess.run(
@@ -120,6 +134,29 @@ class UtilInventoryTests(unittest.TestCase):
                 self.assertTrue(fixture.is_file(), fixture)
                 self.assertIn(f"matches: {ident}", probe.read_text(encoding="utf-8"))
 
+    def test_anchor_replaced_once_when_it_occurs_once(self) -> None:
+        text = "a: 1\nrule:\nb: 2\n"
+        self.assertEqual(
+            anchored_replace(text, "rule:\n", "rule:\n  kind: x\n", "u.yml"),
+            "a: 1\nrule:\n  kind: x\nb: 2\n",
+        )
+
+    def test_repeated_anchor_fails_with_util_and_anchor(self) -> None:
+        text = "rule:\nx: 1\nrule:\n"
+        with self.assertRaises(AssertionError) as caught:
+            anchored_replace(text, "rule:\n", "y\n", "java/java-imported-name.yml")
+        message = str(caught.exception)
+        self.assertIn("java/java-imported-name.yml", message)
+        self.assertIn("'rule:\\n'", message)
+        self.assertIn("occurs 2 times", message)
+
+    def test_missing_anchor_fails_with_util_and_anchor(self) -> None:
+        with self.assertRaises(AssertionError) as caught:
+            anchored_replace("a: 1\n", "rule:\n", "y\n", "python/u.yml")
+        message = str(caught.exception)
+        self.assertIn("python/u.yml", message)
+        self.assertIn("occurs 0 times", message)
+
     def test_util_id_rejects_a_file_without_an_id(self) -> None:
         with tempfile.TemporaryDirectory() as scratch:
             path = Path(scratch) / "no-id.yml"
@@ -139,8 +176,7 @@ class UtilFixtureTests(unittest.TestCase):
         shutil.copytree(UTILS_DIR, base / "utils")
         target = base / "utils" / name
         text = target.read_text(encoding="utf-8")
-        self.assertIn(old, text)
-        target.write_text(text.replace(old, new), encoding="utf-8")
+        target.write_text(anchored_replace(text, old, new, name), encoding="utf-8")
         return base / "ci/util-tests/sgconfig.yml"
 
     def test_shipped_utils_pass_their_fixtures(self) -> None:

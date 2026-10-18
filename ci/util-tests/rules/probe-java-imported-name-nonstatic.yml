@@ -1,0 +1,13 @@
+# ast-grep test snapshots record only the first match of a case, so this probe
+# pins the static-import exclusion recipe from utils/java/java-imported-name.yml:
+# a static import is not matched and a single-type import still is.
+id: probe-java-imported-name-nonstatic
+language: java
+severity: hint
+message: probe for the static-import exclusion recipe of the java-imported-name util
+rule:
+  matches: java-imported-name
+  not:
+    inside:
+      kind: import_declaration
+      regex: '^import\s+static\s'
