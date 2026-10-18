@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-unquoted-test-operand
+language: bash
+severity: warning
+message: >-
+  Unquoted parameter expansion used as an operand of a test comparison; quote
+  it.
+note: >-
+  Syntactic only; matches a bare parameter expansion operand directly in a
+  bracket test comparison, without knowing the runtime value or whether word
+  splitting can occur.
+rule:
+  all:
+    - kind: simple_expansion
+    - inside:
+        kind: binary_expression
+        inside:
+          kind: test_command
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
