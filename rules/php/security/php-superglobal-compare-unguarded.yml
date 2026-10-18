@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-superglobal-compare-unguarded
+language: php
+severity: warning
+message: >-
+  POST superglobal index is compared in an if condition without an isset or
+  array_key_exists check in the same condition.
+note: >-
+  Syntactic only; it checks the condition text for isset or array_key_exists
+  and does not track guards elsewhere, aliasing, or which key is checked.
+rule:
+  kind: if_statement
+  has:
+    field: condition
+    all:
+      - has:
+          stopBy: end
+          kind: binary_expression
+          all:
+            - has:
+                field: operator
+                regex: '^(==|!=|===|!==|<>|<|>|<=|>=)$'
+            - has:
+                kind: subscript_expression
+                regex: '^\$_POST\s*\['
+      - not:
+          regex: 'isset\s*\(|array_key_exists\s*\('
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
