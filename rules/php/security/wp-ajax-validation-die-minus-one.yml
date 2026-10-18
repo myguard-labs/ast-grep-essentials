@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-ajax-validation-die-minus-one
+language: php
+severity: warning
+message: >-
+  die('-1') is used after a failed preg_match validation; -1 signals an
+  authentication failure to admin-ajax clients.
+note: >-
+  Syntactic match only; it does not verify that the preg_match input comes
+  from request data or that the handler is an AJAX handler.
+rule:
+  all:
+    - pattern: 'die(''-1'')'
+    - inside:
+        kind: if_statement
+        stopBy: end
+        has:
+          field: condition
+          has:
+            pattern: 'preg_match($$$ARGS)'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
