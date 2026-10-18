@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sh-mapfile-here-string-length-guard
+language: bash
+severity: warning
+message: >-
+  mapfile reads from a here-string of an expansion; the here-string always
+  adds a newline, so the array gets one element even when the variable is
+  empty.
+note: >-
+  Matches only the literal syntax of mapfile with a here-string whose body is
+  an expansion. It does not check the later length test, the array contents,
+  or runtime values, and does not resolve aliases or types.
+rule:
+  pattern: 'mapfile -t $ARR <<<"$VAR"'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
