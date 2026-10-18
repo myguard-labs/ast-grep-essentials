@@ -7,9 +7,12 @@ message: >-
   Mutable dict or list literal assigned as a class attribute without a
   ClassVar annotation; this value is shared across instances.
 note: >-
-  Single-file syntactic match on a bare class-body assignment of a dict or
-  list literal. It does not resolve types, imports, or whether the attribute
-  is later mutated or reassigned per instance.
+  Single-file syntactic match on a bare class-body assignment of a dict
+  literal. The assignment must not sit inside a function (a method or a
+  nested def) between it and its nearest enclosing class; assignments in
+  if, try or with blocks of the class body still match. It does not resolve
+  types, imports, or whether the attribute is later mutated or reassigned
+  per instance.
 rule:
   kind: expression_statement
   all:
@@ -25,6 +28,11 @@ rule:
     - inside:
         kind: class_definition
         stopBy: end
+    - not:
+        inside:
+          kind: function_definition
+          stopBy:
+            kind: class_definition
 metadata:
   rule_modified_at: '2026-10-17'
   ast_grep_tested_version: 0.50.0
