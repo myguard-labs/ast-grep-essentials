@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-superglobal-read-unguarded-in-expression
+language: php
+severity: warning
+message: >-
+  Superglobal element is read directly in a call without an isset() guard in
+  the same expression.
+note: >-
+  Syntactic only; a guard in an earlier statement or via another construct is
+  not recognized, and only in_array is matched.
+rule:
+  all:
+    - pattern: 'in_array($SG[$K], $$$ARGS)'
+    - not:
+        inside:
+          kind: binary_expression
+          stopBy: end
+          has:
+            stopBy: end
+            pattern: 'isset($$$GUARD)'
+constraints:
+  SG:
+    regex: '^\$_(GET|POST)$'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
