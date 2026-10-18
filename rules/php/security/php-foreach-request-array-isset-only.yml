@@ -1,0 +1,40 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-foreach-request-array-isset-only
+language: php
+severity: warning
+message: >-
+  foreach iterates a request array element guarded only by isset(); consider
+  also checking is_array().
+note: >-
+  Syntactic only; matches an enclosing if whose condition uses isset() without
+  is_array(), and does not track aliasing, earlier checks, or other guards
+  outside that condition.
+rule:
+  all:
+    - kind: foreach_statement
+    - has:
+        kind: subscript_expression
+        regex: '^\$_(POST|GET|REQUEST)\['
+    - inside:
+        kind: if_statement
+        stopBy: end
+        has:
+          field: condition
+          kind: parenthesized_expression
+          all:
+            - has:
+                pattern: 'isset($$$ARGS)'
+                stopBy: end
+            - not:
+                has:
+                  pattern: 'is_array($$$ARGS)'
+                  stopBy: end
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
