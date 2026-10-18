@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-isset-guard-superglobal-mismatch
+language: php
+severity: warning
+message: >-
+  This GET superglobal read sits inside an if whose condition checks isset on
+  the POST superglobal with the same key, so the guard and the read use
+  different request arrays.
+note: >-
+  Purely syntactic. It matches literal GET and POST superglobal subscripts
+  with the same key text inside one if statement. It does not check else
+  branches, aliasing, or runtime values.
+rule:
+  all:
+    - pattern: '$G[$K]'
+    - inside:
+        stopBy: end
+        kind: if_statement
+        has:
+          field: condition
+          has:
+            stopBy: end
+            pattern: 'isset($P[$K])'
+constraints:
+  G:
+    regex: '^\$_GET$'
+  P:
+    regex: '^\$_POST$'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
