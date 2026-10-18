@@ -4,11 +4,12 @@ id: py-mutable-class-attr-without-classvar
 language: python
 severity: warning
 message: >-
-  Mutable dict or list literal assigned as a class attribute without a
+  Mutable dict, list or set literal assigned as a class attribute without a
   ClassVar annotation; this value is shared across instances.
 note: >-
-  Single-file syntactic match on a bare class-body assignment of a dict
-  literal. The assignment must not sit inside a function (a method or a
+  Single-file syntactic match on a bare class-body assignment of a dict,
+  list or set literal (not set(), list() or dict() calls, tuples or
+  comprehensions). An annotation that mentions ClassVar is not flagged. The assignment must not sit inside a function (a method or a
   nested def) between it and its nearest enclosing class; assignments in
   if, try or with blocks of the class body still match. It does not resolve
   types, imports, or whether the attribute is later mutated or reassigned
@@ -24,7 +25,14 @@ rule:
               pattern: '$NAME'
           - has:
               field: right
-              kind: dictionary
+              any:
+                - kind: dictionary
+                - kind: list
+                - kind: set
+          - not:
+              has:
+                field: type
+                regex: ClassVar
     - inside:
         kind: class_definition
         stopBy: end
