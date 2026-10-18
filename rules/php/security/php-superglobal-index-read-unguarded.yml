@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-superglobal-index-read-unguarded
+language: php
+severity: warning
+message: >-
+  Request superglobal index is read as an operand of a binary expression; the
+  key may be absent.
+note: >-
+  Syntactic only; matches a GET, POST or REQUEST superglobal subscript that is
+  a direct operand of a binary expression. It does not detect isset or other
+  guards elsewhere and does not check the operator.
+rule:
+  all:
+    - kind: subscript_expression
+    - regex: '^\$_(GET|POST|REQUEST)\s*\['
+    - inside:
+        kind: binary_expression
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
