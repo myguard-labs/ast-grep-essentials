@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-removed-http-vars-superglobal
+language: php
+severity: warning
+message: >-
+  Legacy HTTP POST, GET and SERVER variable arrays were removed in PHP 5.4;
+  use the modern superglobals instead.
+note: >-
+  Matches the literal variable name only; it does not check scope or whether
+  the variable was assigned locally.
+rule:
+  kind: variable_name
+  all:
+    - has:
+        kind: name
+        regex: '^HTTP_(POST|GET|SERVER)_VARS$'
+metadata:
+  rule_modified_at: '2026-10-18'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-18'
+  created_at: '2026-10-18'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
