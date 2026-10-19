@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-length-bounded-buffer-scanned-as-nul-string
+language: c
+severity: warning
+message: >-
+  Loop scans a pointer until NUL with no length bound in a function that takes
+  a size parameter.
+note: >-
+  Syntactic only; matches while (*p) in a function with a size_t parameter and
+  cannot tell whether the data is really NUL-terminated.
+rule:
+  all:
+    - pattern: 'while (*$P) $BODY'
+    - inside:
+        stopBy: end
+        kind: function_definition
+        has:
+          stopBy: end
+          kind: parameter_declaration
+          regex: size_t
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
