@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-request-uri-substring-gate
+language: php
+severity: warning
+message: Substring test on attacker-controlled request path should not gate behavior.
+note: >-
+  Matches a literal strstr call on the REQUEST_URI or PHP_SELF server entry
+  directly inside a return statement only; does not cover boolean-condition
+  uses or resolve aliasing.
+rule:
+  kind: function_call_expression
+  regex: '^strstr\(\s*\$_SERVER\[\s*[''"](REQUEST_URI|PHP_SELF)[''"]\s*\]'
+  inside:
+    kind: return_statement
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
