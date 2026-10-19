@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-request-index-unguarded
+language: php
+severity: warning
+message: >-
+  Request superglobal element (POST or GET) is passed directly as a call
+  argument without an isset or array_key_exists guard.
+note: >-
+  Syntactic check only. It matches a direct superglobal subscript used as a
+  call argument outside isset or array_key_exists calls and does not detect
+  guards elsewhere in the file.
+rule:
+  all:
+    - kind: subscript_expression
+    - regex: '^\$_(POST|GET)\['
+    - inside:
+        kind: argument
+    - not:
+        inside:
+          stopBy: end
+          regex: '^(isset|array_key_exists)\s*\('
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
