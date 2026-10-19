@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-foreach-val-no-deref
+language: c
+severity: warning
+message: Block of a ZEND_HASH_FOREACH_VAL loop uses Z_TYPE_P without any ZVAL_DEREF.
+note: >-
+  Textual and syntactic only; does not check ordering, which variable is used,
+  aliasing, or whether the value can be a reference.
+rule:
+  all:
+    - kind: compound_statement
+    - regex: 'Z_TYPE_P\('
+    - not:
+        regex: 'ZVAL_DEREF\('
+    - inside:
+        stopBy: end
+        regex: '^\s*ZEND_HASH_FOREACH_VAL\('
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
