@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hashtable-destroy-then-efree
+language: c
+severity: warning
+message: >-
+  efree() directly after zend_hash_destroy() on the same pointer; use
+  FREE_HASHTABLE() instead.
+note: >-
+  Matches only the adjacent literal statements with the same argument text; it
+  does not verify the pointer is a HashTable or track aliases.
+rule:
+  pattern: 'efree($X);'
+  follows:
+    pattern: 'zend_hash_destroy($X);'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
