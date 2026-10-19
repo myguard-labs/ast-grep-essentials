@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ci-macro-calls-case-sensitive-helper
+language: c
+severity: warning
+message: >-
+  Macro named *_ci expands to a call to a helper whose name does not end in
+  _ci.
+note: >-
+  Textual check of the macro body's leading call name; does not resolve
+  whether the callee has a case-insensitive variant or whether the body is
+  otherwise intended.
+rule:
+  kind: preproc_function_def
+  all:
+    - has:
+        field: name
+        regex: '_ci$'
+    - has:
+        field: value
+        kind: preproc_arg
+        regex: '^(\s|\\)*\w+\s*\('
+    - not:
+        has:
+          field: value
+          kind: preproc_arg
+          regex: '^(\s|\\)*\w*_ci\s*\('
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
