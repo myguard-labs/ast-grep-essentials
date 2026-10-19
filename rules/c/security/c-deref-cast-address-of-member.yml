@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-deref-cast-address-of-member
+language: c
+severity: warning
+message: >-
+  Dereferenced pointer cast of a member's address; possible strict-aliasing
+  violation.
+note: >-
+  Matches syntax only; it does not check whether the cast type matches the
+  member type, so same-type casts may be flagged.
+rule:
+  kind: pointer_expression
+  regex: '^\*'
+  has:
+    field: argument
+    kind: cast_expression
+    has:
+      field: value
+      kind: pointer_expression
+      regex: '^&'
+      has:
+        field: argument
+        kind: field_expression
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
