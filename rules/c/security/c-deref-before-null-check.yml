@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-deref-before-null-check
+language: c
+severity: warning
+message: >-
+  Pointer is dereferenced by a member write before a later null check on the
+  same pointer.
+note: >-
+  Syntactic only; matches a sibling statement p->f = v; followed by if (!p)
+  with the same identifier text, without checking reassignment or aliasing in
+  between.
+rule:
+  pattern: '$P->$F = $V;'
+  precedes:
+    stopBy: end
+    pattern: 'if (!$P) $S'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
