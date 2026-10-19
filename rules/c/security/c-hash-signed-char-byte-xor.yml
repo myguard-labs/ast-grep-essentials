@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-signed-char-byte-xor
+language: c
+severity: warning
+message: >-
+  XOR with a byte read through a plain char pointer may sign-extend; consider
+  unsigned char.
+note: >-
+  Syntactic only; matches a char pointer parameter in the same function and
+  does not resolve aliases, local declarations, or typedefs.
+rule:
+  all:
+    - pattern: '$H ^ (*$P++)'
+    - inside:
+        stopBy: end
+        kind: function_definition
+        has:
+          stopBy: end
+          kind: parameter_declaration
+          all:
+            - has:
+                kind: primitive_type
+                regex: '^char$'
+            - has:
+                kind: pointer_declarator
+                has:
+                  pattern: '$P'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
