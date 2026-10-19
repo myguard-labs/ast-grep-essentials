@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-find-out-param-single-pointer
+language: c
+severity: warning
+message: >-
+  zend_hash find call casts the address of a single-level pointer to void **,
+  hiding a possible out-parameter type mismatch.
+note: >-
+  Syntactic only; matches a same-name single-pointer declaration enclosing the
+  call without resolving scope, shadowing, or types.
+rule:
+  all:
+    - pattern: '$F($H, $I, (void **)&$X)'
+    - inside:
+        stopBy: end
+        has:
+          stopBy: end
+          pattern: '$T *$X;'
+constraints:
+  F:
+    regex: '^zend_hash_.*find'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
