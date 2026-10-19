@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-foreach-value-type-test-no-deref
+language: c
+severity: warning
+message: >-
+  Loop value is type-tested with Z_TYPE_P or Z_OBJCE_P as the first statement
+  of a block, with no preceding ZVAL_DEREF.
+note: >-
+  Syntactic approximation only; it does not verify the block belongs to a
+  ZEND_HASH_FOREACH loop or that the tested variable is the loop variable.
+rule:
+  kind: if_statement
+  nthChild: 1
+  inside:
+    kind: compound_statement
+  has:
+    kind: parenthesized_expression
+    regex: 'Z_(TYPE|OBJCE)_P\('
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
