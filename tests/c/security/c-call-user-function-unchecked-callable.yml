@@ -1,0 +1,10 @@
+id: c-call-user-function-unchecked-callable
+valid:
+  - >-
+    void f(zval *cb, zval *arg, zval *ret TSRMLS_DC) { char *name; if
+    (zend_is_callable(cb, 0, &name)) { call_user_function(CG(function_table),
+    NULL, cb, ret, 1, &arg TSRMLS_CC); } }
+invalid:
+  - >-
+    void f(zval *cb, zval *arg, zval *ret TSRMLS_DC) {
+    call_user_function(CG(function_table), NULL, cb, ret, 1, &arg TSRMLS_CC); }
