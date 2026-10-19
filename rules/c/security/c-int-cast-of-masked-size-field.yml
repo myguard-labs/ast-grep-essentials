@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-int-cast-of-masked-size-field
+language: c
+severity: warning
+message: >-
+  An (int) cast is applied to a bitwise-NOT-masked expression, which may
+  truncate large size-derived offsets.
+note: >-
+  Matches macro body text by regex because the C grammar leaves macro bodies
+  unparsed; it does not verify the operand is a struct field or used as a
+  block offset.
+rule:
+  kind: preproc_arg
+  regex: '\(int\)\s*\(.*&\s*~'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
