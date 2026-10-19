@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-sql-query-superglobal-interpolation
+language: php
+severity: warning
+message: >-
+  A wpdb query call receives a double-quoted SQL string that interpolates POST
+  or GET request data directly. Use the prepare method instead.
+note: >-
+  Matches only literal syntax, a double-quoted string argument containing a
+  POST or GET superglobal. It does not resolve aliases or check sanitization.
+rule:
+  all:
+    - kind: member_call_expression
+    - has:
+        field: object
+        regex: '^\$wpdb$'
+    - has:
+        field: name
+        regex: '^query$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          has:
+            kind: encapsed_string
+            regex: '\$_(POST|GET)'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
