@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-inline-asm-percent-equals-local-label
+language: c
+severity: warning
+message: >-
+  Inline asm template uses the GCC-specific %= operand; prefer portable
+  numeric local labels (Nf/Nb).
+note: >-
+  Matches the literal %= text in a string inside a GNU asm expression; it does
+  not check whether the use forms a label.
+rule:
+  kind: string_literal
+  regex: '%='
+  inside:
+    kind: gnu_asm_expression
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
