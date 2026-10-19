@@ -1,0 +1,15 @@
+id: c-escape-second-char-unguarded
+valid:
+  - |-
+    static unsigned char hex2c(const char *p) {
+      const char c1 = p[1];
+      const char c2 = p[1] ? p[2] : '\0';
+      return (unsigned char)(c1 | c2);
+    }
+invalid:
+  - |-
+    static unsigned char hex2c(const char *p) {
+      const char c1 = p[1];
+      const char c2 = p[2];
+      return (unsigned char)(c1 | c2);
+    }

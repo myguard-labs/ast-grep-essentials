@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-escape-second-char-unguarded
+language: c
+severity: warning
+message: >-
+  Char initializer reads index 2 unconditionally after index 1 was read; a NUL
+  at index 1 makes this read run past the string.
+note: >-
+  Syntactic only. It matches a direct p[2] initializer in a function that also
+  reads the same-named p[1]. It does not prove the string can end there or
+  detect guards outside the initializer.
+rule:
+  all:
+    - pattern: 'const char $C = $P[2];'
+    - inside:
+        stopBy: end
+        kind: function_definition
+        has:
+          stopBy: end
+          pattern: '$P[1]'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
