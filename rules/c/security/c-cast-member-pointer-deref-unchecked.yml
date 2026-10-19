@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-cast-member-pointer-deref-unchecked
+language: c
+severity: warning
+message: >-
+  Pointer initialized from a cast member access is dereferenced without a NULL
+  check.
+note: >-
+  Syntactic only; any if statement mentioning the pointer suppresses the
+  match, and no dataflow or aliasing is resolved.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        pattern: '$T *$P = ($T *)$S->$F;'
+        stopBy: end
+    - has:
+        pattern: '*$P'
+        stopBy: end
+    - not:
+        has:
+          kind: if_statement
+          stopBy: end
+          has:
+            pattern: '$P'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
