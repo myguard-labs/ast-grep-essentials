@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-call-result-reassigned-to-argument
+language: c
+severity: warning
+message: >-
+  Call result is assigned back to its own argument and then NULL-checked; use
+  a separate result variable.
+note: >-
+  Syntactic only; matches the same identifier text on adjacent statements
+  without resolving aliasing or data flow.
+rule:
+  kind: expression_statement
+  pattern: '$X = $F($X);'
+  precedes:
+    kind: if_statement
+    has:
+      field: condition
+      has:
+        pattern: '!$X'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
