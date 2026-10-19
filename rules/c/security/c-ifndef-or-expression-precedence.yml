@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ifndef-or-expression-precedence
+language: c
+severity: warning
+message: >-
+  #ifndef takes only one macro name. Any || or && expression after that name
+  is ignored. Use #if !(...) with defined() instead.
+note: >-
+  This rule checks the source text with a regex over the whole translation
+  unit, because tree-sitter-c may fail to parse these directives. It does not
+  tell real directives apart from text inside comments or strings, and it does
+  not evaluate macros.
+rule:
+  kind: translation_unit
+  regex: '(?m)^[ \t]*#[ \t]*ifndef[ \t]+[A-Za-z_][A-Za-z0-9_]*[ \t]*(\|\||&&)'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
