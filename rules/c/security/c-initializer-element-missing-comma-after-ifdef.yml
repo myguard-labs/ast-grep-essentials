@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-initializer-element-missing-comma-after-ifdef
+language: c
+severity: warning
+message: >-
+  Initializer element is followed by a preprocessor conditional and another
+  element with no separating comma.
+note: >-
+  Text-level match over the source file because tree-sitter-c does not
+  reliably parse preprocessor directives inside brace initializers; it does
+  not evaluate which configurations are active and may miss or over-report
+  unusual layouts.
+rule:
+  kind: translation_unit
+  regex: >-
+    =\s*\{[^}]*[A-Za-z0-9_)\]]\s*\n\s*#\s*(if|ifdef|ifndef|elif|else|endif)\b[^\n]*\n\s*[A-Za-z_&(]
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
