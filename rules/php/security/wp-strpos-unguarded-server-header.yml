@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-strpos-unguarded-server-header
+language: php
+severity: warning
+message: >-
+  strpos() reads a superglobal server HTTP header without an isset() or
+  empty() check in the same condition.
+note: >-
+  Syntactic only. It looks for isset or empty on a server superglobal element
+  in an enclosing binary expression, and does not follow guards elsewhere or
+  confirm they cover the same key.
+rule:
+  all:
+    - kind: function_call_expression
+    - regex: '^strpos\s*\(\s*\$_SERVER\s*\[\s*[''"]HTTP_'
+    - not:
+        inside:
+          stopBy: end
+          kind: binary_expression
+          regex: '(isset|empty)\s*\(\s*\$_SERVER\s*\['
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
