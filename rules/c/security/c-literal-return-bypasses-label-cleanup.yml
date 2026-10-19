@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-literal-return-bypasses-label-cleanup
+language: c
+severity: warning
+message: >-
+  Literal 0/NULL return in a function with a cleanup label may skip the
+  cleanup; consider goto.
+note: >-
+  Purely syntactic. It does not check that the label does cleanup or that
+  resources are live at the return.
+rule:
+  kind: return_statement
+  regex: '^return\s+(0|NULL)\s*;$'
+  all:
+    - inside:
+        kind: function_definition
+        stopBy: end
+        has:
+          kind: labeled_statement
+          stopBy: end
+    - not:
+        inside:
+          kind: labeled_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
