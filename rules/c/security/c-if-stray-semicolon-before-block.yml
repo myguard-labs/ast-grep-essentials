@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-if-stray-semicolon-before-block
+language: c
+severity: warning
+message: 'Stray semicolon after if condition; the following block always runs.'
+note: >-
+  Syntactic only; matches an if whose body is a bare ';' directly followed by
+  a sibling block, without judging intent.
+rule:
+  kind: if_statement
+  has:
+    field: consequence
+    kind: expression_statement
+    regex: '^;$'
+  precedes:
+    kind: compound_statement
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
