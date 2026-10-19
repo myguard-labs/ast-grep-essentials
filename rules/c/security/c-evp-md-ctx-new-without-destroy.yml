@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-evp-md-ctx-new-without-destroy
+language: c
+severity: warning
+message: >-
+  EVP_MD_CTX_new result has no later EVP_MD_CTX_destroy or EVP_MD_CTX_free in
+  the same scope.
+note: >-
+  Syntactic only; does not verify the released variable is the same context,
+  nor ownership transfer, returns, or cleanup in other functions.
+rule:
+  all:
+    - pattern: 'EVP_MD_CTX *$V = EVP_MD_CTX_new();'
+    - not:
+        precedes:
+          stopBy: end
+          regex: 'EVP_MD_CTX_(destroy|free)\s*\('
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
