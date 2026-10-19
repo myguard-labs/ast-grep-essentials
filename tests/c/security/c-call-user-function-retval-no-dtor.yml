@@ -1,0 +1,13 @@
+id: c-call-user-function-retval-no-dtor
+valid:
+  - >-
+    static void f(zval *func, zval **params) { zval retval; if
+    (call_user_function(CG(function_table), NULL, func, &retval, 1, params
+    TSRMLS_CC) == SUCCESS && Z_TYPE(retval) == IS_STRING) {
+    use(Z_STRVAL(retval)); zval_dtor(&retval); } }
+invalid:
+  - >-
+    static void f(zval *func, zval **params) { zval retval; if
+    (call_user_function(CG(function_table), NULL, func, &retval, 1, params
+    TSRMLS_CC) == SUCCESS && Z_TYPE(retval) == IS_STRING) {
+    use(Z_STRVAL(retval)); } }

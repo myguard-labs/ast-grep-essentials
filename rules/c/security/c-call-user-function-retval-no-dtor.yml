@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-call-user-function-retval-no-dtor
+language: c
+severity: warning
+message: >-
+  Local return zval passed to call_user_function is never destroyed with
+  zval_dtor.
+note: >-
+  Syntactic check only. It matches the literal local name retval and does not
+  track aliases, other destructors such as zval_ptr_dtor, or control flow.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        stopBy: end
+        pattern: 'call_user_function($$$A, &retval, $$$B)'
+    - not:
+        has:
+          stopBy: end
+          pattern: 'zval_dtor(&retval)'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
