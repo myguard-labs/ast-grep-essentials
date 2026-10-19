@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-asn1-utf8-len-unchecked
+language: c
+severity: warning
+message: >-
+  The return value of ASN1_STRING_to_UTF8 is passed on as a length without
+  checking for -1.
+note: >-
+  Matches only the syntax where the next sibling statement is a call that
+  takes the assigned variable as an argument. It does not do dataflow or alias
+  analysis, and it does not see checks that are farther away.
+rule:
+  kind: expression_statement
+  all:
+    - has:
+        pattern: '$LEN = ASN1_STRING_to_UTF8($$$A)'
+    - precedes:
+        kind: expression_statement
+        has:
+          pattern: '$F($$$B, $LEN, $$$C)'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
