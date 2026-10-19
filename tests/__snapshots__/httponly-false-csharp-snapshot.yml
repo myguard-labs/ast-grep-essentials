@@ -1,19 +1,34 @@
 id: httponly-false-csharp
 snapshots:
-  ? |
-    class Example {
-        void Configure() {
-            var options = new Microsoft.AspNetCore.Http.CookieOptions { HttpOnly = false };
-        }
-    }
-  : labels:
+  "class Example {\n    void Configure() {\n        isReady = false;\n        options.Cookie.HttpOnly = false;\n    }\n}\n":
+    fixed: |
+      class Example {
+          void Configure() {
+              isReady = false;
+              options.Cookie.HttpOnly = true;
+          }
+      }
+    labels:
+    - source: options.Cookie.HttpOnly = false
+      style: primary
+      start: 72
+      end: 103
+  "class Example {\n    void Configure() {\n        var options = new Microsoft.AspNetCore.Http.CookieOptions { HttpOnly = false };\n    }\n}\n":
+    fixed: |
+      class Example {
+          void Configure() {
+              var options = new Microsoft.AspNetCore.Http.CookieOptions { HttpOnly = true };
+          }
+      }
+    labels:
     - source: HttpOnly = false
       style: primary
       start: 107
       end: 123
-  ? |
-    options.Cookie.HttpOnly = false;
-  : labels:
+  "options.Cookie.HttpOnly = false;\n":
+    fixed: |
+      options.Cookie.HttpOnly = true;
+    labels:
     - source: options.Cookie.HttpOnly = false
       style: primary
       start: 0
