@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-header-macro-tsrmg-missing-include
+language: c
+severity: warning
+message: Macro expands TSRMG but this file does not include TSRM.h.
+note: >-
+  Syntactic check only. It looks for a TSRM.h include anywhere in the same
+  file. It does not resolve indirect includes or check whether ZTS is defined.
+rule:
+  kind: preproc_function_def
+  regex: 'TSRMG\s*\('
+  not:
+    inside:
+      stopBy: end
+      kind: translation_unit
+      has:
+        stopBy: end
+        kind: preproc_include
+        regex: 'TSRM\.h'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

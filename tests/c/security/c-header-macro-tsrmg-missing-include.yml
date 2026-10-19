@@ -1,0 +1,12 @@
+id: c-header-macro-tsrmg-missing-include
+valid:
+  - |-
+    #ifdef ZTS
+    # include "TSRM.h"
+    # define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)
+    #endif
+invalid:
+  - |-
+    #ifdef ZTS
+    # define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)
+    #endif
