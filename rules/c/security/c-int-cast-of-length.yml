@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-int-cast-of-length
+language: c
+severity: warning
+message: Cast of a length identifier to int may truncate a large size value.
+note: >-
+  Matches the literal cast syntax on an identifier ending in _len; does not
+  resolve the identifier's type or value range.
+rule:
+  kind: cast_expression
+  all:
+    - has:
+        field: type
+        regex: '^int$'
+    - has:
+        field: value
+        kind: identifier
+        regex: '_len$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
