@@ -1,0 +1,34 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-superglobal-compare-without-isset
+language: php
+severity: warning
+message: >-
+  Request superglobal element is compared without an isset() or
+  array_key_exists() check in the same condition.
+note: >-
+  Syntactic approximation only; it checks for an isset/array_key_exists call
+  in an enclosing binary expression, not that it guards the same key.
+rule:
+  all:
+    - kind: binary_expression
+    - regex: '^\$_(GET|POST|REQUEST)\[[^\]]*\]\s*(==|===|!=|!==)'
+    - inside:
+        kind: if_statement
+        stopBy: end
+    - not:
+        inside:
+          kind: binary_expression
+          stopBy: end
+          has:
+            kind: function_call_expression
+            regex: '^(isset|array_key_exists)\b'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
