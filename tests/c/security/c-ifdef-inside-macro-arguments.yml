@@ -1,0 +1,5 @@
+id: c-ifdef-inside-macro-arguments
+valid:
+  - "#ifdef HAVE_TLSV1_X\n#define SSL_PROTOCOLS \"a\"\n#else\n#define SSL_PROTOCOLS \"b\"\n#endif\nstatic const command_rec cmds[] = {\n\tCMD(Protocol, RAW_ARGS, SSL_PROTOCOLS)\n};\n"
+invalid:
+  - "static const command_rec cmds[] = {\n\tCMD(Protocol, RAW_ARGS,\n#ifdef HAVE_TLSV1_X\n\t\t\"a\")\n#else\n\t\t\"b\")\n#endif\n};\n"
