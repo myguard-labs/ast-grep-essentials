@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-superglobal-bare-identifier-key
+language: php
+severity: warning
+message: Superglobal array key is a bare identifier instead of a quoted string.
+note: >-
+  Matches syntax only; it does not check whether the identifier is a defined
+  constant.
+rule:
+  kind: subscript_expression
+  all:
+    - has:
+        kind: variable_name
+        regex: '^\$_(GET|POST|REQUEST|COOKIE|SERVER)$'
+    - has:
+        kind: name
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
