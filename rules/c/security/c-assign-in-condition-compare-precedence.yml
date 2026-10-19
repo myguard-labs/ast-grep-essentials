@@ -1,0 +1,39 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-assign-in-condition-compare-precedence
+language: c
+severity: warning
+message: >-
+  Assignment in an if condition has a comparison as its right-hand side; the
+  comparison binds tighter, so the variable receives 0 or 1. Parenthesize the
+  assignment.
+note: >-
+  Purely syntactic; matches a plain assignment whose right side is a
+  comparison, directly inside an if condition parentheses, without checking
+  types or intent.
+rule:
+  all:
+    - kind: assignment_expression
+    - has:
+        field: operator
+        regex: '^=$'
+    - has:
+        field: right
+        kind: binary_expression
+        has:
+          field: operator
+          regex: '^(==|!=|<|>|<=|>=)$'
+    - inside:
+        kind: parenthesized_expression
+        stopBy: neighbor
+        inside:
+          kind: if_statement
+          stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
