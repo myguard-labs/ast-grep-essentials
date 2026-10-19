@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bare-null-sentinel-in-struct-array
+language: c
+severity: warning
+message: >-
+  Array of structs is terminated by a bare NULL element; use a full struct
+  sentinel such as {NULL, 0}.
+note: >-
+  Matches only the literal syntax of a brace list with a nested brace element
+  and a direct bare NULL element; it does not check the element type or how
+  loops use the array.
+rule:
+  kind: initializer_list
+  all:
+    - has:
+        kind: initializer_list
+    - has:
+        regex: '^NULL$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

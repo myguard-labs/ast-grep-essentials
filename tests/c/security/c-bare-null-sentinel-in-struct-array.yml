@@ -1,0 +1,9 @@
+id: c-bare-null-sentinel-in-struct-array
+valid:
+  - >-
+    static const special_forms_t special_forms[] = { {"alpha", 1}, {NULL, 0}, };
+    for (pp = special_forms; pp && pp->name; pp++) { use(pp->name); }
+invalid:
+  - >-
+    static const special_forms_t special_forms[] = { {"alpha", 1}, NULL, }; for
+    (pp = special_forms; pp; pp++) { use(pp->name); }
