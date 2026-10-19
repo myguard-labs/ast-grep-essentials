@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-keyform-option-type-char
+language: c
+severity: warning
+message: >-
+  Option with a keyform name uses type char 'F'; key formats should use 'f' so
+  ENGINE is accepted.
+note: >-
+  Matches syntactically a 'F' char literal sharing a parent with a string
+  literal containing keyform; does not verify the literal is in an OPTIONS
+  table or its position.
+rule:
+  kind: char_literal
+  regex: '^''F''$'
+  inside:
+    has:
+      kind: string_literal
+      regex: keyform
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
