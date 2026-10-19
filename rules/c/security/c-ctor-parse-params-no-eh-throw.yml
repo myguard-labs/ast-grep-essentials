@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ctor-parse-params-no-eh-throw
+language: c
+severity: warning
+message: >-
+  zend_parse_parameters failure branch calls ZEND_CTOR_MAKE_NULL without a
+  preceding zend_replace_error_handling(EH_THROW, ...), so the error is not
+  thrown.
+note: >-
+  Syntactic check only; it looks for a preceding sibling statement in the same
+  block and does not follow control flow, macros, or handlers set elsewhere.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        kind: call_expression
+        regex: '^zend_parse_parameters\b'
+        stopBy: end
+    - has:
+        kind: call_expression
+        regex: '^ZEND_CTOR_MAKE_NULL\s*\('
+        stopBy: end
+    - not:
+        follows:
+          stopBy: end
+          regex: 'zend_replace_error_handling\s*\(\s*EH_THROW'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

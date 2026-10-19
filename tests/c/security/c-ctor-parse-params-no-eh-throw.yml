@@ -1,0 +1,18 @@
+id: c-ctor-parse-params-no-eh-throw
+valid:
+  - |-
+    PHP_METHOD(PDO, dbh_constructor) {
+     zend_replace_error_handling(EH_THROW, pdo_exception_ce, &zeh);
+     if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "s", &dsn)) {
+     ZEND_CTOR_MAKE_NULL();
+     return;
+     }
+    }
+invalid:
+  - |-
+    PHP_METHOD(PDO, dbh_constructor) {
+     if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "s", &dsn)) {
+     ZEND_CTOR_MAKE_NULL();
+     return;
+     }
+    }
