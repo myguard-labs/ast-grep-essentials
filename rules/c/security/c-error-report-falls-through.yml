@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-error-report-falls-through
+language: c
+severity: warning
+message: 'Error is reported but the if-block does not return; execution falls through.'
+note: >-
+  Syntactic only; checks direct statements of the block for a named error call
+  and no return statement. It does not detect goto or exit and cannot know
+  whether continuing is intentional.
+rule:
+  kind: compound_statement
+  inside:
+    kind: if_statement
+    field: consequence
+  all:
+    - has:
+        kind: expression_statement
+        has:
+          kind: call_expression
+          has:
+            field: function
+            kind: identifier
+            regex: '^(php_error|zend_error|php_error_docref)$'
+    - not:
+        has:
+          kind: return_statement
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

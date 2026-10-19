@@ -1,0 +1,30 @@
+id: c-error-report-falls-through
+snapshots:
+  "if (idx < 1) {\n    php_error(E_WARNING, \"Bad message number\");\n}\nuse(idx);":
+    labels:
+    - source: |-
+        {
+            php_error(E_WARNING, "Bad message number");
+        }
+      style: primary
+      start: 13
+      end: 64
+    - source: php_error
+      style: secondary
+      start: 19
+      end: 28
+    - source: php_error(E_WARNING, "Bad message number")
+      style: secondary
+      start: 19
+      end: 61
+    - source: php_error(E_WARNING, "Bad message number");
+      style: secondary
+      start: 19
+      end: 62
+    - source: |-
+        if (idx < 1) {
+            php_error(E_WARNING, "Bad message number");
+        }
+      style: secondary
+      start: 0
+      end: 64
