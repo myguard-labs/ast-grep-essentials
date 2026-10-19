@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-convert-hash-lookup-in-place
+language: c
+severity: warning
+message: >-
+  convert_to_* is called in a scope that also assigns a zval pointer from
+  zend_hash_str_find; converting a hash-owned value in place mutates the
+  table.
+note: >-
+  Syntactic only; does not link the converted variable to the lookup result
+  and does not check function boundaries, reassignment, or control flow.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    kind: identifier
+    regex: '^convert_to_'
+  inside:
+    stopBy: end
+    has:
+      stopBy: end
+      kind: init_declarator
+      has:
+        kind: call_expression
+        has:
+          field: function
+          regex: '^zend_hash_str_find$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
