@@ -1,0 +1,38 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-brigade-foreach-var-after-loop
+language: c
+severity: warning
+message: >-
+  The APR_BRIGADE_FOREACH loop variable is used after the loop; it points at
+  the sentinel after normal completion. Capture the bucket inside the loop.
+note: >-
+  Syntactic only; matches the same identifier text in a later construct and
+  cannot tell break paths, reassignment, or shadowing.
+rule:
+  all:
+    - kind: identifier
+    - pattern: '$E'
+    - inside:
+        stopBy: end
+        follows:
+          stopBy: end
+          all:
+            - regex: '^APR_BRIGADE_FOREACH'
+            - has:
+                stopBy: end
+                pattern: '$E'
+    - not:
+        inside:
+          stopBy: end
+          kind: compound_statement
+          follows:
+            regex: '^APR_BRIGADE_FOREACH'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
