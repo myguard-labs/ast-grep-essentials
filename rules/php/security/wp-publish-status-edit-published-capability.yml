@@ -1,0 +1,34 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-publish-status-edit-published-capability
+language: php
+severity: warning
+message: >-
+  Publishing is gated by an edit_published_* capability check, which is likely
+  the wrong capability (publish_* is expected).
+note: >-
+  Matches literal syntax only; it does not verify that the status is
+  downgraded or resolve the capability's runtime meaning.
+rule:
+  kind: if_statement
+  has:
+    field: condition
+    stopBy: end
+    all:
+      - has:
+          pattern: '''publish'''
+          stopBy: end
+      - has:
+          pattern: '!current_user_can($CAP)'
+          stopBy: end
+constraints:
+  CAP:
+    regex: '^[''"]edit_published_'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
