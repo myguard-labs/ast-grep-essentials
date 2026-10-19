@@ -1,0 +1,43 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-isset-guard-reads-other-request-key
+language: php
+severity: warning
+message: An isset guard tests one POST key but the branch reads a different POST key.
+note: >-
+  Syntactic only; compares literal key text and does not track aliasing, other
+  guards, or dataflow.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        field: condition
+        stopBy: end
+        all:
+          - kind: subscript_expression
+          - regex: '^\$_POST\['
+          - has:
+              kind: string
+              pattern: '$K'
+    - has:
+        field: condition
+        stopBy: end
+        pattern: 'isset($$$A)'
+    - has:
+        field: body
+        stopBy: end
+        all:
+          - kind: subscript_expression
+          - regex: '^\$_POST\['
+          - has:
+              kind: string
+              not:
+                pattern: '$K'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
