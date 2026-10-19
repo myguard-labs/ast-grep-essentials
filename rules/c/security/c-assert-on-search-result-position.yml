@@ -1,0 +1,21 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-assert-on-search-result-position
+language: c
+severity: warning
+message: >-
+  assert compares a pointer against the start of a buffer; this check compiles
+  out in release builds.
+note: >-
+  Matches the syntax assert(ptr > call(...)) only; it does not verify that the
+  pointer came from a search function.
+rule:
+  pattern: 'assert($P > $CALL($$$ARGS))'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
