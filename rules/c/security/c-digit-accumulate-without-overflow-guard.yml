@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-digit-accumulate-without-overflow-guard
+language: c
+severity: warning
+message: >-
+  Digit accumulation x = x * base + d inside a while loop with no earlier
+  if-check in the same block may overflow.
+note: >-
+  Syntactic only; covers while loops, does not verify the accumulator type or
+  that an earlier if actually compares it to a limit.
+rule:
+  all:
+    - pattern: '$X = $X * $B + $D;'
+    - inside:
+        stopBy: end
+        kind: while_statement
+    - not:
+        follows:
+          stopBy: end
+          kind: if_statement
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
