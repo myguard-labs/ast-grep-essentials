@@ -1,0 +1,10 @@
+id: c-apr-nonblocking-eagain-terminates
+valid:
+  - >-
+    rv = ap_get_brigade(f->next, bb, mode, block, n); if
+    (APR_STATUS_IS_EAGAIN(rv)) { return rv; } if (rv != APR_SUCCESS) { return
+    rv; }
+invalid:
+  - >-
+    rv = ap_get_brigade(f->next, bb, mode, block, n); if (rv != APR_SUCCESS) {
+    return rv; }

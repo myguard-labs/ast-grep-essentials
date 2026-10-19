@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-apr-nonblocking-eagain-terminates
+language: c
+severity: warning
+message: >-
+  ap_get_brigade result is checked only for APR_SUCCESS, so APR_EAGAIN from a
+  non-blocking read is treated as a fatal error.
+note: >-
+  Matches only the adjacent statement sequence in the shown syntax. It does
+  not follow rv through other statements, aliases, or control flow.
+rule:
+  pattern: 'if (rv != APR_SUCCESS) { return rv; }'
+  follows:
+    pattern: 'rv = ap_get_brigade($$$ARGS);'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
