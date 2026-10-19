@@ -1,0 +1,44 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-address-of-pointer-param-reinterpreted
+language: c
+severity: warning
+message: >-
+  Address of a pointer parameter is cast to a pointer type and dereferenced,
+  reading the pointer bits rather than the pointee.
+note: >-
+  Syntactic only; matches a dereferenced cast of &identifier to a pointer type
+  inside a function that declares any pointer parameter. Does not verify the
+  identifier is that parameter, nor shadowing or aliasing.
+rule:
+  all:
+    - kind: pointer_expression
+    - has:
+        field: argument
+        kind: cast_expression
+        all:
+          - has:
+              kind: type_descriptor
+              has:
+                kind: abstract_pointer_declarator
+          - has:
+              field: value
+              kind: pointer_expression
+              has:
+                kind: identifier
+    - inside:
+        kind: function_definition
+        stopBy: end
+        has:
+          kind: parameter_declaration
+          stopBy: end
+          has:
+            kind: pointer_declarator
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
