@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-int-out-param-for-long-format
+language: c
+severity: warning
+message: >-
+  An int variable's address is passed to zend_parse_parameters with a format
+  containing 'l', which writes a long.
+note: >-
+  Syntactic only. It does not check scope, the exact position of 'l' within
+  the format, or which format character matches this argument.
+rule:
+  all:
+    - pattern: 'zend_parse_parameters($N, $F, &$V);'
+    - has:
+        stopBy: end
+        kind: string_literal
+        regex: l
+    - follows:
+        stopBy: end
+        pattern: 'int $V = $I;'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
