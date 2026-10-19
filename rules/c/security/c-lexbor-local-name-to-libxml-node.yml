@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-lexbor-local-name-to-libxml-node
+language: c
+severity: warning
+message: >-
+  Result of lxb_dom_element_local_name() is passed to xmlNewDocNode(),
+  dropping any namespace prefix.
+note: >-
+  Matches a same-file declaration from lxb_dom_element_local_name() followed
+  by a declaration passing that variable to xmlNewDocNode(); no dataflow,
+  reassignment or scope analysis.
+rule:
+  all:
+    - kind: declaration
+    - has:
+        stopBy: end
+        pattern: 'xmlNewDocNode($D, $N, $NAME, $C)'
+    - follows:
+        stopBy: end
+        pattern: 'const lxb_char_t *$NAME = lxb_dom_element_local_name($$$A);'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
