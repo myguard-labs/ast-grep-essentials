@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-instantiate-fixed-class-in-method
+language: c
+severity: warning
+message: >-
+  spl_instantiate_arg_ex2 is called with a fixed spl_ce_* class entry;
+  subclasses of $this will not be instantiated.
+note: >-
+  Matches the call syntax with a literal spl_ce_* first argument; it does not
+  verify the enclosing SPL_METHOD body or resolve macros.
+rule:
+  pattern: 'spl_instantiate_arg_ex2($CE, $$$ARGS)'
+constraints:
+  CE:
+    regex: '^spl_ce_'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
