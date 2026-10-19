@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-foreach-str-key-null
+language: c
+severity: warning
+message: >-
+  ZSTR_VAL or ZSTR_LEN applied to the hash key without a NULL test in an
+  enclosing scope.
+note: >-
+  Syntactic only; it assumes the variable is named key, does not verify it is
+  the iterator key, and does not check that a guard is ordered earlier or only
+  recognizes the form key == NULL.
+rule:
+  all:
+    - kind: call_expression
+    - regex: '^ZSTR_(VAL|LEN)\(\s*key\s*\)$'
+    - not:
+        inside:
+          stopBy: end
+          has:
+            stopBy: end
+            pattern: 'key == NULL'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
