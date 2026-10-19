@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-apr-interval-time-bare-integer
+language: c
+severity: warning
+message: >-
+  apr_interval_time_t is in microseconds; wrap integer literals in
+  apr_time_from_sec or apr_time_from_msec.
+note: >-
+  Matches only a declaration initialised with a literal non-zero integer. It
+  does not track later assignments, macros, or aliases of the type.
+rule:
+  pattern: 'apr_interval_time_t $V = $N;'
+constraints:
+  'N':
+    kind: number_literal
+    not:
+      regex: '^0+$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
