@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-wpdb-request-interpolated-sql
+language: php
+severity: warning
+message: >-
+  Request superglobal is interpolated directly into a SQL string passed to a
+  wpdb query method.
+note: >-
+  Matches literal wpdb receiver syntax and a double-quoted first argument
+  containing a GET, POST, REQUEST or COOKIE superglobal; does not resolve
+  aliasing or sanitization.
+rule:
+  kind: member_call_expression
+  regex: >-
+    ^\$wpdb->(get_row|get_results|get_var|get_col|query)\s*\(\s*"[^"]*\$_(GET|POST|REQUEST|COOKIE)\b
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
