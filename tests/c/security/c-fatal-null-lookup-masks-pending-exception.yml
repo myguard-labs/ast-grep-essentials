@@ -1,0 +1,14 @@
+id: c-fatal-null-lookup-masks-pending-exception
+valid:
+  - |-
+    ce = zend_fetch_class(n, l, 0);
+    if (EG(exception) != NULL) return;
+    if (!ce) {
+     zend_error_noreturn(E_ERROR, "missing");
+    }
+invalid:
+  - |-
+    ce = zend_fetch_class(n, l, 0);
+    if (!ce) {
+     zend_error_noreturn(E_ERROR, "missing");
+    }
