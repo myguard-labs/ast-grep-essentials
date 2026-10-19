@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-filter-next-guard-passes-outer-pointer
+language: c
+severity: warning
+message: >-
+  Macro guards on (x)->next but passes the bare (x) as the filter argument
+  instead of (x)->next.
+note: >-
+  Text-based match on the macro body, which the C grammar leaves opaque. It
+  cannot verify that the guarded and passed names are identical.
+rule:
+  kind: preproc_arg
+  regex: '\(\w+\)->next\s*\?\s*\(\w+\)->next->fops->\w+\(\([^()]*\),\s*\(\w+\)\s*[,)]'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
