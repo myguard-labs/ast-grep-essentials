@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-double-pointer-param-indexed-as-char
+language: c
+severity: warning
+message: >-
+  Character literal assigned through a subscript of a char ** parameter
+  without dereferencing it first.
+note: >-
+  Syntactic only; matches by identifier name against a char ** parameter in
+  the same function and does not check shadowing or intent.
+rule:
+  all:
+    - pattern: '$A[$I] = $V'
+    - has:
+        field: right
+        kind: char_literal
+    - inside:
+        stopBy: end
+        kind: function_definition
+        has:
+          stopBy: end
+          pattern:
+            context: 'void f(char **$A) {}'
+            selector: parameter_declaration
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
