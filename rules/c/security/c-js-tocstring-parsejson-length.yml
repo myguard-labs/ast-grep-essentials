@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-js-tocstring-parsejson-length
+language: c
+severity: warning
+message: >-
+  Buffer from JS_ToCString() is passed to JS_ParseJSON() with a separate
+  length; use JS_ToCStringLen() to obtain the length.
+note: >-
+  Syntactic only; matches an earlier assignment from JS_ToCString to the same
+  variable name and does not check dataflow or the origin of the length.
+rule:
+  pattern: '$R = JS_ParseJSON($CX, $P, $L, $F);'
+  follows:
+    stopBy: end
+    pattern: '$P = JS_ToCString($$$A);'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
