@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-left-shift-negative-literal
+language: c
+severity: warning
+message: >-
+  Left shift of a negated integer literal is undefined behaviour; use an
+  unsigned constant such as ~0U.
+note: >-
+  Matches only the literal syntax of a negated numeric literal (optionally
+  parenthesized) on the left of <<; it does not resolve macros, constants, or
+  types.
+rule:
+  pattern: '$L << $X'
+constraints:
+  L:
+    regex: '^\(*\s*-\s*[0-9][0-9a-zA-Z_.]*\s*\)*$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
