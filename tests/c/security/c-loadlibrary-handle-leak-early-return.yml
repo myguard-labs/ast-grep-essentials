@@ -1,0 +1,9 @@
+id: c-loadlibrary-handle-leak-early-return
+valid:
+  - >-
+    HMODULE dll = LoadLibraryA("x"); FARPROC p = GetProcAddress(dll, "y"); if (p
+    == NULL) { FreeLibrary(dll); return -1; }
+invalid:
+  - >-
+    HMODULE dll = LoadLibraryA("x"); FARPROC p = GetProcAddress(dll, "y"); if (p
+    == NULL) { return -1; }

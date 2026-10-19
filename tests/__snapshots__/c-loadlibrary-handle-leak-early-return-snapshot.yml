@@ -1,0 +1,16 @@
+id: c-loadlibrary-handle-leak-early-return
+snapshots:
+  "HMODULE dll = LoadLibraryA(\"x\"); FARPROC p = GetProcAddress(dll, \"y\"); if (p == NULL) { return -1; }":
+    labels:
+    - source: if (p == NULL) { return -1; }
+      style: primary
+      start: 71
+      end: 100
+    - source: return -1;
+      style: secondary
+      start: 88
+      end: 98
+    - source: FARPROC p = GetProcAddress(dll, "y");
+      style: secondary
+      start: 33
+      end: 70

@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-loadlibrary-handle-leak-early-return
+language: c
+severity: warning
+message: >-
+  Early return after a NULL GetProcAddress result does not call FreeLibrary on
+  the loaded library handle.
+note: >-
+  This is a syntactic check of a NULL-check block that returns and whose text
+  never mentions FreeLibrary, placed after a GetProcAddress declaration. It
+  does not track the handle's dataflow or aliasing, and it does not see
+  cleanup done elsewhere, such as at goto labels or in wrappers.
+rule:
+  all:
+    - pattern: 'if ($P == NULL) { $$$BODY }'
+    - has:
+        kind: return_statement
+        stopBy: end
+    - not:
+        regex: FreeLibrary
+    - follows:
+        pattern: 'FARPROC $P = GetProcAddress($$$GARGS);'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
