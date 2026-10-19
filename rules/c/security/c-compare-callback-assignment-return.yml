@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-compare-callback-assignment-return
+language: c
+severity: warning
+message: >-
+  Comparator returns an assignment between member accesses; '==' was likely
+  intended.
+note: >-
+  Syntactic match only; the function name suffix is checked textually and no
+  types or intent are resolved.
+rule:
+  all:
+    - pattern: 'return $L = $R;'
+    - inside:
+        kind: function_definition
+        stopBy: end
+        has:
+          field: declarator
+          has:
+            kind: identifier
+            regex: '_compare$'
+            stopBy: end
+constraints:
+  L:
+    kind: field_expression
+  R:
+    kind: field_expression
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
