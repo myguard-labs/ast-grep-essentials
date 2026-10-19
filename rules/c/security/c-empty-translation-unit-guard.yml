@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-empty-translation-unit-guard
+language: c
+severity: warning
+message: >-
+  This file's only top-level content is a single conditional-compilation
+  block, so it may be an empty translation unit when the guard is false.
+note: >-
+  Matches syntax only. It does not evaluate the macro, so it cannot tell
+  whether the guard is actually false in any build.
+rule:
+  kind: translation_unit
+  all:
+    - has:
+        kind: preproc_ifdef
+        nthChild: 1
+    - not:
+        has:
+          nthChild: 2
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
