@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-declared-pointer-deref-unassigned
+language: c
+severity: warning
+message: >-
+  Member write through a local pointer that was declared without an
+  initializer and not assigned earlier.
+note: >-
+  Syntactic, flow-insensitive check on sibling statements only; it does not
+  track aliasing, assignments in nested blocks, or address-taking.
+rule:
+  all:
+    - pattern: '$P->$F = $V;'
+    - follows:
+        pattern: '$T *$P;'
+        stopBy: end
+    - not:
+        follows:
+          pattern: '$P = $V2;'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
