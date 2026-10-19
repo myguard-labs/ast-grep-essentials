@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-index-len-minus-one-unguarded
+language: c
+severity: warning
+message: >-
+  Index s[n - 1] in a condition with no preceding nonzero test of n in the
+  same condition.
+note: >-
+  Syntactic only. Any enclosing && in the condition suppresses the match
+  without checking that its left side tests the same n. Values and earlier
+  guards are not analysed.
+rule:
+  all:
+    - pattern: '$S[$N - 1]'
+    - inside:
+        kind: parenthesized_expression
+        stopBy: end
+    - not:
+        inside:
+          pattern: '$A && $B'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
