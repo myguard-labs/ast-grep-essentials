@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-asn1-adb-duplicate-nid
+language: c
+severity: warning
+message: >-
+  This ADB_ENTRY repeats the NID of an earlier sibling ADB_ENTRY in the same
+  table.
+note: >-
+  Matches textually identical first arguments among sibling ADB_ENTRY calls;
+  it does not resolve macros, aliases, or confirm the entries belong to one
+  ASN1_ADB table.
+rule:
+  pattern: 'ADB_ENTRY($NID, $$$A)'
+  follows:
+    pattern: 'ADB_ENTRY($NID, $$$B)'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
