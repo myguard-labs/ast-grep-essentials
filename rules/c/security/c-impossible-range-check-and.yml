@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-impossible-range-check-and
+language: c
+severity: warning
+message: >-
+  Condition combines a lower-bound check below INT_MIN and an upper-bound
+  check above INT_MAX with &&, so it is always false. Use || instead.
+note: >-
+  Matches text shape only inside macro bodies (preproc_arg). It does not
+  verify that both operands are the same expression, and it does not resolve
+  macros or types.
+rule:
+  kind: preproc_arg
+  regex: '<\s*INT_MIN\s*\)?\s*&&[^;|]*>\s*INT_MAX'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
