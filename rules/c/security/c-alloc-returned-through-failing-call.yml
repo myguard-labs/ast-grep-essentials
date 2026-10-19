@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-alloc-returned-through-failing-call
+language: c
+severity: warning
+message: >-
+  Allocated pointer is stored in a local and the function returns a call
+  result directly; if that call fails the allocation may leak.
+note: >-
+  Syntactic only; does not verify the call takes the same local, can fail, or
+  that no free occurs elsewhere.
+rule:
+  kind: return_statement
+  has:
+    kind: call_expression
+  follows:
+    stopBy: end
+    kind: declaration
+    has:
+      kind: init_declarator
+      has:
+        kind: call_expression
+        has:
+          field: function
+          regex: '^(pemalloc|emalloc|malloc)$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

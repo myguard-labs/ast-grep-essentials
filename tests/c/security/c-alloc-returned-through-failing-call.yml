@@ -1,0 +1,7 @@
+id: c-alloc-returned-through-failing-call
+valid:
+  - >-
+    void *p = pemalloc(n, 0); if (!zend_hash_add_ptr(ht, key, p)) { pefree(p,
+    0); } return p;
+invalid:
+  - 'void *p = pemalloc(n, 0); return zend_hash_add_ptr(ht, key, p);'
