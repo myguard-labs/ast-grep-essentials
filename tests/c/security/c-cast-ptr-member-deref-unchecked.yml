@@ -1,0 +1,11 @@
+id: c-cast-ptr-member-deref-unchecked
+valid:
+  - |-
+    struct res { int status; };
+    struct obj { void *ptr; };
+    int f(struct obj *o) { if (!o->ptr) return 0; return ((struct res *)o->ptr)->status; }
+invalid:
+  - |-
+    struct res { int status; };
+    struct obj { void *ptr; };
+    int f(struct obj *o) { return ((struct res *)o->ptr)->status; }

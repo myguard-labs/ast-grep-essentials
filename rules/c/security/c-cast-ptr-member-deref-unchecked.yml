@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-cast-ptr-member-deref-unchecked
+language: c
+severity: warning
+message: Pointer member is cast and dereferenced in a function with no if-check.
+note: >-
+  Approximation; any if statement in the function counts as a guard, and it
+  does not verify the checked expression is the same pointer.
+rule:
+  all:
+    - pattern: '(($T)$E->$F)->$G'
+    - inside:
+        kind: function_definition
+        stopBy: end
+        not:
+          has:
+            kind: if_statement
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
