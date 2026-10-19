@@ -1,0 +1,21 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-last-char-check-indexes-length
+language: c
+severity: warning
+message: >-
+  Subscript uses the length itself after a len > 0 check; this reads one past
+  the last character. Consider buf[len - 1].
+note: >-
+  Syntactic only; matches the literal shape `len > 0 && buf[len] != x` and
+  does not cover `==` or verify buffer size semantics.
+rule:
+  pattern: '$LEN > 0 && $BUF[$LEN] != $X'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
