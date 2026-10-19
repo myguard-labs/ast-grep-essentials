@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-generate-ex-into-null-initialised-pointer
+language: c
+severity: warning
+message: >-
+  Pointer initialised to NULL is passed as the output object of a
+  *_generate_parameters_ex call.
+note: >-
+  Syntactic only; it does not check for intervening assignments or allocations
+  between the declaration and the call.
+rule:
+  all:
+    - pattern: '$F($P, $$$ARGS);'
+    - follows:
+        pattern: '$T *$P = NULL;'
+        stopBy: end
+constraints:
+  F:
+    regex: '_generate_parameters_ex$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
