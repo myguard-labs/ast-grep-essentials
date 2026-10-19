@@ -1,0 +1,18 @@
+id: c-if-body-preproc-branch-divergence
+valid:
+  - |-
+    if (md == NULL) {
+    #ifndef FIPS
+        md = EVP_sha1();
+    #else
+        return 0;
+    #endif
+    }
+invalid:
+  - |
+    if (md == NULL)
+    #ifndef FIPS
+        md = EVP_sha1();
+    #else
+        return 0;
+    #endif

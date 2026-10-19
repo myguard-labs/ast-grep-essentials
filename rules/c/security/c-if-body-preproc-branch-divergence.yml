@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-if-body-preproc-branch-divergence
+language: c
+severity: warning
+message: >-
+  Unbraced if body is split by a preprocessor conditional; the controlled
+  statement differs by build configuration.
+note: >-
+  Matches a preprocessor ifdef/ifndef block whose immediately preceding
+  sibling ends in a closing parenthesis, as in an unbraced if condition; it
+  does not evaluate macros or build configurations and may also match other
+  directive placements after parenthesized syntax.
+rule:
+  all:
+    - kind: preproc_ifdef
+    - follows:
+        regex: '\)$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

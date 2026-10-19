@@ -1,0 +1,17 @@
+id: c-if-body-preproc-branch-divergence
+snapshots:
+  "if (md == NULL)\n#ifndef FIPS\n    md = EVP_sha1();\n#else\n    return 0;\n#endif\n":
+    labels:
+    - source: |-
+        #ifndef FIPS
+            md = EVP_sha1();
+        #else
+            return 0;
+        #endif
+      style: primary
+      start: 16
+      end: 76
+    - source: if (md == NULL)
+      style: secondary
+      start: 0
+      end: 15
