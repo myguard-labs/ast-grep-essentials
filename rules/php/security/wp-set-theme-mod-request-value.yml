@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-set-theme-mod-request-value
+language: php
+severity: warning
+message: 'set_theme_mod() stores a raw request superglobal element; sanitize it first.'
+note: >-
+  Matches only a literal request superglobal element (REQUEST, GET or POST) as
+  the second argument. It does not track values through variables or resolve a
+  shadowed set_theme_mod.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '^set_theme_mod$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          nthChild: 2
+          has:
+            kind: subscript_expression
+            regex: '^\$_(REQUEST|GET|POST)\s*\['
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
