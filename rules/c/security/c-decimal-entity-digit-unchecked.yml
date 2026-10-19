@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-decimal-entity-digit-unchecked
+language: c
+severity: warning
+message: >-
+  Character minus '0' is accumulated into a number without a preceding digit
+  range check.
+note: >-
+  Syntactic only. It checks for a preceding sibling if statement, not whether
+  that check actually validates digits.
+rule:
+  pattern: '$E = $E * 10 + ($C - ''0'');'
+  not:
+    follows:
+      kind: if_statement
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
