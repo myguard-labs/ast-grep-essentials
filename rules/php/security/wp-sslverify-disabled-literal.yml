@@ -7,7 +7,8 @@ message: >-
   This array pair sets 'sslverify' to false, which disables TLS certificate
   verification for the HTTP request.
 note: >-
-  Matches only a single-file syntactic array pair with the key 'sslverify' and
+  Matches only a single-file syntactic array pair with the key 'sslverify' (single or
+  double quoted, literal content only; an interpolated key is not matched) and
   the literal false value. It does not resolve whether the array is passed to
   an HTTP call, whether the value is overridden later, or any runtime or
   filter behavior.
@@ -16,8 +17,10 @@ rule:
   pattern: $ELEMENT
   all:
     - has:
-        kind: string
         regex: '^[''"]sslverify[''"]$'
+        any:
+          - kind: string
+          - kind: encapsed_string
     - has:
         kind: boolean
         regex: '^(?i)false$'
@@ -35,8 +38,10 @@ rewriters:
         kind: array_element_initializer
       follows:
         stopBy: end
-        kind: string
         regex: '^[''"]sslverify[''"]$'
+        any:
+          - kind: string
+          - kind: encapsed_string
     fix: 'true'
 fix: $FIXED
 metadata:
