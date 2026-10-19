@@ -1,0 +1,16 @@
+id: c-global-fd-unlock-without-sentinel-check
+snapshots:
+  "static int lock_file;\nstatic void unlock_all(void) {\n    struct flock fl;\n    fcntl(lock_file, F_SETLK, &fl);\n}":
+    labels:
+    - source: fcntl(lock_file, F_SETLK, &fl)
+      style: primary
+      start: 78
+      end: 108
+    - source: |-
+        static void unlock_all(void) {
+            struct flock fl;
+            fcntl(lock_file, F_SETLK, &fl);
+        }
+      style: secondary
+      start: 22
+      end: 111

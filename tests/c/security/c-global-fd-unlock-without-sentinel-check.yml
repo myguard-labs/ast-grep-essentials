@@ -1,0 +1,16 @@
+id: c-global-fd-unlock-without-sentinel-check
+valid:
+  - |-
+    static int lock_file;
+    static void unlock_all(void) {
+        struct flock fl;
+        if (lock_file == -1) return;
+        fcntl(lock_file, F_SETLK, &fl);
+    }
+invalid:
+  - |-
+    static int lock_file;
+    static void unlock_all(void) {
+        struct flock fl;
+        fcntl(lock_file, F_SETLK, &fl);
+    }
