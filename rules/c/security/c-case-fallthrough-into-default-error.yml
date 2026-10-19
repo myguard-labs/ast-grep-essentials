@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-case-fallthrough-into-default-error
+language: c
+severity: warning
+message: >-
+  This case has no direct break and falls through into a default label that
+  jumps to an error exit.
+note: >-
+  Syntactic only. It checks that the case has no direct break statement and
+  that the next sibling label is a default containing a direct goto. It does
+  not check reachability, and intentional fallthrough is possible.
+rule:
+  all:
+    - kind: case_statement
+    - regex: '^case'
+    - not:
+        has:
+          kind: break_statement
+    - precedes:
+        kind: case_statement
+        regex: '^default'
+        has:
+          kind: goto_statement
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
