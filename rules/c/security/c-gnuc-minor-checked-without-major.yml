@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-gnuc-minor-checked-without-major
+language: c
+severity: warning
+message: >-
+  __GNUC_MINOR__ is compared after a non-strict __GNUC__ check, which rejects
+  later major releases with a smaller minor.
+note: >-
+  Matches literal syntax only; it excludes conjunctions wrapped in parentheses
+  (e.g. as an alternative to a strict major test) without verifying the
+  surrounding logic.
+rule:
+  all:
+    - kind: binary_expression
+    - pattern: '__GNUC__ >= $N && __GNUC_MINOR__ >= $M'
+    - not:
+        inside:
+          kind: parenthesized_expression
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
