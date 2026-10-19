@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ifdef-guards-own-define
+language: c
+severity: warning
+message: >-
+  #ifdef tests a macro and then defines that same macro; the define only runs
+  if it is already defined. Likely meant #ifndef.
+note: >-
+  Matches the literal directive shape only; it does not check other macro
+  definitions, includes, or the build configuration.
+rule:
+  pattern: |
+    #ifdef $NAME
+    #define $NAME $VAL
+    #endif
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
