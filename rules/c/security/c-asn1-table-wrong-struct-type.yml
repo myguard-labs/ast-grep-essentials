@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-asn1-table-wrong-struct-type
+language: c
+severity: warning
+message: >-
+  ASN1_SEQUENCE template member names a different struct type than the
+  template.
+note: >-
+  Purely syntactic; only checks ASN1_IMP_SET_OF_OPT member type text against
+  the ASN1_SEQUENCE name, with no macro expansion or type resolution.
+rule:
+  all:
+    - pattern: 'ASN1_SEQUENCE($T) = { ASN1_IMP_SET_OF_OPT($U, $$$A) }'
+    - not:
+        pattern: 'ASN1_SEQUENCE($T) = { ASN1_IMP_SET_OF_OPT($T, $$$A) }'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
