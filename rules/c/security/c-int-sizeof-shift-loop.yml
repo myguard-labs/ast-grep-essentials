@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-int-sizeof-shift-loop
+language: c
+severity: warning
+message: >-
+  An int variable initialised from sizeof is doubled with <<= 1 in a later
+  loop; it may overflow against a size_t bound.
+note: >-
+  Syntactic match only; does not check the comparison type, the loop bound, or
+  whether overflow is actually reachable.
+rule:
+  all:
+    - pattern: 'int $V = $INIT;'
+    - has:
+        kind: init_declarator
+        has:
+          kind: sizeof_expression
+    - precedes:
+        stopBy: end
+        kind: for_statement
+        has:
+          stopBy: end
+          pattern: '$V <<= 1'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
