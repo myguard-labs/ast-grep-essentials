@@ -1,0 +1,9 @@
+id: c-log-macro-without-level-guard
+valid:
+  - >-
+    #define TLLM_LOG(level, ...) (logger_enabled(level) ?
+    ::tensorrt_llm::common::log((level), __VA_ARGS__) : (void) 0)
+invalid:
+  - >-
+    #define TLLM_LOG(level, ...) ::tensorrt_llm::common::log((level),
+    __VA_ARGS__)

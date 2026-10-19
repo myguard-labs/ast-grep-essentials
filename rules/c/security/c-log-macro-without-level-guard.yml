@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-log-macro-without-level-guard
+language: c
+severity: warning
+message: >-
+  Variadic logging macro calls the log function directly with no level check,
+  so arguments are evaluated even when filtered out.
+note: >-
+  Matches macro body text only; it does not resolve whether the called
+  function checks the level internally.
+rule:
+  kind: preproc_function_def
+  has:
+    field: value
+    kind: preproc_arg
+    all:
+      - regex: 'log\s*\(.*__VA_ARGS__'
+      - not:
+          regex: '\?|enabled|isEnabled|if\s*\('
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
