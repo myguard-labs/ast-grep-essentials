@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ifdef-extra-tokens
+language: c
+severity: warning
+message: >-
+  #ifdef/#ifndef takes a single macro name; extra tokens are ignored by the
+  preprocessor.
+note: >-
+  Text-based line match on the whole translation unit; it does not check macro
+  definitions, comments beyond a leading slash, or multi-line continuations.
+rule:
+  kind: translation_unit
+  regex: '(?m)^[ \t]*#[ \t]*ifn?def[ \t]+\w+[ \t]+[^ \t\r\n/]'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
