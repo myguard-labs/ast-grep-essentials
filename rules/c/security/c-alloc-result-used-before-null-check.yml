@@ -1,0 +1,39 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-alloc-result-used-before-null-check
+language: c
+severity: warning
+message: >-
+  Value assigned from a call is passed to another call before it is tested for
+  NULL.
+note: >-
+  Purely syntactic sibling-order check; it does not verify the callee is an
+  allocator or that the variable is unchanged between statements.
+rule:
+  all:
+    - kind: expression_statement
+    - has:
+        kind: call_expression
+        has:
+          kind: argument_list
+          has:
+            pattern: '$V'
+    - follows:
+        stopBy: end
+        kind: expression_statement
+        has:
+          pattern: '$V = $C($$$ARGS)'
+    - precedes:
+        stopBy: end
+        kind: if_statement
+        has:
+          stopBy: end
+          pattern: '!$V'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
