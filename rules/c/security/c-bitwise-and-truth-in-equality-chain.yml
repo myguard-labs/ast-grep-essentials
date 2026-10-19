@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bitwise-and-truth-in-equality-chain
+language: c
+severity: warning
+message: >-
+  Bitwise & used as a truth value next to an == comparison of the same
+  expression; the mask test may have been meant as an equality.
+note: >-
+  Matches only the literal syntax `X & C || X == D` with the same text for X.
+  It does not resolve types or check that the operands are constants. It does
+  not cover the reversed order or the && form.
+rule:
+  pattern: '$A & $C || $A == $D'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
