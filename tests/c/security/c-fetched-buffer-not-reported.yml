@@ -1,0 +1,9 @@
+id: c-fetched-buffer-not-reported
+valid:
+  - >-
+    errcode = php_oci_fetch_errmsg(err_p, &errbuf); if (errbuf) {
+    php_error_docref(NULL, E_WARNING, "%s", errbuf); efree(errbuf); }
+invalid:
+  - >-
+    php_error_docref(NULL, E_WARNING, "OCI_NO_DATA"); errcode =
+    php_oci_fetch_errmsg(err_p, &errbuf); if (errbuf) { efree(errbuf); }

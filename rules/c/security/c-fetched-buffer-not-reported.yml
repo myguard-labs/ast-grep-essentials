@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-fetched-buffer-not-reported
+language: c
+severity: warning
+message: >-
+  Buffer is freed without a preceding sibling statement passing it to
+  php_error_docref.
+note: >-
+  Syntactic only; it does not verify the buffer was filled by a fetch call or
+  track aliases or dataflow.
+rule:
+  all:
+    - pattern: 'efree($B);'
+    - not:
+        follows:
+          pattern: 'php_error_docref($$$A, $B);'
+          stopBy: neighbor
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
