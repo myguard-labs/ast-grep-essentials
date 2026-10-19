@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-foreach-wrong-base-after-init
+language: c
+severity: warning
+message: >-
+  ZEND_HASH_FOREACH iterates the same hash expression that zend_hash_init just
+  initialized, so it walks an empty table.
+note: >-
+  Matches textually identical expressions only; does not check that no entries
+  were added between the init and the loop, nor aliasing.
+rule:
+  pattern: 'ZEND_HASH_FOREACH_STR_KEY_PTR($H, $$$ARGS)'
+  inside:
+    kind: expression_statement
+    follows:
+      stopBy: end
+      has:
+        pattern: 'zend_hash_init($H, $$$REST)'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
