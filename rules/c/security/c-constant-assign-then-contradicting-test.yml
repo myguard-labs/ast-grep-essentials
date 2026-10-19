@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-constant-assign-then-contradicting-test
+language: c
+severity: warning
+message: >-
+  Variable is assigned a nonzero constant immediately before a condition
+  testing its negation; the branch is dead.
+note: >-
+  Matches only adjacent statements syntactically; it does not track aliasing,
+  macros, or other dataflow.
+rule:
+  all:
+    - kind: if_statement
+    - follows:
+        pattern: '$V = $N;'
+    - has:
+        field: condition
+        has:
+          pattern: '!$V'
+          stopBy: end
+constraints:
+  'N':
+    regex: '^[1-9][0-9]*$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
