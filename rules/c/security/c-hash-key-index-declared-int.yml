@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-key-index-declared-int
+language: c
+severity: warning
+message: >-
+  An int variable receives the index key from zend_hash_get_current_key_ex;
+  hash index keys are unsigned long and may truncate.
+note: >-
+  Matches only a preceding sibling `int` declaration with the same name; it
+  does not resolve scopes, shadowing, or aliases.
+rule:
+  all:
+    - pattern: 'zend_hash_get_current_key_ex($H, $KEY, $LEN, &$K, $$$REST);'
+    - follows:
+        pattern: 'int $K;'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
