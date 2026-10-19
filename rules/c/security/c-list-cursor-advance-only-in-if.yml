@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-list-cursor-advance-only-in-if
+language: c
+severity: warning
+message: >-
+  Loop cursor is advanced only inside an if branch with no else; the loop may
+  never terminate when the condition is false.
+note: >-
+  Syntactic only; matches a while whose body is solely an if that advances the
+  cursor, with no else text in the loop. It does not analyze advances
+  elsewhere or other exits.
+rule:
+  all:
+    - pattern: |
+        while ($P != NULL) { if ($C) { $P = $P->next; } }
+    - not:
+        regex: '\belse\b'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
