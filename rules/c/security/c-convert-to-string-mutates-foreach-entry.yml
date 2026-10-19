@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-convert-to-string-mutates-foreach-entry
+language: c
+severity: warning
+message: >-
+  convert_to_string rewrites its argument in place; if this is a hash foreach
+  entry it mutates the container. Consider zval_get_string.
+note: >-
+  Matches direct convert_to_string calls syntactically; does not verify the
+  argument is a ZEND_HASH_FOREACH_VAL loop variable.
+rule:
+  kind: call_expression
+  has:
+    kind: identifier
+    regex: '^convert_to_string$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

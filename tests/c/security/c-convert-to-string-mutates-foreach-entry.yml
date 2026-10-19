@@ -1,0 +1,9 @@
+id: c-convert-to-string-mutates-foreach-entry
+valid:
+  - >-
+    ZEND_HASH_FOREACH_VAL(arr, entry) { zend_string *s = zval_get_string(entry);
+    zend_string_release(s); } ZEND_HASH_FOREACH_END();
+invalid:
+  - >-
+    ZEND_HASH_FOREACH_VAL(arr, entry) { convert_to_string(entry); }
+    ZEND_HASH_FOREACH_END();
