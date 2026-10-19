@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-decl-after-statement-c89
+language: c
+severity: warning
+message: >-
+  Declaration with initializer appears after an executable statement, which
+  C89 forbids.
+note: >-
+  Syntactic only. It matches an initialized declaration that follows an
+  expression statement in the same block. It does not detect other statement
+  kinds or check which C standard the project targets.
+rule:
+  kind: declaration
+  has:
+    kind: init_declarator
+  inside:
+    kind: compound_statement
+  follows:
+    stopBy: end
+    kind: expression_statement
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
