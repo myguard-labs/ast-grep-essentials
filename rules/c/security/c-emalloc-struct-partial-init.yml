@@ -1,0 +1,21 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-emalloc-struct-partial-init
+language: c
+severity: warning
+message: >-
+  Pointer assigned from emalloc(sizeof(T)) is not zeroed; verify all fields
+  are initialized.
+note: >-
+  Syntactic heuristic only; it does not check which fields are assigned,
+  memset use, or other initialization in the function.
+rule:
+  pattern: '$P = emalloc(sizeof($T))'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
