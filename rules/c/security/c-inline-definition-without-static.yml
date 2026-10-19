@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-inline-definition-without-static
+language: c
+severity: warning
+message: >-
+  Inline function definition without static; under C99 semantics it may emit
+  no external symbol.
+note: >-
+  Matches only the specifier syntax of this definition; it does not check for
+  an extern declaration elsewhere or resolve macros.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        kind: storage_class_specifier
+        regex: '^inline$'
+    - not:
+        has:
+          kind: storage_class_specifier
+          regex: '^static$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
