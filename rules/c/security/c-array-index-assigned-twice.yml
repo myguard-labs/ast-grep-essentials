@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-array-index-assigned-twice
+language: c
+severity: warning
+message: >-
+  This array slot was already assigned earlier in the same block; the earlier
+  write is overwritten.
+note: >-
+  Matches repeated literal-index assignments on the same array text among
+  sibling statements. It does not check for intervening reads, loops, or
+  preprocessor branches.
+rule:
+  pattern: '$A[$I] = $V;'
+  follows:
+    pattern: '$A[$I] = $W;'
+    stopBy: end
+constraints:
+  I:
+    kind: number_literal
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
