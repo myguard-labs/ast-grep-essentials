@@ -1,0 +1,9 @@
+id: c-libxml-dumpmem-size-guard-no-ptr
+valid:
+  - >-
+    htmlDocDumpMemoryFormat(docp, &mem, &size, format); if (!size || !mem) {
+    RETVAL_FALSE; } else { RETVAL_STRINGL((const char *) mem, size); }
+invalid:
+  - >-
+    htmlDocDumpMemoryFormat(docp, &mem, &size, format); if (!size) {
+    RETVAL_FALSE; } else { RETVAL_STRINGL((const char *) mem, size); }

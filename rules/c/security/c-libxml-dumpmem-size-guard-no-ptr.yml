@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-libxml-dumpmem-size-guard-no-ptr
+language: c
+severity: warning
+message: >-
+  Size-only check before using a dumped buffer in the else branch; the buffer
+  pointer is not tested.
+note: >-
+  Syntactic only; does not verify that the tested variable is the size
+  out-parameter of a libxml dump call or that the buffer is used in the else
+  branch.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        field: condition
+        kind: parenthesized_expression
+        has:
+          kind: unary_expression
+          pattern: '!$SIZE'
+    - has:
+        field: alternative
+        regex: '.'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
