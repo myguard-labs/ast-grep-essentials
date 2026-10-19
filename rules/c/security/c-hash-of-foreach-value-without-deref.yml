@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-of-foreach-value-without-deref
+language: c
+severity: warning
+message: >-
+  HASH_OF() is used in a block that has no ZVAL_DEREF() call. A hash value
+  wrapped in a reference would be missed.
+note: >-
+  Purely syntactic. Matches a HASH_OF call expression when none of its
+  enclosing compound statements contains a ZVAL_DEREF call. It does not check
+  that both calls use the same variable, that ZVAL_DEREF comes before HASH_OF,
+  that the argument is the foreach loop value, or the zval's runtime type.
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        kind: identifier
+        regex: '^HASH_OF$'
+    - not:
+        inside:
+          stopBy: end
+          kind: compound_statement
+          has:
+            stopBy: end
+            kind: call_expression
+            has:
+              kind: identifier
+              regex: '^ZVAL_DEREF$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

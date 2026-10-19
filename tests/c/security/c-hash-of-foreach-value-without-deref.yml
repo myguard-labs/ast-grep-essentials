@@ -1,0 +1,9 @@
+id: c-hash-of-foreach-value-without-deref
+valid:
+  - >-
+    ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, pIter) { ZVAL_DEREF(pIter);
+    HashTable *sub = HASH_OF(pIter); use(sub); } ZEND_HASH_FOREACH_END();
+invalid:
+  - >-
+    ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, pIter) { HashTable *sub =
+    HASH_OF(pIter); use(sub); } ZEND_HASH_FOREACH_END();
