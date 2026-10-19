@@ -3,7 +3,14 @@ valid:
   - >-
     $user_name = isset( $_POST['user_name'] ) ? trim( wp_unslash(
     $_POST['user_name'] ) ) : '';
+  - >-
+    $user_name = empty( $_POST['user_name'] ) ? $fallback : 'admin';
+  - >-
+    $user_name = isset( $_POST['user_name'] ) ? 'admin' : $fallback;
 invalid:
   - >-
     $user_name = isset( $_POST['user_name'] ) ? trim( wp_unslash(
     $_POST['user_name'] ) ) : 'admin';
+  - >-
+    wp_create_user( isset( $_POST['user_name'] ) ? $_POST['user_name'] : 'admin',
+    $pass );
