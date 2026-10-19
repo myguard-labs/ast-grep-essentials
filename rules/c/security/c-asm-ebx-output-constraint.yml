@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-asm-ebx-output-constraint
+language: c
+severity: warning
+message: >-
+  Inline asm output operand is bound to ebx, which can clobber the PIC GOT
+  pointer on i386.
+note: >-
+  Matches the literal "=b" output constraint syntax only. It does not check
+  the target architecture, whether PIC is enabled, or whether ebx is saved and
+  restored.
+rule:
+  kind: gnu_asm_output_operand
+  has:
+    kind: string_literal
+    regex: '^"[=+]&?b"$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
