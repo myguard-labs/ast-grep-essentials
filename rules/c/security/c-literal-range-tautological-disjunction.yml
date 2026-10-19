@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-literal-range-tautological-disjunction
+language: c
+severity: warning
+message: 'Range check joined with || is likely always true; probably meant &&.'
+note: >-
+  Matches the syntax x >= LITERAL || x <= LITERAL on the same identifier. It
+  does not compare the literal values, so cases where A > B + 1 (not a
+  tautology) are also matched.
+rule:
+  pattern: '$X >= $A || $X <= $B'
+constraints:
+  X:
+    kind: identifier
+  A:
+    kind: number_literal
+  B:
+    kind: number_literal
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
