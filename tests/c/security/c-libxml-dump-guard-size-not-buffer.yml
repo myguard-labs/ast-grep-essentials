@@ -1,0 +1,9 @@
+id: c-libxml-dump-guard-size-not-buffer
+valid:
+  - >-
+    int size; char *mem; xmlDocDumpFormatMemory(doc, &mem, &size, fmt); if
+    (!size || !mem) { return 0; } return mem_use(mem, size);
+invalid:
+  - >-
+    int size; char *mem; xmlDocDumpFormatMemory(doc, &mem, &size, fmt); if
+    (!size) { return 0; } return mem_use(mem, size);

@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-libxml-dump-guard-size-not-buffer
+language: c
+severity: warning
+message: >-
+  Guard after xmlDocDumpFormatMemory tests only the size out-parameter, not
+  the buffer pointer.
+note: >-
+  Syntactic only; matches an if directly after the dump call whose condition
+  is just !size. Does not track aliasing or later checks.
+rule:
+  pattern: 'if (!$S) { $$$B }'
+  follows:
+    kind: expression_statement
+    has:
+      pattern: 'xmlDocDumpFormatMemory($D, &$M, &$S, $$$A)'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
