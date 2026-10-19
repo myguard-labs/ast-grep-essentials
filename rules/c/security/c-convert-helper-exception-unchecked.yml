@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-convert-helper-exception-unchecked
+language: c
+severity: warning
+message: >-
+  Conversion helper call is immediately followed by another statement without
+  an EG(exception) check.
+note: >-
+  Syntactic only; it checks that the next sibling statement is a plain
+  expression statement and does not verify that it consumes the converted
+  value or that an exception check exists elsewhere.
+rule:
+  all:
+    - kind: expression_statement
+    - has:
+        kind: call_expression
+        regex: '^(convert_to_string|convert_to_long|zend_is_true)\s*\('
+    - precedes:
+        kind: expression_statement
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
