@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bitwise-and-equality-precedence
+language: c
+severity: warning
+message: >-
+  Bitwise & or | has an unparenthesized ==/!= comparison as its right operand,
+  so the comparison is evaluated first.
+note: 'Matches syntax only; it does not tell whether the precedence was intended.'
+rule:
+  all:
+    - kind: binary_expression
+    - has:
+        field: operator
+        regex: '^(&|\|)$'
+    - has:
+        field: right
+        kind: binary_expression
+        has:
+          field: operator
+          regex: '^(==|!=)$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
