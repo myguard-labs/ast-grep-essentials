@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-guard-after-minus-one-index
+language: c
+severity: warning
+message: >-
+  The N - 1 expression is evaluated before the N > 1 guard; reorder the &&
+  operands.
+note: >-
+  Syntactic only; matches the same identifier text and does not prove N can be
+  zero or the type is unsigned.
+rule:
+  all:
+    - pattern: '$X && $N > 1'
+    - has:
+        field: left
+        stopBy: end
+        pattern: '$N - 1'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
