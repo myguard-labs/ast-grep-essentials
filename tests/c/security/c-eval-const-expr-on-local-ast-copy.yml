@@ -1,0 +1,10 @@
+id: c-eval-const-expr-on-local-ast-copy
+valid:
+  - |-
+    zend_eval_const_expr(&ast->child[0]);
+    zend_ast *class_ast = ast->child[0];
+invalid:
+  - |-
+    zend_ast *class_ast = ast->child[0];
+    zend_eval_const_expr(&class_ast);
+    use(class_ast);

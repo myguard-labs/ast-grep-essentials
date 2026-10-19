@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-eval-const-expr-on-local-ast-copy
+language: c
+severity: warning
+message: >-
+  A local copy of an AST child is passed by address to zend_eval_const_expr,
+  so the parent's child pointer may become stale.
+note: >-
+  Matches only the same-block syntactic shape, a local declared from
+  ast->child[N] and later passed as &local. It does not check whether the
+  result is written back or whether the callee replaces the node.
+rule:
+  pattern: 'zend_eval_const_expr(&$A);'
+  follows:
+    pattern: 'zend_ast *$A = ast->child[$I];'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
