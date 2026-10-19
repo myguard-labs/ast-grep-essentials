@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-iterator-slot-reset-without-del
+language: c
+severity: warning
+message: >-
+  ht_iter is reset to (uint32_t)-1 in a function that never calls
+  zend_hash_iterator_del.
+note: >-
+  Syntactic only; it checks the enclosing function for a literal
+  zend_hash_iterator_del call and does not track whether the iterator is live
+  or released elsewhere.
+rule:
+  all:
+    - pattern: '$OBJ->ht_iter = (uint32_t)-1'
+    - inside:
+        kind: function_definition
+        stopBy: end
+    - not:
+        inside:
+          kind: function_definition
+          stopBy: end
+          has:
+            kind: call_expression
+            stopBy: end
+            has:
+              field: function
+              regex: '^zend_hash_iterator_del$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
