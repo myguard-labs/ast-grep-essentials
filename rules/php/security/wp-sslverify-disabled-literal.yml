@@ -13,6 +13,7 @@ note: >-
   filter behavior.
 rule:
   kind: array_element_initializer
+  pattern: $ELEMENT
   all:
     - has:
         kind: string
@@ -20,6 +21,24 @@ rule:
     - has:
         kind: boolean
         regex: '^(?i)false$'
+transform:
+  FIXED:
+    rewrite:
+      rewriters: [sslverify-false-to-true]
+      source: $ELEMENT
+rewriters:
+  - id: sslverify-false-to-true
+    rule:
+      kind: boolean
+      regex: '^(?i)false$'
+      inside:
+        kind: array_element_initializer
+      follows:
+        stopBy: end
+        kind: string
+        regex: '^[''"]sslverify[''"]$'
+    fix: 'true'
+fix: $FIXED
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0

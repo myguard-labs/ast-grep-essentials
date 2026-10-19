@@ -8,15 +8,27 @@ valid:
     fn main() {
         let _builder = (reqwest::Client::builder()).danger_accept_invalid_certs(false);
     }
+  - |
+    reqwest::Client::builder().set_nodelay(true)
+  - |
+    reqwest::Client::builder().danger_accept_invalid_certs(flag)
 invalid:
-  - |
-    reqwest::Client::builder().danger_accept_invalid_hostnames(true)
-  - |
-    reqwest::Client::builder().danger_accept_invalid_certs(true)
-  - |
-    reqwest::Client::builder().user_agent("USER AGENT").cookie_store(true).danger_accept_invalid_hostnames(true)
-  - |
-    reqwest::Client::builder().user_agent("USER AGENT").cookie_store(true).danger_accept_invalid_certs(true)
+  - |-
+    fn main() {
+        let _builder = reqwest::Client::builder().danger_accept_invalid_hostnames(true);
+    }
+  - |-
+    fn main() {
+        let _builder = reqwest::Client::builder().danger_accept_invalid_certs(true);
+    }
+  - |-
+    fn main() {
+        let _builder = reqwest::Client::builder().user_agent("USER AGENT").cookie_store(true).danger_accept_invalid_hostnames(true);
+    }
+  - |-
+    fn main() {
+        let _builder = reqwest::Client::builder().user_agent("USER AGENT").cookie_store(true).danger_accept_invalid_certs(true);
+    }
   - |-
     fn main() {
         let _builder = (reqwest::Client::builder()).danger_accept_invalid_certs(true);
