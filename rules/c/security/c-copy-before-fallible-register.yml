@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-copy-before-fallible-register
+language: c
+severity: warning
+message: >-
+  An if statement whose body returns follows a ZVAL_COPY; the failure path may
+  keep the stored reference.
+note: >-
+  Syntactic ordering check only; it does not verify the condition is a
+  fallible registration call, or that the reference is released elsewhere.
+rule:
+  all:
+    - kind: if_statement
+    - regex: '(RETURN_|return)'
+    - has:
+        field: condition
+        has:
+          kind: call_expression
+          stopBy: end
+    - follows:
+        stopBy: end
+        regex: '^ZVAL_COPY'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
