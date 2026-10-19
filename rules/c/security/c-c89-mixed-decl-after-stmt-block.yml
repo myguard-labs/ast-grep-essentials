@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-c89-mixed-decl-after-stmt-block
+language: c
+severity: warning
+message: >-
+  Declaration appears after an executable statement in the same block, which
+  C89 does not allow.
+note: >-
+  Syntactic only; it detects a declaration following an expression statement
+  among direct block siblings, and does not know whether the project targets
+  C89. Other statement kinds are not covered.
+rule:
+  kind: declaration
+  inside:
+    kind: compound_statement
+    stopBy: neighbor
+  follows:
+    kind: expression_statement
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
