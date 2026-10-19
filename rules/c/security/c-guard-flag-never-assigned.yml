@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-guard-flag-never-assigned
+language: c
+severity: warning
+message: >-
+  Local flag initialized to zero is used as an if condition but never assigned
+  in this function; the branch looks dead.
+note: >-
+  Syntactic only; it checks for plain assignment expressions to the same name
+  and ignores increments, compound assignments, address-taking, and shadowing.
+rule:
+  all:
+    - pattern: 'if ($N) $S'
+    - inside:
+        stopBy: end
+        kind: function_definition
+        all:
+          - has:
+              stopBy: end
+              pattern: 'int $N = 0;'
+          - not:
+              has:
+                stopBy: end
+                pattern: '$N = $V'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
