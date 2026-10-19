@@ -1,0 +1,9 @@
+id: c-alloc-context-stored-only-on-success
+valid:
+  - >-
+    int f(void *ctx) { struct buf *ret = alloc_out(); if (ret != NULL) {
+    ret->context = ctx; } else { release(ctx); } return 0; }
+invalid:
+  - >-
+    int f(void *ctx) { struct buf *ret = alloc_out(); if (ret != NULL) {
+    ret->context = ctx; } return 0; }
