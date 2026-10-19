@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-ip-sanitize-ipv4-only-class
+language: php
+severity: warning
+message: >-
+  IPv4-only character class strips ':' from REMOTE_ADDR, truncating IPv6
+  addresses.
+note: >-
+  Syntactic only; matches a literal negated class without ':' in the first
+  argument and does not resolve aliasing or other regex semantics.
+rule:
+  pattern: 'preg_replace($PAT, $REP, $_SERVER[''REMOTE_ADDR''])'
+  has:
+    kind: arguments
+    has:
+      kind: argument
+      nthChild: 1
+      regex: '^.\/\[\^[^\]:]*\]\/'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
