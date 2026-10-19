@@ -1,0 +1,22 @@
+id: c-goto-past-initialized-declaration
+valid:
+  - |-
+    void f(int x) {
+        if (x) goto out;
+        {
+        out:
+            ;
+            int y = 1;
+            (void)y;
+        }
+    }
+invalid:
+  - |-
+    void f(int x) {
+        if (x) goto out;
+        {
+            int y = 1;
+        out:
+            (void)y;
+        }
+    }
