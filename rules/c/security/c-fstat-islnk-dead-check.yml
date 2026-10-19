@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-fstat-islnk-dead-check
+language: c
+severity: warning
+message: >-
+  S_ISLNK() is used in a function that also calls fstat(); an fstat result
+  never reports a symlink, so this check is likely dead.
+note: >-
+  Syntactic only. It matches any S_ISLNK call in a function containing an
+  fstat call, without tracking which struct stat variable was filled.
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        kind: identifier
+        regex: '^S_ISLNK$'
+    - inside:
+        stopBy: end
+        kind: function_definition
+        has:
+          stopBy: end
+          kind: call_expression
+          has:
+            field: function
+            kind: identifier
+            regex: '^fstat$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

@@ -1,0 +1,32 @@
+id: c-fstat-islnk-dead-check
+snapshots:
+  "#include <sys/stat.h>\nint check_fd(int fd) {\n    struct stat sb;\n    if (fstat(fd, &sb) != 0)\n        return -1;\n    if (S_ISLNK(sb.st_mode))\n        return -1;\n    return 0;\n}":
+    labels:
+    - source: S_ISLNK(sb.st_mode)
+      style: primary
+      start: 121
+      end: 140
+    - source: S_ISLNK
+      style: secondary
+      start: 121
+      end: 128
+    - source: fstat
+      style: secondary
+      start: 73
+      end: 78
+    - source: fstat(fd, &sb)
+      style: secondary
+      start: 73
+      end: 87
+    - source: |-
+        int check_fd(int fd) {
+            struct stat sb;
+            if (fstat(fd, &sb) != 0)
+                return -1;
+            if (S_ISLNK(sb.st_mode))
+                return -1;
+            return 0;
+        }
+      style: secondary
+      start: 22
+      end: 176
