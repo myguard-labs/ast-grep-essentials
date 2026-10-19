@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-deref-cast-of-byte-buffer
+language: c
+severity: warning
+message: >-
+  Dereferencing a wide scalar cast of a byte buffer can be a misaligned or
+  aliasing read; use memcpy into a local.
+note: >-
+  Name-based syntactic match on the operand text; does not verify the
+  operand's real type or alignment.
+rule:
+  kind: pointer_expression
+  regex: >-
+    ^\*\s*\(\s*(const\s+)?(unsigned\s+|signed\s+)?(float|double|short|int|long|u?int(16|32|64)_t)\b[^)]*\*\s*\)\s*(sqldata|buf|data|bytes)\s*$
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
