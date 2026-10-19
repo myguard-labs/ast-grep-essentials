@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-inline-nonstatic-function-definition
+language: c
+severity: warning
+message: >-
+  Inline function definition without static or extern may be an inline-only
+  definition that leaves the symbol unresolved.
+note: >-
+  Matches only the specifiers written on the definition; it does not check for
+  a separate extern declaration elsewhere or other translation units.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        kind: storage_class_specifier
+        regex: '^(inline|__inline|__inline__)$'
+    - not:
+        has:
+          kind: storage_class_specifier
+          regex: '^(static|extern)$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
