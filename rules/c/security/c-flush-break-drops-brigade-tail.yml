@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-flush-break-drops-brigade-tail
+language: c
+severity: warning
+message: >-
+  Flush bucket branch breaks without splitting off the remaining brigade
+  buckets.
+note: >-
+  Syntactic only; matches an if on APR_BUCKET_IS_FLUSH whose body contains a
+  break and no apr_brigade_split call. Does not verify the enclosing loop or
+  handling elsewhere.
+rule:
+  pattern: 'if (APR_BUCKET_IS_FLUSH($E)) $BODY'
+  all:
+    - has:
+        kind: break_statement
+        stopBy: end
+    - not:
+        has:
+          kind: identifier
+          regex: '^apr_brigade_split$'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

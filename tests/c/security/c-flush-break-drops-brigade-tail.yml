@@ -1,0 +1,16 @@
+id: c-flush-break-drops-brigade-tail
+valid:
+  - |-
+    APR_BRIGADE_FOREACH(e, b) {
+        if (APR_BUCKET_IS_FLUSH(e)) {
+            more = apr_brigade_split(b, APR_BUCKET_NEXT(e));
+            break;
+        }
+    }
+invalid:
+  - |-
+    APR_BRIGADE_FOREACH(e, b) {
+        if (APR_BUCKET_IS_FLUSH(e)) {
+            break;
+        }
+    }
