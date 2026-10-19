@@ -1,0 +1,14 @@
+id: c-alloc-leak-on-error-return
+valid:
+  - |-
+    char *buf = emalloc(n);
+    if (get_args(ht, buf) == FAILURE) {
+        efree(buf);
+        RETURN_FALSE;
+    }
+invalid:
+  - |-
+    char *buf = emalloc(n);
+    if (get_args(ht, buf) == FAILURE) {
+        RETURN_FALSE;
+    }

@@ -1,0 +1,22 @@
+id: c-alloc-leak-on-error-return
+snapshots:
+  "char *buf = emalloc(n);\nif (get_args(ht, buf) == FAILURE) {\n    RETURN_FALSE;\n}":
+    labels:
+    - source: |-
+        if (get_args(ht, buf) == FAILURE) {
+            RETURN_FALSE;
+        }
+      style: primary
+      start: 24
+      end: 79
+    - source: char *buf = emalloc(n);
+      style: secondary
+      start: 0
+      end: 23
+    - source: |-
+        {
+            RETURN_FALSE;
+        }
+      style: secondary
+      start: 58
+      end: 79

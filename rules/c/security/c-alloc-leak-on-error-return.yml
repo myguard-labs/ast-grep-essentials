@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-alloc-leak-on-error-return
+language: c
+severity: warning
+message: >-
+  If-block returns after an emalloc allocation without any efree/free in the
+  block.
+note: >-
+  Syntactic only; does not match the freed name to the allocated variable, nor
+  prove reachability, aliasing, or ownership transfer.
+rule:
+  kind: if_statement
+  all:
+    - follows:
+        stopBy: end
+        kind: declaration
+        regex: 'emalloc\('
+    - has:
+        field: consequence
+        kind: compound_statement
+        all:
+          - regex: '(return|RETURN_[A-Z_]+)'
+          - not:
+              regex: '(efree|free)\('
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
