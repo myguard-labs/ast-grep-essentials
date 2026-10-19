@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-duplicate-member-assign-same-element
+language: c
+severity: warning
+message: >-
+  Consecutive assignments write the same member of the same array element; the
+  first value is overwritten. Check for a copy-paste index error.
+note: >-
+  Matches only adjacent sibling statements with identical lvalue syntax; it
+  does not resolve aliasing or side effects in the right-hand sides.
+rule:
+  all:
+    - pattern: '$L = $A;'
+    - precedes:
+        pattern: '$L = $B;'
+constraints:
+  L:
+    kind: field_expression
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
