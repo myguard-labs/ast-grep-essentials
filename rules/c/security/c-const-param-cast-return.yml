@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-const-param-cast-return
+language: c
+severity: warning
+message: >-
+  Returning a const char * parameter cast to char * discards const on the
+  caller's borrowed input.
+note: >-
+  Syntactic approximation. It does not link the cast variable to the const
+  parameter by name, and it does not check aliasing or reassignment.
+rule:
+  pattern: 'return (char *)$X;'
+  inside:
+    stopBy: end
+    kind: function_definition
+    has:
+      stopBy: end
+      kind: parameter_declaration
+      regex: 'const\s+char\s*\*'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
