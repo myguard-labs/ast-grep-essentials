@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-digit-backref-index-unbounded
+language: c
+severity: warning
+message: >-
+  Array indexed by a digit character is guarded only by a digit range test,
+  not by the array's count.
+note: >-
+  Matches syntax only within one parenthesized condition; it does not resolve
+  array sizes, aliases, or guards outside that condition.
+rule:
+  pattern: '$A[$X - ''0'']'
+  inside:
+    kind: parenthesized_expression
+    stopBy: end
+    all:
+      - has:
+          pattern: '''0'' <= $X'
+          stopBy: end
+      - not:
+          has:
+            pattern: '$X - ''0'' <= $N'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
