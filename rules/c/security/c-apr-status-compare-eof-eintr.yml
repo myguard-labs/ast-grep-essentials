@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-apr-status-compare-eof-eintr
+language: c
+severity: warning
+message: >-
+  Use APR_STATUS_IS_EOF() or APR_STATUS_IS_EINTR() instead of comparing a
+  status directly with APR_EOF or APR_EINTR.
+note: >-
+  Matches the literal ==/!= comparison with APR_EOF or APR_EINTR; it does not
+  check that the other operand is an apr_status_t.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^[=!]=$'
+    - has:
+        field: right
+        kind: identifier
+        regex: '^(APR_EOF|APR_EINTR)$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
