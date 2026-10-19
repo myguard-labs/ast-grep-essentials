@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-curl-getinfo-string-array-arg
+language: c
+severity: warning
+message: >-
+  curl_easy_getinfo string option receives a char array; pass the address of a
+  char pointer instead.
+note: >-
+  Syntactic only; matches a bare identifier declared as a char array in the
+  same function and a fixed list of string-valued CURLINFO names, without type
+  or alias resolution.
+rule:
+  all:
+    - pattern: 'curl_easy_getinfo($H, $OPT, $OUT)'
+    - inside:
+        stopBy: end
+        kind: function_definition
+        has:
+          stopBy: end
+          pattern: 'char $OUT[$SIZE];'
+constraints:
+  OPT:
+    regex: >-
+      ^CURLINFO_(EFFECTIVE_URL|CONTENT_TYPE|REDIRECT_URL|PRIVATE|PRIMARY_IP|LOCAL_IP|FTP_ENTRY_PATH|SCHEME|EFFECTIVE_METHOD|REFERER|CAINFO|CAPATH)$
+  OUT:
+    kind: identifier
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
