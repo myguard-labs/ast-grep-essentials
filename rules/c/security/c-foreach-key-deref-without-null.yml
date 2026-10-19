@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-foreach-key-deref-without-null
+language: c
+severity: warning
+message: >-
+  ZSTR_VAL or ZSTR_LEN applied to a key that may be NULL for integer-indexed
+  entries; check the key first.
+note: >-
+  Syntactic only; matches ZSTR_VAL or ZSTR_LEN calls not inside a conditional
+  expression. It does not verify the enclosing foreach, the key variable
+  identity, or other NULL guards such as if statements.
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        regex: '^(ZSTR_VAL|ZSTR_LEN)$'
+    - not:
+        inside:
+          kind: conditional_expression
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
