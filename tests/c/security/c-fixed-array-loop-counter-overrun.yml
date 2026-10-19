@@ -1,0 +1,19 @@
+id: c-fixed-array-loop-counter-overrun
+valid:
+  - |-
+    void f(int e) {
+      int pts[3];
+      int i, pti = 0;
+      for (i = 0; i <= e && pti < 3; i++, pti++) {
+        pts[pti] = i;
+      }
+    }
+invalid:
+  - |-
+    void f(int e) {
+      int pts[3];
+      int i, pti = 0;
+      for (i = 0; i <= e; i++, pti++) {
+        pts[pti] = i;
+      }
+    }

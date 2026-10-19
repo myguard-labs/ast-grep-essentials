@@ -1,0 +1,34 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-fixed-array-loop-counter-overrun
+language: c
+severity: warning
+message: >-
+  For loop advances a second counter used as an array subscript, but its
+  condition has no strict less-than bound.
+note: >-
+  Syntactic approximation only. It does not resolve which counter indexes
+  which array, or the array size.
+rule:
+  kind: for_statement
+  all:
+    - has:
+        field: update
+        kind: comma_expression
+    - has:
+        field: condition
+        not:
+          regex: '<[^=]'
+    - has:
+        field: body
+        has:
+          kind: subscript_expression
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
