@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-int-length-out-param
+language: c
+severity: warning
+message: >-
+  Address of a plain int local is passed as the length out-argument of a
+  ->read() call.
+note: >-
+  Syntactic only; matches a local literally named len declared as int earlier
+  in the same block, without resolving types or other names.
+rule:
+  kind: expression_statement
+  all:
+    - has:
+        stopBy: end
+        pattern: '$B->read($$$A, &len)'
+    - follows:
+        stopBy: end
+        pattern: 'int len;'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
