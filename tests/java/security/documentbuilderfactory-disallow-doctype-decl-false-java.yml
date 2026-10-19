@@ -1,6 +1,12 @@
 id: documentbuilderfactory-disallow-doctype-decl-false-java
 valid:
   - |
+    class FeatureSuffixNearMiss {
+        void f(DocumentBuilderFactory dbf) throws Exception {
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl-extra", false);
+        }
+    }
+  - |
     class CodeRabbitControl { String text = "CodeRabbit"; }
   - |
     ParserConfigurationException {
@@ -40,14 +46,31 @@ valid:
         SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     }
+  - |
+    class A {
+        void f(DocumentBuilderFactory dbf) throws Exception {
+            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        }
+    }
 invalid:
   - |
-    ParserConfigurationException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+    class A {
+        void f() throws ParserConfigurationException {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+        }
     }
   - |
-    ParserConfigurationException {
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+    class A {
+        void f() throws ParserConfigurationException {
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+        }
+    }
+  - |
+    class A {
+        void f(DocumentBuilderFactory dbf) throws Exception {
+            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+        }
     }

@@ -1,5 +1,8 @@
 id: lua-http-client-verify-disabled
 valid:
+  - 'local ok = sock:sslhandshake(false, host, true)'
+  - 'local opts = { ssl_verify = true, keepalive = false }'
+  - 'local ok = other:handshake(nil, host, false)'
   - 'local res = httpc:request_uri(url, { ssl_verify = true })'
   - 'local res = httpc:request_uri(url, { ssl_verify = verify })'
   - 'local opts = { verify = false }'
@@ -10,3 +13,5 @@ valid:
 invalid:
   - 'local res = httpc:request_uri(url, { ssl_verify = false })'
   - 'local ok = sock:sslhandshake(nil, host, false)'
+  - 'local res = httpc:request_uri(url, { keepalive = false, ssl_verify = false })'
+  - 'local ok = sock:sslhandshake(false, host, false)'

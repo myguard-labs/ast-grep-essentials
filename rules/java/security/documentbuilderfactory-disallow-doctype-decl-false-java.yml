@@ -45,11 +45,36 @@ utils:
           - has:
               stopBy: end
               kind: string_literal
-              regex: "http://apache.org/xml/features/disallow-doctype-decl"
+              regex: '^"http://apache\.org/xml/features/disallow-doctype-decl"$'
           - has:
               stopBy: end
               regex: "^false$"
+transform:
+  FIXED:
+    rewrite:
+      rewriters: [disallow-doctype-decl-false-to-true]
+      source: $STMT
+rewriters:
+  - id: disallow-doctype-decl-false-to-true
+    rule:
+      kind: 'false'
+      inside:
+        stopBy: neighbor
+        kind: argument_list
+        inside:
+          stopBy: neighbor
+          kind: method_invocation
+          has:
+            field: name
+            regex: '^setFeature$'
+      follows:
+        stopBy: end
+        kind: string_literal
+        regex: '^"http://apache\.org/xml/features/disallow-doctype-decl"$'
+    fix: 'true'
+fix: $FIXED
 rule:
+  pattern: $STMT
   any:
     - matches: match_expression_statement
 metadata:

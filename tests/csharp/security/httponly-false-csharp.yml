@@ -12,6 +12,13 @@ valid:
             var options = new Microsoft.AspNetCore.Http.CookieOptions { HttpOnly = true };
         }
     }
+  - |
+    class Example {
+        void Configure() {
+            isReady = false;
+            options.Cookie.SecurePolicy = false;
+        }
+    }
 invalid:
   - |
     options.Cookie.HttpOnly = false;
@@ -19,5 +26,12 @@ invalid:
     class Example {
         void Configure() {
             var options = new Microsoft.AspNetCore.Http.CookieOptions { HttpOnly = false };
+        }
+    }
+  - |
+    class Example {
+        void Configure() {
+            isReady = false;
+            options.Cookie.HttpOnly = false;
         }
     }

@@ -1,20 +1,22 @@
 id: sh-ssh-host-key-check-disabled
 snapshots:
-  '''ssh'' ''-oStrictHostKeyChecking=no'' host':
+  "'ssh' '-oStrictHostKeyChecking=no' host":
+    fixed: "'ssh' '-oStrictHostKeyChecking=yes' host"
     labels:
-    - source: '''ssh'' ''-oStrictHostKeyChecking=no'' host'
+    - source: "'ssh' '-oStrictHostKeyChecking=no' host"
       style: primary
       start: 0
       end: 39
-    - source: '''ssh'''
+    - source: "'ssh'"
       style: secondary
       start: 0
       end: 5
-    - source: '''-oStrictHostKeyChecking=no'''
+    - source: "'-oStrictHostKeyChecking=no'"
       style: secondary
       start: 6
       end: 34
   command -- ssh -o StrictHostKeyChecking=no host:
+    fixed: command -- ssh -o StrictHostKeyChecking=yes host
     labels:
     - source: command -- ssh -o StrictHostKeyChecking=no host
       style: primary
@@ -40,7 +42,8 @@ snapshots:
       style: secondary
       start: 15
       end: 17
-  command scp -q -o StrictHostKeyChecking=no file host:/tmp/:
+  "command scp -q -o StrictHostKeyChecking=no file host:/tmp/":
+    fixed: command scp -q -o StrictHostKeyChecking=yes file host:/tmp/
     labels:
     - source: command scp -q -o StrictHostKeyChecking=no file host:/tmp/
       style: primary
@@ -63,6 +66,7 @@ snapshots:
       start: 15
       end: 17
   command ssh -o StrictHostKeyChecking=no host:
+    fixed: command ssh -o StrictHostKeyChecking=yes host
     labels:
     - source: command ssh -o StrictHostKeyChecking=no host
       style: primary
@@ -85,6 +89,7 @@ snapshots:
       start: 12
       end: 14
   command ssh -v -o StrictHostKeyChecking=no host:
+    fixed: command ssh -v -o StrictHostKeyChecking=yes host
     labels:
     - source: command ssh -v -o StrictHostKeyChecking=no host
       style: primary
@@ -106,7 +111,8 @@ snapshots:
       style: secondary
       start: 15
       end: 17
-  scp -oStrictHostKeyChecking=no file host:/tmp/:
+  "scp -oStrictHostKeyChecking=no file host:/tmp/":
+    fixed: scp -oStrictHostKeyChecking=yes file host:/tmp/
     labels:
     - source: scp -oStrictHostKeyChecking=no file host:/tmp/
       style: primary
@@ -121,6 +127,7 @@ snapshots:
       start: 4
       end: 30
   sftp "-o" "StrictHostKeyChecking=no" host:
+    fixed: sftp "-o" "StrictHostKeyChecking=yes" host
     labels:
     - source: sftp "-o" "StrictHostKeyChecking=no" host
       style: primary
@@ -130,15 +137,16 @@ snapshots:
       style: secondary
       start: 0
       end: 4
-    - source: '"StrictHostKeyChecking=no"'
+    - source: "\"StrictHostKeyChecking=no\""
       style: secondary
       start: 10
       end: 36
-    - source: '"-o"'
+    - source: "\"-o\""
       style: secondary
       start: 5
       end: 9
   ssh -o StrictHostKeyChecking=no host:
+    fixed: ssh -o StrictHostKeyChecking=yes host
     labels:
     - source: ssh -o StrictHostKeyChecking=no host
       style: primary
@@ -156,7 +164,27 @@ snapshots:
       style: secondary
       start: 4
       end: 6
+  ssh -o StrictHostKeyChecking=no host printf %s -oStrictHostKeyChecking=no:
+    fixed: ssh -o StrictHostKeyChecking=yes host printf %s -oStrictHostKeyChecking=no
+    labels:
+    - source: ssh -o StrictHostKeyChecking=no host printf %s -oStrictHostKeyChecking=no
+      style: primary
+      start: 0
+      end: 73
+    - source: ssh
+      style: secondary
+      start: 0
+      end: 3
+    - source: StrictHostKeyChecking=no
+      style: secondary
+      start: 7
+      end: 31
+    - source: -o
+      style: secondary
+      start: 4
+      end: 6
   ssh -o strictHOSTkeychecking=NO host:
+    fixed: ssh -o strictHOSTkeychecking=yes host
     labels:
     - source: ssh -o strictHOSTkeychecking=NO host
       style: primary
@@ -175,6 +203,7 @@ snapshots:
       start: 4
       end: 6
   ssh -v -o StrictHostKeyChecking=no host:
+    fixed: ssh -v -o StrictHostKeyChecking=yes host
     labels:
     - source: ssh -v -o StrictHostKeyChecking=no host
       style: primary

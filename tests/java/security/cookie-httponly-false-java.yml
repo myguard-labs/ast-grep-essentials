@@ -10,13 +10,20 @@ valid:
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }
+  - |
+    class A {
+        void f(Cookie cookie) {
+            cookie.setSecure(false);
+        }
+    }
 invalid:
   - |
-
-    @RequestMapping(value = "/cookie4", method = "GET")
-    public void explicitDisable(@RequestParam String value, HttpServletResponse response) {
-        Cookie cookie = new Cookie("cookie", value);
-        cookie.setSecure(false);
-        cookie.setHttpOnly(false);
-        response.addCookie(cookie);
+    class A {
+        @RequestMapping(value = "/cookie4", method = "GET")
+        public void explicitDisable(@RequestParam String value, HttpServletResponse response) {
+            Cookie cookie = new Cookie("cookie", value);
+            cookie.setSecure(false);
+            cookie.setHttpOnly(false);
+            response.addCookie(cookie);
+        }
     }
