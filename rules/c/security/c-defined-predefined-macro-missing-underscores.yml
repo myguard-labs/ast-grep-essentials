@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-defined-predefined-macro-missing-underscores
+language: c
+severity: warning
+message: >-
+  defined() tests a predefined macro name missing its trailing double
+  underscores, so it is never defined.
+note: >-
+  Matches only the literal identifier spelling from a fixed list of standard
+  predefined macros; it does not check whether the project defines such a
+  macro itself.
+rule:
+  kind: identifier
+  regex: >-
+    ^__(STDC_VERSION|STDC_HOSTED|STDC|FILE|LINE|DATE|TIME|cplusplus|STDC_UTF_16|STDC_UTF_32|STDC_IEC_559)$
+  inside:
+    kind: preproc_defined
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
