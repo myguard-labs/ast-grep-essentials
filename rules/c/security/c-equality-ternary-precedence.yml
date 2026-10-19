@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-equality-ternary-precedence
+language: c
+severity: warning
+message: >-
+  An equality comparison is used directly as the condition of a ?: expression;
+  check operator precedence.
+note: >-
+  Syntactic only; it cannot tell whether the precedence is intentional, and it
+  does not check the ternary arms.
+rule:
+  kind: conditional_expression
+  has:
+    field: condition
+    kind: binary_expression
+    all:
+      - has:
+          field: operator
+          regex: '^(==|!=)$'
+      - has:
+          field: right
+          kind: identifier
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
