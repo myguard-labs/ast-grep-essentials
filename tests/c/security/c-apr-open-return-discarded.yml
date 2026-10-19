@@ -1,0 +1,13 @@
+id: c-apr-open-return-discarded
+valid:
+  - |-
+    ret = ap_open(&tempfile, ap_lock_fname, APR_WRITE, APR_UREAD|APR_UWRITE, p);
+    if (ret != APR_SUCCESS) {
+        return;
+    }
+invalid:
+  - |-
+    ap_open(&tempfile, ap_lock_fname, APR_WRITE, APR_UREAD|APR_UWRITE, p);
+    if (!tempfile) {
+        return;
+    }
