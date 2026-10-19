@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hex-decode-missing-lowercase
+language: c
+severity: warning
+message: >-
+  Hex digit decode ternary handles only uppercase 'A' range; lowercase digits
+  are decoded wrongly.
+note: >-
+  Syntactic only; does not verify that lowercase is handled elsewhere, such as
+  by prior case folding.
+rule:
+  all:
+    - pattern: '$C >= ''A'' ? $C - 0x37 : $E'
+    - not:
+        inside:
+          kind: conditional_expression
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
