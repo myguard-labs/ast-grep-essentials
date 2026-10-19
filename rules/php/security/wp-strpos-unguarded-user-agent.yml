@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-strpos-unguarded-user-agent
+language: php
+severity: warning
+message: >-
+  strpos() reads the HTTP_USER_AGENT server key directly without an isset()
+  check in the same condition.
+note: >-
+  Syntactic only; it does not detect guards outside the enclosing binary
+  expression, such as earlier statements or early returns.
+rule:
+  all:
+    - kind: function_call_expression
+    - regex: '^strpos\(\s*\$_SERVER\[\s*[''"]HTTP_USER_AGENT[''"]\s*\]\s*,'
+    - not:
+        inside:
+          stopBy: end
+          kind: binary_expression
+          regex: 'isset\(\s*\$_SERVER\[\s*[''"]HTTP_USER_AGENT[''"]\s*\]\s*\)'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
