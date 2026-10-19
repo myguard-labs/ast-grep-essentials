@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ignored-call-result-then-return-success
+language: c
+severity: warning
+message: Call result is discarded and the next statement unconditionally returns 1.
+note: >-
+  Matches syntax only. It does not check whether the call can fail or whether
+  returning 1 means success, so expect false positives.
+rule:
+  all:
+    - kind: expression_statement
+    - has:
+        kind: call_expression
+    - precedes:
+        kind: return_statement
+        regex: '^return 1;$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
