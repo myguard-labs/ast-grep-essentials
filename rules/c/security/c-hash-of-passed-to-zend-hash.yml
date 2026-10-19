@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-of-passed-to-zend-hash
+language: c
+severity: warning
+message: >-
+  HASH_OF() result is passed directly to a zend_hash_* API without an
+  enclosing NULL check; HASH_OF may return NULL.
+note: >-
+  Syntactic only. Matches when the first argument of a zend_hash_* call is
+  written as HASH_OF(...). An enclosing if whose condition starts with HASH_OF
+  counts as a guard. Guards stored in variables, early returns and runtime
+  zval types are not tracked.
+rule:
+  all:
+    - kind: call_expression
+    - regex: '^zend_hash_\w*\s*\(\s*HASH_OF\s*\('
+    - not:
+        inside:
+          kind: if_statement
+          stopBy: end
+          regex: '^if\s*\(\s*!?\s*HASH_OF\s*\('
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
