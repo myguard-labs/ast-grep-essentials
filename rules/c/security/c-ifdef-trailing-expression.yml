@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ifdef-trailing-expression
+language: c
+severity: warning
+message: >-
+  #ifdef/#ifndef takes a single macro name; trailing tokens are ignored by the
+  preprocessor.
+note: >-
+  Textual line match on the whole translation unit; it does not check how the
+  parser represents the directive or whether the macro is defined.
+rule:
+  all:
+    - kind: translation_unit
+    - regex: >-
+        (?m)^[ \t]*#[ \t]*(ifdef|ifndef)[ \t]+[A-Za-z_][A-Za-z0-9_]*([ \t]+[^
+        \t\r\n/]|[^ \t\r\n/A-Za-z0-9_])
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
