@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hardcoded-align-literal
+language: c
+severity: warning
+message: >-
+  Alignment rounding divides and multiplies by the same integer literal;
+  consider sizeof of the aligned type.
+note: >-
+  Matches the syntactic shape (x / N) * N with a repeated integer literal
+  only; it cannot tell whether this is really alignment or what the platform
+  alignment is.
+rule:
+  pattern: '($X / $N) * $N'
+constraints:
+  'N':
+    kind: number_literal
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
