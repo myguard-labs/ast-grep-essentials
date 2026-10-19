@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-alloc-assign-null-check-other-field
+language: c
+severity: warning
+message: >-
+  Allocation result is stored in one member but the next NULL check tests a
+  different member.
+note: >-
+  Purely syntactic; matches same receiver text with different member names and
+  does not verify allocator semantics, aliasing, or that the call allocates.
+rule:
+  all:
+    - pattern: '$R->$F = $FN($$$ARGS);'
+    - precedes:
+        stopBy: neighbor
+        kind: if_statement
+        has:
+          stopBy: end
+          pattern: '$R->$G == NULL'
+    - not:
+        precedes:
+          stopBy: neighbor
+          kind: if_statement
+          has:
+            stopBy: end
+            pattern: '$R->$F == NULL'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
