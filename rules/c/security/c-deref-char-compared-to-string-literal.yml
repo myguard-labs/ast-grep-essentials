@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-deref-char-compared-to-string-literal
+language: c
+severity: warning
+message: >-
+  Dereferenced value compared with a string literal; this compares a char to a
+  pointer. Use a character literal or test the character.
+note: >-
+  Matches the literal syntax of a pointer dereference compared to a string
+  literal with == or !=; does not check the operand's actual type.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: left
+        kind: pointer_expression
+        regex: '^\*'
+    - has:
+        field: right
+        kind: string_literal
+    - has:
+        field: operator
+        regex: '^(==|!=)$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
