@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-free-then-deref-same-block
+language: c
+severity: warning
+message: >-
+  Pointer is dereferenced via -> after being passed to free() earlier in the
+  same block.
+note: >-
+  Syntactic only; does not detect reassignment of the pointer between the free
+  and the use, aliasing, or control flow.
+rule:
+  all:
+    - pattern: 'free($P);'
+    - precedes:
+        stopBy: end
+        has:
+          stopBy: end
+          pattern: '$P->$F'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
