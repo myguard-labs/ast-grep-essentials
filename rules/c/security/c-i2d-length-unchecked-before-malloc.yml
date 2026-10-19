@@ -1,0 +1,47 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-i2d-length-unchecked-before-malloc
+language: c
+severity: warning
+message: >-
+  OPENSSL_malloc size may come from an i2d_* result that is not checked to be
+  greater than zero; a negative error return becomes a huge allocation size.
+note: >-
+  Purely syntactic. It matches an OPENSSL_malloc call with an identifier
+  argument inside an if statement that follows a sibling statement assigning
+  from an i2d_* call. It is suppressed only when the enclosing if condition
+  contains a literal "<= 0" comparison. It does not link the compared variable
+  to the size argument and does not track dataflow, reassignment, aliases, or
+  guards written in other forms or statements.
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        regex: '^OPENSSL_malloc$'
+    - has:
+        field: arguments
+        has:
+          kind: identifier
+    - inside:
+        stopBy: end
+        kind: if_statement
+        follows:
+          stopBy: end
+          regex: '=\s*i2d_\w*\s*\('
+    - not:
+        inside:
+          stopBy: end
+          kind: if_statement
+          has:
+            stopBy: end
+            kind: binary_expression
+            regex: '^\w+\s*<=\s*0$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

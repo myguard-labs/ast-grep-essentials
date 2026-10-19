@@ -1,0 +1,9 @@
+id: c-i2d-length-unchecked-before-malloc
+valid:
+  - >-
+    int len; unsigned char *pp; len = i2d_ESS_SIGNING_CERT_V2(sc, NULL); if (len
+    <= 0 || (pp = OPENSSL_malloc(len)) == NULL) goto err;
+invalid:
+  - >-
+    int len; unsigned char *pp; len = i2d_ESS_SIGNING_CERT_V2(sc, NULL); if ((pp
+    = OPENSSL_malloc(len)) == NULL) goto err;
