@@ -1,0 +1,9 @@
+id: c-local-sockaddr-uninitialized-passed
+valid:
+  - >-
+    static void f(const char *ip) { struct sockaddr_in6 sa6 = {0};
+    inet_pton(AF_INET6, ip, &sa6.sin6_addr); }
+invalid:
+  - >-
+    static void f(const char *ip) { struct sockaddr_in6 sa6; inet_pton(AF_INET6,
+    ip, &sa6.sin6_addr); }

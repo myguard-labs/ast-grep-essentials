@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-local-sockaddr-uninitialized-passed
+language: c
+severity: warning
+message: >-
+  Local sockaddr struct declared without an initializer and later used in a
+  call.
+note: >-
+  Syntactic only; matches a same-block later call mentioning the variable
+  name, without checking for intervening initialization, dataflow, or
+  shadowing.
+rule:
+  all:
+    - pattern: 'struct $T $V;'
+    - inside:
+        kind: function_definition
+        stopBy: end
+    - precedes:
+        stopBy: end
+        has:
+          kind: call_expression
+          stopBy: end
+          has:
+            pattern: '$V'
+            stopBy: end
+constraints:
+  T:
+    regex: '^sockaddr(_in6)?$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
