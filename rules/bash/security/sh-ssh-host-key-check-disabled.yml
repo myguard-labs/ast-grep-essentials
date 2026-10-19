@@ -75,8 +75,48 @@ utils:
               - matches: ordinary-operand
               - not: {matches: wrapped-client}
           matches: wrapped-client
+transform:
+  FIXED:
+    rewrite:
+      rewriters: [joined-option-to-yes, separate-setting-to-yes]
+      source: $CMD
+rewriters:
+  # -oStrictHostKeyChecking=no (one token) -> =yes, keeping quotes and case
+  - id: joined-option-to-yes
+    rule:
+      pattern: $TOK
+      regex: (?i)^["']?-oStrictHostKeyChecking\s*=\s*no["']?$
+      any:
+        - matches: unsafe-option
+        - matches: wrapped-unsafe-option
+    transform:
+      REPL:
+        replace:
+          source: $TOK
+          replace: (?i)=\s*no(["']?)$
+          by: =yes$1
+    fix: $REPL
+  # -o StrictHostKeyChecking=no: only the setting token after the guarded -o
+  - id: separate-setting-to-yes
+    rule:
+      pattern: $TOK
+      matches: unsafe-setting
+      follows:
+        regex: ^["']?-o["']?$
+        any:
+          - matches: unsafe-option
+          - matches: wrapped-unsafe-option
+    transform:
+      REPL:
+        replace:
+          source: $TOK
+          replace: (?i)=\s*no(["']?)$
+          by: =yes$1
+    fix: $REPL
+fix: $FIXED
 rule:
   kind: command
+  pattern: $CMD
   any:
     - all:
         - has:
