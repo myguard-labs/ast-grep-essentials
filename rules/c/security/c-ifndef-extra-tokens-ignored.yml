@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ifndef-extra-tokens-ignored
+language: c
+severity: warning
+message: >-
+  #ifdef/#ifndef tests only the first identifier; extra tokens after it are
+  ignored. Use #if with defined(...) for compound conditions.
+note: >-
+  Purely textual line match inside the file; it does not verify how the
+  preprocessor or parser treats the trailing tokens, and it reports once per
+  file.
+rule:
+  kind: translation_unit
+  regex: '(?m)^[ \t]*#[ \t]*ifn?def[ \t]+[A-Za-z_][A-Za-z0-9_]*[ \t]+[^\s/]'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
