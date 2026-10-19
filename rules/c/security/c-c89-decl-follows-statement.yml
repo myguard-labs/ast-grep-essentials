@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-c89-decl-follows-statement
+language: c
+severity: warning
+message: >-
+  Declaration with initializer follows an if statement in the same block,
+  which C89 forbids.
+note: >-
+  Matches syntactic ordering only within one compound statement and only after
+  an if statement; it does not check which standard the build targets or macro
+  expansions.
+rule:
+  kind: declaration
+  has:
+    kind: init_declarator
+  inside:
+    kind: compound_statement
+  follows:
+    stopBy: end
+    kind: if_statement
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
