@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-duplicate-resource-type-name
+language: c
+severity: warning
+message: >-
+  Duplicate resource type name literal passed to
+  zend_register_list_destructors_ex in sibling statements.
+note: >-
+  Matches sibling statements with the same literal text; does not prove same
+  function in all cases or resolve macros.
+rule:
+  pattern: '$A = zend_register_list_destructors_ex($D, $N, $S, $M);'
+  precedes:
+    stopBy: end
+    pattern: '$B = zend_register_list_destructors_ex($D2, $N2, $S, $M2);'
+constraints:
+  S:
+    kind: string_literal
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
