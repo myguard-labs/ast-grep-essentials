@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-superglobal-post-assign-no-unslash
+language: php
+severity: warning
+message: 'Superglobal POST element is assigned directly without wp_unslash().'
+note: >-
+  Matches the literal assignment syntax only; it does not track later
+  unslashing or other sanitization of the variable.
+rule:
+  kind: assignment_expression
+  has:
+    field: right
+    kind: subscript_expression
+    regex: '^\$_POST\['
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
