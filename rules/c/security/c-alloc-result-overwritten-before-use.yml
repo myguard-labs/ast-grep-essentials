@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-alloc-result-overwritten-before-use
+language: c
+severity: warning
+message: >-
+  Allocation result is overwritten by the next statement without being used,
+  which leaks it.
+note: >-
+  Matches two adjacent statements syntactically; it does not check whether the
+  new value reads the old pointer (e.g. via a call) or aliasing.
+rule:
+  pattern: '$L = malloc($$$A);'
+  precedes:
+    stopBy: neighbor
+    pattern: '$L = $V;'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
