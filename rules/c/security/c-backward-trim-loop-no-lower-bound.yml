@@ -1,0 +1,38 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-backward-trim-loop-no-lower-bound
+language: c
+severity: warning
+message: >-
+  Backward-scanning loop dereferences and decrements a pointer without a
+  lower-bound comparison in its condition.
+note: >-
+  Syntactic only; it does not check whether the bound is enforced elsewhere,
+  or whether the same pointer is dereferenced and decremented.
+rule:
+  kind: while_statement
+  all:
+    - has:
+        field: condition
+        has:
+          pattern: '*$E'
+          stopBy: end
+    - has:
+        field: body
+        has:
+          pattern: '$E--'
+          stopBy: end
+    - not:
+        has:
+          field: condition
+          has:
+            pattern: '$E >= $A'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
