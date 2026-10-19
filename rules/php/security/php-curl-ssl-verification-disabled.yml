@@ -21,10 +21,83 @@ note: >-
   passed by variable. CURLOPT_SSL_VERIFYHOST set to 1 is left outside the shape
   because libcurl 7.66.0 and later treats it exactly like 2; only the 7.28.1 to
   7.65.3 range rejected it, and neither behaviour weakens verification.
+transform:
+  FIXED:
+    rewrite:
+      rewriters:
+        - verify-peer-off-to-true
+        - verify-host-off-to-2
+        - element-peer-off-to-true
+        - element-host-off-to-2
+      source: $CALL
+rewriters:
+  # curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false|0) -> true
+  - id: verify-peer-off-to-true
+    rule:
+      kind: argument
+      nthChild: 3
+      regex: '(?i)^(false|0|"0"|''0'')$'
+      follows:
+        stopBy: end
+        kind: argument
+        regex: '(?i)^CURLOPT_SSL_VERIFYPEER$'
+      inside:
+        stopBy: neighbor
+        kind: arguments
+        inside:
+          stopBy: neighbor
+          kind: function_call_expression
+          has:
+            field: function
+            regex: '(?i)^\\?curl_setopt$'
+    fix: 'true'
+  # curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false|0) -> 2 (the strict check)
+  - id: verify-host-off-to-2
+    rule:
+      kind: argument
+      nthChild: 3
+      regex: '(?i)^(false|0|"0"|''0'')$'
+      follows:
+        stopBy: end
+        kind: argument
+        regex: '(?i)^CURLOPT_SSL_VERIFYHOST$'
+      inside:
+        stopBy: neighbor
+        kind: arguments
+        inside:
+          stopBy: neighbor
+          kind: function_call_expression
+          has:
+            field: function
+            regex: '(?i)^\\?curl_setopt$'
+    fix: '2'
+  # curl_setopt_array($ch, [CURLOPT_SSL_VERIFY* => false|0])
+  - id: element-peer-off-to-true
+    rule:
+      regex: '(?i)^(false|0|"0"|''0'')$'
+      inside:
+        stopBy: neighbor
+        kind: array_element_initializer
+      follows:
+        stopBy: end
+        regex: '(?i)^CURLOPT_SSL_VERIFYPEER$'
+    fix: 'true'
+  - id: element-host-off-to-2
+    rule:
+      regex: '(?i)^(false|0|"0"|''0'')$'
+      inside:
+        stopBy: neighbor
+        kind: array_element_initializer
+      follows:
+        stopBy: end
+        regex: '(?i)^CURLOPT_SSL_VERIFYHOST$'
+    fix: '2'
+fix: $FIXED
 rule:
   any:
     # curl_setopt($ch, CURLOPT_SSL_VERIFY*, false|0)
     - kind: function_call_expression
+      pattern: $CALL
       all:
         - has:
             field: function
@@ -42,6 +115,7 @@ rule:
                   regex: '(?i)^(false|0|"0"|''0'')$'
     # curl_setopt_array($ch, [CURLOPT_SSL_VERIFY* => false|0, ...])
     - kind: array_element_initializer
+      pattern: $CALL
       all:
         - has:
             nthChild: {position: 1, ofRule: {not: {kind: comment}}}
