@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-alloc-early-return-without-free
+language: c
+severity: warning
+message: >-
+  An if-block returns after the local was assigned an allocation, without
+  freeing or referencing it.
+note: >-
+  Syntactic only; it does not check control flow, aliasing, ownership
+  transfer, or whether the if-block is truly on a path after the allocation.
+rule:
+  kind: if_statement
+  all:
+    - follows:
+        pattern: '$V = $F($$$A);'
+        stopBy: end
+    - has:
+        kind: return_statement
+        stopBy: end
+    - not:
+        has:
+          pattern: '$V'
+          stopBy: end
+constraints:
+  F:
+    regex: '^(emalloc|malloc|estrdup)$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
