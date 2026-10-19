@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-exit-status-read-before-shutdown
+language: c
+severity: warning
+message: >-
+  Exit status is read before php_request_shutdown; shutdown handlers may
+  change it.
+note: >-
+  Matches the syntactic ordering in one block only; does not verify that the
+  shutdown call is the PHP one or that handlers modify the status.
+rule:
+  pattern: '$VAR = EG(exit_status);'
+  precedes:
+    stopBy: end
+    pattern: 'php_request_shutdown($$$ARGS);'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

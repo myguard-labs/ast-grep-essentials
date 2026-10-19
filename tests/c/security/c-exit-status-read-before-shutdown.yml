@@ -1,0 +1,9 @@
+id: c-exit-status-read-before-shutdown
+valid:
+  - |-
+    php_request_shutdown((void *) 0);
+    exit_status = EG(exit_status);
+invalid:
+  - |-
+    exit_status = EG(exit_status);
+    php_request_shutdown((void *) 0);
