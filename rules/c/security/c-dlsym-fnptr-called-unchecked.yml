@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-dlsym-fnptr-called-unchecked
+language: c
+severity: warning
+message: >-
+  Function pointer loaded via dynlib_sym is called immediately without a NULL
+  check.
+note: >-
+  Matches only the literal adjacent-statement shape; it does not track
+  aliasing, other symbol loaders, or guards elsewhere.
+rule:
+  all:
+    - pattern: 'return fp($$$ARGS);'
+    - follows:
+        pattern: '*(void **)(&fp) = dynlib_sym($$$A);'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
