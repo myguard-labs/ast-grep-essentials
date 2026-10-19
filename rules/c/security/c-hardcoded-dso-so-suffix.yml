@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hardcoded-dso-so-suffix
+language: c
+severity: warning
+message: >-
+  Macro value hardcodes the ".so" shared-object suffix; use the platform
+  DSO_EXTENSION macro instead.
+note: >-
+  Matches only raw preprocessor macro values whose text ends in a string
+  literal ending with .so. It does not check whether the value is really used
+  as a module path. It does not see suffixes built at runtime or through other
+  macros.
+rule:
+  kind: preproc_arg
+  regex: '\.so"\s*$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
