@@ -15,13 +15,47 @@ note: >-
   written literally. A value passed through a variable or a configuration lookup
   is not matched. Development and test code is the usual reason this appears and
   is not a reason to leave it in a deployed configuration.
+transform:
+  FIXED:
+    rewrite:
+      rewriters: [field-false-to-true, handshake-false-to-true]
+      source: $NODE
+rewriters:
+  # { ssl_verify = false } -> true
+  - id: field-false-to-true
+    rule:
+      kind: 'false'
+      inside:
+        stopBy: neighbor
+        kind: field
+        has: {field: name, regex: '^ssl_verify$'}
+    fix: 'true'
+  # sock:sslhandshake(session, name, false) -> true (third argument is ssl_verify)
+  - id: handshake-false-to-true
+    rule:
+      kind: 'false'
+      nthChild: 3
+      inside:
+        stopBy: neighbor
+        kind: arguments
+        inside:
+          stopBy: neighbor
+          kind: function_call
+          has:
+            field: name
+            kind: method_index_expression
+            has: {field: method, regex: '^sslhandshake$'}
+    fix: 'true'
+fix: $FIXED
 rule:
   any:
     - kind: field
+      pattern: $NODE
       all:
         - has: {field: name, regex: '^ssl_verify$'}
         - has: {field: value, kind: 'false'}
     - kind: function_call
+      pattern: $NODE
       all:
         - has:
             field: name

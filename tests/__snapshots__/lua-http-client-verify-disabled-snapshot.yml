@@ -1,6 +1,30 @@
 id: lua-http-client-verify-disabled
 snapshots:
-  local ok = sock:sslhandshake(nil, host, false):
+  "local ok = sock:sslhandshake(false, host, false)":
+    fixed: local ok = sock:sslhandshake(false, host, true)
+    labels:
+    - source: sock:sslhandshake(false, host, false)
+      style: primary
+      start: 11
+      end: 48
+    - source: sslhandshake
+      style: secondary
+      start: 16
+      end: 28
+    - source: sock:sslhandshake
+      style: secondary
+      start: 11
+      end: 28
+    - source: "false"
+      style: secondary
+      start: 42
+      end: 47
+    - source: (false, host, false)
+      style: secondary
+      start: 28
+      end: 48
+  "local ok = sock:sslhandshake(nil, host, false)":
+    fixed: local ok = sock:sslhandshake(nil, host, true)
     labels:
     - source: sock:sslhandshake(nil, host, false)
       style: primary
@@ -14,7 +38,7 @@ snapshots:
       style: secondary
       start: 11
       end: 28
-    - source: 'false'
+    - source: "false"
       style: secondary
       start: 40
       end: 45
@@ -22,7 +46,23 @@ snapshots:
       style: secondary
       start: 28
       end: 46
-  local res = httpc:request_uri(url, { ssl_verify = false }):
+  "local res = httpc:request_uri(url, { keepalive = false, ssl_verify = false })":
+    fixed: local res = httpc:request_uri(url, { keepalive = false, ssl_verify = true })
+    labels:
+    - source: ssl_verify = false
+      style: primary
+      start: 56
+      end: 74
+    - source: ssl_verify
+      style: secondary
+      start: 56
+      end: 66
+    - source: "false"
+      style: secondary
+      start: 69
+      end: 74
+  "local res = httpc:request_uri(url, { ssl_verify = false })":
+    fixed: local res = httpc:request_uri(url, { ssl_verify = true })
     labels:
     - source: ssl_verify = false
       style: primary
@@ -32,7 +72,7 @@ snapshots:
       style: secondary
       start: 37
       end: 47
-    - source: 'false'
+    - source: "false"
       style: secondary
       start: 50
       end: 55
