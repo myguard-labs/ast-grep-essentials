@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-init-macro-enum-mismatch
+language: c
+severity: warning
+message: Macro name ends in TAKE3 but its body passes a different TAKE enum constant.
+note: >-
+  Purely textual check on the macro name suffix TAKE3 and TAKE<digits> tokens
+  in the body; other suffixes are not covered.
+rule:
+  kind: preproc_function_def
+  all:
+    - has:
+        field: name
+        regex: 'TAKE3$'
+    - has:
+        field: value
+        regex: '\bTAKE[0-9]+\b'
+    - not:
+        has:
+          field: value
+          regex: '\bTAKE3\b'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
