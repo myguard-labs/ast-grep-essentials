@@ -4,13 +4,14 @@ id: sh-ssh-host-key-check-disabled
 language: bash
 severity: error
 message: >-
-  SSH host-key verification is disabled with StrictHostKeyChecking=no. A
+  SSH host-key verification is disabled with StrictHostKeyChecking=no (or off/false). A
   machine-in-the-middle can impersonate the server and capture credentials or
   replace transferred data. Pin the host key in a managed known_hosts file and
   keep strict checking enabled.
 note: >-
   Matches -o StrictHostKeyChecking=no and the joined -oStrictHostKeyChecking=no
-  form in the client-option region of direct or `command`-prefixed ssh, scp, or
+  form (also the ssh_config space separator inside one quoted token, and the
+  synonyms off and false) in the client-option region of direct or `command`-prefixed ssh, scp, or
   sftp commands, including quoted option tokens. Options following `--`, or
   immediately following an ordinary operand, are excluded so remote-command
   data is not mistaken for a client setting. This conservative boundary can
@@ -26,7 +27,7 @@ utils:
       - kind: raw_string
   unsafe-setting:
     matches: argument-token
-    regex: (?i)^["']?StrictHostKeyChecking\s*=\s*no["']?$
+    regex: (?i)^["']?StrictHostKeyChecking(\s*=\s*|\s+)(no|off|false)["']?$
   ordinary-operand:
     matches: argument-token
     regex: ^["']?[^-'"].*$
@@ -37,7 +38,7 @@ utils:
     all:
       - matches: argument-token
       - any:
-          - regex: (?i)^["']?-oStrictHostKeyChecking\s*=\s*no["']?$
+          - regex: (?i)^["']?-oStrictHostKeyChecking(\s*=\s*|\s+)(no|off|false)["']?$
           - all:
               - regex: ^["']?-o["']?$
               - precedes: {matches: unsafe-setting}
@@ -85,7 +86,7 @@ rewriters:
   - id: joined-option-to-yes
     rule:
       pattern: $TOK
-      regex: (?i)^["']?-oStrictHostKeyChecking\s*=\s*no["']?$
+      regex: (?i)^["']?-oStrictHostKeyChecking(\s*=\s*|\s+)(no|off|false)["']?$
       any:
         - matches: unsafe-option
         - matches: wrapped-unsafe-option
@@ -93,8 +94,8 @@ rewriters:
       REPL:
         replace:
           source: $TOK
-          replace: (?i)=\s*no(["']?)$
-          by: =yes$1
+          replace: (?i)(no|off|false)(["']?)$
+          by: yes$2
     fix: $REPL
   # -o StrictHostKeyChecking=no: only the setting token after the guarded -o
   - id: separate-setting-to-yes
@@ -110,8 +111,8 @@ rewriters:
       REPL:
         replace:
           source: $TOK
-          replace: (?i)=\s*no(["']?)$
-          by: =yes$1
+          replace: (?i)(no|off|false)(["']?)$
+          by: yes$2
     fix: $REPL
 fix: $FIXED
 rule:
