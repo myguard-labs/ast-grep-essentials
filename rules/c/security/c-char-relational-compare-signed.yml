@@ -1,0 +1,42 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-char-relational-compare-signed
+language: c
+severity: warning
+message: >-
+  Plain char local used in a relational comparison; signedness is
+  implementation-defined.
+note: >-
+  Matches by identifier name within one function only; does not resolve
+  shadowing, types, or pointer declarators.
+rule:
+  all:
+    - kind: binary_expression
+    - has:
+        field: operator
+        regex: '^(<|>|<=|>=)$'
+    - has:
+        kind: identifier
+        pattern: '$V'
+    - inside:
+        kind: function_definition
+        stopBy: end
+        has:
+          stopBy: end
+          kind: declaration
+          all:
+            - has:
+                kind: primitive_type
+                regex: '^char$'
+            - has:
+                stopBy: end
+                kind: identifier
+                pattern: '$V'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
