@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-alloc-sizeof-minus-one-count
+language: c
+severity: warning
+message: >-
+  Size expression multiplies sizeof by (identifier - 1), which underflows when
+  the identifier is zero.
+note: >-
+  Matches the syntactic shape only; does not determine whether the identifier
+  can be zero or whether the result is used for allocation.
+rule:
+  pattern: '$A * ($N - 1)'
+constraints:
+  A:
+    kind: sizeof_expression
+  'N':
+    kind: identifier
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
