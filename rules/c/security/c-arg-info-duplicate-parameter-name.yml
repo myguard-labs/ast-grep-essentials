@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-arg-info-duplicate-parameter-name
+language: c
+severity: warning
+message: Duplicate parameter name in ZEND_ARG_INFO entries.
+note: >-
+  Matches an arg-info call that follows an earlier sibling arg-info call with
+  the same name argument. It does not verify that both lie in the same
+  BEGIN/END block. The optional leading n tolerates literal backslash-n text
+  glued to the macro name.
+rule:
+  pattern: '$F($A, $N)'
+  follows:
+    pattern: '$G($B, $N)'
+    stopBy: end
+constraints:
+  F:
+    regex: '^n?ZEND_ARG_INFO$'
+  G:
+    regex: '^n?ZEND_ARG_INFO$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
