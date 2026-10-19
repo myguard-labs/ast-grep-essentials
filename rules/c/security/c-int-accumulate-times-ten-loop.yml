@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-int-accumulate-times-ten-loop
+language: c
+severity: warning
+message: >-
+  Decimal accumulation v = v * 10 + d inside a loop with no enclosing guard;
+  this may overflow.
+note: >-
+  Syntactic approximation only. It matches a while loop and an assignment not
+  nested in any if statement. It does not check the variable type, the bound,
+  or the guard semantics.
+rule:
+  all:
+    - pattern: '$V = $V * 10 + $D'
+    - inside:
+        kind: while_statement
+        stopBy: end
+    - not:
+        inside:
+          kind: if_statement
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
