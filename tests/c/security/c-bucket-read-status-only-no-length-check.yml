@@ -1,0 +1,15 @@
+id: c-bucket-read-status-only-no-length-check
+valid:
+  - |-
+    rv = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);
+    if (!APR_STATUS_IS_SUCCESS(rv) || (n == 0)) {
+        return 0;
+    }
+    use(n);
+invalid:
+  - |-
+    rv = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);
+    if (!APR_STATUS_IS_SUCCESS(rv)) {
+        return 0;
+    }
+    use(n);

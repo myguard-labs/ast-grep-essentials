@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-bucket-read-status-only-no-length-check
+language: c
+severity: warning
+message: >-
+  apr_bucket_read() result is checked only for status; a zero-length (EOF)
+  read is not tested.
+note: >-
+  Syntactic only. It matches an if whose whole condition is a status-only
+  check directly after an assignment from apr_bucket_read. It does not verify
+  that the length is used later or that no later zero-length test exists.
+rule:
+  pattern: 'if (!APR_STATUS_IS_SUCCESS($RV)) $BODY'
+  follows:
+    pattern: '$X = apr_bucket_read($$$ARGS);'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
