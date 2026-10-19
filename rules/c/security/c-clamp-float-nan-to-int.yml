@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-clamp-float-nan-to-int
+language: c
+severity: warning
+message: >-
+  Nested ternary clamp is cast to a type; a NaN passes both comparisons and
+  reaches the cast.
+note: >-
+  Matches a cast containing a conditional whose alternative holds another
+  conditional; it does not verify operand types, float literals, or that the
+  cast target is an integer type.
+rule:
+  kind: cast_expression
+  has:
+    stopBy: end
+    kind: conditional_expression
+    has:
+      field: alternative
+      stopBy: end
+      kind: conditional_expression
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
