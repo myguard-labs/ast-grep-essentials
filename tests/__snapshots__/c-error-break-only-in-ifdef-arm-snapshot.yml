@@ -1,0 +1,34 @@
+id: c-error-break-only-in-ifdef-arm
+snapshots:
+  "int w(char *p, int n) { while (n > 0) { int r = write_it(p, n); if (!r) {\n#ifdef WIN32_NO_CONSOLE\nbreak;\n#else\nhandle_abort();\n#endif\n} p += r; n -= r; } return 0; }":
+    labels:
+    - source: break;
+      style: primary
+      start: 98
+      end: 104
+    - source: |-
+        #else
+        handle_abort();
+      style: secondary
+      start: 105
+      end: 126
+    - source: |-
+        #ifdef WIN32_NO_CONSOLE
+        break;
+        #else
+        handle_abort();
+        #endif
+      style: secondary
+      start: 74
+      end: 133
+    - source: |-
+        if (!r) {
+        #ifdef WIN32_NO_CONSOLE
+        break;
+        #else
+        handle_abort();
+        #endif
+        }
+      style: secondary
+      start: 64
+      end: 135
