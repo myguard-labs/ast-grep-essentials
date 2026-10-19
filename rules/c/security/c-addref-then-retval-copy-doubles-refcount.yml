@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-addref-then-retval-copy-doubles-refcount
+language: c
+severity: warning
+message: >-
+  Z_ADDREF_P on a value immediately before RETVAL_ZVAL(value, 1, 0) adds a
+  second reference, because RETVAL_ZVAL with copy=1 already adds one.
+note: >-
+  Matches only adjacent statements with the same literal argument text. It
+  does not resolve macros, aliases, or control flow.
+rule:
+  pattern: 'RETVAL_ZVAL($V, 1, 0);'
+  follows:
+    pattern: 'Z_ADDREF_P($V);'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
