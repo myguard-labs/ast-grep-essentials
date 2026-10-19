@@ -1,0 +1,9 @@
+id: c-kind-check-before-child-eval
+valid:
+  - >-
+    zend_eval_const_expr(&ast->child[1]); if (ast->child[1]->kind !=
+    ZEND_AST_ZVAL) return;
+invalid:
+  - >-
+    if (ast->child[1]->kind != ZEND_AST_ZVAL) return;
+    zend_eval_const_expr(&ast->child[1]);
