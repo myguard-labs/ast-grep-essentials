@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-free-inside-disabled-preproc
+language: c
+severity: warning
+message: >-
+  Free-family call sits inside a preprocessor block that looks disabled, so
+  the release may never run.
+note: >-
+  Matches condition text only (literal 0 or a macro name ending in _0); it
+  does not check whether the macro is actually defined.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        regex: '^(free|efree|zend_\w*free)$'
+    - inside:
+        kind: preproc_if
+        stopBy: end
+        has:
+          field: condition
+          regex: '^\s*(0|\w*_0)\s*$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
