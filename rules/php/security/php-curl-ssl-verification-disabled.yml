@@ -13,7 +13,9 @@ message: >-
 note: >-
   Matches a literal false, 0, "0" or '0' supplied to CURLOPT_SSL_VERIFYPEER or
   CURLOPT_SSL_VERIFYHOST, either as the third positional argument of curl_setopt
-  or as an element of the options array given directly as curl_setopt_array's
+  or as the named option: and value: arguments of curl_setopt in any order
+  (also mixed with a positional handle), or as an element of the options array
+  given directly as curl_setopt_array's
   second positional or options named argument. The safe values — true and 1 for
   the peer option, 2 for the host option — do not match, and neither does a
   value computed at runtime, a constant name in quotes, an array nested in
@@ -21,56 +23,88 @@ note: >-
   passed by variable. CURLOPT_SSL_VERIFYHOST set to 1 is left outside the shape
   because libcurl 7.66.0 and later treats it exactly like 2; only the 7.28.1 to
   7.65.3 range rejected it, and neither behaviour weakens verification.
+utils:
+  # option argument: positional 2nd, or named `option:` in any position
+  peer-option-arg:
+    kind: argument
+    any:
+      - all:
+          - nthChild: 2
+          - regex: '(?i)^CURLOPT_SSL_VERIFYPEER$'
+      - regex: '(?i)^(?-i:option)\s*:\s*CURLOPT_SSL_VERIFYPEER$'
+  host-option-arg:
+    kind: argument
+    any:
+      - all:
+          - nthChild: 2
+          - regex: '(?i)^CURLOPT_SSL_VERIFYHOST$'
+      - regex: '(?i)^(?-i:option)\s*:\s*CURLOPT_SSL_VERIFYHOST$'
+  positional-off-value:
+    kind: argument
+    nthChild: 3
+    regex: '(?i)^(false|0|"0"|''0'')$'
+  named-off-value:
+    kind: argument
+    regex: '(?i)^(?-i:value)\s*:\s*(false|0|"0"|''0'')$'
+  curl-setopt-args:
+    kind: arguments
+    inside:
+      stopBy: neighbor
+      kind: function_call_expression
+      has:
+        field: function
+        regex: '(?i)^\\?curl_setopt$'
 transform:
   FIXED:
     rewrite:
       rewriters:
         - verify-peer-off-to-true
+        - verify-peer-named-off-to-true
         - verify-host-off-to-2
+        - verify-host-named-off-to-2
         - element-peer-off-to-true
         - element-host-off-to-2
       source: $CALL
 rewriters:
-  # curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false|0) -> true
+  # curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false|0) -> true; named forms
+  # (handle:/option:/value: in any order) keep the `value: ` prefix
   - id: verify-peer-off-to-true
     rule:
-      kind: argument
-      nthChild: 3
-      regex: '(?i)^(false|0|"0"|''0'')$'
-      follows:
-        stopBy: end
-        kind: argument
-        regex: '(?i)^CURLOPT_SSL_VERIFYPEER$'
+      matches: positional-off-value
       inside:
         stopBy: neighbor
-        kind: arguments
-        inside:
-          stopBy: neighbor
-          kind: function_call_expression
-          has:
-            field: function
-            regex: '(?i)^\\?curl_setopt$'
+        matches: curl-setopt-args
+        has:
+          matches: peer-option-arg
     fix: 'true'
+  - id: verify-peer-named-off-to-true
+    rule:
+      matches: named-off-value
+      inside:
+        stopBy: neighbor
+        matches: curl-setopt-args
+        has:
+          matches: peer-option-arg
+    fix: 'value: true'
   # curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false|0) -> 2 (the strict check)
   - id: verify-host-off-to-2
     rule:
-      kind: argument
-      nthChild: 3
-      regex: '(?i)^(false|0|"0"|''0'')$'
-      follows:
-        stopBy: end
-        kind: argument
-        regex: '(?i)^CURLOPT_SSL_VERIFYHOST$'
+      matches: positional-off-value
       inside:
         stopBy: neighbor
-        kind: arguments
-        inside:
-          stopBy: neighbor
-          kind: function_call_expression
-          has:
-            field: function
-            regex: '(?i)^\\?curl_setopt$'
+        matches: curl-setopt-args
+        has:
+          matches: host-option-arg
     fix: '2'
+  - id: verify-host-named-off-to-2
+    rule:
+      matches: named-off-value
+      inside:
+        stopBy: neighbor
+        matches: curl-setopt-args
+        has:
+          matches: host-option-arg
+    fix: 'value: 2'
   # curl_setopt_array($ch, [CURLOPT_SSL_VERIFY* => false|0])
   - id: element-peer-off-to-true
     rule:
@@ -106,13 +140,13 @@ rule:
             field: arguments
             all:
               - has:
-                  kind: argument
-                  nthChild: 2
-                  regex: '(?i)^CURLOPT_SSL_VERIFY(PEER|HOST)$'
+                  any:
+                    - matches: peer-option-arg
+                    - matches: host-option-arg
               - has:
-                  kind: argument
-                  nthChild: 3
-                  regex: '(?i)^(false|0|"0"|''0'')$'
+                  any:
+                    - matches: positional-off-value
+                    - matches: named-off-value
     # curl_setopt_array($ch, [CURLOPT_SSL_VERIFY* => false|0, ...])
     - kind: array_element_initializer
       pattern: $CALL
