@@ -14,8 +14,33 @@ note: >-
   environment is not matched. A script that only ever runs on a loopback
   developer machine is the routine dismissal, and it still ships the flag in the
   same file the deployment imports.
+transform:
+  FIXED:
+    rewrite:
+      rewriters: [debug-true-to-false]
+      source: $CALL
+rewriters:
+  - id: debug-true-to-false
+    rule:
+      kind: keyword_argument
+      all:
+        - has: {field: name, regex: '^debug$'}
+        - has: {field: value, regex: '^True$'}
+      inside:
+        stopBy: neighbor
+        kind: argument_list
+        inside:
+          stopBy: neighbor
+          kind: call
+          has:
+            field: function
+            kind: attribute
+            has: {field: attribute, regex: '^run$'}
+    fix: debug=False
+fix: $FIXED
 rule:
   kind: call
+  pattern: $CALL
   all:
     - has:
         field: function
