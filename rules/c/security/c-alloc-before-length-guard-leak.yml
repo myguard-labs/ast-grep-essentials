@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-alloc-before-length-guard-leak
+language: c
+severity: warning
+message: >-
+  Buffer allocated with emalloc before a later early-return guard; the early
+  return may leak it.
+note: >-
+  Syntactic only; does not verify that the guard checks the same length
+  variable or that no free occurs before the return.
+rule:
+  pattern: '$T *$P = emalloc($$$A);'
+  precedes:
+    stopBy: end
+    kind: if_statement
+    has:
+      stopBy: end
+      kind: return_statement
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
