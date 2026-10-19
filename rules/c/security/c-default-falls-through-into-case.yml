@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-default-falls-through-into-case
+language: c
+severity: warning
+message: >-
+  This default group has statements but no break, so it falls into the next
+  case.
+note: >-
+  Syntactic only; it checks direct children of the default group for a break
+  and cannot tell intentional fallthrough, return/goto terminators, or nested
+  terminators.
+rule:
+  all:
+    - kind: case_statement
+    - regex: '^default'
+    - has:
+        kind: expression_statement
+    - precedes:
+        kind: case_statement
+        stopBy: neighbor
+    - not:
+        has:
+          kind: break_statement
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
