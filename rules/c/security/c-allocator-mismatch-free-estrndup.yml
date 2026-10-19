@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-allocator-mismatch-free-estrndup
+language: c
+severity: warning
+message: >-
+  Pointer allocated with a PHP emalloc-family allocator is passed to libc
+  free(); use efree().
+note: >-
+  Syntactic same-scope check only. It does not resolve reassignment, aliasing,
+  macros, or control flow between the allocation and free.
+rule:
+  pattern: 'free($P);'
+  follows:
+    stopBy: end
+    pattern: '$T *$P = $F($$$A);'
+constraints:
+  F:
+    regex: '^(estrndup|estrdup|emalloc|ecalloc|erealloc|safe_emalloc)$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
