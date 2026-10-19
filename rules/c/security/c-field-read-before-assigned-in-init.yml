@@ -1,0 +1,38 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-field-read-before-assigned-in-init
+language: c
+severity: warning
+message: >-
+  A struct field is assigned from a call that reads a sibling field, but that
+  sibling field is only assigned in a later statement.
+note: >-
+  Matches syntax only. It compares receiver and field text, and it does not
+  resolve aliasing, helpers that set the field, or control flow.
+rule:
+  all:
+    - kind: expression_statement
+    - has:
+        kind: assignment_expression
+        has:
+          field: right
+          kind: call_expression
+          has:
+            stopBy: end
+            pattern: '$P->$L'
+    - precedes:
+        stopBy: end
+        kind: expression_statement
+        has:
+          kind: assignment_expression
+          has:
+            field: left
+            pattern: '$P->$L'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
