@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-frameless-return-skips-flf-clean
+language: c
+severity: warning
+message: >-
+  RETURN_* returns directly and skips the flf_clean cleanup label in this
+  frameless function.
+note: >-
+  Syntactic only; matches RETURN_* statements enclosed by text containing
+  ZEND_FRAMELESS_FUNCTION and an flf_clean label, without checking whether
+  temporaries actually need cleanup.
+rule:
+  kind: expression_statement
+  regex: '^RETURN_[A-Z0-9_]+'
+  inside:
+    stopBy: end
+    regex: '(?s)ZEND_FRAMELESS_FUNCTION.*flf_clean\s*:'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
