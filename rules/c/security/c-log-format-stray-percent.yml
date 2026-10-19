@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-log-format-stray-percent
+language: c
+severity: warning
+message: >-
+  Format string passed to ngx_log_error contains a percent sign without a
+  valid conversion specifier.
+note: >-
+  Lexical check on the literal only. It treats a percent followed by a
+  non-alphanumeric character other than flag characters as stray. It does not
+  validate specifier names or resolve macros.
+rule:
+  all:
+    - kind: string_literal
+    - nthChild: 4
+    - regex: '^"(?:[^%]|%%)*%[^-+0-9.*a-zA-Z%#]'
+    - inside:
+        kind: argument_list
+        inside:
+          kind: call_expression
+          has:
+            field: function
+            regex: '^ngx_log_error$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
