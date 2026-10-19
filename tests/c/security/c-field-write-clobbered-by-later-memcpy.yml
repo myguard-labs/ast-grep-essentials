@@ -1,0 +1,9 @@
+id: c-field-write-clobbered-by-later-memcpy
+valid:
+  - |-
+    memcpy(dst, src, sizeof(*dst));
+    dst->bits |= 4;
+invalid:
+  - |-
+    dst->bits |= 4;
+    memcpy(dst, src, sizeof(*dst));
