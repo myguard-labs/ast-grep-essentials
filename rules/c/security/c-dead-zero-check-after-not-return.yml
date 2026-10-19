@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-dead-zero-check-after-not-return
+language: c
+severity: warning
+message: >-
+  This (V == 0) test follows an earlier `if (!V) return`, so it can never be
+  true.
+note: >-
+  Syntactic only; does not check that V is unmodified between the two tests,
+  nor control flow or aliasing.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        field: condition
+        has:
+          pattern: '$V == 0'
+          stopBy: end
+    - follows:
+        pattern: 'if (!$V) return $A;'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
