@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-dh-params-from-file-without-free
+language: c
+severity: warning
+message: >-
+  DH loaded by ssl_dh_GetParamFromFile is passed to SSL_CTX_set_tmp_dh without
+  a later DH_free on it.
+note: >-
+  Syntactic only. It checks sibling statements in the same block and does not
+  track aliasing, other release paths, or control flow.
+rule:
+  pattern: 'SSL_CTX_set_tmp_dh($C, $D);'
+  all:
+    - follows:
+        stopBy: end
+        pattern: 'DH *$D = ssl_dh_GetParamFromFile($$$A);'
+    - not:
+        precedes:
+          stopBy: end
+          pattern: 'DH_free($D);'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
