@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-err-macro-library-mismatch
+language: c
+severity: warning
+message: >-
+  Error macro names one library but raises an error under a different ERR_LIB_
+  constant.
+note: >-
+  Textual check limited to the BNerr macro; ast-grep cannot correlate a macro
+  name prefix with the ERR_LIB_ suffix generically, and no other wrappers are
+  covered.
+rule:
+  kind: preproc_function_def
+  all:
+    - regex: '^#\s*define\s+BNerr\s*\('
+    - regex: 'ERR_raise\(\s*ERR_LIB_'
+    - not:
+        regex: 'ERR_raise\(\s*ERR_LIB_BN\b'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
