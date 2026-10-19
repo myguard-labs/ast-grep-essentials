@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: wp-redirect-raw-http-referer
+language: php
+severity: warning
+message: >-
+  wp_redirect() is called with the raw HTTP_REFERER server value, which is
+  client-controlled and enables an open redirect. Use wp_get_referer()
+  instead.
+note: >-
+  Matches only the literal superglobal HTTP_REFERER subscript as the first
+  argument; it does not track aliased variables or sanitization elsewhere.
+rule:
+  all:
+    - pattern: 'wp_redirect($$$ARGS)'
+    - has:
+        kind: arguments
+        has:
+          kind: argument
+          nthChild: 1
+          regex: '^\$_SERVER\[[''"]HTTP_REFERER[''"]\]$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
