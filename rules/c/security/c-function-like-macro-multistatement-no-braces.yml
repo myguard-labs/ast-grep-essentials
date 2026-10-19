@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-function-like-macro-multistatement-no-braces
+language: c
+severity: warning
+message: >-
+  Function-like macro body has multiple statements without braces or
+  do-while(0).
+note: >-
+  Textual check on the raw macro body; it cannot tell semicolons in strings or
+  comments from statements.
+rule:
+  kind: preproc_function_def
+  has:
+    kind: preproc_arg
+    all:
+      - regex: ';[\s\\]*[^\s\\]'
+      - not:
+          regex: '^[\s\\]*(\{|do\b)'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
