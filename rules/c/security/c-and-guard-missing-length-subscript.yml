@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-and-guard-missing-length-subscript
+language: c
+severity: warning
+message: 'Subscript p[n - 1] follows && without an earlier test of n.'
+note: >-
+  Purely syntactic. It matches the literal identifier n and does not check
+  types, aliases, or guards outside this expression.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^&&$'
+    - has:
+        field: right
+        pattern: '$P[n - 1] == $X'
+    - not:
+        has:
+          field: left
+          has:
+            stopBy: end
+            pattern: 'n'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
