@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-libc-free-openssl-alloc
+language: c
+severity: warning
+message: >-
+  Memory allocated with an OPENSSL_* allocator is released with libc free();
+  use OPENSSL_free().
+note: >-
+  Syntactic only; matches a declaration initialised from
+  OPENSSL_malloc/strdup/zalloc followed by free() of the same identifier,
+  without checking scope, reassignment or control flow.
+rule:
+  pattern: 'free($P);'
+  follows:
+    stopBy: end
+    pattern: '$T *$P = $F($$$A);'
+constraints:
+  F:
+    regex: '^OPENSSL_(malloc|strdup|zalloc)$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
