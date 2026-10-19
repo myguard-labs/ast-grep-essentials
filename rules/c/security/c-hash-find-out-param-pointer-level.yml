@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-find-out-param-pointer-level
+language: c
+severity: warning
+message: >-
+  Address of a single-pointer variable is passed as (void **) out-parameter to
+  zend_hash_find; the callee writes a zval** into it.
+note: >-
+  Syntactic only; matches a preceding sibling declaration with one pointer
+  level and the same name, without resolving scopes, shadowing, or types.
+rule:
+  all:
+    - pattern: 'zend_hash_find($$$A, (void **) &$V);'
+    - follows:
+        stopBy: end
+        pattern: '$T *$V;'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
