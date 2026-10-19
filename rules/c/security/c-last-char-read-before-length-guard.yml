@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-last-char-read-before-length-guard
+language: c
+severity: warning
+message: >-
+  Index x[len - 1] is read without an earlier visible check that len is at
+  least 1.
+note: >-
+  Syntactic approximation only. It does not verify that a comparison guards
+  the same length variable, and it does not track values or control flow.
+rule:
+  pattern: '$B[$N - 1]'
+  not:
+    inside:
+      stopBy: end
+      kind: binary_expression
+      has:
+        kind: binary_expression
+        regex: '>=|<|>'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
