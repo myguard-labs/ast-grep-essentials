@@ -1,0 +1,38 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-init-flag-set-outside-guard
+language: c
+severity: warning
+message: >-
+  Init flag is set after a preprocessor conditional that wraps the initializer
+  call, outside the conditional. When the guard is off the flag is set without
+  init work.
+note: >-
+  Syntactic match only; it does not check that the flag is the one for the
+  guarded initializer or what the macro evaluates to.
+rule:
+  kind: expression_statement
+  all:
+    - has:
+        kind: assignment_expression
+        all:
+          - has:
+              field: left
+              kind: identifier
+              regex: inited
+          - has:
+              field: right
+              kind: number_literal
+    - follows:
+        kind: preproc_if
+        has:
+          stopBy: end
+          kind: call_expression
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

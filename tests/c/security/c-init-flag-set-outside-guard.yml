@@ -1,0 +1,21 @@
+id: c-init-flag-set-outside-guard
+valid:
+  - |-
+    static int init_strings(void)
+    {
+    #if !defined(OPENSSL_NO_ERR)
+        load_strings();
+        strings_inited = 1;
+    #endif
+        return 1;
+    }
+invalid:
+  - |-
+    static int init_strings(void)
+    {
+    #if !defined(OPENSSL_NO_ERR)
+        load_strings();
+    #endif
+        strings_inited = 1;
+        return 1;
+    }
