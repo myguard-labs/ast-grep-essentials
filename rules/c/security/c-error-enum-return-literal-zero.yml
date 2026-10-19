@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-error-enum-return-literal-zero
+language: c
+severity: warning
+message: >-
+  Function with an error-enum style return type returns literal 0 instead of a
+  named enumerator.
+note: >-
+  Matches by return type name only (err-style typedef name ending in _t). It
+  does not verify that the typedef is an enum or that 0 is not the intended
+  enumerator.
+rule:
+  pattern: 'return 0;'
+  inside:
+    stopBy: end
+    kind: function_definition
+    has:
+      field: type
+      kind: type_identifier
+      regex: '^err(or)?[a-z0-9_]*_t$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
