@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-hash-move-forward-inside-foreach
+language: c
+severity: warning
+message: >-
+  zend_hash_move_forward is called inside a ZEND_HASH_FOREACH loop, which
+  already advances the iterator.
+note: >-
+  Matches a zend_hash_move_forward call expression by syntax when some
+  enclosing node's text contains a ZEND_HASH_FOREACH_ macro invocation. It
+  does not expand macros, confirm the call is in the loop body, or check which
+  hash table is advanced.
+rule:
+  all:
+    - kind: call_expression
+    - regex: '^zend_hash_move_forward\s*\('
+    - inside:
+        regex: 'ZEND_HASH_FOREACH_[A-Z_]*\s*\('
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
