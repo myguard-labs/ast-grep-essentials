@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-if-not-bare-feature-macro
+language: c
+severity: warning
+message: '#if !NAME used as a feature test; consider #ifndef NAME.'
+note: >-
+  Matches the syntax only. It cannot tell whether the macro is always defined
+  as 0 or 1, so some matches are false positives.
+rule:
+  kind: preproc_if
+  has:
+    field: condition
+    kind: unary_expression
+    regex: '^!\s*[A-Za-z_][A-Za-z0-9_]*$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
