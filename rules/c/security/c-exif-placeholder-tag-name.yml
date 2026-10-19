@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-exif-placeholder-tag-name
+language: c
+severity: warning
+message: >-
+  Tag entry name looks like a hex-literal placeholder; give it a real name or
+  remove it.
+note: >-
+  Matches a hex key followed by a hex-literal string name syntactically; it
+  does not verify that the string equals the key, so review hits.
+rule:
+  kind: initializer_list
+  all:
+    - has:
+        kind: number_literal
+        regex: '^0[xX][0-9a-fA-F]+$'
+        nthChild: 1
+    - has:
+        kind: string_literal
+        regex: '^"0[xX][0-9a-fA-F]+"$'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
