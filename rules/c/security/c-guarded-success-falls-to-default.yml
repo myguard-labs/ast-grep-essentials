@@ -1,0 +1,38 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-guarded-success-falls-to-default
+language: c
+severity: warning
+message: >-
+  This case returns only inside an if without else, so a false condition falls
+  through into the default case.
+note: >-
+  Syntactic only; it does not check whether the fall-through is intended or
+  what the callee's NULL contract is.
+rule:
+  all:
+    - kind: case_statement
+    - regex: '^case'
+    - has:
+        all:
+          - kind: if_statement
+          - not:
+              has:
+                kind: else_clause
+          - has:
+              kind: return_statement
+              stopBy: end
+    - not:
+        has:
+          kind: return_statement
+    - precedes:
+        kind: case_statement
+        regex: '^default'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
