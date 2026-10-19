@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-addref-before-refcount-decrement-free
+language: c
+severity: warning
+message: >-
+  Conditional AddRef runs before a decrement-and-free test; the count is
+  incremented even when the reference is freed.
+note: >-
+  Matches only the adjacent-statement syntax; it does not verify that the
+  counters are on different objects or resolve macros.
+rule:
+  all:
+    - kind: if_statement
+    - pattern: 'if ($C) Z_ADDREF_P($V);'
+    - precedes:
+        kind: if_statement
+        regex: '--\s*GC_REFCOUNT'
+metadata:
+  rule_modified_at: '2026-10-19'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-19'
+  created_at: '2026-10-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

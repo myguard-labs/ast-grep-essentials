@@ -1,0 +1,10 @@
+id: c-addref-before-refcount-decrement-free
+valid:
+  - >-
+    if (UNEXPECTED(--GC_REFCOUNT(r) == 0)) { efree_size(r,
+    sizeof(zend_reference)); } else if (Z_OPT_REFCOUNTED_P(value)) {
+    Z_ADDREF_P(value); }
+invalid:
+  - |-
+    if (Z_OPT_REFCOUNTED_P(value)) Z_ADDREF_P(value);
+    if (UNEXPECTED(--GC_REFCOUNT(r) == 0)) { efree_size(r, sizeof(zend_reference)); }
