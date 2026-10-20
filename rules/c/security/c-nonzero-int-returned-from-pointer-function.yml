@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-nonzero-int-returned-from-pointer-function
+language: c
+severity: warning
+message: >-
+  Nonzero integer literal returned from a function declared to return a
+  pointer.
+note: >-
+  Matches syntax only; it does not resolve typedef'd pointer return types or
+  macros.
+rule:
+  kind: return_statement
+  has:
+    kind: number_literal
+    regex: '^(0[xX]0*[1-9a-fA-F]|0*[1-9])'
+  inside:
+    kind: function_definition
+    stopBy: end
+    has:
+      field: declarator
+      kind: pointer_declarator
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
