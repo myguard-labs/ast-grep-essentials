@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pointer-param-compared-to-zero
+language: c
+severity: warning
+message: Pointer parameter is compared directly to 0 without a dereference.
+note: >-
+  Syntactic only; matches a same-named pointer parameter in the enclosing
+  function and does not handle shadowing or the != form.
+rule:
+  all:
+    - pattern: '$P == 0'
+    - inside:
+        stopBy: end
+        kind: function_definition
+        has:
+          stopBy: end
+          kind: parameter_declaration
+          has:
+            kind: pointer_declarator
+            has:
+              stopBy: end
+              pattern: '$P'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
