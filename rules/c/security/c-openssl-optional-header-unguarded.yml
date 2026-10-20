@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-optional-header-unguarded
+language: c
+severity: warning
+message: >-
+  Optional OpenSSL engine header is included without an ifndef
+  OPENSSL_NO_ENGINE guard.
+note: >-
+  Matches only the literal engine.h include and checks for an enclosing ifndef
+  of the same macro. It does not handle if-defined forms or other
+  header-to-macro mappings.
+rule:
+  kind: preproc_include
+  regex: '<openssl/engine\.h>'
+  not:
+    inside:
+      stopBy: end
+      kind: preproc_ifdef
+      has:
+        kind: identifier
+        regex: '^OPENSSL_NO_ENGINE$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
