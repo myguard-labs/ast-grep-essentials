@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-preproc-bitwise-or-in-if
+language: c
+severity: warning
+message: 'Bitwise | used in a #if condition; use logical || to combine feature macros.'
+note: >-
+  Syntactic only: flags a binary expression containing a lone | inside a #if
+  or #elif directive. It does not expand macros or check whether their values
+  are 0 or 1.
+rule:
+  kind: binary_expression
+  regex: '[^|]\|[^|]'
+  inside:
+    regex: '^#[ \t]*(el)?if\b'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
