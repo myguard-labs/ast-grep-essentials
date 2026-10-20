@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-malloc-leak-on-early-return
+language: c
+severity: warning
+message: >-
+  This if-block returns early without calling free, although memory from
+  malloc is freed later.
+note: >-
+  Syntactic approximation only; it does not check that the freed pointer is
+  the same variable as the malloc result, or resolve aliases or control flow.
+rule:
+  any:
+    - pattern: 'if ($COND) { return $$$R; }'
+  all:
+    - follows:
+        stopBy: end
+        pattern: '$T $V = malloc($$$A);'
+    - precedes:
+        stopBy: end
+        pattern: 'free($$$B);'
+    - not:
+        has:
+          pattern: 'free($$$ARGS)'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
