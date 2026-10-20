@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-mixed-unsigned-cast-bounds-check
+language: c
+severity: warning
+message: >-
+  Sum of unsigned long casts is compared against a cast to a different
+  unsigned type; review the bounds check.
+note: >-
+  Matches literal cast syntax only; it does not resolve types, widths, or
+  whether the mismatch is actually unsafe.
+rule:
+  all:
+    - pattern: '((unsigned long) $A + (unsigned long) $B) > ($U) $C'
+    - not:
+        pattern: '((unsigned long) $A + (unsigned long) $B) > (unsigned long) $C'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
