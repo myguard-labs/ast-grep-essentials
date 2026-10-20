@@ -1,0 +1,40 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-nonvoid-switch-tail-no-return
+language: c
+severity: warning
+message: >-
+  Non-void function ends with a switch that has no default label and no return
+  after it.
+note: >-
+  Syntactic check only; it cannot tell whether the case labels cover every
+  possible value, and a default in a nested switch may be misjudged.
+rule:
+  all:
+    - kind: function_definition
+    - not:
+        has:
+          field: type
+          regex: '^void$'
+    - has:
+        field: body
+        kind: compound_statement
+        has:
+          all:
+            - kind: switch_statement
+            - nthChild:
+                position: 1
+                reverse: true
+            - not:
+                has:
+                  kind: case_statement
+                  regex: '^default\b'
+                  stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
