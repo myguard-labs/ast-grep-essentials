@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-loop-body-uses-head-not-cursor
+language: c
+severity: warning
+message: Loop body passes the seed variable to a call instead of the loop cursor.
+note: >-
+  Syntactic only; it does not check types, aliasing, or whether passing the
+  head is intended.
+rule:
+  kind: for_statement
+  all:
+    - has:
+        field: initializer
+        pattern: '$C = $H'
+    - has:
+        field: update
+        pattern: '$C = $C->next'
+    - has:
+        field: body
+        has:
+          kind: call_expression
+          stopBy: end
+          has:
+            field: arguments
+            has:
+              pattern: '$H'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

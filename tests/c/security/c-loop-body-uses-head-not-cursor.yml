@@ -1,0 +1,9 @@
+id: c-loop-body-uses-head-not-cursor
+valid:
+  - >-
+    struct n { struct n *next; }; void g(struct n *); void f(struct n *head) {
+    struct n *cur; for (cur = head; cur; cur = cur->next) { g(cur); } }
+invalid:
+  - >-
+    struct n { struct n *next; }; void g(struct n *); void f(struct n *head) {
+    struct n *cur; for (cur = head; cur; cur = cur->next) { g(head); } }
