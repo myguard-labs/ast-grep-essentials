@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-printf-conversions-exceed-arguments
+language: c
+severity: warning
+message: >-
+  Format string has conversion specifiers but no arguments are supplied after
+  it.
+note: >-
+  Syntactic only; checks php_error_docref with a literal format and no
+  variadic arguments, and does not count specifiers against arguments in
+  general or resolve wrappers.
+rule:
+  pattern: 'php_error_docref($A, $B, $FMT)'
+constraints:
+  FMT:
+    kind: string_literal
+    regex: '(^|[^%])%[-+ 0-9.*lhzjtL]*[diouxXeEfFgGaAcspn]'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
