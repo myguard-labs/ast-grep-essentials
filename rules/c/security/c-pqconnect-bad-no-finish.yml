@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pqconnect-bad-no-finish
+language: c
+severity: warning
+message: Connection failure branch returns without calling PQfinish on the handle.
+note: >-
+  Syntactic only; does not verify the handle came from PQconnectdb or PQsetdb,
+  nor that PQfinish targets the same handle, and cleanup elsewhere is not
+  tracked.
+rule:
+  all:
+    - pattern: 'if (PQstatus($C) == CONNECTION_BAD) $BODY'
+    - has:
+        kind: return_statement
+        stopBy: end
+    - not:
+        has:
+          kind: call_expression
+          regex: '^PQfinish\s*\('
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

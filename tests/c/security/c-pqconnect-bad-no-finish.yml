@@ -1,0 +1,14 @@
+id: c-pqconnect-bad-no-finish
+valid:
+  - |-
+    PGconn *conn = PQconnectdb(s);
+    if (PQstatus(conn) == CONNECTION_BAD) {
+        PQfinish(conn);
+        return -1;
+    }
+invalid:
+  - |-
+    PGconn *conn = PQconnectdb(s);
+    if (PQstatus(conn) == CONNECTION_BAD) {
+        return -1;
+    }
