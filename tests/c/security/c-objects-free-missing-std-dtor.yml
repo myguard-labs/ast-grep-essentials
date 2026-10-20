@@ -1,0 +1,10 @@
+id: c-objects-free-missing-std-dtor
+valid:
+  - >-
+    static void foo_objects_dtor(void *object, zend_object_handle handle
+    TSRMLS_DC) { struct foo_object *intern = object;
+    zend_object_std_dtor(&intern->zo TSRMLS_CC); efree(intern); }
+invalid:
+  - >-
+    static void foo_objects_dtor(void *object, zend_object_handle handle
+    TSRMLS_DC) { struct foo_object *intern = object; efree(intern); }

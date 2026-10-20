@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-objects-free-missing-std-dtor
+language: c
+severity: warning
+message: >-
+  Object storage is released with efree in a block that never calls
+  zend_object_std_dtor.
+note: >-
+  Syntactic check only. It looks for a zend_object_std_dtor identifier
+  anywhere in the enclosing compound statement and does not verify call order,
+  the argument, helper functions, or macro expansion.
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        kind: identifier
+        regex: '^efree$'
+    - inside:
+        kind: compound_statement
+        stopBy: end
+        not:
+          has:
+            kind: identifier
+            regex: '^zend_object_std_dtor$'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
