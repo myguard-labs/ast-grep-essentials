@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pointer-plus-length-bounds-check
+language: c
+severity: warning
+message: >-
+  Pointer-plus-length bounds check can overflow; compare the remaining space
+  (end - p) against the length instead.
+note: >-
+  Matches the syntax of a binary addition compared with >= or > only; it does
+  not verify types, pointer-ness, or that the length is signed.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^(>=|>)$'
+    - has:
+        field: left
+        kind: parenthesized_expression
+        has:
+          kind: binary_expression
+          has:
+            field: operator
+            regex: '^\+$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
