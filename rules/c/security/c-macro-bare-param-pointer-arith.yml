@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-macro-bare-param-pointer-arith
+language: c
+severity: warning
+message: >-
+  Function-like macro dereferences pointer arithmetic on a bare identifier;
+  cast the parameter to a byte pointer type first.
+note: >-
+  Textual match on the macro body; it does not verify the identifier is a
+  macro parameter or resolve its type.
+rule:
+  kind: preproc_function_def
+  has:
+    kind: preproc_arg
+    regex: '\*\s*\(\s*[A-Za-z_]\w*\s*[+-]'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
