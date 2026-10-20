@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-preproc-bitwise-and-in-if
+language: c
+severity: warning
+message: 'Bitwise & used in a preprocessor if condition; did you mean &&?'
+note: >-
+  Syntactic check only; it matches a direct & expression in the if directive
+  condition and does not know the macro values.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^&$'
+    - inside:
+        kind: preproc_if
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
