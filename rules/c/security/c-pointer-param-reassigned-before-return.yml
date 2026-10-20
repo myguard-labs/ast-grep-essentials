@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pointer-param-reassigned-before-return
+language: c
+severity: warning
+message: >-
+  Pointer parameter is reassigned to an address; the caller will not see the
+  change. Write through the pointer instead.
+note: >-
+  Syntactic only; does not check that the function returns without writing
+  through the pointer, nor shadowing or types.
+rule:
+  all:
+    - pattern: '$P = &$X'
+    - inside:
+        stopBy: end
+        kind: function_definition
+        has:
+          stopBy: end
+          kind: parameter_declaration
+          has:
+            stopBy: end
+            kind: identifier
+            pattern: '$P'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
