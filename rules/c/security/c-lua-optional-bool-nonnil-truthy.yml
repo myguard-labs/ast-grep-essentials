@@ -1,0 +1,21 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-lua-optional-bool-nonnil-truthy
+language: c
+severity: warning
+message: >-
+  Non-nil check on a Lua value enables a flag even when the value is an
+  explicit false. Consider lua_toboolean.
+note: >-
+  Matches the literal if (!lua_isnil(...)) syntax only. It does not check that
+  the value came from lua_getfield or that it is meant to be a boolean.
+rule:
+  pattern: 'if (!lua_isnil($L, $IDX)) $BODY'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
