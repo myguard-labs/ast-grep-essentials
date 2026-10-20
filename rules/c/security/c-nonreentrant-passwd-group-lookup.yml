@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-nonreentrant-passwd-group-lookup
+language: c
+severity: warning
+message: >-
+  getpwnam/getgrnam return pointers to static storage and are not thread-safe;
+  prefer getpwnam_r/getgrnam_r.
+note: >-
+  Matches the literal call syntax only; it does not verify that the result is
+  used to read a uid or gid, nor resolve shadowed names or threading context.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    kind: identifier
+    regex: '^(getpwnam|getgrnam)$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

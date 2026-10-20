@@ -1,0 +1,7 @@
+id: c-nonreentrant-passwd-group-lookup
+valid:
+  - >-
+    struct passwd pw; struct passwd *res; getpwnam_r(name, &pw, buf, buflen,
+    &res); uid = pw.pw_uid;
+invalid:
+  - 'struct passwd *pw = getpwnam(name); uid = pw->pw_uid;'
