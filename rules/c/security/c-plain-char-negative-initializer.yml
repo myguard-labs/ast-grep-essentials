@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-plain-char-negative-initializer
+language: c
+severity: warning
+message: >-
+  Plain char initializer contains a negative integer literal; plain char
+  signedness is implementation-defined.
+note: >-
+  Matches only a declaration whose direct type is the bare primitive char and
+  whose initializer text contains a negative numeric literal; it does not
+  resolve typedefs or macros, and it does not check the target's char
+  signedness.
+rule:
+  kind: declaration
+  all:
+    - has:
+        kind: primitive_type
+        regex: '^char$'
+    - has:
+        kind: init_declarator
+        has:
+          stopBy: end
+          regex: '^-\s*[0-9]'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
