@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-member-store-before-null-check
+language: c
+severity: warning
+message: >-
+  Pointer field is written before a later if statement checks the same pointer
+  against NULL.
+note: >-
+  Matches syntax only. It does not prove the pointer can be NULL, and it does
+  not check for intervening reassignment or other control flow.
+rule:
+  pattern: '$P->$F = $V;'
+  precedes:
+    stopBy: end
+    kind: if_statement
+    has:
+      field: condition
+      has:
+        pattern: '$P != NULL'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
