@@ -1,0 +1,9 @@
+id: c-out-param-assigned-after-early-exit
+valid:
+  - >-
+    static int f(bool *is_private, int x) { *is_private = false; if (!x) goto
+    cleanup; cleanup: return 0; }
+invalid:
+  - >-
+    static int f(bool *is_private, int x) { if (!x) goto cleanup; *is_private =
+    false; cleanup: return 0; }

@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-out-param-assigned-after-early-exit
+language: c
+severity: warning
+message: >-
+  Pointer out-parameter is written after an earlier conditional goto that may
+  skip the write.
+note: >-
+  Syntactic only; does not verify that the pointer is a parameter or that the
+  goto path is reachable.
+rule:
+  all:
+    - kind: expression_statement
+    - pattern: '*$P = $V;'
+    - follows:
+        stopBy: end
+        kind: if_statement
+        has:
+          stopBy: end
+          kind: goto_statement
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
