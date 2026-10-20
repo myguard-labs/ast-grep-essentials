@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-lookahead-index-without-length-guard
+language: c
+severity: warning
+message: 's[i + 1] is read in a && chain with no preceding i + 1 length comparison.'
+note: >-
+  Purely syntactic; it checks only the literal s[i + 1] and i + 1 < bound
+  shapes in the same expression, not other guards, aliasing, or actual buffer
+  lengths.
+rule:
+  kind: binary_expression
+  all:
+    - pattern: '$L && $R'
+    - has:
+        field: right
+        stopBy: end
+        pattern: 's[i + 1]'
+    - not:
+        has:
+          field: left
+          stopBy: end
+          pattern: 'i + 1 < $N'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
