@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-postincrement-target-read-in-same-assignment
+language: c
+severity: warning
+message: >-
+  The left side post-increments a pointer that the right side also reads,
+  which is an unsequenced modification.
+note: >-
+  Syntactic only; it matches the literal *x++ = ... form with the same
+  identifier text on the right and does not check aliasing or other
+  sequencing.
+rule:
+  all:
+    - pattern: '*$S++ = $R'
+    - has:
+        field: right
+        stopBy: end
+        pattern: '$S'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
