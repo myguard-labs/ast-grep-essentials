@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-memcpy-fixed-local-array-variable-length
+language: c
+severity: warning
+message: >-
+  memcpy length is not a plain sizeof expression; check it cannot exceed the
+  destination array size.
+note: >-
+  Syntactic only; does not verify the destination is a fixed-size local array,
+  and guarded copies also match.
+rule:
+  pattern: 'memcpy($DST, $SRC, $LEN)'
+constraints:
+  DST:
+    kind: identifier
+  LEN:
+    not:
+      kind: sizeof_expression
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
