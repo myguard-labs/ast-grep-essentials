@@ -1,0 +1,38 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-loop-counter-array-write-unbounded
+language: c
+severity: warning
+message: >-
+  While loop writes an array at a counter incremented in the body, but the
+  loop condition does not mention that counter.
+note: >-
+  Syntactic only; does not verify the array is fixed-size, nor detect bounds
+  checks elsewhere in the body.
+rule:
+  kind: while_statement
+  all:
+    - has:
+        field: body
+        has:
+          pattern: '$A[$N] = $$$V'
+          stopBy: end
+    - has:
+        field: body
+        has:
+          pattern: '$N++'
+          stopBy: end
+    - not:
+        has:
+          field: condition
+          has:
+            pattern: '$N'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
