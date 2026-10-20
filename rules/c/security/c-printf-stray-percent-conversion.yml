@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-printf-stray-percent-conversion
+language: c
+severity: warning
+message: >-
+  String literal contains a '%' followed by a word, which a printf-style
+  function parses as a conversion specifier.
+note: >-
+  Syntactic check only; it does not verify the string is used as a
+  printf-style format and may flag legitimate %-words.
+rule:
+  kind: string_literal
+  regex: '(^|[^%])%[a-zA-Z]{4,}'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
