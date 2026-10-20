@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-version-guard-excludes-libressl
+language: c
+severity: warning
+message: >-
+  OpenSSL version guard does not mention LibreSSL, which also defines
+  OPENSSL_VERSION_NUMBER.
+note: >-
+  Syntactic check on the if condition text only; it does not follow macros,
+  includes, or elif chains.
+rule:
+  kind: preproc_if
+  all:
+    - has:
+        field: condition
+        regex: OPENSSL_VERSION_NUMBER
+    - not:
+        has:
+          field: condition
+          regex: LIBRESSL_VERSION_NUMBER
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
