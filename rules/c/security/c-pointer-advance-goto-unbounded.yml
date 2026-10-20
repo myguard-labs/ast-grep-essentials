@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pointer-advance-goto-unbounded
+language: c
+severity: warning
+message: >-
+  Pointer is advanced by a length and the next statement is a goto, with no
+  bounds comparison in between.
+note: >-
+  Purely syntactic. It checks only that the next sibling statement is a goto,
+  and it cannot tell whether a bound was proven earlier or elsewhere. It may
+  fire on safe code.
+rule:
+  all:
+    - kind: expression_statement
+    - has:
+        pattern: '$P += $N'
+    - precedes:
+        kind: goto_statement
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
