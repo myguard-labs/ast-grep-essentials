@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-long-to-int-cast-unchecked
+language: c
+severity: warning
+message: >-
+  Cast to int in a function that never references INT_MAX or INT_MIN; check
+  the range before narrowing.
+note: >-
+  Syntactic only; does not verify the cast operand is declared long, and any
+  mention of INT_MAX or INT_MIN in the function suppresses the match.
+rule:
+  all:
+    - pattern: '(int)$V'
+    - inside:
+        stopBy: end
+        kind: function_definition
+        not:
+          has:
+            stopBy: end
+            kind: identifier
+            regex: '^INT_(MAX|MIN)$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
