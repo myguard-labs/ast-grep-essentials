@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-macro-body-missing-semicolon-between-calls
+language: c
+severity: warning
+message: >-
+  Macro body line ends with a call and no semicolon before the next continued
+  call.
+note: >-
+  Textual regex over the macro body; does not know whether the invoked macros
+  expand to declarations needing a separator.
+rule:
+  kind: preproc_function_def
+  regex: '\n[ \t]*\w+\([^;\n]*\)[ \t]*\\\r?\n[ \t]*\w+\('
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
