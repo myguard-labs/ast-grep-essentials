@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-php-return-macro-before-cleanup
+language: c
+severity: warning
+message: >-
+  RETURN_* macro returns immediately, so the later efree call is unreachable
+  and leaks.
+note: >-
+  Syntactic only; matches sibling statements by name and does not verify macro
+  expansion or control flow.
+rule:
+  all:
+    - kind: expression_statement
+    - has:
+        kind: call_expression
+        has:
+          field: function
+          kind: identifier
+          regex: '^RETURN_'
+    - precedes:
+        stopBy: end
+        pattern: 'efree($$$ARGS);'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
