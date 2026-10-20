@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-branch-member-access
+language: c
+severity: warning
+message: Member access on a pointer inside the branch that tested it as NULL.
+note: >-
+  Matches the same identifier text syntactically in the if (!p) body. It does
+  not track reassignment of p or early exits.
+rule:
+  pattern: 'if (!$P) $BODY'
+  has:
+    field: consequence
+    stopBy: end
+    pattern: '$P->$F'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
