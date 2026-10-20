@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-check-tests-stale-variable-after-alloc
+language: c
+severity: warning
+message: >-
+  This NULL check tests a variable other than the one assigned by the
+  allocation just before it.
+note: >-
+  Matches adjacent statements syntactically only. It does not resolve
+  aliasing, control flow, or whether the tested variable is checked elsewhere.
+rule:
+  all:
+    - pattern: 'if ($A == NULL) $S'
+    - follows:
+        pattern: '$B = malloc($$$ARGS);'
+    - not:
+        follows:
+          pattern: '$A = malloc($$$ARGS2);'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
