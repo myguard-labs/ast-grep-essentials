@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-preproc-if-bare-feature-macro
+language: c
+severity: warning
+message: 'Bare HAVE_ identifier in an if directive; use ifdef or defined().'
+note: >-
+  Syntactic only; matches a lone HAVE_ identifier as the whole condition, not
+  compound conditions or macro values.
+rule:
+  all:
+    - kind: preproc_if
+    - has:
+        field: condition
+        all:
+          - kind: identifier
+          - regex: '^HAVE_'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
