@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-loop-index-unbounded-subscript
+language: c
+severity: warning
+message: >-
+  While loop subscripts an array with a post-incremented index that the loop
+  condition never mentions; check for buffer overrun.
+note: >-
+  Syntactic only; does not check whether the index is bounded elsewhere,
+  aliasing, or actual buffer sizes. Likely noisy.
+rule:
+  kind: while_statement
+  all:
+    - has:
+        field: body
+        has:
+          pattern: '$A[$I++]'
+          stopBy: end
+    - not:
+        has:
+          field: condition
+          has:
+            pattern: '$I'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
