@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-out-param-clobbered-after-assign
+language: c
+severity: warning
+message: >-
+  Output parameter is assigned and later overwritten with NULL in the same
+  block.
+note: >-
+  Matches the same literal dereferenced text in an earlier sibling store and a
+  later NULL store. It does not check control flow, aliasing, or intervening
+  reads.
+rule:
+  all:
+    - pattern: '*$P = NULL;'
+    - follows:
+        pattern: '*$P = $V;'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
