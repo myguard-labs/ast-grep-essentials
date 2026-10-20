@@ -1,0 +1,39 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-magic-accessor-guard-incomplete
+language: c
+severity: warning
+message: >-
+  Guard chain excludes __get and __set but not __isset; check all magic
+  accessors.
+note: >-
+  Matches literal ce-> syntax in a single expression; does not resolve what ce
+  is or whether other magic accessors are checked elsewhere.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        stopBy: end
+        pattern: '!ce->__get'
+    - has:
+        stopBy: end
+        pattern: '!ce->__set'
+    - not:
+        has:
+          stopBy: end
+          pattern: '!ce->__isset'
+    - not:
+        inside:
+          stopBy: end
+          kind: binary_expression
+          has:
+            stopBy: end
+            pattern: '!ce->__isset'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
