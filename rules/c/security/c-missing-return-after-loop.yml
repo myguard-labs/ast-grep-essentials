@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-missing-return-after-loop
+language: c
+severity: warning
+message: Non-void function body ends with a loop and no return follows it.
+note: >-
+  Syntactic only; does not check whether the loop is infinite, whether all
+  paths return earlier, or typedef'd void types.
+rule:
+  kind: function_definition
+  all:
+    - not:
+        has:
+          field: type
+          regex: '^void$'
+    - has:
+        field: body
+        kind: compound_statement
+        has:
+          regex: '^(for|while)\b'
+          nthChild:
+            position: 1
+            reverse: true
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
