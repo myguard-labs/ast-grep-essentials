@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-object-store-bucket-unchecked
+language: c
+severity: warning
+message: Object bucket is dereferenced in a function that never calls IS_OBJ_VALID.
+note: >-
+  Syntactic check only. It does not verify that the validity check guards this
+  particular bucket or index.
+rule:
+  all:
+    - pattern: 'EG(objects_store).object_buckets[$H]->$F'
+    - not:
+        inside:
+          kind: function_definition
+          stopBy: end
+          has:
+            stopBy: end
+            pattern: 'IS_OBJ_VALID($$$A)'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
