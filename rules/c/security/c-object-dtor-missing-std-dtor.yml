@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-object-dtor-missing-std-dtor
+language: c
+severity: warning
+message: >-
+  Function calls efree() but never calls zend_object_std_dtor(); the embedded
+  zend_object may leak.
+note: >-
+  Syntactic check only; does not verify the freed value is a
+  zend_object-embedding struct or that the destructor is called in another
+  function.
+rule:
+  kind: function_definition
+  all:
+    - has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          regex: '^efree$'
+    - not:
+        has:
+          stopBy: end
+          kind: call_expression
+          has:
+            field: function
+            regex: '^zend_object_std_dtor$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

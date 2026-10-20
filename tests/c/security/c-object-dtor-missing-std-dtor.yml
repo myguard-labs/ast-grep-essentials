@@ -1,0 +1,9 @@
+id: c-object-dtor-missing-std-dtor
+valid:
+  - >-
+    static void obj_free(void *o TSRMLS_DC) { my_obj *intern = o;
+    zend_object_std_dtor(&intern->zo TSRMLS_CC); efree(intern); }
+invalid:
+  - >-
+    static void obj_free(void *o TSRMLS_DC) { my_obj *intern = o; efree(intern);
+    }
