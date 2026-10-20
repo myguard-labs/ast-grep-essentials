@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-check-tests-input-not-result
+language: c
+severity: warning
+message: >-
+  This NULL check tests an input argument of the preceding allocator call, not
+  the assigned result.
+note: >-
+  Syntactic only; allocator is recognised by name (alloc/dup) and no aliasing
+  or type information is resolved.
+rule:
+  pattern: 'if ($X == NULL) $S'
+  follows:
+    pattern: '$L = $F($$$A, $X, $$$B);'
+constraints:
+  F:
+    regex: '(alloc|dup)'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
