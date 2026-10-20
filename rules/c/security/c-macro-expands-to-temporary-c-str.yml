@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-macro-expands-to-temporary-c-str
+language: c
+severity: warning
+message: >-
+  Function-like macro expands to .c_str() on a call result, which points into
+  a temporary.
+note: >-
+  Textual check of the macro body only. It does not verify that the call
+  returns a temporary or how callers use the result.
+rule:
+  kind: preproc_function_def
+  has:
+    kind: preproc_arg
+    regex: '\)\s*\.c_str\(\s*\)\s*$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
