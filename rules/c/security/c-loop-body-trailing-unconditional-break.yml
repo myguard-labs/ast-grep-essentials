@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-loop-body-trailing-unconditional-break
+language: c
+severity: warning
+message: 'Loop body ends with an unconditional break, so it runs at most once.'
+note: >-
+  Purely syntactic; intentional run-once loops are not distinguished, and only
+  braced while bodies are checked (for loops are not covered).
+rule:
+  kind: break_statement
+  nthChild:
+    position: 1
+    reverse: true
+  inside:
+    stopBy: neighbor
+    kind: compound_statement
+    inside:
+      field: body
+      kind: while_statement
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
