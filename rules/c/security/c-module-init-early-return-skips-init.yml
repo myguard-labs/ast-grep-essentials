@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-module-init-early-return-skips-init
+language: c
+severity: warning
+message: >-
+  Preprocessor-guarded early return of SUCCESS precedes the initialization
+  statement.
+note: >-
+  Matches syntax only. It does not check that the enclosing function is a
+  PHP_MINIT or PHP_MSHUTDOWN hook, and it does not check that the following
+  statement is the real initialization call.
+rule:
+  kind: preproc_ifdef
+  has:
+    pattern: 'return SUCCESS;'
+    stopBy: end
+  precedes:
+    kind: expression_statement
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

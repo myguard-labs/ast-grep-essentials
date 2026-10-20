@@ -1,0 +1,9 @@
+id: c-module-init-early-return-skips-init
+valid:
+  - >-
+    PHP_MINIT_FUNCTION(fdf) { err = FDFInitialize(); #ifdef WIN32 return
+    SUCCESS; #endif if (err == FDFErcOK) return SUCCESS; return FAILURE; }
+invalid:
+  - >-
+    PHP_MINIT_FUNCTION(fdf) { #ifdef WIN32 return SUCCESS; #endif err =
+    FDFInitialize(); if (err == FDFErcOK) return SUCCESS; return FAILURE; }
