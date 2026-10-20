@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-memchr-result-plus-one-unchecked
+language: c
+severity: warning
+message: >-
+  Dereference of p + 1 without a bounds comparison of p + 1 in the enclosing
+  expression; if p came from memchr this may read past the buffer end.
+note: >-
+  Syntactic only; matches the literal name p, does not verify p came from
+  memchr, and guards outside the enclosing expression are not seen.
+rule:
+  pattern: '*(p + 1)'
+  not:
+    inside:
+      stopBy: end
+      kind: binary_expression
+      has:
+        stopBy: end
+        pattern: 'p + 1 < $E'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
