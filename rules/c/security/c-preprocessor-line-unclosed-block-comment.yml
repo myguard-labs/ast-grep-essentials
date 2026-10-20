@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-preprocessor-line-unclosed-block-comment
+language: c
+severity: warning
+message: >-
+  Preprocessor directive line opens a block comment that is not closed on the
+  same line.
+note: >-
+  Textual line-based regex check; it does not model line continuations or
+  comments or strings that start earlier in the file.
+rule:
+  kind: translation_unit
+  regex: '(?m)^[ \t]*#[^\n]*/\*([^*\n]|\*+[^*/\n])*\**$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
