@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-ec-call-unguarded
+language: c
+severity: warning
+message: EC-related call outside an OPENSSL_NO_EC guard may break no-ec builds.
+note: >-
+  Name-based heuristic on the callee identifier; does not resolve the
+  function, and guards are matched by literal OPENSSL_NO_EC text in an
+  enclosing ifdef/ifndef.
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        kind: identifier
+        regex: 'EC_|_EC_KEY'
+    - not:
+        inside:
+          stopBy: end
+          kind: preproc_ifdef
+          has:
+            field: name
+            regex: OPENSSL_NO_EC
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
