@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-product-accumulator-init-zero
+language: c
+severity: warning
+message: >-
+  Variable initialized to 0 is later multiplied with *=, so the product stays
+  0.
+note: >-
+  Syntactic only; matches a later sibling statement containing the same name
+  with *= and does not check for reassignment in between.
+rule:
+  all:
+    - pattern: '$T $V = 0;'
+    - precedes:
+        stopBy: end
+        has:
+          stopBy: end
+          pattern: '$V *= $E'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
