@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-preproc-defined-and-compare
+language: c
+severity: warning
+message: 'Condition combines !defined(X) with && and then compares the same macro X.'
+note: >-
+  Matches the literal syntax only; does not evaluate preprocessor semantics or
+  other comparison operators.
+rule:
+  pattern:
+    context: |
+      #if !defined($X) && $X != $V
+      #endif
+    selector: binary_expression
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
