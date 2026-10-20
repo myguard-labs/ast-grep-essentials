@@ -1,0 +1,20 @@
+id: c-openssl-free-without-length-reset
+snapshots:
+  "struct s { unsigned char *alpn_selected; size_t alpn_selected_len; };\nstatic void reset(struct s *s) {\n    OPENSSL_free(s->alpn_selected);\n    s->alpn_selected = NULL;\n}":
+    labels:
+    - source: s->alpn_selected = NULL;
+      style: primary
+      start: 143
+      end: 167
+    - source: OPENSSL_free(s->alpn_selected);
+      style: secondary
+      start: 107
+      end: 138
+    - source: |-
+        {
+            OPENSSL_free(s->alpn_selected);
+            s->alpn_selected = NULL;
+        }
+      style: secondary
+      start: 101
+      end: 169

@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-free-without-length-reset
+language: c
+severity: warning
+message: >-
+  Pointer member is freed and set to NULL but no sibling length member is
+  reset in this block.
+note: >-
+  Syntactic only; any assignment to a field ending in _len in the block
+  suppresses the match, without checking it is the sibling.
+rule:
+  all:
+    - pattern: '$S->$F = NULL;'
+    - follows:
+        pattern: 'OPENSSL_free($S->$F);'
+    - inside:
+        kind: compound_statement
+        not:
+          has:
+            kind: assignment_expression
+            regex: '_len\s*='
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
