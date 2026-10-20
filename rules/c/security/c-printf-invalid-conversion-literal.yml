@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-printf-invalid-conversion-literal
+language: c
+severity: warning
+message: >-
+  Format string literal contains a % followed by a long letter run that is not
+  a valid conversion.
+note: >-
+  Purely textual check on the literal in call arguments; it does not verify
+  the callee is printf-like or handle %% escapes.
+rule:
+  kind: string_literal
+  regex: '%[a-zA-Z]{4,}'
+  inside:
+    kind: argument_list
+    inside:
+      kind: call_expression
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
