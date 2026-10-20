@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-preproc-misspelled-platform-macro
+language: c
+severity: warning
+message: >-
+  Preprocessor condition tests __MacOSX__, which compilers do not predefine;
+  use __APPLE__ instead.
+note: >-
+  Matches the literal macro name inside defined() only; it does not check
+  whether the macro is defined elsewhere in the project.
+rule:
+  kind: identifier
+  regex: '^__MacOSX__$'
+  inside:
+    kind: preproc_defined
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
