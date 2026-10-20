@@ -1,0 +1,15 @@
+id: c-null-check-chain-returns-without-free
+valid:
+  - |-
+    buf_t *p = alloc(), *q = alloc();
+    if (!p || !q) {
+      buf_free(p);
+      buf_free(q);
+      return 0;
+    }
+invalid:
+  - |-
+    buf_t *p = alloc(), *q = alloc();
+    if (!p || !q) {
+      return 0;
+    }

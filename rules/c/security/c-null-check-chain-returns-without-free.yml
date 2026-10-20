@@ -1,0 +1,38 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-check-chain-returns-without-free
+language: c
+severity: warning
+message: >-
+  Early return after a chained NULL check has no free call; earlier
+  allocations may leak.
+note: >-
+  Purely syntactic; does not verify which pointers were allocated or whether
+  cleanup happens elsewhere.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        field: condition
+        kind: parenthesized_expression
+        regex: '^\(\s*!\s*\w+(\s*\|\|\s*!\s*\w+)+\s*\)$'
+    - has:
+        field: consequence
+        has:
+          kind: return_statement
+          stopBy: end
+    - not:
+        has:
+          kind: call_expression
+          stopBy: end
+          has:
+            field: function
+            regex: 'free$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
