@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-optional-symbol-unguarded
+language: c
+severity: warning
+message: >-
+  RAND_egd is called outside a preprocessor conditional block. Some libraries,
+  such as LibreSSL, do not provide it.
+note: >-
+  Matches only direct RAND_egd calls that are not inside a #if or #ifdef block
+  in the same file. It does not check what the guard condition tests. It does
+  not cover ENGINE_CTRL_CHIL_SET_FORKCHECK or struct sockaddr_un.
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        kind: identifier
+        regex: '^RAND_egd$'
+    - not:
+        inside:
+          stopBy: end
+          kind: preproc_ifdef
+    - not:
+        inside:
+          stopBy: end
+          kind: preproc_if
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
