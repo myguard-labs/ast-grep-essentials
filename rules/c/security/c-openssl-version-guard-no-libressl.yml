@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-version-guard-no-libressl
+language: c
+severity: warning
+message: >-
+  This #if compares OPENSSL_VERSION_NUMBER against a pre-1.1.0 value but does
+  not check LIBRESSL_VERSION_NUMBER. LibreSSL reports a 1.0-era version, so
+  code under this gate may call APIs that LibreSSL does not have.
+note: >-
+  Matches only the literal text of the #if condition. It does not evaluate
+  macros, follow nested or enclosing guards, or check what the gated code
+  calls.
+rule:
+  kind: preproc_if
+  has:
+    field: condition
+    all:
+      - regex: 'OPENSSL_VERSION_NUMBER\s*<\s*0x10(0|10000)'
+      - not:
+          regex: LIBRESSL_VERSION_NUMBER
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
