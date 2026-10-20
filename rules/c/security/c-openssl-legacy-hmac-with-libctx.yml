@@ -1,0 +1,39 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-legacy-hmac-with-libctx
+language: c
+severity: warning
+message: >-
+  Legacy HMAC API used in a function that takes an OSSL_LIB_CTX; prefer
+  EVP_Q_mac or EVP_MAC.
+note: >-
+  Syntactic only; matches callee names and the OSSL_LIB_CTX pointer parameter
+  spelling without resolving typedefs or whether the context is actually used.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    kind: identifier
+    regex: '^(HMAC_CTX_new|HMAC_Init_ex|HMAC_Update|HMAC_Final)$'
+  inside:
+    stopBy: end
+    kind: function_definition
+    has:
+      stopBy: end
+      kind: parameter_declaration
+      all:
+        - has:
+            field: type
+            kind: type_identifier
+            regex: '^OSSL_LIB_CTX$'
+        - has:
+            field: declarator
+            kind: pointer_declarator
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
