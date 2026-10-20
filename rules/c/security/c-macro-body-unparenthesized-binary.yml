@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-macro-body-unparenthesized-binary
+language: c
+severity: warning
+message: >-
+  Function-like macro body is a top-level binary expression without enclosing
+  parentheses; wrap the whole body in parentheses.
+note: >-
+  Textual heuristic on the raw macro body; it only recognizes a leading
+  parenthesized group (nesting up to two levels) followed by a binary
+  operator, and does not parse the expression.
+rule:
+  kind: preproc_function_def
+  has:
+    field: value
+    kind: preproc_arg
+    regex: '^\s*\([^()]*(\([^()]*\)[^()]*)*\)\s*(\+|-|<<|>>|\||\^|&)'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
