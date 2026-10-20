@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-ossl-param-len-key-utf8-type
+language: c
+severity: warning
+message: >-
+  OSSL_PARAM_utf8_string is used with a key whose name ends in _LEN; use an
+  integer or size type instead.
+note: >-
+  Matches the key macro name syntactically by suffix; it does not resolve
+  macro definitions or the actual parameter type.
+rule:
+  pattern: 'OSSL_PARAM_utf8_string($KEY, $$$REST)'
+constraints:
+  KEY:
+    kind: identifier
+    regex: '_LEN$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
