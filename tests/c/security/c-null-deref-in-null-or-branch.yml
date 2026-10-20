@@ -1,0 +1,21 @@
+id: c-null-deref-in-null-or-branch
+valid:
+  - |-
+    int f(struct url *resource) {
+        if (!resource || !resource->path) {
+            if (resource && resource->host) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+invalid:
+  - |-
+    int f(struct url *resource) {
+        if (!resource || !resource->path) {
+            if (resource->host) {
+                return 1;
+            }
+        }
+        return 0;
+    }
