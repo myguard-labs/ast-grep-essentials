@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-php-array-init-then-return-leak
+language: c
+severity: warning
+message: >-
+  array_init(return_value) is followed by an early RETURN_FALSE/RETURN_NULL
+  without zval_dtor(return_value), leaking the array.
+note: >-
+  Syntactic only; flags an if block whose first statement is
+  RETURN_FALSE/RETURN_NULL after an array_init(return_value) sibling; does not
+  track other cleanup or control flow.
+rule:
+  kind: if_statement
+  all:
+    - follows:
+        pattern: 'array_init(return_value);'
+        stopBy: end
+    - has:
+        kind: compound_statement
+        has:
+          kind: expression_statement
+          regex: '^RETURN_(FALSE|NULL);$'
+          nthChild: 1
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
