@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-check-store-outside-guard
+language: c
+severity: warning
+message: >-
+  Field store through a pointer that the immediately preceding if null-tested
+  sits outside that if, so it runs when the pointer is NULL.
+note: >-
+  Syntactic only; matches the same pointer text in `P != NULL` in the previous
+  sibling if, without checking else branches, early exits, or aliasing.
+rule:
+  all:
+    - pattern: '$P->$F = $V;'
+    - follows:
+        kind: if_statement
+        has:
+          field: condition
+          stopBy: end
+          pattern: '$P != NULL'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

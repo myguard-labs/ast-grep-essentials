@@ -1,0 +1,15 @@
+id: c-null-check-store-outside-guard
+valid:
+  - |-
+    struct s *ctx = alloc();
+    if (ctx != NULL) {
+        ctx->provctx = p;
+        ctx->pbe_nid = -1;
+    }
+invalid:
+  - |-
+    struct s *ctx = alloc();
+    if (ctx != NULL) {
+        ctx->provctx = p;
+    }
+    ctx->pbe_nid = -1;
