@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-php-stream-cast-unguarded
+language: c
+severity: warning
+message: php_stream_cast is called without an enclosing php_stream_can_cast check.
+note: >-
+  Syntactic only; looks for the identifier php_stream_cast not inside an if
+  whose condition mentions php_stream_can_cast, without matching the same
+  stream or target type.
+rule:
+  kind: identifier
+  regex: '^php_stream_cast$'
+  not:
+    inside:
+      stopBy: end
+      kind: if_statement
+      has:
+        field: condition
+        has:
+          stopBy: end
+          kind: identifier
+          regex: '^php_stream_can_cast$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
