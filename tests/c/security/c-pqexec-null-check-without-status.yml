@@ -1,0 +1,10 @@
+id: c-pqexec-null-check-without-status
+valid:
+  - >-
+    PGresult *res; if ((res = PQexec(conn, "select oid,typname from pg_type"))
+    == NULL || PQresultStatus(res) != PGRES_TUPLES_OK) { return NULL; } n =
+    PQntuples(res);
+invalid:
+  - >-
+    PGresult *res; if ((res = PQexec(conn, "select oid,typname from pg_type"))
+    == NULL) { return NULL; } n = PQntuples(res);

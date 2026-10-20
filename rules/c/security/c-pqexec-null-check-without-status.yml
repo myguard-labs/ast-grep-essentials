@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pqexec-null-check-without-status
+language: c
+severity: warning
+message: 'PQexec result is checked only against NULL; also check PQresultStatus.'
+note: >-
+  Syntactic only; matches an if whose entire condition is the NULL comparison,
+  and cannot see a PQresultStatus check elsewhere in the function.
+rule:
+  kind: if_statement
+  has:
+    field: condition
+    kind: parenthesized_expression
+    has:
+      pattern: '($R = PQexec($$$A)) == NULL'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
