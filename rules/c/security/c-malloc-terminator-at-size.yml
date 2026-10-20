@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-malloc-terminator-at-size
+language: c
+severity: warning
+message: >-
+  NUL terminator written at index equal to the malloc size, one past the end
+  of the allocation.
+note: >-
+  Syntactic only; matches the same identifier used as malloc size and as index
+  within one block, without checking reassignment, aliasing, or control flow.
+rule:
+  pattern: '$H[$N] = ''\0'''
+  inside:
+    kind: compound_statement
+    stopBy: end
+    has:
+      pattern: '$T *$H = malloc($N);'
+      stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
