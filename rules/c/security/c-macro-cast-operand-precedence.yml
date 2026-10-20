@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-macro-cast-operand-precedence
+language: c
+severity: warning
+message: >-
+  Cast applies to a member access compared with == in a ternary without
+  parenthesizing the cast operand.
+note: >-
+  Text-based match on the macro body, which the C grammar keeps as raw text.
+  It does not resolve types or macro usage.
+rule:
+  kind: preproc_function_def
+  regex: '\(\s*\w+\s*\)\s*\(\s*\w+\s*\)\s*->\s*\w+\s*==[^?]*\?'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
