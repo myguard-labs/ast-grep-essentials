@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-overwrite-owned-field-without-free
+language: c
+severity: warning
+message: >-
+  Allocator result is assigned to a struct member without freeing its previous
+  value first.
+note: >-
+  Syntactic only. It looks for an earlier efree of the same member among
+  preceding sibling statements. It does not track aliasing, initialisation, or
+  frees in other blocks.
+rule:
+  all:
+    - pattern: '$OBJ->$F = $ALLOC($$$ARGS);'
+    - not:
+        follows:
+          stopBy: end
+          pattern: 'efree($OBJ->$F);'
+constraints:
+  ALLOC:
+    regex: '^(emalloc|estrdup|estrndup|malloc)$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
