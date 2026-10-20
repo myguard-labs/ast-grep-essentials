@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pointer-read-before-reassign-in-loop
+language: c
+severity: warning
+message: >-
+  Pointer member is read before the pointer is reassigned later in the same
+  loop body.
+note: >-
+  Purely syntactic; matches same-named pointer text in sibling statements
+  within a for loop and does not check aliasing, control flow, or intent.
+rule:
+  kind: expression_statement
+  all:
+    - has:
+        stopBy: end
+        pattern: '$P->$F'
+    - precedes:
+        stopBy: end
+        pattern: '$P = $V;'
+    - inside:
+        kind: compound_statement
+        inside:
+          kind: for_statement
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
