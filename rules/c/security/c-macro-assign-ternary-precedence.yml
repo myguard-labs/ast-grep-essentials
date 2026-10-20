@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-macro-assign-ternary-precedence
+language: c
+severity: warning
+message: >-
+  Function-like macro body mixes an assignment with a bare ?: conditional;
+  parenthesize the conditional so operands bind correctly.
+note: >-
+  Heuristic text match on the opaque macro body; it cannot parse nesting, so
+  it only flags an assignment followed by a comparison whose right operand
+  directly precedes the ?.
+rule:
+  kind: preproc_function_def
+  has:
+    kind: preproc_arg
+    regex: '[^=!<>]=[^=].*[<>]=?\s*\w+\s*\?'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
