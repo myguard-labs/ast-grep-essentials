@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pointer-offset-before-allocation
+language: c
+severity: warning
+message: Pointer is offset before the base pointer is assigned by an allocation call.
+note: >-
+  Matches only same-scope sibling statement order with the same base
+  identifier text. It does not check control flow, aliasing, or other
+  allocators.
+rule:
+  all:
+    - kind: declaration
+    - has:
+        stopBy: end
+        pattern: '$B + $N'
+    - precedes:
+        stopBy: end
+        pattern: '$B = malloc($$$A);'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
