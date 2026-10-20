@@ -1,0 +1,34 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-pkcs7-signed-attr-deref-unchecked
+language: c
+severity: warning
+message: Result of PKCS7_get_signed_attribute is dereferenced without a NULL check.
+note: >-
+  Syntactic only; matches an if condition using -> on the assigned variable
+  without an && guard on it, and does not track aliasing or other guards.
+rule:
+  kind: if_statement
+  all:
+    - follows:
+        stopBy: end
+        pattern: '$V = PKCS7_get_signed_attribute($$$A);'
+    - has:
+        field: condition
+        has:
+          stopBy: end
+          pattern: '$V->$F'
+    - not:
+        has:
+          field: condition
+          has:
+            stopBy: end
+            pattern: '$V && $X'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
