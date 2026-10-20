@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-postfix-increment-in-comparison
+language: c
+severity: warning
+message: >-
+  Postfix increment or decrement used as a direct operand of a relational
+  comparison; the comparison sees the pre-update value.
+note: >-
+  Purely syntactic; intentional idioms such as while (n++ < max) will also
+  match, and no data flow is analyzed.
+rule:
+  kind: binary_expression
+  all:
+    - has:
+        field: operator
+        regex: '^(<|>|<=|>=)$'
+    - has:
+        kind: update_expression
+        regex: '(\+\+|--)$'
+        has:
+          field: argument
+          kind: identifier
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
