@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-deref-before-null-check
+language: c
+severity: warning
+message: >-
+  Pointer is dereferenced with -> before a later if statement tests it for
+  NULL.
+note: >-
+  Syntactic hint only; matches the same identifier text and cannot tell
+  whether the pointer can be NULL at runtime without dataflow.
+rule:
+  kind: expression_statement
+  all:
+    - has:
+        pattern: '$X->$F'
+        stopBy: end
+    - precedes:
+        kind: if_statement
+        has:
+          field: condition
+          has:
+            pattern: '$X && $Y'
+            stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

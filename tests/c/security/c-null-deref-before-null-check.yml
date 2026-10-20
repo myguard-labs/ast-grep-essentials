@@ -1,0 +1,13 @@
+id: c-null-deref-before-null-check
+valid:
+  - |-
+    void f(struct s *key, const char **out) {
+        if (key) { *out = key->val; }
+        if (key && key->val[0] == '\0') { *out = 0; }
+    }
+invalid:
+  - |-
+    void f(struct s *key, const char **out) {
+        *out = key->val;
+        if (key && key->val[0] == '\0') { *out = 0; }
+    }
