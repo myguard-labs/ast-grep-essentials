@@ -1,0 +1,20 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-php-exception-discarded-not-saved
+language: c
+severity: warning
+message: 'Pending EG(exception) is destroyed and nulled without being saved first.'
+note: >-
+  Syntactic match only. It does not check whether the exception was saved
+  elsewhere or whether a callback runs.
+rule:
+  pattern: |
+    if (EG(exception)) { zval_ptr_dtor(&EG(exception)); EG(exception) = NULL; }
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
