@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-mangled-name-freed-with-efree
+language: c
+severity: warning
+message: >-
+  Buffer from zend_mangle_property_name() is released with efree(); use
+  pefree() with the same persistence flag.
+note: >-
+  Matches syntactically a preceding sibling statement that mangles into &var
+  followed by efree(var); it does not verify control flow, reassignment, or
+  the actual flag value.
+rule:
+  pattern: 'efree($N);'
+  follows:
+    pattern: 'zend_mangle_property_name(&$N, $$$REST);'
+    stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
