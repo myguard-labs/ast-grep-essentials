@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-php-hex-decode-half-strlen-alloc
+language: c
+severity: warning
+message: >-
+  Allocation sized by strlen(...) / 2 with no preceding parity check;
+  odd-length input may not be rejected.
+note: >-
+  Syntactic heuristic only; it looks for a preceding sibling if statement
+  mentioning % 2 and does not verify that it checks the same string or guards
+  the allocation.
+rule:
+  all:
+    - kind: expression_statement
+    - has:
+        pattern: 'strlen($$$A) / 2'
+        stopBy: end
+    - not:
+        follows:
+          kind: if_statement
+          regex: '%\s*2'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
