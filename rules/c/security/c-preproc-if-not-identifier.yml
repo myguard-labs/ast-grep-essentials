@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-preproc-if-not-identifier
+language: c
+severity: warning
+message: >-
+  Preprocessor if with a negated bare identifier; prefer ifndef, since an
+  undefined identifier silently evaluates to 0.
+note: >-
+  Matches only the syntactic form of a negated bare identifier as the if
+  condition. It does not check whether the macro is defined or numeric.
+rule:
+  kind: preproc_if
+  has:
+    field: condition
+    kind: unary_expression
+    all:
+      - regex: '^!'
+      - has:
+          field: argument
+          kind: identifier
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
