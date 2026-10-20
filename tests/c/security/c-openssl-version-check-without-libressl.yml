@@ -1,0 +1,13 @@
+id: c-openssl-version-check-without-libressl
+valid:
+  - |-
+    #if OPENSSL_VERSION_NUMBER >= 0x1000205fL
+    #ifdef LIBRESSL_VERSION_NUMBER
+    void f(void) { }
+    #endif
+    #endif
+invalid:
+  - |-
+    #if OPENSSL_VERSION_NUMBER >= 0x1000205fL
+    void f(void) { }
+    #endif
