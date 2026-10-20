@@ -1,0 +1,38 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-nonvoid-function-ends-with-if
+language: c
+severity: warning
+message: >-
+  Non-void function ends with an if without else; control may reach the
+  closing brace without returning.
+note: >-
+  Syntactic only; does not check for noreturn calls, infinite loops, or
+  typedef aliases of void.
+rule:
+  kind: function_definition
+  all:
+    - not:
+        has:
+          field: type
+          regex: '^void$'
+    - has:
+        field: body
+        kind: compound_statement
+        has:
+          kind: if_statement
+          nthChild:
+            position: 1
+            reverse: true
+          not:
+            has:
+              field: alternative
+              kind: else_clause
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
