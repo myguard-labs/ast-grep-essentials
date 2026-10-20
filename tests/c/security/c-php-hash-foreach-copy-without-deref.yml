@@ -1,0 +1,14 @@
+id: c-php-hash-foreach-copy-without-deref
+valid:
+  - |-
+    ZEND_HASH_FOREACH_VAL(ht, param) {
+        ZVAL_DEREF(param);
+        ZVAL_COPY_VALUE(&args[i], param);
+        i++;
+    } ZEND_HASH_FOREACH_END();
+invalid:
+  - |-
+    ZEND_HASH_FOREACH_VAL(ht, param) {
+        ZVAL_COPY_VALUE(&args[i], param);
+        i++;
+    } ZEND_HASH_FOREACH_END();

@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-php-hash-foreach-copy-without-deref
+language: c
+severity: warning
+message: >-
+  ZVAL_COPY_VALUE copies a value without a preceding ZVAL_DEREF on it; a
+  reference wrapper may be copied.
+note: >-
+  Syntactic only; does not verify the enclosing ZEND_HASH_FOREACH_VAL loop or
+  the variable's origin, only that no earlier sibling ZVAL_DEREF on the same
+  expression exists.
+rule:
+  all:
+    - pattern: 'ZVAL_COPY_VALUE($D, $P);'
+    - not:
+        follows:
+          pattern: 'ZVAL_DEREF($P);'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
