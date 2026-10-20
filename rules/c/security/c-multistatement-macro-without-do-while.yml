@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-multistatement-macro-without-do-while
+language: c
+severity: warning
+message: >-
+  Function-like macro has multiple statements but is not wrapped in do { }
+  while (0).
+note: >-
+  Syntactic only; matches the definition text, not whether any use site is an
+  unbraced if or loop body. Semicolons in strings or comments may miscount.
+rule:
+  kind: preproc_function_def
+  all:
+    - has:
+        field: value
+        kind: preproc_arg
+        regex: ';[^;]*;'
+    - not:
+        has:
+          field: value
+          kind: preproc_arg
+          regex: '^\s*do\b'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
