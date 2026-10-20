@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-missing-break-before-case
+language: c
+severity: warning
+message: >-
+  Case body ends with an expression statement and falls through into the next
+  case or default label.
+note: >-
+  Syntactic check only; intentional fallthrough and other terminating
+  statements (nested ifs, loops) are not analyzed.
+rule:
+  kind: case_statement
+  all:
+    - has:
+        kind: expression_statement
+        nthChild:
+          position: 1
+          reverse: true
+    - precedes:
+        kind: case_statement
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
