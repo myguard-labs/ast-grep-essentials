@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-prototype-bare-identifier-params
+language: c
+severity: warning
+message: Prototype parameter is a bare identifier with no type specifier.
+note: >-
+  Syntactic only; a lone typedef name parameter such as size_t in a valid
+  prototype looks the same and is not resolved.
+rule:
+  kind: parameter_declaration
+  has:
+    field: type
+    kind: type_identifier
+  not:
+    has:
+      field: declarator
+      regex: '.'
+  inside:
+    kind: parameter_list
+    inside:
+      kind: function_declarator
+      inside:
+        kind: declaration
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
