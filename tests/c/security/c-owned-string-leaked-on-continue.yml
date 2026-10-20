@@ -1,0 +1,18 @@
+id: c-owned-string-leaked-on-continue
+valid:
+  - |-
+    ZEND_HASH_FOREACH_KEY_VAL(pats, n, k, e) {
+      key = zend_long_to_str(n);
+      if (len > slen) {
+        zend_string_release(key);
+        continue;
+      }
+    }
+invalid:
+  - |-
+    ZEND_HASH_FOREACH_KEY_VAL(pats, n, k, e) {
+      key = zend_long_to_str(n);
+      if (len > slen) {
+        continue;
+      }
+    }

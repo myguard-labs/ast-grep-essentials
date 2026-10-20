@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-owned-string-leaked-on-continue
+language: c
+severity: warning
+message: >-
+  continue after zend_long_to_str without zend_string_release may leak the
+  string.
+note: >-
+  Syntactic only; does not track which variable is released or whether another
+  path frees it.
+rule:
+  kind: continue_statement
+  all:
+    - inside:
+        stopBy: end
+        kind: compound_statement
+        has:
+          stopBy: end
+          pattern: '$K = zend_long_to_str($$$A)'
+    - not:
+        follows:
+          stopBy: end
+          pattern: 'zend_string_release($$$B);'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

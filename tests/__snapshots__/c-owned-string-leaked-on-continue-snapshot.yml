@@ -1,0 +1,22 @@
+id: c-owned-string-leaked-on-continue
+snapshots:
+  "ZEND_HASH_FOREACH_KEY_VAL(pats, n, k, e) {\n  key = zend_long_to_str(n);\n  if (len > slen) {\n    continue;\n  }\n}":
+    labels:
+    - source: continue;
+      style: primary
+      start: 96
+      end: 105
+    - source: key = zend_long_to_str(n)
+      style: secondary
+      start: 45
+      end: 70
+    - source: |-
+        {
+          key = zend_long_to_str(n);
+          if (len > slen) {
+            continue;
+          }
+        }
+      style: secondary
+      start: 41
+      end: 111
