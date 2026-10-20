@@ -1,0 +1,13 @@
+id: c-openssl-verify-eq-zero-misses-error
+valid:
+  - |-
+    int j = EVP_DigestVerify(mctx, data, len, hdata, hdatalen);
+    if (j <= 0) {
+        return 0;
+    }
+invalid:
+  - |-
+    int j = EVP_DigestVerify(mctx, data, len, hdata, hdatalen);
+    if (j == 0) {
+        return 0;
+    }
