@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-php-include-without-config-guard
+language: c
+severity: warning
+message: >-
+  php.h is included without an earlier HAVE_CONFIG_H guard that includes
+  config.h.
+note: >-
+  Syntactic check only. It looks for an earlier sibling ifdef block containing
+  a config.h include in the same file. It does not check the macro name or
+  resolve other include paths.
+rule:
+  all:
+    - kind: preproc_include
+    - regex: 'php\.h'
+    - not:
+        follows:
+          stopBy: end
+          kind: preproc_ifdef
+          has:
+            stopBy: end
+            kind: preproc_include
+            regex: 'config\.h'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
