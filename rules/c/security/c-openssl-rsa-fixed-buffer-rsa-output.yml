@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-rsa-fixed-buffer-rsa-output
+language: c
+severity: warning
+message: >-
+  RSA encrypt/decrypt output buffer should be sized from RSA_size, not a fixed
+  literal array size.
+note: >-
+  Syntactic only; it flags RSA public/private encrypt/decrypt calls and cannot
+  verify the output buffer's declared size.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    kind: identifier
+    regex: '^RSA_(public|private)_(encrypt|decrypt)$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
