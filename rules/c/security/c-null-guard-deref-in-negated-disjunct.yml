@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-guard-deref-in-negated-disjunct
+language: c
+severity: warning
+message: >-
+  Condition has a negated null test joined by ||, and the body dereferences
+  the same pointer; the body can run with it NULL.
+note: >-
+  Syntactic only; matches the same identifier text and does not check
+  reassignment, aliasing, or control flow.
+rule:
+  kind: if_statement
+  all:
+    - has:
+        field: condition
+        has:
+          pattern: '!$P || $Q'
+          stopBy: end
+    - has:
+        field: consequence
+        has:
+          pattern: '$P->$F'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
