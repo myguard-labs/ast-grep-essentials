@@ -1,0 +1,10 @@
+id: c-long-multiply-overflow-via-double
+valid:
+  - >-
+    void f(long a, long b, long *out) { long lr = a * b; long double dr = (long
+    double)a * (long double)b; if ((dr + ((long double)lr - dr)) != dr) {
+    return; } *out = lr; }
+invalid:
+  - >-
+    void f(long a, long b, long *out) { long lr = a * b; double dr = (double)a *
+    (double)b; if ((dr + ((double)lr - dr)) != dr) { return; } *out = lr; }

@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-long-multiply-overflow-via-double
+language: c
+severity: warning
+message: >-
+  Integer product computed in double; double's 53-bit mantissa makes this an
+  unreliable overflow check for 64-bit multiplication.
+note: >-
+  Matches the literal syntax of two operands both cast to double and
+  multiplied; it does not verify that the result is used for overflow
+  detection or resolve operand types.
+rule:
+  pattern: '(double)$A * (double)$B'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
