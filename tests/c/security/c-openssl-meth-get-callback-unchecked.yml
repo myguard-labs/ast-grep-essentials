@@ -1,0 +1,17 @@
+id: c-openssl-meth-get-callback-unchecked
+valid:
+  - |-
+    static int (*pinit)(EVP_PKEY_CTX *);
+    static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) {
+        if (pinit == NULL)
+            EVP_PKEY_meth_get_paramgen(base, &pinit, NULL);
+        return pinit != NULL ? pinit(ctx) : 1;
+    }
+invalid:
+  - |-
+    static int (*pinit)(EVP_PKEY_CTX *);
+    static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) {
+        if (pinit == NULL)
+            EVP_PKEY_meth_get_paramgen(base, &pinit, NULL);
+        return pinit(ctx);
+    }

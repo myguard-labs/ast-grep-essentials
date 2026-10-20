@@ -1,0 +1,46 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-meth-get-callback-unchecked
+language: c
+severity: warning
+message: >-
+  Callback pointer filled by an EVP_PKEY_meth_get_* call is invoked without a
+  NULL test.
+note: >-
+  Syntactic only. Matches a call through an identifier whose address is passed
+  to an EVP_PKEY_meth_get_* call in the same function when the call is not
+  inside a conditional expression. It does not track dataflow or recognise
+  NULL guards written as if statements.
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        kind: identifier
+        pattern: '$F'
+    - inside:
+        kind: function_definition
+        stopBy: end
+        has:
+          stopBy: end
+          kind: call_expression
+          all:
+            - has:
+                field: function
+                regex: '^EVP_PKEY_meth_get_'
+            - has:
+                field: arguments
+                has:
+                  pattern: '&$F'
+    - not:
+        inside:
+          kind: conditional_expression
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
