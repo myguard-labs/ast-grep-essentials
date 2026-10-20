@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-prototype-definition-arity-mismatch
+language: c
+severity: warning
+message: >-
+  Function definition has parameters but an earlier prototype of the same name
+  declares (void).
+note: >-
+  Syntactic only; covers the (void) prototype versus one-parameter definition
+  case, not general arity comparison or macros.
+rule:
+  all:
+    - pattern: '$T $F($P) { $$$B }'
+    - follows:
+        pattern: 'void $F(void);'
+        stopBy: end
+constraints:
+  P:
+    not:
+      regex: '^void$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
