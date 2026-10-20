@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-check-before-reassignment
+language: c
+severity: warning
+message: >-
+  Pointer is null-checked, reassigned inside the if body, then dereferenced
+  after the block without a guard.
+note: >-
+  Purely syntactic; does not verify the reassigned value may be NULL or that
+  no other guard exists.
+rule:
+  all:
+    - pattern: 'if ($P) { $$$A }'
+    - has:
+        pattern: '$P = $V'
+        stopBy: end
+    - precedes:
+        stopBy: end
+        has:
+          pattern: '*$P'
+          stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
