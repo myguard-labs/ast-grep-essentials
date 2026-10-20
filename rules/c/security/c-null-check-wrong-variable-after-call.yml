@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-null-check-wrong-variable-after-call
+language: c
+severity: warning
+message: >-
+  NULL check tests a call argument instead of the variable just assigned from
+  that call.
+note: >-
+  Purely syntactic check of the statement directly before the if; it does not
+  prove the argument cannot be NULL or that the assigned result is checked
+  elsewhere, and it ignores aliasing and macros.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        field: condition
+        has:
+          pattern: '$A == NULL'
+    - follows:
+        all:
+          - pattern: '$X = $F($$$ARGS);'
+          - has:
+              stopBy: end
+              kind: argument_list
+              has:
+                pattern: '$A'
+          - not:
+              pattern: '$A = $RHS;'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
