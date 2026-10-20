@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-num-args-guard-skips-argc
+language: c
+severity: warning
+message: >-
+  This else-if guard tests only !ZEND_NUM_ARGS() and does not consult the
+  parsed argc.
+note: >-
+  Purely syntactic; it does not verify that an argc variable exists in the
+  enclosing function or that the counts diverge.
+rule:
+  all:
+    - pattern: 'if (!ZEND_NUM_ARGS()) $S'
+    - inside:
+        kind: else_clause
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
