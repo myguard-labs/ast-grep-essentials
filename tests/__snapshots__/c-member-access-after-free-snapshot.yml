@@ -1,0 +1,16 @@
+id: c-member-access-after-free
+snapshots:
+  "struct s { int len; void *magic; };\nvoid f(struct s *p) {\n\tfree(p);\n\tuse(p->len);\n}":
+    labels:
+    - source: use(p->len);
+      style: primary
+      start: 69
+      end: 81
+    - source: p->len
+      style: secondary
+      start: 73
+      end: 79
+    - source: free(p);
+      style: secondary
+      start: 59
+      end: 67

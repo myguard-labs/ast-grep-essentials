@@ -1,0 +1,5 @@
+id: c-member-access-after-free
+valid:
+  - "struct s { int len; void *magic; };\nvoid f(struct s *p) {\n\tuse(p->len);\n\tfree(p);\n}"
+invalid:
+  - "struct s { int len; void *magic; };\nvoid f(struct s *p) {\n\tfree(p);\n\tuse(p->len);\n}"

@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-member-access-after-free
+language: c
+severity: warning
+message: >-
+  Pointer is dereferenced with -> after being passed to free() in an earlier
+  statement.
+note: >-
+  Syntactic statement-order check only; it does not detect reassignment
+  between the free and the use, aliasing, or control flow. Only free() is
+  matched.
+rule:
+  kind: expression_statement
+  all:
+    - has:
+        pattern: '$P->$F'
+        stopBy: end
+    - follows:
+        pattern: 'free($P);'
+        stopBy: end
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
