@@ -1,0 +1,31 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-malloc-result-written-unchecked
+language: c
+severity: warning
+message: Result of malloc is dereferenced and written without a preceding NULL check.
+note: >-
+  Syntactic only; matches a sibling declaration initialized by malloc followed
+  by a store through the same name with no earlier if mentioning it. Does not
+  track aliasing, other checks forms, or calloc/realloc.
+rule:
+  all:
+    - pattern: '*$V = $X;'
+    - follows:
+        stopBy: end
+        pattern: '$T *$V = malloc($$$A);'
+    - not:
+        follows:
+          stopBy: end
+          kind: if_statement
+          has:
+            stopBy: end
+            pattern: '$V'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
