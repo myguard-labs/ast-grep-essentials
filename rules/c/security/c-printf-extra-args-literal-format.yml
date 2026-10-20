@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-printf-extra-args-literal-format
+language: c
+severity: warning
+message: >-
+  Format string literal has no conversion specifiers but extra arguments are
+  passed.
+note: >-
+  Matches only the literal php_error_docref call syntax; it does not resolve
+  macros or other printf-style wrappers.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: identifier
+        regex: '^php_error_docref$'
+    - has:
+        field: arguments
+        kind: argument_list
+        all:
+          - has:
+              nthChild: 3
+              kind: string_literal
+              regex: '^[^%]*$'
+          - has:
+              nthChild: 4
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
