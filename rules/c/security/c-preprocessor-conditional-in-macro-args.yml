@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-preprocessor-conditional-in-macro-args
+language: c
+severity: warning
+message: >-
+  Preprocessor conditional directive inside call or macro arguments is
+  undefined behavior; split into separate calls.
+note: >-
+  Textual heuristic over a function body; matches a open parenthesis followed
+  by a conditional directive line with no semicolon or brace between. Does not
+  confirm the callee is a macro.
+rule:
+  kind: function_definition
+  regex: '\w[ \t]*\([^;{}]*\n[ \t]*#[ \t]*(if|ifdef|ifndef|else|elif)\b'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

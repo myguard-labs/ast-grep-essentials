@@ -1,0 +1,19 @@
+id: c-preprocessor-conditional-in-macro-args
+valid:
+  - |-
+    void f(void) {
+    #ifdef FOO
+     REGISTER_LONG_CONSTANT("X", 1, CONST_CS);
+    #else
+     REGISTER_LONG_CONSTANT("X", 0, CONST_CS);
+    #endif
+    }
+invalid:
+  - |-
+    void f(void) { REGISTER_LONG_CONSTANT("X",
+    #ifdef FOO
+     1
+    #else
+     0
+    #endif
+    , CONST_CS); }
