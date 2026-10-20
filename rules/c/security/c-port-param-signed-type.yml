@@ -1,0 +1,27 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-port-param-signed-type
+language: c
+severity: warning
+message: 'Parameter named port is declared with a signed narrow type (int or short).'
+note: >-
+  Matches the parameter name and declared type text only. It does not prove
+  the value range or resolve typedefs.
+rule:
+  kind: parameter_declaration
+  all:
+    - has:
+        field: declarator
+        kind: identifier
+        regex: '^port$'
+    - has:
+        field: type
+        regex: '^(signed\s+)?(short|int)(\s+int)?$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
