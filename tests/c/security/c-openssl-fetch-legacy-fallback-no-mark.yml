@@ -1,0 +1,12 @@
+id: c-openssl-fetch-legacy-fallback-no-mark
+valid:
+  - |-
+    (void)ERR_set_mark();
+    cipher = EVP_CIPHER_fetch(libctx, name, propq);
+    if (cipher == NULL)
+        cipher = EVP_get_cipherbynid(nid);
+invalid:
+  - |-
+    cipher = EVP_CIPHER_fetch(libctx, name, propq);
+    if (cipher == NULL)
+        cipher = EVP_get_cipherbynid(nid);

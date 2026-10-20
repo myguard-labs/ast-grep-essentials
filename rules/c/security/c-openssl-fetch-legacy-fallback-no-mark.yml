@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-fetch-legacy-fallback-no-mark
+language: c
+severity: warning
+message: >-
+  EVP fetch failure is replaced by a legacy EVP_get_* fallback without a
+  preceding ERR_set_mark.
+note: >-
+  Syntactic only; checks the immediately preceding statement for ERR_set_mark
+  and does not track marks set elsewhere or pop them.
+rule:
+  pattern: 'if ($V == NULL) $V = $G($$$A);'
+  follows:
+    all:
+      - pattern: '$V = $F($$$B);'
+      - not:
+          follows:
+            kind: expression_statement
+            regex: ERR_set_mark
+constraints:
+  F:
+    regex: '^EVP_\w+_fetch$'
+  G:
+    regex: '^EVP_get_\w+$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
