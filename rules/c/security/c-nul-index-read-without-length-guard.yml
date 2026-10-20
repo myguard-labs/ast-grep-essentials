@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-nul-index-read-without-length-guard
+language: c
+severity: warning
+message: >-
+  Index 3 is read in an && chain after index 1 was compared, with no check on
+  index 2 in the chain.
+note: >-
+  Syntactic only; matches the literal index 1 then 3 shape and does not verify
+  that the subscripted expressions are the same string or know its length.
+rule:
+  all:
+    - pattern: '$L && $S[3] == $C'
+    - has:
+        field: left
+        stopBy: end
+        pattern: '$T[1] == $X'
+    - not:
+        has:
+          stopBy: end
+          pattern: '$U[2]'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
