@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-long-parsed-via-double
+language: c
+severity: warning
+message: >-
+  Integer parsed via a floating-point parser and cast to long; precision is
+  lost above 2^53.
+note: >-
+  Syntactic only; matches a double initialized from strtod/zend_strtod
+  followed by a (long) cast of that variable, without checking dataflow or
+  intervening reassignment.
+rule:
+  pattern: 'long $L = (long)$D;'
+  follows:
+    stopBy: end
+    pattern: 'double $D = $F($$$A);'
+constraints:
+  F:
+    regex: '^(zend_strtod|strtod)$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
