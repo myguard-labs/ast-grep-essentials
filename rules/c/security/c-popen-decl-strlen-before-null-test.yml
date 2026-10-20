@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-popen-decl-strlen-before-null-test
+language: c
+severity: warning
+message: >-
+  strlen() is called on a pointer before it is null-tested; move the null
+  check above the call.
+note: >-
+  Syntactic only; matches sibling order of the declaration and the if (!ptr)
+  test, without checking that the pointer is a parameter or nullable.
+rule:
+  pattern: 'int $N = strlen($P);'
+  precedes:
+    stopBy: end
+    pattern: 'if (!$P) $S'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
