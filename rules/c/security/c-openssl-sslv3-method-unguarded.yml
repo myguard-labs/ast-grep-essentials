@@ -1,0 +1,28 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-openssl-sslv3-method-unguarded
+language: c
+severity: warning
+message: SSLv3 method call is not guarded by an OPENSSL_NO_SSL3 preprocessor check.
+note: >-
+  Syntactic only. Recognizes ifdef or ifndef ancestors naming OPENSSL_NO_SSL3,
+  not if defined forms or macro redefinitions.
+rule:
+  all:
+    - kind: call_expression
+    - regex: '^SSLv3_(client|server)_method\s*\('
+    - not:
+        inside:
+          stopBy: end
+          kind: preproc_ifdef
+          has:
+            kind: identifier
+            regex: '^OPENSSL_NO_SSL3$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
