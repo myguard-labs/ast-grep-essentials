@@ -1,0 +1,24 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-macro-param-unparenthesized-member
+language: c
+severity: warning
+message: >-
+  Macro body applies `->` to a bare identifier; parenthesize macro parameters,
+  e.g. `(v)->type`.
+note: >-
+  Text-based match on the function-like macro body; it does not verify that
+  the identifier is actually a macro parameter.
+rule:
+  kind: preproc_arg
+  inside:
+    kind: preproc_function_def
+  regex: '[A-Za-z_][A-Za-z0-9_]*\s*->'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
