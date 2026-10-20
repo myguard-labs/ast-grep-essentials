@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-predicate-macro-calls-other-predicate
+language: c
+severity: warning
+message: 'Macro isinf expands to a call to isnan, a different predicate.'
+note: >-
+  Syntactic only; matches the literal macro name and body text without
+  resolving other definitions or intent.
+rule:
+  kind: preproc_function_def
+  all:
+    - has:
+        field: name
+        regex: '^isinf$'
+    - has:
+        field: value
+        regex: '^\s*_?isnan\s*\('
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
