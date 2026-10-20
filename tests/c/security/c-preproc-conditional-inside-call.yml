@@ -1,0 +1,13 @@
+id: c-preproc-conditional-inside-call
+valid:
+  - |-
+    #ifdef FOO
+    int f(int a, int b) { return g(a, b); }
+    #endif
+invalid:
+  - |-
+    int f(int a, int b) { return g(a,
+    #ifdef FOO
+     b
+    #endif
+     ); }
