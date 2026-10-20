@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-param-buffer-nul-write-in-place
+language: c
+severity: warning
+message: >-
+  NUL stored at a length-minus-one index in a function taking a writable char
+  pointer parameter; this may mutate the caller's buffer.
+note: >-
+  Syntactic only; does not verify the indexed name is the parameter itself, so
+  it can match a different pointer in the same function.
+rule:
+  all:
+    - pattern: '$A[$N - 1] = ''\0'''
+    - inside:
+        stopBy: end
+        kind: function_definition
+        has:
+          stopBy: end
+          kind: parameter_declaration
+          all:
+            - has:
+                field: type
+                regex: '^char$'
+            - has:
+                kind: pointer_declarator
+            - not:
+                has:
+                  kind: type_qualifier
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
