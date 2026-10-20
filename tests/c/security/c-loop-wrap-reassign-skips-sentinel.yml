@@ -1,0 +1,9 @@
+id: c-loop-wrap-reassign-skips-sentinel
+valid:
+  - >-
+    struct n *p = last->next; while (p != last) { if (!p) { p = head; continue;
+    } use(p->fd); p = p->next; }
+invalid:
+  - >-
+    struct n *p = last->next; while (p != last) { if (!p) { p = head; }
+    use(p->fd); p = p->next; }
