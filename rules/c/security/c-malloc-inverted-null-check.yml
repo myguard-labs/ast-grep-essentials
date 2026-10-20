@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-malloc-inverted-null-check
+language: c
+severity: warning
+message: >-
+  Truthy test on an allocation result exits early, so the failure path may run
+  only when allocation succeeded.
+note: >-
+  Matches syntax only. It checks the immediately preceding statement and does
+  not resolve aliasing, types, or control flow.
+rule:
+  all:
+    - pattern: 'if ($P) $BODY'
+    - follows:
+        pattern: '$P = $F($$$A);'
+    - has:
+        field: consequence
+        has:
+          stopBy: end
+          regex: '^(return|goto)\b'
+constraints:
+  F:
+    regex: '^(malloc|calloc|realloc)$'
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
