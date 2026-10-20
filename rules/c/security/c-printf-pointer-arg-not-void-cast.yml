@@ -1,0 +1,25 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-printf-pointer-arg-not-void-cast
+language: c
+severity: warning
+message: 'Argument for %p should be cast to (void *).'
+note: >-
+  Matches only two-argument printf calls with a %p in the format literal; does
+  not map conversions to arguments or resolve types.
+rule:
+  pattern: 'printf($FMT, $ARG)'
+constraints:
+  FMT:
+    regex: '%p'
+  ARG:
+    not:
+      kind: cast_expression
+metadata:
+  rule_modified_at: '2026-10-20'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-10-20'
+  created_at: '2026-10-20'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
