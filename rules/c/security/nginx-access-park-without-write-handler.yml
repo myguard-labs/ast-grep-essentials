@@ -1,0 +1,33 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: nginx-access-park-without-write-handler
+language: c
+severity: warning
+message: >-
+  This function parks the request with a count increment and NGX_AGAIN but never
+  changes the write event handler, so the request keeps
+  ngx_http_core_run_phases. A client socket event during the park can re-run the
+  phases and re-enter the handler while the first operation is still in flight.
+  Without a guard that launches a second operation, and its late completion can
+  use a request that has already been served and freed. Set an empty or
+  waiting write handler while parked, and restore it on resume.
+note: >-
+  A match means one function has the increment and the NGX_AGAIN return with no
+  write_event_handler reference. Assigning the handler in the caller, or a
+  context flag that makes re-entry return NGX_AGAIN without launching anything,
+  is correct and invisible to this rule, so check both before reporting. A
+  content-phase park is safe because nginx installs an empty write handler there.
+rule:
+  kind: update_expression
+  regex: '^\w+->main->count\+\+$'
+  inside:
+    stopBy: end
+    kind: function_definition
+    all:
+      - has: {stopBy: end, kind: return_statement, regex: '^return\s+NGX_AGAIN\s*;$'}
+      - not: {has: {stopBy: end, kind: field_expression, regex: 'write_event_handler$'}}
+metadata:
+  created_at: '2026-11-05'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
