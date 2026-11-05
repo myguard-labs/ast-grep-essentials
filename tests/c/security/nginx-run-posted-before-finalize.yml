@@ -1,0 +1,14 @@
+id: nginx-run-posted-before-finalize
+valid:
+  - 'void f(ngx_http_request_t *r) { ngx_connection_t *c = r->connection; ngx_http_core_run_phases(r); ngx_http_finalize_request(r, NGX_DONE); ngx_http_run_posted_requests(c); }'
+  - 'void f(ngx_connection_t *c) { ngx_http_run_posted_requests(c); }'
+  - 'void f(ngx_http_request_t *r, ngx_connection_t *c) { if (r) { ngx_http_run_posted_requests(c); } else { ngx_http_finalize_request(r, NGX_DONE); } }'
+  - 'void f(ngx_http_request_t *r, ngx_connection_t *c) { my_run_posted_requests(c); ngx_http_finalize_request(r, NGX_DONE); }'
+  - 'void f(void) { /* ngx_http_run_posted_requests(c); ngx_http_finalize_request(r, 0); */ }'
+  - 'const char *s = "ngx_http_run_posted_requests(c); ngx_http_finalize_request(r, 0);";'
+invalid:
+  - 'void f(ngx_http_request_t *r) { ngx_http_core_run_phases(r); ngx_http_run_posted_requests(r->connection); ngx_http_finalize_request(r, NGX_DONE); }'
+  - 'void f(ngx_http_request_t *r) { ngx_connection_t *c = r->connection; ngx_http_core_run_phases(r); ngx_http_run_posted_requests(c); ngx_http_finalize_request(r, NGX_DONE); }'
+  - 'void f(ngx_http_request_t *r, ngx_int_t rc, ngx_connection_t *c) { ngx_http_run_posted_requests(c); log_it(); ngx_http_finalize_request(r, rc); }'
+  - 'void f(ngx_http_request_t *r, ngx_connection_t *c) { ngx_http_run_posted_requests(c); if (r) { ngx_http_finalize_request(r, NGX_DONE); } }'
+  - 'void f(ngx_http_request_t *r, ngx_connection_t *c) { ngx_http_run_posted_requests(c); ngx_http_close_request(r, 0); }'

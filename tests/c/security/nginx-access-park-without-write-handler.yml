@@ -1,0 +1,13 @@
+id: nginx-access-park-without-write-handler
+valid:
+  - 'ngx_int_t f(ngx_http_request_t *r) { r->write_event_handler = ngx_http_request_empty_handler; r->main->count++; return NGX_AGAIN; }'
+  - 'ngx_int_t f(ngx_http_request_t *r) { r->main->count++; return NGX_DONE; }'
+  - 'ngx_int_t f(ngx_http_request_t *r) { return NGX_AGAIN; }'
+  - 'ngx_int_t f(ngx_http_limit_req_node_t *lr) { lr->count++; return NGX_AGAIN; }'
+  - 'ngx_int_t f(ngx_http_status_t *status) { if (status->count++ != 0) { return NGX_ERROR; } return NGX_AGAIN; }'
+  - 'ngx_int_t f(void) { /* r->main->count++; */ return NGX_AGAIN; }'
+  - 'const char *s = "r->main->count++; return NGX_AGAIN;";'
+invalid:
+  - 'ngx_int_t f(ngx_http_request_t *r) { r->main->count++; return NGX_AGAIN; }'
+  - 'ngx_int_t f(ngx_http_request_t *r, ngx_int_t ok) { if (!ok) { return NGX_DECLINED; } r->main->count++; return NGX_AGAIN; }'
+  - 'ngx_int_t f(ngx_http_request_t *sr) { sr->main->count++; arm_timer(sr); return NGX_AGAIN; }'
