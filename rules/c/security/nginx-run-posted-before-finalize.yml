@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: nginx-run-posted-before-finalize
+language: c
+severity: warning
+message: >-
+  The request is finalized after ngx_http_run_posted_requests already ran. When
+  the resumed phases hit a dead client, nginx posts the terminate handler, and
+  running the posted requests executes it: it forces the count to one and frees
+  the request regardless of any reference this code still holds. The later
+  finalize then works on freed memory. Save the connection first, finalize, and
+  make ngx_http_run_posted_requests the last call, the order
+  ngx_http_request_handler itself uses.
+note: >-
+  A match means the posted-request run precedes a finalize or close call in the
+  same block. It does not check that both calls name the same request, or that
+  the request can be terminated. Dismiss only when the finalize targets a
+  request that this posted-request run cannot free. The rule does not see a
+  finalize in another function.
+rule:
+  kind: expression_statement
+  has:
+    kind: call_expression
+    has: {field: function, regex: '^ngx_http_run_posted_requests$'}
+  precedes:
+    stopBy: end
+    has:
+      stopBy: end
+      kind: call_expression
+      has: {field: function, regex: '^ngx_http_(finalize_request|close_request)$'}
+metadata:
+  created_at: '2026-11-05'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'

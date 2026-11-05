@@ -1,0 +1,132 @@
+id: nginx-run-posted-before-finalize
+snapshots:
+  "void f(ngx_http_request_t *r) { ngx_connection_t *c = r->connection; ngx_http_core_run_phases(r); ngx_http_run_posted_requests(c); ngx_http_finalize_request(r, NGX_DONE); }":
+    labels:
+    - source: ngx_http_run_posted_requests(c);
+      style: primary
+      start: 98
+      end: 130
+    - source: ngx_http_run_posted_requests
+      style: secondary
+      start: 98
+      end: 126
+    - source: ngx_http_run_posted_requests(c)
+      style: secondary
+      start: 98
+      end: 129
+    - source: ngx_http_finalize_request
+      style: secondary
+      start: 131
+      end: 156
+    - source: ngx_http_finalize_request(r, NGX_DONE)
+      style: secondary
+      start: 131
+      end: 169
+    - source: ngx_http_finalize_request(r, NGX_DONE)
+      style: secondary
+      start: 131
+      end: 169
+  "void f(ngx_http_request_t *r) { ngx_http_core_run_phases(r); ngx_http_run_posted_requests(r->connection); ngx_http_finalize_request(r, NGX_DONE); }":
+    labels:
+    - source: ngx_http_run_posted_requests(r->connection);
+      style: primary
+      start: 61
+      end: 105
+    - source: ngx_http_run_posted_requests
+      style: secondary
+      start: 61
+      end: 89
+    - source: ngx_http_run_posted_requests(r->connection)
+      style: secondary
+      start: 61
+      end: 104
+    - source: ngx_http_finalize_request
+      style: secondary
+      start: 106
+      end: 131
+    - source: ngx_http_finalize_request(r, NGX_DONE)
+      style: secondary
+      start: 106
+      end: 144
+    - source: ngx_http_finalize_request(r, NGX_DONE)
+      style: secondary
+      start: 106
+      end: 144
+  "void f(ngx_http_request_t *r, ngx_connection_t *c) { ngx_http_run_posted_requests(c); if (r) { ngx_http_finalize_request(r, NGX_DONE); } }":
+    labels:
+    - source: ngx_http_run_posted_requests(c);
+      style: primary
+      start: 53
+      end: 85
+    - source: ngx_http_run_posted_requests
+      style: secondary
+      start: 53
+      end: 81
+    - source: ngx_http_run_posted_requests(c)
+      style: secondary
+      start: 53
+      end: 84
+    - source: ngx_http_finalize_request
+      style: secondary
+      start: 95
+      end: 120
+    - source: ngx_http_finalize_request(r, NGX_DONE)
+      style: secondary
+      start: 95
+      end: 133
+    - source: ngx_http_finalize_request(r, NGX_DONE)
+      style: secondary
+      start: 95
+      end: 133
+  "void f(ngx_http_request_t *r, ngx_connection_t *c) { ngx_http_run_posted_requests(c); ngx_http_close_request(r, 0); }":
+    labels:
+    - source: ngx_http_run_posted_requests(c);
+      style: primary
+      start: 53
+      end: 85
+    - source: ngx_http_run_posted_requests
+      style: secondary
+      start: 53
+      end: 81
+    - source: ngx_http_run_posted_requests(c)
+      style: secondary
+      start: 53
+      end: 84
+    - source: ngx_http_close_request
+      style: secondary
+      start: 86
+      end: 108
+    - source: ngx_http_close_request(r, 0)
+      style: secondary
+      start: 86
+      end: 114
+    - source: ngx_http_close_request(r, 0)
+      style: secondary
+      start: 86
+      end: 114
+  "void f(ngx_http_request_t *r, ngx_int_t rc, ngx_connection_t *c) { ngx_http_run_posted_requests(c); log_it(); ngx_http_finalize_request(r, rc); }":
+    labels:
+    - source: ngx_http_run_posted_requests(c);
+      style: primary
+      start: 67
+      end: 99
+    - source: ngx_http_run_posted_requests
+      style: secondary
+      start: 67
+      end: 95
+    - source: ngx_http_run_posted_requests(c)
+      style: secondary
+      start: 67
+      end: 98
+    - source: ngx_http_finalize_request
+      style: secondary
+      start: 110
+      end: 135
+    - source: ngx_http_finalize_request(r, rc)
+      style: secondary
+      start: 110
+      end: 142
+    - source: ngx_http_finalize_request(r, rc)
+      style: secondary
+      start: 110
+      end: 142
