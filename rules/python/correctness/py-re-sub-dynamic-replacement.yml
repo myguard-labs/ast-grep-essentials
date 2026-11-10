@@ -12,9 +12,72 @@ note: >-
   argument is a bare identifier. It cannot tell whether that name refers to a
   function or other callable, which is safe, or whether the runtime string
   actually contains backslashes. String literals, lambdas, and other
-  expression forms are not flagged.
+  expression forms are not flagged. The one exemption is a proven local bound:
+  the replacement name is assigned a backslash-free, interpolation-free string
+  literal in the immediately preceding statement (or, as a walrus, the
+  immediately preceding tuple element), so no escape can be expanded. Calls
+  inside a lambda body or a comprehension are never exempted, nor is a
+  statement that rebinds the name with a walrus, since the name may change
+  before the call runs.
+utils:
+  plain-literal:
+    kind: string
+    not:
+      any:
+        - regex: '\\'
+        - has:
+            kind: interpolation
 rule:
-  pattern: 're.sub($PAT, $REPL, $$$REST)'
+  all:
+    - pattern: 're.sub($PAT, $REPL, $$$REST)'
+    - not:
+        all:
+          - any:
+              - inside:
+                  any:
+                    - kind: expression_statement
+                    - kind: return_statement
+                    - kind: assert_statement
+                  stopBy:
+                    any:
+                      - kind: expression_statement
+                      - kind: return_statement
+                      - kind: assert_statement
+                  follows:
+                    kind: expression_statement
+                    has:
+                      kind: assignment
+                      all:
+                        - has: {field: left, pattern: $REPL}
+                        - has: {field: right, matches: plain-literal}
+                  not:
+                    has:
+                      kind: named_expression
+                      has: {field: name, pattern: $REPL}
+                      stopBy: end
+              - follows:
+                  kind: named_expression
+                  all:
+                    - has: {field: name, pattern: $REPL}
+                    - has: {field: value, matches: plain-literal}
+                  stopBy:
+                    not: {regex: '^,$'}
+                  inside:
+                    kind: tuple
+          - not:
+              has:
+                kind: named_expression
+                has: {field: name, pattern: $REPL}
+                stopBy: end
+          - not:
+              inside:
+                any:
+                  - kind: lambda
+                  - kind: list_comprehension
+                  - kind: set_comprehension
+                  - kind: dictionary_comprehension
+                  - kind: generator_expression
+                stopBy: end
 constraints:
   REPL:
     kind: identifier

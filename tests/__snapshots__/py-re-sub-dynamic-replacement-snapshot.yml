@@ -1,12 +1,74 @@
 id: py-re-sub-dynamic-replacement
 snapshots:
-  ? |-
-    import re
-
-    def render(text, diagram):
-        return re.sub(r'<!--\s*marker\s*-->', diagram, text)
-  : labels:
+  "import re\n\ndef render(pattern, word, user_value):\n    return (value := \"owned-run\", other(value := user_value), re.sub(pattern, value, word))[2]":
+    labels:
+    - source: re.sub(pattern, value, word)
+      style: primary
+      start: 112
+      end: 140
+  "import re\n\ndef render(pattern, word, user_value):\n    return (value := user_value, re.sub(pattern, value, word))[1]":
+    labels:
+    - source: re.sub(pattern, value, word)
+      style: primary
+      start: 83
+      end: 111
+  "import re\n\ndef render(pattern, word, user_value):\n    value = \"owned-run\"\n    return (value := user_value, re.sub(pattern, value, word))[1]":
+    labels:
+    - source: re.sub(pattern, value, word)
+      style: primary
+      start: 107
+      end: 135
+  "import re\n\ndef render(pattern, word, user_value):\n    value = \"owned-run\"\n    return lambda: re.sub(pattern, value, word)":
+    labels:
+    - source: re.sub(pattern, value, word)
+      style: primary
+      start: 93
+      end: 121
+  "import re\n\ndef render(pattern, word, user_value):\n    value = \"owned-run\"\n    value = user_value\n    return re.sub(pattern, value, word)":
+    labels:
+    - source: re.sub(pattern, value, word)
+      style: primary
+      start: 108
+      end: 136
+  "import re\n\ndef render(pattern, word, user_value):\n    value = \"owned\\\\1\"\n    return re.sub(pattern, value, word)":
+    labels:
+    - source: re.sub(pattern, value, word)
+      style: primary
+      start: 84
+      end: 112
+  "import re\n\ndef render(pattern, word, user_value):\n    value = f\"owned-{user_value}\"\n    return re.sub(pattern, value, word)":
+    labels:
+    - source: re.sub(pattern, value, word)
+      style: primary
+      start: 95
+      end: 123
+  "import re\n\ndef render(pattern, word, user_value):\n    word = re.sub(pattern, user_value, word)\n    return word":
+    labels:
+    - source: re.sub(pattern, user_value, word)
+      style: primary
+      start: 61
+      end: 94
+  "import re\n\ndef render(pattern, word, user_values):\n    value = \"owned-run\"\n    return [re.sub(pattern, value, word) for value in user_values]":
+    labels:
+    - source: re.sub(pattern, value, word)
+      style: primary
+      start: 87
+      end: 115
+  "import re\n\ndef render(pattern, words, user_value):\n    value = \"owned-run\"\n    for word in words:\n        value = user_value\n        re.sub(pattern, value, word)":
+    labels:
+    - source: re.sub(pattern, value, word)
+      style: primary
+      start: 133
+      end: 161
+  "import re\n\ndef render(text, diagram):\n    return re.sub(r'<!--\\s*marker\\s*-->', diagram, text)":
+    labels:
     - source: re.sub(r'<!--\s*marker\s*-->', diagram, text)
       style: primary
       start: 49
       end: 94
+  "import re\n\ndef render(word, user_value):\n    return (value := \"owned-run\", re.sub((value := user_value), value, word))[1]":
+    labels:
+    - source: re.sub((value := user_value), value, word)
+      style: primary
+      start: 75
+      end: 117

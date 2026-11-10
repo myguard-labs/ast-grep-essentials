@@ -12,7 +12,9 @@ message: >-
 note: >-
   Fires on a search, search_s or xpath call whose relevant argument is an
   f-string with an interpolation, a concatenation or a percent expression
-  involving a string literal. The receiver type is not resolved, so an unrelated
+  involving a string literal. A call on the bare `re` module identifier
+  (re.search) is the standard-library regex search and is excluded; any other
+  receiver is still inspected. The receiver type is not resolved, so an unrelated
   search method on another object matches too, and that plus an interpolated
   value the program itself produced is the routine dismissal. Any argument is
   inspected, not only the filter, so an interpolation in an unrelated argument
@@ -35,6 +37,11 @@ rule:
         field: function
         kind: attribute
         has: {field: attribute, regex: '^(search|search_s|search_ext_s|xpath)$'}
+    - not:
+        has:
+          field: function
+          kind: attribute
+          has: {field: object, kind: identifier, regex: '^re$'}
     - has:
         field: arguments
         has:
