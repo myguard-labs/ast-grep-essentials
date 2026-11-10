@@ -12,8 +12,9 @@ message: >-
 note: >-
   Fires on a search, search_s or xpath call whose relevant argument is an
   f-string with an interpolation, a concatenation or a percent expression
-  involving a string literal. A call on the bare `re` identifier (re.search) is
-  excluded as the standard-library regex search only when the file has an
+  involving a string literal. A re.search call on the bare `re` identifier
+  (not search_s, search_ext_s or xpath) is excluded as the standard-library
+  regex search only when the file has an
   `import re` statement (at any depth) and no enclosing function or lambda
   takes a parameter named `re`; any other receiver is still inspected. Other
   rebindings of `re` (assignment, loop or with target) are not tracked. The
@@ -44,7 +45,9 @@ rule:
           - has:
               field: function
               kind: attribute
-              has: {field: object, kind: identifier, regex: '^re$'}
+              all:
+                - has: {field: object, kind: identifier, regex: '^re$'}
+                - has: {field: attribute, regex: '^search$'}
           - inside:
               stopBy: end
               kind: module
