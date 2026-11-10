@@ -7,14 +7,14 @@ message: >-
   Identity comparison against a literal. `is` asks whether two names point at the
   same object, which for strings, numbers and containers depends on interning and
   on how the value was produced, so the branch fires or does not fire for reasons
-  the code does not state. Compare with == instead; keep `is` for None, True and
-  False.
+  the code does not state. Compare with == instead of `is` and != instead of
+  `is not`; keep identity tests for None, True and False.
 note: >-
   Fires on an `is` or `is not` comparison whose right operand is a string,
   number, list, tuple, set or dictionary literal. CPython interns small integers
   and some strings, so such a comparison can appear to work in a REPL and fail
   on longer values or another interpreter. There is no routine dismissal; the
-  fix is always ==.
+  fix is always == for `is` and != for `is not`.
 rule:
   kind: comparison_operator
   has:
