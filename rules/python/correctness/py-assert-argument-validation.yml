@@ -11,7 +11,9 @@ note: >-
   inside a function, except an `is None` or `is not None` check, which is
   usually type narrowing rather than validation. It cannot tell whether the
   compared name is a parameter or the other side is a constant, so asserts on
-  locals or internal invariants are also flagged and need triage.
+  locals or internal invariants are also flagged and need triage. An assert
+  whose nearest enclosing function is named with a `test_` prefix is a pytest
+  assertion, not validation, and is not flagged.
 rule:
   kind: assert_statement
   has:
@@ -23,6 +25,14 @@ rule:
   inside:
     kind: function_definition
     stopBy: end
+  not:
+    inside:
+      kind: function_definition
+      has:
+        field: name
+        regex: '^test_'
+      stopBy:
+        kind: function_definition
 metadata:
   rule_modified_at: '2026-10-09'
   ast_grep_tested_version: 0.45.3

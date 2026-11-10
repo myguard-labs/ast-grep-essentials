@@ -12,12 +12,17 @@ message: >-
 note: >-
   Fires on a search, search_s or xpath call whose relevant argument is an
   f-string with an interpolation, a concatenation or a percent expression
-  involving a string literal. The receiver type is not resolved, so an unrelated
-  search method on another object matches too, and that plus an interpolated
-  value the program itself produced is the routine dismissal. Any argument is
-  inspected, not only the filter, so an interpolation in an unrelated argument
-  and a value already passed through escape_filter_chars both match and are
-  routine dismissals.
+  involving a string literal. A re.search call on the bare `re` identifier
+  (not search_s, search_ext_s or xpath) is excluded as the standard-library
+  regex search only when the file has an
+  `import re` statement (at any depth) and no enclosing function or lambda
+  takes a parameter named `re`; any other receiver is still inspected. Other
+  rebindings of `re` (assignment, loop or with target) are not tracked. The
+  receiver type is not resolved, so an unrelated search method on another
+  object matches too, and that plus an interpolated value the program itself
+  produced is the routine dismissal. Any argument is inspected, not only the
+  filter, so an interpolation in an unrelated argument and a value already
+  passed through escape_filter_chars both match and are routine dismissals.
 utils:
   runtime-built-filter:
     any:
@@ -35,6 +40,41 @@ rule:
         field: function
         kind: attribute
         has: {field: attribute, regex: '^(search|search_s|search_ext_s|xpath)$'}
+    - not:
+        all:
+          - has:
+              field: function
+              kind: attribute
+              all:
+                - has: {field: object, kind: identifier, regex: '^re$'}
+                - has: {field: attribute, regex: '^search$'}
+          - inside:
+              stopBy: end
+              kind: module
+              has:
+                stopBy: end
+                kind: import_statement
+                has: {kind: dotted_name, regex: '^re$'}
+          - not:
+              inside:
+                stopBy: end
+                any:
+                  - kind: function_definition
+                  - kind: lambda
+                has:
+                  field: parameters
+                  has:
+                    any:
+                      - {kind: identifier, regex: '^re$'}
+                      - any:
+                          - kind: list_splat_pattern
+                          - kind: dictionary_splat_pattern
+                        has: {kind: identifier, regex: '^re$'}
+                      - any:
+                          - kind: typed_parameter
+                          - kind: default_parameter
+                          - kind: typed_default_parameter
+                        has: {nthChild: 1, kind: identifier, regex: '^re$'}
     - has:
         field: arguments
         has:

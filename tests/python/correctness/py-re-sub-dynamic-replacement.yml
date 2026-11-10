@@ -5,7 +5,113 @@ valid:
 
     def render(text, diagram):
         return re.sub(r'<!--\s*marker\s*-->', lambda _m: diagram, text)
+  - |-
+    import re
+
+    def render(pattern, word):
+        value = "owned-run"
+        word = re.sub(pattern, value, word)
+        return word
+  - |-
+    import re
+
+    def render(pattern, word):
+        return (value := "owned-run", re.sub(pattern, value, word))[1]
+  - |-
+    import re
+
+    def render(pattern, word):
+        value = "owned-run"
+        return re.sub(pattern, value, word)
 invalid:
+  - |-
+    import re
+
+    def render(pattern, word, user_value):
+        return (value := user_value, re.sub(pattern, value, word))[1]
+  - |-
+    import re
+
+    def render(pattern, word, user_value):
+        return (value := "owned-run", other(value := user_value), re.sub(pattern, value, word))[2]
+  - |-
+    import re
+
+    def render(pattern, word, user_value):
+        word = re.sub(pattern, user_value, word)
+        return word
+  - |-
+    import re
+
+    def render(pattern, word, user_value):
+        value = "owned-run"
+        value = user_value
+        return re.sub(pattern, value, word)
+  - |-
+    import re
+
+    def render(pattern, word, user_value):
+        value = "owned\\1"
+        return re.sub(pattern, value, word)
+  - |-
+    import re
+
+    def render(pattern, word, user_value):
+        value = f"owned-{user_value}"
+        return re.sub(pattern, value, word)
+  - |-
+    import re
+
+    def render(pattern, word, user_value):
+        value = "owned-run"
+        return lambda: re.sub(pattern, value, word)
+  - |-
+    import re
+
+    def render(pattern, words, user_value):
+        value = "owned-run"
+        for word in words:
+            value = user_value
+            re.sub(pattern, value, word)
+  - |-
+    import re
+
+    def render(pattern, word, user_value):
+        value = "owned-run"
+        return (value := user_value, re.sub(pattern, value, word))[1]
+  - |-
+    import re
+
+    def render(pattern, word, user_values):
+        value = "owned-run"
+        return [re.sub(pattern, value, word) for value in user_values]
+  - |-
+    import re
+
+    def render(word, user_value):
+        return (value := "owned-run", re.sub((value := user_value), value, word))[1]
+  - |-
+    import re
+
+    def render(pattern, word, user_value):
+        value = "owned-run"
+        value += user_value
+        return re.sub(pattern, value, word)
+  - |-
+    import re
+
+    def render(pattern, word, flag):
+        value = "owned-run"
+        if flag:
+            word = re.sub(pattern, value, word)
+        return word
+  - |-
+    import re
+
+    def render(pattern, word, user_value):
+        value = "owned-run"
+        value, other = user_value, 1
+        return re.sub(pattern, value, word)
   - |-
     import re
 
