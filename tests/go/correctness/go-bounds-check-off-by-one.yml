@@ -1,13 +1,17 @@
 id: go-bounds-check-off-by-one
 valid:
-- if i+1 < len(arr) && arr[i+1] == val { return }
-- if i < len(arr) && arr[i+1] == val { return }
-- if i <= len(arr) && arr[i] == val { return }
-- if i <= len(arr) && other[i+1] == val { return }
-- // if i <= len(arr) && arr[i+1] == val { return }
-- var astgrepFixture = "if i <= len(arr) && arr[i+1] == val"
-- if i <= len(arr) && arr[i-1] == val { return }
-- if i <= len(arr) || arr[i+1] == val { return }
+  - 'if i+1 < len(arr) && arr[i+1] == val { return }'
+  - 'if i < len(arr) && arr[i+1] == val { return }'
+  - 'if i <= len(arr) && arr[i] == val { return }'
+  - 'if i <= len(arr) && other[i+1] == val { return }'
+  - '// if i <= len(arr) && arr[i+1] == val { return }'
+  - 'var astgrepFixture = "if i <= len(arr) && arr[i+1] == val"'
+  - 'if i <= len(arr) && arr[i-1] == val { return }'
+  - 'if i <= len(arr) || arr[i+1] == val { return }'
+  - 'if i < len(items) && items[i+1] > limit { return }'
+  - 'if i <= len(items) && items[i-1] > limit { return }'
 invalid:
-- if i <= len(arr) && arr[i+1] == val { return }
-- if i <= len(arr) && arr[i+1] != val { return }
+  - 'if i <= len(arr) && arr[i+1] == val { return }'
+  - 'if i <= len(arr) && arr[i+1] != val { return }'
+  - 'if i <= len(items) && items[i+1] > limit { return }'
+  - 'if i <= len(data) && check(data[i+1]) { return }'
