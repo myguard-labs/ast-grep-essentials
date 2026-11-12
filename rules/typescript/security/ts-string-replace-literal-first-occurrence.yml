@@ -7,15 +7,17 @@ message: >-
   This .replace() call uses a plain string literal as its first argument, so
   only the first occurrence is replaced.
 note: >-
-  Syntactic check only. Matches a literal string first argument to a
-  .replace() member call; it does not verify the receiver is a String, nor
-  whether first-occurrence replacement is intended.
+  Syntactic check only. Matches a literal string first argument (single or
+  double quoted) to a .replace() member call; it does not verify the receiver
+  is a String, nor whether first-occurrence replacement is intended.
 rule:
-  pattern: '$RECV.replace(''$A'', $B)'
+  any:
+    - pattern: '$RECV.replace(''$A'', $B)'
+    - pattern: '$RECV.replace("$A", $B)'
 metadata:
-  rule_modified_at: '2026-10-17'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-17'
+  rule_modified_at: '2026-11-12'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-11-12'
   created_at: '2026-10-17'
   source: 'MyGuard'
   modified_by: MyGuard
