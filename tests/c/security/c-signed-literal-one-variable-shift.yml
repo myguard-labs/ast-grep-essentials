@@ -1,5 +1,9 @@
 id: c-signed-literal-one-variable-shift
 valid:
+  - 'int f(int bit) { return ~((1u << bit) - 1); }'
+  - "void f(int i, size_t *n) {\n\t*n = (size_t)1 << i;\n}"
   - 'unsigned int f(int w) { return 1u << (w - 1); }'
 invalid:
+  - 'int f(int bit) { return ~((1 << bit) - 1); }'
+  - "void f(int i, size_t *n) {\n\t*n = 1 << i;\n}"
   - 'int f(int w) { return 1 << (w - 1); }'
