@@ -2,16 +2,13 @@
 
 id: c-unprototyped-empty-parameter-list
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  This function declarator has an empty parameter list `()`, so it has no
-  prototype and call-site argument checking is disabled. Use `(void)` if no
-  parameters are intended.
+  Deprecated rule ID; use c-empty-param-list-unprototyped. A named function declarator has an
+  empty parameter list; use (void) to declare no parameters.
 note: >-
-  Single-file syntactic match on a function declarator with an empty parameter
-  list. It does not resolve call sites, types, or whether the declaration is a
-  prototype in another translation unit, and it does not account for C23
-  semantics.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-empty-param-list-unprototyped and do not emit this rule.
 rule:
   kind: function_declarator
   all:
@@ -21,18 +18,10 @@ rule:
     - has:
         field: parameters
         kind: parameter_list
-        not:
-          has:
-            kind: parameter_declaration
-    - not:
-        has:
-          field: parameters
-          kind: parameter_list
-          regex: void
+        pattern: '()'
 metadata:
-  rule_modified_at: '2026-10-15'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-15'
+  deprecated_alias_of: c-empty-param-list-unprototyped
+  rule_modified_at: '2026-11-15'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard
