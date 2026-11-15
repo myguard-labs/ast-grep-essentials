@@ -1,0 +1,23 @@
+id: py-kill-literal-pid
+valid:
+- os.kill(os.getpid(), sig)
+- os.kill(proc.pid, sig)
+- os.kill(0, sig)
+- os.kill(-1, sig)
+- os.kill(4194305, sig)
+- os.kill(pid, sig)
+- os.killpg(0, sig)
+- os.killpg(os.getpgid(proc.pid), sig)
+- os.killpg(4194305, sig)
+- os.kill(2**31 - 1, sig)
+- signal.kill(12345, sig)
+- '# os.kill(12345, sig)'
+invalid:
+- os.kill(12345, sig)
+- os.killpg(4242, sig)
+- os.kill(1, 0)
+- os.kill(4194304, sig)
+- os.kill(4194300, sig)
+- os.kill(999999, sig)
+- os.kill(1000000, sig)
+- os.kill(4000000, sig)
