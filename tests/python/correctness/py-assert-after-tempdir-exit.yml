@@ -36,6 +36,18 @@ valid:
   tmp = make_new_dir()
   log("x")
   self.assertFalse(os.path.exists(tmp))
+- |-
+  with tempfile.TemporaryDirectory() as tmp:
+      run(tmp)
+  tmp = make_new_dir()
+  with open(path) as f:
+      f.read()
+  self.assertFalse(os.path.exists(tmp))
+- |-
+  with tempfile.TemporaryDirectory() as tmp:
+      run(tmp)
+  tmp += "/sub"
+  self.assertFalse(os.path.exists(tmp))
 invalid:
 - |-
   with tempfile.TemporaryDirectory() as tmp:

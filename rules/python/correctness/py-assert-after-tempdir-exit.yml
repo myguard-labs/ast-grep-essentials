@@ -13,10 +13,13 @@ note: >-
   follows, in the same block, a with statement binding T through
   tempfile.TemporaryDirectory() or TemporaryDirectory() (as T). T must be the
   same name in both. A derived path (base = os.path.join(T, ...)), a name
-  rebound between the with block and the assertion, other assertion forms and
-  a with statement in an enclosing block are not matched. Only the
+  rebound by plain or augmented assignment between the with block and the
+  assertion (the scan for the rebinding stops at the TemporaryDirectory with
+  statement, so unrelated with blocks in between do not end it), other
+  assertion forms and a with statement in an enclosing block are not matched. Only the
   argument-less call is matched: TemporaryDirectory(prefix=...), dir=... and
-  delete=... forms are not. An assertion that
+  delete=... forms are not. Rebinding by for T in ..., a later with ... as T or
+  a tuple target is not handled (the rule still fires). An assertion that
   deliberately checks the cleanup itself is the routine dismissal.
 rule:
   all:
@@ -43,9 +46,24 @@ rule:
         follows:
           stopBy:
             kind: with_statement
+            has:
+              kind: with_clause
+              has:
+                kind: with_item
+                has:
+                  kind: as_pattern
+                  all:
+                    - has:
+                        kind: call
+                        regex: '^(tempfile\.)?TemporaryDirectory\(\)$'
+                    - has:
+                        kind: as_pattern_target
+                        pattern: $T
           kind: expression_statement
           has:
-            kind: assignment
+            any:
+              - kind: assignment
+              - kind: augmented_assignment
             has:
               field: left
               pattern: $T
