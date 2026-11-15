@@ -1,5 +1,23 @@
 id: c-c89-local-decl-after-stmt-block
 valid:
+  - 'void f(void) { int a; int b; a = 1; b = a; }'
+  - 'void f(void) { int y = 0; x = y; }'
   - 'int f(void) { int x = 0; int y = 1; x++; return x + y; }'
+  - 'void f(void) { int a = 0; int b = 1; a++; (void)b; }'
+  - 'void f(int x) { int y = 2; x = 1; (void)x; (void)y; }'
+  - 'int g(int x); int f(int x) { int y = x + 1; g(x); return y; }'
 invalid:
+  - 'void f(void) { int a; a = 1; int b; b = a; }'
+  - 'void f(void) { x = 1; int y = 0; }'
   - 'int f(void) { int x = 0; x++; int y = 1; return x + y; }'
+  - 'void f(void) { int a = 0; a++; int b = 1; (void)b; }'
+  - 'void f(int x) { x = 1; int y = 2; (void)x; (void)y; }'
+  - 'int g(int x); int f(int x) { g(x); int y = x + 1; return y; }'
+  - 'void f(int c) { switch (c) { case 1: g(); int y = 0; (void)y; } }'
+  - |-
+    void f(void) {
+    #ifdef X
+      g();
+      int y;
+    #endif
+    }
