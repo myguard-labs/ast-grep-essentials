@@ -1,0 +1,43 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-assert-after-tempdir-exit
+language: python
+severity: warning
+message: >-
+  assertFalse(os.path.exists(...)) on a TemporaryDirectory name runs after the
+  with block has exited. The directory is always removed on exit, so the
+  assertion can never fail. Move it inside the with block, or assert on state
+  the code under test produced.
+note: >-
+  Fires on an expression statement self.assertFalse(os.path.exists(T)) that
+  follows, in the same block, a with statement binding T through
+  tempfile.TemporaryDirectory() or TemporaryDirectory() (as T). T must be the
+  same name in both. A derived path (base = os.path.join(T, ...)), a name
+  rebound between the with block and the assertion, other assertion forms and
+  a with statement in an enclosing block are not matched. An assertion that
+  deliberately checks the cleanup itself is the routine dismissal.
+rule:
+  kind: expression_statement
+  has:
+    pattern: $S.assertFalse(os.path.exists($T))
+  follows:
+    stopBy: end
+    kind: with_statement
+    has:
+      kind: with_clause
+      has:
+        kind: with_item
+        has:
+          kind: as_pattern
+          all:
+            - has:
+                kind: call
+                regex: '^(tempfile\.)?TemporaryDirectory\(\)$'
+            - has:
+                kind: as_pattern_target
+                pattern: $T
+metadata:
+  created_at: '2026-11-15'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
