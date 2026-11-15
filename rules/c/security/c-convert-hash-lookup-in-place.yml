@@ -11,21 +11,22 @@ note: >-
   Syntactic only; does not link the converted variable to the lookup result
   and does not check function boundaries, reassignment, or control flow.
 rule:
-  kind: call_expression
-  has:
-    field: function
-    kind: identifier
-    regex: '^convert_to_'
-  inside:
-    stopBy: end
-    has:
-      stopBy: end
-      kind: init_declarator
-      has:
-        kind: call_expression
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        kind: identifier
+        regex: '^convert_to_'
+    - inside:
+        stopBy: end
         has:
-          field: function
-          regex: '^zend_hash_str_find$'
+          stopBy: end
+          kind: init_declarator
+          has:
+            kind: call_expression
+            has:
+              field: function
+              regex: '^zend_hash_str_find$'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
