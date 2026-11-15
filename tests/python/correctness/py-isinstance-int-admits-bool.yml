@@ -1,0 +1,81 @@
+id: py-isinstance-int-admits-bool
+valid:
+- |
+  if isinstance(n, bool) or not isinstance(n, int):
+      raise TypeError(n)
+- |
+  if not isinstance(n, int) or isinstance(n, bool):
+      raise TypeError(n)
+- |
+  def check(n):
+      if isinstance(n, bool):
+          raise TypeError(n)
+      if not isinstance(n, int) or n < 1:
+          raise ValueError(n)
+- |
+  def check(n):
+      if not isinstance(n, int) or type(n) is bool:
+          raise TypeError(n)
+- |
+  if type(n) is not int:
+      raise TypeError(n)
+- |
+  if not isinstance(n, int):
+      return None
+- |
+  if isinstance(n, int):
+      raise TypeError(n)
+- |
+  if not isinstance(n, (int, float)):
+      raise TypeError(n)
+- |
+  if not isinstance(n, numbers.Integral):
+      raise TypeError(n)
+- |
+  if flag:
+      bad = not isinstance(n, int)
+      raise TypeError(n)
+- |
+  if not isinstance(n, int):
+      if strict:
+          raise TypeError(n)
+- |
+  # if not isinstance(n, int):
+  #     raise TypeError(n)
+- |
+  ok = not isinstance(n, int)
+- |
+  if not isinstance(n, str) and isinstance(n, int):
+      raise TypeError(n)
+invalid:
+- |
+  if not isinstance(n, int):
+      raise TypeError(n)
+- |
+  if not isinstance(n, int) or n <= 0:
+      raise ValueError(n)
+- |
+  def parse(record):
+      number = record.get("number")
+      url = record.get("url")
+      if not isinstance(number, int) or not isinstance(url, str) or not url:
+          raise DeliveryError("record is missing number/url")
+      return number, url
+- |
+  if n is None:
+      pass
+  elif not isinstance(n, int):
+      raise TypeError(n)
+- |
+  if not (isinstance(n, int) and n > 0):
+      log.error("bad")
+      raise ValueError(n)
+- |
+  def check(n, other):
+      if isinstance(other, bool):
+          return
+      if not isinstance(n, int):
+          raise TypeError(n)
+- |
+  if not isinstance(record.get("count"), int):
+      raise ValueError(record)

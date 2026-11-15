@@ -1,0 +1,73 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-isinstance-int-admits-bool
+language: python
+severity: info
+message: >-
+  Type guard `not isinstance(x, int)` rejects non-integers but admits True and
+  False, because bool is a subclass of int. A JSON `true` or `false` therefore
+  passes this check as 1 or 0, including a later range test such as `x < 1`.
+  Reject booleans explicitly (`isinstance(x, bool) or not isinstance(x, int)`)
+  or compare the exact type (`type(x) is not int`).
+note: >-
+  Fires on `isinstance(<expr>, int)` under a `not` in the condition of an if
+  or elif whose block raises directly. A guard is treated as handled when the same
+  condition, or the enclosing function anywhere, contains
+  `isinstance(<same expr>, ...bool...)` or `type(<same expr>)`; ordering is not
+  checked. Tuple types such as `(int, float)`, numbers.Integral, guards that
+  return instead of raise, and positive `isinstance(x, int)` tests are not
+  matched. Purely syntactic: whether the value can be a bool is not known; an
+  internally produced value that cannot be a bool is the routine dismissal.
+  Source: a grind escape where a pull-request number validator accepted JSON
+  booleans.
+utils:
+  guard-if:
+    any:
+      - kind: if_statement
+      - kind: elif_clause
+rule:
+  all:
+    - pattern: isinstance($X, int)
+    - inside:
+        stopBy: &guard-scope
+          any:
+            - kind: block
+            - kind: lambda
+            - matches: guard-if
+        kind: not_operator
+    - inside:
+        stopBy: *guard-scope
+        matches: guard-if
+        has:
+          field: consequence
+          has:
+            kind: raise_statement
+    - not:
+        inside:
+          stopBy: *guard-scope
+          matches: guard-if
+          has:
+            field: condition
+            has: &bool-guard
+              stopBy: end
+              any:
+                - kind: call
+                  all:
+                    - pattern: isinstance($X, $$$)
+                    - has:
+                        field: arguments
+                        has:
+                          stopBy: end
+                          kind: identifier
+                          regex: ^bool$
+                - pattern: type($X)
+    - not:
+        inside:
+          stopBy: end
+          kind: function_definition
+          has: *bool-guard
+metadata:
+  created_at: '2026-11-15'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
