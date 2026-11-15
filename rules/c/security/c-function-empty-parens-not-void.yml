@@ -2,14 +2,13 @@
 
 id: c-function-empty-parens-not-void
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  Function definition declares an empty parameter list; use (void) for a
-  prototyped function.
+  Deprecated rule ID; use c-empty-parameter-list-definition. A named function definition has an
+  empty parameter list; use (void) to declare no parameters.
 note: >-
-  Matches function definitions whose parameter list is literally empty. It
-  does not check whether a declaration exists elsewhere or resolve types, and
-  it does not inspect call sites.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-empty-parameter-list-definition and do not emit this rule.
 rule:
   kind: function_definition
   has:
@@ -18,13 +17,10 @@ rule:
     has:
       field: parameters
       kind: parameter_list
-      not:
-        has:
-          kind: parameter_declaration
+      pattern: '()'
 metadata:
-  rule_modified_at: '2026-10-15'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-15'
+  deprecated_alias_of: c-empty-parameter-list-definition
+  rule_modified_at: '2026-11-15'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard

@@ -7,19 +7,26 @@ message: >-
   Function declared with an empty parameter list; use (void) to state that it
   takes no arguments.
 note: >-
-  Matches a function declarator whose parameter list is literally empty. It
-  does not check whether the function is actually called with arguments, nor
-  resolve declarations in other files.
+  Matches a named function declarator, in a declaration or a definition,
+  whose parameter list is literally empty. Function-pointer declarators are
+  left to c-empty-parens-function-pointer-declarator, and a K&R identifier
+  list or a bare (...) is not an empty list. It does not check whether the
+  function is actually called with arguments, nor resolve declarations in
+  other files.
 rule:
   kind: function_declarator
-  has:
-    field: parameters
-    kind: parameter_list
-    pattern: '()'
+  all:
+    - has:
+        field: declarator
+        kind: identifier
+    - has:
+        field: parameters
+        kind: parameter_list
+        pattern: '()'
 metadata:
-  rule_modified_at: '2026-10-14'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-14'
+  rule_modified_at: '2026-11-15'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-11-15'
   created_at: '2026-10-14'
   source: 'MyGuard'
   modified_by: MyGuard
