@@ -1,10 +1,38 @@
 id: c-preprocessor-bare-feature-macro-if
 valid:
   - |-
+    #if defined(HAVE_LIBXML)
+    int libxml_enabled;
+    #endif
+  - |-
+    #ifdef ZTS
+    static int f(void);
+    #endif
+  - |-
+    #ifdef HAVE_STRUCT_TM_TM_GMTOFF
+    int x;
+    #endif
+  - |-
     #if defined(HAVE_FOO)
     int x;
     #endif
+  - |-
+    #if HAVE_FOO > 0
+    int x;
+    #endif
 invalid:
+  - |-
+    #if HAVE_LIBXML
+    int libxml_enabled;
+    #endif
+  - |-
+    #if ZTS
+    static int f(void);
+    #endif
+  - |-
+    #if HAVE_STRUCT_TM_TM_GMTOFF
+    int x;
+    #endif
   - |-
     #if HAVE_FOO
     int x;

@@ -2,22 +2,21 @@
 
 id: c-preprocessor-bare-feature-macro-if
 language: c
-severity: warning
-message: 'Use defined(MACRO) instead of a bare identifier in an if directive.'
+severity: 'off'
+message: >-
+  Deprecated rule ID; use c-preproc-if-bare-identifier. Bare identifier used as the whole
+  condition of a preprocessor if.
 note: >-
-  Matches only an if directive whose entire condition is a single identifier;
-  does not detect bare identifiers inside larger expressions or whether the
-  macro is defined.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-preproc-if-bare-identifier and do not emit this rule.
 rule:
-  all:
-    - kind: preproc_if
-    - has:
-        field: condition
-        kind: identifier
+  kind: preproc_if
+  has:
+    field: condition
+    kind: identifier
 metadata:
-  rule_modified_at: '2026-10-20'
-  ast_grep_tested_version: 0.51.0
-  validated_at: '2026-10-20'
+  deprecated_alias_of: c-preproc-if-bare-identifier
+  rule_modified_at: '2026-11-15'
   created_at: '2026-10-20'
   source: 'MyGuard'
   modified_by: MyGuard
