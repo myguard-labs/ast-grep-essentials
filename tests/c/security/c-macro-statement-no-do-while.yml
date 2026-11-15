@@ -3,5 +3,9 @@ valid:
   - >-
     #define pfree_sz(p, n) do { if (n) free(p); else efree_size(p, n); } while
     (0)
+  - >-
+    #define ISINT(val) do { for (p = val; *p; ++p) if (!apr_isdigit(*p)) return
+    0; } while (0)
 invalid:
   - '#define pfree_sz(p, n) if (n) free(p); else efree_size(p, n)'
+  - '#define ISINT(val) for (p = val; *p; ++p) if (!apr_isdigit(*p)) return 0'
