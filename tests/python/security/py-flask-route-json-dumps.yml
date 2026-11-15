@@ -1,0 +1,70 @@
+id: py-flask-route-json-dumps
+valid:
+- |-
+  def helper(x):
+      return json.dumps(x)
+- |-
+  @app.route("/x")
+  def view(x):
+      log.info(json.dumps(x))
+      return jsonify(x)
+- |-
+  @app.route("/x")
+  def view(x):
+      return Response(json.dumps(x), mimetype="application/json")
+- |-
+  @app.route("/x")
+  def view(x):
+      return jsonify(x)
+- |-
+  @functools.cache
+  def cached(x):
+      return json.dumps(x)
+- |-
+  @app.route("/x")
+  def view(x):
+      return json.loads(x)
+- |-
+  @app.route("/x")
+  def view(x):
+      return 200, json.dumps(x)
+- |-
+  @app.route("/x")
+  def view(x):
+      return json.dumps(x), 200, {"Content-Type": "application/json"}
+- |-
+  @app.route("/x")
+  def view(x):
+      return json.dumps(x), {"Content-Type": "application/json"}
+- |-
+  @app.route("/x")
+  def view(x):
+      return json.dumps(x), 200, headers
+invalid:
+- |-
+  @app.route("/x")
+  def view(x):
+      return json.dumps(x)
+- |-
+  @app.route("/x")
+  def view(x):
+      return json.dumps(x), 200
+- |-
+  @bp.get("/y")
+  def view(x):
+      return json.dumps(x)
+- |-
+  @login_required
+  @app.route("/x", methods=["POST"])
+  @limiter.limit("5/minute")
+  def view(x):
+      return json.dumps(x)
+
+- |-
+  @app.route("/x")
+  def view(x):
+      return (json.dumps(x), 200)
+- |-
+  @app.post("/x")
+  def view(x):
+      return json.dumps(x), HTTPStatus.CREATED
