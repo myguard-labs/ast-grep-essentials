@@ -1,0 +1,54 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-flask-route-json-dumps
+language: python
+severity: info
+message: >-
+  A Flask route returns json.dumps(...) directly. The response is sent as
+  text/html, so clients and proxies do not treat it as JSON and the body is
+  served with the wrong content type. Return jsonify(...) or build a Response
+  with mimetype="application/json".
+note: >-
+  Fires on a return statement whose value is a json.dumps call, or a tuple whose
+  first element is one such as return json.dumps(x), 200, inside a function
+  decorated with a route, get, post, put, delete or patch attribute call on any
+  receiver, including blueprints. A helper without a route decorator, an
+  audit-log json.dumps argument, Response(json.dumps(x), mimetype=...) and
+  jsonify(...) are not matched. A route that deliberately serves JSON text as
+  HTML, or whose app sets a JSON default content type elsewhere, is the routine
+  dismissal.
+rule:
+  kind: return_statement
+  any:
+    - has:
+        stopBy: neighbor
+        kind: call
+        pattern: json.dumps($$$ARGS)
+    - has:
+        stopBy: neighbor
+        kind: expression_list
+        has:
+          nthChild: 1
+          kind: call
+          pattern: json.dumps($$$ARGS)
+  inside:
+    stopBy:
+      kind: function_definition
+    kind: function_definition
+    inside:
+      kind: decorated_definition
+      has:
+        kind: decorator
+        has:
+          kind: call
+          has:
+            field: function
+            kind: attribute
+            has:
+              field: attribute
+              regex: '^(route|get|post|put|delete|patch)$'
+metadata:
+  created_at: '2026-11-15'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
