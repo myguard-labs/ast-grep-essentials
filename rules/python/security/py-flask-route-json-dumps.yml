@@ -4,17 +4,22 @@ id: py-flask-route-json-dumps
 language: python
 severity: info
 message: >-
-  A Flask route returns json.dumps(...) directly. The response is sent as
+  A Flask route returns json.dumps(...) directly. Flask sends a string body as
   text/html, so clients and proxies do not treat it as JSON and the body is
   served with the wrong content type. Return jsonify(...) or build a Response
   with mimetype="application/json".
 note: >-
-  Fires on a return statement whose value is a json.dumps call, or a tuple whose
-  first element is one such as return json.dumps(x), 200, inside a function
+  Fires on a return statement whose value is a json.dumps call, or a two-element
+  tuple of such a call and a status (an integer or an attribute such as
+  HTTPStatus.OK), with or without parentheses, inside a function
   decorated with a route, get, post, put, delete or patch attribute call on any
   receiver, including blueprints. A helper without a route decorator, an
   audit-log json.dumps argument, Response(json.dumps(x), mimetype=...) and
-  jsonify(...) are not matched. A route that deliberately serves JSON text as
+  jsonify(...) are not matched, nor is a tuple that carries headers, as in
+  return json.dumps(x), 200, {"Content-Type": "application/json"}. The
+  decorator check is name-based, so FastAPI-style @app.get handlers also
+  match; there the string is JSON-encoded a second time rather than served as
+  text/html, which is still a defect. A route that deliberately serves JSON text as
   HTML, or whose app sets a JSON default content type elsewhere, is the routine
   dismissal.
 rule:
@@ -26,11 +31,22 @@ rule:
         pattern: json.dumps($$$ARGS)
     - has:
         stopBy: neighbor
-        kind: expression_list
-        has:
-          nthChild: 1
-          kind: call
-          pattern: json.dumps($$$ARGS)
+        any:
+          - kind: expression_list
+          - kind: tuple
+        all:
+          - has:
+              nthChild: 1
+              kind: call
+              pattern: json.dumps($$$ARGS)
+          - has:
+              nthChild: 2
+              any:
+                - kind: integer
+                - kind: attribute
+          - not:
+              has:
+                nthChild: 3
   inside:
     stopBy:
       kind: function_definition

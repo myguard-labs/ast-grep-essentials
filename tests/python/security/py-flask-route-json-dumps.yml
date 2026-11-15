@@ -28,6 +28,18 @@ valid:
   @app.route("/x")
   def view(x):
       return 200, json.dumps(x)
+- |-
+  @app.route("/x")
+  def view(x):
+      return json.dumps(x), 200, {"Content-Type": "application/json"}
+- |-
+  @app.route("/x")
+  def view(x):
+      return json.dumps(x), {"Content-Type": "application/json"}
+- |-
+  @app.route("/x")
+  def view(x):
+      return json.dumps(x), 200, headers
 invalid:
 - |-
   @app.route("/x")
@@ -47,3 +59,12 @@ invalid:
   @limiter.limit("5/minute")
   def view(x):
       return json.dumps(x)
+
+- |-
+  @app.route("/x")
+  def view(x):
+      return (json.dumps(x), 200)
+- |-
+  @app.post("/x")
+  def view(x):
+      return json.dumps(x), HTTPStatus.CREATED
