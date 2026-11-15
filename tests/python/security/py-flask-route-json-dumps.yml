@@ -40,6 +40,17 @@ valid:
   @app.route("/x")
   def view(x):
       return json.dumps(x), 200, headers
+- |-
+  @app.route("/x")
+  def view(x):
+      def inner(y):
+          return json.dumps(y)
+      return jsonify(inner(x))
+- |-
+  @app.route("/x")
+  class View:
+      def get(self, x):
+          return json.dumps(x)
 invalid:
 - |-
   @app.route("/x")
@@ -68,3 +79,7 @@ invalid:
   @app.post("/x")
   def view(x):
       return json.dumps(x), HTTPStatus.CREATED
+- |-
+  @app.route("/a")
+  async def view(x):
+      return json.dumps(x)
