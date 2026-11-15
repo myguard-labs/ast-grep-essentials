@@ -1,0 +1,74 @@
+id: py-assert-after-tempdir-exit
+valid:
+- |-
+  with tempfile.TemporaryDirectory() as tmp:
+      run(tmp)
+      self.assertFalse(os.path.exists(tmp))
+- |-
+  with TemporaryDirectory() as tmp:
+      self.assertFalse(os.path.exists(tmp))
+- |-
+  with tempfile.TemporaryDirectory() as tmp:
+      run(tmp)
+  self.assertTrue(os.path.exists(tmp))
+- |-
+  with tempfile.TemporaryDirectory() as tmp:
+      run(tmp)
+  self.assertFalse(os.path.exists(other))
+- |-
+  with TemporaryDirectory() as tmp:
+      run(tmp)
+  self.assertFalse(os.path.exists(other))
+- |-
+  with open(path) as tmp:
+      run(tmp)
+  self.assertFalse(os.path.exists(tmp))
+- |-
+  self.assertFalse(os.path.exists(tmp))
+- |-
+  with tempfile.TemporaryDirectory() as tmp:
+      run(tmp)
+  tmp = make_new_dir()
+  self.assertFalse(os.path.exists(tmp))
+- |-
+  with tempfile.TemporaryDirectory() as tmp:
+      run(tmp)
+  tmp = make_new_dir()
+  log("x")
+  self.assertFalse(os.path.exists(tmp))
+- |-
+  with tempfile.TemporaryDirectory() as tmp:
+      run(tmp)
+  tmp = make_new_dir()
+  with open(path) as f:
+      f.read()
+  self.assertFalse(os.path.exists(tmp))
+- |-
+  with tempfile.TemporaryDirectory() as tmp:
+      run(tmp)
+  tmp += "/sub"
+  self.assertFalse(os.path.exists(tmp))
+invalid:
+- |-
+  with tempfile.TemporaryDirectory() as tmp:
+      run(tmp)
+  self.assertFalse(os.path.exists(tmp))
+- |-
+  with TemporaryDirectory() as tmp:
+      run(tmp)
+  self.assertFalse(os.path.exists(tmp))
+- |-
+  with tempfile.TemporaryDirectory() as tmp:
+      run(tmp)
+  log("done")
+  self.assertFalse(os.path.exists(tmp))
+- |-
+  with TemporaryDirectory() as tmp:
+      run(tmp)
+  x = 1
+  self.assertFalse(os.path.exists(tmp))
+- |-
+  with tempfile.TemporaryDirectory() as tmp:
+      run(tmp)
+  other = make_new_dir()
+  self.assertFalse(os.path.exists(tmp))
