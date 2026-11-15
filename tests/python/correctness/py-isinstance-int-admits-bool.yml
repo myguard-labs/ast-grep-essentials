@@ -47,6 +47,22 @@ valid:
 - |
   if not isinstance(n, str) and isinstance(n, int):
       raise TypeError(n)
+- |
+  def f(n):
+      if not isinstance(n, int):
+          raise TypeError(n)
+      if isinstance(n, bool):
+          raise TypeError(n)
+      return n
+- |
+  def outer(m):
+      if isinstance(m, bool):
+          raise TypeError(m)
+      def inner(m):
+          if not isinstance(m, int):
+              raise TypeError(m)
+          return m
+      return inner
 invalid:
 - |
   if not isinstance(n, int):
