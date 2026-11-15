@@ -4,21 +4,29 @@ id: wp-upload-mime-map-php-extension
 language: php
 severity: warning
 message: >-
-  This upload MIME map key includes php while mapping to a non-PHP type;
-  review whether PHP files can be uploaded.
+  This upload MIME map key includes an executable PHP extension; review
+  whether PHP files can be uploaded.
 note: >-
-  Matches only a literal single-quoted array key containing a php alternation
-  segment (e.g. txt|c|php) mapped to text/plain in a PHP array entry. Does not
-  resolve runtime values, WordPress allowlist usage, or whether the type is
-  applied to uploads.
+  Matches only a literal single-quoted array-entry key (key => value) whose
+  alternation segments (split on |) include an executable extension (php,
+  php3..php8, phtml, phar, pht) and whose value is a literal single-quoted
+  string, e.g. 'txt|c|php' => 'text/plain'. Does not match nonassociative
+  array elements, values, double-quoted keys, non-literal values, or any
+  non-extension key such as 'phpx'. Extension matching is case-sensitive
+  (e.g. 'PHP|txt' is not reported). The value is not checked, so a PHP
+  type such as 'application/x-httpd-php' is also reported. Does not resolve runtime values,
+  WordPress allowlist usage, or whether the type is applied to uploads.
 rule:
   kind: string
-  regex: '^''[^'']*php[^'']*''$'
+  regex: '^''(?:[^''|]*\|)*(?:php[3-8]?|phtml|phar|pht)(?:\|[^''|]*)*''$'
+  nthChild: 1
   inside:
-    kind: array_creation_expression
-    stopBy: end
+    kind: array_element_initializer
+    has:
+      kind: string
+      nthChild: 2
 metadata:
-  rule_modified_at: '2026-10-15'
+  rule_modified_at: '2026-11-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
   created_at: '2026-10-15'
