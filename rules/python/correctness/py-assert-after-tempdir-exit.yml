@@ -14,28 +14,41 @@ note: >-
   tempfile.TemporaryDirectory() or TemporaryDirectory() (as T). T must be the
   same name in both. A derived path (base = os.path.join(T, ...)), a name
   rebound between the with block and the assertion, other assertion forms and
-  a with statement in an enclosing block are not matched. An assertion that
+  a with statement in an enclosing block are not matched. Only the
+  argument-less call is matched: TemporaryDirectory(prefix=...), dir=... and
+  delete=... forms are not. An assertion that
   deliberately checks the cleanup itself is the routine dismissal.
 rule:
-  kind: expression_statement
-  has:
-    pattern: $S.assertFalse(os.path.exists($T))
-  follows:
-    stopBy: end
-    kind: with_statement
-    has:
-      kind: with_clause
-      has:
-        kind: with_item
+  all:
+    - kind: expression_statement
+    - has:
+        pattern: $S.assertFalse(os.path.exists($T))
+    - follows:
+        stopBy: end
+        kind: with_statement
         has:
-          kind: as_pattern
-          all:
-            - has:
-                kind: call
-                regex: '^(tempfile\.)?TemporaryDirectory\(\)$'
-            - has:
-                kind: as_pattern_target
-                pattern: $T
+          kind: with_clause
+          has:
+            kind: with_item
+            has:
+              kind: as_pattern
+              all:
+                - has:
+                    kind: call
+                    regex: '^(tempfile\.)?TemporaryDirectory\(\)$'
+                - has:
+                    kind: as_pattern_target
+                    pattern: $T
+    - not:
+        follows:
+          stopBy:
+            kind: with_statement
+          kind: expression_statement
+          has:
+            kind: assignment
+            has:
+              field: left
+              pattern: $T
 metadata:
   created_at: '2026-11-15'
   source: 'MyGuard'
