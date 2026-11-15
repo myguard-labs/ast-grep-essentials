@@ -1,5 +1,9 @@
 id: php-embedded-php-tag-in-string-literal
 valid:
   - '<?php $u = ''http://example.com/'' . $home; ?>'
+  - '<?php echo apply_filters( ''link_url'', ''http://example.com/?x=1'' ); ?>'
 invalid:
   - '<?php $u = ''http://example.com/<?php echo $home; ?>''; ?>'
+  - >-
+    <?php echo apply_filters( 'link_url', 'http://example.com/?x=<?php echo 1;
+    ?>' ); ?>
