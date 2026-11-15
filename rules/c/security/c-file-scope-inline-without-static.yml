@@ -2,30 +2,27 @@
 
 id: c-file-scope-inline-without-static
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  File-scope function definition uses inline without static or extern storage
-  class.
+  Deprecated rule ID; use c-inline-nonstatic-function-definition. File-scope
+  function definition uses inline without static or extern storage class.
 note: >-
-  Purely syntactic check on a single file. It matches top-level function
-  definitions whose declaration specifiers include inline and no static or
-  extern keyword; it does not resolve linkage, definitions in other
-  translation units, or toolchain behavior.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-inline-nonstatic-function-definition and do not emit
+  this rule.
 rule:
   kind: function_definition
-  inside:
-    kind: translation_unit
-    stopBy: end
-  has:
-    kind: storage_class_specifier
-    not:
-      regex: '^(static|extern)$'
-    stopBy: neighbor
-  regex: '^inline\b'
+  all:
+    - has:
+        kind: storage_class_specifier
+        regex: '^(inline|__inline|__inline__)$'
+    - not:
+        has:
+          kind: storage_class_specifier
+          regex: '^(static|extern)$'
 metadata:
-  rule_modified_at: '2026-10-16'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-16'
+  deprecated_alias_of: c-inline-nonstatic-function-definition
+  rule_modified_at: '2026-11-15'
   created_at: '2026-10-16'
   source: 'MyGuard'
   modified_by: MyGuard

@@ -1,5 +1,21 @@
 id: c-file-scope-inline-without-static
 valid:
-  - 'static inline int convert_cp(int x) { return x; }'
+  - 'static inline int f(void) { return 1; }'
+  - 'inline static int f(void) { return 1; }'
+  - 'static __inline int f(void) { return 1; }'
+  - 'extern inline int f(void) { return 1; }'
+  - 'int f(void) { return 1; }'
+  - 'inline int f(void);'
+  - 'static inline int helper(int x) { return x; }'
 invalid:
-  - 'inline int convert_cp(int x) { return x; }'
+  - 'inline int f(void) { return 1; }'
+  - '__inline int f(void) { return 1; }'
+  - '__inline__ int f(void) { return 1; }'
+  - 'inline void *get_ls_cache(void) { return 0; }'
+  - 'inline struct s f(void) { struct s v; return v; }'
+  - 'const inline int f(void) { return 1; }'
+  - 'inline int f(int x, ...) { return 1; }'
+  - |-
+    #ifdef X
+    inline int f(void) { return 1; }
+    #endif

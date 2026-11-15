@@ -2,32 +2,28 @@
 
 id: c-bare-inline-external-linkage
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  Function definition uses bare inline without static or extern; verify an
-  external definition exists elsewhere.
+  Deprecated rule ID; use c-inline-nonstatic-function-definition. Function
+  definition uses bare inline without static or extern; verify an external
+  definition exists elsewhere.
 note: >-
-  Syntactic check only. Matches a function definition whose specifiers include
-  inline and lack static or extern; it cannot see whether an external
-  definition exists in another translation unit.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-inline-nonstatic-function-definition and do not emit
+  this rule.
 rule:
   kind: function_definition
   all:
     - has:
         kind: storage_class_specifier
-        regex: '^inline$'
+        regex: '^(inline|__inline|__inline__)$'
     - not:
         has:
           kind: storage_class_specifier
-          regex: '^static$'
-    - not:
-        has:
-          kind: storage_class_specifier
-          regex: '^extern$'
+          regex: '^(static|extern)$'
 metadata:
-  rule_modified_at: '2026-10-15'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-15'
+  deprecated_alias_of: c-inline-nonstatic-function-definition
+  rule_modified_at: '2026-11-15'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard

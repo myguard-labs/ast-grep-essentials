@@ -2,30 +2,28 @@
 
 id: c-non-static-inline-definition
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  Top-level inline function definition without static or extern may emit no
-  external symbol.
+  Deprecated rule ID; use c-inline-nonstatic-function-definition. Top-level
+  inline function definition without static or extern may emit no external
+  symbol.
 note: >-
-  Matches only the literal syntax of a top-level function definition whose
-  declaration specifiers contain the inline keyword and contain neither static
-  nor extern. It does not check headers, linkage across files, or whether an
-  out-of-line definition exists elsewhere.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-inline-nonstatic-function-definition and do not emit
+  this rule.
 rule:
+  kind: function_definition
   all:
-    - kind: function_definition
-    - pattern: 'inline $TYPE $NAME($$$PARAMS) $$$BODY'
+    - has:
+        kind: storage_class_specifier
+        regex: '^(inline|__inline|__inline__)$'
     - not:
-        pattern: 'static $$$REST'
-    - not:
-        pattern: 'extern $$$REST'
-    - inside:
-        kind: translation_unit
-        stopBy: end
+        has:
+          kind: storage_class_specifier
+          regex: '^(static|extern)$'
 metadata:
-  rule_modified_at: '2026-10-15'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-15'
+  deprecated_alias_of: c-inline-nonstatic-function-definition
+  rule_modified_at: '2026-11-15'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard
