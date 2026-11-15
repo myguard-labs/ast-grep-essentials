@@ -2,23 +2,23 @@
 
 id: c-macro-statement-no-do-while
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  Function-like macro body is a bare if/else statement not wrapped in do { }
+  Deprecated rule ID; use c-multistmt-macro-without-do-while. Function-like
+  macro body starts with a bare for/if/while statement; wrap it in do { ... }
   while (0).
 note: >-
-  Syntactic check only. It flags function-like preprocessor macros whose
-  replacement text begins with a bare if statement; it does not verify the
-  macro is used in statement context or that the body is multi-statement.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-multistmt-macro-without-do-while and do not emit this
+  rule.
 rule:
   kind: preproc_function_def
   has:
-    field: value
-    regex: '^\s*if\b'
+    kind: preproc_arg
+    regex: '^\s*(for|if|while)\b'
 metadata:
-  rule_modified_at: '2026-10-16'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-16'
+  deprecated_alias_of: c-multistmt-macro-without-do-while
+  rule_modified_at: '2026-11-15'
   created_at: '2026-10-16'
   source: 'MyGuard'
   modified_by: MyGuard
