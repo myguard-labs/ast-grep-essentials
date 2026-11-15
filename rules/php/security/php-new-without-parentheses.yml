@@ -6,13 +6,18 @@ severity: warning
 message: Add explicit parentheses to this new expression.
 note: >-
   Matches a new expression whose class name is a bare name with no argument
-  list in the literal syntax; does not resolve class identity or runtime
+  list in the literal syntax, including an anonymous class without one; does not resolve class identity or runtime
   behavior.
 rule:
   kind: object_creation_expression
   not:
-    has:
-      kind: arguments
+    any:
+      - has:
+          kind: arguments
+      - has:
+          kind: anonymous_class
+          has:
+            kind: arguments
 metadata:
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
