@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: swift-ats-allows-arbitrary-loads
+language: swift
+severity: warning
+message: >-
+  NSAllowsArbitraryLoads set to true disables App Transport Security for all connections; remove it or use scoped exceptions.
+note: >-
+  [CWE-319]: Cleartext Transmission of Sensitive Information
+  [OWASP A02:2021]: Cryptographic Failures
+  Matches a dictionary literal entry with the key NSAllowsArbitraryLoads and value true; Info.plist files themselves are not Swift and are not scanned.
+rule:
+  kind: line_string_literal
+  regex: '^"NSAllowsArbitraryLoads"$'
+  inside:
+    kind: dictionary_literal
+  precedes:
+    kind: boolean_literal
+    regex: '^true$'
+    stopBy:
+      regex: '^,$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-319'
+  owasp: 'A04:2025|A02:2021'
+  category: 'security'
