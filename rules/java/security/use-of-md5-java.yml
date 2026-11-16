@@ -43,7 +43,15 @@ rule:
                     kind: program
                     has:
                       kind: import_declaration
-                      pattern: 'import java.security.MessageDigest;'
+                      all:
+                        - has:
+                            matches: java-imported-name
+                            regex: '^java\s*\.\s*security\s*\.\s*MessageDigest$'
+                        - not:
+                            has:
+                              kind: asterisk
+                        - not:
+                            regex: '^import\s+static\s'
 metadata:
   rule_modified_at: '2026-10-06'
   ast_grep_tested_version: 0.45.3
