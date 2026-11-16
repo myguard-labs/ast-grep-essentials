@@ -1,0 +1,94 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: process-start-dynamic-arguments-csharp
+language: csharp
+severity: warning
+message: >-
+  Process arguments are built with string concatenation, interpolation or
+  string.Format. Untrusted input can inject extra arguments or shell commands.
+note: >-
+  Matches Process.Start(file, args) and new ProcessStartInfo(file, args) where
+  args, and an Arguments initializer inside new ProcessStartInfo { ... } whose
+  value, is an interpolated string with an interpolation, a + concatenation
+  containing a non-literal operand, or a string.Format call. Literal-only
+  arguments are not flagged. This is a single-file syntactic check; it does
+  not follow arguments assigned in an earlier statement, assignments to
+  psi.Arguments outside an initializer, or sanitization of the values.
+utils:
+  dynamic-arg-text:
+    any:
+      - kind: interpolated_string_expression
+        has:
+          kind: interpolation
+      - kind: binary_expression
+        all:
+          - has:
+              field: operator
+              regex: '^\+$'
+          - has:
+              stopBy: end
+              any:
+                - kind: identifier
+                - kind: member_access_expression
+                - kind: invocation_expression
+                - kind: element_access_expression
+      - kind: invocation_expression
+        has:
+          field: function
+          regex: '^(?:string|String|System\.String)\.Format$'
+rule:
+  any:
+    - kind: invocation_expression
+      all:
+        - has:
+            field: function
+            regex: '^(?:System\.Diagnostics\.)?Process\.Start$'
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              kind: argument
+              nthChild: 2
+              has:
+                matches: dynamic-arg-text
+    - kind: object_creation_expression
+      all:
+        - has:
+            field: type
+            regex: '^(?:System\.Diagnostics\.)?ProcessStartInfo$'
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              kind: argument
+              nthChild: 2
+              has:
+                matches: dynamic-arg-text
+    - kind: assignment_expression
+      all:
+        - has:
+            field: left
+            regex: '^Arguments$'
+        - has:
+            field: right
+            matches: dynamic-arg-text
+        - inside:
+            kind: initializer_expression
+            inside:
+              kind: object_creation_expression
+              has:
+                field: type
+                regex: '^(?:System\.Diagnostics\.)?ProcessStartInfo$'
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-78'
+  owasp: 'A05:2025|A03:2021'
+  category: 'security'
+  subcategory: 'command-injection'
+  references: 'https://cheatsheetseries.owasp.org/cheatsheets/OS_Command_Injection_Defense_Cheat_Sheet.html|https://cwe.mitre.org/data/definitions/78.html'

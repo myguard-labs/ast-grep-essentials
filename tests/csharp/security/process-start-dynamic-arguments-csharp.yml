@@ -1,0 +1,50 @@
+id: process-start-dynamic-arguments-csharp
+valid:
+  - |
+    class Example {
+        void Run() {
+            Process.Start("notepad.exe", "readme.txt");
+            Process.Start("cmd", "/c " + "dir");
+            Process.Start(path);
+        }
+    }
+  - |
+    class Example {
+        void Run(string path) {
+            var psi = new ProcessStartInfo("git", "status");
+            var p2 = new ProcessStartInfo(path);
+            var p3 = new ProcessStartInfo { FileName = path, Arguments = "--version" };
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var o = new Options { Arguments = "a " + x };
+            Log("a " + x, "b " + x);
+        }
+    }
+invalid:
+  - |
+    class Example {
+        void Run(string x) {
+            Process.Start("cmd", "/c ping " + x);
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo("tool", $"--input {x}");
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo { FileName = "cmd", Arguments = "/c echo " + x };
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            System.Diagnostics.Process.Start("sh", string.Format("-c '{0}'", x));
+        }
+    }
