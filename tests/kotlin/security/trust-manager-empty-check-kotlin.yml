@@ -19,6 +19,10 @@ valid:
         override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { /* a */ validate(chain) /* b */ }
     }
   - |
+    class Wrap(val delegate: X509TrustManager) : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) = delegate.checkServerTrusted(chain, authType)
+    }
+  - |
     fun checkServer(chain: Array<X509Certificate>) {}
 invalid:
   - |
@@ -58,4 +62,8 @@ invalid:
             // 2
             /* 3 */
         }
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) = Unit
     }
