@@ -1,10 +1,20 @@
 id: c-nul-terminator-index-sizeof
 snapshots:
-  ? |-
-    char buf[16];
-    buf[sizeof(buf)] = '\0';
-  : labels:
+  "char buf[16];\nbuf[sizeof(buf)] = '\\0';":
+    labels:
     - source: buf[sizeof(buf)] = '\0'
       style: primary
       start: 14
       end: 37
+  "void f(void) { char buf[16]; buf[ sizeof( buf ) ] = '\\0'; }":
+    labels:
+    - source: buf[ sizeof( buf ) ] = '\0'
+      style: primary
+      start: 29
+      end: 56
+  "void f(void) { char buf[16]; buf[sizeof(buf)] = 0; }":
+    labels:
+    - source: buf[sizeof(buf)] = 0
+      style: primary
+      start: 29
+      end: 49

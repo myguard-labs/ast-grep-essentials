@@ -1,5 +1,10 @@
 id: c-char-array-const-index-oob
 valid:
   - 'void f(void) { char buf[5]; buf[4] = ''\0''; }'
+  - 'void f(void) { char buf[4]; buf[3] = ''\0''; }'
+  - 'void f(void) { char buf[8]; buf[4] = ''\0''; }'
+  - 'void f(void) { { char buf[4]; } buf[4] = ''\0''; }'
 invalid:
   - 'void f(void) { char buf[4]; buf[4] = ''\0''; }'
+  - 'void f(void) { char buf[4]; int x = 1; buf[4] = ''\0''; }'
+  - 'void f(void) { char buf[4]; if (x) { buf[4] = ''\0''; } }'

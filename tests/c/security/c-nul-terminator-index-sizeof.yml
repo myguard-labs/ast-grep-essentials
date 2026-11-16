@@ -3,7 +3,12 @@ valid:
   - |-
     char buf[16];
     buf[sizeof(buf) - 1] = '\0';
+  - 'void f(void) { char buf[16]; buf[sizeof(buf) - 1] = 0; }'
+  - 'void f(void) { char a[16]; char b[16]; a[sizeof(b)] = ''\0''; }'
+  - 'void f(void) { char buf[16]; x = buf[sizeof(buf)]; }'
 invalid:
   - |-
     char buf[16];
     buf[sizeof(buf)] = '\0';
+  - 'void f(void) { char buf[16]; buf[sizeof(buf)] = 0; }'
+  - 'void f(void) { char buf[16]; buf[ sizeof( buf ) ] = ''\0''; }'
