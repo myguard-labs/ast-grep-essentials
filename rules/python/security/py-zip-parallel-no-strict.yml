@@ -1,7 +1,46 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
 id: py-zip-parallel-no-strict
 language: python
-severity: warning
-message: A zip() call over two sequences without strict=True, which silently truncates mismatched parallel lists.
-note: The defect only matters when the sequences come from a caller and can differ in length. The commit rejects mismatched parallel multimodal fields before handoff. Proving the input is caller-controlled needs dataflow, so this is a taint claim.
+severity: 'off'
+message: >-
+  Deprecated rule ID; use py-zip-without-strict. A zip() call over parallel
+  sequences without strict=True silently truncates mismatched lengths.
+note: >-
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use py-zip-without-strict and do not emit this rule.
 rule:
-  pattern: zip($A, $B)
+  all:
+    - kind: call
+    - has:
+        field: function
+        kind: identifier
+        regex: ^zip$
+    - has:
+        field: arguments
+        any:
+          - has:
+              nthChild:
+                position: 2
+                ofRule:
+                  not:
+                    any:
+                      - kind: keyword_argument
+                      - kind: dictionary_splat
+                      - kind: comment
+          - has:
+              kind: list_splat
+    - not:
+        has:
+          field: arguments
+          has:
+            kind: keyword_argument
+            has:
+              field: name
+              regex: ^strict$
+metadata:
+  deprecated_alias_of: py-zip-without-strict
+  created_at: '2026-09-05'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
