@@ -1,0 +1,27 @@
+id: py-hardcoded-cipher-key
+valid:
+  - |
+    cipher = AES.new(key, AES.MODE_GCM)
+  - |
+    cipher = AES.new(os.environ["KEY"].encode(), AES.MODE_GCM, nonce=nonce)
+  - |
+    cipher = AES.new(get_random_bytes(32), AES.MODE_GCM)
+  - |
+    f = Fernet(Fernet.generate_key())
+  - |
+    cipher = AES.new(f"{prefix}0123456789abcdef", AES.MODE_ECB)
+  - |
+    obj = Widget.new(b"0123456789abcdef")
+  - |
+    cipher = AES.new(key=load_key(), mode=AES.MODE_GCM)
+invalid:
+  - |
+    cipher = AES.new(b"0123456789abcdef", AES.MODE_GCM)
+  - |
+    cipher = AES.new("0123456789abcdef".encode(), AES.MODE_CBC, iv)
+  - |
+    f = Fernet(b"c2VjcmV0c2VjcmV0c2VjcmV0c2VjcmV0c2VjcmV0MTI=")
+  - |
+    cipher = AES.new(key=b"0123456789abcdef", mode=AES.MODE_GCM)
+  - |
+    aead = ChaCha20Poly1305(b"0123456789abcdef0123456789abcdef")
