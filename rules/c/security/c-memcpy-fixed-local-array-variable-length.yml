@@ -108,3 +108,5 @@ metadata:
     - "FN: global array destination used inside a function 'char g[4]; void f(size_t n){ memcpy(g, src, n); }' is not matched"
     - "FN: member destination 'memcpy(s->buf, src, n)' with unchecked n is not matched (rule requires identifier destination)"
     - "FP: strictly smaller guard 'if (n < sizeof(buf)) memcpy(buf, src, n);' and a doubly parenthesised guard 'if ((n <= sizeof(buf)))' still match (only <= / >= with a single parenthesis level are recognised)"
+    - "FP: && guard unrolled two levels 'if (n <= sizeof(buf) && a && b && c) memcpy(buf, src, n);' still matches (the guard operand is only searched two && levels deep)"
+    - "FP: cast guard 'if ((size_t)n <= sizeof(buf)) memcpy(buf, src, n);' still matches (a cast on the length is not recognised)"
