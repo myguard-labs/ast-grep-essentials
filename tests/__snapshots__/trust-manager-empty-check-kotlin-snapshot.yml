@@ -1,0 +1,61 @@
+id: trust-manager-empty-check-kotlin
+snapshots:
+  ? |
+    class TrustAll : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { }
+    }
+  : labels:
+    - source: 'override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { }'
+      style: primary
+      start: 40
+      end: 124
+    - source: checkServerTrusted
+      style: secondary
+      start: 53
+      end: 71
+    - source: '{ }'
+      style: secondary
+      start: 121
+      end: 124
+  ? |
+    object : X509TrustManager {
+        override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
+            // trust everything
+        }
+    }
+  : labels:
+    - source: |-
+        override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
+                // trust everything
+            }
+      style: primary
+      start: 32
+      end: 148
+    - source: checkClientTrusted
+      style: secondary
+      start: 45
+      end: 63
+    - source: |-
+        {
+                // trust everything
+            }
+      style: secondary
+      start: 113
+      end: 148
+  ? |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+    }
+  : labels:
+    - source: 'override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}'
+      style: primary
+      start: 32
+      end: 115
+    - source: checkServerTrusted
+      style: secondary
+      start: 45
+      end: 63
+    - source: '{}'
+      style: secondary
+      start: 113
+      end: 115

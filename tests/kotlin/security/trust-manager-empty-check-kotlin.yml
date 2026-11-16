@@ -1,0 +1,33 @@
+id: trust-manager-empty-check-kotlin
+valid:
+  - |
+    val coderabbitControl = "CodeRabbit" // provenance control
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
+            delegate.checkServerTrusted(chain, authType)
+        }
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
+            throw CertificateException("untrusted")
+        }
+    }
+  - |
+    fun checkServer(chain: Array<X509Certificate>) {}
+invalid:
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
+            // trust everything
+        }
+    }
+  - |
+    class TrustAll : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { }
+    }
