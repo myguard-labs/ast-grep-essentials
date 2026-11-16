@@ -19,7 +19,9 @@ note: >-
   bound to one in the enclosing block, and on the lambda parameter of
   `Using(new ObjectInputStream(...)) { ... }`. An anonymous subclass with a
   body, which is the usual place for a resolveClass allow-list, and other
-  stream types are not reported. The rule cannot tell whether the stream
+  stream types are not reported. A fully qualified or `_root_` qualified
+  `java.io.ObjectInputStream` is reported like the short name; an alias
+  import such as `import java.io.{ObjectInputStream => OIS}` is a known miss. The rule cannot tell whether the stream
   carries untrusted bytes, so review each hit for the data source.
 utils:
   plain-ois-instance:

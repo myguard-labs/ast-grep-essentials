@@ -58,3 +58,18 @@ invalid:
       def bad(in: java.io.InputStream) =
         Using(/* untrusted stream */ new ObjectInputStream(in)) { o => o.readObject() }
     }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) = new java.io.ObjectInputStream(in).readObject()
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) = new _root_.java.io.ObjectInputStream(in).readObject()
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) = {
+        val stream = new _root_.java.io.ObjectInputStream(in)
+        stream.readObject()
+      }
+    }

@@ -19,7 +19,10 @@ note: >-
       - https://owasp.org/Top10/A03_2021-Injection
   Matches `s"..."`, `f"..."` or `raw"..."` with an interpolation, or a `+`
   concatenation with a non-literal operand, run through `.!` or `.!!`, both
-  directly and inside `Process(...)`. A literal command and an argument Seq
+  directly and inside `Process(...)`, including the qualified spellings
+  `process.Process`, `sys.process.Process`, `scala.sys.process.Process` and
+  `_root_.scala.sys.process.Process`. An alias import such as
+  `import scala.sys.process.{Process => P}` is a known miss. A literal command and an argument Seq
   are not reported. A plain identifier receiver is not reported because its
   origin cannot be told from syntax alone.
 utils:
@@ -62,8 +65,11 @@ rule:
             all:
               - has:
                   field: function
-                  kind: identifier
-                  regex: ^Process$
+                  any:
+                    - kind: identifier
+                      regex: ^Process$
+                    - kind: field_expression
+                      regex: ^(_root_\.)?((scala\.)?sys\.)?process\.Process$
               - has:
                   field: arguments
                   kind: arguments
