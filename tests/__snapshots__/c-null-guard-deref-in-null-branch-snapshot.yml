@@ -1,12 +1,52 @@
 id: c-null-guard-deref-in-null-branch
 snapshots:
-  void f(int *found) { if (!found) { *found = 0; } }:
+  "int f(int *p) { if (!p) { return *p; } return 0; }":
+    labels:
+    - source: if (!p) { return *p; }
+      style: primary
+      start: 16
+      end: 38
+    - source: "*p"
+      style: secondary
+      start: 33
+      end: 35
+  "void f(int *found) { if (!found) { *found = 0; } }":
     labels:
     - source: if (!found) { *found = 0; }
       style: primary
       start: 21
       end: 48
-    - source: '*found'
+    - source: "*found"
       style: secondary
       start: 35
+      end: 41
+  "void f(int *p) { if (!p) { *p += 1; } }":
+    labels:
+    - source: if (!p) { *p += 1; }
+      style: primary
+      start: 17
+      end: 37
+    - source: "*p"
+      style: secondary
+      start: 27
+      end: 29
+  "void f(int *p) { if (!p) { *p = 0; } else { g(); } }":
+    labels:
+    - source: if (!p) { *p = 0; } else { g(); }
+      style: primary
+      start: 17
+      end: 50
+    - source: "*p"
+      style: secondary
+      start: 27
+      end: 29
+  "void f(int *p) { if (!p) { log_it(); g(*p); } }":
+    labels:
+    - source: if (!p) { log_it(); g(*p); }
+      style: primary
+      start: 17
+      end: 45
+    - source: "*p"
+      style: secondary
+      start: 39
       end: 41

@@ -1,5 +1,18 @@
 id: c-null-check-tests-input-not-result
 valid:
   - 'c.name = zend_strndup(name, n); if (c.name == NULL) { return; }'
+  - |-
+    void f(void *p, size_t n) { q = realloc(p, n); if (q == NULL) { return; } }
+  - |-
+    void f(char *src) { if (src == NULL) { return; } d = strdup(src); }
+  - |-
+    void f(size_t n) { p = xmalloc(n); if (p == NULL) return; }
+
 invalid:
   - 'c.name = zend_strndup(name, n); if (name == NULL) { return; }'
+  - |-
+    void f(void *p, size_t n) { q = realloc(p, n); if (p == NULL) { return; } }
+  - |-
+    void f(char *name, size_t n) { c = strndup(name, n); if (name == NULL) { return; } }
+  - |-
+    void f(void *ctx, void *src, size_t n) { d = pool_alloc(ctx, src, n); if (src == NULL) { return; } }

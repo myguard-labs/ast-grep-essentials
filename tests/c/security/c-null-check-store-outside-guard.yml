@@ -6,6 +6,13 @@ valid:
         ctx->provctx = p;
         ctx->pbe_nid = -1;
     }
+  - |-
+    void f(struct s *ctx) { if (ctx == NULL) { return; } ctx->a = 1; ctx->b = 2; }
+  - |-
+    void f(struct s *a, struct s *b) { if (a != NULL) { a->x = 1; } if (b != NULL) { b->y = 1; } }
+  - |-
+    void f(struct s *ctx) { if (ctx != NULL) { ctx->a = 1; } g(); }
+
 invalid:
   - |-
     struct s *ctx = alloc();
@@ -13,3 +20,9 @@ invalid:
         ctx->provctx = p;
     }
     ctx->pbe_nid = -1;
+  - |-
+    void f(void) { struct s *ctx = alloc(); if (ctx != NULL) { ctx->a = 1; } ctx->b = 2; }
+  - |-
+    void f(struct s *p) { if (p != NULL) { p->a = 1; } else { log_it(); } p->x = 0; }
+  - |-
+    void f(struct s *ctx) { if (ctx != NULL && ctx->ready) { run(); } ctx->b = 1; }

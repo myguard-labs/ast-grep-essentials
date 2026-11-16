@@ -1,5 +1,35 @@
 id: c-null-branch-member-access
 snapshots:
+  "struct s { int id; };\nint f(struct s *p) { if (!p) { log_it(); return p->id; } return 0; }":
+    labels:
+    - source: if (!p) { log_it(); return p->id; }
+      style: primary
+      start: 43
+      end: 78
+    - source: p->id
+      style: secondary
+      start: 70
+      end: 75
+  "struct s { int id; };\nint f(struct s *p) { int x; if (!p) { x = p->id; } return x; }":
+    labels:
+    - source: if (!p) { x = p->id; }
+      style: primary
+      start: 50
+      end: 72
+    - source: p->id
+      style: secondary
+      start: 64
+      end: 69
+  "struct s { int id; };\nvoid f(struct s *p) { if (!p) g(p->id); }":
+    labels:
+    - source: if (!p) g(p->id);
+      style: primary
+      start: 44
+      end: 61
+    - source: p->id
+      style: secondary
+      start: 54
+      end: 59
   "struct s { int id; };\nvoid f(struct s *p) { if (!p) { g(p->id); } }":
     labels:
     - source: if (!p) { g(p->id); }
@@ -10,3 +40,13 @@ snapshots:
       style: secondary
       start: 56
       end: 61
+  "struct s { int id; };\nvoid f(struct s *p, int c) { if (!p) { if (c) { g(p->id); } } }":
+    labels:
+    - source: if (!p) { if (c) { g(p->id); } }
+      style: primary
+      start: 51
+      end: 83
+    - source: p->id
+      style: secondary
+      start: 72
+      end: 77

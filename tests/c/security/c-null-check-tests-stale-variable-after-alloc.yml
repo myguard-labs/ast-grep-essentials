@@ -1,5 +1,18 @@
 id: c-null-check-tests-stale-variable-after-alloc
 valid:
   - "a = malloc(8);\nb = malloc(8);\nif (b == NULL) {\n\treturn -1;\n}"
+  - |-
+    int f(size_t n) { p = malloc(n); if (p == NULL) return -1; return 0; }
+  - |-
+    int f(size_t n) { p = malloc(n); if (!p) return -1; return 0; }
+  - |-
+    int f(size_t n) { p = malloc(n); if (p != NULL) { use(p); } return 0; }
+
 invalid:
   - "a = malloc(8);\nb = malloc(8);\nif (a == NULL) {\n\treturn -1;\n}"
+  - |-
+    int f(size_t n) { p = malloc(n); if (q == NULL) return -1; return 0; }
+  - |-
+    int f(struct s *s, size_t n) { s->buf = malloc(n); if (s->name == NULL) { return -1; } return 0; }
+  - |-
+    int f(size_t n) { log_it(); p = malloc(n); if (old == NULL) { return -1; } return 0; }

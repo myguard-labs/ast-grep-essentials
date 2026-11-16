@@ -1,10 +1,26 @@
 id: c-null-test-inverted-deref-ternary
 snapshots:
-  ? |-
-    struct o { int p; };
-    int f(struct o *s) { return (s == NULL) ? s->p : 0; }
-  : labels:
-    - source: '(s == NULL) ? s->p : 0'
+  "struct o { int p; int len; };\nint f(struct o *s) { return (s == NULL) ? s->len : -1; }":
+    labels:
+    - source: "(s == NULL) ? s->len : -1"
+      style: primary
+      start: 58
+      end: 83
+  "struct o { int p; };\nint f(struct o *s) { int v = (s == NULL) ? s->p : g(); return v; }":
+    labels:
+    - source: "(s == NULL) ? s->p : g()"
+      style: primary
+      start: 50
+      end: 74
+  "struct o { int p; };\nint f(struct o *s) { return ((s == NULL) ? s->p : 0) + 1; }":
+    labels:
+    - source: "(s == NULL) ? s->p : 0"
+      style: primary
+      start: 50
+      end: 72
+  "struct o { int p; };\nint f(struct o *s) { return (s == NULL) ? s->p : 0; }":
+    labels:
+    - source: "(s == NULL) ? s->p : 0"
       style: primary
       start: 49
       end: 71

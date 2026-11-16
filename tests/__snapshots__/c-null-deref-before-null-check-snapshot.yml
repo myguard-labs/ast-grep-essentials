@@ -1,5 +1,27 @@
 id: c-null-deref-before-null-check
 snapshots:
+  "void f(struct s *key) { n = key->len; if (key && key->len > 0) { g(); } }":
+    labels:
+    - source: n = key->len;
+      style: primary
+      start: 24
+      end: 37
+    - source: key->len
+      style: secondary
+      start: 28
+      end: 36
+    - source: key && key->len > 0
+      style: secondary
+      start: 42
+      end: 61
+    - source: key && key->len > 0
+      style: secondary
+      start: 42
+      end: 61
+    - source: if (key && key->len > 0) { g(); }
+      style: secondary
+      start: 38
+      end: 71
   "void f(struct s *key, const char **out) {\n    *out = key->val;\n    if (key && key->val[0] == '\\0') { *out = 0; }\n}":
     labels:
     - source: "*out = key->val;"
@@ -22,3 +44,47 @@ snapshots:
       style: secondary
       start: 67
       end: 112
+  "void f(struct s *p) { g(p->v); if (p && p->w) { h(); } }":
+    labels:
+    - source: g(p->v);
+      style: primary
+      start: 22
+      end: 30
+    - source: p->v
+      style: secondary
+      start: 24
+      end: 28
+    - source: p && p->w
+      style: secondary
+      start: 35
+      end: 44
+    - source: p && p->w
+      style: secondary
+      start: 35
+      end: 44
+    - source: if (p && p->w) { h(); }
+      style: secondary
+      start: 31
+      end: 54
+  "void f(struct s *p) { p->hits++; if (p && p->ok) { h(); } }":
+    labels:
+    - source: p->hits++;
+      style: primary
+      start: 22
+      end: 32
+    - source: p->hits
+      style: secondary
+      start: 22
+      end: 29
+    - source: p && p->ok
+      style: secondary
+      start: 37
+      end: 47
+    - source: p && p->ok
+      style: secondary
+      start: 37
+      end: 47
+    - source: if (p && p->ok) { h(); }
+      style: secondary
+      start: 33
+      end: 57

@@ -1,5 +1,20 @@
 id: c-null-branch-deref-member-write
 valid:
   - 'void f(struct s *p) { if (p) { p->key = 0; } }'
+  - |-
+    void f(struct s *p) { if (!p) { return; } p->key = 0; }
+  - |-
+    void f(struct s *p, struct s *q) { if (!p || !q) { return; } p->key = 0; q->key = 1; }
+  - |-
+    void f(struct s *p) { if (p != NULL) { p->key = 0; } }
+  - |-
+    void f(struct s *p) { struct s local; if (!p) { local.key = 0; } }
+
 invalid:
   - 'void f(struct s *p) { if (!p) { p->key = 0; } }'
+  - |-
+    void f(struct s *p) { if (!p) p->key = 0; }
+  - |-
+    void f(struct s *p) { if (!p) { log_it(); p->count = 1; } }
+  - |-
+    void f(struct s *p) { if (!p) { p->key = 0; } else { g(); } }
