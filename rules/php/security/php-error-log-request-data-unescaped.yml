@@ -10,11 +10,15 @@ message: >-
   (for example with json_encode or str_replace) before logging it.
 note: >-
   Fires on an error_log call whose arguments, including double-quoted string
-  interpolation, read $_GET, $_POST, $_REQUEST or $_COOKIE. A call that also
-  applies str_replace, preg_replace, json_encode, urlencode, rawurlencode,
-  addcslashes, var_export, filter_var, ctype_*, sanitize_*, esc_*, intval,
-  absint, strlen, count, a hash or encoding function, or a numeric or boolean
-  cast anywhere in its arguments is not matched. A value copied into a variable
+  interpolation, read $_GET, $_POST, $_REQUEST or $_COOKIE. The finding is
+  suppressed only when the request-data value itself is wrapped in str_replace,
+  preg_replace, json_encode, urlencode, rawurlencode, addcslashes, var_export,
+  filter_var, ctype_*, sanitize_*, esc_*, intval, absint, strlen, count, a hash
+  or encoding function, or a numeric or boolean cast; a sanitizer on another
+  argument does not suppress it. Any str_replace or preg_replace call counts as
+  sanitizing, whatever it replaces (a heuristic that accepts some false
+  negatives). $_SERVER keys such as HTTP_USER_AGENT or REQUEST_URI are excluded
+  deliberately (precision over recall). A value copied into a variable
   first is not seen. A log sink that already escapes line breaks is the
   routine dismissal.
 

@@ -12,9 +12,10 @@ note: >-
   Fires on a trace, debug, info, warn, error or fatal call on a receiver named
   log, logger, LOG or LOGGER whose arguments, including string concatenation,
   contain a getParameter, getHeader or getQueryString call on a receiver named
-  request or req. A call that also applies replace, replaceAll, encode,
-  escapeJava, escapeHtml, escapeHtml4, parseInt, parseLong or length anywhere
-  in its arguments is not matched. A value copied into a variable first, or a
+  request or req. The finding is suppressed only when the request-data
+  call itself is wrapped in a call to replace, replaceAll, encode, escapeJava,
+  escapeHtml, escapeHtml4, parseInt, parseLong or length; a sanitizer on another
+  argument does not suppress it. Any replace or replaceAll call counts as sanitizing, whatever it replaces (a heuristic that accepts some false negatives). A value copied into a variable first, or a
   logger held under another name, is not seen. A sink that already escapes line
   breaks is the routine dismissal.
 

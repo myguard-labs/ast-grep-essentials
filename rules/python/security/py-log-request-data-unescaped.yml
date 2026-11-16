@@ -14,9 +14,10 @@ note: >-
   arguments, including f-string interpolations, read request.args,
   request.form, request.values, request.headers, request.cookies, request.data,
   request.json (Flask) or request.GET, request.POST, request.META,
-  request.COOKIES, request.body (Django). A call that also applies replace,
-  escape, quote, repr, dumps, sanitize, int, len, bool or float anywhere in its
-  arguments is not matched. A value copied into a variable first, or a logger
+  request.COOKIES, request.body (Django). The finding is suppressed only
+  when the request-data value itself is wrapped in a call to replace, escape,
+  quote, repr, dumps, sanitize, int, len, bool or float; a sanitizer on another
+  argument does not suppress it. Any replace or replaceAll call counts as sanitizing, whatever it replaces (a heuristic that accepts some false negatives). A value copied into a variable first, or a logger
   held under another name, is not seen. A log sink that already escapes line
   breaks is the routine dismissal.
 
