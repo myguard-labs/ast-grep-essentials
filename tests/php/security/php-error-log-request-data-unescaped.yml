@@ -1,0 +1,27 @@
+id: php-error-log-request-data-unescaped
+valid:
+  - |
+    <?php error_log("user " . str_replace(["\r", "\n"], " ", $_GET["user"]));
+  - |
+    <?php error_log("page " . (int) $_GET["page"]);
+  - |
+    <?php error_log(json_encode($_POST));
+  - |
+    <?php error_log("login ok for " . $username);
+  - |
+    <?php other_log("user " . $_GET["user"]);
+  - |
+    <?php
+    // error_log("user " . $_GET["user"]);
+    $s = 'error_log($_POST["x"])';
+  - |
+    <?php error_log("path " . $_SERVER["REQUEST_URI"]);
+invalid:
+  - |
+    <?php error_log("user " . $_GET["user"]);
+  - |
+    <?php error_log($_POST["name"]);
+  - |
+    <?php error_log("agent $_COOKIE[agent] seen");
+  - |
+    <?php error_log("q=" . trim($_REQUEST["q"]), 3, "/tmp/app.log");
