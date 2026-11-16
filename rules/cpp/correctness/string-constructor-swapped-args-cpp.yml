@@ -1,0 +1,53 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: string-constructor-swapped-args-cpp
+language: cpp
+severity: warning
+message: >-
+  std::string is constructed from a character literal followed by a count. The
+  count-and-character constructor takes the count first, so these arguments are
+  swapped: the character is converted to a count and the count to a character.
+note: >-
+  [CWE-628]: Function Call with Incorrectly Specified Arguments
+  [OWASP A06:2025]
+  Syntactic subset of bugprone-string-constructor. It matches a two-argument
+  initialisation or functional cast of std::string, string, std::wstring or
+  wstring whose first argument is a char literal and whose second is a number
+  literal. Swaps between variables need type information and are not matched.
+rule:
+  kind: argument_list
+  all:
+    - has:
+        nthChild: 1
+        kind: char_literal
+    - has:
+        nthChild: 2
+        kind: number_literal
+    - not:
+        has:
+          nthChild: 3
+    - any:
+        - inside:
+            kind: call_expression
+            has:
+              field: function
+              regex: '^(std::)?w?string$'
+        - inside:
+            kind: init_declarator
+            inside:
+              kind: declaration
+              has:
+                field: type
+                regex: '^(std::)?w?string$'
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-628'
+  owasp: 'A06:2025'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/628.html'
+  taxonomy_cited_keys: 'cwe'
