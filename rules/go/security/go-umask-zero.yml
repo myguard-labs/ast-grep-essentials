@@ -1,0 +1,46 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-umask-zero
+language: go
+severity: warning
+message: >-
+  The process umask is cleared with Umask(0). Every file and directory this
+  process creates afterwards gets exactly the mode its code asks for, so an
+  os.OpenFile or os.Mkdir with 0666 or 0777 becomes world-writable and the
+  platform default protection is gone. Keep the inherited umask, or set 022
+  or 077 and request narrow modes explicitly.
+note: >-
+  Fires on syscall.Umask or unix.Umask called with the literal 0 (0, 00 or 0o0).
+  A umask restored to the saved previous value, a non-zero literal and a
+  variable argument are not matched. Clearing the umask around a single
+  chmod-sensitive creation and restoring it is the routine dismissal.
+
+  [CWE-276] [A01:2025] [A01:2021]
+
+  [REFERENCES]
+      - https://cwe.mitre.org/data/definitions/276.html
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: selector_expression
+        regex: '^(syscall|unix)\.Umask$'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          nthChild:
+            position: 1
+            ofRule: {not: {kind: comment}}
+          kind: int_literal
+          regex: '^0[oO]?0*$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-276'
+  owasp: 'A01:2025|A01:2021'
+  category: 'security'
+  references: 'https://cwe.mitre.org/data/definitions/276.html'

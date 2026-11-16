@@ -1,0 +1,28 @@
+id: js-fs-chmod-world-writable
+valid:
+  - |
+    fs.chmodSync(p, 0o600)
+  - |
+    fs.chmod(p, 0o755, cb)
+  - |
+    fs.chmod(p, 0o644, cb)
+  - |
+    fs.chmodSync(p, mode)
+  - |
+    other.chmodSync(p, 0o777)
+  - |
+    // fs.chmodSync(p, 0o777)
+    const s = "fs.chmodSync(p, 0o777)";
+  - |
+    fs.writeFileSync(p, data, { mode: 0o600 })
+invalid:
+  - |
+    fs.chmodSync(p, 0o777)
+  - |
+    fs.chmod(p, 0o666, cb)
+  - |
+    fs.promises.chmod(p, 0o757)
+  - |
+    fs.chmodSync(p, 511)
+  - |
+    fs.fchmodSync(fd, 0777)

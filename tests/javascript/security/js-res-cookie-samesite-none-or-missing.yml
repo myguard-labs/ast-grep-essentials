@@ -1,0 +1,44 @@
+id: js-res-cookie-samesite-none-or-missing
+valid:
+  - |
+    res.cookie("session", sid, { httpOnly: true, sameSite: "lax" })
+  - |
+    res.cookie("sid", sid, { sameSite: "strict", secure: true })
+  - |
+    res.cookie("theme", "dark")
+  - |
+    res.cookie("session", sid, opts)
+  - |
+    res.cookie("session", sid, { ...base, httpOnly: true })
+  - |
+    // res.cookie("session", sid, { sameSite: "none" })
+    const s = 'res.cookie("session", sid)';
+  - |
+    other.cookie("session", sid)
+  - |
+    res.cookie("sidebar", "open")
+  - |
+    res.cookie("author_pref", "x")
+  - |
+    res.cookie("theme", { sameSite: "none" }, { sameSite: "lax" })
+  - |
+    res.cookie("session", sid, { "sameSite": "lax" })
+invalid:
+  - |
+    res.cookie("session", sid, { sameSite: "none", secure: true })
+  - |
+    res.cookie("theme", "dark", { sameSite: false })
+  - |
+    response.cookie("auth_token", tok, { httpOnly: true })
+  - |
+    res.cookie('csrf', t)
+  - |
+    res.cookie("sid", sid, { sameSite: 'None' })
+  - |
+    res.cookie("sessionId", sid)
+  - |
+    res.cookie("XSRF-TOKEN", t)
+  - |
+    res.cookie("session", { sameSite: "lax" })
+  - |
+    res.cookie("theme", "dark", { "sameSite": "none" })

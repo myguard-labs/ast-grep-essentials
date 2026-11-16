@@ -1,0 +1,30 @@
+id: java-file-request-parameter-direct
+valid:
+  - |
+    class A { void f() { File f = new File("/etc/app.conf"); } }
+  - |
+    class A { void f() { Path p = Paths.get(baseDir, name); } }
+  - |
+    class A { void f(HttpServletRequest request) { String id = request.getParameter("id"); } }
+  - |
+    class A { void f(HttpServletRequest request) {
+      Path p = Paths.get(base, request.getParameter("f")).normalize();
+      if (!p.startsWith(base)) { return; }
+      Files.readAllBytes(Paths.get(request.getParameter("f")));
+    } }
+  - |
+    class A { void f() { // new File(request.getParameter("f"))
+      String s = "new File(request.getParameter(\"f\"))"; } }
+  - |
+    class A { void f(Other o) { File f = new File(o.getParameter("f")); } }
+invalid:
+  - |
+    class A { void f(HttpServletRequest request) { File f = new File(request.getParameter("file")); } }
+  - |
+    class A { void f(HttpServletRequest request) { byte[] b = Files.readAllBytes(Paths.get(request.getParameter("p"))); } }
+  - |
+    class A { void f(HttpServletRequest req) throws Exception { InputStream in = new FileInputStream(req.getPathInfo()); } }
+  - |
+    class A { void f(HttpServletRequest request) { File f = new File(baseDir, request.getParameter("name")); } }
+  - |
+    class A { void f(HttpServletRequest request) { Path p = Path.of(request.getHeader("X-File")); } }

@@ -1,0 +1,18 @@
+id: go-cookie-samesite-none-or-missing
+valid:
+  - 'package p; var c = &http.Cookie{Name: "session", Value: v, SameSite: http.SameSiteLaxMode}'
+  - 'package p; var c = &http.Cookie{Name: "sid", Value: v, SameSite: http.SameSiteStrictMode}'
+  - 'package p; var c = &http.Cookie{Name: "theme", Value: "dark"}'
+  - 'package p; var c = &http.Cookie{Name: name, Value: v}'
+  - 'package p; var c = &other.Cookie{Name: "session", SameSite: http.SameSiteNoneMode}'
+  - 'package p; // c := &http.Cookie{Name: "session", Value: v}'
+  - 'package p; var s = `&http.Cookie{Name: "session"}`'
+  - 'package p; var c = &http.Cookie{Name: "sidebar", Value: "open"}'
+  - 'package p; var c = &http.Cookie{Name: "author_pref", Value: "x"}'
+invalid:
+  - 'package p; var c = &http.Cookie{Name: "session", Value: v, SameSite: http.SameSiteNoneMode, Secure: true}'
+  - 'package p; var c = http.Cookie{Name: "theme", Value: "dark", SameSite: http.SameSiteNoneMode}'
+  - 'package p; var c = &http.Cookie{Name: "auth_token", Value: v, HttpOnly: true}'
+  - 'package p; var c = &http.Cookie{Name: "csrf", Value: v}'
+  - 'package p; var c = &http.Cookie{Name: "sessionId", Value: v}'
+  - 'package p; var c = &http.Cookie{Name: "XSRF-TOKEN", Value: v}'

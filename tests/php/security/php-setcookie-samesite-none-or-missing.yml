@@ -1,0 +1,36 @@
+id: php-setcookie-samesite-none-or-missing
+valid:
+  - |
+    <?php setcookie('session', $v, ['samesite' => 'Lax', 'secure' => true]);
+  - |
+    <?php setcookie("sid", $v, ["expires" => 0, "samesite" => "Strict"]);
+  - |
+    <?php setcookie('theme', 'dark');
+  - |
+    <?php setcookie('session', $v, $options);
+  - |
+    <?php setcookie(name: 'session', value: $v, expires_or_options: ['samesite' => 'Lax']);
+  - |
+    <?php // setcookie('session', $v, ['samesite' => 'None']);
+    $s = "setcookie('session', 1)";
+  - |
+    <?php other('session', $v);
+  - |
+    <?php setcookie('sidebar', 'open');
+  - |
+    <?php setcookie('author_pref', 'x');
+invalid:
+  - |
+    <?php setcookie('session', $v, ['samesite' => 'None', 'secure' => true]);
+  - |
+    <?php setcookie('theme', 'dark', ["samesite" => "none"]);
+  - |
+    <?php setcookie('auth_token', $v, ['httponly' => true]);
+  - |
+    <?php setcookie('PHPSESSID', $v, time() + 3600, '/');
+  - |
+    <?php setcookie('csrf', $v);
+  - |
+    <?php setcookie('sessionId', $v);
+  - |
+    <?php setcookie('XSRF-TOKEN', $v);

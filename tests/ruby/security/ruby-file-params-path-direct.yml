@@ -1,0 +1,32 @@
+id: ruby-file-params-path-direct
+valid:
+  - |
+    File.read(Rails.root.join("config", "app.yml"))
+  - |
+    send_file Rails.root.join("public", "report.pdf")
+  - |
+    File.read(File.join(BASE, File.basename(params[:name])))
+  - |
+    def show
+      path = File.expand_path(params[:file], BASE)
+      return head(:forbidden) unless path.start_with?(BASE)
+      send_file params[:file]
+    end
+  - |
+    # File.read(params[:file])
+    note = "send_file params[:file]"
+  - |
+    Other.read(params[:file])
+invalid:
+  - |
+    File.read(params[:file])
+  - |
+    send_file params[:path]
+  - |
+    send_file(File.join(Rails.root, "files", params[:name]))
+  - |
+    File.open(params.fetch(:file)) { |f| f.read }
+  - |
+    IO.read(params[:log], 100)
+  - |
+    File.binread(params.dig(:doc, :path))
