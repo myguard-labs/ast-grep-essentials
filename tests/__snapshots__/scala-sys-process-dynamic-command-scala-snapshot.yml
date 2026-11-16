@@ -34,6 +34,114 @@ snapshots:
       style: secondary
       start: 58
       end: 93
+  "import scala.sys.process._\nobject A {\n  def bad(dir: String) = Process(s\"ls $dir\").run()\n}\n":
+    labels:
+    - source: Process(s"ls $dir").run
+      style: primary
+      start: 63
+      end: 86
+    - source: run
+      style: secondary
+      start: 83
+      end: 86
+    - source: Process
+      style: secondary
+      start: 63
+      end: 70
+    - source: s
+      style: secondary
+      start: 71
+      end: 72
+    - source: $dir
+      style: secondary
+      start: 76
+      end: 80
+    - source: s"ls $dir"
+      style: secondary
+      start: 71
+      end: 81
+    - source: (s"ls $dir")
+      style: secondary
+      start: 70
+      end: 82
+    - source: Process(s"ls $dir")
+      style: secondary
+      start: 63
+      end: 82
+  "import scala.sys.process._\nobject A {\n  def bad(dir: String) = s\"ls $dir\".lazyLines\n}\n":
+    labels:
+    - source: s"ls $dir".lazyLines
+      style: primary
+      start: 63
+      end: 83
+    - source: lazyLines
+      style: secondary
+      start: 74
+      end: 83
+    - source: s
+      style: secondary
+      start: 63
+      end: 64
+    - source: $dir
+      style: secondary
+      start: 68
+      end: 72
+    - source: s"ls $dir"
+      style: secondary
+      start: 63
+      end: 73
+  "import scala.sys.process._\nobject A {\n  def bad(dir: String): Int = (\"ls \" + dir + \" -l\").!\n}\n":
+    labels:
+    - source: ("ls " + dir + " -l").!
+      style: primary
+      start: 68
+      end: 91
+    - source: "!"
+      style: secondary
+      start: 90
+      end: 91
+    - source: +
+      style: secondary
+      start: 81
+      end: 82
+    - source: dir
+      style: secondary
+      start: 77
+      end: 80
+    - source: "\"ls \" + dir + \" -l\""
+      style: secondary
+      start: 69
+      end: 88
+    - source: ("ls " + dir + " -l")
+      style: secondary
+      start: 68
+      end: 89
+  "import scala.sys.process._\nobject A {\n  def bad(dir: String): Int = (dir + \" -l\").!\n}\n":
+    labels:
+    - source: (dir + " -l").!
+      style: primary
+      start: 68
+      end: 83
+    - source: "!"
+      style: secondary
+      start: 82
+      end: 83
+    - source: +
+      style: secondary
+      start: 73
+      end: 74
+    - source: dir
+      style: secondary
+      start: 69
+      end: 72
+    - source: dir + " -l"
+      style: secondary
+      start: 69
+      end: 80
+    - source: (dir + " -l")
+      style: secondary
+      start: 68
+      end: 81
   "import scala.sys.process._\nobject A {\n  def bad(dir: String): Int = Process(/* shell string */ s\"tar xf $dir\").!\n}\n":
     labels:
     - source: Process(/* shell string */ s"tar xf $dir").!
@@ -68,6 +176,40 @@ snapshots:
       style: secondary
       start: 68
       end: 110
+  "import scala.sys.process._\nobject A {\n  def bad(dir: String): Int = Process(s\"tar xf $dir\") !\n}\n":
+    labels:
+    - source: Process(s"tar xf $dir") !
+      style: primary
+      start: 68
+      end: 93
+    - source: "!"
+      style: secondary
+      start: 92
+      end: 93
+    - source: Process
+      style: secondary
+      start: 68
+      end: 75
+    - source: s
+      style: secondary
+      start: 76
+      end: 77
+    - source: $dir
+      style: secondary
+      start: 85
+      end: 89
+    - source: s"tar xf $dir"
+      style: secondary
+      start: 76
+      end: 90
+    - source: (s"tar xf $dir")
+      style: secondary
+      start: 75
+      end: 91
+    - source: Process(s"tar xf $dir")
+      style: secondary
+      start: 68
+      end: 91
   "import scala.sys.process._\nobject A {\n  def bad(dir: String): Int = Process(s\"tar xf $dir\").!\n}\n":
     labels:
     - source: Process(s"tar xf $dir").!
@@ -102,6 +244,28 @@ snapshots:
       style: secondary
       start: 68
       end: 91
+  "import scala.sys.process._\nobject A {\n  def bad(dir: String): Int = s\"ls -l $dir\" !\n}\n":
+    labels:
+    - source: s"ls -l $dir" !
+      style: primary
+      start: 68
+      end: 83
+    - source: "!"
+      style: secondary
+      start: 82
+      end: 83
+    - source: s
+      style: secondary
+      start: 68
+      end: 69
+    - source: $dir
+      style: secondary
+      start: 76
+      end: 80
+    - source: s"ls -l $dir"
+      style: secondary
+      start: 68
+      end: 81
   "import scala.sys.process._\nobject A {\n  def bad(dir: String): Int = s\"ls -l $dir\".!\n}\n":
     labels:
     - source: s"ls -l $dir".!
@@ -124,6 +288,32 @@ snapshots:
       style: secondary
       start: 68
       end: 81
+  "import scala.sys.process._\nobject A {\n  def bad(dir: String): String = (\"ls -l \" + dir) !!\n}\n":
+    labels:
+    - source: ("ls -l " + dir) !!
+      style: primary
+      start: 71
+      end: 90
+    - source: "!!"
+      style: secondary
+      start: 88
+      end: 90
+    - source: +
+      style: secondary
+      start: 81
+      end: 82
+    - source: dir
+      style: secondary
+      start: 83
+      end: 86
+    - source: "\"ls -l \" + dir"
+      style: secondary
+      start: 72
+      end: 86
+    - source: ("ls -l " + dir)
+      style: secondary
+      start: 71
+      end: 87
   "import scala.sys.process._\nobject A {\n  def bad(dir: String): String = (\"ls -l \" + dir).!!\n}\n":
     labels:
     - source: ("ls -l " + dir).!!

@@ -5,8 +5,8 @@ language: scala
 severity: warning
 message: >-
   A scala.sys.process command is built from a string that is interpolated or
-  concatenated at run time and then executed with the `!` or `!!` operator.
-  The process library splits that string on whitespace, so a value that
+  concatenated at run time and then executed with the `!`, `!!` or `run`
+  family of process operators. The process library splits that string on whitespace, so a value that
   carries spaces, quotes or option-like text changes the program name or its
   arguments. Pass the program and each argument as separate elements of a Seq
   or Process(Seq(...)) and validate or allow-list any value that comes from a
@@ -18,13 +18,15 @@ note: >-
       - https://cwe.mitre.org/data/definitions/78.html
       - https://owasp.org/Top10/A03_2021-Injection
   Matches `s"..."`, `f"..."` or `raw"..."` with an interpolation, or a `+`
-  concatenation with a non-literal operand, run through `.!` or `.!!`, both
-  directly and inside `Process(...)`, including the qualified spellings
+  concatenation that has a non-literal operand on either side, run through
+  `.!`, `.!!`, `.!<`, `.!!<`, `.run`, `.lazyLines`, or the postfix spelling
+  `cmd !` and `cmd !!`. Both the direct string and the argument of
+  `Process(...)` are checked, including the qualified spellings
   `process.Process`, `sys.process.Process`, `scala.sys.process.Process` and
   `_root_.scala.sys.process.Process`. An alias import such as
-  `import scala.sys.process.{Process => P}` is a known miss. A literal command and an argument Seq
-  are not reported. A plain identifier receiver is not reported because its
-  origin cannot be told from syntax alone.
+  `import scala.sys.process.{Process => P}` is a known miss. A literal command
+  and an argument Seq are not reported. A plain identifier receiver is not
+  reported because its origin cannot be told from syntax alone.
 utils:
   dynamic-string:
     any:
@@ -44,44 +46,51 @@ utils:
               regex: ^\+$
           - has:
               stopBy: end
-              field: right
-              not:
-                kind: string
+              kind: identifier
+  process-command:
+    any:
+      - matches: dynamic-string
+      - kind: parenthesized_expression
+        has:
+          matches: dynamic-string
+      - kind: call_expression
+        all:
+          - has:
+              field: function
+              any:
+                - kind: identifier
+                  regex: ^Process$
+                - kind: field_expression
+                  regex: ^(_root_\.)?((scala\.)?sys\.)?process\.Process$
+          - has:
+              field: arguments
+              kind: arguments
+              has:
+                nthChild:
+                  position: 1
+                  ofRule:
+                    not:
+                      any:
+                        - kind: comment
+                        - kind: block_comment
+                matches: dynamic-string
 rule:
-  kind: field_expression
-  all:
-    - has:
-        field: field
-        kind: operator_identifier
-        regex: ^!!?$
-    - has:
-        field: value
-        any:
-          - matches: dynamic-string
-          - kind: parenthesized_expression
-            has:
-              matches: dynamic-string
-          - kind: call_expression
-            all:
-              - has:
-                  field: function
-                  any:
-                    - kind: identifier
-                      regex: ^Process$
-                    - kind: field_expression
-                      regex: ^(_root_\.)?((scala\.)?sys\.)?process\.Process$
-              - has:
-                  field: arguments
-                  kind: arguments
-                  has:
-                    nthChild:
-                      position: 1
-                      ofRule:
-                        not:
-                          any:
-                            - kind: comment
-                            - kind: block_comment
-                    matches: dynamic-string
+  any:
+    - kind: field_expression
+      all:
+        - has:
+            field: field
+            regex: ^(!|!!|!<|!!<|run|lazyLines|lazyLines_!)$
+        - has:
+            field: value
+            matches: process-command
+    - kind: postfix_expression
+      all:
+        - has:
+            kind: operator_identifier
+            regex: ^(!|!!|!<|!!<)$
+        - has:
+            matches: process-command
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'

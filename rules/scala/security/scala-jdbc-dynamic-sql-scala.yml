@@ -19,8 +19,9 @@ note: >-
   Matches executeQuery, executeUpdate, executeLargeUpdate, execute,
   addBatch, prepareStatement and prepareCall called with an `s`, `f` or `raw`
   interpolated string that has an interpolation, or a `+` concatenation with a
-  non-literal operand. Literal SQL, `?` placeholders and parameter-binding
-  interpolators such as `sql"..."` are not reported. A plain identifier
+  non-literal operand on either side, also when the string is followed by
+  `.stripMargin`, `.trim` or `.stripLineEnd`. Literal SQL, `?` placeholders and
+  parameter-binding interpolators such as `sql"..."` are not reported. A plain identifier
   argument is not reported because its origin cannot be told from syntax.
 utils:
   dynamic-sql:
@@ -41,9 +42,25 @@ utils:
               regex: ^\+$
           - has:
               stopBy: end
-              field: right
-              not:
-                kind: string
+              kind: identifier
+  sql-trimmed:
+    kind: field_expression
+    all:
+      - has:
+          field: value
+          matches: dynamic-sql
+      - has:
+          field: field
+          kind: identifier
+          regex: ^(stripMargin|trim|stripLineEnd)$
+  sql-argument:
+    any:
+      - matches: dynamic-sql
+      - matches: sql-trimmed
+      - kind: call_expression
+        has:
+          field: function
+          matches: sql-trimmed
 rule:
   kind: call_expression
   all:
@@ -65,7 +82,7 @@ rule:
                 any:
                   - kind: comment
                   - kind: block_comment
-          matches: dynamic-sql
+          matches: sql-argument
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'

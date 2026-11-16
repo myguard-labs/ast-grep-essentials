@@ -24,6 +24,21 @@ valid:
     object A {
       def ok(): Int = ("ls " + "-l").!
     }
+  - |
+    import scala.sys.process._
+    object A {
+      def ok(): Int = ("ls " + "-l" + " -a").!
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def ok(): Int = "ls -l" !
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def ok(dir: String) = Seq("ls", dir).lazyLines
+    }
 invalid:
   - |
     import scala.sys.process._
@@ -62,4 +77,39 @@ invalid:
     import scala.sys
     object A {
       def bad(dir: String): Int = sys.process.Process(s"tar xf $dir").!
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String): Int = s"ls -l $dir" !
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String): String = ("ls -l " + dir) !!
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String): Int = Process(s"tar xf $dir") !
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String): Int = ("ls " + dir + " -l").!
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String): Int = (dir + " -l").!
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String) = s"ls $dir".lazyLines
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String) = Process(s"ls $dir").run()
     }

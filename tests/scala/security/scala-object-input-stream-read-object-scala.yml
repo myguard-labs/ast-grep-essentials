@@ -36,6 +36,11 @@ valid:
       def ok(in: java.io.InputStream) =
         Using(new BufferedReader(in)) { o => o.readObject() }
     }
+  - |
+    object A {
+      def ok(in: java.io.InputStream) =
+        Using.resource(new BufferedReader(in)) { o => o.readObject() }
+    }
 invalid:
   - |
     object A {
@@ -72,4 +77,19 @@ invalid:
         val stream = new _root_.java.io.ObjectInputStream(in)
         stream.readObject()
       }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) =
+        Using.resource(new ObjectInputStream(in)) { o => o.readObject() }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) =
+        scala.util.Using(new java.io.ObjectInputStream(in)) { o => o.readObject() }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) =
+        _root_.scala.util.Using.resource(new ObjectInputStream(in))(o => o.readObject())
     }

@@ -24,6 +24,17 @@ valid:
     object A {
       def ok(stmt: java.sql.Statement, q: String) = stmt.executeQuery(q)
     }
+  - |
+    object A {
+      def ok(stmt: java.sql.Statement) =
+        stmt.executeQuery("select a " + "from b " + "where c = 1")
+    }
+  - |
+    object A {
+      def ok(stmt: java.sql.Statement) =
+        stmt.executeQuery("""select 1
+          |from dual""".stripMargin)
+    }
 invalid:
   - |
     object A {
@@ -51,4 +62,25 @@ invalid:
         stmt.executeUpdate(
           // built from the request
           "delete from users where id = " + id)
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, id: String) =
+        stmt.executeQuery("select * from users where id = " + id + " limit 1")
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, id: String) =
+        stmt.executeQuery(id + " limit 1")
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, name: String) =
+        stmt.executeQuery(s"""select * from users
+          |where name = '$name'""".stripMargin)
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, name: String) =
+        stmt.executeQuery(f"select * from users where name = '$name%s'".trim)
     }
