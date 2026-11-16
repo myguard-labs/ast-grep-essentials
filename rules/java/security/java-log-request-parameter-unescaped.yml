@@ -51,13 +51,21 @@ rule:
               any:
                 - has: {field: name, regex: '^(encode|escapeJava|parseInt|parseLong|length)$'}
                 - all:
-                    - has: {field: name, regex: '^(replace|replaceAll)$'}
+                    - has: {field: name, regex: '^replaceAll$'}
                     - has:
                         field: arguments
                         kind: argument_list
                         has:
                           nthChild: 1
                           regex: '\\[rns]|\\x0[adAD]|\\u000[adAD]'
+                - all:
+                    - has: {field: name, regex: '^replace$'}
+                    - has:
+                        field: arguments
+                        kind: argument_list
+                        has:
+                          nthChild: 1
+                          regex: '(^|[^\\])(\\\\)*\\([rn]|x0[adAD]|u000[adAD])'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'

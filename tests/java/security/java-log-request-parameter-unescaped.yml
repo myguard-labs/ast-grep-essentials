@@ -17,6 +17,8 @@ valid:
     class A { void f(HttpServletRequest request) { log.info("method {}", request.getMethod()); } }
   - |
     class A { void f(HttpServletRequest request) { log.info("user {}", request.getParameter("user").replaceAll("[\\r\\n]", "")); } }
+  - |
+    class A { void f(HttpServletRequest request) { log.info(request.getParameter("x").replaceAll("[\\r\\n]", "")); } }
 invalid:
   - |
     class A { void f(HttpServletRequest request) { log.info("user {}", request.getParameter("user")); } }
@@ -34,3 +36,5 @@ invalid:
     class A { void f(HttpServletRequest request) { log.info(StringEscapeUtils.escapeHtml(request.getParameter("x"))); } }
   - |
     class A { void f(HttpServletRequest request) { log.info(request.getParameter("x").replace("<", "")); } }
+  - |
+    class A { void f(HttpServletRequest request) { log.info(request.getParameter("x").replace("\\n", "")); } }
