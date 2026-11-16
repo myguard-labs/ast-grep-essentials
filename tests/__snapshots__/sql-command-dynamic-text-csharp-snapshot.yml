@@ -163,6 +163,112 @@ snapshots:
   ? |
     class Example {
         void Run(string x) {
+            var cmd = new SqlCommand { CommandText = "SELECT " + x };
+        }
+    }
+  : labels:
+    - source: CommandText = "SELECT " + x
+      style: primary
+      start: 76
+      end: 103
+    - source: CommandText
+      style: secondary
+      start: 76
+      end: 87
+    - source: +
+      style: secondary
+      start: 100
+      end: 101
+    - source: x
+      style: secondary
+      start: 102
+      end: 103
+    - source: '"SELECT " + x'
+      style: secondary
+      start: 90
+      end: 103
+  ? |
+    class Example {
+        void Run(string x) {
+            var cmd = new SqlCommand("SELECT 1");
+            cmd.CommandText = $"SELECT * FROM t WHERE a = {x}";
+        }
+    }
+  : labels:
+    - source: cmd.CommandText = $"SELECT * FROM t WHERE a = {x}"
+      style: primary
+      start: 95
+      end: 145
+    - source: cmd.CommandText
+      style: secondary
+      start: 95
+      end: 110
+    - source: '{x}'
+      style: secondary
+      start: 141
+      end: 144
+    - source: $"SELECT * FROM t WHERE a = {x}"
+      style: secondary
+      start: 113
+      end: 145
+  ? |
+    class Example {
+        void Run(string x) {
+            var cmd = new SqlCommand($@"SELECT * FROM t WHERE a = {x}");
+        }
+    }
+  : labels:
+    - source: new SqlCommand($@"SELECT * FROM t WHERE a = {x}")
+      style: primary
+      start: 59
+      end: 108
+    - source: SqlCommand
+      style: secondary
+      start: 63
+      end: 73
+    - source: '{x}'
+      style: secondary
+      start: 103
+      end: 106
+    - source: $@"SELECT * FROM t WHERE a = {x}"
+      style: secondary
+      start: 74
+      end: 107
+    - source: $@"SELECT * FROM t WHERE a = {x}"
+      style: secondary
+      start: 74
+      end: 107
+    - source: ($@"SELECT * FROM t WHERE a = {x}")
+      style: secondary
+      start: 73
+      end: 108
+  ? |
+    class Example {
+        void Run(string x) {
+            var cmd = new SqlCommand();
+            cmd.CommandText = string.Format("SELECT {0}", x);
+        }
+    }
+  : labels:
+    - source: cmd.CommandText = string.Format("SELECT {0}", x)
+      style: primary
+      start: 85
+      end: 133
+    - source: cmd.CommandText
+      style: secondary
+      start: 85
+      end: 100
+    - source: string.Format
+      style: secondary
+      start: 103
+      end: 116
+    - source: string.Format("SELECT {0}", x)
+      style: secondary
+      start: 103
+      end: 133
+  ? |
+    class Example {
+        void Run(string x) {
             var cmd = new SqlCommand(/* q */ "SELECT * FROM t WHERE a = '" + x + "'");
         }
     }

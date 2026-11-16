@@ -216,6 +216,90 @@ snapshots:
   ? |
     class Example {
         void Run(string x) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments = "-c " + x;
+        }
+    }
+  : labels:
+    - source: psi.Arguments = "-c " + x
+      style: primary
+      start: 95
+      end: 120
+    - source: psi.Arguments
+      style: secondary
+      start: 95
+      end: 108
+    - source: +
+      style: secondary
+      start: 117
+      end: 118
+    - source: x
+      style: secondary
+      start: 119
+      end: 120
+    - source: '"-c " + x'
+      style: secondary
+      start: 111
+      end: 120
+    - source: ProcessStartInfo
+      style: secondary
+      start: 63
+      end: 79
+    - source: new ProcessStartInfo("sh")
+      style: secondary
+      start: 59
+      end: 85
+    - source: |-
+        void Run(string x) {
+                var psi = new ProcessStartInfo("sh");
+                psi.Arguments = "-c " + x;
+            }
+      style: secondary
+      start: 20
+      end: 127
+  ? |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments = $"-c {x}";
+        }
+    }
+  : labels:
+    - source: psi.Arguments = $"-c {x}"
+      style: primary
+      start: 95
+      end: 120
+    - source: psi.Arguments
+      style: secondary
+      start: 95
+      end: 108
+    - source: '{x}'
+      style: secondary
+      start: 116
+      end: 119
+    - source: $"-c {x}"
+      style: secondary
+      start: 111
+      end: 120
+    - source: ProcessStartInfo
+      style: secondary
+      start: 63
+      end: 79
+    - source: new ProcessStartInfo("sh")
+      style: secondary
+      start: 59
+      end: 85
+    - source: |-
+        void Run(string x) {
+                var psi = new ProcessStartInfo("sh");
+                psi.Arguments = $"-c {x}";
+            }
+      style: secondary
+      start: 20
+      end: 127
+  ? |
+    class Example {
+        void Run(string x) {
             var psi = new ProcessStartInfo("tool", $"--input {x}");
         }
     }

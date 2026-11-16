@@ -30,6 +30,20 @@ valid:
             Log(arguments: "a " + x);
         }
     }
+  - |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments = "-c ls";
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var o = new Options();
+            o.Arguments = "a " + x;
+        }
+    }
 invalid:
   - |
     class Example {
@@ -74,5 +88,19 @@ invalid:
         void Run(string x) {
             global::System.Diagnostics.Process.Start("sh", $"-c {x}");
             var p = new global::System.Diagnostics.ProcessStartInfo("sh", "-c " + x);
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments = $"-c {x}";
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments = "-c " + x;
         }
     }
