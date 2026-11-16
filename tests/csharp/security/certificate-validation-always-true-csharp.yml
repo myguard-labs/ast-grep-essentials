@@ -1,0 +1,76 @@
+id: certificate-validation-always-true-csharp
+valid:
+  - |
+    class Example {
+        void Configure() {
+            ServicePointManager.ServerCertificateValidationCallback = (s, cert, chain, errors) => errors == SslPolicyErrors.None;
+        }
+    }
+  - |
+    class Example {
+        void Configure(HttpClientHandler h) {
+            h.ServerCertificateCustomValidationCallback = (m, c, ch, e) => { return e == SslPolicyErrors.None; };
+        }
+    }
+  - |
+    class Example {
+        void Configure() {
+            ServicePointManager.ServerCertificateValidationCallback = Validate;
+            other.SomeCallback = (a, b) => true;
+        }
+    }
+  - |
+    class Example {
+        void Configure() {
+            ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback((s, c, ch, e) => e == SslPolicyErrors.None);
+        }
+    }
+  - |
+    class Example {
+        void Configure() {
+            ServicePointManager.ServerCertificateValidationCallback -= (s, c, ch, e) => true;
+        }
+    }
+invalid:
+  - |
+    class Example {
+        void Configure() {
+            ServicePointManager.ServerCertificateValidationCallback = (s, cert, chain, errors) => true;
+        }
+    }
+  - |
+    class Example {
+        void Configure() {
+            ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
+        }
+    }
+  - |
+    class Example {
+        void Configure() {
+            var h = new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
+        }
+    }
+  - |
+    class Example {
+        void Configure(SslStream s) {
+            var o = new SslClientAuthenticationOptions { RemoteCertificateValidationCallback = (a, b, c, d) => { return true; } };
+        }
+    }
+  - |
+    class Example {
+        void Configure() {
+            ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback((s, c, ch, e) => true);
+        }
+    }
+  - |
+    class Example {
+        void Configure() {
+            ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(delegate { return true; });
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            global::System.Net.ServicePointManager.ServerCertificateValidationCallback = (s, c, ch, e) => true;
+        }
+    }

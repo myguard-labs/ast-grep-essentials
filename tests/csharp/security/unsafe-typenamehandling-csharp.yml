@@ -1,0 +1,65 @@
+id: unsafe-typenamehandling-csharp
+valid:
+  - |
+    class Example {
+        void Configure() {
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None };
+        }
+    }
+  - |
+    class Example {
+        void Configure(JsonSerializerSettings settings) {
+            settings.TypeNameHandling = TypeNameHandling.None;
+        }
+    }
+  - |
+    class Example {
+        void Configure(Other o) {
+            o.NameHandling = TypeNameHandling.Auto;
+            o.TypeNameHandling = Mode.Auto;
+        }
+    }
+  - |
+    class Example {
+        void Configure(JsonSerializerSettings s) {
+            s.TypeNameHandling = TypeNameHandling.None | TypeNameHandling.None;
+        }
+    }
+invalid:
+  - |
+    class Example {
+        void Configure() {
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+        }
+    }
+  - |
+    class Example {
+        void Configure(JsonSerializerSettings settings) {
+            settings.TypeNameHandling = TypeNameHandling.All;
+        }
+    }
+  - |
+    class Example {
+        void Configure(JsonSerializerSettings s) {
+            s.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
+        }
+    }
+  - |
+    class Example {
+        void Configure(JsonSerializerSettings s) {
+            s.TypeNameHandling = TypeNameHandling.Objects | TypeNameHandling.Arrays;
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var s = new Newtonsoft.Json.JsonSerializerSettings();
+            s.TypeNameHandling = global::Newtonsoft.Json.TypeNameHandling.All;
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var s = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+        }
+    }

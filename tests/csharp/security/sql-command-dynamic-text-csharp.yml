@@ -1,0 +1,95 @@
+id: sql-command-dynamic-text-csharp
+valid:
+  - |
+    class Example {
+        void Query(SqlConnection conn, int id) {
+            var cmd = new SqlCommand("SELECT * FROM t WHERE id = @id", conn);
+            cmd.Parameters.AddWithValue("@id", id);
+        }
+    }
+  - |
+    class Example {
+        void Query(SqlConnection conn) {
+            var cmd = new SqlCommand("SELECT * " + "FROM t", conn);
+            var c2 = new SqlCommand($"SELECT 1", conn);
+            cmd.CommandText = "SELECT " + "2";
+        }
+    }
+  - |
+    class Example {
+        void Query(SqlConnection conn, string name) {
+            var other = new StringBuilder("a" + name);
+            var c = new CommandBuilder($"x{name}");
+            log.CommandLine = "a" + name;
+        }
+    }
+invalid:
+  - |
+    class Example {
+        void Query(SqlConnection conn, string name) {
+            var cmd = new SqlCommand("SELECT * FROM t WHERE n = '" + name + "'", conn);
+        }
+    }
+  - |
+    class Example {
+        void Query(SqlConnection conn, int id) {
+            var cmd = new SqlCommand($"SELECT * FROM t WHERE id = {id}", conn);
+        }
+    }
+  - |
+    class Example {
+        void Query(SqlCommand cmd, string name) {
+            cmd.CommandText = "DELETE FROM t WHERE n = " + name;
+        }
+    }
+  - |
+    class Example {
+        void Query(NpgsqlConnection conn, string name) {
+            var cmd = new NpgsqlCommand(string.Format("SELECT * FROM t WHERE n = '{0}'", name), conn);
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var cmd = new SqlCommand(/* q */ "SELECT * FROM t WHERE a = '" + x + "'");
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var c = new System.Data.SqlClient.SqlCommand("SELECT " + x);
+            var d = new global::System.Data.SqlClient.SqlCommand(global::System.String.Format("SELECT {0}", x));
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var cmd = new SqlCommand { CommandText = "SELECT " + x };
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var cmd = new SqlCommand("SELECT 1");
+            cmd.CommandText = $"SELECT * FROM t WHERE a = {x}";
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var cmd = new SqlCommand($@"SELECT * FROM t WHERE a = {x}");
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var cmd = new SqlCommand();
+            cmd.CommandText = string.Format("SELECT {0}", x);
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var cmd = new SqlCommand(cmdText: "SELECT " + x);
+        }
+    }

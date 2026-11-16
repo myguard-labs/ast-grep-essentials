@@ -1,0 +1,83 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: sql-command-dynamic-text-csharp
+language: csharp
+severity: warning
+message: >-
+  SQL command text is built with string concatenation, interpolation or
+  string.Format. Use parameterized queries to prevent SQL injection.
+note: >-
+  Matches ADO.NET command or adapter construction (SqlCommand, SqlDataAdapter,
+  OleDbCommand, OdbcCommand, NpgsqlCommand, MySqlCommand, SqliteCommand,
+  SQLiteCommand, OracleCommand) whose first argument, or a CommandText
+  assignment whose value, is an interpolated string with an interpolation, a
+  + concatenation containing a non-literal operand, or a string.Format call.
+  Purely literal concatenation is not flagged. This is a single-file
+  syntactic check: constants and sanitized values that are concatenated are
+  still reported, and it does not follow text built in an earlier statement.
+  A named `cmdText:` argument is matched only when it is written first; the
+  position decides, not the name. Known miss: command text passed as a named
+  `cmdText:` argument after another argument, such as
+  `new SqlCommand(connection: conn, cmdText: ...)`, is not matched.
+utils:
+  dynamic-sql-text:
+    any:
+      - kind: interpolated_string_expression
+        has:
+          kind: interpolation
+      - kind: binary_expression
+        all:
+          - has:
+              field: operator
+              regex: '^\+$'
+          - has:
+              stopBy: end
+              any:
+                - kind: identifier
+                - kind: member_access_expression
+                - kind: invocation_expression
+                - kind: element_access_expression
+      - kind: invocation_expression
+        has:
+          field: function
+          regex: '^(?:global::)?(?:string|String|System\.String)\.Format$'
+rule:
+  any:
+    - kind: object_creation_expression
+      all:
+        - has:
+            field: type
+            regex: '^(?:global::)?(?:[A-Za-z_]\w*\.)*(?:SqlCommand|SqlDataAdapter|OleDbCommand|OdbcCommand|NpgsqlCommand|MySqlCommand|SqliteCommand|SQLiteCommand|OracleCommand)$'
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              kind: argument
+              nthChild:
+                position: 1
+                ofRule:
+                  not:
+                    kind: comment
+              has:
+                matches: dynamic-sql-text
+    - kind: assignment_expression
+      all:
+        - has:
+            field: left
+            regex: '(?:^|\.)CommandText$'
+        - has:
+            field: right
+            matches: dynamic-sql-text
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-89'
+  owasp: 'A05:2025|A03:2021'
+  category: 'security'
+  subcategory: 'sql-injection'
+  references: 'https://cheatsheetseries.owasp.org/cheatsheets/Query_Parameterization_Cheat_Sheet.html|https://cwe.mitre.org/data/definitions/89.html'

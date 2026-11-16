@@ -1,0 +1,113 @@
+id: process-start-dynamic-arguments-csharp
+valid:
+  - |
+    class Example {
+        void Run() {
+            Process.Start("notepad.exe", "readme.txt");
+            Process.Start("cmd", "/c " + "dir");
+            Process.Start(path);
+        }
+    }
+  - |
+    class Example {
+        void Run(string path) {
+            var psi = new ProcessStartInfo("git", "status");
+            var p2 = new ProcessStartInfo(path);
+            var p3 = new ProcessStartInfo { FileName = path, Arguments = "--version" };
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var o = new Options { Arguments = "a " + x };
+            Log("a " + x, "b " + x);
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            Process.Start(fileName: "sh", arguments: "-c ls");
+            Log(arguments: "a " + x);
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments = "-c ls";
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var o = new Options();
+            o.Arguments = "a " + x;
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            Process.Start(arguments: "-c ls", fileName: "sh" + x);
+            Process.Start("user" + x, "u", "p" + x, "d");
+        }
+    }
+invalid:
+  - |
+    class Example {
+        void Run(string x) {
+            Process.Start("cmd", "/c ping " + x);
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo("tool", $"--input {x}");
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo { FileName = "cmd", Arguments = "/c echo " + x };
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            System.Diagnostics.Process.Start("sh", string.Format("-c '{0}'", x));
+        }
+    }
+  - |
+    class Example {
+        void Run(string cmd) {
+            Process.Start(arguments: "-c " + cmd, fileName: "sh");
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            Process.Start("cmd", /* args */ "/c ping " + x);
+            var psi = new ProcessStartInfo("tool", // args
+                $"--input {x}");
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            global::System.Diagnostics.Process.Start("sh", $"-c {x}");
+            var p = new global::System.Diagnostics.ProcessStartInfo("sh", "-c " + x);
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments = $"-c {x}";
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments = "-c " + x;
+        }
+    }

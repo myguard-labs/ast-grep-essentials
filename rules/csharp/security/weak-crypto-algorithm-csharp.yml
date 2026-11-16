@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: weak-crypto-algorithm-csharp
+language: csharp
+severity: warning
+message: >-
+  A broken or weak cryptographic algorithm (MD5, SHA1, DES, TripleDES or RC2)
+  is created. Use SHA-256 or stronger for hashing and AES-GCM for encryption.
+note: >-
+  Matches Create or HashData calls on MD5, SHA1, DES, TripleDES and RC2, and
+  construction of their CryptoServiceProvider, Managed and Cng
+  implementations. It does not decide whether the use is security relevant
+  (for example a non-security checksum), and does not resolve types.
+rule:
+  any:
+    - kind: invocation_expression
+      has:
+        field: function
+        kind: member_access_expression
+        regex: '^(?:global::)?(?:System\.Security\.Cryptography\.)?(?:MD5|SHA1|DES|TripleDES|RC2)\.(?:Create|HashData)$'
+    - kind: object_creation_expression
+      has:
+        field: type
+        regex: '^(?:global::)?(?:System\.Security\.Cryptography\.)?(?:MD5|SHA1|DES|TripleDES|RC2)(?:CryptoServiceProvider|Managed|Cng)$'
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-327'
+  owasp: 'A02:2025|A02:2021'
+  category: 'security'
+  subcategory: 'cryptography'
+  references: 'https://cwe.mitre.org/data/definitions/327.html|https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html'

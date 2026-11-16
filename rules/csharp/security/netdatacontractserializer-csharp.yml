@@ -1,0 +1,30 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: netdatacontractserializer-csharp
+language: csharp
+severity: warning
+message: >-
+  NetDataContractSerializer embeds CLR type names in the stream and is unsafe
+  to use on untrusted data. Use DataContractSerializer or System.Text.Json.
+note: >-
+  Matches construction of NetDataContractSerializer, with or without
+  arguments or an initializer. It does not verify that Deserialize is called
+  or that the input is untrusted, and does not resolve types or namespaces.
+rule:
+  kind: object_creation_expression
+  has:
+    field: type
+    regex: '^(?:global::)?(?:System\.Runtime\.Serialization\.)?NetDataContractSerializer$'
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-502'
+  owasp: 'A08:2025|A08:2021'
+  category: 'security'
+  subcategory: 'insecure-deserialization'
+  references: 'https://learn.microsoft.com/en-us/dotnet/standard/serialization/binaryformatter-security-guide|https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html'
