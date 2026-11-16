@@ -1,0 +1,32 @@
+id: rust-mem-uninitialized
+valid:
+  - |-
+    fn f() -> u8 {
+        let mut x = std::mem::MaybeUninit::<u8>::uninit();
+        unsafe { x.as_mut_ptr().write(0); x.assume_init() }
+    }
+  - |-
+    fn f() -> u32 {
+        unsafe { std::mem::zeroed() }
+    }
+  - |-
+    fn f(b: &Builder) -> Buf {
+        b.uninitialized()
+    }
+  - |-
+    fn f() -> Buf {
+        Buf::uninitialized()
+    }
+invalid:
+  - |-
+    fn f() -> u8 {
+        unsafe { std::mem::uninitialized() }
+    }
+  - |-
+    fn f() -> u8 {
+        unsafe { mem::uninitialized::<u8>() }
+    }
+  - |-
+    fn f() -> [u8; 4] {
+        unsafe { core::mem::uninitialized() }
+    }
