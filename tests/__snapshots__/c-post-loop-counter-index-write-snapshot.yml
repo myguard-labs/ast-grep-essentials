@@ -1,5 +1,15 @@
 id: c-post-loop-counter-index-write
 snapshots:
+  "void f(void) { struct s *b; int i; for (i = 0; i < 25; i++) b->data[i] = 0x41; b->data[i] = 0; }":
+    labels:
+    - source: b->data[i] = 0;
+      style: primary
+      start: 79
+      end: 94
+    - source: for (i = 0; i < 25; i++) b->data[i] = 0x41;
+      style: secondary
+      start: 35
+      end: 78
   "void f(void) { unsigned char salt[25]; int i; for (i = 0; i < 25; i++) salt[i] = 0x41; salt[i] = 0; }":
     labels:
     - source: salt[i] = 0;
@@ -10,3 +20,23 @@ snapshots:
       style: secondary
       start: 46
       end: 86
+  "void f(void) { unsigned char salt[25]; int i; for (i = 0; i < 25; i++) { salt[i] = 0x41; } salt[i] = 0; }":
+    labels:
+    - source: salt[i] = 0;
+      style: primary
+      start: 91
+      end: 103
+    - source: for (i = 0; i < 25; i++) { salt[i] = 0x41; }
+      style: secondary
+      start: 46
+      end: 90
+  "void f(void) { unsigned char salt[25]; int i; for (i = 0; i < n; i++) salt[i] = 0x41; salt[i] = '\\0'; }":
+    labels:
+    - source: salt[i] = '\0';
+      style: primary
+      start: 86
+      end: 101
+    - source: for (i = 0; i < n; i++) salt[i] = 0x41;
+      style: secondary
+      start: 46
+      end: 85

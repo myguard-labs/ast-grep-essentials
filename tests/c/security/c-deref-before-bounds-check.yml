@@ -3,7 +3,13 @@ valid:
   - >-
     void f(char *buf) { char *p; for (p = buf; p < buf + 8 && *p != 0; ) { p++;
     } }
+  - "void f(char *buf, char *q) { char *p; for (p = buf; *q != 0 && p < buf + 8; ) { p++; } }"
+  - "void f(char *buf) { char *p; for (p = buf; *p != 0 || p < buf + 8; ) { p++; } }"
+  - "void f(char *buf) { char *p; for (p = buf; p != 0 && p > buf; ) { p++; } }"
 invalid:
   - >-
     void f(char *buf) { char *p; for (p = buf; *p != 0 && p < buf + 8; ) { p++;
     } }
+  - "int f(char *p, char *end) { return *p == 'x' && p < end; }"
+  - "int f(char *p, char *end) { return (*p == 'x') && (p < end); }"
+  - "int f(struct t *t, char *end) { if (*t->p == 'x' && t->p < end) return 1; return 0; }"

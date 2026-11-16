@@ -1,8 +1,26 @@
 id: c-dotdot-strstr-path-guard
 snapshots:
-  if (!strstr(path, "..")) use(path);:
+  "if (!strstr(path, \"..\")) use(path);":
     labels:
     - source: strstr(path, "..")
       style: primary
       start: 5
       end: 23
+  "int f(const char *name) { if (strstr( ( name ), \"..\" )) return 0; return 1; }":
+    labels:
+    - source: strstr( ( name ), ".." )
+      style: primary
+      start: 30
+      end: 54
+  "int f(const char *name) { if (strstr(name, \"..\") != NULL) return 0; return 1; }":
+    labels:
+    - source: strstr(name, "..")
+      style: primary
+      start: 30
+      end: 48
+  "int f(struct req *r) { return strstr(r->path, \"..\") == NULL; }":
+    labels:
+    - source: strstr(r->path, "..")
+      style: primary
+      start: 30
+      end: 51

@@ -1,5 +1,11 @@
 id: c-dotdot-strstr-path-guard
 valid:
   - 'if (!strstr(path, "x")) use(path);'
+  - "int f(const char *name) { if (!strstr(name, \".\")) return 1; return 0; }"
+  - "int f(const char *name) { if (!strstr(name, \"/../\")) return 1; return 0; }"
+  - "int f(const char *name) { if (!strstr(name, \"...\")) return 1; return 0; }"
 invalid:
   - 'if (!strstr(path, "..")) use(path);'
+  - "int f(const char *name) { if (strstr(name, \"..\") != NULL) return 0; return 1; }"
+  - "int f(struct req *r) { return strstr(r->path, \"..\") == NULL; }"
+  - "int f(const char *name) { if (strstr( ( name ), \"..\" )) return 0; return 1; }"

@@ -14,3 +14,45 @@ snapshots:
       style: secondary
       start: 59
       end: 67
+  "void f(struct s *p) { free(p); /* stale */ use(p->len); }":
+    labels:
+    - source: use(p->len);
+      style: primary
+      start: 43
+      end: 55
+    - source: p->len
+      style: secondary
+      start: 47
+      end: 53
+    - source: free(p);
+      style: secondary
+      start: 22
+      end: 30
+  "void f(struct s *p) { free(p); log(\"gone\"); use(p->len); }":
+    labels:
+    - source: use(p->len);
+      style: primary
+      start: 44
+      end: 56
+    - source: p->len
+      style: secondary
+      start: 48
+      end: 54
+    - source: free(p);
+      style: secondary
+      start: 22
+      end: 30
+  "void f(struct s *p) { free(p); p->len = 0; }":
+    labels:
+    - source: p->len = 0;
+      style: primary
+      start: 31
+      end: 42
+    - source: p->len
+      style: secondary
+      start: 31
+      end: 37
+    - source: free(p);
+      style: secondary
+      start: 22
+      end: 30

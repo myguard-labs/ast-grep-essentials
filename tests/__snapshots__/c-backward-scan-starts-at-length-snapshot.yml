@@ -1,8 +1,26 @@
 id: c-backward-scan-starts-at-length
 snapshots:
-  void f(char *ip, size_t len) { char *p; for (p = ip + len; p > ip; p--) { if (*p == ' ') { break; } } }:
+  "void f(char *ip, size_t len) { char *p; for (p = ip + len; p > ip; ) { p--; } }":
+    labels:
+    - source: for (p = ip + len; p > ip; ) { p--; }
+      style: primary
+      start: 40
+      end: 77
+  "void f(char *ip, size_t len) { char *p; for (p = ip + len; p > ip; p--) { if (*p == ' ') { break; } } }":
     labels:
     - source: for (p = ip + len; p > ip; p--) { if (*p == ' ') { break; } }
       style: primary
       start: 40
       end: 101
+  "void f(char *ip, size_t len) { char *p; for (p = ip + len; p >= ip; p--) { if (*p == ' ') { break; } } }":
+    labels:
+    - source: for (p = ip + len; p >= ip; p--) { if (*p == ' ') { break; } }
+      style: primary
+      start: 40
+      end: 102
+  "void f(struct b *b, size_t n) { for (b->p = b->s + b->n; b->p > b->s; b->p--) { if (*b->p == ' ') { break; } } }":
+    labels:
+    - source: for (b->p = b->s + b->n; b->p > b->s; b->p--) { if (*b->p == ' ') { break; } }
+      style: primary
+      start: 32
+      end: 110

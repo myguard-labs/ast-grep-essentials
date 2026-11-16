@@ -3,5 +3,11 @@ valid:
   - >-
     int f(const char *b, int n) { return n >= 2 && b[0] == 'x' && b[n - 1] ==
     'x'; }
+  - "int f(const char *b, int n) { return n > 0 && b[n - 1] == 'x'; }"
+  - "int f(const char *b, int n) { return n < 1 || b[n - 1] == 'x'; }"
+  - "int f(const char *b, int n) { return b[n - 2] == 'x'; }"
 invalid:
   - 'int f(const char *b, int n) { return b[0] == ''x'' && b[n - 1] == ''x''; }'
+  - "int f(const char *b, int n) { char c = b[n - 1]; return c; }"
+  - "int f(struct s *s) { return s->d[s->n - 1]; }"
+  - "int f(const char *b, int n) { return b[ n /* len */ - 1 ] == 'x'; }"

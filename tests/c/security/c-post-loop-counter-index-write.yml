@@ -3,7 +3,13 @@ valid:
   - >-
     void f(void) { unsigned char salt[25]; int i; for (i = 0; i < 25; i++)
     salt[i] = 0x41; salt[i - 1] = 0; }
+  - "void f(void) { unsigned char salt[25]; int i, j; for (i = 0; i < 25; i++) salt[i] = 0x41; salt[j] = 0; }"
+  - "void f(void) { unsigned char salt[25]; int i; for (i = 0; i < 25; i++) salt[i] = 0x41; use(salt); }"
+  - "void f(void) { unsigned char salt[25]; int i; for (i = 0; i < 25; i++) salt[i] = 0x41; salt[0] = 0; }"
 invalid:
   - >-
     void f(void) { unsigned char salt[25]; int i; for (i = 0; i < 25; i++)
     salt[i] = 0x41; salt[i] = 0; }
+  - "void f(void) { unsigned char salt[25]; int i; for (i = 0; i < 25; i++) { salt[i] = 0x41; } salt[i] = 0; }"
+  - "void f(void) { struct s *b; int i; for (i = 0; i < 25; i++) b->data[i] = 0x41; b->data[i] = 0; }"
+  - "void f(void) { unsigned char salt[25]; int i; for (i = 0; i < n; i++) salt[i] = 0x41; salt[i] = '\\0'; }"

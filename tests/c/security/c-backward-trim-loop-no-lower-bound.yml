@@ -3,7 +3,13 @@ valid:
   - >-
     void f(char *start, char *e) { while (e >= start && (*e == ' ' || *e ==
     '\t')) { e--; } }
+  - "void f(char *start, char *e) { while (*e == ' ' && e >= start) { e--; } }"
+  - "void f(char *start, char *e) { while (*e == ' ') { e++; } }"
+  - "void f(char *start, char *e) { while (e >= start && *e == ' ') e--; }"
 invalid:
   - >-
     void f(char *start, char *e) { while (*e == ' ' || *e == '\t') { e--; }
     (void)start; }
+  - "void f(char *start, char *e) { while (*e == ' ') e--; }"
+  - "void f(char *start, char *e) { while (isspace(*e)) { e--; } }"
+  - "void f(char *start, char *e) { while (*e == ' ') { if (x) { e--; } } }"

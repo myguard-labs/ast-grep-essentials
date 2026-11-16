@@ -3,7 +3,13 @@ valid:
   - >-
     static const unsigned char t[256]; unsigned char f(int x) { return
     t[(unsigned char) x]; }
+  - "unsigned char f(int x) { return t[x & 0xff]; }"
+  - "unsigned char f(int x) { return t[(signed char)x]; }"
+  - "unsigned char f(int x) { return t[(unsigned char)(char)x]; }"
 invalid:
   - >-
     static const unsigned char t[256]; unsigned char f(int x) { return t[(char)
     x]; }
+  - "unsigned char f(const char *s) { return t[(char)*s]; }"
+  - "unsigned char f(int x) { return tab.map[(char)(x + 1)]; }"
+  - "void f(int x) { t[(char)x] = 1; }"
