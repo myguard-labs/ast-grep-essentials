@@ -23,7 +23,9 @@ note: >-
   reported. A fully qualified or `_root_` qualified
   `java.io.ObjectInputStream` is reported like the short name; an alias
   import such as `import java.io.{ObjectInputStream => Stream}` is a known miss. A `var`, a pattern binding or a class member
-  receiver is not a source. Between the source and the call, a val or var in a
+  receiver is not a source. A nested val or Using lambda of the same name
+  that is itself such a source is reported on its own and never hides an
+  outer source. Between the source and the call, a val or var in a
   nested block, a `def` parameter (not its default value), a lambda parameter
   or a case pattern of the same name hides the source, for the val and the
   `Using` form alike; a binding that comes after the call in the same block is
@@ -116,6 +118,10 @@ utils:
         has:
           any:
             - kind: val_definition
+              not:
+                has:
+                  field: value
+                  matches: plain-ois-instance
             - kind: var_definition
           has:
             field: pattern
@@ -132,6 +138,8 @@ utils:
               kind: identifier
               pattern: $STREAM
       - kind: lambda_expression
+        not:
+          matches: using-source
         has:
           field: parameters
           any:

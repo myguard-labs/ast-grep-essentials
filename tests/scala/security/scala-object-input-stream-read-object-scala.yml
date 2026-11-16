@@ -213,3 +213,28 @@ invalid:
         run()
       }
     }
+  - |
+    object A {
+      def bad(in1: java.io.InputStream, in2: java.io.InputStream) = {
+        val o = new ObjectInputStream(in1)
+        o.hashCode
+        {
+          val o = new ObjectInputStream(in2)
+          o.readObject()
+        }
+      }
+    }
+  - |
+    object A {
+      def bad(in1: java.io.InputStream, in2: java.io.InputStream) = {
+        val o = new ObjectInputStream(in1)
+        Using(new ObjectInputStream(in2)) { o => o.readObject() }
+      }
+    }
+  - |
+    object A {
+      def bad(in1: java.io.InputStream, in2: java.io.InputStream) =
+        Using(new ObjectInputStream(in1)) { o =>
+          Using(new ObjectInputStream(in2)) { o => o.readObject() }
+        }
+    }
