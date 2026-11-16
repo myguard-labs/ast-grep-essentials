@@ -1,10 +1,41 @@
 id: js-svg-extension-only-sanitize
 snapshots:
-  ? |-
-    if (req.file.ext === '.svg' || req.file.ext === '.svgz') {
-      await sanitizeSvg(req.file.path, false)
-    }
-  : labels:
+  "if ((req.file.ext === '.svg')) { await sanitizeSvg(req.file.path, false) }":
+    labels:
+    - source: if ((req.file.ext === '.svg')) { await sanitizeSvg(req.file.path, false) }
+      style: primary
+      start: 0
+      end: 74
+    - source: req.file.ext === '.svg'
+      style: secondary
+      start: 5
+      end: 28
+  "if (/* svg only */ req.file.ext === '.svg') { await sanitizeSvg(req.file.path, false) } else { await store(req.file.path) }":
+    labels:
+    - source: >-
+        if (/* svg only */ req.file.ext === '.svg') { await sanitizeSvg(req.file.path,
+        false) } else { await store(req.file.path) }
+      style: primary
+      start: 0
+      end: 123
+    - source: req.file.ext === '.svg'
+      style: secondary
+      start: 19
+      end: 42
+  "if (ok) { await a() } else if (req.file.ext === '.svg') { await sanitizeSvg(req.file.path, false) }":
+    labels:
+    - source: >-
+        if (ok) { await a() } else if (req.file.ext === '.svg') { await
+        sanitizeSvg(req.file.path, false) }
+      style: primary
+      start: 0
+      end: 99
+    - source: req.file.ext === '.svg'
+      style: secondary
+      start: 31
+      end: 54
+  "if (req.file.ext === '.svg' || req.file.ext === '.svgz') {\n  await sanitizeSvg(req.file.path, false)\n}":
+    labels:
     - source: |-
         if (req.file.ext === '.svg' || req.file.ext === '.svgz') {
           await sanitizeSvg(req.file.path, false)
@@ -16,3 +47,25 @@ snapshots:
       style: secondary
       start: 4
       end: 27
+  "if (req.file.ext === '.svg') { await sanitizeSvg(req.file.path, false) }":
+    labels:
+    - source: if (req.file.ext === '.svg') { await sanitizeSvg(req.file.path, false) }
+      style: primary
+      start: 0
+      end: 72
+    - source: req.file.ext === '.svg'
+      style: secondary
+      start: 4
+      end: 27
+  "if (req.file.ext === '.svgz' || req.file.ext === '.svg') { await sanitizeSvg(req.file.path, false) }":
+    labels:
+    - source: >-
+        if (req.file.ext === '.svgz' || req.file.ext === '.svg') { await
+        sanitizeSvg(req.file.path, false) }
+      style: primary
+      start: 0
+      end: 100
+    - source: req.file.ext === '.svg'
+      style: secondary
+      start: 32
+      end: 55
