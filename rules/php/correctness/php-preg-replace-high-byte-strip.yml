@@ -12,10 +12,15 @@ note: >-
   not determine whether the input is multibyte or whether the pattern is
   applied to such input.
 rule:
-  pattern: 'preg_replace(''$PAT'', '''', $$$ARGS)'
+  any:
+    - pattern: 'preg_replace(''$PAT'', '''', $$$ARGS)'
+    - pattern: 'preg_replace($PAT, "", $$$ARGS)'
   has:
-    kind: string_content
-    regex: '\\x[89a-fA-F][0-9a-fA-F]'
+    any:
+      - kind: string_content
+        regex: '\\x[89a-fA-F][0-9a-fA-F]'
+      - kind: escape_sequence
+        regex: '\\x[89a-fA-F][0-9a-fA-F]'
     stopBy: end
   not:
     has:
