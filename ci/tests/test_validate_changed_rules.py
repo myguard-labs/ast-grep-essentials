@@ -1,6 +1,7 @@
 import io
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -800,6 +801,225 @@ class ValidateChangedRulesTests(unittest.TestCase):
         ):
             self.assertEqual(gate.main(), 1)
         self.assertIn("executable file", stderr.getvalue())
+
+
+REAL_ENGINE = os.environ.get("AST_GREP_UTIL_TESTS") or shutil.which("ast-grep")
+UTIL_TEXT = (
+    "id: py-clean\nlanguage: python\nrule:\n  not:\n    kind: ERROR\n"
+)
+
+
+class GlobalUtilTests(unittest.TestCase):
+    def make_repo(self, root: Path, rule_id: str = "py-util", util: str = "py-clean"):
+        util_file = root / "utils/python/py-clean.yml"
+        util_file.parent.mkdir(parents=True)
+        util_file.write_text(UTIL_TEXT)
+        rule = root / f"rules/python/security/{rule_id}.yml"
+        fixture = root / f"tests/python/security/{rule_id}.yml"
+        rule.parent.mkdir(parents=True)
+        fixture.parent.mkdir(parents=True)
+        rule.write_text(
+            f"id: {rule_id}\nlanguage: python\nrule:\n  kind: call\n"
+            f"  matches: {util}\n"
+        )
+        fixture.write_text(f"id: {rule_id}\nvalid: [x]\ninvalid: [f()]\n")
+        return util_file, rule, fixture
+
+    def fake_engine(self, root: Path) -> Path:
+        engine = root / "ast-grep"
+        engine.write_text(
+            "#!/bin/sh\nls utils/python/py-clean.yml >/dev/null || exit 3\n"
+            "grep -q 'utilDirs: \\[utils\\]' sgconfig.yml || exit 4\n"
+            "test \"$(ls rules | wc -l)\" -eq 1 || exit 5\n"
+            "test -e rules/py-util.yml || exit 6\n"
+            "echo 'test result: ok. 1 passed; 0 failed;'\n"
+        )
+        engine.chmod(0o755)
+        return engine
+
+    def test_isolated_config_loads_global_utils_only(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            _, rule, _ = self.make_repo(root)
+            other = root / "rules/python/security/py-other.yml"
+            other.write_text("id: py-other\nlanguage: python\nrule: {kind: call}\n")
+            engine = self.fake_engine(root)
+            gate.validate_rule(root, engine, rule)
+
+    def test_missing_pyyaml_uses_text_scan_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self.make_repo(root)
+            rule = root / "rules/python/security/py-util.yml"
+            with patch.dict(sys.modules, {"yaml": None}):
+                self.assertIsNone(gate._load_documents(b"id: x\n"))
+                with redirect_stderr(io.StringIO()) as stderr:
+                    self.assertTrue(gate._references(rule, {"py-clean"}))
+                    self.assertFalse(gate._references(rule, {"other"}))
+            self.assertIn("text scan", stderr.getvalue())
+
+    @unittest.skipUnless(REAL_ENGINE, "ast-grep not installed")
+    def test_rule_using_global_util_validates(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self.make_repo(root)
+            gate.validate_rule(root, Path(REAL_ENGINE), root / "rules/python/security/py-util.yml")
+
+    @unittest.skipUnless(REAL_ENGINE, "ast-grep not installed")
+    def test_undefined_util_still_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self.make_repo(root, util="no-such-util")
+            with self.assertRaises(gate.ValidationError):
+                gate.validate_rule(
+                    root, Path(REAL_ENGINE), root / "rules/python/security/py-util.yml"
+                )
+
+    def test_util_change_selects_referencing_rules_without_fixture_change(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self.make_repo(root)
+            engine = self.fake_engine(root)
+            count = gate.validate_changed(root, engine, ["utils/python/py-clean.yml"])
+            self.assertEqual(count, 1)
+
+    def test_util_chain_is_followed(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self.make_repo(root)
+            (root / "utils/python/py-outer.yml").write_text(
+                "id: py-outer\nlanguage: python\nrule:\n  matches: py-clean\n"
+            )
+            (root / "rules/python/security/py-util.yml").write_text(
+                "id: py-util\nlanguage: python\nrule:\n  matches: py-outer\n"
+            )
+            self.assertEqual(
+                gate.util_affected_rules(root, None, ["utils/python/py-clean.yml"]),
+                [PurePosixPath("rules/python/security/py-util.yml")],
+            )
+
+    def test_unreferenced_util_selects_nothing(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self.make_repo(root)
+            (root / "utils/python/py-lonely.yml").write_text(
+                "id: py-lonely\nlanguage: python\nrule: {kind: call}\n"
+            )
+            engine = self.fake_engine(root)
+            self.assertEqual(
+                gate.util_affected_rules(root, None, ["utils/python/py-lonely.yml"]), []
+            )
+            self.assertEqual(
+                gate.validate_changed(root, engine, ["utils/python/py-lonely.yml"]), 0
+            )
+
+    def git(self, root: Path, *args: str) -> None:
+        subprocess.run(
+            ["git", "-c", "user.name=t", "-c", "user.email=t@example.invalid",
+             "-c", "commit.gpgsign=false", *args],
+            cwd=root, check=True, capture_output=True,
+        )
+
+    def commit_base(self, root: Path) -> None:
+        self.git(root, "init", "-q")
+        self.git(root, "add", "-A")
+        self.git(root, "commit", "-q", "-m", "base")
+
+    def test_flow_mapping_reference_is_selected(self) -> None:
+        for spelling in (
+            "rule: { matches: py-clean }\n",
+            "rule: {kind: call, matches: 'py-clean'}\n",
+            'rule:\n  all:\n    - matches: "py-clean"  # note\n',
+            "utils:\n  helper:\n    matches: py-clean\nrule:\n  matches: helper\n",
+        ):
+            with self.subTest(spelling=spelling), tempfile.TemporaryDirectory() as name:
+                root = Path(name)
+                self.make_repo(root)
+                (root / "rules/python/security/py-util.yml").write_text(
+                    "id: py-util\nlanguage: python\n" + spelling
+                )
+                self.assertEqual(
+                    gate.util_affected_rules(root, None, ["utils/python/py-clean.yml"]),
+                    [PurePosixPath("rules/python/security/py-util.yml")],
+                )
+
+    def test_pattern_text_mentioning_matches_is_not_a_reference(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self.make_repo(root)
+            (root / "rules/python/security/py-util.yml").write_text(
+                "id: py-util\nlanguage: python\nrule:\n  pattern: |\n"
+                "    matches: py-clean\n"
+            )
+            self.assertEqual(
+                gate.util_affected_rules(root, None, ["utils/python/py-clean.yml"]), []
+            )
+
+    def test_unparseable_rule_falls_back_to_text_scan(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self.make_repo(root)
+            (root / "rules/python/security/py-util.yml").write_text(
+                "id: py-util\nrule: [unclosed\n  matches: py-clean\n"
+            )
+            with redirect_stderr(io.StringIO()) as stderr:
+                found = gate.util_affected_rules(
+                    root, None, ["utils/python/py-clean.yml"]
+                )
+            self.assertEqual(
+                found, [PurePosixPath("rules/python/security/py-util.yml")]
+            )
+            self.assertIn("text scan", stderr.getvalue())
+
+    def test_renamed_util_id_selects_rules_using_old_id(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            util, _, _ = self.make_repo(root)
+            self.commit_base(root)
+            util.write_text(UTIL_TEXT.replace("id: py-clean", "id: py-renamed"))
+            self.assertEqual(
+                gate.util_affected_rules(root, "HEAD", ["utils/python/py-clean.yml"]),
+                [PurePosixPath("rules/python/security/py-util.yml")],
+            )
+            # Without the base the old id is lost (the defect being fixed).
+            self.assertEqual(
+                gate.util_affected_rules(root, None, ["utils/python/py-clean.yml"]), []
+            )
+
+    @unittest.skipUnless(REAL_ENGINE, "ast-grep not installed")
+    def test_renamed_util_id_leaves_reference_undefined(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            util, _, _ = self.make_repo(root)
+            self.commit_base(root)
+            util.write_text(UTIL_TEXT.replace("id: py-clean", "id: py-renamed"))
+            with self.assertRaises(gate.ValidationError) as caught:
+                gate.validate_changed(
+                    root, Path(REAL_ENGINE), ["utils/python/py-clean.yml"], "HEAD"
+                )
+            self.assertIn("py-util", str(caught.exception))
+
+    def test_deleted_util_selects_its_referencers(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            util, _, _ = self.make_repo(root)
+            self.commit_base(root)
+            util.unlink()
+            self.assertEqual(
+                gate.util_affected_rules(root, "HEAD", ["utils/python/py-clean.yml"]),
+                [PurePosixPath("rules/python/security/py-util.yml")],
+            )
+
+    def test_direct_rule_edit_still_requires_fixture_change(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self.make_repo(root)
+            engine = self.fake_engine(root)
+            with self.assertRaises(gate.ValidationError) as caught:
+                gate.validate_changed(
+                    root, engine, ["rules/python/security/py-util.yml"]
+                )
+            self.assertIn("require changed mirrored fixtures", str(caught.exception))
 
 
 if __name__ == "__main__":
