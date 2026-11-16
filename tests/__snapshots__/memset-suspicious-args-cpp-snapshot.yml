@@ -1,11 +1,55 @@
 id: memset-suspicious-args-cpp
 snapshots:
+  "void f(char *p) { memset(p, sizeof(int), 0); }":
+    labels:
+    - source: memset(p, sizeof(int), 0)
+      style: primary
+      start: 18
+      end: 43
+    - source: memset
+      style: secondary
+      start: 18
+      end: 24
+    - source: sizeof(int)
+      style: secondary
+      start: 28
+      end: 39
+    - source: "0"
+      style: secondary
+      start: 41
+      end: 42
+    - source: (p, sizeof(int), 0)
+      style: secondary
+      start: 24
+      end: 43
   "void f(char *p) { memset(p, sizeof(p), 0); }":
     labels:
     - source: memset(p, sizeof(p), 0)
       style: primary
       start: 18
       end: 41
+  "void f(char *p) { memset(p, sizeof(struct foo), 0); }":
+    labels:
+    - source: memset(p, sizeof(struct foo), 0)
+      style: primary
+      start: 18
+      end: 50
+    - source: memset
+      style: secondary
+      start: 18
+      end: 24
+    - source: sizeof(struct foo)
+      style: secondary
+      start: 28
+      end: 46
+    - source: "0"
+      style: secondary
+      start: 48
+      end: 49
+    - source: (p, sizeof(struct foo), 0)
+      style: secondary
+      start: 24
+      end: 50
   "void f(char *p) { std::memset(p, sizeof(buf), 0); }":
     labels:
     - source: std::memset(p, sizeof(buf), 0)

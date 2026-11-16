@@ -25,6 +25,24 @@ rule:
     - pattern: 'std::memset($P, sizeof($X), 0)'
     - pattern: 'memset($P, sizeof $X, 0)'
     - pattern: 'std::memset($P, sizeof $X, 0)'
+    - all:
+        - kind: call_expression
+        - has:
+            field: function
+            regex: '^(std::)?memset$'
+        - has:
+            field: arguments
+            all:
+              - has:
+                  nthChild: 2
+                  kind: sizeof_expression
+              - has:
+                  nthChild: 3
+                  kind: number_literal
+                  regex: '^0$'
+              - not:
+                  has:
+                    nthChild: 4
 metadata:
   rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.51.0

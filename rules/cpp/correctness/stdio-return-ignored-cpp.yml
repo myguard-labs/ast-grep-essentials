@@ -13,8 +13,9 @@ note: >-
   [OWASP A10:2025]
   Syntactic subset of cert-err33-c. A match is an expression statement whose
   call names fgets, fread, fwrite, fputs, fputc, fseek, fsetpos, fopen,
-  tmpfile or setvbuf unqualified or as std::name, or remove/rename as ::name or
-  std::name with the C argument count. An explicit (void) cast parses as a cast
+  tmpfile or setvbuf unqualified or as ::name or std::name, or remove/rename
+  as ::name or std::name with the C argument count. A discarded fputs or
+  fputc to stdout or stderr is reported by design, as in cert-err33-c. An explicit (void) cast parses as a cast
   expression and is not matched. A same-named member function called without
   an object, or a user overload, is not told apart from the C function.
 rule:
@@ -24,7 +25,7 @@ rule:
     any:
       - has:
           field: function
-          regex: '^(std::)?(fgets|fread|fwrite|fputs|fputc|fseek|fsetpos|fopen|tmpfile|setvbuf)$'
+          regex: '^(::|std::)?(fgets|fread|fwrite|fputs|fputc|fseek|fsetpos|fopen|tmpfile|setvbuf)$'
       - all:
           - has:
               field: function
