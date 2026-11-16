@@ -7,16 +7,63 @@ message: >-
   memcpy length is not a plain sizeof expression; check it cannot exceed the
   destination array size.
 note: >-
-  Syntactic only; does not verify the destination is a fixed-size local array,
-  and guarded copies also match.
+  Syntactic only; requires the destination identifier to be declared as an
+  array in an enclosing block (or at file level for top-level statements),
+  skips a constant N * sizeof(T) length (not variable-length, so out of scope)
+  and a copy inside the then-branch of an if whose condition is
+  `<len> <= sizeof(dst)` on the same length expression; a copy in the else
+  branch or guarded by a different length still matches. Other guards still
+  match; a destination that is a global array used inside a function is not
+  matched. The array declaration is looked up by name, so it may match a
+  declaration in a sibling block or one that appears later in the scope.
 rule:
-  pattern: 'memcpy($DST, $SRC, $LEN)'
+  all:
+    - pattern: 'memcpy($DST, $SRC, $LEN)'
+    - any:
+        - inside:
+            stopBy: end
+            kind: compound_statement
+            has:
+              stopBy: end
+              pattern:
+                context: 'int $DST[$SZ]'
+                selector: array_declarator
+        - all:
+            - not:
+                inside:
+                  stopBy: end
+                  kind: function_definition
+            - inside:
+                stopBy: end
+                kind: translation_unit
+                has:
+                  stopBy: end
+                  pattern:
+                    context: 'int $DST[$SZ]'
+                    selector: array_declarator
+    - not:
+        inside:
+          stopBy: end
+          inside:
+            field: consequence
+            kind: if_statement
+            has:
+              field: condition
+              has:
+                stopBy: end
+                pattern: '$LEN <= sizeof($DST)'
 constraints:
   DST:
     kind: identifier
   LEN:
     not:
-      kind: sizeof_expression
+      any:
+        - kind: sizeof_expression
+        - all:
+            - kind: binary_expression
+            - has: {field: left, kind: number_literal}
+            - has: {field: operator, regex: '^\*$'}
+            - has: {field: right, kind: sizeof_expression}
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
@@ -29,4 +76,6 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/120.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
+    - "FN: constant N * sizeof(T) length that exceeds the array 'int buf[2]; memcpy(buf, src, 8 * sizeof(int));' is not matched (not variable-length)"
+    - "FN: global array destination used inside a function 'char g[4]; void f(size_t n){ memcpy(g, src, n); }' is not matched"
     - "FN: member destination 'memcpy(s->buf, src, n)' with unchecked n is not matched (rule requires identifier destination)"
