@@ -5,13 +5,15 @@ language: kotlin
 severity: warning
 message: >-
   MODE_WORLD_READABLE and MODE_WORLD_WRITEABLE make a file readable or writable
-  by every app on the device. Both are removed or throw on current Android
-  versions. Use the private mode and share data through a FileProvider or a
+  by every app on the device. Both are deprecated in API 17 and throw a
+  SecurityException from API 24 (N). Use the private mode and share data through a FileProvider or a
   content provider with explicit permissions.
 note: >-
   Matches any reference to the Context constants MODE_WORLD_READABLE or
   MODE_WORLD_WRITEABLE, qualified or bare. Whether the value reaches a file or
-  preferences API is not resolved.
+  preferences API is not resolved. Names are matched by text, not resolved: a
+  same-name local constant (`val MODE_WORLD_READABLE = 0`, its declaration and
+  its uses) is a known false positive.
 
   [CWE-276] [A01:2025] [A01:2021]
 

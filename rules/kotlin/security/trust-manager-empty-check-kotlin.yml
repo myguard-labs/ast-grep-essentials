@@ -10,7 +10,8 @@ message: >-
   for an untrusted chain.
 note: >-
   Matches a function named checkServerTrusted or checkClientTrusted whose body
-  is an empty block, with only whitespace or comments inside. An expression
+  is an empty block, with only whitespace or comments inside, or whose only
+  statement is a bare no-op: `return`, `return@label` or `Unit`. An expression
   body of `= Unit` is also empty. A body that logs, or that delegates to another
   manager (block or expression body), is not matched.
 
@@ -28,6 +29,10 @@ rule:
           - regex: '^\{'
             not:
               has: {kind: statements}
+          - regex: '^\{'
+            has:
+              kind: statements
+              regex: '^(return(@\w+)?|Unit)\s*;?$'
           - regex: '^=\s*Unit\s*$'
 metadata:
   rule_modified_at: '2026-11-16'

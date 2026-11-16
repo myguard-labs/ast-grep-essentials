@@ -24,6 +24,14 @@ valid:
     }
   - |
     fun checkServer(chain: Array<X509Certificate>) {}
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { return validate(chain) }
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { Unit; validate(chain) }
+    }
 invalid:
   - |
     object : X509TrustManager {
@@ -66,4 +74,23 @@ invalid:
   - |
     object : X509TrustManager {
         override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) = Unit
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { return }
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) { Unit }
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
+            // accept all
+            return
+        }
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { return@checkServerTrusted }
     }
