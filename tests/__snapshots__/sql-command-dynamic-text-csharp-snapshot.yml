@@ -1,12 +1,7 @@
 id: sql-command-dynamic-text-csharp
 snapshots:
-  ? |
-    class Example {
-        void Query(NpgsqlConnection conn, string name) {
-            var cmd = new NpgsqlCommand(string.Format("SELECT * FROM t WHERE n = '{0}'", name), conn);
-        }
-    }
-  : labels:
+  "class Example {\n    void Query(NpgsqlConnection conn, string name) {\n        var cmd = new NpgsqlCommand(string.Format(\"SELECT * FROM t WHERE n = '{0}'\", name), conn);\n    }\n}\n":
+    labels:
     - source: new NpgsqlCommand(string.Format("SELECT * FROM t WHERE n = '{0}'", name), conn)
       style: primary
       start: 87
@@ -31,13 +26,8 @@ snapshots:
       style: secondary
       start: 104
       end: 166
-  ? |
-    class Example {
-        void Query(SqlCommand cmd, string name) {
-            cmd.CommandText = "DELETE FROM t WHERE n = " + name;
-        }
-    }
-  : labels:
+  "class Example {\n    void Query(SqlCommand cmd, string name) {\n        cmd.CommandText = \"DELETE FROM t WHERE n = \" + name;\n    }\n}\n":
+    labels:
     - source: cmd.CommandText = "DELETE FROM t WHERE n = " + name
       style: primary
       start: 70
@@ -54,17 +44,12 @@ snapshots:
       style: secondary
       start: 117
       end: 121
-    - source: '"DELETE FROM t WHERE n = " + name'
+    - source: "\"DELETE FROM t WHERE n = \" + name"
       style: secondary
       start: 88
       end: 121
-  ? |
-    class Example {
-        void Query(SqlConnection conn, int id) {
-            var cmd = new SqlCommand($"SELECT * FROM t WHERE id = {id}", conn);
-        }
-    }
-  : labels:
+  "class Example {\n    void Query(SqlConnection conn, int id) {\n        var cmd = new SqlCommand($\"SELECT * FROM t WHERE id = {id}\", conn);\n    }\n}\n":
+    labels:
     - source: new SqlCommand($"SELECT * FROM t WHERE id = {id}", conn)
       style: primary
       start: 79
@@ -73,7 +58,7 @@ snapshots:
       style: secondary
       start: 83
       end: 93
-    - source: '{id}'
+    - source: "{id}"
       style: secondary
       start: 123
       end: 127
@@ -89,13 +74,8 @@ snapshots:
       style: secondary
       start: 93
       end: 135
-  ? |
-    class Example {
-        void Query(SqlConnection conn, string name) {
-            var cmd = new SqlCommand("SELECT * FROM t WHERE n = '" + name + "'", conn);
-        }
-    }
-  : labels:
+  "class Example {\n    void Query(SqlConnection conn, string name) {\n        var cmd = new SqlCommand(\"SELECT * FROM t WHERE n = '\" + name + \"'\", conn);\n    }\n}\n":
+    labels:
     - source: new SqlCommand("SELECT * FROM t WHERE n = '" + name + "'", conn)
       style: primary
       start: 84
@@ -112,11 +92,11 @@ snapshots:
       style: secondary
       start: 131
       end: 135
-    - source: '"SELECT * FROM t WHERE n = ''" + name + "''"'
+    - source: "\"SELECT * FROM t WHERE n = '\" + name + \"'\""
       style: secondary
       start: 99
       end: 141
-    - source: '"SELECT * FROM t WHERE n = ''" + name + "''"'
+    - source: "\"SELECT * FROM t WHERE n = '\" + name + \"'\""
       style: secondary
       start: 99
       end: 141
@@ -124,14 +104,8 @@ snapshots:
       style: secondary
       start: 98
       end: 148
-  ? |
-    class Example {
-        void Run(string x) {
-            var c = new System.Data.SqlClient.SqlCommand("SELECT " + x);
-            var d = new global::System.Data.SqlClient.SqlCommand(global::System.String.Format("SELECT {0}", x));
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        var c = new System.Data.SqlClient.SqlCommand(\"SELECT \" + x);\n        var d = new global::System.Data.SqlClient.SqlCommand(global::System.String.Format(\"SELECT {0}\", x));\n    }\n}\n":
+    labels:
     - source: new System.Data.SqlClient.SqlCommand("SELECT " + x)
       style: primary
       start: 57
@@ -148,11 +122,11 @@ snapshots:
       style: secondary
       start: 106
       end: 107
-    - source: '"SELECT " + x'
+    - source: "\"SELECT \" + x"
       style: secondary
       start: 94
       end: 107
-    - source: '"SELECT " + x'
+    - source: "\"SELECT \" + x"
       style: secondary
       start: 94
       end: 107
@@ -160,13 +134,8 @@ snapshots:
       style: secondary
       start: 93
       end: 108
-  ? |
-    class Example {
-        void Run(string x) {
-            var cmd = new SqlCommand { CommandText = "SELECT " + x };
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        var cmd = new SqlCommand { CommandText = \"SELECT \" + x };\n    }\n}\n":
+    labels:
     - source: CommandText = "SELECT " + x
       style: primary
       start: 76
@@ -183,18 +152,12 @@ snapshots:
       style: secondary
       start: 102
       end: 103
-    - source: '"SELECT " + x'
+    - source: "\"SELECT \" + x"
       style: secondary
       start: 90
       end: 103
-  ? |
-    class Example {
-        void Run(string x) {
-            var cmd = new SqlCommand("SELECT 1");
-            cmd.CommandText = $"SELECT * FROM t WHERE a = {x}";
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        var cmd = new SqlCommand(\"SELECT 1\");\n        cmd.CommandText = $\"SELECT * FROM t WHERE a = {x}\";\n    }\n}\n":
+    labels:
     - source: cmd.CommandText = $"SELECT * FROM t WHERE a = {x}"
       style: primary
       start: 95
@@ -203,7 +166,7 @@ snapshots:
       style: secondary
       start: 95
       end: 110
-    - source: '{x}'
+    - source: "{x}"
       style: secondary
       start: 141
       end: 144
@@ -211,13 +174,8 @@ snapshots:
       style: secondary
       start: 113
       end: 145
-  ? |
-    class Example {
-        void Run(string x) {
-            var cmd = new SqlCommand($@"SELECT * FROM t WHERE a = {x}");
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        var cmd = new SqlCommand($@\"SELECT * FROM t WHERE a = {x}\");\n    }\n}\n":
+    labels:
     - source: new SqlCommand($@"SELECT * FROM t WHERE a = {x}")
       style: primary
       start: 59
@@ -226,7 +184,7 @@ snapshots:
       style: secondary
       start: 63
       end: 73
-    - source: '{x}'
+    - source: "{x}"
       style: secondary
       start: 103
       end: 106
@@ -242,14 +200,8 @@ snapshots:
       style: secondary
       start: 73
       end: 108
-  ? |
-    class Example {
-        void Run(string x) {
-            var cmd = new SqlCommand();
-            cmd.CommandText = string.Format("SELECT {0}", x);
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        var cmd = new SqlCommand();\n        cmd.CommandText = string.Format(\"SELECT {0}\", x);\n    }\n}\n":
+    labels:
     - source: cmd.CommandText = string.Format("SELECT {0}", x)
       style: primary
       start: 85
@@ -266,13 +218,8 @@ snapshots:
       style: secondary
       start: 103
       end: 133
-  ? |
-    class Example {
-        void Run(string x) {
-            var cmd = new SqlCommand(/* q */ "SELECT * FROM t WHERE a = '" + x + "'");
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        var cmd = new SqlCommand(/* q */ \"SELECT * FROM t WHERE a = '\" + x + \"'\");\n    }\n}\n":
+    labels:
     - source: new SqlCommand(/* q */ "SELECT * FROM t WHERE a = '" + x + "'")
       style: primary
       start: 59
@@ -289,11 +236,11 @@ snapshots:
       style: secondary
       start: 114
       end: 115
-    - source: '"SELECT * FROM t WHERE a = ''" + x + "''"'
+    - source: "\"SELECT * FROM t WHERE a = '\" + x + \"'\""
       style: secondary
       start: 82
       end: 121
-    - source: '"SELECT * FROM t WHERE a = ''" + x + "''"'
+    - source: "\"SELECT * FROM t WHERE a = '\" + x + \"'\""
       style: secondary
       start: 82
       end: 121
@@ -301,3 +248,33 @@ snapshots:
       style: secondary
       start: 73
       end: 122
+  "class Example {\n    void Run(string x) {\n        var cmd = new SqlCommand(cmdText: \"SELECT \" + x);\n    }\n}\n":
+    labels:
+    - source: "new SqlCommand(cmdText: \"SELECT \" + x)"
+      style: primary
+      start: 59
+      end: 97
+    - source: SqlCommand
+      style: secondary
+      start: 63
+      end: 73
+    - source: +
+      style: secondary
+      start: 93
+      end: 94
+    - source: x
+      style: secondary
+      start: 95
+      end: 96
+    - source: "\"SELECT \" + x"
+      style: secondary
+      start: 83
+      end: 96
+    - source: "cmdText: \"SELECT \" + x"
+      style: secondary
+      start: 74
+      end: 96
+    - source: "(cmdText: \"SELECT \" + x)"
+      style: secondary
+      start: 73
+      end: 97
