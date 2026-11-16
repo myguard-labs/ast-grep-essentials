@@ -47,6 +47,34 @@ valid:
         Cookie c = Cookie.of("foo", "bar");
       }
     }
+  - |
+    package com.example;
+
+    import io.micronaut.http.*;
+    import static io.micronaut.http.netty.cookies.NettyCookie.*;
+
+    @Controller("/hello")
+    public class HelloController {
+
+      @Post("/test1")
+      public MutableHttpMessage<Object> postTest1() {
+        new NettyCookie("foo", "bar");
+      }
+    }
+  - |
+    package com.example;
+
+    import io.micronaut.http.*;
+    import static io.micronaut.http.netty.cookies.NettyCookie.*;
+
+    @Controller("/hello")
+    public class HelloController {
+
+      @Post("/test1")
+      public MutableHttpMessage<Object> postTest1() {
+        NettyCookie z = new NettyCookie("foo", "bar");
+      }
+    }
 invalid:
   - |
     package com.example;
