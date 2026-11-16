@@ -1,11 +1,15 @@
 id: c-self-assignment
 snapshots:
-  ? "struct s { int len; int other; };\nvoid f(struct s *stmt) {\n\tstmt->len = stmt->len;\n}"
-  : labels:
+  "struct s { int len; int other; };\nvoid f(struct s *stmt) {\n\tstmt->len = stmt->len;\n}":
+    labels:
     - source: stmt->len = stmt->len
       style: primary
       start: 60
       end: 81
+    - source: "="
+      style: secondary
+      start: 70
+      end: 71
     - source: stmt->len
       style: secondary
       start: 60
@@ -14,3 +18,21 @@ snapshots:
       style: secondary
       start: 72
       end: 81
+  "void f(int x) { x = x; }":
+    labels:
+    - source: x = x
+      style: primary
+      start: 16
+      end: 21
+    - source: "="
+      style: secondary
+      start: 18
+      end: 19
+    - source: x
+      style: secondary
+      start: 16
+      end: 17
+    - source: x
+      style: secondary
+      start: 20
+      end: 21
