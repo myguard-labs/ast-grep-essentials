@@ -16,12 +16,17 @@ rule:
     - pattern: 'preg_replace(''$PAT'', '''', $$$ARGS)'
     - pattern: 'preg_replace($PAT, "", $$$ARGS)'
   has:
-    any:
-      - kind: string_content
-        regex: '\\x[89a-fA-F][0-9a-fA-F]'
-      - kind: escape_sequence
-        regex: '\\x[89a-fA-F][0-9a-fA-F]'
-    stopBy: end
+    kind: arguments
+    has:
+      kind: argument
+      nthChild: 1
+      has:
+        any:
+          - kind: string_content
+            regex: '\\x[89a-fA-F][0-9a-fA-F]'
+          - kind: escape_sequence
+            regex: '\\x[89a-fA-F][0-9a-fA-F]'
+        stopBy: end
   not:
     has:
       kind: arguments
