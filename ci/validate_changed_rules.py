@@ -473,7 +473,11 @@ def _references(path: Path, ids: set[str]) -> bool:
     text = data.decode("utf-8", errors="replace")
     for util_id in ids:
         quoted = re.escape(util_id)
-        if re.search(rf"\bmatches:[ \t]*['\"]?{quoted}['\"]?(?![\w.-])", text):
+        if re.search(
+            rf"(?:^|[\s{{,\[])['\"]?matches['\"]?[ \t]*:[ \t]*['\"]?{quoted}['\"]?(?![\w.-])",
+            text,
+            re.MULTILINE,
+        ):
             return True
     return False
 

@@ -858,6 +858,30 @@ class GlobalUtilTests(unittest.TestCase):
                     self.assertFalse(gate._references(rule, {"other"}))
             self.assertIn("text scan", stderr.getvalue())
 
+    def test_text_scan_matches_quoted_and_unquoted_keys(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            rule = root / "py-rule.yml"
+            cases = {
+                'rule: {"matches": "py-clean"}\n': True,  # double-quoted key
+                "rule: {'matches': py-clean}\n": True,  # single-quoted key
+                "rule:\n  matches: py-clean\n": True,  # unquoted key still works
+                "rule:\n  matches: 'py-clean'\n": True,  # quoted value
+                "rule:\n  matches_extra: py-clean\n": False,  # other key
+                'rule:\n  note: "matches py-clean"\n': False,  # word in a string
+                "rule:\n  matches: py-clean-extra\n": False,  # longer id
+                "rule: {all: [matches: py-clean]}\n": True,  # flow sequence pair
+                "rule: {any: [{matches: py-clean}, matches: other]}\n": True,
+            }
+            with patch.dict(sys.modules, {"yaml": None}):
+                for text, expected in cases.items():
+                    rule.write_text(text)
+                    with self.subTest(text=text):
+                        with redirect_stderr(io.StringIO()):
+                            self.assertIs(
+                                gate._references(rule, {"py-clean"}), expected
+                            )
+
     @unittest.skipUnless(REAL_ENGINE, "ast-grep not installed")
     def test_rule_using_global_util_validates(self) -> None:
         with tempfile.TemporaryDirectory() as name:
