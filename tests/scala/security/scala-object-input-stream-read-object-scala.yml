@@ -41,6 +41,38 @@ valid:
       def ok(in: java.io.InputStream) =
         Using.resource(new BufferedReader(in)) { o => o.readObject() }
     }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, j: Json) = {
+        {
+          val s = new ObjectInputStream(in)
+          s.close()
+        }
+        {
+          val s = j.reader()
+          s.readObject()
+        }
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, j: Json) = {
+        val s = new ObjectInputStream(in)
+        s.close()
+        {
+          val s = j.reader()
+          s.readObject()
+        }
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream) = {
+        val s = new ObjectInputStream(in)
+        def other(s: Json) = s.readObject()
+        other(null)
+      }
+    }
 invalid:
   - |
     object A {
@@ -92,4 +124,24 @@ invalid:
     object A {
       def bad(in: java.io.InputStream) =
         _root_.scala.util.Using.resource(new ObjectInputStream(in))(o => o.readObject())
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream, j: Json) = {
+        val s = new ObjectInputStream(in)
+        {
+          val t = j.reader()
+          t.close()
+        }
+        s.readObject()
+      }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) = {
+        val s = new ObjectInputStream(in)
+        if (in != null) {
+          s.readObject()
+        } else null
+      }
     }

@@ -16,13 +16,15 @@ note: >-
       - https://cwe.mitre.org/data/definitions/502.html
       - https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures
   Matches readObject() on `new ObjectInputStream(...)` directly, on a val
-  bound to one in the enclosing block, and on the lambda parameter of
+  bound to one in the nearest enclosing block that declares that name, and on the lambda parameter of
   `Using(new ObjectInputStream(...)) { ... }`, `Using.resource(...)` and
   `scala.util.Using(...)`. An anonymous subclass with a body, which is the
   usual place for a resolveClass allow-list, and other stream types are not
   reported. A fully qualified or `_root_` qualified
   `java.io.ObjectInputStream` is reported like the short name; an alias
-  import such as `import java.io.{ObjectInputStream => Stream}` is a known miss.
+  import such as `import java.io.{ObjectInputStream => Stream}` is a known miss. A `var`, a pattern binding or a class member
+  receiver is not tracked, and a `def` parameter of the same name hides an
+  outer val.
   The rule cannot tell whether the stream carries untrusted bytes, so review
   each hit for the data source.
 utils:
@@ -68,10 +70,24 @@ rule:
               field: value
               matches: plain-ois-instance
         - inside:
-            stopBy: end
+            stopBy:
+              any:
+                - kind: block
+                  has:
+                    kind: val_definition
+                    has:
+                      field: pattern
+                      kind: identifier
+                      pattern: $STREAM
+                - kind: function_definition
+                  has:
+                    field: parameters
+                    has:
+                      stopBy: end
+                      kind: identifier
+                      pattern: $STREAM
             kind: block
             has:
-              stopBy: end
               kind: val_definition
               all:
                 - has:

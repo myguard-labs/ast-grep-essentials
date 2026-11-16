@@ -352,6 +352,50 @@ snapshots:
       style: secondary
       start: 48
       end: 81
+  "object A {\n  def bad(in: java.io.InputStream) = {\n    val s = new ObjectInputStream(in)\n    if (in != null) {\n      s.readObject()\n    } else null\n  }\n}\n":
+    labels:
+    - source: s.readObject()
+      style: primary
+      start: 116
+      end: 130
+    - source: readObject
+      style: secondary
+      start: 118
+      end: 128
+    - source: s
+      style: secondary
+      start: 116
+      end: 117
+    - source: s.readObject
+      style: secondary
+      start: 116
+      end: 128
+    - source: s
+      style: secondary
+      start: 58
+      end: 59
+    - source: ObjectInputStream
+      style: secondary
+      start: 66
+      end: 83
+    - source: new ObjectInputStream(in)
+      style: secondary
+      start: 62
+      end: 87
+    - source: val s = new ObjectInputStream(in)
+      style: secondary
+      start: 54
+      end: 87
+    - source: |-
+        {
+            val s = new ObjectInputStream(in)
+            if (in != null) {
+              s.readObject()
+            } else null
+          }
+      style: secondary
+      start: 48
+      end: 150
   "object A {\n  def bad(in: java.io.InputStream) = {\n    val stream = new _root_.java.io.ObjectInputStream(in)\n    stream.readObject()\n  }\n}\n":
     labels:
     - source: stream.readObject()
@@ -394,6 +438,52 @@ snapshots:
       style: secondary
       start: 48
       end: 135
+  "object A {\n  def bad(in: java.io.InputStream, j: Json) = {\n    val s = new ObjectInputStream(in)\n    {\n      val t = j.reader()\n      t.close()\n    }\n    s.readObject()\n  }\n}\n":
+    labels:
+    - source: s.readObject()
+      style: primary
+      start: 154
+      end: 168
+    - source: readObject
+      style: secondary
+      start: 156
+      end: 166
+    - source: s
+      style: secondary
+      start: 154
+      end: 155
+    - source: s.readObject
+      style: secondary
+      start: 154
+      end: 166
+    - source: s
+      style: secondary
+      start: 67
+      end: 68
+    - source: ObjectInputStream
+      style: secondary
+      start: 75
+      end: 92
+    - source: new ObjectInputStream(in)
+      style: secondary
+      start: 71
+      end: 96
+    - source: val s = new ObjectInputStream(in)
+      style: secondary
+      start: 63
+      end: 96
+    - source: |-
+        {
+            val s = new ObjectInputStream(in)
+            {
+              val t = j.reader()
+              t.close()
+            }
+            s.readObject()
+          }
+      style: secondary
+      start: 57
+      end: 172
   "object A {\n  def bad(p: String) = {\n    val stream = new java.io.ObjectInputStream(new FileInputStream(p))\n    try { stream.readObject() } finally stream.close()\n  }\n}\n":
     labels:
     - source: stream.readObject()
