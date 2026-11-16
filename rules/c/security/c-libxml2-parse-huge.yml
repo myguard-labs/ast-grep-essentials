@@ -9,8 +9,8 @@ message: >-
   untrusted XML.
 note: >-
   Matches the XML_PARSE_HUGE option constant in an argument of an xmlRead*,
-  xmlCtxtRead*, xmlReadMemory-style or xmlCtxtUseOptions call, including inside
-  a bitwise OR. A flag set through a variable, and a document from a trusted,
+  xmlCtxtRead*, xmlCtxtUseOptions or xmlCtxtSetOptions call, including inside
+  a bitwise OR or an integer cast. A flag set through a variable, and a document from a trusted,
   size-limited source, are not seen or are the routine dismissal. Clearing the
   flag with a bitwise AND NOT (opts & ~XML_PARSE_HUGE) is not matched.
 
@@ -29,11 +29,12 @@ rule:
             any:
               - kind: binary_expression
               - kind: parenthesized_expression
+              - kind: cast_expression
         inside:
           kind: call_expression
           has:
             field: function
-            regex: '^xml(Ctxt)?(Read\w*|UseOptions)$'
+            regex: '^xml(Ctxt)?(Read\w*|UseOptions|SetOptions)$'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'
