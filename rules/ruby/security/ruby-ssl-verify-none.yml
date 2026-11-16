@@ -1,0 +1,26 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ruby-ssl-verify-none
+language: ruby
+severity: warning
+message: >-
+  OpenSSL::SSL::VERIFY_NONE turns off TLS certificate verification, which allows
+  man-in-the-middle attacks on the connection.
+note: >-
+  Fires on the constant OpenSSL::SSL::VERIFY_NONE, with or without a leading
+  ::. OpenSSL::SSL::VERIFY_PEER, a similarly named constant on another module,
+  and mentions in comments or strings are not matched. A test-only client that
+  never sends real credentials is the routine dismissal.
+rule:
+  kind: scope_resolution
+  regex: '^(::)?OpenSSL::SSL::VERIFY_NONE$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-295'
+  owasp: 'A04:2025|A02:2021'
+  category: 'security'
+  subcategory: 'certificate-validation'
+  references: 'https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html'

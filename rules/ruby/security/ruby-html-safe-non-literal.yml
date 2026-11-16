@@ -1,0 +1,78 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ruby-html-safe-non-literal
+language: ruby
+severity: warning
+message: >-
+  html_safe or raw marks a non-literal value as safe HTML, which disables Rails
+  output escaping and allows cross-site scripting when the value is user data.
+note: >-
+  Fires on VALUE.html_safe and raw(VALUE) where VALUE is not a plain string
+  literal and is not itself a call to sanitize, html_escape, escapeHTML,
+  escape_once or h, either bare or on a known helper receiver (ERB::Util, CGI,
+  Rack::Utils, helpers, view); the same method on another receiver is flagged. strip_tags removes tags but does not escape, so it is not exempt. Literal strings, escaped values and a raw call with no
+  argument are not matched. Content that is built from trusted constants is the
+  routine dismissal.
+rule:
+  any:
+    - pattern: $VALUE.html_safe
+    - pattern: $VALUE&.html_safe
+    - kind: call
+      all:
+        - not:
+            has:
+              field: receiver
+              regex: '.'
+        - has:
+            field: method
+            regex: '^raw$'
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              nthChild:
+                position: 1
+                ofRule:
+                  not:
+                    kind: comment
+              not:
+                any:
+                  - kind: string
+                    not:
+                      has:
+                        kind: interpolation
+                  - matches: escaping-call
+constraints:
+  VALUE:
+    not:
+      any:
+        - kind: string
+          not:
+            has:
+              kind: interpolation
+        - matches: escaping-call
+utils:
+  escaping-call:
+    kind: call
+    all:
+      - has:
+          field: method
+          regex: '^(sanitize|html_escape|escapeHTML|escape_once|h)$'
+      - any:
+          - not:
+              has:
+                field: receiver
+                regex: '.'
+          - has:
+              field: receiver
+              regex: '^(ERB::Util|CGI|Rack::Utils|helpers|view|ActionController::Base\.helpers)$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-79'
+  owasp: 'A05:2025|A03:2021'
+  category: 'security'
+  subcategory: 'xss'
+  references: 'https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html'
