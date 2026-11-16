@@ -388,28 +388,90 @@ def find_rule(root: Path, rule_id: str) -> Path | None:
     return hits[0] if hits else None
 
 
-def _util_id(root: Path, base: str | None, path: PurePosixPath) -> str:
-    """The id a util is referenced by: its ``id:`` line, else its file stem."""
-    data = None
-    if (root / path).is_file():
-        data = (root / path).read_bytes()
-    elif base:
-        data = _base_blob(root, base, path)
+_ID_LINE = re.compile(rb"(?m)^id:[ \t]*['\"]?([^\s'\"#]+)")
+
+
+def _load_documents(data: bytes) -> list[object] | None:
+    """Parsed YAML documents, or ``None`` when PyYAML or the parse fails."""
+    try:
+        import yaml  # pylint: disable=import-outside-toplevel
+
+        return list(yaml.safe_load_all(data))
+    except (ImportError, yaml.YAMLError, ValueError, RecursionError):
+        return None
+
+
+def _walk_matches(node: object, found: set[str]) -> None:
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key == "matches" and isinstance(value, str):
+                found.add(value)
+            _walk_matches(value, found)
+    elif isinstance(node, list):
+        for item in node:
+            _walk_matches(item, found)
+
+
+def _util_ids_in(data: bytes | None, path: PurePosixPath) -> set[str]:
+    """Ids a util is referenced by in one version: its ``id``, else its stem."""
     if data:
-        found = re.search(rb"(?m)^id:[ \t]*['\"]?([^\s'\"#]+)", data)
-        if found:
-            return found.group(1).decode("utf-8", "replace")
-    return path.stem
+        documents = _load_documents(data)
+        if documents is not None:
+            ids = {
+                doc["id"]
+                for doc in documents
+                if isinstance(doc, dict) and isinstance(doc.get("id"), str)
+            }
+            if ids:
+                return ids
+        else:
+            found = _ID_LINE.search(data)
+            if found:
+                return {found.group(1).decode("utf-8", "replace")}
+    return {path.stem}
+
+
+def _util_ids(root: Path, base: str | None, path: PurePosixPath) -> set[str]:
+    """Every id a changed util went by: the base and the head version.
+
+    A renamed id keeps its old name so rules still using it are selected (and
+    then fail as undefined); a deleted util contributes its base ids only.
+    """
+    ids: set[str] = set()
+    if (root / path).is_file():
+        ids |= _util_ids_in((root / path).read_bytes(), path)
+    if base:
+        previous = _base_blob(root, base, path)
+        if previous is not None:
+            ids |= _util_ids_in(previous, path)
+    return ids or {path.stem}
 
 
 def _references(path: Path, ids: set[str]) -> bool:
+    """Whether the YAML at ``path`` has a ``matches:`` value naming an id.
+
+    Walks the parsed document, so flow mappings, quoting and trailing text are
+    all handled. Only when the file cannot be parsed does it fall back to a
+    text scan (reported on stderr).
+    """
     try:
-        text = path.read_text(encoding="utf-8", errors="replace")
+        data = path.read_bytes()
     except OSError:
         return False
+    documents = _load_documents(data)
+    if documents is not None:
+        found: set[str] = set()
+        _walk_matches(documents, found)
+        return bool(found & ids)
+    print(
+        f"validate-changed-rules: cannot parse {path.name}; "
+        "using text scan for util references",
+        file=sys.stderr,
+    )
+    text = data.decode("utf-8", errors="replace")
     for util_id in ids:
-        pattern = rf"(?m)\bmatches:[ \t]*['\"]?{re.escape(util_id)}['\"]?[ \t]*(?:#.*)?$"
-        if re.search(pattern, text):
+        quoted = re.escape(util_id)
+        if re.search(rf"\bmatches:[ \t]*['\"]?{quoted}['\"]?(?![\w.-])", text):
             return True
     return False
 
@@ -425,7 +487,7 @@ def util_affected_rules(
     for value in paths:
         path = _safe_path(value)
         if path is not None and path.parts[:1] == ("utils",):
-            ids.add(_util_id(root, base, path))
+            ids |= _util_ids(root, base, path)
     if not ids:
         return []
     utils = sorted((root / "utils").glob("**/*.yml")) if (root / "utils").is_dir() else []
@@ -433,9 +495,9 @@ def util_affected_rules(
     while grown:  # a util that matches a changed util is itself changed
         grown = False
         for util in utils:
-            util_id = _util_id(root, None, PurePosixPath(util.relative_to(root).as_posix()))
-            if util_id not in ids and _references(util, ids):
-                ids.add(util_id)
+            own = _util_ids(root, None, PurePosixPath(util.relative_to(root).as_posix()))
+            if not own <= ids and _references(util, ids):
+                ids |= own
                 grown = True
     affected = []
     for language in sorted(SUPPORTED_LANGUAGES):

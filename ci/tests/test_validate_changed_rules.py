@@ -900,6 +900,103 @@ class GlobalUtilTests(unittest.TestCase):
                 gate.validate_changed(root, engine, ["utils/python/py-lonely.yml"]), 0
             )
 
+    def git(self, root: Path, *args: str) -> None:
+        subprocess.run(
+            ["git", "-c", "user.name=t", "-c", "user.email=t@example.invalid",
+             "-c", "commit.gpgsign=false", *args],
+            cwd=root, check=True, capture_output=True,
+        )
+
+    def commit_base(self, root: Path) -> None:
+        self.git(root, "init", "-q")
+        self.git(root, "add", "-A")
+        self.git(root, "commit", "-q", "-m", "base")
+
+    def test_flow_mapping_reference_is_selected(self) -> None:
+        for spelling in (
+            "rule: { matches: py-clean }\n",
+            "rule: {kind: call, matches: 'py-clean'}\n",
+            'rule:\n  all:\n    - matches: "py-clean"  # note\n',
+            "utils:\n  helper:\n    matches: py-clean\nrule:\n  matches: helper\n",
+        ):
+            with self.subTest(spelling=spelling), tempfile.TemporaryDirectory() as name:
+                root = Path(name)
+                self.make_repo(root)
+                (root / "rules/python/security/py-util.yml").write_text(
+                    "id: py-util\nlanguage: python\n" + spelling
+                )
+                self.assertEqual(
+                    gate.util_affected_rules(root, None, ["utils/python/py-clean.yml"]),
+                    [PurePosixPath("rules/python/security/py-util.yml")],
+                )
+
+    def test_pattern_text_mentioning_matches_is_not_a_reference(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self.make_repo(root)
+            (root / "rules/python/security/py-util.yml").write_text(
+                "id: py-util\nlanguage: python\nrule:\n  pattern: |\n"
+                "    matches: py-clean\n"
+            )
+            self.assertEqual(
+                gate.util_affected_rules(root, None, ["utils/python/py-clean.yml"]), []
+            )
+
+    def test_unparseable_rule_falls_back_to_text_scan(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self.make_repo(root)
+            (root / "rules/python/security/py-util.yml").write_text(
+                "id: py-util\nrule: [unclosed\n  matches: py-clean\n"
+            )
+            with redirect_stderr(io.StringIO()) as stderr:
+                found = gate.util_affected_rules(
+                    root, None, ["utils/python/py-clean.yml"]
+                )
+            self.assertEqual(
+                found, [PurePosixPath("rules/python/security/py-util.yml")]
+            )
+            self.assertIn("text scan", stderr.getvalue())
+
+    def test_renamed_util_id_selects_rules_using_old_id(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            util, _, _ = self.make_repo(root)
+            self.commit_base(root)
+            util.write_text(UTIL_TEXT.replace("id: py-clean", "id: py-renamed"))
+            self.assertEqual(
+                gate.util_affected_rules(root, "HEAD", ["utils/python/py-clean.yml"]),
+                [PurePosixPath("rules/python/security/py-util.yml")],
+            )
+            # Without the base the old id is lost (the defect being fixed).
+            self.assertEqual(
+                gate.util_affected_rules(root, None, ["utils/python/py-clean.yml"]), []
+            )
+
+    @unittest.skipUnless(REAL_ENGINE, "ast-grep not installed")
+    def test_renamed_util_id_leaves_reference_undefined(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            util, _, _ = self.make_repo(root)
+            self.commit_base(root)
+            util.write_text(UTIL_TEXT.replace("id: py-clean", "id: py-renamed"))
+            with self.assertRaises(gate.ValidationError) as caught:
+                gate.validate_changed(
+                    root, Path(REAL_ENGINE), ["utils/python/py-clean.yml"], "HEAD"
+                )
+            self.assertIn("py-util", str(caught.exception))
+
+    def test_deleted_util_selects_its_referencers(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            util, _, _ = self.make_repo(root)
+            self.commit_base(root)
+            util.unlink()
+            self.assertEqual(
+                gate.util_affected_rules(root, "HEAD", ["utils/python/py-clean.yml"]),
+                [PurePosixPath("rules/python/security/py-util.yml")],
+            )
+
     def test_direct_rule_edit_still_requires_fixture_change(self) -> None:
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
