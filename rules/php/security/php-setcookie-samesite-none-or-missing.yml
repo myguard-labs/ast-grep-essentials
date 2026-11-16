@@ -1,0 +1,89 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-setcookie-samesite-none-or-missing
+language: php
+severity: warning
+message: >-
+  Cookie set with samesite None, or a session-style cookie set without any
+  samesite option. A cookie sent on cross-site requests lets another site
+  trigger authenticated requests, which is the precondition for cross-site
+  request forgery. Pass an options array with samesite Lax or Strict unless
+  the cookie must really travel cross-site, and then pair None with secure
+  and a CSRF token.
+note: >-
+  Fires on setcookie or setrawcookie whose options array has a samesite key
+  set to None, and on a call whose cookie name is a string literal containing
+  session, token, auth, jwt, sid, login, remember or csrf and that carries no
+  samesite key, including the positional form, which cannot express it. A call with named arguments, or one whose third argument
+  is a variable that may hold the options array, is not matched. A cookie that
+  must be embedded cross-site is the routine dismissal.
+
+  [CWE-1275] [A01:2025] [A01:2021]
+
+  [REFERENCES]
+      - https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#samesite_attribute
+utils:
+  samesite-element:
+    kind: array_element_initializer
+    regex: '(?i)^["'']samesite["'']\s*=>'
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?(setcookie|setrawcookie)$'
+    - not:
+        has:
+          field: arguments
+          has:
+            kind: argument
+            has: {field: name, regex: '.'}
+    - any:
+        - has:
+            field: arguments
+            has:
+              stopBy: end
+              kind: array_element_initializer
+              regex: '(?i)^["'']samesite["'']\s*=>\s*["'']none["'']$'
+        - all:
+            - has:
+                field: arguments
+                has:
+                  kind: argument
+                  nthChild:
+                    position: 1
+                    ofRule: {kind: argument}
+                  regex: '(?i)^["''][^"'']*(session|token|auth|jwt|sid|login|remember|csrf)'
+            - not:
+                has:
+                  field: arguments
+                  has:
+                    stopBy: end
+                    matches: samesite-element
+            - not:
+                all:
+                  - has:
+                      field: arguments
+                      has:
+                        kind: argument
+                        nthChild:
+                          position: 3
+                          ofRule: {kind: argument}
+                        has: {kind: variable_name}
+                  - not:
+                      has:
+                        field: arguments
+                        has:
+                          kind: argument
+                          nthChild:
+                            position: 4
+                            ofRule: {kind: argument}
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-1275'
+  owasp: 'A01:2025|A01:2021'
+  category: 'security'
+  references: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#samesite_attribute'
