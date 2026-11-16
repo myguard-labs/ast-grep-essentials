@@ -10,9 +10,12 @@ message: >-
   "AES/GCM/NoPadding".
 note: >-
   Matches Cipher.getInstance with a literal block-cipher name that has no mode,
-  or the same name with an explicit ECB mode. Nonliteral transformations, string
-  templates and receivers other than Cipher or javax.crypto.Cipher are not resolved. A
-  comment before the argument and a named argument are handled.
+  or the same name with an explicit ECB mode, including an ECB padding built
+  with a string template or a concatenation, a comment before the argument and a
+  named argument. Receivers other than Cipher or javax.crypto.Cipher are not
+  resolved. Known misses: a bare algorithm name concatenated with a variable
+  ("AES" + mode) and a transformation held in a variable or built entirely
+  from templates.
 rule:
   kind: call_expression
   all:
@@ -27,8 +30,11 @@ rule:
             kind: value_argument
             nthChild: {position: 1, ofRule: {kind: value_argument}}
             has:
-              kind: string_literal
-              regex: '^"(AES|AES_128|AES_192|AES_256|DES|DESede|TripleDES|Blowfish|RC2|Camellia|SEED|ARIA)(/ECB/[A-Za-z0-9]+)?"$'
+              any:
+                - kind: string_literal
+                  regex: '(?s)^"(AES|AES_128|AES_192|AES_256|DES|DESede|TripleDES|Blowfish|RC2|Camellia|SEED|ARIA)(/ECB/.*)?"$'
+                - kind: additive_expression
+                  regex: '(?s)^"(AES|AES_128|AES_192|AES_256|DES|DESede|TripleDES|Blowfish|RC2|Camellia|SEED|ARIA)"\s*\+\s*"/ECB/[^"]*"|^"(AES|AES_128|AES_192|AES_256|DES|DESede|TripleDES|Blowfish|RC2|Camellia|SEED|ARIA)/ECB/[^"]*"\s*\+'
 metadata:
   rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.45.2
