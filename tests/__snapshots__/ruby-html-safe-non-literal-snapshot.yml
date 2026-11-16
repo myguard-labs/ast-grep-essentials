@@ -1,23 +1,32 @@
 id: ruby-html-safe-non-literal
 snapshots:
-  ? |
-    out = "<b>#{name}</b>".html_safe
-  : labels:
-    - source: '"<b>#{name}</b>".html_safe'
+  "out = \"<b>#{name}</b>\".html_safe\n":
+    labels:
+    - source: "\"<b>#{name}</b>\".html_safe"
       style: primary
       start: 6
       end: 32
-  ? |
-    out = params[:bio].html_safe
-  : labels:
+  "out = (h(name) + params[:x]).html_safe\n":
+    labels:
+    - source: (h(name) + params[:x]).html_safe
+      style: primary
+      start: 6
+      end: 38
+  "out = params[:bio].html_safe\n":
+    labels:
     - source: params[:bio].html_safe
       style: primary
       start: 6
       end: 28
-  ? |
-    out = raw(@comment.body)
-  : labels:
+  "out = raw(@comment.body)\n":
+    labels:
     - source: raw(@comment.body)
       style: primary
       start: 6
       end: 24
+  "out = raw(sanitize(title) + params[:body])\n":
+    labels:
+    - source: raw(sanitize(title) + params[:body])
+      style: primary
+      start: 6
+      end: 42

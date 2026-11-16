@@ -9,6 +9,10 @@ valid:
   - |
     out = raw(h(params[:bio]))
   - |
+    out = raw(sanitize(params[:body]))
+  - |
+    out = ERB::Util.html_escape(x).html_safe
+  - |
     # raw(params[:bio])
     note = "params[:bio].html_safe"
 invalid:
@@ -18,3 +22,7 @@ invalid:
     out = raw(@comment.body)
   - |
     out = "<b>#{name}</b>".html_safe
+  - |
+    out = raw(sanitize(title) + params[:body])
+  - |
+    out = (h(name) + params[:x]).html_safe
