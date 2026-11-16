@@ -1,0 +1,49 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-django-modelform-fields-all
+language: python
+severity: warning
+message: >-
+  Meta.fields is set to "__all__", so every model field, including ones added
+  later such as roles or ownership, becomes writable from the submitted form.
+  List the editable fields explicitly.
+note: >-
+  Matches an assignment to fields whose value is the string "__all__", directly
+  inside a class named Meta. An explicit field list, an exclude list, and
+  assignments outside a Meta class are not matched. A form that is only used by
+  staff, or whose model has no sensitive fields, is the routine dismissal.
+
+  [CWE-915] [A08:2025] [A08:2021]
+
+  [REFERENCES]
+      - https://docs.djangoproject.com/en/stable/topics/forms/modelforms/#selecting-the-fields-to-use
+rule:
+  kind: assignment
+  all:
+    - has:
+        field: left
+        kind: identifier
+        regex: '^fields$'
+    - has:
+        field: right
+        kind: string
+        regex: '^[uU]?("__all__"|\x27__all__\x27)$'
+    - inside:
+        kind: expression_statement
+        inside:
+          kind: block
+          inside:
+            kind: class_definition
+            has:
+              field: name
+              regex: '^Meta$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-915'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/915.html'
+  owasp: 'A08:2025|A08:2021'
+  category: 'security'
+  references: 'https://docs.djangoproject.com/en/stable/topics/forms/modelforms/#selecting-the-fields-to-use'
