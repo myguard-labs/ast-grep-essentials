@@ -19,6 +19,10 @@ valid:
     res.cookie("sidebar", "open")
   - |
     res.cookie("author_pref", "x")
+  - |
+    res.cookie("theme", { sameSite: "none" }, { sameSite: "lax" })
+  - |
+    res.cookie("session", sid, { "sameSite": "lax" })
 invalid:
   - |
     res.cookie("session", sid, { sameSite: "none", secure: true })
@@ -36,3 +40,7 @@ invalid:
     res.cookie("sessionId", sid)
   - |
     res.cookie("XSRF-TOKEN", t)
+  - |
+    res.cookie("session", { sameSite: "lax" })
+  - |
+    res.cookie("theme", "dark", { "sameSite": "none" })

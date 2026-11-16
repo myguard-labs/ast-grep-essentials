@@ -10,8 +10,8 @@ message: >-
   request forgery. Set sameSite to lax or strict unless the cookie must really
   travel cross-site, and then pair none with secure true and a CSRF token.
 note: >-
-  Fires on res.cookie or response.cookie whose options object has a sameSite
-  key set to the string none or to false, and on a call whose cookie name is a
+  Fires on res.cookie or response.cookie whose third argument (the options
+  object) has a sameSite key, bare or quoted, set to the string none or to false, and on a call whose cookie name is a
   string literal with a name segment of session, token, auth, jwt, sid, login,
   remember or csrf (at the start of the name or after _ - . or a camelCase
   step, so sidebar and author_pref do not count) and whose options object has
@@ -36,11 +36,14 @@ rule:
             field: arguments
             kind: arguments
             has:
+              nthChild:
+                position: 3
+                ofRule: {not: {kind: comment}}
               kind: object
               has:
                 kind: pair
                 all:
-                  - has: {field: key, regex: '^sameSite$'}
+                  - has: {field: key, regex: '^(sameSite|"sameSite"|''sameSite'')$'}
                   - has: {field: value, regex: '(?i)^(["'']none["'']|false)$'}
         - all:
             - has:
@@ -66,13 +69,16 @@ rule:
                   field: arguments
                   kind: arguments
                   has:
+                    nthChild:
+                      position: 3
+                      ofRule: {not: {kind: comment}}
                     kind: object
                     has:
                       any:
                         - kind: spread_element
                         - all:
                             - kind: pair
-                            - has: {field: key, regex: '^sameSite$'}
+                            - has: {field: key, regex: '^(sameSite|"sameSite"|''sameSite'')$'}
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'
