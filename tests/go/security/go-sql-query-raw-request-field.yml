@@ -5,3 +5,9 @@ valid:
 - var astgrepFixture = "func run(h *H, req Req) { for _, q := range req.Param.Query { h.flightService.Query(ctx, q.RawQuery) } }"
 invalid:
 - func run(h *H, req Req) { for _, q := range req.Param.Query { h.flightService.Query(ctx, q.RawQuery) } }
+- 'func h(r *http.Request) { db.Query(ctx, r.URL.RawQuery, 1) }'
+- 'func h(r *http.Request) { db.Query(ctx, /* raw */ r.URL.RawQuery) }'
+- |-
+  func h(r *http.Request) { s.db.Query(
+    r.URL.RawQuery,
+  ) }

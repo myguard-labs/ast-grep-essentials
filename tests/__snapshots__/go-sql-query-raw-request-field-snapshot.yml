@@ -1,6 +1,90 @@
 id: go-sql-query-raw-request-field
 snapshots:
-  func run(h *H, req Req) { for _, q := range req.Param.Query { h.flightService.Query(ctx, q.RawQuery) } }:
+  "func h(r *http.Request) { db.Query(ctx, /* raw */ r.URL.RawQuery) }":
+    labels:
+    - source: db.Query(ctx, /* raw */ r.URL.RawQuery)
+      style: primary
+      start: 26
+      end: 65
+    - source: Query
+      style: secondary
+      start: 29
+      end: 34
+    - source: db.Query
+      style: secondary
+      start: 26
+      end: 34
+    - source: RawQuery
+      style: secondary
+      start: 56
+      end: 64
+    - source: r.URL.RawQuery
+      style: secondary
+      start: 50
+      end: 64
+    - source: (ctx, /* raw */ r.URL.RawQuery)
+      style: secondary
+      start: 34
+      end: 65
+  "func h(r *http.Request) { db.Query(ctx, r.URL.RawQuery, 1) }":
+    labels:
+    - source: db.Query(ctx, r.URL.RawQuery, 1)
+      style: primary
+      start: 26
+      end: 58
+    - source: Query
+      style: secondary
+      start: 29
+      end: 34
+    - source: db.Query
+      style: secondary
+      start: 26
+      end: 34
+    - source: RawQuery
+      style: secondary
+      start: 46
+      end: 54
+    - source: r.URL.RawQuery
+      style: secondary
+      start: 40
+      end: 54
+    - source: (ctx, r.URL.RawQuery, 1)
+      style: secondary
+      start: 34
+      end: 58
+  "func h(r *http.Request) { s.db.Query(\n  r.URL.RawQuery,\n) }":
+    labels:
+    - source: |-
+        s.db.Query(
+          r.URL.RawQuery,
+        )
+      style: primary
+      start: 26
+      end: 57
+    - source: Query
+      style: secondary
+      start: 31
+      end: 36
+    - source: s.db.Query
+      style: secondary
+      start: 26
+      end: 36
+    - source: RawQuery
+      style: secondary
+      start: 46
+      end: 54
+    - source: r.URL.RawQuery
+      style: secondary
+      start: 40
+      end: 54
+    - source: |-
+        (
+          r.URL.RawQuery,
+        )
+      style: secondary
+      start: 36
+      end: 57
+  "func run(h *H, req Req) { for _, q := range req.Param.Query { h.flightService.Query(ctx, q.RawQuery) } }":
     labels:
     - source: h.flightService.Query(ctx, q.RawQuery)
       style: primary
