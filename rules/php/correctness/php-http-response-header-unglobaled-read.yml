@@ -8,9 +8,11 @@ message: >-
   the same function body.
 note: >-
   Single-file syntactic check. It looks only for a function body that contains
-  the $http_response_header variable and no global statement naming it in that
-  function; it does not verify local assignments, reachability, or the runtime
-  scope that the HTTP stream wrapper uses.
+  the $http_response_header variable, no global statement naming it in that
+  function, and no direct call to a stream-wrapper reader (file_get_contents,
+  fopen, file, readfile, copy) that creates the variable in the local scope.
+  It does not verify reachability or the runtime scope that the HTTP stream
+  wrapper uses, and it covers function definitions, not methods.
 rule:
   all:
     - kind: function_definition
@@ -21,6 +23,13 @@ rule:
         has:
           pattern: 'global $http_response_header;'
           stopBy: end
+    - not:
+        has:
+          kind: function_call_expression
+          stopBy: end
+          has:
+            field: function
+            regex: '^(file_get_contents|fopen|file|readfile|copy)$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
