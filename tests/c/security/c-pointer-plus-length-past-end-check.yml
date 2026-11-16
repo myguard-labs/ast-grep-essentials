@@ -1,5 +1,8 @@
 id: c-pointer-plus-length-past-end-check
 valid:
+  - >-
+    void f(size_t offset, size_t count, size_t len) { if (offset > len - count)
+    { return; } }
   - |-
     int f(unsigned char *data, unsigned char *dataend) {
         if (2 > dataend - data)
@@ -7,6 +10,9 @@ valid:
         return 1;
     }
 invalid:
+  - >-
+    void f(size_t offset, size_t count, size_t len) { if (offset + count > len)
+    { return; } }
   - |-
     int f(unsigned char *data, unsigned char *dataend) {
         if (data + 2 > dataend)
