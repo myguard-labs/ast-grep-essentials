@@ -1,0 +1,40 @@
+id: unsafe-typenamehandling-csharp
+valid:
+  - |
+    class Example {
+        void Configure() {
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None };
+        }
+    }
+  - |
+    class Example {
+        void Configure(JsonSerializerSettings settings) {
+            settings.TypeNameHandling = TypeNameHandling.None;
+        }
+    }
+  - |
+    class Example {
+        void Configure(Other o) {
+            o.NameHandling = TypeNameHandling.Auto;
+            o.TypeNameHandling = Mode.Auto;
+        }
+    }
+invalid:
+  - |
+    class Example {
+        void Configure() {
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+        }
+    }
+  - |
+    class Example {
+        void Configure(JsonSerializerSettings settings) {
+            settings.TypeNameHandling = TypeNameHandling.All;
+        }
+    }
+  - |
+    class Example {
+        void Configure(JsonSerializerSettings s) {
+            s.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
+        }
+    }
