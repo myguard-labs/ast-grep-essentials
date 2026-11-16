@@ -12,7 +12,14 @@ note: >-
   not resolve macros, typedefs, or declarations in other files.
 rule:
   kind: function_definition
-  pattern: 'static void init_globals() { }'
+  has:
+    kind: function_declarator
+    stopBy:
+      kind: parameter_list
+    has:
+      field: parameters
+      kind: parameter_list
+      regex: '^\(\s*\)$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
