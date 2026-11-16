@@ -7,14 +7,25 @@ message: >-
   Pointer initialised to NULL is passed as the output object of a
   *_generate_parameters_ex call.
 note: >-
-  Syntactic only; it does not check for intervening assignments or allocations
-  between the declaration and the call.
+  Syntactic only; a sibling statement that reassigns the pointer from a call
+  (for example dh = DH_new();) between the declaration and the call counts as
+  an allocation. Conditional or nested assignments and aliasing are not
+  tracked.
 rule:
   all:
     - pattern: '$F($P, $$$ARGS);'
     - follows:
         pattern: '$T *$P = NULL;'
         stopBy: end
+    - not:
+        follows:
+          stopBy: end
+          pattern: '$P = $V;'
+          has:
+            kind: assignment_expression
+            has:
+              field: right
+              kind: call_expression
 constraints:
   F:
     regex: '_generate_parameters_ex$'
@@ -32,3 +43,5 @@ metadata:
   owasp: 'A10:2025'
   todo_cases:
     - "FN (generate call nested in an if statement): DH *dh = NULL; if (bits > 0) DH_generate_parameters_ex(dh, bits, 2, NULL);"
+    - "FN (later NULL reset ignored): DH *dh = NULL; dh = DH_new(); dh = NULL; DH_generate_parameters_ex(dh, 2, 2, NULL); is suppressed by the earlier call sibling"
+    - "FN (may-NULL call counts as allocation): DH *dh = NULL; dh = lookup(); DH_generate_parameters_ex(dh, 2, 2, NULL); is suppressed although lookup may return NULL"

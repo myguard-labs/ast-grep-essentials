@@ -9,6 +9,12 @@ valid:
     if (!HASH_OF(obj)) { return; } else { zend_hash_clean(HASH_OF(obj)); }
   - |-
     zend_hash_find(Z_ARRVAL_P(arr), key);
+  - |-
+    if (!HASH_OF(obj)) { return; } zend_hash_clean(HASH_OF(obj));
+  - |-
+    if (!HASH_OF(obj)) return; n = zend_hash_num_elements(HASH_OF(obj));
+  - |-
+    void f(zval *obj, int enabled) { if (!HASH_OF(obj) || !enabled) return; zend_hash_clean(HASH_OF(obj)); }
 invalid:
   - 'zend_hash_internal_pointer_reset(HASH_OF(obj));'
   - |-
@@ -21,3 +27,9 @@ invalid:
     while (more) { zend_hash_clean ( HASH_OF (obj) ); }
   - |-
     return zend_hash_str_exists(HASH_OF(arg), "k", 1);
+  - |-
+    if (!HASH_OF(other)) { return; } zend_hash_clean(HASH_OF(obj));
+  - |-
+    if (!HASH_OF(obj)) { log(); } zend_hash_clean(HASH_OF(obj));
+  - |-
+    void f(zval *obj, int enabled) { if (!HASH_OF(obj) && enabled) return; zend_hash_clean(HASH_OF(obj)); }

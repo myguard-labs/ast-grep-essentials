@@ -9,8 +9,9 @@ message: >-
 note: >-
   Syntactic only. Matches when the first argument of a zend_hash_* call is
   written as HASH_OF(...). An enclosing if whose condition starts with HASH_OF
-  counts as a guard. Guards stored in variables, early returns and runtime
-  zval types are not tracked.
+  counts as a guard, as does an earlier sibling statement if (!HASH_OF(x))
+  that returns, continues or breaks with the same argument x. Guards stored in
+  variables and runtime zval types are not tracked.
 rule:
   all:
     - kind: call_expression
@@ -20,6 +21,45 @@ rule:
           kind: if_statement
           stopBy: end
           regex: '^if\s*\(\s*!?\s*HASH_OF\s*\('
+    - has:
+        stopBy: end
+        pattern:
+          context: 'x = HASH_OF($X);'
+          selector: call_expression
+    - not:
+        inside:
+          stopBy: end
+          follows:
+            stopBy: end
+            kind: if_statement
+            all:
+              - has:
+                  field: condition
+                  all:
+                    - has:
+                        stopBy: end
+                        pattern:
+                          context: 'x = !HASH_OF($X);'
+                          selector: unary_expression
+                    - any:
+                        # whole condition is (!HASH_OF(x))
+                        - regex: '^\(\s*!\s*HASH_OF\s*\((?:[^()&|?]|\([^()&|?]*\))*\)\s*\)$'
+                        # (!HASH_OF(x) || ...): the negation is the first || operand, no &&/?: at top level
+                        - regex: '^\(\s*!\s*HASH_OF\s*\((?:[^()&|?]|\([^()&|?]*\))*\)\s*\|\|(?:[^&?()]|\([^&?()]*\))*\)$'
+                        # (... || !HASH_OF(x)): the negation is a || operand, no &&/?: at top level
+                        - regex: '^\((?:[^&?()]|\([^&?()]*\))*\|\|\s*!\s*HASH_OF\s*\((?:[^()&|?]|\([^()&|?]*\))*\)\s*\)$'
+              - has:
+                  field: consequence
+                  any:
+                    - kind: return_statement
+                    - kind: continue_statement
+                    - kind: break_statement
+                    - kind: compound_statement
+                      has:
+                        any:
+                          - kind: return_statement
+                          - kind: continue_statement
+                          - kind: break_statement
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0

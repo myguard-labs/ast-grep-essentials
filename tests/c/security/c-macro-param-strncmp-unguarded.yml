@@ -2,13 +2,14 @@ id: c-macro-param-strncmp-unguarded
 valid:
   - '#define IS_HTTP(uri) ((uri) != NULL && strncmp(uri, PFX, strlen(PFX)) == 0)'
   - |-
-    #define IS_HTTP(uri) ((uri) != NULL && strncmp(uri, PFX, strlen(PFX)) == 0)
-  - |-
     #define SAME(a, b) (!(a) || !(b) ? 0 : strcmp(a, b) == 0)
   - |-
     #define MEM_EQ(a, b, n) (memcmp(a, b, n) == 0)
   - |-
     #define PFX_LEN strlen(PFX)
+  - |-
+    #define IS_HTTP(uri) ((uri) && strncmp(uri, "http://", 7) == 0)
+  - '#define EQ(a) ((a) && strcmp(a, "x") == 0)'
 invalid:
   - '#define IS_HTTP(uri) strncmp(uri, PFX, strlen(PFX)) == 0'
   - |-
@@ -23,3 +24,4 @@ invalid:
   - |-
     #define STREQ(a, b)  (strcmp(a,\
      b) == 0)
+  - '#define EQB(a, b) ((a) && strcmp(a, b))'

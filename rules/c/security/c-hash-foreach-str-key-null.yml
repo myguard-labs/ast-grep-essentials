@@ -8,8 +8,10 @@ message: >-
   enclosing scope.
 note: >-
   Syntactic only; it assumes the variable is named key, does not verify it is
-  the iterator key, and does not check that a guard is ordered earlier or only
-  recognizes the form key == NULL.
+  the iterator key, and does not check that a key == NULL guard is ordered
+  earlier. Also accepted: a deref inside the consequence of if (key != NULL),
+  and a deref following an if (!key) whose consequence returns, continues or
+  breaks.
 rule:
   all:
     - kind: call_expression
@@ -20,6 +22,36 @@ rule:
           has:
             stopBy: end
             pattern: 'key == NULL'
+    - not:
+        inside:
+          stopBy: end
+          kind: if_statement
+          field: consequence
+          has:
+            field: condition
+            regex: '^\(\s*key\s*(!=\s*NULL\s*)?\)$'
+    - not:
+        inside:
+          stopBy: end
+          follows:
+            stopBy: end
+            kind: if_statement
+            all:
+              - has:
+                  field: condition
+                  regex: '^\(\s*!\s*key\s*\)$'
+              - has:
+                  field: consequence
+                  any:
+                    - kind: return_statement
+                    - kind: continue_statement
+                    - kind: break_statement
+                    - kind: compound_statement
+                      has:
+                        any:
+                          - kind: return_statement
+                          - kind: continue_statement
+                          - kind: break_statement
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
