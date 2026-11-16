@@ -1,0 +1,54 @@
+id: sizeof-literal-or-nested-cpp
+snapshots:
+  "size_t f() { return sizeof 42; }":
+    labels:
+    - source: sizeof 42
+      style: primary
+      start: 20
+      end: 29
+    - source: "42"
+      style: secondary
+      start: 27
+      end: 29
+  "size_t f() { return sizeof(42); }":
+    labels:
+    - source: sizeof(42)
+      style: primary
+      start: 20
+      end: 30
+    - source: "42"
+      style: secondary
+      start: 27
+      end: 29
+    - source: (42)
+      style: secondary
+      start: 26
+      end: 30
+  "size_t f() { return sizeof(sizeof(int)); }":
+    labels:
+    - source: sizeof(sizeof(int))
+      style: primary
+      start: 20
+      end: 39
+    - source: sizeof(int)
+      style: secondary
+      start: 27
+      end: 38
+    - source: (sizeof(int))
+      style: secondary
+      start: 26
+      end: 39
+  "void f(char *p) { memset(p, 0, sizeof(8)); }":
+    labels:
+    - source: sizeof(8)
+      style: primary
+      start: 31
+      end: 40
+    - source: "8"
+      style: secondary
+      start: 38
+      end: 39
+    - source: (8)
+      style: secondary
+      start: 37
+      end: 40

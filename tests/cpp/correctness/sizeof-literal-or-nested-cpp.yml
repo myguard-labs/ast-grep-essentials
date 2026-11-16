@@ -1,0 +1,13 @@
+id: sizeof-literal-or-nested-cpp
+valid:
+  - 'size_t f() { int a[4]; return sizeof(a); }'
+  - 'size_t f() { return sizeof(int); }'
+  - 'size_t f(int *p) { return sizeof(*p); }'
+  - 'size_t f() { return sizeof(a) / sizeof(a[0]); }'
+  - 'size_t f() { return sizeof(this); }'
+  - 'size_t f() { return 4 * sizeof(long); }'
+invalid:
+  - 'size_t f() { return sizeof(42); }'
+  - 'size_t f() { return sizeof 42; }'
+  - 'size_t f() { return sizeof(sizeof(int)); }'
+  - 'void f(char *p) { memset(p, 0, sizeof(8)); }'
