@@ -520,6 +520,52 @@ snapshots:
       style: secondary
       start: 48
       end: 135
+  "object A {\n  def bad(in: java.io.InputStream, j: Json) = {\n    val s = new ObjectInputStream(in)\n    locally {\n      val t = j.reader()\n      t.close()\n    }\n    s.readObject()\n  }\n}\n":
+    labels:
+    - source: s.readObject()
+      style: primary
+      start: 162
+      end: 176
+    - source: readObject
+      style: secondary
+      start: 164
+      end: 174
+    - source: s
+      style: secondary
+      start: 162
+      end: 163
+    - source: s.readObject
+      style: secondary
+      start: 162
+      end: 174
+    - source: s
+      style: secondary
+      start: 67
+      end: 68
+    - source: ObjectInputStream
+      style: secondary
+      start: 75
+      end: 92
+    - source: new ObjectInputStream(in)
+      style: secondary
+      start: 71
+      end: 96
+    - source: val s = new ObjectInputStream(in)
+      style: secondary
+      start: 63
+      end: 96
+    - source: |-
+        {
+            val s = new ObjectInputStream(in)
+            locally {
+              val t = j.reader()
+              t.close()
+            }
+            s.readObject()
+          }
+      style: secondary
+      start: 57
+      end: 180
   "object A {\n  def bad(in: java.io.InputStream, j: Json) = {\n    val s = new ObjectInputStream(in)\n    {\n      val t = j.reader()\n      t.close()\n    }\n    s.readObject()\n  }\n}\n":
     labels:
     - source: s.readObject()
