@@ -9,6 +9,14 @@ valid:
      }
      return res->ai_family;
     }
+  - |-
+    int f(const char *h) { if (getaddrinfo(h, NULL, &hints, &res) != 0 || res == NULL) { return 0; } return res->ai_family; }
+  - |-
+    int f(const char *h) { if (getaddrinfo(h, NULL, &hints, &res) == 0 && res != NULL) { return res->ai_family; } return 0; }
+  - |-
+    int f(const char *h) { if (getnameinfo(sa, len, host, sizeof host, NULL, 0, 0)) { return 0; } return 1; }
+  - |-
+    int f(const char *h) { int rc = getaddrinfo(h, NULL, &hints, &res); if (rc != 0 || !res) { return 0; } return res->ai_family; }
 invalid:
   - |-
     #include <netdb.h>
@@ -19,3 +27,15 @@ invalid:
      }
      return res->ai_family;
     }
+  - |-
+    int f(const char *h) { if (getaddrinfo(h, NULL, &hints, &res)) { return 0; } else { log(); } return res->ai_family; }
+  - |-
+    int f(const char *h) { if (getaddrinfo(h, NULL, &hints, &res)) { } return res->ai_family; }
+  - |-
+    int f(const char *h) { while (n--) { if (getaddrinfo(h, NULL, NULL, &res)) { continue; } use(res->ai_addr); } return 0; }
+  - |-
+    int f(const char *h) { if (getaddrinfo(h, NULL, &hints, &res)) { /* fail */ return 0; } return res->ai_family; }
+  - |-
+    int f(const char *h) { if (getaddrinfo(
+     h, NULL,
+     &hints, &res)) { freeaddrinfo(res); return 0; } return 1; }

@@ -1,5 +1,25 @@
 id: c-macro-param-strncmp-unguarded
 valid:
   - '#define IS_HTTP(uri) ((uri) != NULL && strncmp(uri, PFX, strlen(PFX)) == 0)'
+  - |-
+    #define IS_HTTP(uri) ((uri) != NULL && strncmp(uri, PFX, strlen(PFX)) == 0)
+  - |-
+    #define SAME(a, b) (!(a) ? 0 : strcmp(a, b) == 0)
+  - |-
+    #define MEM_EQ(a, b, n) (memcmp(a, b, n) == 0)
+  - |-
+    #define PFX_LEN strlen(PFX)
 invalid:
   - '#define IS_HTTP(uri) strncmp(uri, PFX, strlen(PFX)) == 0'
+  - |-
+    #define SAME(a, b) (strcmp(a, b) == 0)
+  - |-
+    #define IS_HTTP(uri) (strncmp((const char *)uri, PFX, strlen(PFX)) == 0)
+  - |-
+    #define IS_HTTP(uri) strncmp( uri , PFX, 4) == 0
+  - |-
+    #define IS_HTTP(uri) \
+      (strncmp((uri), PFX, strlen(PFX)) == 0)
+  - |-
+    #define STREQ(a, b)  (strcmp(a,\
+     b) == 0)

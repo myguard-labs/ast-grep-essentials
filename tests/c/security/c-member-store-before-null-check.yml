@@ -1,7 +1,27 @@
 id: c-member-store-before-null-check
 valid:
   - 'if (prsactx != NULL) prsactx->flag_allow_md = 0;'
+  - |-
+    if (p != NULL) { p->x = 1; }
+  - |-
+    if (p == NULL) return; p->x = 1;
+  - |-
+    p->x = 1; if (q != NULL) { use(q); }
+  - |-
+    p->x = 1; if (p->y != NULL) { use(p); }
+  - |-
+    if (p == NULL) { return; } p->x = 1; if (p->next != NULL) { run(); }
 invalid:
   - |-
     prsactx->flag_allow_md = 0;
         if (prsactx != NULL) { }
+  - |-
+    p->x = compute(1); if (p != NULL) { run(); }
+  - |-
+    ctx->priv->x = 1; if (ctx->priv != NULL) { run(); }
+  - |-
+    p->x = 1; log(); if (p != NULL) { run(); } else { fail(); }
+  - |-
+    void f(struct s *p) { p->x = 1; if (p != NULL) run(); }
+  - |-
+    p->x = 1; /* guard */ if (p != NULL) { run(); }

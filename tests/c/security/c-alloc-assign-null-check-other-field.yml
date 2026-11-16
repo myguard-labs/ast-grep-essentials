@@ -1,5 +1,24 @@
 id: c-alloc-assign-null-check-other-field
 valid:
   - 'ret->propq = OPENSSL_strdup(propq); if (ret->propq == NULL) return NULL;'
+  - |-
+    ret->name = OPENSSL_strdup(src); if (!ret->name) return NULL;
+  - |-
+    ret->name = OPENSSL_strdup(src); if (ret->name == NULL || ret->other == NULL) return NULL;
+  - |-
+    ret->name = OPENSSL_strdup(src); if (ret->name == NULL) { free(ret); return NULL; }
+  - |-
+    ret->len = compute(src); if (ret->len == NULL) return NULL;
 invalid:
   - 'ret->name = OPENSSL_strdup(propq); if (ret->propq == NULL) return NULL;'
+  - |-
+    ret->name = strdup(src); if (ret->other == NULL) return NULL;
+  - |-
+    ret->name = OPENSSL_strdup(src, 1, 2); if ((ret->propq == NULL)) { free(ret); return NULL; }
+  - |-
+    int f(struct r *ret) { ret->buf = OPENSSL_malloc(n);
+     if (ret->len == NULL) { return 0; } return 1; }
+  - |-
+    ret->name = OPENSSL_strdup(src); if (ret->propq == NULL) return NULL; else use(ret);
+  - |-
+    ctx->ret->name = OPENSSL_strdup(src); if (ctx->ret->propq == NULL) return NULL;

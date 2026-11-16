@@ -3,7 +3,27 @@ valid:
   - >-
     htmlDocDumpMemoryFormat(docp, &mem, &size, format); if (!size || !mem) {
     RETVAL_FALSE; } else { RETVAL_STRINGL((const char *) mem, size); }
+  - |-
+    htmlDocDumpMemoryFormat(docp, &mem, &size, format); if (size == 0 || mem == NULL) { RETVAL_FALSE; } else { RETVAL_STRINGL((const char *) mem, size); }
+  - |-
+    htmlDocDumpMemoryFormat(docp, &mem, &size, format); if (size > 0 && mem) { RETVAL_STRINGL((const char *) mem, size); } else { RETVAL_FALSE; }
+  - |-
+    htmlDocDumpMemoryFormat(docp, &mem, &size, format); if (!mem || !size) { RETVAL_FALSE; } else { RETVAL_STRINGL((const char *) mem, size); }
+  - |-
+    htmlDocDumpMemoryFormat(docp, &mem, &size, format); if (!mem || !size) { RETVAL_FALSE; }
+  - |-
+    xmlDocDumpMemory(docp, &mem, &size); if (size <= 0 || !mem) { RETURN_FALSE; } RETVAL_STRINGL((char *) mem, size);
 invalid:
   - >-
     htmlDocDumpMemoryFormat(docp, &mem, &size, format); if (!size) {
     RETVAL_FALSE; } else { RETVAL_STRINGL((const char *) mem, size); }
+  - |-
+    xmlDocDumpMemory(docp, &mem, &size); if (!size) { RETVAL_FALSE; } else { RETVAL_STRINGL((char *) mem, size); }
+  - |-
+    xmlDocDumpMemory(docp, &mem, &size); if (!size) RETVAL_FALSE; else RETVAL_STRINGL((char *) mem, size);
+  - |-
+    xmlDocDumpMemory(docp, &mem, &size); if (!size) { RETVAL_FALSE; } else if (mode) { RETVAL_STRINGL((char *) mem, size); }
+  - |-
+    void f(void) { xmlDocDumpMemory(d, &buf, &len); if (!len) { return; } else { out(buf, len); } }
+  - |-
+    xmlDocDumpMemory(docp, &mem, &size); if (!(size)) { RETVAL_FALSE; } else { RETVAL_STRINGL((char *) mem, size); }

@@ -1,5 +1,25 @@
 id: c-linked-list-walk-without-null-check
 valid:
   - 'void f(struct n *p, int want) { for (; p && p->tag != want; p = p->next); }'
+  - |-
+    void f(struct n *p, int want) { for (; p != NULL && p->tag != want; p = p->next); }
+  - |-
+    void f(struct n *p, int want) { while (p && p->tag != want) p = p->next; }
+  - |-
+    void f(struct n *p, int want) { for (; p; p = p->next) { if (p->tag == want) break; } }
+  - |-
+    void f(struct n *p, int want) { for (; p && p->tag != want; p = p->next) { use(p); } }
 invalid:
   - 'void f(struct n *p, int want) { for (; p->tag != want; p = p->next); }'
+  - |-
+    void f(struct n *cur, int want) { for (; cur->tag != want; cur = cur->next); }
+  - |-
+    void f(struct n *p) { for (; p->tag != WANT_TAG; p = p->next); }
+  - |-
+    void f(struct n *p, int want) { for (; p->tag != want + 1; p = p->next); }
+  - |-
+    void f(struct n *p, int want) { for (; p->tag != tag_of(want); p = p->next); }
+  - |-
+    void f(struct s *s, int w) { for (; s->list->tag != w; s->list = s->list->next); }
+  - |-
+    void f(struct n *p, int want) { for ( ; p->tag != want ; p = p->next ) ; }

@@ -1,8 +1,40 @@
 id: c-apr-table-get-strcmp-null
 snapshots:
-  if (strcmp(apr_table_get(t, "k"), "err") == 0) { }:
+  "if (strcmp(apr_table_get(t, \"k\"), \"err\") == 0) { }":
     labels:
     - source: strcmp(apr_table_get(t, "k"), "err")
       style: primary
       start: 4
       end: 40
+  "if (strcmp(apr_table_get(t, \"k\"), apr_table_get(u, \"k\")) == 0) { }":
+    labels:
+    - source: strcmp(apr_table_get(t, "k"), apr_table_get(u, "k"))
+      style: primary
+      start: 4
+      end: 56
+  "if (strcmp(apr_table_get(t, /* key */ \"k\"), \"err\") == 0) { }":
+    labels:
+    - source: strcmp(apr_table_get(t, /* key */ "k"), "err")
+      style: primary
+      start: 4
+      end: 50
+  "rc = strcmp(apr_table_get(r->headers_in, \"Host\"), host);":
+    labels:
+    - source: strcmp(apr_table_get(r->headers_in, "Host"), host)
+      style: primary
+      start: 5
+      end: 55
+  "return strcmp(apr_table_get(t,\n \"k\"), \"err\");":
+    labels:
+    - source: |-
+        strcmp(apr_table_get(t,
+         "k"), "err")
+      style: primary
+      start: 7
+      end: 44
+  "x = strcmp(apr_table_get(t, \"k\"), \"a\") ? 1 : 2;":
+    labels:
+    - source: strcmp(apr_table_get(t, "k"), "a")
+      style: primary
+      start: 4
+      end: 38

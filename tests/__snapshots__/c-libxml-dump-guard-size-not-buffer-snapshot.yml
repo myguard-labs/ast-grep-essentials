@@ -1,5 +1,19 @@
 id: c-libxml-dump-guard-size-not-buffer
 snapshots:
+  "int f(xmlDocPtr doc) { xmlDocDumpFormatMemory(doc, &mem, &size, 1); if (!size) { log(); return 0; } return 1; }":
+    labels:
+    - source: if (!size) { log(); return 0; }
+      style: primary
+      start: 68
+      end: 99
+    - source: xmlDocDumpFormatMemory(doc, &mem, &size, 1)
+      style: secondary
+      start: 23
+      end: 66
+    - source: xmlDocDumpFormatMemory(doc, &mem, &size, 1);
+      style: secondary
+      start: 23
+      end: 67
   "int size; char *mem; xmlDocDumpFormatMemory(doc, &mem, &size, fmt); if (!size) { return 0; } return mem_use(mem, size);":
     labels:
     - source: if (!size) { return 0; }
@@ -14,3 +28,31 @@ snapshots:
       style: secondary
       start: 21
       end: 67
+  "xmlDocDumpFormatMemory(doc, &buf, &len, 0); if (!len) { return 0; } return mem_use(buf, len);":
+    labels:
+    - source: if (!len) { return 0; }
+      style: primary
+      start: 44
+      end: 67
+    - source: xmlDocDumpFormatMemory(doc, &buf, &len, 0)
+      style: secondary
+      start: 0
+      end: 42
+    - source: xmlDocDumpFormatMemory(doc, &buf, &len, 0);
+      style: secondary
+      start: 0
+      end: 43
+  "xmlDocDumpFormatMemory(doc, &mem, &size, fmt); if (!size) { return 0; } else { done(); } return mem_use(mem, size);":
+    labels:
+    - source: if (!size) { return 0; } else { done(); }
+      style: primary
+      start: 47
+      end: 88
+    - source: xmlDocDumpFormatMemory(doc, &mem, &size, fmt)
+      style: secondary
+      start: 0
+      end: 45
+    - source: xmlDocDumpFormatMemory(doc, &mem, &size, fmt);
+      style: secondary
+      start: 0
+      end: 46

@@ -3,7 +3,25 @@ valid:
   - >-
     long read_value(const struct any *pSource) { long *p_value = (long
     *)pSource->_value; if (p_value) { return *p_value; } return 0; }
+  - |-
+    long read_value(const struct any *pSource) { long *p_value = (long *)pSource->_value; if (!p_value) { return 0; } return *p_value; }
+  - |-
+    long read_value(const struct any *pSource) { long *p_value = (long *)pSource->_value; if (p_value != NULL && *p_value > 0) { return *p_value; } return 0; }
+  - |-
+    long *get_value(const struct any *pSource) { long *p_value = (long *)pSource->_value; return p_value; }
+  - |-
+    long read_value(const struct any *pSource) { long v = (long)pSource->_value; return v; }
 invalid:
   - >-
     long read_value(const struct any *pSource) { long *p_value = (long
     *)pSource->_value; return *p_value; }
+  - |-
+    long read_value(const struct any *pSource) { long *p_value = (long *)pSource->_value; return *p_value; }
+  - |-
+    void set_value(struct any *pSource) { long *p_value = (long *)pSource->_value; *p_value = 5; }
+  - |-
+    long read_value(struct any *a) { long *p = (long *)a->inner->_value; return *p; }
+  - |-
+    long read_value(struct any *a) { long *p = (long *)a->_value; if (other) { log(); } return *p; }
+  - |-
+    long read_value(struct any *a) { struct cfg *c = (struct cfg *)a->priv; return (*c).n; }

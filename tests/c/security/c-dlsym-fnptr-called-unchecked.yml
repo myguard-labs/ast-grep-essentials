@@ -3,5 +3,22 @@ valid:
   - >-
     *(void **)(&fp) = dynlib_sym(h, "f"); if (fp == NULL) { return 0; } return
     fp(t);
+  - |-
+    *(void **)(&fp) = dynlib_sym(h, "f"); if (!fp) { return 0; } return fp(t);
+  - |-
+    *(void **)(&fp) = dynlib_sym(h, "f"); if (fp) { return fp(t); } return 0;
+  - |-
+    *(void **)(&fp) = dynlib_sym(h, "f"); return fp;
+  - |-
+    *(void **)(&fp) = dynlib_sym(h, "f"); if (fp == NULL) return -1; return fp(t, 1);
 invalid:
   - '*(void **)(&fp) = dynlib_sym(h, "f"); return fp(t);'
+  - |-
+    *(void **)(&fp) = dynlib_sym(h, "f"); return fp(t, 1, 2);
+  - |-
+    *(void **)(&fp) = dynlib_sym(h, "f"); return fp();
+  - |-
+    *(void **)(&fp) = dynlib_sym(h, "f", 3); return fp(t);
+  - |-
+    int g(void *h, int t) { *(void **)(&fp) = dynlib_sym(h, "f");
+     return fp(t); }

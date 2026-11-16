@@ -1,5 +1,24 @@
 id: c-apr-table-get-strcmp-null
 valid:
   - 'if (strcmp(s, "err") == 0) { }'
+  - |-
+    const char *v = apr_table_get(t, "k"); if (v && strcmp(v, "err") == 0) { }
+  - |-
+    if (strcmp("apr_table_get(t, k)", "err") == 0) { }
+  - |-
+    if (apr_table_get(t, "k") != NULL && strcmp(s, "err") == 0) { }
+  - |-
+    const char *v = apr_table_get(t, "k"); if (v == NULL) return; if (strcmp(v, "err") == 0) { }
 invalid:
   - 'if (strcmp(apr_table_get(t, "k"), "err") == 0) { }'
+  - |-
+    rc = strcmp(apr_table_get(r->headers_in, "Host"), host);
+  - |-
+    if (strcmp(apr_table_get(t, /* key */ "k"), "err") == 0) { }
+  - |-
+    return strcmp(apr_table_get(t,
+     "k"), "err");
+  - |-
+    x = strcmp(apr_table_get(t, "k"), "a") ? 1 : 2;
+  - |-
+    if (strcmp(apr_table_get(t, "k"), apr_table_get(u, "k")) == 0) { }

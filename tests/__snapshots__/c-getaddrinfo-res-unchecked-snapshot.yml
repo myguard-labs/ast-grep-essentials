@@ -1,15 +1,7 @@
 id: c-getaddrinfo-res-unchecked
 snapshots:
-  ? |-
-    #include <netdb.h>
-    int f(const char *host) {
-     struct addrinfo hints, *res;
-     if (getaddrinfo(host, NULL, &hints, &res)) {
-     return 0;
-     }
-     return res->ai_family;
-    }
-  : labels:
+  "#include <netdb.h>\nint f(const char *host) {\n struct addrinfo hints, *res;\n if (getaddrinfo(host, NULL, &hints, &res)) {\n return 0;\n }\n return res->ai_family;\n}":
+    labels:
     - source: |-
         if (getaddrinfo(host, NULL, &hints, &res)) {
          return 0;
@@ -17,3 +9,36 @@ snapshots:
       style: primary
       start: 76
       end: 134
+  "int f(const char *h) { if (getaddrinfo(\n h, NULL,\n &hints, &res)) { freeaddrinfo(res); return 0; } return 1; }":
+    labels:
+    - source: |-
+        if (getaddrinfo(
+         h, NULL,
+         &hints, &res)) { freeaddrinfo(res); return 0; }
+      style: primary
+      start: 23
+      end: 98
+  "int f(const char *h) { if (getaddrinfo(h, NULL, &hints, &res)) { /* fail */ return 0; } return res->ai_family; }":
+    labels:
+    - source: if (getaddrinfo(h, NULL, &hints, &res)) { /* fail */ return 0; }
+      style: primary
+      start: 23
+      end: 87
+  "int f(const char *h) { if (getaddrinfo(h, NULL, &hints, &res)) { return 0; } else { log(); } return res->ai_family; }":
+    labels:
+    - source: if (getaddrinfo(h, NULL, &hints, &res)) { return 0; } else { log(); }
+      style: primary
+      start: 23
+      end: 92
+  "int f(const char *h) { if (getaddrinfo(h, NULL, &hints, &res)) { } return res->ai_family; }":
+    labels:
+    - source: if (getaddrinfo(h, NULL, &hints, &res)) { }
+      style: primary
+      start: 23
+      end: 66
+  "int f(const char *h) { while (n--) { if (getaddrinfo(h, NULL, NULL, &res)) { continue; } use(res->ai_addr); } return 0; }":
+    labels:
+    - source: if (getaddrinfo(h, NULL, NULL, &res)) { continue; }
+      style: primary
+      start: 37
+      end: 88

@@ -1,5 +1,21 @@
 id: c-generate-ex-into-null-initialised-pointer
 valid:
   - 'DH *dhparam = DH_new(); DH_generate_parameters_ex(dhparam, 2048, 2, NULL);'
+  - |-
+    DSA *dsa = DSA_new(); DSA_generate_parameters_ex(dsa, 2048, NULL, 0, NULL, NULL, NULL);
+  - |-
+    DH *unused = NULL; DH *dh = DH_new(); DH_generate_parameters_ex(dh, 2048, 2, NULL);
+  - |-
+    DH *dh = NULL; DH_check(dh, &codes);
+  - |-
+    RSA *rsa = RSA_new(); RSA_generate_key_ex(rsa, 2048, e, NULL);
 invalid:
   - 'DH *dhparam = NULL; DH_generate_parameters_ex(dhparam, 2048, 2, NULL);'
+  - |-
+    DSA *dsa = NULL; DSA_generate_parameters_ex(dsa, 2048, NULL, 0, NULL, NULL, NULL);
+  - |-
+    struct dh_st *dh = NULL; DH_generate_parameters_ex(dh, 1024, 5, cb);
+  - |-
+    int f(void) { DH *dh = NULL; log(); DH_generate_parameters_ex(dh, 2048, 2, NULL); return 0; }
+  - |-
+    EVP_PKEY_CTX *c = NULL; EVP_PKEY_generate_parameters_ex(c, 1);

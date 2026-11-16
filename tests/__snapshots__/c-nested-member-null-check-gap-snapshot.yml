@@ -1,5 +1,33 @@
 id: c-nested-member-null-check-gap
 snapshots:
+  if (!inf->x_pkey) return; v = inf->x_pkey->dec_pkey;:
+    labels:
+    - source: v = inf->x_pkey->dec_pkey;
+      style: primary
+      start: 26
+      end: 52
+    - source: if (!inf->x_pkey) return;
+      style: secondary
+      start: 0
+      end: 25
+    - source: inf->x_pkey->dec_pkey
+      style: secondary
+      start: 30
+      end: 51
+  "if (!inf->x_pkey) { return; } check(inf->x509, (inf->x_pkey->dec_pkey));":
+    labels:
+    - source: check(inf->x509, (inf->x_pkey->dec_pkey));
+      style: primary
+      start: 30
+      end: 72
+    - source: if (!inf->x_pkey) { return; }
+      style: secondary
+      start: 0
+      end: 29
+    - source: inf->x_pkey->dec_pkey
+      style: secondary
+      start: 48
+      end: 69
   "if (!inf->x_pkey) { return; } check(inf->x509, inf->x_pkey->dec_pkey);":
     labels:
     - source: check(inf->x509, inf->x_pkey->dec_pkey);
@@ -14,3 +42,45 @@ snapshots:
       style: secondary
       start: 47
       end: 68
+  "if (!inf->x_pkey) { return; } log(); other(); check(inf->x_pkey->dec_pkey);":
+    labels:
+    - source: check(inf->x_pkey->dec_pkey);
+      style: primary
+      start: 46
+      end: 75
+    - source: if (!inf->x_pkey) { return; }
+      style: secondary
+      start: 0
+      end: 29
+    - source: inf->x_pkey->dec_pkey
+      style: secondary
+      start: 52
+      end: 73
+  "if (!inf->x_pkey) { return; } n = inf->x_pkey->dec_pkey->len;":
+    labels:
+    - source: n = inf->x_pkey->dec_pkey->len;
+      style: primary
+      start: 30
+      end: 61
+    - source: if (!inf->x_pkey) { return; }
+      style: secondary
+      start: 0
+      end: 29
+    - source: inf->x_pkey->dec_pkey
+      style: secondary
+      start: 34
+      end: 55
+  "void f(struct inf *inf) { if (!inf->x_pkey) { return; } check(inf->x509, inf->x_pkey->dec_pkey); }":
+    labels:
+    - source: check(inf->x509, inf->x_pkey->dec_pkey);
+      style: primary
+      start: 56
+      end: 96
+    - source: if (!inf->x_pkey) { return; }
+      style: secondary
+      start: 26
+      end: 55
+    - source: inf->x_pkey->dec_pkey
+      style: secondary
+      start: 73
+      end: 94

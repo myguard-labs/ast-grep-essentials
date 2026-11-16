@@ -1,5 +1,25 @@
 id: c-malloc-result-written-unchecked
 valid:
   - 'char *s = malloc(n + 1); if (s == NULL) return; *s = ''x'';'
+  - |-
+    char *s = malloc(n + 1); if (!s) return; *s = 'x';
+  - |-
+    char *s = malloc(n + 1); if (s) { *s = 'x'; }
+  - |-
+    char buf[8]; char *s = buf; *s = 'x';
+  - |-
+    int *p = malloc(sizeof *p); if (p == NULL) { return -1; } log(); *p = 0;
 invalid:
   - 'char *s = malloc(n + 1); *s = ''x'';'
+  - |-
+    int *p = malloc(sizeof *p); *p = 0;
+  - |-
+    struct foo *p = malloc(sizeof(struct foo)); *p = zero;
+  - |-
+    char *s = malloc(n + 1); log(); *s = 'x';
+  - |-
+    char *s = malloc(n + 1); if (n > 0) { log(); } *s = 'x';
+  - |-
+    char *s = malloc(n + 1); *s = 'x'; if (s == NULL) return;
+  - |-
+    int f(size_t n) { char *s = malloc(n); /* fill */ *s = 0; return 0; }
