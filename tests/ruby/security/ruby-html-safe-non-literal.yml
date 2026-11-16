@@ -21,7 +21,15 @@ valid:
     out = sanitize(params[:bio])&.html_safe
   - |
     out = view.raw(params[:bio])
+  - |
+    out = CGI.escapeHTML(params[:bio]).html_safe
+  - |
+    out = raw(helpers.sanitize(params[:bio]))
 invalid:
+  - |
+    out = obj.h(params[:bio]).html_safe
+  - |
+    out = raw(custom.sanitize(params[:bio]))
   - |
     out = params[:bio].html_safe
   - |
