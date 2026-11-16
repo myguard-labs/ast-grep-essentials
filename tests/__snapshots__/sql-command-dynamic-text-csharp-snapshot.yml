@@ -1,0 +1,106 @@
+id: sql-command-dynamic-text-csharp
+snapshots:
+  "class Example {\n    void Query(NpgsqlConnection conn, string name) {\n        var cmd = new NpgsqlCommand(string.Format(\"SELECT * FROM t WHERE n = '{0}'\", name), conn);\n    }\n}\n":
+    labels:
+    - source: new NpgsqlCommand(string.Format("SELECT * FROM t WHERE n = '{0}'", name), conn)
+      style: primary
+      start: 87
+      end: 166
+    - source: NpgsqlCommand
+      style: secondary
+      start: 91
+      end: 104
+    - source: string.Format
+      style: secondary
+      start: 105
+      end: 118
+    - source: string.Format("SELECT * FROM t WHERE n = '{0}'", name)
+      style: secondary
+      start: 105
+      end: 159
+    - source: string.Format("SELECT * FROM t WHERE n = '{0}'", name)
+      style: secondary
+      start: 105
+      end: 159
+    - source: (string.Format("SELECT * FROM t WHERE n = '{0}'", name), conn)
+      style: secondary
+      start: 104
+      end: 166
+  "class Example {\n    void Query(SqlCommand cmd, string name) {\n        cmd.CommandText = \"DELETE FROM t WHERE n = \" + name;\n    }\n}\n":
+    labels:
+    - source: cmd.CommandText = "DELETE FROM t WHERE n = " + name
+      style: primary
+      start: 70
+      end: 121
+    - source: cmd.CommandText
+      style: secondary
+      start: 70
+      end: 85
+    - source: +
+      style: secondary
+      start: 115
+      end: 116
+    - source: name
+      style: secondary
+      start: 117
+      end: 121
+    - source: "\"DELETE FROM t WHERE n = \" + name"
+      style: secondary
+      start: 88
+      end: 121
+  "class Example {\n    void Query(SqlConnection conn, int id) {\n        var cmd = new SqlCommand($\"SELECT * FROM t WHERE id = {id}\", conn);\n    }\n}\n":
+    labels:
+    - source: new SqlCommand($"SELECT * FROM t WHERE id = {id}", conn)
+      style: primary
+      start: 79
+      end: 135
+    - source: SqlCommand
+      style: secondary
+      start: 83
+      end: 93
+    - source: "{id}"
+      style: secondary
+      start: 123
+      end: 127
+    - source: $"SELECT * FROM t WHERE id = {id}"
+      style: secondary
+      start: 94
+      end: 128
+    - source: $"SELECT * FROM t WHERE id = {id}"
+      style: secondary
+      start: 94
+      end: 128
+    - source: ($"SELECT * FROM t WHERE id = {id}", conn)
+      style: secondary
+      start: 93
+      end: 135
+  "class Example {\n    void Query(SqlConnection conn, string name) {\n        var cmd = new SqlCommand(\"SELECT * FROM t WHERE n = '\" + name + \"'\", conn);\n    }\n}\n":
+    labels:
+    - source: new SqlCommand("SELECT * FROM t WHERE n = '" + name + "'", conn)
+      style: primary
+      start: 84
+      end: 148
+    - source: SqlCommand
+      style: secondary
+      start: 88
+      end: 98
+    - source: +
+      style: secondary
+      start: 136
+      end: 137
+    - source: name
+      style: secondary
+      start: 131
+      end: 135
+    - source: "\"SELECT * FROM t WHERE n = '\" + name + \"'\""
+      style: secondary
+      start: 99
+      end: 141
+    - source: "\"SELECT * FROM t WHERE n = '\" + name + \"'\""
+      style: secondary
+      start: 99
+      end: 141
+    - source: ("SELECT * FROM t WHERE n = '" + name + "'", conn)
+      style: secondary
+      start: 98
+      end: 148
