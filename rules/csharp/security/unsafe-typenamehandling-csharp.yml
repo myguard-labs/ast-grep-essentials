@@ -24,6 +24,16 @@ note: >-
   [REFERENCES]
       - https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html
       - https://www.newtonsoft.com/json/help/html/SerializationSettings.htm#TypeNameHandling
+utils:
+  unsafe-member:
+    all:
+      - kind: member_access_expression
+        regex: '^(?:global::)?(?:Newtonsoft\.Json\.)?TypeNameHandling\.(?:All|Auto|Objects|Arrays)$'
+      - not:
+          inside:
+            kind: prefix_unary_expression
+            regex: '^~'
+            stopBy: end
 rule:
   kind: assignment_expression
   all:
@@ -42,13 +52,12 @@ rule:
                   regex: '^\|$'
               - has:
                   stopBy: end
-                  kind: member_access_expression
-                  regex: '^(?:global::)?(?:Newtonsoft\.Json\.)?TypeNameHandling\.(?:All|Auto|Objects|Arrays)$'
+                  matches: unsafe-member
           - kind: parenthesized_expression
             any:
               - has:
-                  kind: member_access_expression
-                  regex: '^(?:global::)?(?:Newtonsoft\.Json\.)?TypeNameHandling\.(?:All|Auto|Objects|Arrays)$'
+                  stopBy: end
+                  matches: unsafe-member
               - has:
                   stopBy: end
                   kind: binary_expression
@@ -58,8 +67,7 @@ rule:
                         regex: '^\|$'
                     - has:
                         stopBy: end
-                        kind: member_access_expression
-                        regex: '^(?:global::)?(?:Newtonsoft\.Json\.)?TypeNameHandling\.(?:All|Auto|Objects|Arrays)$'
+                        matches: unsafe-member
 metadata:
   rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.51.0
