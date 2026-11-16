@@ -34,6 +34,26 @@ snapshots:
       style: secondary
       start: 20
       end: 123
+  "<?php\nfunction save($path, $dest) {\n    $unused = function () use ($path) {\n        return mime_content_type($path);\n    };\n    move_uploaded_file($_FILES['f']['tmp_name'], $dest);\n}\n":
+    labels:
+    - source: move_uploaded_file($_FILES['f']['tmp_name'], $dest)
+      style: primary
+      start: 128
+      end: 179
+    - source: move_uploaded_file
+      style: secondary
+      start: 128
+      end: 146
+    - source: |-
+        function save($path, $dest) {
+            $unused = function () use ($path) {
+                return mime_content_type($path);
+            };
+            move_uploaded_file($_FILES['f']['tmp_name'], $dest);
+        }
+      style: secondary
+      start: 6
+      end: 182
   "<?php\nfunction save() {\n    $ext = pathinfo($_FILES['f']['name'], PATHINFO_EXTENSION);\n    \\move_uploaded_file($_FILES['f']['tmp_name'], $dest . $ext);\n}\n":
     labels:
     - source: \move_uploaded_file($_FILES['f']['tmp_name'], $dest . $ext)

@@ -13,7 +13,7 @@ note: >-
   Fires on move_uploaded_file inside a function, method or closure whose body
   contains no call to wp_check_filetype, wp_check_filetype_and_ext,
   wp_handle_upload, mime_content_type, finfo_file, getimagesize or
-  exif_imagetype. The check is per function: validation done by a caller or in
+  exif_imagetype. The check is per function, and only the nearest enclosing one: a check inside a nested closure or function does not cover the outer one. It is per function: validation done by a caller or in
   a sibling helper is not seen, and is the routine dismissal. A call outside
   any function is not matched. It does not judge whether the check result is
   actually used. An upload name built from the client field is also covered by
@@ -36,7 +36,12 @@ rule:
         field: function
         regex: '(?i)^\\?move_uploaded_file$'
     - inside:
-        stopBy: end
+        stopBy: &fn
+          any:
+            - kind: function_definition
+            - kind: method_declaration
+            - kind: anonymous_function
+            - kind: arrow_function
         any:
           - kind: function_definition
           - kind: method_declaration
@@ -44,7 +49,7 @@ rule:
           - kind: arrow_function
         not:
           has:
-            stopBy: end
+            stopBy: *fn
             matches: validation-call
 metadata:
   created_at: '2026-11-16'
