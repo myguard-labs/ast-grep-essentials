@@ -1,6 +1,6 @@
 id: c-char-array-const-index-oob
 snapshots:
-  void f(void) { char buf[4]; buf[4] = '\0'; }:
+  "void f(void) { char buf[4]; buf[4] = '\\0'; }":
     labels:
     - source: buf[4] = '\0'
       style: primary
@@ -10,7 +10,35 @@ snapshots:
       style: secondary
       start: 15
       end: 27
-    - source: '{ char buf[4]; buf[4] = ''\0''; }'
+    - source: "{ char buf[4]; buf[4] = '\\0'; }"
       style: secondary
       start: 13
       end: 44
+  "void f(void) { char buf[4]; if (x) { buf[4] = '\\0'; } }":
+    labels:
+    - source: buf[4] = '\0'
+      style: primary
+      start: 37
+      end: 50
+    - source: char buf[4];
+      style: secondary
+      start: 15
+      end: 27
+    - source: "{ char buf[4]; if (x) { buf[4] = '\\0'; } }"
+      style: secondary
+      start: 13
+      end: 55
+  "void f(void) { char buf[4]; int x = 1; buf[4] = '\\0'; }":
+    labels:
+    - source: buf[4] = '\0'
+      style: primary
+      start: 39
+      end: 52
+    - source: char buf[4];
+      style: secondary
+      start: 15
+      end: 27
+    - source: "{ char buf[4]; int x = 1; buf[4] = '\\0'; }"
+      style: secondary
+      start: 13
+      end: 55

@@ -1,10 +1,20 @@
 id: c-subscript-write-at-declared-size
 snapshots:
-  ? |-
-    char buf[8];
-    buf[8] = '\0';
-  : labels:
+  "char buf[8];\nbuf[8] = '\\0';":
+    labels:
     - source: buf[8] = '\0'
       style: primary
       start: 13
       end: 26
+  "void f(void) { char buf[8]; buf[ 8 ] = 'x'; }":
+    labels:
+    - source: buf[ 8 ] = 'x'
+      style: primary
+      start: 28
+      end: 42
+  "void f(void) { char buf[8]; buf[8] = 0; }":
+    labels:
+    - source: buf[8] = 0
+      style: primary
+      start: 28
+      end: 38

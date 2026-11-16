@@ -1,5 +1,10 @@
 id: ts-payload-form-read-any-user
 valid:
   - 'read: ({ req: { user } }) => !!user?.isAdmin,'
+  - 'const c = { read: ({ req: { user } }) => !user }'
+  - 'const c = { read: ({ req: { user } }) => !!user && user.isAdmin }'
 invalid:
   - 'read: ({ req: { user } }) => !!user,'
+  - 'const c = { read: ({ req: { user } }) => !!user }'
+  - 'const f = ({ req: { user } }) => !!user;'
+  - 'const c = { read: ({ req: { user } }) => !! user }'

@@ -3,7 +3,24 @@ valid:
   - |-
     from jinja2 import Environment
     env = Environment(autoescape=True)
+  - |-
+    from jinja2 import Environment, select_autoescape
+    env = Environment(autoescape=select_autoescape())
+  - |-
+    from jinja2 import Environment
+    env = Environment()
+  - |-
+    from jinja2 import Environment
+    env = Environment(autoescape=some_flag)
 invalid:
   - |-
     from jinja2 import Environment
     env = Environment(autoescape=False)
+  - |-
+    from jinja2 import Environment
+    env = Environment(autoescape = False)
+  - |-
+    from jinja2 import Environment
+    env = Environment(
+        autoescape=False,  # templates are trusted
+    )

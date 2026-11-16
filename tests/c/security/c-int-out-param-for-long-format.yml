@@ -1,5 +1,9 @@
 id: c-int-out-param-for-long-format
 valid:
   - 'long flags = 0; zend_parse_parameters(ZEND_NUM_ARGS(), "l", &flags);'
+  - 'void f(void) { int flags = 0; zend_parse_parameters(ZEND_NUM_ARGS(), "s", &flags); }'
+  - 'void f(void) { zend_long flags = 0; zend_parse_parameters(ZEND_NUM_ARGS(), "l", &flags); }'
 invalid:
   - 'int flags = 0; zend_parse_parameters(ZEND_NUM_ARGS(), "l", &flags);'
+  - 'void f(void) { int flags = 0; zend_parse_parameters(ZEND_NUM_ARGS(), "|l", &flags); }'
+  - 'void f(void) { int flags = 0; int k = 1; zend_parse_parameters(ZEND_NUM_ARGS(), "l", &flags); }'

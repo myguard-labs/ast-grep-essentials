@@ -1,5 +1,25 @@
 id: c-fixed-buffer-pointer-write-unbounded
 snapshots:
+  "int f(const char *p) { char buf[18]; char *p2 = buf; while (*p) { *p2++ = *p++; } return 0; }":
+    labels:
+    - source: while (*p) { *p2++ = *p++; }
+      style: primary
+      start: 53
+      end: 81
+    - source: "*p2++ = *p++"
+      style: secondary
+      start: 66
+      end: 78
+  "int f(const char *p) { char buf[18]; char *q = buf; while (*p) { *(q) = *p; q++; p++; } return 0; }":
+    labels:
+    - source: while (*p) { *(q) = *p; q++; p++; }
+      style: primary
+      start: 52
+      end: 87
+    - source: "*(q) = *p"
+      style: secondary
+      start: 65
+      end: 74
   "static int f(const char *p) { char buf[18]; char *p2 = buf; while (*p) { *p2 = *p; p2++; p++; } return 0; }":
     labels:
     - source: while (*p) { *p2 = *p; p2++; p++; }

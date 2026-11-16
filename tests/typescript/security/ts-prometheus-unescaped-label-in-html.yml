@@ -1,5 +1,10 @@
 id: ts-prometheus-unescaped-label-in-html
 valid:
   - 'const html = `<span>${escapeHTML(labels.__name__)}</span>`;'
+  - 'const msg = `count: ${stats.total}`;'
+  - 'const html = `<span>${he.encode(labels.__name__)}</span>`;'
 invalid:
   - 'const html = `<span>${labels.__name__}</span>`;'
+  - 'const html = `<td>${row.labels.job}</td>`;'
+  - 'const html = `<a href="${link.href}">x</a>`;'
+  - 'const html = `<span>${labels?.__name__}</span>`;'

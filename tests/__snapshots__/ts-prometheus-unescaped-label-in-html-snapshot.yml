@@ -1,12 +1,26 @@
 id: ts-prometheus-unescaped-label-in-html
 snapshots:
-  const html = `<span>${labels.__name__}</span>`;:
+  "const html = `<a href=\"${link.href}\">x</a>`;":
+    labels:
+    - source: ${link.href}
+      style: primary
+      start: 23
+      end: 35
+    - source: "`<a href=\"${link.href}\">x</a>`"
+      style: secondary
+      start: 13
+      end: 43
+    - source: link.href
+      style: secondary
+      start: 25
+      end: 34
+  "const html = `<span>${labels.__name__}</span>`;":
     labels:
     - source: ${labels.__name__}
       style: primary
       start: 20
       end: 38
-    - source: '`<span>${labels.__name__}</span>`'
+    - source: "`<span>${labels.__name__}</span>`"
       style: secondary
       start: 13
       end: 46
@@ -14,3 +28,31 @@ snapshots:
       style: secondary
       start: 22
       end: 37
+  "const html = `<span>${labels?.__name__}</span>`;":
+    labels:
+    - source: ${labels?.__name__}
+      style: primary
+      start: 20
+      end: 39
+    - source: "`<span>${labels?.__name__}</span>`"
+      style: secondary
+      start: 13
+      end: 47
+    - source: labels?.__name__
+      style: secondary
+      start: 22
+      end: 38
+  "const html = `<td>${row.labels.job}</td>`;":
+    labels:
+    - source: ${row.labels.job}
+      style: primary
+      start: 18
+      end: 35
+    - source: "`<td>${row.labels.job}</td>`"
+      style: secondary
+      start: 13
+      end: 41
+    - source: row.labels.job
+      style: secondary
+      start: 20
+      end: 34

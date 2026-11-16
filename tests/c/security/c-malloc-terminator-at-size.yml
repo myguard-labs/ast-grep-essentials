@@ -3,7 +3,11 @@ valid:
   - |-
     #include <stdlib.h>
     void f(size_t n) { char *h = malloc(n); h[n - 1] = '\0'; }
+  - 'void f(size_t n) { char *h = malloc(n + 1); h[n] = ''\0''; }'
+  - 'void f(size_t n) { char *h = malloc(n); h[n] = ''x''; }'
 invalid:
   - |-
     #include <stdlib.h>
     void f(size_t n) { char *h = malloc(n); h[n] = '\0'; }
+  - 'void f(size_t n) { char *h = malloc(n); memcpy(h, s, n); h[n] = ''\0''; }'
+  - 'void f(size_t n) { char *h = malloc(n); if (h) { h[n] = ''\0''; } }'
