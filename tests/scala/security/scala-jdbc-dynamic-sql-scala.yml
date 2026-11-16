@@ -35,6 +35,18 @@ valid:
         stmt.executeQuery("""select 1
           |from dual""".stripMargin)
     }
+  - |
+    object A {
+      def ok(stmt: java.sql.Statement) = stmt.executeQuery("select 1" + "x".trim)
+    }
+  - |
+    object A {
+      def ok(stmt: java.sql.Statement) = stmt.executeQuery(s"select 1" + " limit 1")
+    }
+  - |
+    object A {
+      def ok(stmt: java.sql.Statement) = stmt.executeQuery(("select 1" + "x").trim)
+    }
 invalid:
   - |
     object A {
@@ -103,4 +115,8 @@ invalid:
     object A {
       def bad(stmt: java.sql.Statement, name: String) =
         stmt.executeQuery((s"select * from users where name = '$name'"))
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, n: String) = stmt.executeQuery("select 1 " + n.trim)
     }

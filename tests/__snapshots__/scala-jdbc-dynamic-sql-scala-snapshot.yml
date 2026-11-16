@@ -244,6 +244,36 @@ snapshots:
       style: secondary
       start: 83
       end: 121
+  "object A {\n  def bad(stmt: java.sql.Statement, n: String) = stmt.executeQuery(\"select 1 \" + n.trim)\n}\n":
+    labels:
+    - source: stmt.executeQuery("select 1 " + n.trim)
+      style: primary
+      start: 60
+      end: 99
+    - source: executeQuery
+      style: secondary
+      start: 65
+      end: 77
+    - source: stmt.executeQuery
+      style: secondary
+      start: 60
+      end: 77
+    - source: +
+      style: secondary
+      start: 90
+      end: 91
+    - source: "n"
+      style: secondary
+      start: 92
+      end: 93
+    - source: "\"select 1 \" + n.trim"
+      style: secondary
+      start: 78
+      end: 98
+    - source: ("select 1 " + n.trim)
+      style: secondary
+      start: 77
+      end: 99
   "object A {\n  def bad(stmt: java.sql.Statement, name: String) =\n    stmt.executeQuery((s\"select * from users where name = '$name'\"))\n}\n":
     labels:
     - source: stmt.executeQuery((s"select * from users where name = '$name'"))

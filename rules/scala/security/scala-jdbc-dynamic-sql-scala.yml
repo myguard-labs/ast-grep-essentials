@@ -22,8 +22,33 @@ note: >-
   non-literal operand on either side, also when the string, or the parenthesized
   concatenation, is followed by `.stripMargin`, `.trim` or `.stripLineEnd`. Literal SQL, `?` placeholders and
   parameter-binding interpolators such as `sql"..."` are not reported. A plain identifier
-  argument is not reported because its origin cannot be told from syntax.
+  argument is not reported because its origin cannot be told from syntax. An operand that only calls a method on a string literal, such as
+  `"select 1" + "x".trim`, or an `s"..."` without an interpolation counts as
+  literal; a chained method on a literal, such as `"b".trim.toLowerCase` or
+  `s"b".trim`, counts as dynamic (a minor false positive). Known miss: `execute` and `addBatch` are matched on any receiver, so a
+  non-JDBC `client.execute(s"key-$id")` is also reported, because the receiver
+  type cannot be told from syntax.
 utils:
+  # An identifier that is not the interpolator of an interpolation-free
+  # s/f/raw string and not a method name called on a string literal, so
+  # "select 1" + "x".trim and s"a" + "b" are literal-only.
+  non-literal-identifier:
+    kind: identifier
+    not:
+      any:
+        - nthChild: 1
+          inside:
+            kind: interpolated_string_expression
+            not:
+              has:
+                stopBy: end
+                kind: interpolation
+        - inside:
+            kind: field_expression
+            has:
+              field: value
+              kind: string
+          nthChild: 2
   dynamic-sql:
     any:
       - kind: interpolated_string_expression
@@ -42,7 +67,7 @@ utils:
               regex: ^\+$
           - has:
               stopBy: end
-              kind: identifier
+              matches: non-literal-identifier
   paren-dynamic-sql:
     any:
       - matches: dynamic-sql

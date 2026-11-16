@@ -39,6 +39,31 @@ valid:
     object A {
       def ok(dir: String) = Seq("ls", dir).lazyLines
     }
+  - |
+    import scala.sys.process._
+    object A {
+      def ok(): Int = "ls -l" ! ProcessLogger(_ => ())
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def ok(): Int = ("ls " + "-l".trim) !
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def ok(): Int = ("ls " + "-l".trim).!
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def ok(): Int = (s"ls " + "-l").!
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def ok(): Int = s"ls -l".!
+    }
 invalid:
   - |
     import scala.sys.process._
@@ -112,4 +137,24 @@ invalid:
     import scala.sys.process._
     object A {
       def bad(dir: String) = Process(s"ls $dir").run()
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String): Int = s"ls $dir" ! ProcessLogger(_ => ())
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String): Int = ("ls " + dir) !! ProcessLogger(_ => ())
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String): Int = Process(s"ls $dir") ! ProcessLogger(_ => ())
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String): Int = ("ls " + dir.trim).!
     }
