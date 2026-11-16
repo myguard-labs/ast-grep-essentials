@@ -1,8 +1,26 @@
 id: c-zval-string-from-unguarded-member
 snapshots:
-  ZVAL_STRING(retval, MyG(error_msg), 1);:
+  "ZVAL_STRING(retval, MyG(error_msg), 1);":
     labels:
     - source: ZVAL_STRING(retval, MyG(error_msg), 1)
       style: primary
       start: 0
       end: 38
+  "void f(zval *retval) { ZVAL_STRING(retval, MyG(error_msg) /* c */, 1); }":
+    labels:
+    - source: ZVAL_STRING(retval, MyG(error_msg) /* c */, 1)
+      style: primary
+      start: 23
+      end: 69
+  "void f(zval *retval) { if (x) { return; } ZVAL_STRING(retval, MyG(error_msg), 1); }":
+    labels:
+    - source: ZVAL_STRING(retval, MyG(error_msg), 1)
+      style: primary
+      start: 42
+      end: 80
+  "void f(zval *retval) { while (n--) { ZVAL_STRING(retval, MyG(error_msg), 1); } }":
+    labels:
+    - source: ZVAL_STRING(retval, MyG(error_msg), 1)
+      style: primary
+      start: 37
+      end: 75

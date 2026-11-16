@@ -3,5 +3,9 @@ valid:
 - func run(q string) error { if strings.TrimSpace(q) == "" { return err }; return exec(strings.TrimSpace(q)) }
 - // func run(q string) error { if strings.TrimSpace(q) == "" { return err }; return exec(q) }
 - var astgrepFixture = "func run(q string) error { if strings.TrimSpace(q) == \"\" { return err }; return exec(q) }"
+- 'func run(q string) error { q = strings.TrimSpace(q); if q == "" { return err }; return exec(q) }'
+- 'func run(q string) error { t := strings.TrimSpace(q); if t == "" { return err }; return exec(t) }'
 invalid:
 - func run(q string) error { if strings.TrimSpace(q) == "" { return err }; return exec(q) }
+- 'func run(cmd string) error { if strings.TrimSpace(cmd) == "" { return ErrEmpty }; return exec(cmd) }'
+- 'func run(q string) error { if strings.TrimSpace(q) == "" { return fmt.Errorf("empty") }; return exec(q) }'

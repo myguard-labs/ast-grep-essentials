@@ -1,5 +1,11 @@
 id: c-emalloc-exact-size-then-write-at-size
 valid:
   - 'char *s = emalloc(n + 1); memset(s, 0, n); s[n] = ''\0'';'
+  - 'char *s = emalloc(n + 1); s[n] = 0;'
+  - 'char *s = safe_emalloc(n, 1, 1); s[n] = 0;'
+  - 'char *s = emalloc(n); memset(s, 0, n); if (n > 0) { s[0] = ''\0''; }'
 invalid:
   - 'char *s = emalloc(n); memset(s, 0, n); s[n] = ''\0'';'
+  - 'char *s = emalloc(n); use(s); s[n] = 0;'
+  - 'char *s = emalloc(n); /* c */ s[n] = 0;'
+  - 'unsigned char *s = emalloc(16); s[16] = 0;'

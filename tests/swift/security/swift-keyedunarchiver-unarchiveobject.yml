@@ -2,6 +2,9 @@ id: swift-keyedunarchiver-unarchiveobject
 valid:
   - |
     let o = try NSKeyedUnarchiver.unarchivedObject(ofClass: Foo.self, from: data)
+  - 'let o = try NSKeyedUnarchiver.unarchivedArrayOfObjects(ofClass: Foo.self, from: data)'
+  - 'let o = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [Foo.self, Bar.self], from: data)'
+  - 'let u = try NSKeyedUnarchiver(forReadingFrom: data); u.requiresSecureCoding = true; let o = u.decodeObject(of: Foo.self, forKey: NSKeyedArchiveRootObjectKey)'
 invalid:
   - |
     let o = NSKeyedUnarchiver.unarchiveObject(with: data)
@@ -9,3 +12,5 @@ invalid:
     let p = NSKeyedUnarchiver.unarchiveObject(withFile: path)
   - |
     let p = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data)
+  - 'let o = NSKeyedUnarchiver.unarchiveObject(with: data) as? Foo'
+  - 'if let o = NSKeyedUnarchiver.unarchiveObject(with: data) { use(o) }'

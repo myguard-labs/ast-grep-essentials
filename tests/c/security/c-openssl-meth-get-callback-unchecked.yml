@@ -7,6 +7,15 @@ valid:
             EVP_PKEY_meth_get_paramgen(base, &pinit, NULL);
         return pinit != NULL ? pinit(ctx) : 1;
     }
+  - |-
+    static int (*pinit)(EVP_PKEY_CTX *);
+    static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) { EVP_PKEY_meth_get_paramgen(base, &pinit, NULL); return other(ctx); }
+  - |-
+    static int (*pinit)(EVP_PKEY_CTX *);
+    static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) { EVP_PKEY_meth_get_paramgen(base, &pinit, NULL); return (pinit == NULL) ? 1 : pinit(ctx); }
+  - |-
+    static int (*pinit)(EVP_PKEY_CTX *);
+    static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) { EVP_PKEY_meth_get_paramgen(base, &pinit, NULL); return pinit ? pinit(ctx) : 0; }
 invalid:
   - |-
     static int (*pinit)(EVP_PKEY_CTX *);
@@ -15,3 +24,12 @@ invalid:
             EVP_PKEY_meth_get_paramgen(base, &pinit, NULL);
         return pinit(ctx);
     }
+  - |-
+    static int (*pkg)(EVP_PKEY_CTX *);
+    static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) { EVP_PKEY_meth_get_keygen(base, &pkg, NULL); return pkg(ctx); }
+  - |-
+    static int (*pinit)(EVP_PKEY_CTX *);
+    static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) { EVP_PKEY_meth_get_paramgen(base, &pinit, NULL); pinit(ctx); return 1; }
+  - |-
+    static int (*pinit)(EVP_PKEY_CTX *);
+    static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) { EVP_PKEY_meth_get_paramgen(base, &pinit, NULL); return wrap(pinit(ctx)); }

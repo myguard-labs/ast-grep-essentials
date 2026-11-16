@@ -1,5 +1,13 @@
 id: c-null-guard-inverted-deref
 valid:
   - 'void f(int *found) { if (found) { *found = 0; } }'
+  - 'void f(int *p) { if (!p) { return; } *p = 0; }'
+  - |-
+    int dflt;
+    void f(int *p) { if (!p) { p = &dflt; } *p = 0; }
+  - 'void f(int *p) { int x = 0; int *q = &x; if (!p) { *q = 1; } }'
 invalid:
   - 'void f(int *found) { if (!found) { *found = 0; } }'
+  - 'void f(int *p) { if (!p) *p = 0; }'
+  - 'void f(int *p) { if (!p) { log(); if (x) { *p = 1; } } }'
+  - 'void f(int *p) { if (!p /* null */) { *p = 0; } }'

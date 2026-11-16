@@ -3,7 +3,24 @@ valid:
   - |-
     if (!type) { return NULL; }
     int n = strlen(type);
+  - |-
+    int n = strlen("literal");
+    if (!type) { return NULL; }
+  - |-
+    if (type) { int n = strlen(type); use(n); }
+    if (!other) { return NULL; }
+  - |-
+    if (type == NULL) { return NULL; }
+    int n = strlen(type);
 invalid:
   - |-
     int n = strlen(type);
+    if (!type) { return NULL; }
+  - |-
+    int n = strlen(type);
+    use(n);
+    if (!type) { return NULL; }
+  - 'void f(char *type) { int n = strlen(type); if (!type) return; }'
+  - |-
+    int n = strlen(type); /* len */
     if (!type) { return NULL; }

@@ -1,5 +1,11 @@
 id: c-zval-string-from-unguarded-member
 valid:
   - 'if (MyG(error_msg)) { ZVAL_STRING(retval, MyG(error_msg), 1); }'
+  - 'if (MyG(error_msg) != NULL) { ZVAL_STRING(retval, MyG(error_msg), 1); }'
+  - 'ZVAL_STRING(retval, "literal", 1);'
+  - 'void f(zval *retval) { ZVAL_STRING(retval, MyG(error_msg) ? MyG(error_msg) : "", 1); }'
 invalid:
   - 'ZVAL_STRING(retval, MyG(error_msg), 1);'
+  - 'void f(zval *retval) { ZVAL_STRING(retval, MyG(error_msg) /* c */, 1); }'
+  - 'void f(zval *retval) { if (x) { return; } ZVAL_STRING(retval, MyG(error_msg), 1); }'
+  - 'void f(zval *retval) { while (n--) { ZVAL_STRING(retval, MyG(error_msg), 1); } }'
