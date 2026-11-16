@@ -3,5 +3,10 @@ valid:
 - class A { void f(ApplicationContext ctx) throws Exception { Resource r = ctx.getResource("classpath:xslt/view.xsl"); } }
 - // class A { void f(ApplicationContext ctx, String url) throws Exception { Resource r = ctx.getResource(url); } }
 - class AstgrepFixture { String value = "class A { void f(ApplicationContext ctx, String url) throws Exception { Resource r = ctx.getResource(url); } }"; }
+- "class A { void f(ApplicationContext ctx, String url) throws Exception { ResourceHandlerUtils.assertSafe(url); Resource r = ctx.getResource(url); } }"
+- "class A { void f(ApplicationContext ctx) throws Exception { Resource r = ctx.getResources(\"classpath:x\"); } }"
 invalid:
 - class A { void f(ApplicationContext ctx, String url) throws Exception { Resource r = ctx.getResource(url); } }
+- "class A { void f(ResourceLoader loader, String url) throws Exception { Resource r = loader.getResource(url); } }"
+- "class A { void f(String url) throws Exception { Resource r = getApplicationContext().getResource(url); } }"
+- "class A { void f(String u) { ResourceHandlerUtils.check(u); } void g(String url) { ctx.getResource(url); } }"

@@ -1,8 +1,26 @@
 id: java-spring-getresource-unchecked-path
 snapshots:
-  class A { void f(ApplicationContext ctx, String url) throws Exception { Resource r = ctx.getResource(url); } }:
+  "class A { void f(ApplicationContext ctx, String url) throws Exception { Resource r = ctx.getResource(url); } }":
     labels:
     - source: ctx.getResource(url)
       style: primary
       start: 85
       end: 105
+  "class A { void f(ResourceLoader loader, String url) throws Exception { Resource r = loader.getResource(url); } }":
+    labels:
+    - source: loader.getResource(url)
+      style: primary
+      start: 84
+      end: 107
+  "class A { void f(String u) { ResourceHandlerUtils.check(u); } void g(String url) { ctx.getResource(url); } }":
+    labels:
+    - source: ctx.getResource(url)
+      style: primary
+      start: 83
+      end: 103
+  "class A { void f(String url) throws Exception { Resource r = getApplicationContext().getResource(url); } }":
+    labels:
+    - source: getApplicationContext().getResource(url)
+      style: primary
+      start: 61
+      end: 101
