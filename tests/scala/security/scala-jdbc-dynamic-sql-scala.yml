@@ -40,3 +40,15 @@ invalid:
       def bad(conn: java.sql.Connection, table: String) =
         conn.prepareStatement(s"select * from ${table}")
     }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, name: String) =
+        stmt.executeQuery(/* user input */ s"select * from users where name = '$name'")
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, id: String) =
+        stmt.executeUpdate(
+          // built from the request
+          "delete from users where id = " + id)
+    }

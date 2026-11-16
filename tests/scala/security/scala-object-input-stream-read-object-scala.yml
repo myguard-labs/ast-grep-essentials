@@ -53,3 +53,8 @@ invalid:
       def bad(in: java.io.InputStream) =
         Using(new ObjectInputStream(in)) { o => o.readObject() }
     }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) =
+        Using(/* untrusted stream */ new ObjectInputStream(in)) { o => o.readObject() }
+    }
