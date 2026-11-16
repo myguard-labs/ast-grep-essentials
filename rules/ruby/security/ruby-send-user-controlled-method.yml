@@ -1,0 +1,36 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ruby-send-user-controlled-method
+language: ruby
+severity: warning
+message: >-
+  send, public_send or __send__ is called with a method name taken from params.
+  A request can then invoke any method the receiver responds to.
+note: >-
+  Fires on a call to send, public_send or __send__ whose first argument starts
+  with params, including params[:x] and params[:x].to_sym. A fixed symbol, an
+  allow-list lookup such as ALLOWED[params[:x]] and a variable that merely has
+  params in its name are not matched. The value may be checked against an
+  allow-list before the call, which is the routine dismissal.
+rule:
+  kind: call
+  all:
+    - has:
+        field: method
+        regex: '^(send|public_send|__send__)$'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          nthChild: 1
+          regex: '^params\s*[\[.]'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-470'
+  owasp: 'A05:2025|A03:2021'
+  category: 'security'
+  subcategory: 'unsafe-reflection'
+  references: 'https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html'

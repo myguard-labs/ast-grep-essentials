@@ -1,0 +1,18 @@
+id: ruby-send-user-controlled-method
+valid:
+  - |
+    @user.send(:name)
+  - |
+    @user.public_send(ALLOWED[params[:attr]])
+  - |
+    @user.send(params_method)
+  - |
+    # @user.send(params[:attr])
+    note = "@user.send(params[:attr])"
+invalid:
+  - |
+    @user.send(params[:attr])
+  - |
+    record.public_send(params[:method].to_sym)
+  - |
+    obj.__send__(params.fetch(:m))
