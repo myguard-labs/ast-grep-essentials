@@ -11,6 +11,9 @@ note: >-
   the $http_response_header variable, no global statement naming it in that
   function, and no direct call to a stream-wrapper reader (file_get_contents,
   fopen, file, readfile, copy) that creates the variable in the local scope.
+  Reader calls inside a nested closure, arrow function, function or method
+  create the variable only in that inner scope, so they are excluded from the
+  reader check.
   It does not verify reachability or the runtime scope that the HTTP stream
   wrapper uses, and it covers function definitions, not methods.
 rule:
@@ -26,7 +29,12 @@ rule:
     - not:
         has:
           kind: function_call_expression
-          stopBy: end
+          stopBy:
+            any:
+              - kind: anonymous_function
+              - kind: arrow_function
+              - kind: function_definition
+              - kind: method_declaration
           has:
             field: function
             regex: '^(file_get_contents|fopen|file|readfile|copy)$'

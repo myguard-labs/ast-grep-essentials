@@ -2,6 +2,10 @@ id: php-http-response-header-unglobaled-read
 valid:
   - "<?php\nfunction read_headers() {\n\tglobal $http_response_header;\n\treturn $http_response_header;\n}"
   - "<?php\nfunction fetch( $u ) {\n\t$body = file_get_contents( $u );\n\treturn $http_response_header;\n}"
+  - "<?php\nfunction f( $u ) {\n\t$g = function () { return 1; };\n\t$b = file_get_contents( $u );\n\treturn $http_response_header;\n}"
 invalid:
   - "<?php\nfunction read_headers() {\n\treturn $http_response_header;\n}"
   - "<?php\nfunction read_headers( $u ) {\n\t$h = get_headers( $u );\n\treturn $http_response_header;\n}"
+  - "<?php\nfunction f() {\n\t$g = function () { file_get_contents( 'http://x' ); };\n\treturn $http_response_header;\n}"
+  - "<?php\nfunction f() {\n\t$g = fn() => file_get_contents( 'http://x' );\n\treturn $http_response_header;\n}"
+  - "<?php\nfunction f() {\n\tfunction inner() { file_get_contents( 'http://x' ); }\n\treturn $http_response_header;\n}"
