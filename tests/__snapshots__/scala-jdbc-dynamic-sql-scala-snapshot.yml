@@ -60,6 +60,94 @@ snapshots:
       style: secondary
       start: 82
       end: 135
+  "object A {\n  def bad(stmt: java.sql.Statement, id: String) =\n    stmt.executeQuery((\"select * from users where id = \" + id).trim)\n}\n":
+    labels:
+    - source: stmt.executeQuery(("select * from users where id = " + id).trim)
+      style: primary
+      start: 65
+      end: 129
+    - source: executeQuery
+      style: secondary
+      start: 70
+      end: 82
+    - source: stmt.executeQuery
+      style: secondary
+      start: 65
+      end: 82
+    - source: +
+      style: secondary
+      start: 118
+      end: 119
+    - source: id
+      style: secondary
+      start: 120
+      end: 122
+    - source: "\"select * from users where id = \" + id"
+      style: secondary
+      start: 84
+      end: 122
+    - source: ("select * from users where id = " + id)
+      style: secondary
+      start: 83
+      end: 123
+    - source: trim
+      style: secondary
+      start: 124
+      end: 128
+    - source: ("select * from users where id = " + id).trim
+      style: secondary
+      start: 83
+      end: 128
+    - source: (("select * from users where id = " + id).trim)
+      style: secondary
+      start: 82
+      end: 129
+  "object A {\n  def bad(stmt: java.sql.Statement, id: String) =\n    stmt.executeQuery(((\"select * from users where id = \" + id)).stripMargin)\n}\n":
+    labels:
+    - source: stmt.executeQuery((("select * from users where id = " + id)).stripMargin)
+      style: primary
+      start: 65
+      end: 138
+    - source: executeQuery
+      style: secondary
+      start: 70
+      end: 82
+    - source: stmt.executeQuery
+      style: secondary
+      start: 65
+      end: 82
+    - source: +
+      style: secondary
+      start: 119
+      end: 120
+    - source: id
+      style: secondary
+      start: 121
+      end: 123
+    - source: "\"select * from users where id = \" + id"
+      style: secondary
+      start: 85
+      end: 123
+    - source: ("select * from users where id = " + id)
+      style: secondary
+      start: 84
+      end: 124
+    - source: (("select * from users where id = " + id))
+      style: secondary
+      start: 83
+      end: 125
+    - source: stripMargin
+      style: secondary
+      start: 126
+      end: 137
+    - source: (("select * from users where id = " + id)).stripMargin
+      style: secondary
+      start: 83
+      end: 137
+    - source: ((("select * from users where id = " + id)).stripMargin)
+      style: secondary
+      start: 82
+      end: 138
   "object A {\n  def bad(stmt: java.sql.Statement, id: String) =\n    stmt.executeQuery(id + \" limit 1\")\n}\n":
     labels:
     - source: stmt.executeQuery(id + " limit 1")
@@ -156,6 +244,48 @@ snapshots:
       style: secondary
       start: 83
       end: 121
+  "object A {\n  def bad(stmt: java.sql.Statement, name: String) =\n    stmt.executeQuery((s\"select * from users where name = '$name'\").stripLineEnd)\n}\n":
+    labels:
+    - source: stmt.executeQuery((s"select * from users where name = '$name'").stripLineEnd)
+      style: primary
+      start: 67
+      end: 144
+    - source: executeQuery
+      style: secondary
+      start: 72
+      end: 84
+    - source: stmt.executeQuery
+      style: secondary
+      start: 67
+      end: 84
+    - source: s
+      style: secondary
+      start: 86
+      end: 87
+    - source: $name
+      style: secondary
+      start: 122
+      end: 127
+    - source: s"select * from users where name = '$name'"
+      style: secondary
+      start: 86
+      end: 129
+    - source: (s"select * from users where name = '$name'")
+      style: secondary
+      start: 85
+      end: 130
+    - source: stripLineEnd
+      style: secondary
+      start: 131
+      end: 143
+    - source: (s"select * from users where name = '$name'").stripLineEnd
+      style: secondary
+      start: 85
+      end: 143
+    - source: ((s"select * from users where name = '$name'").stripLineEnd)
+      style: secondary
+      start: 84
+      end: 144
   "object A {\n  def bad(stmt: java.sql.Statement, name: String) =\n    stmt.executeQuery(/* user input */ s\"select * from users where name = '$name'\")\n}\n":
     labels:
     - source: stmt.executeQuery(/* user input */ s"select * from users where name = '$name'")

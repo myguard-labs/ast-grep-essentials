@@ -84,3 +84,18 @@ invalid:
       def bad(stmt: java.sql.Statement, name: String) =
         stmt.executeQuery(f"select * from users where name = '$name%s'".trim)
     }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, id: String) =
+        stmt.executeQuery(("select * from users where id = " + id).trim)
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, id: String) =
+        stmt.executeQuery((("select * from users where id = " + id)).stripMargin)
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, name: String) =
+        stmt.executeQuery((s"select * from users where name = '$name'").stripLineEnd)
+    }

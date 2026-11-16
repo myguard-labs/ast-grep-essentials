@@ -19,8 +19,8 @@ note: >-
   Matches executeQuery, executeUpdate, executeLargeUpdate, execute,
   addBatch, prepareStatement and prepareCall called with an `s`, `f` or `raw`
   interpolated string that has an interpolation, or a `+` concatenation with a
-  non-literal operand on either side, also when the string is followed by
-  `.stripMargin`, `.trim` or `.stripLineEnd`. Literal SQL, `?` placeholders and
+  non-literal operand on either side, also when the string, or the parenthesized
+  concatenation, is followed by `.stripMargin`, `.trim` or `.stripLineEnd`. Literal SQL, `?` placeholders and
   parameter-binding interpolators such as `sql"..."` are not reported. A plain identifier
   argument is not reported because its origin cannot be told from syntax.
 utils:
@@ -43,12 +43,18 @@ utils:
           - has:
               stopBy: end
               kind: identifier
+  paren-dynamic-sql:
+    any:
+      - matches: dynamic-sql
+      - kind: parenthesized_expression
+        has:
+          matches: paren-dynamic-sql
   sql-trimmed:
     kind: field_expression
     all:
       - has:
           field: value
-          matches: dynamic-sql
+          matches: paren-dynamic-sql
       - has:
           field: field
           kind: identifier
