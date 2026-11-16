@@ -8,38 +8,50 @@ message: >-
 note: >-
   [CWE-295]: Improper Certificate Validation
   [OWASP A07:2021]: Identification and Authentication Failures
-  Matches a completion call of the form handler(.useCredential, URLCredential(trust: ...)) that is not in the then-block of an if whose condition is a non-negated SecTrustEvaluate* call (the else branch and a negated check are still reported) and does not follow a guard whose condition is such a call; a call that ignores the evaluation result (for example _ = SecTrustEvaluateWithError(...)) is still reported, and evaluation done in a helper defined elsewhere or inside a compound && / == condition is not seen. Scope: it matches the literal .useCredential with an inline URLCredential(trust:); fully qualified dispositions and credentials built into a variable first are not covered.
+  Matches a completion call of the form handler(.useCredential, URLCredential(trust: ...)) that is not in the then-block of an if whose condition is a non-negated SecTrustEvaluate* call on the same trust value (the else branch and a negated check are still reported) and does not follow a guard whose condition is such a call on the same trust value (an evaluation of a different identifier does not suppress, and a trust re-bound under another name is not linked); a call that ignores the evaluation result (for example _ = SecTrustEvaluateWithError(...)) is still reported, and evaluation done in a helper defined elsewhere or inside a compound && / == condition is not seen. Scope: it matches the literal .useCredential with an inline URLCredential(trust:); fully qualified dispositions and credentials built into a variable first are not covered.
 utils:
-  evaluated-condition:
+  evaluates-same-trust:
+    kind: call_expression
     has:
-      kind: call_expression
-      has:
-        kind: simple_identifier
-        regex: '^SecTrustEvaluate'
+      kind: simple_identifier
+      regex: '^SecTrustEvaluate'
+    all:
+      - has:
+          kind: value_argument
+          stopBy: end
+          has:
+            field: value
+            pattern: $TRUST
 rule:
   pattern: '$HANDLER(.useCredential, URLCredential(trust: $TRUST))'
   not:
     any:
+      # then-block: the `statements` node no `else` token precedes. Braces and
+      # `else` are anonymous siblings in the if_statement, and an empty then
+      # block has no `statements` node at all.
       - inside:
           kind: statements
           stopBy: end
           not:
             follows:
-              kind: statements
+              regex: '^else$'
               stopBy: end
           inside:
             kind: if_statement
-            matches: evaluated-condition
+            has:
+              matches: evaluates-same-trust
       - follows:
           kind: guard_statement
           stopBy: end
-          matches: evaluated-condition
+          has:
+            matches: evaluates-same-trust
       - inside:
           stopBy: end
           follows:
             kind: guard_statement
             stopBy: end
-            matches: evaluated-condition
+            has:
+              matches: evaluates-same-trust
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'
