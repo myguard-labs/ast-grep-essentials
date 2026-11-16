@@ -1,0 +1,53 @@
+id: runtime-exec-dynamic-command-kotlin
+snapshots:
+  ? |
+    fun run(name: String) {
+        Runtime.getRuntime().exec("ls " + name)
+    }
+  : labels:
+    - source: Runtime.getRuntime().exec("ls " + name)
+      style: primary
+      start: 28
+      end: 67
+    - source: '"ls "'
+      style: secondary
+      start: 54
+      end: 59
+    - source: '"ls " + name'
+      style: secondary
+      start: 54
+      end: 66
+  ? |
+    fun run(name: String) {
+        Runtime.getRuntime().exec("ls $name")
+    }
+  : labels:
+    - source: Runtime.getRuntime().exec("ls $name")
+      style: primary
+      start: 28
+      end: 65
+    - source: name
+      style: secondary
+      start: 59
+      end: 63
+    - source: '"ls $name"'
+      style: secondary
+      start: 54
+      end: 64
+  ? |
+    fun run(name: String) {
+        Runtime.getRuntime().exec("ls ${name}", envp)
+    }
+  : labels:
+    - source: Runtime.getRuntime().exec("ls ${name}", envp)
+      style: primary
+      start: 28
+      end: 73
+    - source: name
+      style: secondary
+      start: 60
+      end: 64
+    - source: '"ls ${name}"'
+      style: secondary
+      start: 54
+      end: 66

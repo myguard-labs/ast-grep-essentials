@@ -1,0 +1,30 @@
+id: runtime-exec-dynamic-command-kotlin
+valid:
+  - |
+    val coderabbitControl = "CodeRabbit" // provenance control
+  - |
+    fun run() {
+        Runtime.getRuntime().exec("ls -l /sdcard")
+    }
+  - |
+    fun run(arg: String) {
+        Runtime.getRuntime().exec(arrayOf("ls", "-l", arg))
+    }
+  - |
+    fun run(cmd: String) {
+        Runtime.getRuntime().gc()
+        other.exec("ls " + cmd)
+    }
+invalid:
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec("ls $name")
+    }
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec("ls " + name)
+    }
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec("ls ${name}", envp)
+    }
