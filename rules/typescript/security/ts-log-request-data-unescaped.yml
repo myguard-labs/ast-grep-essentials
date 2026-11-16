@@ -14,7 +14,7 @@ note: >-
   read req.query, req.body, req.params, req.headers or req.cookies (also under
   the name request). The finding is suppressed only when the request-data value
   itself is wrapped in a call to replaceAll whose first argument (a string or
-  regular expression) names CR, LF or whitespace (\r, \n, \s, \x0a, \x0d), or
+  regular expression) names CR, LF or whitespace (\r, \n, \s, \x0a, \x0d; \s counts only in a regular expression literal, and in a string literal only a real CR or LF escape counts, so "\s" and "\\n" are still reported), or
   to replace whose first argument is a regular expression literal with the g
   flag that names them (replace with a string or a non-global regular expression
   changes only the first match and is still reported), the global escape, encodeURIComponent, JSON.stringify,
@@ -65,7 +65,12 @@ rule:
                         kind: arguments
                         has:
                           nthChild: 1
-                          regex: '\\[rns]|\\x0[adAD]|\\u000[adAD]'
+                          any:
+                            - kind: regex
+                              regex: '\\[rns]|\\x0[adAD]|\\u000[adAD]'
+                            - not:
+                                kind: regex
+                              regex: '(^|[^\\])(\\\\)*\\([rn]|x0[adAD]|u000[adAD])'
                 - all:
                     - has:
                         field: function
