@@ -1,0 +1,92 @@
+id: scala-jdbc-dynamic-sql-scala
+snapshots:
+  "object A {\n  def bad(conn: java.sql.Connection, table: String) =\n    conn.prepareStatement(s\"select * from ${table}\")\n}\n":
+    labels:
+    - source: conn.prepareStatement(s"select * from ${table}")
+      style: primary
+      start: 69
+      end: 117
+    - source: prepareStatement
+      style: secondary
+      start: 74
+      end: 90
+    - source: conn.prepareStatement
+      style: secondary
+      start: 69
+      end: 90
+    - source: s
+      style: secondary
+      start: 91
+      end: 92
+    - source: ${table}
+      style: secondary
+      start: 107
+      end: 115
+    - source: s"select * from ${table}"
+      style: secondary
+      start: 91
+      end: 116
+    - source: (s"select * from ${table}")
+      style: secondary
+      start: 90
+      end: 117
+  "object A {\n  def bad(stmt: java.sql.Statement, id: String) =\n    stmt.executeUpdate(\"delete from users where id = \" + id)\n}\n":
+    labels:
+    - source: stmt.executeUpdate("delete from users where id = " + id)
+      style: primary
+      start: 65
+      end: 121
+    - source: executeUpdate
+      style: secondary
+      start: 70
+      end: 83
+    - source: stmt.executeUpdate
+      style: secondary
+      start: 65
+      end: 83
+    - source: +
+      style: secondary
+      start: 116
+      end: 117
+    - source: id
+      style: secondary
+      start: 118
+      end: 120
+    - source: "\"delete from users where id = \" + id"
+      style: secondary
+      start: 84
+      end: 120
+    - source: ("delete from users where id = " + id)
+      style: secondary
+      start: 83
+      end: 121
+  "object A {\n  def bad(stmt: java.sql.Statement, name: String) =\n    stmt.executeQuery(s\"select * from users where name = '$name'\")\n}\n":
+    labels:
+    - source: stmt.executeQuery(s"select * from users where name = '$name'")
+      style: primary
+      start: 67
+      end: 129
+    - source: executeQuery
+      style: secondary
+      start: 72
+      end: 84
+    - source: stmt.executeQuery
+      style: secondary
+      start: 67
+      end: 84
+    - source: s
+      style: secondary
+      start: 85
+      end: 86
+    - source: $name
+      style: secondary
+      start: 121
+      end: 126
+    - source: s"select * from users where name = '$name'"
+      style: secondary
+      start: 85
+      end: 128
+    - source: (s"select * from users where name = '$name'")
+      style: secondary
+      start: 84
+      end: 129
