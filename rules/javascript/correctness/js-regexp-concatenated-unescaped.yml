@@ -2,30 +2,26 @@
 
 id: js-regexp-concatenated-unescaped
 language: javascript
-severity: warning
+severity: 'off'
 message: >-
-  RegExp built from a string concatenation containing an unescaped identifier
-  operand.
+  Deprecated rule ID; use js-regexp-constructor-unescaped-concat. RegExp built
+  from a string concatenation containing an unescaped identifier operand.
 note: >-
-  Syntactic only; flags a bare identifier used directly as a + operand inside
-  the RegExp arguments. It cannot tell whether the value was escaped somewhere
-  else or whether it actually contains metacharacters.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use js-regexp-constructor-unescaped-concat and do not emit
+  this rule.
 rule:
-  kind: new_expression
-  all:
-    - has:
-        field: constructor
-        regex: '^RegExp$'
-    - has:
-        field: arguments
-        has:
-          stopBy: end
-          kind: binary_expression
-          regex: '\+'
-          has:
-            kind: identifier
+  pattern: 'new RegExp($$$ARGS)'
+  has:
+    field: arguments
+    has:
+      stopBy: end
+      pattern: '$L + $R'
+      has:
+        kind: identifier
 metadata:
-  rule_modified_at: '2026-10-09'
+  deprecated_alias_of: js-regexp-constructor-unescaped-concat
+  rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.45.3
   validated_at: '2026-10-09'
   created_at: '2026-10-09'
