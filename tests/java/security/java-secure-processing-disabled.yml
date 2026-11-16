@@ -17,6 +17,10 @@ valid:
       // dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
       String s = "setFeature(FEATURE_SECURE_PROCESSING, false)";
     } }
+  - |
+    class A { void f(DocumentBuilderFactory dbf) throws Exception {
+      dbf.setFeature(MY_FEATURE_SECURE_PROCESSING_OVERRIDE, false);
+    } }
 invalid:
   - |
     class A { void f(DocumentBuilderFactory dbf) throws Exception {
@@ -25,4 +29,12 @@ invalid:
   - |
     class A { void f(TransformerFactory tf) throws Exception {
       tf.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", false);
+    } }
+  - |
+    class A { void f(DocumentBuilderFactory dbf) throws Exception {
+      dbf.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", false);
+    } }
+  - |
+    class A { void f(DocumentBuilderFactory dbf) throws Exception {
+      dbf.setFeature(FEATURE_SECURE_PROCESSING, false);
     } }
