@@ -44,6 +44,12 @@ SUPPORTED_LANGUAGES = frozenset(
         "typescript",
     }
 )
+# Languages whose parser is a customLanguages library in the root sgconfig.yml.
+# The isolated per-rule config this gate builds has no such library, so the
+# latest ast-grep cannot load or test them. A change to such a rule is accepted
+# only when nothing but its ``metadata:`` block differs from base (see
+# ``unparseable_metadata_only_changes``); anything else is refused.
+UNPARSEABLE_LANGUAGES = frozenset({"powershell"})
 NPM_REGISTRY = "https://registry.npmjs.org/"
 MAX_WORKERS = 4
 PASS_LINE = re.compile(r"(?m)^test result: ok\. 1 passed; 0 failed;\s*$")
@@ -211,7 +217,9 @@ def _strict_documents(data: bytes) -> list[object]:
         loader.dispose()  # type: ignore[no-untyped-call]
 
 
-def _matcher_document(data: bytes) -> dict[object, object] | None:
+def _matcher_document(
+    data: bytes, ignored: frozenset[str] = NON_MATCHING_KEYS
+) -> dict[object, object] | None:
     """The single YAML mapping in ``data`` minus the non-matching keys.
 
     ``metadata`` and ``note`` are ignored by the ast-grep matcher, so a fixture
@@ -231,11 +239,16 @@ def _matcher_document(data: bytes) -> dict[object, object] | None:
         return None
     if len(documents) != 1 or not isinstance(documents[0], dict):
         return None
-    return {k: v for k, v in documents[0].items() if k not in NON_MATCHING_KEYS}
+    return {k: v for k, v in documents[0].items() if k not in ignored}
 
 
 def non_matching_rule_changes(
-    root: Path, base: str, paths: Sequence[str]
+    root: Path,
+    base: str,
+    paths: Sequence[str],
+    ignored: frozenset[str] = NON_MATCHING_KEYS,
+    removable: frozenset[str] = REMOVABLE_KEYS,
+    languages: frozenset[str] | None = None,
 ) -> frozenset[str]:
     """Changed rules whose parsed document differs from ``base`` only in the
     non-matching keys ``metadata`` and ``note``, or by the removal of a
@@ -252,6 +265,8 @@ def non_matching_rule_changes(
         path = _safe_path(value)
         if path is None or len(path.parts) != 4 or path.parts[0] != "rules":
             continue
+        if languages is not None and path.parts[1] not in languages:
+            continue
         current = root / path
         if not current.exists():
             continue
@@ -259,8 +274,8 @@ def non_matching_rule_changes(
         previous = _base_blob(root, base, path)
         if previous is None:
             continue
-        document = _matcher_document(current.read_bytes())
-        before = _matcher_document(previous)
+        document = _matcher_document(current.read_bytes(), ignored)
+        before = _matcher_document(previous, ignored)
         if document is None or before is None:
             continue
         # Only a removal is waived: drop a removable key from the base copy
@@ -268,11 +283,30 @@ def non_matching_rule_changes(
         before = {
             k: v
             for k, v in before.items()
-            if not (k in REMOVABLE_KEYS and k not in document)
+            if not (k in removable and k not in document)
         }
         if document == before:
             exempt.add(value)
     return frozenset(exempt)
+
+
+def unparseable_metadata_only_changes(
+    root: Path, base: str, paths: Sequence[str]
+) -> frozenset[str]:
+    """Changed rules in ``UNPARSEABLE_LANGUAGES`` whose parsed document differs
+    from ``base`` only in ``metadata``. ``note`` and removable keys do not
+    qualify here: the rule cannot be loaded, so only the block that ast-grep
+    never reads is accepted. Added, deleted or logic-changed rules, and any
+    fixture or snapshot path, are not returned and are refused downstream.
+    """
+    return non_matching_rule_changes(
+        root,
+        base,
+        paths,
+        ignored=frozenset({"metadata"}),
+        removable=frozenset(),
+        languages=UNPARSEABLE_LANGUAGES,
+    )
 
 
 def missing_fixture_changes(
@@ -499,6 +533,11 @@ def validate_changed(
     Rules run on a bounded thread pool (each check is an isolated subprocess);
     ``workers=1`` forces serial execution with identical output.
     """
+    if base:
+        # Metadata-only edits of rules the validator cannot parse are accepted
+        # without a load/test (there is no parser); every other path remains.
+        skipped = unparseable_metadata_only_changes(root, base, paths)
+        paths = [value for value in paths if value not in skipped]
     exempt = (
         header_only_rule_changes(root, base, paths)
         | non_matching_rule_changes(root, base, paths)

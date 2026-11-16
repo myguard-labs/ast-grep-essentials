@@ -218,6 +218,86 @@ class ValidateChangedRulesTests(unittest.TestCase):
             with self.assertRaisesRegex(gate.ValidationError, "mirrored fixtures"):
                 gate.validate_changed(root, engine, [path], base)
 
+    PS_BASE = "id: ps-one\nlanguage: powershell\nrule: {kind: command}\nmessage: m\n"
+    PS_REFUSED = "mirrored fixtures|unsupported rule language: powershell"
+    PS_PATH = "rules/powershell/security/ps-one.yml"
+
+    def ps_change(
+        self, base_text: str | None, text: str | None, extra: Sequence[str] = ()
+    ) -> int:
+        """Run validate_changed on a PowerShell rule edit; return the count.
+
+        The fake engine fails the test if invoked, as no parser exists for
+        PowerShell in the validator's isolated config.
+        """
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            rule = root / self.PS_PATH
+            rule.parent.mkdir(parents=True)
+            (root / "README").write_text("x\n")
+            if base_text is not None:
+                rule.write_text(base_text)
+            base = self.commit_base(root)
+            if text is not None:
+                rule.write_text(text)
+            elif base_text is not None:
+                rule.unlink()
+            engine = self.make_engine(root, "test result: ok. 1 passed; 0 failed;")
+            with redirect_stdout(io.StringIO()):
+                return gate.validate_changed(
+                    root, engine, [self.PS_PATH, *extra], base
+                )
+
+    def test_powershell_metadata_only_change_is_accepted(self) -> None:
+        text = self.PS_BASE + "metadata:\n  cwe: [CWE-78]\n  owasp: [A03]\n"
+        self.assertEqual(self.ps_change(self.PS_BASE, text), 0)
+        self.assertEqual(self.ps_change(text, text.replace("CWE-78", "CWE-94")), 0)
+
+    def test_powershell_logic_change_is_refused(self) -> None:
+        meta = "metadata: {a: 1}\n"
+        for label, text in {
+            "rule": self.PS_BASE.replace("command", "pipeline") + meta,
+            "message": self.PS_BASE.replace("m\n", "n\n") + meta,
+            "note": self.PS_BASE + "note: x\n",
+            "removed key": "id: ps-one\nlanguage: powershell\nmessage: m\n",
+        }.items():
+            with self.subTest(label):
+                with self.assertRaisesRegex(
+                    gate.ValidationError, self.PS_REFUSED
+                ):
+                    self.ps_change(self.PS_BASE, text)
+
+    def test_powershell_added_or_deleted_rule_is_refused(self) -> None:
+        for base_text, text in ((None, self.PS_BASE), (self.PS_BASE, None)):
+            with self.subTest(added=base_text is None):
+                with self.assertRaisesRegex(
+                    gate.ValidationError, self.PS_REFUSED
+                ):
+                    self.ps_change(base_text, text)
+
+    def test_powershell_fixture_change_is_still_refused(self) -> None:
+        text = self.PS_BASE + "metadata: {a: 1}\n"
+        with self.assertRaisesRegex(gate.ValidationError, "powershell"):
+            self.ps_change(
+                self.PS_BASE, text, ["tests/powershell/security/ps-one.yml"]
+            )
+
+    def test_unknown_language_metadata_change_is_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            rule = root / "rules/cobol/security/c-one.yml"
+            rule.parent.mkdir(parents=True)
+            rule.write_text("id: c-one\nlanguage: cobol\n")
+            base = self.commit_base(root)
+            rule.write_text("id: c-one\nlanguage: cobol\nmetadata: {a: 1}\n")
+            engine = self.make_engine(root, "test result: ok. 1 passed; 0 failed;")
+            with self.assertRaisesRegex(
+                gate.ValidationError, "unsupported rule language: cobol"
+            ):
+                gate.validate_changed(
+                    root, engine, ["rules/cobol/security/c-one.yml"], base
+                )
+
     def test_added_rule_is_not_non_matching_exempt(self) -> None:
         self.assertEqual(self.non_matching(self.BASE, None)[0], frozenset())
 
