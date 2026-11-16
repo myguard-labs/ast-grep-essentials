@@ -8,7 +8,10 @@ note: >-
   Matches the same identifier text syntactically in the if (!p) body. It does
   not track reassignment of p or early exits.
 rule:
-  pattern: 'if (!$P) $BODY'
+  any:
+    - pattern: 'if (!$P) $BODY'
+    - pattern: 'if ($P == NULL) $BODY'
+    - pattern: 'if (NULL == $P) $BODY'
   has:
     field: consequence
     stopBy: end
@@ -25,5 +28,3 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/476.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
-  todo_cases:
-    - 'struct s { int id; }; void f(struct s *p) { if (p == NULL) { g(p->id); } }'

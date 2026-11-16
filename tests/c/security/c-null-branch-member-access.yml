@@ -15,6 +15,9 @@ valid:
   - |-
     struct s { int id; };
     void f(struct s *p) { struct s dflt; if (!p) { g(dflt.id); } }
+  - |-
+    struct s { int id; };
+    void f(struct s *p) { if (p == NULL) { g(0); } else { g(p->id); } }
 
 invalid:
   - |-
@@ -32,3 +35,9 @@ invalid:
   - |-
     struct s { int id; };
     void f(struct s *p, int c) { if (!p) { if (c) { g(p->id); } } }
+  - |-
+    struct s { int id; };
+    void f(struct s *p) { if (p == NULL) { g(p->id); } }
+  - |-
+    struct s { int id; };
+    void f(struct s *p) { if (NULL == p) { g(p->id); } }
