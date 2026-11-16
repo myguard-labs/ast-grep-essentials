@@ -69,13 +69,20 @@ utils:
         has:
           field: attribute
           regex: '^urlopen$'
+  pool-receiver:
+    any:
+      - kind: identifier
+        regex: '^(urllib3|http|pool|manager)$'
+      - kind: attribute
+        has:
+          field: attribute
+          regex: '^(urllib3|http|pool|manager)$'
   pool-urlopen:
     kind: attribute
     all:
       - has:
           field: object
-          kind: identifier
-          regex: '^(urllib3|http|pool|manager)$'
+          matches: pool-receiver
       - has:
           field: attribute
           regex: '^urlopen$'
@@ -84,8 +91,7 @@ utils:
     all:
       - has:
           field: object
-          kind: identifier
-          regex: '^(urllib3|http|pool|manager)$'
+          matches: pool-receiver
       - has:
           field: attribute
           regex: '^(request|urlopen)$'
