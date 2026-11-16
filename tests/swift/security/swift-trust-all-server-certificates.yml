@@ -1,0 +1,23 @@
+id: swift-trust-all-server-certificates
+valid:
+  - |
+    func urlSession(_ s: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        guard let trust = challenge.protectionSpace.serverTrust else { return }
+        if SecTrustEvaluateWithError(trust, nil) {
+            completionHandler(.useCredential, URLCredential(trust: trust))
+        }
+    }
+  - |
+    func urlSession(_ s: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        completionHandler(.performDefaultHandling, nil)
+    }
+invalid:
+  - |
+    func urlSession(_ s: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        completionHandler(.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
+    }
+  - |
+    func urlSession(_ s: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        let trust = challenge.protectionSpace.serverTrust!
+        completionHandler(.useCredential, URLCredential(trust: trust))
+    }
