@@ -9,9 +9,13 @@ message: >-
 note: >-
   Syntactic only; requires the destination identifier to be declared as an
   array in an enclosing block (or at file level for top-level statements),
-  skips a constant N * sizeof(T) length and a copy inside an if whose condition
-  compares against sizeof(dst) with <=. Other guards still match; a destination
-  that is a global array used inside a function is not matched.
+  skips a constant N * sizeof(T) length (not variable-length, so out of scope)
+  and a copy inside the then-branch of an if whose condition is
+  `<len> <= sizeof(dst)` on the same length expression; a copy in the else
+  branch or guarded by a different length still matches. Other guards still
+  match; a destination that is a global array used inside a function is not
+  matched. The array declaration is looked up by name, so it may match a
+  declaration in a sibling block or one that appears later in the scope.
 rule:
   all:
     - pattern: 'memcpy($DST, $SRC, $LEN)'
@@ -41,11 +45,17 @@ rule:
         inside:
           stopBy: end
           kind: if_statement
-          has:
-            field: condition
-            has:
-              stopBy: end
-              pattern: '$N <= sizeof($DST)'
+          all:
+            - has:
+                field: condition
+                has:
+                  stopBy: end
+                  pattern: '$LEN <= sizeof($DST)'
+            - has:
+                field: consequence
+                has:
+                  stopBy: end
+                  pattern: 'memcpy($DST, $SRC, $LEN)'
 constraints:
   DST:
     kind: identifier
@@ -70,5 +80,6 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/120.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
+    - "FN: constant N * sizeof(T) length that exceeds the array 'int buf[2]; memcpy(buf, src, 8 * sizeof(int));' is not matched (not variable-length)"
     - "FN: global array destination used inside a function 'char g[4]; void f(size_t n){ memcpy(g, src, n); }' is not matched"
     - "FN: member destination 'memcpy(s->buf, src, n)' with unchecked n is not matched (rule requires identifier destination)"
