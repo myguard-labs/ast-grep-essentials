@@ -14,10 +14,15 @@ note: >-
 rule:
   all:
     - kind: function_call_expression
-    - pattern: 'selected($A, $B)'
+    - any:
+        - pattern: 'selected($A, $B)'
+        - pattern: 'checked($A, $B)'
     - inside:
         kind: binary_expression
-        stopBy: end
+        has:
+          field: operator
+          regex: '^\.$'
+          stopBy: neighbor
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0

@@ -14,14 +14,19 @@ rule:
   kind: array_creation_expression
   has:
     kind: array_element_initializer
+    stopBy: end
     all:
       - has:
+          nthChild: 1
           kind: string
-          pattern: '''label'''
-      - not:
-          has:
-            kind: function_call_expression
-    stopBy: end
+          regex: "^'label'$"
+          stopBy: neighbor
+      - has:
+          nthChild: 2
+          any:
+            - kind: string
+            - kind: encapsed_string
+          stopBy: neighbor
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
