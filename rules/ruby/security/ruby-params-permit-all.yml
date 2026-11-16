@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ruby-params-permit-all
+language: ruby
+severity: warning
+message: >-
+  params.permit! allows every request attribute through strong parameters, which
+  enables mass assignment of fields such as roles or ownership.
+note: >-
+  Fires on a permit! call whose receiver chain starts with params, such as
+  params.permit! and params.require(:user).permit!. permit with a field list and
+  permit! on other receivers are not matched. A value that is filtered or
+  reassigned before it reaches a model is the routine dismissal.
+rule:
+  kind: call
+  all:
+    - has:
+        field: method
+        regex: '^permit!$'
+    - has:
+        field: receiver
+        regex: '^params\b'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-915'
+  owasp: 'A01:2025|A01:2021'
+  category: 'security'
+  subcategory: 'mass-assignment'
+  references: 'https://cheatsheetseries.owasp.org/cheatsheets/Mass_Assignment_Cheat_Sheet.html'
