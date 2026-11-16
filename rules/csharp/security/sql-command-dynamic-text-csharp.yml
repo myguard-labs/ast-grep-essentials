@@ -36,14 +36,14 @@ utils:
       - kind: invocation_expression
         has:
           field: function
-          regex: '^(?:string|String|System\.String)\.Format$'
+          regex: '^(?:global::)?(?:string|String|System\.String)\.Format$'
 rule:
   any:
     - kind: object_creation_expression
       all:
         - has:
             field: type
-            regex: '^(?:SqlCommand|SqlDataAdapter|OleDbCommand|OdbcCommand|NpgsqlCommand|MySqlCommand|SqliteCommand|SQLiteCommand|OracleCommand)$'
+            regex: '^(?:global::)?(?:[A-Za-z_]\w*\.)*(?:SqlCommand|SqlDataAdapter|OleDbCommand|OdbcCommand|NpgsqlCommand|MySqlCommand|SqliteCommand|SQLiteCommand|OracleCommand)$'
         - has:
             field: arguments
             kind: argument_list

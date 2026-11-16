@@ -127,6 +127,42 @@ snapshots:
   ? |
     class Example {
         void Run(string x) {
+            var c = new System.Data.SqlClient.SqlCommand("SELECT " + x);
+            var d = new global::System.Data.SqlClient.SqlCommand(global::System.String.Format("SELECT {0}", x));
+        }
+    }
+  : labels:
+    - source: new System.Data.SqlClient.SqlCommand("SELECT " + x)
+      style: primary
+      start: 57
+      end: 108
+    - source: System.Data.SqlClient.SqlCommand
+      style: secondary
+      start: 61
+      end: 93
+    - source: +
+      style: secondary
+      start: 104
+      end: 105
+    - source: x
+      style: secondary
+      start: 106
+      end: 107
+    - source: '"SELECT " + x'
+      style: secondary
+      start: 94
+      end: 107
+    - source: '"SELECT " + x'
+      style: secondary
+      start: 94
+      end: 107
+    - source: ("SELECT " + x)
+      style: secondary
+      start: 93
+      end: 108
+  ? |
+    class Example {
+        void Run(string x) {
             var cmd = new SqlCommand(/* q */ "SELECT * FROM t WHERE a = '" + x + "'");
         }
     }

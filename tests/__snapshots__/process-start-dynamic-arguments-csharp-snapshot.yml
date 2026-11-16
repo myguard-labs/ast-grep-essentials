@@ -145,6 +145,38 @@ snapshots:
   ? |
     class Example {
         void Run(string x) {
+            global::System.Diagnostics.Process.Start("sh", $"-c {x}");
+            var p = new global::System.Diagnostics.ProcessStartInfo("sh", "-c " + x);
+        }
+    }
+  : labels:
+    - source: global::System.Diagnostics.Process.Start("sh", $"-c {x}")
+      style: primary
+      start: 49
+      end: 106
+    - source: global::System.Diagnostics.Process.Start
+      style: secondary
+      start: 49
+      end: 89
+    - source: '{x}'
+      style: secondary
+      start: 101
+      end: 104
+    - source: $"-c {x}"
+      style: secondary
+      start: 96
+      end: 105
+    - source: $"-c {x}"
+      style: secondary
+      start: 96
+      end: 105
+    - source: ("sh", $"-c {x}")
+      style: secondary
+      start: 89
+      end: 106
+  ? |
+    class Example {
+        void Run(string x) {
             var psi = new ProcessStartInfo { FileName = "cmd", Arguments = "/c echo " + x };
         }
     }
