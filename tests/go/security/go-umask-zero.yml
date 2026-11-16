@@ -1,0 +1,14 @@
+id: go-umask-zero
+valid:
+  - 'package p; func f() { syscall.Umask(022) }'
+  - 'package p; func f() { old := syscall.Umask(0077); _ = old }'
+  - 'package p; func f() { syscall.Umask(old) }'
+  - 'package p; func f() { other.Umask(0) }'
+  - 'package p; func f() { unix.Umask(0o022) }'
+  - 'package p; // syscall.Umask(0)'
+  - 'package p; var s = "syscall.Umask(0)"'
+invalid:
+  - 'package p; func f() { syscall.Umask(0) }'
+  - 'package p; func f() { old := unix.Umask(0); _ = old }'
+  - 'package p; func f() { syscall.Umask(00) }'
+  - 'package p; func f() { unix.Umask(0o0) }'
