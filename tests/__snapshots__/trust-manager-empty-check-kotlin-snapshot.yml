@@ -1,11 +1,8 @@
 id: trust-manager-empty-check-kotlin
 snapshots:
-  ? |
-    class TrustAll : X509TrustManager {
-        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { }
-    }
-  : labels:
-    - source: 'override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { }'
+  "class TrustAll : X509TrustManager {\n    override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { }\n}\n":
+    labels:
+    - source: "override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { }"
       style: primary
       start: 40
       end: 124
@@ -13,17 +10,12 @@ snapshots:
       style: secondary
       start: 53
       end: 71
-    - source: '{ }'
+    - source: "{ }"
       style: secondary
       start: 121
       end: 124
-  ? |
-    object : X509TrustManager {
-        override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
-            // trust everything
-        }
-    }
-  : labels:
+  "object : X509TrustManager {\n    override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {\n        // trust everything\n    }\n}\n":
+    labels:
     - source: |-
         override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
                 // trust everything
@@ -42,12 +34,33 @@ snapshots:
       style: secondary
       start: 113
       end: 148
-  ? |
-    object : X509TrustManager {
-        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
-    }
-  : labels:
-    - source: 'override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}'
+  "object : X509TrustManager {\n    override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {\n        // accept everything\n        /* really everything */\n        // } even this brace\n    }\n}\n":
+    labels:
+    - source: |-
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
+                // accept everything
+                /* really everything */
+                // } even this brace
+            }
+      style: primary
+      start: 32
+      end: 210
+    - source: checkServerTrusted
+      style: secondary
+      start: 45
+      end: 63
+    - source: |-
+        {
+                // accept everything
+                /* really everything */
+                // } even this brace
+            }
+      style: secondary
+      start: 113
+      end: 210
+  "object : X509TrustManager {\n    override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}\n}\n":
+    labels:
+    - source: "override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}"
       style: primary
       start: 32
       end: 115
@@ -55,7 +68,7 @@ snapshots:
       style: secondary
       start: 45
       end: 63
-    - source: '{}'
+    - source: "{}"
       style: secondary
       start: 113
       end: 115

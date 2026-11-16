@@ -22,7 +22,21 @@ rule:
         - has:
             kind: boolean_literal
             regex: '^true$'
-    - pattern: $S.setJavaScriptEnabled(true)
+    - kind: call_expression
+      all:
+        - has:
+            kind: navigation_expression
+            has:
+              kind: navigation_suffix
+              has: {kind: simple_identifier, regex: '^setJavaScriptEnabled$'}
+        - has:
+            kind: call_suffix
+            has:
+              kind: value_arguments
+              has:
+                kind: value_argument
+                nthChild: {position: 1, ofRule: {kind: value_argument}}
+                has: {kind: boolean_literal, regex: '^true$'}
 metadata:
   rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.45.2

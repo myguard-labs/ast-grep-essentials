@@ -12,6 +12,9 @@ valid:
     val c = Cipher.getInstance("RSA")
     val d = Cipher.getInstance("ChaCha20-Poly1305")
     val e = Cipher.getInstance("AES-extra")
+  - |
+    val c = Cipher.getInstance(/* mode */ "AES/GCM/NoPadding")
+    val d = Cipher.getInstance("RSA", "AES")
 invalid:
   - |
     val c = Cipher.getInstance("AES")
@@ -23,3 +26,10 @@ invalid:
     }
   - |
     val c = Cipher.getInstance("AES/ECB/PKCS5Padding")
+  - |
+    val c = Cipher.getInstance(/* transformation */ "AES")
+  - |
+    val c = Cipher.getInstance(
+        // default mode is ECB
+        "DES",
+    )

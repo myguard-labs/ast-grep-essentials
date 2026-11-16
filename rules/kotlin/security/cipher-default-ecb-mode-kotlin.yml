@@ -13,10 +13,21 @@ note: >-
   or the same name with an explicit ECB mode. Nonliteral transformations, string
   templates and receivers other than a plain Cipher identifier are not resolved.
 rule:
-  pattern: Cipher.getInstance($ALG)
-constraints:
-  ALG:
-    regex: '^"(AES|AES_128|AES_192|AES_256|DES|DESede|TripleDES|Blowfish|RC2|Camellia|SEED|ARIA)(/ECB/[A-Za-z0-9]+)?"$'
+  kind: call_expression
+  all:
+    - has:
+        kind: navigation_expression
+        regex: '^Cipher\.getInstance$'
+    - has:
+        kind: call_suffix
+        has:
+          kind: value_arguments
+          has:
+            kind: value_argument
+            nthChild: {position: 1, ofRule: {kind: value_argument}}
+            has:
+              kind: string_literal
+              regex: '^"(AES|AES_128|AES_192|AES_256|DES|DESede|TripleDES|Blowfish|RC2|Camellia|SEED|ARIA)(/ECB/[A-Za-z0-9]+)?"$'
 metadata:
   rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.45.2

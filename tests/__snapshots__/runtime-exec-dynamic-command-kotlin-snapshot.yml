@@ -1,27 +1,40 @@
 id: runtime-exec-dynamic-command-kotlin
 snapshots:
-  ? |
-    fun run(name: String) {
-        Runtime.getRuntime().exec("ls " + name)
-    }
-  : labels:
+  "fun run(name: String) {\n    Runtime.getRuntime().exec(\n        // the command\n        \"ls \" + name,\n        /* env */ envp,\n    )\n}\n":
+    labels:
+    - source: |-
+        Runtime.getRuntime().exec(
+                // the command
+                "ls " + name,
+                /* env */ envp,
+            )
+      style: primary
+      start: 28
+      end: 129
+    - source: "\"ls \""
+      style: secondary
+      start: 86
+      end: 91
+    - source: "\"ls \" + name"
+      style: secondary
+      start: 86
+      end: 98
+  "fun run(name: String) {\n    Runtime.getRuntime().exec(\"ls \" + name)\n}\n":
+    labels:
     - source: Runtime.getRuntime().exec("ls " + name)
       style: primary
       start: 28
       end: 67
-    - source: '"ls "'
+    - source: "\"ls \""
       style: secondary
       start: 54
       end: 59
-    - source: '"ls " + name'
+    - source: "\"ls \" + name"
       style: secondary
       start: 54
       end: 66
-  ? |
-    fun run(name: String) {
-        Runtime.getRuntime().exec("ls $name")
-    }
-  : labels:
+  "fun run(name: String) {\n    Runtime.getRuntime().exec(\"ls $name\")\n}\n":
+    labels:
     - source: Runtime.getRuntime().exec("ls $name")
       style: primary
       start: 28
@@ -30,15 +43,12 @@ snapshots:
       style: secondary
       start: 59
       end: 63
-    - source: '"ls $name"'
+    - source: "\"ls $name\""
       style: secondary
       start: 54
       end: 64
-  ? |
-    fun run(name: String) {
-        Runtime.getRuntime().exec("ls ${name}", envp)
-    }
-  : labels:
+  "fun run(name: String) {\n    Runtime.getRuntime().exec(\"ls ${name}\", envp)\n}\n":
+    labels:
     - source: Runtime.getRuntime().exec("ls ${name}", envp)
       style: primary
       start: 28
@@ -47,7 +57,21 @@ snapshots:
       style: secondary
       start: 60
       end: 64
-    - source: '"ls ${name}"'
+    - source: "\"ls ${name}\""
       style: secondary
       start: 54
       end: 66
+  "fun run(name: String) {\n    Runtime.getRuntime().exec(/* cmd */ \"ls $name\")\n}\n":
+    labels:
+    - source: Runtime.getRuntime().exec(/* cmd */ "ls $name")
+      style: primary
+      start: 28
+      end: 75
+    - source: name
+      style: secondary
+      start: 69
+      end: 73
+    - source: "\"ls $name\""
+      style: secondary
+      start: 64
+      end: 74
