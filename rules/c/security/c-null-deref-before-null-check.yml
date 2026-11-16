@@ -15,6 +15,44 @@ rule:
     - has:
         pattern: '$X->$F'
         stopBy: end
+        not:
+          inside:
+            field: consequence
+            kind: conditional_expression
+            has:
+              field: condition
+              any:
+                - pattern: '$X'
+                - pattern: '$X != NULL'
+                - pattern: '($X != NULL)'
+                - pattern: '($X)'
+    - not:
+        follows:
+          stopBy: end
+          all:
+            - kind: if_statement
+            - any:
+                - pattern: 'if (!$X) $S'
+                - pattern: 'if ($X == NULL) $S'
+            - not:
+                has:
+                  field: alternative
+                  kind: else_clause
+            - has:
+                field: consequence
+                any:
+                  - kind: return_statement
+                  - kind: goto_statement
+                  - kind: break_statement
+                  - kind: continue_statement
+                  - all:
+                      - kind: compound_statement
+                      - has:
+                          any:
+                            - kind: return_statement
+                            - kind: goto_statement
+                            - kind: break_statement
+                            - kind: continue_statement
     - precedes:
         kind: if_statement
         has:
