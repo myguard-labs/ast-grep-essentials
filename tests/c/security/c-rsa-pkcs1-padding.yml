@@ -1,0 +1,17 @@
+id: c-rsa-pkcs1-padding
+valid:
+  - |
+    int f(RSA *r) { return RSA_public_encrypt(n, in, out, r, RSA_PKCS1_OAEP_PADDING); }
+  - |
+    int f(RSA *r) { return RSA_private_decrypt(n, in, out, r, RSA_PKCS1_OAEP_PADDING); }
+  - |
+    int f(RSA *r) { return RSA_private_encrypt(n, in, out, r, RSA_PKCS1_PADDING); }
+  - |
+    int f(RSA *r, int pad) { return RSA_public_encrypt(n, in, out, r, pad); }
+  - |
+    int f(void) { return other_encrypt(n, in, out, r, RSA_PKCS1_PADDING); }
+invalid:
+  - |
+    int f(RSA *r) { return RSA_public_encrypt(n, in, out, r, RSA_PKCS1_PADDING); }
+  - |
+    int f(RSA *r) { return RSA_private_decrypt(n, in, out, r, RSA_PKCS1_PADDING); }

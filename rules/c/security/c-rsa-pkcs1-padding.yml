@@ -1,0 +1,38 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-rsa-pkcs1-padding
+language: c
+severity: warning
+message: >-
+  RSA_public_encrypt or RSA_private_decrypt is called with RSA_PKCS1_PADDING.
+  Use RSA_PKCS1_OAEP_PADDING instead.
+note: >-
+  [CWE-780] [OWASP A04:2025|A02:2021] PKCS#1 v1.5 encryption padding is
+  vulnerable to Bleichenbacher padding-oracle attacks. This is a syntactic
+  check: a direct RSA_public_encrypt or RSA_private_decrypt call with the
+  RSA_PKCS1_PADDING identifier as an argument. RSA_private_encrypt (the
+  signature primitive) and padding held in variables are not matched.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: identifier
+        regex: '^(RSA_public_encrypt|RSA_private_decrypt)$'
+    - has:
+        field: arguments
+        has:
+          kind: identifier
+          regex: '^RSA_PKCS1_PADDING$'
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-780'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/780.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A04:2025|A02:2021'
