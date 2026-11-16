@@ -20,7 +20,7 @@ note: >-
   rawurlencode, ctype_*, sanitize_text_field, sanitize_key, sanitize_title,
   sanitize_file_name, sanitize_email, intval, floatval, absint, strlen, count,
   a hash or encoding function, or a numeric or boolean cast; a sanitizer on
-  another argument does not suppress it. A replace of other characters,
+  another argument does not suppress it. A chained replace of only \r is accepted as a sanitizer on purpose (precision over recall). A replace of other characters,
   var_export and the esc_* family (esc_html, esc_attr) do not strip CR or LF
   and are still reported. $_SERVER keys such as HTTP_USER_AGENT or REQUEST_URI are excluded
   deliberately (precision over recall). A value copied into a variable
@@ -96,7 +96,12 @@ rule:
                         regex: '^filter_var$'
                     - has:
                         field: arguments
-                        regex: 'FILTER_VALIDATE_(INT|FLOAT|BOOL(EAN)?|IP|EMAIL|URL|MAC)|FILTER_SANITIZE_(NUMBER_INT|NUMBER_FLOAT|SPECIAL_CHARS|ENCODED)|FILTER_FLAG_STRIP_LOW'
+                        has:
+                          any:
+                            - nthChild: 2
+                              regex: 'FILTER_VALIDATE_(INT|FLOAT|BOOL(EAN)?|IP|EMAIL|URL|MAC)|FILTER_SANITIZE_(NUMBER_INT|NUMBER_FLOAT|SPECIAL_CHARS|ENCODED)|FILTER_FLAG_STRIP_LOW'
+                            - nthChild: 3
+                              regex: 'FILTER_FLAG_STRIP_LOW'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'

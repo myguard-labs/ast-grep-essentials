@@ -16,6 +16,12 @@ valid:
     $s = 'error_log($_POST["x"])';
   - |
     <?php error_log("path " . $_SERVER["REQUEST_URI"]);
+  - |
+    <?php error_log("user " . str_replace(["\r", "\n"], "", $_GET["user"]));
+  - |
+    <?php error_log("user " . addcslashes($_GET["user"], "\0..\37"));
+  - |
+    <?php error_log("user " . filter_var($_GET["user"], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW));
 invalid:
   - |
     <?php error_log("user " . $_GET["user"]);
