@@ -1,0 +1,52 @@
+id: php-move-uploaded-file-no-type-check
+valid:
+  - |
+    <?php
+    function save() {
+        $ft = wp_check_filetype($_FILES['f']['name']);
+        move_uploaded_file($_FILES['f']['tmp_name'], $dest);
+    }
+  - |
+    <?php
+    function save() {
+        if (mime_content_type($_FILES['f']['tmp_name']) !== 'image/png') { return; }
+        move_uploaded_file($_FILES['f']['tmp_name'], $dest);
+    }
+  - |
+    <?php
+    function save() {
+        return wp_handle_upload($_FILES['f'], ['test_form' => false]);
+    }
+  - |
+    <?php
+    function save() {
+        copy($src, $dest);
+    }
+  - |
+    <?php
+    // move_uploaded_file($a, $b);
+    function noop() { return 1; }
+invalid:
+  - |
+    <?php
+    function save() {
+        move_uploaded_file($_FILES['f']['tmp_name'], $dest);
+    }
+  - |
+    <?php
+    class U {
+        public function save($dest) {
+            return move_uploaded_file($_FILES['f']['tmp_name'], $dest);
+        }
+    }
+  - |
+    <?php
+    function save() {
+        $ext = pathinfo($_FILES['f']['name'], PATHINFO_EXTENSION);
+        \move_uploaded_file($_FILES['f']['tmp_name'], $dest . $ext);
+    }
+  - |
+    <?php
+    $h = function () use ($dest) {
+        move_uploaded_file($_FILES['f']['tmp_name'], $dest);
+    };
