@@ -15,10 +15,13 @@ rule:
     - kind: expression_statement
     - has:
         kind: conditional_expression
-        stopBy: end
-    - has:
-        kind: function_call_expression
-        stopBy: end
+        all:
+          - has:
+              field: body
+              kind: function_call_expression
+          - has:
+              field: alternative
+              kind: function_call_expression
     - not:
         has:
           kind: assignment_expression
