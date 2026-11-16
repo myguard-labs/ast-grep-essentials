@@ -9,7 +9,7 @@ message: >-
   memory. Leave secure processing on.
 note: >-
   Matches a setFeature call whose first argument names FEATURE_SECURE_PROCESSING
-  (bare, XMLConstants-qualified, or the literal feature URI) and whose second
+  (bare, XMLConstants-qualified, or the literal feature URI, optionally under a cast) and whose second
   argument is the literal false. A value of true and a value held in a variable
   are not matched. A parser fed only trusted, size-limited documents is the
   routine dismissal.
@@ -29,7 +29,7 @@ rule:
         all:
           - has:
               nthChild: 1
-              regex: '^\(*\s*(([\w\s.]*\.\s*)?FEATURE_SECURE_PROCESSING|"http://javax\.xml\.XMLConstants/feature/secure-processing")\s*\)*$'
+              regex: '^\(*\s*(\(\s*[\w.\s]+\)\s*)?\(*\s*(([\w\s.]*\.\s*)?FEATURE_SECURE_PROCESSING|"http://javax\.xml\.XMLConstants/feature/secure-processing")\s*\)*$'
           - has:
               nthChild: 2
               kind: 'false'
