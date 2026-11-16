@@ -14,7 +14,7 @@ note: >-
   forms, or res.sendFile and res.download, receives a first argument that is
   req or request .query, .params, .body, .headers or .cookies, either directly
   or as an argument of path.join or path.resolve. A sendFile or download call
-  given an options object with a root key is not matched, and nor is a
+  given an options object with a root key (pair or shorthand) is not matched, and nor is a
   function that also calls normalize, realpath, basename or isAbsolute. Any
   such sanitizer call anywhere in the enclosing function suppresses the
   finding, even when the raw value is still used (known miss, chosen for
@@ -53,8 +53,11 @@ rule:
               has:
                 kind: object
                 has:
-                  kind: pair
-                  has: {field: key, regex: '^root$'}
+                  any:
+                    - kind: pair
+                      has: {field: key, regex: '^("root"|''root''|root)$'}
+                    - kind: shorthand_property_identifier
+                      regex: '^root$'
     - not:
         inside:
           stopBy: end

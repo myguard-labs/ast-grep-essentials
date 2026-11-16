@@ -12,7 +12,7 @@ message: >-
   Secure and a CSRF token.
 note: >-
   Fires on an http.Cookie literal whose SameSite field is
-  http.SameSiteNoneMode, and on one with no SameSite field whose Name is a
+  http.SameSiteNoneMode, and on one with no SameSite field whose Name is, or is a `+` concatenation containing, a
   string literal with a name segment of session, token, auth, jwt, sid, login,
   remember or csrf (at the start of the name or after _ - . or a camelCase
   step, so sidebar and author_pref do not count). A field assigned to the
@@ -50,7 +50,8 @@ rule:
                     - has: {nthChild: 1, regex: '^Name$'}
                     - has:
                         nthChild: 2
-                        regex: '(?:^["''`]|[_.\-])(?:(?:session|token|auth|jwt|sid|login|remember|csrf|Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9])|(?i:phpsessid|jsessionid|sessionid|sessid|csrftoken|xsrftoken|authtoken|accesstoken|refreshtoken)(?:["''`_.\-]))|[a-z0-9](?:(?:Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9]))'
+                        has:
+                          matches: cookie-name-operand
             - not:
                 has:
                   field: body
@@ -58,6 +59,20 @@ rule:
                   has:
                     kind: keyed_element
                     has: {nthChild: 1, regex: '^SameSite$'}
+utils:
+  cookie-name-operand:
+    any:
+      - kind: interpreted_string_literal
+        regex: '(?:^["''`]|[_.\-])(?:(?:session|token|auth|jwt|sid|login|remember|csrf|Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9])|(?i:phpsessid|jsessionid|sessionid|sessid|csrftoken|xsrftoken|authtoken|accesstoken|refreshtoken)(?:["''`_.\-]))|[a-z0-9](?:(?:Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9]))'
+      - kind: raw_string_literal
+        regex: '(?:^["''`]|[_.\-])(?:(?:session|token|auth|jwt|sid|login|remember|csrf|Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9])|(?i:phpsessid|jsessionid|sessionid|sessid|csrftoken|xsrftoken|authtoken|accesstoken|refreshtoken)(?:["''`_.\-]))|[a-z0-9](?:(?:Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9]))'
+      - kind: binary_expression
+        has: {field: operator, regex: '^\+$'}
+        any:
+          - has: {field: left, matches: cookie-name-operand}
+          - has: {field: right, matches: cookie-name-operand}
+      - kind: parenthesized_expression
+        has: {matches: cookie-name-operand}
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'
