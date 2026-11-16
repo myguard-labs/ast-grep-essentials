@@ -237,5 +237,76 @@ class AliasSyncTests(unittest.TestCase):
             alias_sync.split_blocks("---\nid: x\n")
 
 
+class ScopedSyncTests(unittest.TestCase):
+    def setUp(self):
+        # pylint: disable-next=consider-using-with
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = Path(self._tmp.name)
+        self.rules = self.root / "rules/c/correctness"
+        self.rules.mkdir(parents=True)
+        for name in ("a", "b"):
+            (self.rules / f"real-{name}.yml").write_text(
+                REPLACEMENT.replace("real-rule", f"real-{name}"))
+            (self.rules / f"old-{name}.yml").write_text(
+                ALIAS.replace("real-rule", f"real-{name}")
+                .replace("old-rule", f"old-{name}"))
+
+    def read(self, name: str) -> str:
+        return (self.rules / f"{name}.yml").read_text()
+
+    def test_scoped_sync_touches_only_the_named_rules_alias(self):
+        stale_b = self.read("old-b")
+        self.assertEqual(alias_sync.sync(self.root, check=False, rule_ids=("real-a",)), 0)
+        self.assertIn("foo($A)", self.read("old-a"))
+        self.assertEqual(self.read("old-b"), stale_b)
+        self.assertEqual(alias_sync.sync(self.root, check=False, rule_ids=("real-b",)), 0)
+        self.assertIn("foo($A)", self.read("old-b"))
+
+    def test_scoped_result_matches_full_sync_byte_for_byte(self):
+        full = self.root.parent / (self.root.name + "-full")
+        # pylint: disable-next=import-outside-toplevel
+        import shutil
+        shutil.copytree(self.root, full)
+        self.addCleanup(shutil.rmtree, full, True)
+        alias_sync.sync(full, check=False)
+        for rid in ("real-a", "real-b"):
+            alias_sync.sync(self.root, check=False, rule_ids=(rid,))
+        for name in ("old-a", "old-b"):
+            self.assertEqual(
+                self.read(name), (full / f"rules/c/correctness/{name}.yml").read_text())
+
+    def test_naming_the_alias_itself_selects_it(self):
+        alias_sync.sync(self.root, check=False, rule_ids=("old-a",))
+        self.assertIn("foo($A)", self.read("old-a"))
+        self.assertIn("STALE", self.read("old-b"))
+
+    def test_unknown_id_is_a_hard_error_with_a_clear_message(self):
+        with self.assertRaises(SystemExit) as ctx:
+            alias_sync.sync(self.root, check=False, rule_ids=("nope",))
+        self.assertIn("'nope'", str(ctx.exception))
+        self.assertIn("no rule file", str(ctx.exception))
+        self.assertIn("STALE", self.read("old-a"))
+
+    def test_check_with_scope_ignores_drift_outside_it(self):
+        self.assertEqual(alias_sync.sync(self.root, check=True, rule_ids=("real-a",)), 1)
+        alias_sync.sync(self.root, check=False, rule_ids=("real-a",))
+        # old-b is still drifted but out of scope.
+        self.assertEqual(alias_sync.sync(self.root, check=True, rule_ids=("real-a",)), 0)
+        self.assertEqual(alias_sync.sync(self.root, check=True, rule_ids=("real-b",)), 1)
+        self.assertEqual(alias_sync.sync(self.root, check=True), 1)
+        self.assertIn("STALE", self.read("old-b"))
+
+    def test_cli_unknown_id_exits_non_zero(self):
+        script = CI_ROOT / "sync_deprecated_aliases.py"
+        # pylint: disable-next=import-outside-toplevel
+        import subprocess
+        done = subprocess.run(
+            [sys.executable, str(script), "--root", str(self.root), "nope"],
+            capture_output=True, text=True, check=False)
+        self.assertNotEqual(done.returncode, 0)
+        self.assertIn("no rule file", done.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()
