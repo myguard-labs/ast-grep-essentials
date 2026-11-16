@@ -18,6 +18,18 @@ snapshots:
       style: primary
       start: 322
       end: 384
+  "func urlSession(_ s: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {\n    guard let trust = challenge.protectionSpace.serverTrust else { return }\n    guard let other = otherTrust() else { return }\n    guard SecTrustEvaluateWithError(other, nil) else { return }\n    completionHandler(.useCredential, URLCredential(trust: trust))\n}\n":
+    labels:
+    - source: "completionHandler(.useCredential, URLCredential(trust: trust))"
+      style: primary
+      start: 372
+      end: 434
+  "func urlSession(_ s: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {\n    guard let trust = challenge.protectionSpace.serverTrust else { return }\n    guard let other = otherTrust() else { return }\n    if SecTrustEvaluateWithError(other, nil) {\n        completionHandler(.useCredential, URLCredential(trust: trust))\n    }\n}\n":
+    labels:
+    - source: "completionHandler(.useCredential, URLCredential(trust: trust))"
+      style: primary
+      start: 359
+      end: 421
   "func urlSession(_ s: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {\n    guard let trust = challenge.protectionSpace.serverTrust else { return }\n    if !SecTrustEvaluateWithError(trust, nil) {\n        completionHandler(.useCredential, URLCredential(trust: trust))\n    }\n}\n":
     labels:
     - source: "completionHandler(.useCredential, URLCredential(trust: trust))"
@@ -30,6 +42,12 @@ snapshots:
       style: primary
       start: 392
       end: 454
+  "func urlSession(_ s: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {\n    guard let trust = challenge.protectionSpace.serverTrust else { return }\n    if SecTrustEvaluateWithError(trust, nil) {\n    } else {\n        completionHandler(.useCredential, URLCredential(trust: trust))\n    }\n}\n":
+    labels:
+    - source: "completionHandler(.useCredential, URLCredential(trust: trust))"
+      style: primary
+      start: 321
+      end: 383
   "func urlSession(_ s: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {\n    let trust = challenge.protectionSpace.serverTrust!\n    completionHandler(.useCredential, URLCredential(trust: trust))\n}\n":
     labels:
     - source: "completionHandler(.useCredential, URLCredential(trust: trust))"
