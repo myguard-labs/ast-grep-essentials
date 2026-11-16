@@ -11,8 +11,8 @@ note: >-
   Matches the LIBXML_PARSEHUGE constant name when it is an argument itself or
   sits in a binary or parenthesized flag expression of that argument, for
   simplexml_load_string, simplexml_load_file, a ->load, ->loadXML, ->loadHTML,
-  ->XML or ->open method call, or a static XMLReader::XML or XMLReader::open
-  call. The constant inside a closure passed to such a call is not matched. A flag held in a variable is not seen,
+  ->XML or ->open method call, a static XMLReader::XML or XMLReader::open
+  call, or new SimpleXMLElement. A fully qualified \LIBXML_PARSEHUGE is matched. The constant inside a closure passed to such a call is not matched. A flag held in a variable is not seen,
   and a document from a trusted, size-limited source is the routine dismissal.
   Entity flags are covered by php-libxml-entity-loading-enabled.
 
@@ -30,10 +30,17 @@ rule:
         any:
           - kind: binary_expression
           - kind: parenthesized_expression
+          - kind: qualified_name
     inside:
       kind: arguments
       inside:
         any:
+          - kind: object_creation_expression
+            has:
+              any:
+                - kind: name
+                - kind: qualified_name
+              regex: '(?i)^\\?SimpleXMLElement$'
           - kind: function_call_expression
             has:
               field: function
