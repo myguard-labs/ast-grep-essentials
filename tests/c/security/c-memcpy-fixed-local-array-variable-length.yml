@@ -3,6 +3,9 @@ valid:
   - 'int buf[2]; memcpy(buf, src, sizeof(buf));'
   - "int buf[2]; memcpy(buf, src, sizeof buf);"
   - "int buf[2]; memcpy(&buf[0], src, sizeof(buf));"
+  - "int *buf = malloc(n); memcpy(buf, src, n);"
+  - "int buf[8]; memcpy(buf, src, 2 * sizeof(int));"
+  - "char buf[8]; if (n <= sizeof(buf)) { memcpy(buf, src, n); }"
 invalid:
   - 'int buf[2]; memcpy(buf, src, n * sizeof(int));'
   - "int buf[2]; memcpy(buf, src, n);"
