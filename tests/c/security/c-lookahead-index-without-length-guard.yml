@@ -3,7 +3,13 @@ valid:
   - >-
     int f(const char *s, size_t n, size_t i) { if (s[i] == ';' && i + 1 < n &&
     s[i + 1] != ';') { return 1; } return 0; }
+  - "int f(const char *s, size_t n, size_t i) { if (i + 1 < n && s[i + 1] != ';') { return 1; } return 0; }"
+  - "int f(const char *s, size_t n, size_t i) { if (s[i] == ';' && s[i] != ':') { return 1; } return 0; }"
+  - "int f(const char *s, size_t n, size_t i) { if (s[i] == ';' && s[i + 2] != ';') { return 1; } return 0; }"
 invalid:
   - >-
     int f(const char *s, size_t n, size_t i) { if (s[i] == ';' && s[i + 1] !=
     ';') { return 1; } return 0; }
+  - "int f(const char *s, size_t n, size_t i) { if (s[i] == ';' && s[i + 1] != ';') { return 1; } return 0; }"
+  - "int f(const char *s, size_t n, size_t i) { if (s[i] == ';' && /* peek */ s[i + 1] != ';') { return 1; } return 0; }"
+  - "int f(const char *s, size_t n, size_t i) { if (s[i] == ';' && (s[i + 1] != ';')) { return 1; } return 0; }"

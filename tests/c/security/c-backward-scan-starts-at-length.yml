@@ -3,7 +3,13 @@ valid:
   - >-
     void f(char *ip, size_t len) { char *p; for (p = ip + len - 1; p > ip; p--)
     { if (*p == ' ') { break; } } }
+  - "void f(char *ip, size_t len) { char *p; for (p = ip + len - 1; p >= ip; p--) { if (*p == ' ') { break; } } }"
+  - "void f(char *ip, size_t len) { char *p; for (p = ip; p < ip + len; p++) { if (*p == ' ') { break; } } }"
+  - "void f(char *ip, char *end) { char *p; for (p = end - 1; p >= ip; p--) { if (*p == ' ') { break; } } }"
 invalid:
   - >-
     void f(char *ip, size_t len) { char *p; for (p = ip + len; p > ip; p--) { if
     (*p == ' ') { break; } } }
+  - "void f(char *ip, size_t len) { char *p; for (p = ip + len; p >= ip; p--) { if (*p == ' ') { break; } } }"
+  - "void f(char *ip, size_t len) { char *p; for (p = ip + len; p > ip; ) { p--; } }"
+  - "void f(struct b *b, size_t n) { for (b->p = b->s + b->n; b->p > b->s; b->p--) { if (*b->p == ' ') { break; } } }"

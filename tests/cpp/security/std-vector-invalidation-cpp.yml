@@ -23,6 +23,10 @@ valid:
       }
       return false;
     }
+  - "void f(std::vector<int> &vec, std::vector<int> &other) { for (std::vector<int>::iterator it = vec.begin(); it != vec.end(); ++it) { other.push_back(*it); } }"
+  - "void f(std::vector<int> &vec) { for (std::vector<int>::iterator it = vec.begin(); it != vec.end(); ++it) { if (*it == 0) { vec.push_back(0); break; } } }"
+  - "void f(std::vector<int> &vec) { for (size_t i = 0; i < vec.size(); ++i) { vec.push_back(0); } }"
+  - "void f(std::vector<int> &vec) { for (std::vector<int>::iterator it = vec.begin(); it != vec.end(); ++it) { use(*it); } }"
 invalid:
   - |
     void loop_variant_5(std::vector<int> &vec) {
@@ -90,3 +94,6 @@ invalid:
         }
       }
     }
+  - "void f(std::vector<int> &vec) { for (std::vector<int>::iterator it = vec.begin(); it != vec.end(); ++it) { if (*it == 0) { vec.clear(); } } }"
+  - "void f(std::vector<int> &vec) { for (std::vector<int>::iterator it = vec.begin(); it != vec.end(); ++it) { if (*it == 0) { vec.insert(it, 1); } } }"
+  - "void f(std::vector<int> &vec) { for (std::vector<int>::iterator it = vec.begin(); it != vec.end(); ++it) { vec.emplace_back(*it); } }"

@@ -1,5 +1,11 @@
 id: c-deref-before-length-bound-loop
 valid:
   - 'for (; len > 0 && *s == 0; s++, len--) continue;'
+  - "void f(char *s, size_t len) { for (; *s == 0 || len > 0; s++, len--) continue; }"
+  - "int f(char *s, size_t len) { return *s == 0 && len > 0; }"
+  - "void f(char *s, size_t len, char *t) { for (; *s == 0 && *t == 0; s++) continue; }"
 invalid:
   - 'for (; *s == 0 && len > 0; s++, len--) continue;'
+  - "void f(char *s, size_t n) { for (; *s == 0 && n > 0; s++, n--) continue; }"
+  - "void f(char *s, size_t count) { for (i = 0; *s == 'a' && i < count; i++) { s++; } }"
+  - "void f(struct t *t) { for (; *t->p == 0 && t->size > 0; t->p++) { t->size--; } }"

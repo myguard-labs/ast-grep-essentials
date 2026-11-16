@@ -3,5 +3,11 @@ valid:
 - function check (path, mod) { if (path.startsWith(mod.path) && path[mod.path.length] === '/') { const rem = path.slice(mod.path.length); return rem } }
 - // function check (path, mod) { if (path.startsWith(mod.path)) { const rem = path.slice(mod.path.length); return rem } }
 - const astgrepFixture = "function check (path, mod) { if (path.startsWith(mod.path)) { const rem = path.slice(mod.path.length); return rem } }";
+- "function check (path, mod) { if (path.startsWith(mod.path + '/')) { const rem = path.slice(mod.path.length); return rem } }"
+- "function check (path, mod) { if (path.startsWith(mod.path)) { return path } }"
+- "function check (path, mod) { if (path === mod.path) { const rem = path.slice(mod.path.length); return rem } }"
 invalid:
 - function check (path, mod) { if (path.startsWith(mod.path)) { const rem = path.slice(mod.path.length); return rem } }
+- "function check (path, mod) { if (path.startsWith(mod.path)) { const tail = path.slice(mod.path.length); return tail } }"
+- "function check (path, mod) { if (path.startsWith( mod.path )) { const rem = path.slice( mod.path.length ); return rem } }"
+- "function check (path, mod) { if (path.startsWith(mod.path)) { const rem = path.slice(mod.path.length); return rem; } }"

@@ -1,12 +1,54 @@
 id: c-deref-before-bounds-check
 snapshots:
-  void f(char *buf) { char *p; for (p = buf; *p != 0 && p < buf + 8; ) { p++; } }:
+  "int f(char *p, char *end) { return (*p == 'x') && (p < end); }":
     labels:
-    - source: '*p != 0 && p < buf + 8'
+    - source: (*p == 'x') && (p < end)
+      style: primary
+      start: 35
+      end: 59
+    - source: "*p"
+      style: secondary
+      start: 36
+      end: 38
+    - source: p < end
+      style: secondary
+      start: 51
+      end: 58
+  "int f(char *p, char *end) { return *p == 'x' && p < end; }":
+    labels:
+    - source: "*p == 'x' && p < end"
+      style: primary
+      start: 35
+      end: 55
+    - source: "*p"
+      style: secondary
+      start: 35
+      end: 37
+    - source: p < end
+      style: secondary
+      start: 48
+      end: 55
+  "int f(struct t *t, char *end) { if (*t->p == 'x' && t->p < end) return 1; return 0; }":
+    labels:
+    - source: "*t->p == 'x' && t->p < end"
+      style: primary
+      start: 36
+      end: 62
+    - source: "*t->p"
+      style: secondary
+      start: 36
+      end: 41
+    - source: t->p < end
+      style: secondary
+      start: 52
+      end: 62
+  "void f(char *buf) { char *p; for (p = buf; *p != 0 && p < buf + 8; ) { p++; } }":
+    labels:
+    - source: "*p != 0 && p < buf + 8"
       style: primary
       start: 43
       end: 65
-    - source: '*p'
+    - source: "*p"
       style: secondary
       start: 43
       end: 45

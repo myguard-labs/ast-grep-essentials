@@ -1,5 +1,11 @@
 id: c-free-then-deref-same-block
 valid:
   - 'free(retmsg->buf); free(retmsg);'
+  - "void f(struct m *a, struct m *b) { free(a); use(b->buf); }"
+  - "void f(struct m *r) { use(r->buf); free(r); }"
+  - "void f(struct m *r) { free(r); r = NULL; }"
 invalid:
   - 'free(retmsg); free(retmsg->buf);'
+  - "void f(struct m *r) { free(r); use(r->len); }"
+  - "void f(struct m *r) { free(r); log(\"x\"); if (ok) { use(r->len); } }"
+  - "void f(struct m *r) { free(r); int n = r->a.b; }"

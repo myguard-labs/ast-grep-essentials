@@ -3,7 +3,13 @@ valid:
   - >-
     void f(char *h, size_t len) { while (len != 0 && h[len - 1] == ' ') { len--;
     } }
+  - "void f(char *h, size_t len) { do { len++; } while (len != 0 && h[len] == ' '); }"
+  - "void f(char *h, size_t len) { while (len != 0) { len--; } }"
+  - "void f(char *h, size_t len) { for (; len != 0 && h[len - 1] == ' '; len--) { } }"
 invalid:
   - >-
     void f(char *h, size_t len) { do { len--; } while (len != 0 && h[len - 1] ==
     ' '); }
+  - "void f(char *h, size_t len) { do len--; while (len != 0 && h[len - 1] == ' '); }"
+  - "void f(char *h, size_t len) { do { /* trim */ len--; } while (h[len - 1] == ' '); }"
+  - "void f(struct s *s) { do { s->len--; } while (s->len != 0 && s->h[s->len - 1] == ' '); }"
