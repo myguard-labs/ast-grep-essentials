@@ -82,10 +82,28 @@ snapshots:
       style: secondary
       start: 66
       end: 82
-    - source: iterations=50000
+    - source: (algorithm=hashes.SHA256(), length=32, salt=salt, iterations=50000)
       style: secondary
-      start: 66
-      end: 82
+      start: 16
+      end: 83
+  "kdf = PBKDF2HMAC(hashes.SHA256(), 32, salt, 1000)\n":
+    labels:
+    - source: PBKDF2HMAC(hashes.SHA256(), 32, salt, 1000)
+      style: primary
+      start: 6
+      end: 49
+    - source: PBKDF2HMAC
+      style: secondary
+      start: 6
+      end: 16
+    - source: "1000"
+      style: secondary
+      start: 44
+      end: 48
+    - source: (hashes.SHA256(), 32, salt, 1000)
+      style: secondary
+      start: 16
+      end: 49
   "salt = bcrypt.gensalt(8)\n":
     labels:
     - source: bcrypt.gensalt(8)

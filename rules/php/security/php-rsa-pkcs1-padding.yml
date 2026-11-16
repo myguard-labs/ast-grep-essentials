@@ -9,9 +9,10 @@ message: >-
 note: >-
   [CWE-780] [OWASP A02:2021] PKCS#1 v1.5 encryption padding is
   vulnerable to Bleichenbacher padding-oracle attacks. This is a syntactic
-  check: openssl_public_encrypt, openssl_private_decrypt,
-  openssl_private_encrypt or openssl_public_decrypt called with the explicit
-  OPENSSL_PKCS1_PADDING constant. Calls that omit the padding argument (which
+  check: openssl_public_encrypt or openssl_private_decrypt called with the
+  explicit OPENSSL_PKCS1_PADDING constant. openssl_private_encrypt and
+  openssl_public_decrypt are raw RSA signing and verification primitives
+  where OAEP is not available, so they are not matched. Calls that omit the padding argument (which
   defaults to PKCS#1 v1.5) and values held in variables are not matched.
 rule:
   kind: function_call_expression
@@ -21,7 +22,7 @@ rule:
         any:
           - kind: name
           - kind: qualified_name
-        regex: '^\\?(openssl_public_encrypt|openssl_private_decrypt|openssl_private_encrypt|openssl_public_decrypt)$'
+        regex: '^\\?(openssl_public_encrypt|openssl_private_decrypt)$'
     - has:
         field: arguments
         has:

@@ -11,7 +11,9 @@ note: >-
   [CWE-321] [OWASP A02:2021] A key embedded in source is exposed to
   everyone with the code. This is a syntactic check: the third argument is a
   plain single-quoted or double-quoted string without variable interpolation.
-  Keys from variables, constants or function calls are not matched.
+  Keys from variables, constants or function calls are not matched. Calls
+  that use any named argument are skipped, because positions no longer
+  identify the key argument.
 rule:
   kind: function_call_expression
   all:
@@ -21,6 +23,14 @@ rule:
           - kind: name
           - kind: qualified_name
         regex: '^\\?openssl_(encrypt|decrypt)$'
+    - not:
+        has:
+          field: arguments
+          has:
+            kind: argument
+            has:
+              field: name
+              kind: name
     - has:
         field: arguments
         has:

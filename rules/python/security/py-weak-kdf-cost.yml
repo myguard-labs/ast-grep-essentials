@@ -12,9 +12,9 @@ note: >-
   1300000 for SHA-1) and a bcrypt cost of at least 10. This is a syntactic
   check on an integer literal: hashlib.pbkdf2_hmac iterations (fourth
   argument or iterations keyword), the cryptography PBKDF2HMAC iterations
-  keyword, and bcrypt.gensalt rounds (first argument or rounds keyword). Only
-  literals below 100000 iterations are flagged so a SHA-512 or tuned value
-  is never reported. Values held in variables are not evaluated.
+  (fourth argument or keyword), and bcrypt.gensalt rounds (first argument or
+  rounds keyword). Only literals below 100000 iterations are flagged so a
+  SHA-512 or tuned value is never reported. Values held in variables are not evaluated.
 utils:
   low-iterations:
     kind: integer
@@ -58,15 +58,19 @@ rule:
             regex: '^PBKDF2HMAC$'
         - has:
             field: arguments
-            has:
-              kind: keyword_argument
-              all:
-                - has:
-                    field: name
-                    regex: '^iterations$'
-                - has:
-                    field: value
-                    matches: low-iterations
+            any:
+              - has:
+                  nthChild: 4
+                  matches: low-iterations
+              - has:
+                  kind: keyword_argument
+                  all:
+                    - has:
+                        field: name
+                        regex: '^iterations$'
+                    - has:
+                        field: value
+                        matches: low-iterations
     - all:
         - has:
             field: function
