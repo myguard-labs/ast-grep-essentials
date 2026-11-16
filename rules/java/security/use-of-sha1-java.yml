@@ -73,7 +73,12 @@ utils:
           follows:
             stopBy: end
             kind: import_declaration
-            pattern: import java.security.MessageDigest
+            all:
+              - has:
+                  matches: java-imported-name
+                  regex: '^java\s*\.\s*security\s*\.\s*MessageDigest$'
+              - not:
+                  regex: '^import\s+static\s'
 
   UPSTREAM_UTIL_003:
     kind: method_invocation
@@ -101,7 +106,12 @@ utils:
           follows:
             stopBy: end
             kind: import_declaration
-            pattern: import java.security.MessageDigest
+            all:
+              - has:
+                  matches: java-imported-name
+                  regex: '^java\s*\.\s*security\s*\.\s*MessageDigest$'
+              - not:
+                  regex: '^import\s+static\s'
       - inside:
           stopBy: end
           follows:

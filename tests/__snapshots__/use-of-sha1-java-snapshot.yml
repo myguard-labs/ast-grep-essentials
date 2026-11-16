@@ -1,14 +1,45 @@
 id: use-of-sha1-java
 snapshots:
-  ? |
-    import java.security.MessageDigest;
-    public byte[] bad1(String password) {
-    MessageDigest sha1Digest = MessageDigest.getInstance("SHA-1");
-    sha1Digest.update(password.getBytes());
-    byte[] hashValue = sha1Digest.digest();
-    return hashValue;
-    }
-  : labels:
+  "import java.security.MessageDigest.*;\npublic byte[] bad1(String password) {\nMessageDigest sha1Digest = MessageDigest.getInstance(\"SHA-1\");\nsha1Digest.update(password.getBytes());\nbyte[] hashValue = sha1Digest.digest();\nreturn hashValue;\n}\n":
+    labels:
+    - source: MessageDigest.getInstance("SHA-1")
+      style: primary
+      start: 103
+      end: 137
+    - source: MessageDigest
+      style: secondary
+      start: 103
+      end: 116
+    - source: getInstance
+      style: secondary
+      start: 117
+      end: 128
+    - source: SHA-1
+      style: secondary
+      start: 130
+      end: 135
+    - source: "\"SHA-1\""
+      style: secondary
+      start: 129
+      end: 136
+    - source: ("SHA-1")
+      style: secondary
+      start: 128
+      end: 137
+    - source: java.security.MessageDigest
+      style: secondary
+      start: 7
+      end: 34
+    - source: import java.security.MessageDigest.*;
+      style: secondary
+      start: 0
+      end: 37
+    - source: import java.security.MessageDigest.*;
+      style: secondary
+      start: 0
+      end: 37
+  "import java.security.MessageDigest;\npublic byte[] bad1(String password) {\nMessageDigest sha1Digest = MessageDigest.getInstance(\"SHA-1\");\nsha1Digest.update(password.getBytes());\nbyte[] hashValue = sha1Digest.digest();\nreturn hashValue;\n}\n":
+    labels:
     - source: MessageDigest.getInstance("SHA-1")
       style: primary
       start: 101
@@ -25,7 +56,7 @@ snapshots:
       style: secondary
       start: 128
       end: 133
-    - source: '"SHA-1"'
+    - source: "\"SHA-1\""
       style: secondary
       start: 127
       end: 134
@@ -33,6 +64,10 @@ snapshots:
       style: secondary
       start: 126
       end: 135
+    - source: java.security.MessageDigest
+      style: secondary
+      start: 7
+      end: 34
     - source: import java.security.MessageDigest;
       style: secondary
       start: 0
@@ -41,21 +76,14 @@ snapshots:
       style: secondary
       start: 0
       end: 35
-  ? |
-    public byte[] bad2(String password) {
-    byte[] hashValue = DigestUtils.getSha1Digest().digest(password.getBytes());
-    return hashValue;
-    }
-  : labels:
+  "public byte[] bad2(String password) {\nbyte[] hashValue = DigestUtils.getSha1Digest().digest(password.getBytes());\nreturn hashValue;\n}\n":
+    labels:
     - source: DigestUtils.getSha1Digest().digest(password.getBytes())
       style: primary
       start: 57
       end: 112
-  ? |
-    public void bad3() {
-    java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA1", "SUN");
-    }
-  : labels:
+  "public void bad3() {\njava.security.MessageDigest md = java.security.MessageDigest.getInstance(\"SHA1\", \"SUN\");\n}\n":
+    labels:
     - source: java.security.MessageDigest.getInstance("SHA1", "SUN")
       style: primary
       start: 54
@@ -72,7 +100,7 @@ snapshots:
       style: secondary
       start: 95
       end: 99
-    - source: '"SHA1"'
+    - source: "\"SHA1\""
       style: secondary
       start: 94
       end: 100
