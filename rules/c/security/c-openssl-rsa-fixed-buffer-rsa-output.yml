@@ -8,12 +8,30 @@ message: >-
   literal array size.
 note: >-
   Syntactic only; it flags RSA public/private encrypt/decrypt calls and cannot
-  verify the output buffer's declared size.
+  verify the output buffer's declared size. A preceding declaration or
+  assignment that sizes the output argument from RSA_size suppresses the match.
 rule:
-  kind: call_expression
-  has:
-    field: function
-    kind: identifier
+  pattern: $FN($FLEN, $FROM, $OUT, $$$REST)
+  not:
+    inside:
+      stopBy: end
+      follows:
+        stopBy: end
+        any:
+          - kind: declaration
+          - kind: expression_statement
+        all:
+          - has:
+              stopBy: end
+              kind: call_expression
+              has:
+                field: function
+                regex: '^RSA_size$'
+          - has:
+              stopBy: end
+              pattern: $OUT
+constraints:
+  FN:
     regex: '^RSA_(public|private)_(encrypt|decrypt)$'
 metadata:
   rule_modified_at: '2026-10-20'
