@@ -9,8 +9,10 @@ message: >-
   deserialization.
 note: >-
   Matches an assignment (statement or object initializer) of
-  TypeNameHandling.All, Auto, Objects or Arrays to a member named
-  TypeNameHandling. TypeNameHandling.None is not flagged. This is a
+  TypeNameHandling.All, Auto, Objects or Arrays, alone or inside a bitwise
+  combination such as `Objects | Arrays` (TypeNameHandling is a [Flags]
+  enum), to a member named TypeNameHandling. TypeNameHandling.None alone is
+  not flagged. This is a
   single-file syntactic check: it does not resolve types, a custom
   SerializationBinder, or whether the settings reach a deserializer.
 rule:
@@ -21,7 +23,16 @@ rule:
         regex: '^(?:[\w.]+\.)?TypeNameHandling$'
     - has:
         field: right
-        regex: '^(?:Newtonsoft\.Json\.)?TypeNameHandling\.(?:All|Auto|Objects|Arrays)$'
+        any:
+          - kind: member_access_expression
+            regex: '^(?:Newtonsoft\.Json\.)?TypeNameHandling\.(?:All|Auto|Objects|Arrays)$'
+          - any:
+              - kind: binary_expression
+              - kind: parenthesized_expression
+            has:
+              stopBy: end
+              kind: member_access_expression
+              regex: '^(?:Newtonsoft\.Json\.)?TypeNameHandling\.(?:All|Auto|Objects|Arrays)$'
 metadata:
   rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.51.0
