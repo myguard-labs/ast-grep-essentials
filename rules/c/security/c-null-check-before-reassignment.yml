@@ -34,6 +34,31 @@ rule:
                     has:
                       field: alternative
                       kind: else_clause
+                - not:
+                    has:
+                      stopBy: end
+                      all:
+                        - kind: expression_statement
+                        - has:
+                            kind: assignment_expression
+                            has:
+                              field: left
+                              pattern: '$P'
+                        - precedes:
+                            stopBy: end
+                            all:
+                              - has:
+                                  pattern: '*$P'
+                                  stopBy: end
+                              - not:
+                                  all:
+                                    - kind: if_statement
+                                    - has:
+                                        field: condition
+                                        any:
+                                          - pattern: '($P)'
+                                          - pattern: '($P != NULL)'
+                                          - pattern: '($P && $Y)'
           - not:
               follows:
                 stopBy: end

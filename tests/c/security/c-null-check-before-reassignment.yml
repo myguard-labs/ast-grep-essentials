@@ -13,6 +13,8 @@ valid:
     void f(int *p) { if (p) { p = next(p); } if (p) { use(*p); } }
   - |-
     void f(int *p) { if (p) { p = next(p); } if (!p) { return; } use(*p); }
+  - |-
+    void f(int *p) { if (p) { p = next(p); } if (p) { p = next(p); if (p) { use(*p); } } }
 
 invalid:
   - >-
@@ -26,3 +28,5 @@ invalid:
     int f(char *buf) { if (buf) { buf = fetch(); } return *buf; }
   - |-
     void f(int *p) { if (p) { p = lookup(1); } /* c */ h(*p); }
+  - |-
+    void f(int *p) { if (p) { p = next(p); } if (p) { p = NULL; use(*p); } }
