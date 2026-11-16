@@ -8,22 +8,28 @@ message: >-
 note: >-
   [CWE-295]: Improper Certificate Validation
   [OWASP A07:2021]: Identification and Authentication Failures
-  Matches a completion call of the form handler(.useCredential, URLCredential(trust: ...)) that is not inside an if whose condition calls SecTrustEvaluate* and does not follow a guard whose condition calls it; a call that ignores the evaluation result (for example _ = SecTrustEvaluateWithError(...)) is still reported, and evaluation done in a helper defined elsewhere is not seen.
+  Matches a completion call of the form handler(.useCredential, URLCredential(trust: ...)) that is not in the then-block of an if whose condition is a non-negated SecTrustEvaluate* call (the else branch and a negated check are still reported) and does not follow a guard whose condition is such a call; a call that ignores the evaluation result (for example _ = SecTrustEvaluateWithError(...)) is still reported, and evaluation done in a helper defined elsewhere or inside a compound && / == condition is not seen. Scope: it matches the literal .useCredential with an inline URLCredential(trust:); fully qualified dispositions and credentials built into a variable first are not covered.
 utils:
   evaluated-condition:
     has:
-      field: condition
-      stopBy: end
-      kind: simple_identifier
-      regex: '^SecTrustEvaluate'
+      kind: call_expression
+      has:
+        kind: simple_identifier
+        regex: '^SecTrustEvaluate'
 rule:
   pattern: '$HANDLER(.useCredential, URLCredential(trust: $TRUST))'
   not:
     any:
       - inside:
-          kind: if_statement
+          kind: statements
           stopBy: end
-          matches: evaluated-condition
+          not:
+            follows:
+              kind: statements
+              stopBy: end
+          inside:
+            kind: if_statement
+            matches: evaluated-condition
       - follows:
           kind: guard_statement
           stopBy: end
