@@ -1,0 +1,88 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ruby-file-params-path-direct
+language: ruby
+severity: warning
+message: >-
+  File path taken straight from params and handed to a file API. A caller who
+  sends parent-directory segments or an absolute path reads any file the
+  process can reach, including configuration and credentials. Reduce the name
+  with File.basename, or expand it against a fixed base and reject a result
+  that does not start with that base.
+note: >-
+  Fires when File.read, File.open, File.binread, File.foreach, File.readlines,
+  IO.read or send_file receives a first argument that is params[...] or
+  params.fetch or params.dig, directly or as an argument of File.join. A method
+  that also calls File.basename, expand_path, realpath or start_with? is not
+  matched. A path copied into a variable first, or checked in a helper, is not
+  seen. A value already reduced to a single safe filename is the routine
+  dismissal.
+
+  [CWE-22] [A01:2025] [A01:2021]
+
+  [REFERENCES]
+      - https://owasp.org/www-community/attacks/Path_Traversal
+rule:
+  kind: call
+  all:
+    - any:
+        - all:
+            - has: {field: method, regex: '^(read|open|binread|foreach|readlines)$'}
+            - has: {field: receiver, regex: '^(File|IO)$'}
+        - all:
+            - has: {field: method, regex: '^send_file$'}
+            - not: {has: {field: receiver, regex: '.'}}
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          nthChild:
+            position: 1
+            ofRule:
+              not:
+                kind: comment
+          matches: params-path
+    - not:
+        inside:
+          stopBy: end
+          any:
+            - kind: method
+            - kind: singleton_method
+            - kind: do_block
+            - kind: block
+          has:
+            stopBy: end
+            kind: call
+            has:
+              field: method
+              regex: '^(basename|expand_path|realpath|start_with\?)$'
+utils:
+  params-accessor:
+    kind: element_reference
+    regex: '^params\s*\['
+  params-fetch:
+    kind: call
+    regex: '^params\s*\.(fetch|dig)\b'
+  params-path:
+    any:
+      - matches: params-accessor
+      - matches: params-fetch
+      - kind: call
+        all:
+          - has: {field: receiver, regex: '^File$'}
+          - has: {field: method, regex: '^join$'}
+          - has:
+              field: arguments
+              has:
+                any:
+                  - matches: params-accessor
+                  - matches: params-fetch
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-22'
+  owasp: 'A01:2025|A01:2021'
+  category: 'security'
+  references: 'https://owasp.org/www-community/attacks/Path_Traversal'
