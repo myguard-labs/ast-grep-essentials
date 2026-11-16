@@ -8,6 +8,10 @@ valid:
 - '# requests.get(request.args["url"])'
 - text = 'requests.get(request.args["url"])'
 - requests.get(url)
+- requests.get(request.build_absolute_uri('/x'))
+- urllib3.request("GET", "https://api.example.com/x")
+- http.request("GET", API_URL)
+- http.request(request.args["m"], "https://api.example.com/x")
 invalid:
 - requests.get(request.args["url"])
 - requests.post(request.form.get("callback"), json=payload)
@@ -15,3 +19,6 @@ invalid:
 - urllib.request.urlopen(request.GET.get("u"))
 - session.head(request.query_params["u"])
 - urlopen(request.json["feed"])
+- urllib3.request("GET", request.args["url"])
+- http.request("GET", request.args["url"])
+- pool.urlopen("GET", url=request.form["u"])

@@ -10,11 +10,14 @@ message: >-
   internal hosts that the caller cannot. Resolve the target against an
   allowlist of schemes and hosts before requesting it.
 note: >-
-  Fires when requests, httpx, urllib3, aiohttp or a lexically named session or
-  client calls get, post, put, patch, delete, head or options, or when urlopen
-  is called, with a first argument or a url keyword argument that reads through
-  a request object, including args, GET, POST, form, values, query_params, data
-  and json. A URL copied into a variable first, and any allowlist check on that
+  Fires when requests, httpx, aiohttp or a lexically named session or client
+  calls get, post, put, patch, delete, head or options, or when urlopen is
+  called, with a first argument or a url keyword argument that reads through
+  an input container of a request object: args, form, values, json, data,
+  files, cookies, headers, GET, POST, query, params or query_params. A urllib3
+  call named request or urlopen on urllib3, http, pool or manager is checked
+  on its second argument or url keyword. Other request members, such as
+  build_absolute_uri(), are not reported. A URL copied into a variable first, and any allowlist check on that
   variable, is not seen. An interpolated URL is covered by
   py-ssrf-request-fstring. A fixed host with a request value only in the path
   is also matched here, and is the routine dismissal.
@@ -24,26 +27,31 @@ note: >-
   [REFERENCES]
       - https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
 utils:
-  request-root:
+  request-input:
+    kind: attribute
+    all:
+      - has:
+          field: object
+          kind: identifier
+          regex: '^request$'
+      - has:
+          field: attribute
+          regex: '^(args|form|values|json|data|files|cookies|headers|GET|POST|query_params|query|params|get_json)$'
+  request-derived:
     any:
-      - kind: identifier
-        regex: '^request$'
+      - matches: request-input
       - kind: attribute
         has:
           field: object
-          matches: request-root
+          matches: request-derived
       - kind: subscript
         has:
           field: value
-          matches: request-root
+          matches: request-derived
       - kind: call
         has:
           field: function
-          matches: request-root
-  request-derived:
-    all:
-      - matches: request-root
-      - not: {kind: identifier}
+          matches: request-derived
   http-callee:
     any:
       - kind: attribute
@@ -51,7 +59,7 @@ utils:
           - has:
               field: object
               kind: identifier
-              regex: '^(requests|httpx|urllib3|aiohttp|http|session|sess|client)$'
+              regex: '^(requests|httpx|aiohttp|http|session|sess|client)$'
           - has:
               field: attribute
               regex: '^(get|post|put|patch|delete|head|options)$'
@@ -61,22 +69,52 @@ utils:
         has:
           field: attribute
           regex: '^urlopen$'
+  pool-callee:
+    kind: attribute
+    all:
+      - has:
+          field: object
+          kind: identifier
+          regex: '^(urllib3|http|pool|manager)$'
+      - has:
+          field: attribute
+          regex: '^(request|urlopen)$'
 rule:
   kind: call
-  all:
-    - has:
-        field: function
-        matches: http-callee
-    - has:
-        field: arguments
-        any:
-          - has:
+  any:
+    - all:
+        - has:
+            field: function
+            matches: http-callee
+        - has:
+            field: arguments
+            has:
               nthChild:
                 position: 1
                 ofRule:
                   not: {kind: comment}
               matches: request-derived
-          - has:
+    - all:
+        - has:
+            field: function
+            matches: pool-callee
+        - has:
+            field: arguments
+            has:
+              nthChild:
+                position: 2
+                ofRule:
+                  not: {kind: comment}
+              matches: request-derived
+    - all:
+        - has:
+            field: function
+            any:
+              - matches: http-callee
+              - matches: pool-callee
+        - has:
+            field: arguments
+            has:
               kind: keyword_argument
               all:
                 - has: {field: name, regex: '^url$'}

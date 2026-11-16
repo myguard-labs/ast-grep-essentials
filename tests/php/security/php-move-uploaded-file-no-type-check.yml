@@ -26,6 +26,13 @@ valid:
     <?php
     // move_uploaded_file($a, $b);
     function noop() { return 1; }
+  - |
+    <?php
+    function save() {
+        $f = new finfo(FILEINFO_MIME_TYPE);
+        if ($f->file($_FILES['f']['tmp_name']) !== 'image/png') { return; }
+        move_uploaded_file($_FILES['f']['tmp_name'], $dest);
+    }
 invalid:
   - |
     <?php

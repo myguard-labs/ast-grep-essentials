@@ -13,9 +13,13 @@ note: >-
   Fires on move_uploaded_file inside a function, method or closure whose body
   contains no call to wp_check_filetype, wp_check_filetype_and_ext,
   wp_handle_upload, mime_content_type, finfo_file, getimagesize or
-  exif_imagetype. The check is per function, and only the nearest enclosing one: a check inside a nested closure or function does not cover the outer one. It is per function: validation done by a caller or in
-  a sibling helper is not seen, and is the routine dismissal. A call outside
-  any function is not matched. It does not judge whether the check result is
+  exif_imagetype, and no ->file() or ->buffer() method call (the finfo object
+  API). The check is per function and only the nearest enclosing one counts: a
+  check inside a nested closure or function does not cover the outer one, and
+  validation done by a caller or in a sibling helper is not seen, which is the
+  routine dismissal. An extension allowlist built with pathinfo() and in_array()
+  is not recognised either, and is also a routine dismissal. A call outside any
+  function is not matched. It does not judge whether the check result is
   actually used. An upload name built from the client field is also covered by
   php-upload-unvalidated-name.
 
@@ -25,10 +29,15 @@ note: >-
       - https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html
 utils:
   validation-call:
-    kind: function_call_expression
-    has:
-      field: function
-      regex: '(?i)^\\?(wp_check_filetype|wp_check_filetype_and_ext|wp_handle_upload|mime_content_type|finfo_file|getimagesize|exif_imagetype)$'
+    any:
+      - kind: function_call_expression
+        has:
+          field: function
+          regex: '(?i)^\\?(wp_check_filetype|wp_check_filetype_and_ext|wp_handle_upload|mime_content_type|finfo_file|getimagesize|exif_imagetype)$'
+      - kind: member_call_expression
+        has:
+          field: name
+          regex: '(?i)^(file|buffer)$'
 rule:
   kind: function_call_expression
   all:
