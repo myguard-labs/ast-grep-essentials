@@ -15,6 +15,12 @@ valid:
   - |
     # raw(params[:bio])
     note = "params[:bio].html_safe"
+  - |
+    out = raw sanitize(params[:body])
+  - |
+    out = sanitize(params[:bio])&.html_safe
+  - |
+    out = view.raw(params[:bio])
 invalid:
   - |
     out = params[:bio].html_safe
@@ -26,3 +32,10 @@ invalid:
     out = raw(sanitize(title) + params[:body])
   - |
     out = (h(name) + params[:x]).html_safe
+  - |
+    out = params[:bio]&.html_safe
+  - |
+    out = raw params[:bio]
+  - |
+    out = raw(# note
+      params[:bio])
