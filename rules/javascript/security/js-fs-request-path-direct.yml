@@ -1,0 +1,96 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-fs-request-path-direct
+language: javascript
+severity: warning
+message: >-
+  File path taken straight from the incoming request and handed to a file API.
+  A caller who sends parent-directory segments or an absolute path reads any
+  file the process can reach, including configuration and credentials. Resolve
+  the name against a fixed base directory, reject a result that leaves it, or
+  pass res.sendFile a root option so Express enforces containment.
+note: >-
+  Fires when fs.readFile, readFileSync, createReadStream, their promises forms,
+  or res.sendFile and res.download, receives a first argument that is req or
+  request .query, .params, .body, .headers or .cookies, either directly or as
+  an argument of path.join or path.resolve. A sendFile or download call given
+  an options object with a root key is not matched, and nor is a function that
+  also calls normalize, realpath, basename or isAbsolute. A path copied into a
+  variable first, or checked in a helper, is not seen. A value a router already
+  reduced to a single safe filename is the routine dismissal.
+
+  [CWE-22] [A01:2025] [A01:2021]
+
+  [REFERENCES]
+      - https://owasp.org/www-community/attacks/Path_Traversal
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: member_expression
+        regex: '^(fs|fsp|fs\.promises|fsPromises|res|response)\.(readFile|readFileSync|createReadStream|sendFile|sendfile|download)$'
+    - has:
+        field: arguments
+        kind: arguments
+        has:
+          nthChild:
+            position: 1
+            ofRule:
+              not:
+                kind: comment
+          matches: request-path
+    - not:
+        all:
+          - has:
+              field: function
+              regex: '\.(sendFile|sendfile|download)$'
+          - has:
+              field: arguments
+              has:
+                kind: object
+                has:
+                  kind: pair
+                  has: {field: key, regex: '^root$'}
+    - not:
+        inside:
+          stopBy: end
+          any:
+            - kind: function_declaration
+            - kind: function_expression
+            - kind: arrow_function
+            - kind: method_definition
+          has:
+            stopBy: end
+            kind: call_expression
+            has:
+              field: function
+              regex: '(normalize|realpath|realpathSync|basename|isAbsolute)$'
+utils:
+  request-accessor:
+    any:
+      - kind: member_expression
+        regex: '^(req|request)\.(query|params|body|headers|cookies)\b'
+      - kind: subscript_expression
+        regex: '^(req|request)\.(query|params|body|headers|cookies)\b'
+  request-path:
+    any:
+      - matches: request-accessor
+      - kind: call_expression
+        all:
+          - has:
+              field: function
+              regex: '^path\.(join|resolve)$'
+          - has:
+              field: arguments
+              has:
+                matches: request-accessor
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-22'
+  owasp: 'A01:2025|A01:2021'
+  category: 'security'
+  references: 'https://owasp.org/www-community/attacks/Path_Traversal'

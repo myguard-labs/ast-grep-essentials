@@ -1,0 +1,33 @@
+id: js-fs-request-path-direct
+valid:
+  - |
+    fs.readFile(CONFIG_PATH, cb)
+  - |
+    res.sendFile(req.params.name, { root: PUBLIC_DIR })
+  - |
+    fs.readFile(path.join(base, name), cb)
+  - |
+    function h(req, res) {
+      const p = path.normalize(req.query.file);
+      fs.readFile(req.query.file, cb);
+    }
+  - |
+    // fs.readFile(req.query.file, cb)
+    const s = "fs.readFile(req.query.file)";
+  - |
+    other.readFile(req.query.file, cb)
+invalid:
+  - |
+    fs.readFile(req.query.file, cb)
+  - |
+    res.sendFile(req.params.name)
+  - |
+    fs.createReadStream(path.join(__dirname, req.body.path))
+  - |
+    const d = fs.readFileSync(req.query["file"], "utf8")
+  - |
+    res.download(request.params.f, "x.txt")
+  - |
+    fs.promises.readFile(req.query.file)
+  - |
+    app.get("/f", (req, res) => { res.sendFile(path.resolve("public", req.params[0])) })
