@@ -4,15 +4,18 @@ id: ruby-unsafe-deserialization
 language: ruby
 severity: warning
 message: >-
-  Marshal.load, Marshal.restore, YAML.load or YAML.unsafe_load is called on a
-  non-literal value. Deserializing attacker-controlled bytes can instantiate
+  Marshal.load, Marshal.restore, YAML.load (Psych before 4) or YAML.unsafe_load
+  is called on a non-literal value. Deserializing attacker-controlled bytes can instantiate
   arbitrary objects and lead to code execution.
 note: >-
   Fires on a call spelled Marshal.load, Marshal.restore, YAML.load,
   YAML.unsafe_load, Psych.load or Psych.unsafe_load whose first argument is not a
   plain string literal. YAML.safe_load, JSON.parse and calls on a literal string
-  are not matched. YAML.load is safe by default from Psych 4 (Ruby 3.1), and
-  data that is never user-controlled is the routine dismissal.
+  are not matched. YAML.load and Psych.load are reported on the assumption of
+  Psych before 4 (Ruby before 3.1), where they instantiate arbitrary objects;
+  from Psych 4 (Ruby 3.1) they are safe by default, so dismiss them there.
+  YAML.unsafe_load, Psych.unsafe_load and Marshal are unsafe on every version.
+  Data that is never user-controlled is the routine dismissal.
 rule:
   kind: call
   all:
