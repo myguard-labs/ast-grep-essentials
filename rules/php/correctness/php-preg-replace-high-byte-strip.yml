@@ -12,11 +12,19 @@ note: >-
   not determine whether the input is multibyte or whether the pattern is
   applied to such input.
 rule:
-  pattern: 'preg_replace(''$PAT'', '''', $$$ARGS)'
+  pattern: preg_replace($PAT, $REP, $$$ARGS)
   has:
-    kind: string_content
-    regex: '\\x[89a-fA-F][0-9a-fA-F]'
-    stopBy: end
+    kind: arguments
+    has:
+      kind: argument
+      nthChild: 1
+      has:
+        any:
+          - kind: string_content
+            regex: '\\x[89a-fA-F][0-9a-fA-F]'
+          - kind: escape_sequence
+            regex: '\\x[89a-fA-F][0-9a-fA-F]'
+        stopBy: end
   not:
     has:
       kind: arguments
@@ -27,6 +35,9 @@ rule:
           kind: string_content
           regex: '[^A-Za-z0-9][A-Za-z]*u[A-Za-z]*$'
           stopBy: end
+constraints:
+  REP:
+    regex: '^(''''|"")$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0

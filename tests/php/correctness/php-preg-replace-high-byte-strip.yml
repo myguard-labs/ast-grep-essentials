@@ -2,7 +2,13 @@ id: php-preg-replace-high-byte-strip
 valid:
   - '$s = preg_replace(''/\x41+/'', '''', $s);'
   - '$s = preg_replace(''/\xad+/u'', '''', $s);'
+  - '$s = preg_replace("/\xad+/u", "", $s);'
+  - '$s = preg_replace(''/abc/'', '''', "\xad" . $s);'
+  - '$s = preg_replace("/abc/", "", "\xad" . $s);'
 invalid:
   - '$s = preg_replace(''/\xad+/'', '''', $s);'
+  - '$s = preg_replace("/\xad+/", "", $s);'
   - '$s = preg_replace(''/\xad+/i'', '''', $s);'
   - '$s = preg_replace(''/\xad+/'', '''', ''/u'');'
+  - '$s = preg_replace("/\xad+/", '''', $s);'
+  - '$s = preg_replace(''/\xad+/'', "", $s);'
