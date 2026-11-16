@@ -1,7 +1,42 @@
 id: py-zip-parallel-no-strict
 valid:
+- "zip(items, **options)"
+- |-
+  zip(items, # comment
+  )
+- |
+  for name, value in zip(names, values, strict=True):
+      emit(name, value)
+- |
+  for name, value in zip(names, values, strict=False):
+      emit(name, value)
+- |
+  for i in zip(names):
+      emit(i)
+- |
+  for i, v in enumerate(values):
+      emit(i, v)
+- |
+  rows = obj.zip(names, values)
+- |
+  cols = zip(*rows, strict=True)
+- |
+  only = zip(names, key=f)
 - pairs = list(zip(mm_hashes, mm_placeholders, strict=True))
 - '# pairs = list(zip(mm_hashes, mm_placeholders))'
 - astgrep_fixture = "pairs = list(zip(mm_hashes, mm_placeholders))"
 invalid:
+- |
+  for name, value in zip(names, values):
+      emit(name, value)
+- |
+  pairs = dict(zip(FEATURE_NAMES, model.feature_importances_))
+- |
+  for a, b, c in zip(docs, embeddings, metadata):
+      store(a, b, c)
+- |
+  cols = list(zip(*rows))
+- |
+  for a, b in zip(names, values, key=f):
+      emit(a, b)
 - pairs = list(zip(mm_hashes, mm_placeholders))
