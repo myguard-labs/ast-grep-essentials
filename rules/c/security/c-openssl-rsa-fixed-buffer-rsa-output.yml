@@ -9,7 +9,8 @@ message: >-
 note: >-
   Syntactic only; it flags RSA public/private encrypt/decrypt calls and cannot
   verify the output buffer's declared size. A preceding initialised declaration or
-  assignment whose value calls RSA_size for the output argument suppresses the match.
+  assignment whose value calls RSA_size for the output argument suppresses the match. Limit: it does not detect a later reassignment of the output
+  pointer to a fixed buffer between the allocation and the call.
 rule:
   pattern: $FN($FLEN, $FROM, $OUT, $$$REST)
   not:
@@ -65,3 +66,5 @@ metadata:
   cwe: 'CWE-787|CWE-131'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/787.html|https://cwe.mitre.org/data/definitions/131.html'
   taxonomy_cited_keys: 'cwe'
+  todo_cases:
+    - 'void f(void) { unsigned char fixed[256]; unsigned char *out = malloc(RSA_size(rsa)); out = fixed; RSA_public_encrypt(n, buf, out, rsa, p); }'
