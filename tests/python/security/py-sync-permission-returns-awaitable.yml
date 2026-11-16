@@ -14,3 +14,19 @@ invalid:
   class IsAuthed:
       def has_permission(self, source, info, **kwargs):
           return check_token_async(info)
+- |-
+  class IsAuthed:
+      def has_permission(self, source, info, **kwargs):
+          if info.user:
+              return check_token_async(info)
+          return False
+- |-
+  class IsAuthed:
+      def has_permission(self, source, info, **kwargs):
+          try:
+              return check_token_async(info)
+          except Exception:
+              return False
+- |-
+  def has_permission(source, info):
+      return check_token_async(info)

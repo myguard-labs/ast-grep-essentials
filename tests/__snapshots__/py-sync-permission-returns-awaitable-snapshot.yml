@@ -1,10 +1,25 @@
 id: py-sync-permission-returns-awaitable
 snapshots:
-  ? |
-    class IsAuthed:
+  "class IsAuthed:\n    def has_permission(self, source, info, **kwargs):\n        if info.user:\n            return check_token_async(info)\n        return False":
+    labels:
+    - source: |-
         def has_permission(self, source, info, **kwargs):
-            return check_token_async(info)
-  : labels:
+                if info.user:
+                    return check_token_async(info)
+                return False
+      style: primary
+      start: 20
+      end: 155
+    - source: check_token_async(info)
+      style: secondary
+      start: 111
+      end: 134
+    - source: return check_token_async(info)
+      style: secondary
+      start: 104
+      end: 134
+  "class IsAuthed:\n    def has_permission(self, source, info, **kwargs):\n        return check_token_async(info)\n":
+    labels:
     - source: |-
         def has_permission(self, source, info, **kwargs):
                 return check_token_async(info)
@@ -19,3 +34,38 @@ snapshots:
       style: secondary
       start: 78
       end: 108
+  "class IsAuthed:\n    def has_permission(self, source, info, **kwargs):\n        try:\n            return check_token_async(info)\n        except Exception:\n            return False":
+    labels:
+    - source: |-
+        def has_permission(self, source, info, **kwargs):
+                try:
+                    return check_token_async(info)
+                except Exception:
+                    return False
+      style: primary
+      start: 20
+      end: 176
+    - source: check_token_async(info)
+      style: secondary
+      start: 102
+      end: 125
+    - source: return check_token_async(info)
+      style: secondary
+      start: 95
+      end: 125
+  "def has_permission(source, info):\n    return check_token_async(info)":
+    labels:
+    - source: |-
+        def has_permission(source, info):
+            return check_token_async(info)
+      style: primary
+      start: 0
+      end: 68
+    - source: check_token_async(info)
+      style: secondary
+      start: 45
+      end: 68
+    - source: return check_token_async(info)
+      style: secondary
+      start: 38
+      end: 68
