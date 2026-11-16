@@ -1,0 +1,48 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-fs-chmod-world-writable
+language: typescript
+severity: warning
+message: >-
+  File mode that grants write access to every local user. Any account on the
+  host can then replace the file, so a configuration file, a script or a socket
+  read back by this process becomes an injection point, and 0777 also makes it
+  executable. Use 0o600 for private data and 0o644 or 0o755 when other users
+  only need to read.
+note: >-
+  Fires on fs.chmod, chmodSync, lchmod, lchmodSync, fchmod, fchmodSync and their
+  promises forms when the mode argument is a numeric literal whose other-write
+  bit is set, in 0o, legacy 0 or decimal 438 and 511 spelling. A mode held in a
+  variable, a string mode such as "777", and the process umask clearing the bit
+  at runtime are outside the shape. A deliberately shared spool directory is a
+  legitimate dismissal.
+
+  [CWE-276] [A01:2025] [A01:2021]
+
+  [REFERENCES]
+      - https://cwe.mitre.org/data/definitions/276.html
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: member_expression
+        regex: '^(fs|fsp|fs\.promises|fsPromises)\.(chmod|chmodSync|lchmod|lchmodSync|fchmod|fchmodSync)$'
+    - has:
+        field: arguments
+        kind: arguments
+        has:
+          nthChild:
+            position: 2
+            ofRule: {not: {kind: comment}}
+          kind: number
+          regex: '^(0[oO]?[0-7]*[2367]|438|511)$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-276'
+  owasp: 'A01:2025|A01:2021'
+  category: 'security'
+  references: 'https://cwe.mitre.org/data/definitions/276.html'
