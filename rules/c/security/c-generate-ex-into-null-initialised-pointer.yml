@@ -43,3 +43,5 @@ metadata:
   owasp: 'A10:2025'
   todo_cases:
     - "FN (generate call nested in an if statement): DH *dh = NULL; if (bits > 0) DH_generate_parameters_ex(dh, bits, 2, NULL);"
+    - "FN (later NULL reset ignored): DH *dh = NULL; dh = DH_new(); dh = NULL; DH_generate_parameters_ex(dh, 2, 2, NULL); is suppressed by the earlier call sibling"
+    - "FN (may-NULL call counts as allocation): DH *dh = NULL; dh = lookup(); DH_generate_parameters_ex(dh, 2, 2, NULL); is suppressed although lookup may return NULL"
