@@ -15,6 +15,10 @@ valid:
     const s = 'console.log(req.body.name)';
   - |
     logger.info("path", req.path)
+  - |
+    logger.info("user", req.query.user.replace(/[\r\n]/g, ""))
+  - |
+    logger.info("user", req.query.user.replaceAll("\n", ""))
 invalid:
   - |
     logger.info("user", req.query.user)
@@ -34,3 +38,7 @@ invalid:
     logger.info("user", req.query.user.replace(/</g, "&lt;"))
   - |
     logger.info("user", escapeHtml(req.query.user))
+  - |
+    logger.info("user", req.query.user.replace("\n", ""))
+  - |
+    logger.info("user", req.query.user.replace(/\n/, ""))

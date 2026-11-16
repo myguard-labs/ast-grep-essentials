@@ -13,11 +13,13 @@ note: >-
   log or winston whose arguments, including template-literal substitutions,
   read req.query, req.body, req.params, req.headers or req.cookies (also under
   the name request). The finding is suppressed only when the request-data value
-  itself is wrapped in a call to replace or replaceAll whose first argument
-  (a string or regular expression) names CR, LF or whitespace (\r, \n, \s,
-  \x0a, \x0d), the global escape, encodeURIComponent, JSON.stringify,
+  itself is wrapped in a call to replaceAll whose first argument (a string or
+  regular expression) names CR, LF or whitespace (\r, \n, \s, \x0a, \x0d), or
+  to replace whose first argument is a regular expression literal with the g
+  flag that names them (replace with a string or a non-global regular expression
+  changes only the first match and is still reported), the global escape, encodeURIComponent, JSON.stringify,
   parseInt, Number or Boolean; a sanitizer on another argument does not
-  suppress it. A replace that targets other characters, String(...) and HTML
+  suppress it. A chained replace of only \r is accepted as a sanitizer on purpose (precision over recall). A replace that targets other characters, String(...) and HTML
   escapers such as _.escape or escapeHtml do not strip CR or LF and are still
   reported. A value copied into a variable
   first, or a logger held under another name, is not seen. A log sink that
@@ -57,13 +59,24 @@ rule:
                 - all:
                     - has:
                         field: function
-                        regex: '\.(replace|replaceAll)$'
+                        regex: '\.replaceAll$'
                     - has:
                         field: arguments
                         kind: arguments
                         has:
                           nthChild: 1
                           regex: '\\[rns]|\\x0[adAD]|\\u000[adAD]'
+                - all:
+                    - has:
+                        field: function
+                        regex: '\.replace$'
+                    - has:
+                        field: arguments
+                        kind: arguments
+                        has:
+                          nthChild: 1
+                          kind: regex
+                          regex: '^/.*(\\[rns]|\\x0[adAD]|\\u000[adAD]).*/[a-fh-z]*g[a-z]*$'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'
