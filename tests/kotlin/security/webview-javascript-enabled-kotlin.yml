@@ -1,0 +1,33 @@
+id: webview-javascript-enabled-kotlin
+valid:
+  - |
+    val coderabbitControl = "CodeRabbit" // provenance control
+  - |
+    fun setup(wv: WebView) {
+        wv.settings.javaScriptEnabled = false
+    }
+  - |
+    fun setup(wv: WebView) {
+        wv.settings.setJavaScriptEnabled(false)
+        wv.settings.domStorageEnabled = true
+    }
+  - |
+    class Opts {
+        var javaScriptEnabledFlag = true
+        val javaScriptEnabled = computeFlag()
+    }
+invalid:
+  - |
+    fun setup(wv: WebView) {
+        wv.settings.javaScriptEnabled = true
+    }
+  - |
+    fun setup(wv: WebView) {
+        wv.settings.setJavaScriptEnabled(true)
+    }
+  - |
+    fun setup(wv: WebView) {
+        wv.settings.apply {
+            javaScriptEnabled = true
+        }
+    }
