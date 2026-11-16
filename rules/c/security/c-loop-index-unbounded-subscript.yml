@@ -9,7 +9,7 @@ message: >-
 note: >-
   Syntactic only; does not check whether the index is bounded elsewhere,
   aliasing, or actual buffer sizes. Likely noisy. An if statement in the body
-  whose condition compares the index suppresses the match.
+  whose condition relationally (<, <=, >, >=) compares the index itself suppresses the match.
 rule:
   kind: while_statement
   all:
@@ -38,10 +38,14 @@ rule:
                 all:
                   - has:
                       field: operator
-                      regex: '^(<|<=|>|>=|==)$'
-                  - has:
-                      pattern: '$I'
-                      stopBy: end
+                      regex: '^(<|<=|>|>=)$'
+                  - any:
+                      - has:
+                          field: left
+                          pattern: '$I'
+                      - has:
+                          field: right
+                          pattern: '$I'
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
