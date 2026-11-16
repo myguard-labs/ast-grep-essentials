@@ -12,6 +12,10 @@ valid:
     void f(struct s *a, struct s *b) { if (a != NULL) { a->x = 1; } if (b != NULL) { b->y = 1; } }
   - |-
     void f(struct s *ctx) { if (ctx != NULL) { ctx->a = 1; } g(); }
+  - |-
+    void f(struct s *ctx) { if (ctx != NULL) { run(); } else { return; } ctx->b = 1; }
+  - |-
+    void f(struct s *ctx) { if (ctx != NULL && ctx->ready) { run(); } else { return; } ctx->b = 1; }
 
 invalid:
   - |-
@@ -26,3 +30,7 @@ invalid:
     void f(struct s *p) { if (p != NULL) { p->a = 1; } else { log_it(); } p->x = 0; }
   - |-
     void f(struct s *ctx) { if (ctx != NULL && ctx->ready) { run(); } ctx->b = 1; }
+  - |-
+    void f(struct s *ctx) { if (ctx != NULL) { run(); } /* store */ ctx->b = 1; }
+  - |-
+    void f(struct s *ctx) { if (ctx != NULL || x) { run(); } else { return; } ctx->b = 1; }
