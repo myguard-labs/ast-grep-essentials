@@ -37,6 +37,18 @@ valid:
             s.TypeNameHandling = (s.TypeNameHandling & ~TypeNameHandling.Auto) | TypeNameHandling.None;
         }
     }
+  - |
+    class Example {
+        void Configure(JsonSerializerSettings s) {
+            s.TypeNameHandling = (s.TypeNameHandling & TypeNameHandling.Auto);
+        }
+    }
+  - |
+    class Example {
+        void Configure(JsonSerializerSettings s, JsonSerializerSettings o) {
+            s.TypeNameHandling = (o.TypeNameHandling == TypeNameHandling.All ? TypeNameHandling.None : TypeNameHandling.None);
+        }
+    }
 invalid:
   - |
     class Example {
