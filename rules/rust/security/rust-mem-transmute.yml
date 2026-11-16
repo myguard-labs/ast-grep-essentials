@@ -1,0 +1,35 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: rust-mem-transmute
+language: rust
+severity: warning
+message: >-
+  mem::transmute reinterprets the bits of a value as another type with no
+  validity check. A wrong size, alignment, lifetime or enum discriminant is
+  undefined behavior. Prefer from_ne_bytes/to_bits, a pointer cast, or
+  bytemuck-style checked conversions.
+note: >-
+  [CWE-843]: Access of Resource Using Incompatible Type ('Type Confusion')
+  [REFERENCES]
+      - https://cwe.mitre.org/data/definitions/843.html
+      - https://doc.rust-lang.org/std/mem/fn.transmute.html
+  Matches a call to std::mem::transmute, core::mem::transmute or mem::transmute,
+  with or without a turbofish. A bare transmute(...) imported with a use
+  declaration, an alias, a method named transmute and transmute_copy are not
+  matched. Candidate inventory: a sound transmute between layout-compatible
+  types still matches.
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: '(?s)^(?:(?:std|core)::)?mem::transmute\s*(?:::\s*<.*>)?$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-843'
+  category: 'security'
+  subcategory: 'unsafe-memory'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/843.html'
+  taxonomy_cited_keys: 'cwe'
