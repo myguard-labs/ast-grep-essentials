@@ -11,14 +11,16 @@ note: >-
 rule:
   kind: compound_statement
   has:
-    stopBy: end
-    kind: return_statement
-    follows:
-      kind: return_statement
-      stopBy: end
-      nthChild: 1
-  any:
-    - pattern: '{ return $A; $B }'
+    all:
+      - follows:
+          kind: return_statement
+          stopBy: neighbor
+      - not:
+          any:
+            - kind: labeled_statement
+            - kind: case_statement
+            - kind: comment
+            - regex: '^}$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0

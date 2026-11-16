@@ -1,5 +1,9 @@
 id: c-unreachable-code-after-return
 valid:
   - 'int f(int x) { if (x) { return 0; } return 1; }'
+  - 'int f(int x) { if (x) { return 0; } cleanup(); return 1; }'
+  - 'int f(int x) { return x; out: cleanup(); return 1; }'
 invalid:
   - 'int f(int x) { if (x) { return 0; return 1; } return 2; }'
+  - 'int f(void) { return 1; cleanup(); }'
+  - 'void f(int x) { if (x) { return; int y = x; (void)y; } }'
