@@ -19,6 +19,12 @@ valid:
             other.SomeCallback = (a, b) => true;
         }
     }
+  - |
+    class Example {
+        void Configure() {
+            ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback((s, c, ch, e) => e == SslPolicyErrors.None);
+        }
+    }
 invalid:
   - |
     class Example {
@@ -42,5 +48,17 @@ invalid:
     class Example {
         void Configure(SslStream s) {
             var o = new SslClientAuthenticationOptions { RemoteCertificateValidationCallback = (a, b, c, d) => { return true; } };
+        }
+    }
+  - |
+    class Example {
+        void Configure() {
+            ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback((s, c, ch, e) => true);
+        }
+    }
+  - |
+    class Example {
+        void Configure() {
+            ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(delegate { return true; });
         }
     }
