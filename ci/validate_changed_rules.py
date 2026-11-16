@@ -18,6 +18,7 @@ import subprocess
 import sys
 import tempfile
 from collections.abc import Iterator, Sequence
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -44,6 +45,7 @@ SUPPORTED_LANGUAGES = frozenset(
     }
 )
 NPM_REGISTRY = "https://registry.npmjs.org/"
+MAX_WORKERS = 4
 PASS_LINE = re.compile(r"(?m)^test result: ok\. 1 passed; 0 failed;\s*$")
 
 
@@ -466,9 +468,22 @@ def latest_engine() -> Iterator[tuple[Path, str]]:
         yield engine, installed
 
 
+def worker_count(rule_count: int) -> int:
+    return max(1, min(os.cpu_count() or 1, MAX_WORKERS, rule_count))
+
+
 def validate_changed(
-    root: Path, engine: Path, paths: Sequence[str], base: str | None = None
+    root: Path,
+    engine: Path,
+    paths: Sequence[str],
+    base: str | None = None,
+    workers: int | None = None,
 ) -> int:
+    """Validate every changed rule; report all failures in rule order.
+
+    Rules run on a bounded thread pool (each check is an isolated subprocess);
+    ``workers=1`` forces serial execution with identical output.
+    """
     exempt = (
         header_only_rule_changes(root, base, paths)
         | non_matching_rule_changes(root, base, paths)
@@ -480,15 +495,42 @@ def validate_changed(
         raise ValidationError(
             "changed rules require changed mirrored fixtures: " + ", ".join(missing)
         )
-    validated = 0
-    for relative in changed_rule_paths(root, paths):
-        rule = root / relative
-        if not rule.is_file():  # A removed rule and fixture have nothing left to load.
-            continue
-        validate_rule(root, engine, rule)
-        print(f"validated {rule.relative_to(root)}")
-        validated += 1
-    return validated
+    rules = [
+        root / relative
+        for relative in changed_rule_paths(root, paths)
+        # A removed rule and fixture have nothing left to load.
+        if (root / relative).is_file()
+    ]
+    if not rules:
+        return 0
+    if workers is None:
+        workers = worker_count(len(rules))
+
+    def check(rule: Path) -> str | None:
+        try:
+            validate_rule(root, engine, rule)
+        except ValidationError as error:
+            return str(error)
+        return None
+
+    if workers <= 1:
+        outcomes = [check(rule) for rule in rules]
+    else:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            outcomes = list(pool.map(check, rules))  # map keeps input order
+    failures = []
+    for rule, failure in zip(rules, outcomes):
+        relative = rule.relative_to(root)
+        if failure is None:
+            print(f"validated {relative}")
+        else:
+            failures.append(f"{relative}: {failure}")
+    if failures:
+        raise ValidationError(
+            f"{len(failures)} of {len(rules)} changed rule(s) failed:\n"
+            + "\n".join(failures)
+        )
+    return len(rules)
 
 
 def main() -> int:
