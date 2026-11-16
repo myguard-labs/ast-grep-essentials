@@ -1,13 +1,8 @@
 id: process-start-dynamic-arguments-csharp
 snapshots:
-  ? |
-    class Example {
-        void Run(string cmd) {
-            Process.Start(arguments: "-c " + cmd, fileName: "sh");
-        }
-    }
-  : labels:
-    - source: 'Process.Start(arguments: "-c " + cmd, fileName: "sh")'
+  "class Example {\n    void Run(string cmd) {\n        Process.Start(arguments: \"-c \" + cmd, fileName: \"sh\");\n    }\n}\n":
+    labels:
+    - source: "Process.Start(arguments: \"-c \" + cmd, fileName: \"sh\")"
       style: primary
       start: 51
       end: 104
@@ -27,25 +22,20 @@ snapshots:
       style: secondary
       start: 84
       end: 87
-    - source: '"-c " + cmd'
+    - source: "\"-c \" + cmd"
       style: secondary
       start: 76
       end: 87
-    - source: 'arguments: "-c " + cmd'
+    - source: "arguments: \"-c \" + cmd"
       style: secondary
       start: 65
       end: 87
-    - source: '(arguments: "-c " + cmd, fileName: "sh")'
+    - source: "(arguments: \"-c \" + cmd, fileName: \"sh\")"
       style: secondary
       start: 64
       end: 104
-  ? |
-    class Example {
-        void Run(string x) {
-            Process.Start("cmd", "/c ping " + x);
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        Process.Start(\"cmd\", \"/c ping \" + x);\n    }\n}\n":
+    labels:
     - source: Process.Start("cmd", "/c ping " + x)
       style: primary
       start: 49
@@ -54,6 +44,10 @@ snapshots:
       style: secondary
       start: 49
       end: 62
+    - source: ("cmd", "/c ping " + x)
+      style: secondary
+      start: 62
+      end: 85
     - source: +
       style: secondary
       start: 81
@@ -62,11 +56,11 @@ snapshots:
       style: secondary
       start: 83
       end: 84
-    - source: '"/c ping " + x'
+    - source: "\"/c ping \" + x"
       style: secondary
       start: 70
       end: 84
-    - source: '"/c ping " + x'
+    - source: "\"/c ping \" + x"
       style: secondary
       start: 70
       end: 84
@@ -74,15 +68,8 @@ snapshots:
       style: secondary
       start: 62
       end: 85
-  ? |
-    class Example {
-        void Run(string x) {
-            Process.Start("cmd", /* args */ "/c ping " + x);
-            var psi = new ProcessStartInfo("tool", // args
-                $"--input {x}");
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        Process.Start(\"cmd\", /* args */ \"/c ping \" + x);\n        var psi = new ProcessStartInfo(\"tool\", // args\n            $\"--input {x}\");\n    }\n}\n":
+    labels:
     - source: Process.Start("cmd", /* args */ "/c ping " + x)
       style: primary
       start: 49
@@ -91,6 +78,10 @@ snapshots:
       style: secondary
       start: 49
       end: 62
+    - source: ("cmd", /* args */ "/c ping " + x)
+      style: secondary
+      start: 62
+      end: 96
     - source: +
       style: secondary
       start: 92
@@ -99,11 +90,11 @@ snapshots:
       style: secondary
       start: 94
       end: 95
-    - source: '"/c ping " + x'
+    - source: "\"/c ping \" + x"
       style: secondary
       start: 81
       end: 95
-    - source: '"/c ping " + x'
+    - source: "\"/c ping \" + x"
       style: secondary
       start: 81
       end: 95
@@ -111,13 +102,8 @@ snapshots:
       style: secondary
       start: 62
       end: 96
-  ? |
-    class Example {
-        void Run(string x) {
-            System.Diagnostics.Process.Start("sh", string.Format("-c '{0}'", x));
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        System.Diagnostics.Process.Start(\"sh\", string.Format(\"-c '{0}'\", x));\n    }\n}\n":
+    labels:
     - source: System.Diagnostics.Process.Start("sh", string.Format("-c '{0}'", x))
       style: primary
       start: 49
@@ -126,6 +112,10 @@ snapshots:
       style: secondary
       start: 49
       end: 81
+    - source: ("sh", string.Format("-c '{0}'", x))
+      style: secondary
+      start: 81
+      end: 117
     - source: string.Format
       style: secondary
       start: 88
@@ -142,14 +132,8 @@ snapshots:
       style: secondary
       start: 81
       end: 117
-  ? |
-    class Example {
-        void Run(string x) {
-            global::System.Diagnostics.Process.Start("sh", $"-c {x}");
-            var p = new global::System.Diagnostics.ProcessStartInfo("sh", "-c " + x);
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        global::System.Diagnostics.Process.Start(\"sh\", $\"-c {x}\");\n        var p = new global::System.Diagnostics.ProcessStartInfo(\"sh\", \"-c \" + x);\n    }\n}\n":
+    labels:
     - source: global::System.Diagnostics.Process.Start("sh", $"-c {x}")
       style: primary
       start: 49
@@ -158,7 +142,11 @@ snapshots:
       style: secondary
       start: 49
       end: 89
-    - source: '{x}'
+    - source: ("sh", $"-c {x}")
+      style: secondary
+      start: 89
+      end: 106
+    - source: "{x}"
       style: secondary
       start: 101
       end: 104
@@ -174,13 +162,8 @@ snapshots:
       style: secondary
       start: 89
       end: 106
-  ? |
-    class Example {
-        void Run(string x) {
-            var psi = new ProcessStartInfo { FileName = "cmd", Arguments = "/c echo " + x };
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        var psi = new ProcessStartInfo { FileName = \"cmd\", Arguments = \"/c echo \" + x };\n    }\n}\n":
+    labels:
     - source: Arguments = "/c echo " + x
       style: primary
       start: 100
@@ -197,7 +180,7 @@ snapshots:
       style: secondary
       start: 125
       end: 126
-    - source: '"/c echo " + x'
+    - source: "\"/c echo \" + x"
       style: secondary
       start: 112
       end: 126
@@ -209,26 +192,16 @@ snapshots:
       style: secondary
       start: 59
       end: 128
-    - source: '{ FileName = "cmd", Arguments = "/c echo " + x }'
+    - source: "{ FileName = \"cmd\", Arguments = \"/c echo \" + x }"
       style: secondary
       start: 80
       end: 128
-  ? |
-    class Example {
-        void Run(string x) {
-            var psi = new ProcessStartInfo("sh");
-            psi.Arguments = "-c " + x;
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        var psi = new ProcessStartInfo(\"sh\");\n        psi.Arguments = \"-c \" + x;\n    }\n}\n":
+    labels:
     - source: psi.Arguments = "-c " + x
       style: primary
       start: 95
       end: 120
-    - source: psi.Arguments
-      style: secondary
-      start: 95
-      end: 108
     - source: +
       style: secondary
       start: 117
@@ -237,10 +210,14 @@ snapshots:
       style: secondary
       start: 119
       end: 120
-    - source: '"-c " + x'
+    - source: "\"-c \" + x"
       style: secondary
       start: 111
       end: 120
+    - source: psi
+      style: secondary
+      start: 53
+      end: 56
     - source: ProcessStartInfo
       style: secondary
       start: 63
@@ -248,6 +225,10 @@ snapshots:
     - source: new ProcessStartInfo("sh")
       style: secondary
       start: 59
+      end: 85
+    - source: psi = new ProcessStartInfo("sh")
+      style: secondary
+      start: 53
       end: 85
     - source: |-
         void Run(string x) {
@@ -257,23 +238,13 @@ snapshots:
       style: secondary
       start: 20
       end: 127
-  ? |
-    class Example {
-        void Run(string x) {
-            var psi = new ProcessStartInfo("sh");
-            psi.Arguments = $"-c {x}";
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        var psi = new ProcessStartInfo(\"sh\");\n        psi.Arguments = $\"-c {x}\";\n    }\n}\n":
+    labels:
     - source: psi.Arguments = $"-c {x}"
       style: primary
       start: 95
       end: 120
-    - source: psi.Arguments
-      style: secondary
-      start: 95
-      end: 108
-    - source: '{x}'
+    - source: "{x}"
       style: secondary
       start: 116
       end: 119
@@ -281,6 +252,10 @@ snapshots:
       style: secondary
       start: 111
       end: 120
+    - source: psi
+      style: secondary
+      start: 53
+      end: 56
     - source: ProcessStartInfo
       style: secondary
       start: 63
@@ -288,6 +263,10 @@ snapshots:
     - source: new ProcessStartInfo("sh")
       style: secondary
       start: 59
+      end: 85
+    - source: psi = new ProcessStartInfo("sh")
+      style: secondary
+      start: 53
       end: 85
     - source: |-
         void Run(string x) {
@@ -297,13 +276,8 @@ snapshots:
       style: secondary
       start: 20
       end: 127
-  ? |
-    class Example {
-        void Run(string x) {
-            var psi = new ProcessStartInfo("tool", $"--input {x}");
-        }
-    }
-  : labels:
+  "class Example {\n    void Run(string x) {\n        var psi = new ProcessStartInfo(\"tool\", $\"--input {x}\");\n    }\n}\n":
+    labels:
     - source: new ProcessStartInfo("tool", $"--input {x}")
       style: primary
       start: 59
@@ -312,7 +286,11 @@ snapshots:
       style: secondary
       start: 63
       end: 79
-    - source: '{x}'
+    - source: ("tool", $"--input {x}")
+      style: secondary
+      start: 79
+      end: 103
+    - source: "{x}"
       style: secondary
       start: 98
       end: 101
