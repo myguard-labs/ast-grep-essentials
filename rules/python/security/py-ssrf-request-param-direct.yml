@@ -1,0 +1,94 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-ssrf-request-param-direct
+language: python
+severity: error
+message: >-
+  Outbound HTTP request whose URL is read straight from the incoming request.
+  A caller who sets that parameter makes the server fetch any address it can
+  reach, including cloud metadata (169.254.169.254), localhost admin ports and
+  internal hosts that the caller cannot. Resolve the target against an
+  allowlist of schemes and hosts before requesting it.
+note: >-
+  Fires when requests, httpx, urllib3, aiohttp or a lexically named session or
+  client calls get, post, put, patch, delete, head or options, or when urlopen
+  is called, with a first argument or a url keyword argument that reads through
+  a request object, including args, GET, POST, form, values, query_params, data
+  and json. A URL copied into a variable first, and any allowlist check on that
+  variable, is not seen. An interpolated URL is covered by
+  py-ssrf-request-fstring. A fixed host with a request value only in the path
+  is also matched here, and is the routine dismissal.
+
+  [CWE-918] [A01:2025]
+
+  [REFERENCES]
+      - https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+utils:
+  request-root:
+    any:
+      - kind: identifier
+        regex: '^request$'
+      - kind: attribute
+        has:
+          field: object
+          matches: request-root
+      - kind: subscript
+        has:
+          field: value
+          matches: request-root
+      - kind: call
+        has:
+          field: function
+          matches: request-root
+  request-derived:
+    all:
+      - matches: request-root
+      - not: {kind: identifier}
+  http-callee:
+    any:
+      - kind: attribute
+        all:
+          - has:
+              field: object
+              kind: identifier
+              regex: '^(requests|httpx|urllib3|aiohttp|http|session|sess|client)$'
+          - has:
+              field: attribute
+              regex: '^(get|post|put|patch|delete|head|options)$'
+      - kind: identifier
+        regex: '^urlopen$'
+      - kind: attribute
+        has:
+          field: attribute
+          regex: '^urlopen$'
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        matches: http-callee
+    - has:
+        field: arguments
+        any:
+          - has:
+              nthChild:
+                position: 1
+                ofRule:
+                  not: {kind: comment}
+              matches: request-derived
+          - has:
+              kind: keyword_argument
+              all:
+                - has: {field: name, regex: '^url$'}
+                - has: {field: value, matches: request-derived}
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-918'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/918.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A01:2025'
+  category: 'security'
+  references: 'https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html'
