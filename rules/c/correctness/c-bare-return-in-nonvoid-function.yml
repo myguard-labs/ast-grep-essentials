@@ -16,7 +16,15 @@ rule:
     - inside:
         kind: function_definition
         stopBy: end
-        pattern: 'static int f($$$PARAMS) { $$$BODY }'
+        not:
+          all:
+            - has:
+                field: type
+                regex: '^void$'
+            - not:
+                has:
+                  field: declarator
+                  kind: pointer_declarator
 metadata:
   rule_modified_at: '2026-10-14'
   ast_grep_tested_version: 0.50.0
