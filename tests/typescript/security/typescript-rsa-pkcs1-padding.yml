@@ -1,0 +1,19 @@
+id: typescript-rsa-pkcs1-padding
+valid:
+  - |
+    const ct = crypto.publicEncrypt({ key, padding: crypto.constants.RSA_PKCS1_OAEP_PADDING, oaepHash: 'sha256' }, buf);
+  - |
+    const ct = crypto.publicEncrypt(key, buf);
+  - |
+    const pt = crypto.privateDecrypt({ key, padding: crypto.constants.RSA_PKCS1_OAEP_PADDING }, buf);
+  - |
+    const sig = crypto.sign('sha256', buf, { key, padding: crypto.constants.RSA_PKCS1_PADDING });
+  - |
+    const ct = other.encrypt({ key, padding: crypto.constants.RSA_PKCS1_PADDING }, buf);
+invalid:
+  - |
+    const ct = crypto.publicEncrypt({ key, padding: crypto.constants.RSA_PKCS1_PADDING }, buf);
+  - |
+    const pt = privateDecrypt({ key: pem, padding: constants.RSA_PKCS1_PADDING }, buf);
+  - |
+    const ct = c.publicEncrypt({ key, padding: RSA_PKCS1_PADDING }, Buffer.from(msg));
