@@ -1,7 +1,7 @@
 id: c-loop-deref-before-bounds-check
 valid:
   - 'void f(char *s, char *e, char *p) { for (p = e; p >= s && *p != '':''; p--); }'
-  - "void f(char *s, char *e, char *p) { while (*p != ':' && p >= s) p--; }"
+  - "void f(char *s, char *e, char *p) { for (p = e; p >= s && *p != 0; p--) { n++; } }"
   - "void f(char *s, char *e, char *p) { for (p = e; *p != ':' && p > s; p--); }"
 invalid:
   - 'void f(char *s, char *e, char *p) { for (p = e; *p != '':'' && p >= s; p--); }'
