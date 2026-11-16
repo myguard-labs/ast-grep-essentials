@@ -1,6 +1,18 @@
 id: c-sprintf-into-sized-alloc
 snapshots:
-  char *buf = emalloc(strlen(a) + strlen(b) + 5); sprintf(buf, "%s_%s", a, b);:
+  "char *buf = emalloc(n); if (x) sprintf(buf, \"%s\", a);":
+    labels:
+    - source: sprintf(buf, "%s", a)
+      style: primary
+      start: 31
+      end: 52
+  "char *buf = emalloc(n); sprintf(buf + strlen(buf), \"%s\", a);":
+    labels:
+    - source: sprintf(buf + strlen(buf), "%s", a)
+      style: primary
+      start: 24
+      end: 59
+  "char *buf = emalloc(strlen(a) + strlen(b) + 5); sprintf(buf, \"%s_%s\", a, b);":
     labels:
     - source: sprintf(buf, "%s_%s", a, b)
       style: primary

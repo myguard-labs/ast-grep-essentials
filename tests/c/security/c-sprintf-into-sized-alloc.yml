@@ -3,5 +3,9 @@ valid:
   - >-
     char *buf = emalloc(strlen(a) + strlen(b) + 5); snprintf(buf, n, "%s_%s", a,
     b);
+  - "char *buf = emalloc(n); snprintf(buf, n, \"%s\", a);"
+  - "char *buf = emalloc(n); if (x) snprintf(buf, n, \"%s_%s\", a, b);"
 invalid:
   - 'char *buf = emalloc(strlen(a) + strlen(b) + 5); sprintf(buf, "%s_%s", a, b);'
+  - "char *buf = emalloc(n); if (x) sprintf(buf, \"%s\", a);"
+  - "char *buf = emalloc(n); sprintf(buf + strlen(buf), \"%s\", a);"

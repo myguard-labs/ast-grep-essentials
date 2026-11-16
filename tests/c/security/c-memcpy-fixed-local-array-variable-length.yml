@@ -1,5 +1,9 @@
 id: c-memcpy-fixed-local-array-variable-length
 valid:
   - 'int buf[2]; memcpy(buf, src, sizeof(buf));'
+  - "int buf[2]; memcpy(buf, src, sizeof buf);"
+  - "int buf[2]; memcpy(&buf[0], src, sizeof(buf));"
 invalid:
   - 'int buf[2]; memcpy(buf, src, n * sizeof(int));'
+  - "int buf[2]; memcpy(buf, src, n);"
+  - "int buf[2]; memcpy(buf, src, len + 1);"

@@ -1,5 +1,8 @@
 id: c-loop-deref-before-bound-check
 valid:
   - 'for (i = 0; i < len && src[i] != ''\0''; i++) tgt[i] = src[i];'
+  - "for (i = 0; i < sizeof(buf) - 1 && src[i] != '\\0'; i++) buf[i] = src[i];"
 invalid:
   - 'for (i = 0; src[i] != ''\0'' && i < len; i++) tgt[i] = src[i];'
+  - "for (k = 0; p->name[k] != '\\0' && k < max; k++) { n++; }"
+  - "for (;src[j] != '\\0' && j < sizeof(buf);) j++;"

@@ -1,11 +1,20 @@
 id: c-string-offset-le-bound-off-by-one
 snapshots:
-  ? |-
-    int f(char *s, long i, long n) {
-      return i <= n && s[i] != '0';
-    }
-  : labels:
+  "int f(char *buf, long off, long len) { while (off <= len && buf[off] != '0') off++; return off; }":
+    labels:
+    - source: off <= len && buf[off] != '0'
+      style: primary
+      start: 46
+      end: 75
+  "int f(char *s, long i, long n) {\n  return i <= n && s[i] != '0';\n}":
+    labels:
     - source: i <= n && s[i] != '0'
       style: primary
       start: 42
       end: 63
+  "int f(char *s, long i, long n) { if (i <= n && s[i] != '0') { return 1; } return 0; }":
+    labels:
+    - source: i <= n && s[i] != '0'
+      style: primary
+      start: 37
+      end: 58

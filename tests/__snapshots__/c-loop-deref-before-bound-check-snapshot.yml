@@ -1,6 +1,20 @@
 id: c-loop-deref-before-bound-check
 snapshots:
-  for (i = 0; src[i] != '\0' && i < len; i++) tgt[i] = src[i];:
+  "for (;src[j] != '\\0' && j < sizeof(buf);) j++;":
+    labels:
+    - source: for (;src[j] != '\0' && j < sizeof(buf);) j++;
+      style: primary
+      start: 0
+      end: 46
+    - source: j < sizeof(buf)
+      style: secondary
+      start: 24
+      end: 39
+    - source: src[j] != '\0' && j < sizeof(buf)
+      style: secondary
+      start: 6
+      end: 39
+  "for (i = 0; src[i] != '\\0' && i < len; i++) tgt[i] = src[i];":
     labels:
     - source: for (i = 0; src[i] != '\0' && i < len; i++) tgt[i] = src[i];
       style: primary
@@ -14,3 +28,17 @@ snapshots:
       style: secondary
       start: 12
       end: 37
+  "for (k = 0; p->name[k] != '\\0' && k < max; k++) { n++; }":
+    labels:
+    - source: for (k = 0; p->name[k] != '\0' && k < max; k++) { n++; }
+      style: primary
+      start: 0
+      end: 56
+    - source: k < max
+      style: secondary
+      start: 34
+      end: 41
+    - source: p->name[k] != '\0' && k < max
+      style: secondary
+      start: 12
+      end: 41
