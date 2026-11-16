@@ -1,0 +1,61 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: java-file-request-parameter-direct
+language: java
+severity: warning
+message: >-
+  File path built straight from a servlet request value. A caller who sends
+  parent-directory segments or an absolute path reads or overwrites any file
+  the process can reach, including configuration and credentials. Resolve the
+  name against a fixed base directory with normalize or getCanonicalPath and
+  reject a result that does not start with that base.
+note: >-
+  Fires when new File, new FileInputStream, new FileReader, Paths.get or
+  Path.of receives, as an argument, a getParameter, getHeader, getPathInfo or
+  getQueryString call on a receiver named request or req. A method that also
+  calls normalize, getCanonicalPath, toRealPath or startsWith is not matched.
+  A path copied into a variable first, or checked in a helper, is not seen. A
+  value already reduced to a single safe filename is the routine dismissal.
+
+  [CWE-22] [A01:2025] [A01:2021]
+
+  [REFERENCES]
+      - https://owasp.org/www-community/attacks/Path_Traversal
+rule:
+  any:
+    - kind: object_creation_expression
+      has:
+        field: type
+        regex: '^(File|FileInputStream|FileReader)$'
+    - kind: method_invocation
+      all:
+        - has: {field: object, regex: '^(Paths|Path)$'}
+        - has: {field: name, regex: '^(get|of)$'}
+  all:
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          kind: method_invocation
+          all:
+            - has: {field: object, regex: '^(request|req)$'}
+            - has: {field: name, regex: '^(getParameter|getHeader|getPathInfo|getQueryString)$'}
+    - not:
+        inside:
+          stopBy: end
+          kind: method_declaration
+          has:
+            stopBy: end
+            kind: method_invocation
+            has:
+              field: name
+              regex: '^(normalize|getCanonicalPath|toRealPath|startsWith)$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-22'
+  owasp: 'A01:2025|A01:2021'
+  category: 'security'
+  references: 'https://owasp.org/www-community/attacks/Path_Traversal'
