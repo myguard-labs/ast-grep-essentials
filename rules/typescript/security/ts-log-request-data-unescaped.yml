@@ -1,0 +1,57 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-log-request-data-unescaped
+language: typescript
+severity: warning
+message: >-
+  Request data is passed to a logging call without escaping. A caller who sends
+  carriage-return or line-feed characters in the value can forge extra log
+  lines and hide their own activity. Escape or reject CR and LF in the value,
+  or log it through JSON.stringify or a structured logger field.
+note: >-
+  Fires on a log, debug, info, warn, error or trace call on console, logger,
+  log or winston whose arguments, including template-literal substitutions,
+  read req.query, req.body, req.params, req.headers or req.cookies (also under
+  the name request). A call that also applies replace, replaceAll, escape,
+  encodeURIComponent, JSON.stringify, parseInt, Number, String or Boolean
+  anywhere in its arguments is not matched. A value copied into a variable
+  first, or a logger held under another name, is not seen. A log sink that
+  already escapes line breaks is the routine dismissal.
+
+  [CWE-117] [A09:2025] [A09:2021]
+
+  [REFERENCES]
+      - https://owasp.org/www-community/attacks/Log_Injection
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: member_expression
+        regex: '^(console|logger|log|winston)\.(log|debug|info|warn|error|trace)$'
+    - has:
+        field: arguments
+        kind: arguments
+        has:
+          stopBy: end
+          kind: member_expression
+          regex: '^(req|request)\.(query|body|params|headers|cookies)$'
+    - not:
+        has:
+          field: arguments
+          kind: arguments
+          has:
+            stopBy: end
+            kind: call_expression
+            has:
+              field: function
+              regex: '(^|\.)(replace|replaceAll|escape|encodeURIComponent|stringify|parseInt|Number|String|Boolean)$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-117'
+  owasp: 'A09:2025|A09:2021'
+  category: 'security'
+  references: 'https://owasp.org/www-community/attacks/Log_Injection'

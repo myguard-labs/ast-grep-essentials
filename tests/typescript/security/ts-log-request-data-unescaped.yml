@@ -1,0 +1,26 @@
+id: ts-log-request-data-unescaped
+valid:
+  - |
+    logger.info("user", req.query.user.replace(/[\r\n]/g, " "))
+  - |
+    console.log(JSON.stringify(req.body))
+  - |
+    logger.warn("page", parseInt(req.query.page, 10))
+  - |
+    logger.info("login ok for " + username)
+  - |
+    other.info("user", req.query.user)
+  - |
+    // logger.info("user", req.query.user)
+    const s = 'console.log(req.body.name)';
+  - |
+    logger.info("path", req.path)
+invalid:
+  - |
+    logger.info("user", req.query.user)
+  - |
+    console.log("name: " + req.body.name)
+  - |
+    log.error(`bad agent ${req.headers["user-agent"]}`)
+  - |
+    winston.warn("id %s", request.params.id)
