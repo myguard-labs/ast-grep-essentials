@@ -12,11 +12,13 @@ message: >-
 note: >-
   Fires on res.cookie or response.cookie whose options object has a sameSite
   key set to the string none or to false, and on a call whose cookie name is a
-  string literal containing session, token, auth, jwt, sid, login, remember or
-  csrf and whose options object has no sameSite key, or that has no options
-  object at all. A call whose options come from a variable, or an options object
-  that spreads another object, is not matched. A cookie that must be embedded
-  cross-site is the routine dismissal.
+  string literal with a name segment of session, token, auth, jwt, sid, login,
+  remember or csrf (at the start of the name or after _ - . or a camelCase
+  step, so sidebar and author_pref do not count) and whose options object has
+  no sameSite key, or that has no options object at all. A call whose options
+  come from a variable, or an options object that spreads another object, is
+  not matched. A cookie that must be embedded cross-site is the routine
+  dismissal.
 
   [CWE-1275] [A01:2025] [A01:2021]
 
@@ -49,7 +51,7 @@ rule:
                     position: 1
                     ofRule: {not: {kind: comment}}
                   kind: string
-                  regex: '(?i)(session|token|auth|jwt|sid|login|remember|csrf)'
+                  regex: '(?:^["''`]|[_.\-])(?:(?:session|token|auth|jwt|sid|login|remember|csrf|Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9])|(?i:phpsessid|jsessionid|sessionid|sessid|csrftoken|xsrftoken|authtoken|accesstoken|refreshtoken)(?:["''`_.\-]))|[a-z0-9](?:(?:Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9]))'
             - not:
                 has:
                   field: arguments

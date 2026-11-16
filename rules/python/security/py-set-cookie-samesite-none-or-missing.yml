@@ -13,10 +13,11 @@ message: >-
 note: >-
   Fires on a set_cookie call whose samesite keyword is the string None or the
   value None, and on a set_cookie call with no samesite keyword whose cookie
-  name is a literal containing session, token, auth, jwt, sid, login, remember
-  or csrf. A call that passes **kwargs, or a samesite taken from a variable or
-  setting, is not matched. A cookie that must be embedded cross-site is the
-  routine dismissal.
+  name is a literal with a name segment of session, token, auth, jwt, sid,
+  login, remember or csrf (at the start of the name or after _ - . or a
+  camelCase step, so sidebar and author_pref do not count). A call that passes
+  **kwargs, or a samesite taken from a variable or setting, is not matched. A
+  cookie that must be embedded cross-site is the routine dismissal.
 
   [CWE-1275] [A01:2025] [A01:2021]
 
@@ -47,7 +48,7 @@ rule:
                     position: 1
                     ofRule: {not: {kind: comment}}
                   kind: string
-                  regex: '(?i)(session|token|auth|jwt|sid|login|remember|csrf)'
+                  regex: '(?:^["''`]|[_.\-])(?:(?:session|token|auth|jwt|sid|login|remember|csrf|Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9])|(?i:phpsessid|jsessionid|sessionid|sessid|csrftoken|xsrftoken|authtoken|accesstoken|refreshtoken)(?:["''`_.\-]))|[a-z0-9](?:(?:Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9]))'
             - not:
                 has:
                   field: arguments

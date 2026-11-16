@@ -15,6 +15,10 @@ valid:
     s = 'resp.set_cookie("session", sid)'
   - |
     resp.delete_cookie("session")
+  - |
+    resp.set_cookie("sidebar", "open")
+  - |
+    resp.set_cookie("author_pref", "x")
 invalid:
   - |
     resp.set_cookie("session", sid, samesite="None", secure=True)
@@ -26,3 +30,7 @@ invalid:
     resp.set_cookie('csrftoken', t, samesite='none')
   - |
     resp.set_cookie("sid", value=sid, secure=True, httponly=True)
+  - |
+    resp.set_cookie("sessionId", sid)
+  - |
+    resp.set_cookie("XSRF-TOKEN", t)

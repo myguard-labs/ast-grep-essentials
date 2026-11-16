@@ -10,14 +10,17 @@ message: >-
   the name against a fixed base directory, reject a result that leaves it, or
   pass res.sendFile a root option so Express enforces containment.
 note: >-
-  Fires when fs.readFile, readFileSync, createReadStream, their promises forms,
-  or res.sendFile and res.download, receives a first argument that is req or
-  request .query, .params, .body, .headers or .cookies, either directly or as
-  an argument of path.join or path.resolve. A sendFile or download call given
-  an options object with a root key is not matched, and nor is a function that
-  also calls normalize, realpath, basename or isAbsolute. A path copied into a
-  variable first, or checked in a helper, is not seen. A value a router already
-  reduced to a single safe filename is the routine dismissal.
+  Fires when fs.readFile, readFileSync, createReadStream, their promises
+  forms, or res.sendFile and res.download, receives a first argument that is
+  req or request .query, .params, .body, .headers or .cookies, either directly
+  or as an argument of path.join or path.resolve. A sendFile or download call
+  given an options object with a root key is not matched, and nor is a
+  function that also calls normalize, realpath, basename or isAbsolute. Any
+  such sanitizer call anywhere in the enclosing function suppresses the
+  finding, even when the raw value is still used (known miss, chosen for
+  precision). A path copied into a variable first, or checked in a helper, is
+  not seen. A value a router already reduced to a single safe filename is the
+  routine dismissal.
 
   [CWE-22] [A01:2025] [A01:2021]
 

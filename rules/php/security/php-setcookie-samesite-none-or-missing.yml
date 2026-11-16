@@ -12,11 +12,14 @@ message: >-
   and a CSRF token.
 note: >-
   Fires on setcookie or setrawcookie whose options array has a samesite key
-  set to None, and on a call whose cookie name is a string literal containing
-  session, token, auth, jwt, sid, login, remember or csrf and that carries no
-  samesite key, including the positional form, which cannot express it. A call with named arguments, or one whose third argument
-  is a variable that may hold the options array, is not matched. A cookie that
-  must be embedded cross-site is the routine dismissal.
+  set to None, and on a call whose cookie name is a string literal with a name
+  segment of session, token, auth, jwt, sid, login, remember or csrf (at the
+  start of the name or after _ - . or a camelCase step, so sidebar and
+  author_pref do not count) and that carries no samesite key, including the
+  positional form, which cannot express it. A call with named arguments, or
+  one whose third argument is a variable that may hold the options array, is
+  not matched. A cookie that must be embedded cross-site is the routine
+  dismissal.
 
   [CWE-1275] [A01:2025] [A01:2021]
 
@@ -53,7 +56,7 @@ rule:
                   nthChild:
                     position: 1
                     ofRule: {kind: argument}
-                  regex: '(?i)^["''][^"'']*(session|token|auth|jwt|sid|login|remember|csrf)'
+                  regex: '(?:^["''`]|[_.\-])(?:(?:session|token|auth|jwt|sid|login|remember|csrf|Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9])|(?i:phpsessid|jsessionid|sessionid|sessid|csrftoken|xsrftoken|authtoken|accesstoken|refreshtoken)(?:["''`_.\-]))|[a-z0-9](?:(?:Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9]))'
             - not:
                 has:
                   field: arguments

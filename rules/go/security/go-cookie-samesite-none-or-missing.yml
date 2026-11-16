@@ -11,10 +11,12 @@ message: >-
   unless the cookie must really travel cross-site, and then pair None with
   Secure and a CSRF token.
 note: >-
-  Fires on an http.Cookie literal whose SameSite field is http.SameSiteNoneMode,
-  and on one with no SameSite field whose Name is a string literal containing
-  session, token, auth, jwt, sid, login, remember or csrf. A field assigned to
-  the value on a later statement, or a name held in a variable, is not visible
+  Fires on an http.Cookie literal whose SameSite field is
+  http.SameSiteNoneMode, and on one with no SameSite field whose Name is a
+  string literal with a name segment of session, token, auth, jwt, sid, login,
+  remember or csrf (at the start of the name or after _ - . or a camelCase
+  step, so sidebar and author_pref do not count). A field assigned to the
+  value on a later statement, or a name held in a variable, is not visible
   here. A cookie that must be embedded cross-site is the routine dismissal.
 
   [CWE-1275] [A01:2025] [A01:2021]
@@ -48,7 +50,7 @@ rule:
                     - has: {nthChild: 1, regex: '^Name$'}
                     - has:
                         nthChild: 2
-                        regex: '(?i)^["`].*(session|token|auth|jwt|sid|login|remember|csrf).*["`]$'
+                        regex: '(?:^["''`]|[_.\-])(?:(?:session|token|auth|jwt|sid|login|remember|csrf|Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9])|(?i:phpsessid|jsessionid|sessionid|sessid|csrftoken|xsrftoken|authtoken|accesstoken|refreshtoken)(?:["''`_.\-]))|[a-z0-9](?:(?:Session|Token|Auth|Jwt|Sid|Login|Remember|Csrf)(?:["''`_.\-]|[A-Z0-9])|(?:SESSION|TOKEN|AUTH|JWT|SID|LOGIN|REMEMBER|CSRF)(?:["''`_.\-]|[0-9]))'
             - not:
                 has:
                   field: body

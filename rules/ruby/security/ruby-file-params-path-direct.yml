@@ -12,11 +12,13 @@ message: >-
 note: >-
   Fires when File.read, File.open, File.binread, File.foreach, File.readlines,
   IO.read or send_file receives a first argument that is params[...] or
-  params.fetch or params.dig, directly or as an argument of File.join. A method
-  that also calls File.basename, expand_path, realpath or start_with? is not
-  matched. A path copied into a variable first, or checked in a helper, is not
-  seen. A value already reduced to a single safe filename is the routine
-  dismissal.
+  params.fetch or params.dig, directly or as an argument of File.join. A
+  method that also calls File.basename, expand_path, realpath or start_with?
+  is not matched. Any such sanitizer call anywhere in the enclosing function
+  suppresses the finding, even when the raw value is still used (known miss,
+  chosen for precision). A path copied into a variable first, or checked in a
+  helper, is not seen. A value already reduced to a single safe filename is
+  the routine dismissal.
 
   [CWE-22] [A01:2025] [A01:2021]
 
