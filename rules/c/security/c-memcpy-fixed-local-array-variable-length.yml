@@ -44,18 +44,14 @@ rule:
     - not:
         inside:
           stopBy: end
-          kind: if_statement
-          all:
-            - has:
-                field: condition
-                has:
-                  stopBy: end
-                  pattern: '$LEN <= sizeof($DST)'
-            - has:
-                field: consequence
-                has:
-                  stopBy: end
-                  pattern: 'memcpy($DST, $SRC, $LEN)'
+          inside:
+            field: consequence
+            kind: if_statement
+            has:
+              field: condition
+              has:
+                stopBy: end
+                pattern: '$LEN <= sizeof($DST)'
 constraints:
   DST:
     kind: identifier
