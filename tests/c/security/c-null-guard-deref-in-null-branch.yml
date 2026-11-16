@@ -7,6 +7,10 @@ valid:
     int f(int *p) { if (!p) { return -1; } return *p; }
   - |-
     void f(int rate, int *count) { if (!count) { total = rate * 2; } }
+  - |-
+    void f(int *found) { if (!found) { x = 0; } else { *found = 1; } }
+  - |-
+    void f(int *found) { if (found == NULL) { x = 0; } else { *found = 1; } }
 
 invalid:
   - 'void f(int *found) { if (!found) { *found = 0; } }'
@@ -18,3 +22,7 @@ invalid:
     void f(int *p) { if (!p) { *p += 1; } }
   - |-
     void f(int *p) { if (!p) { *p = 0; } else { g(); } }
+  - |-
+    void f(int *p) { if (p == NULL) { *p = 0; } }
+  - |-
+    void f(int *p) { if (NULL == p) { *p = 0; } }
