@@ -23,6 +23,13 @@ valid:
             Log("a " + x, "b " + x);
         }
     }
+  - |
+    class Example {
+        void Run(string x) {
+            Process.Start(fileName: "sh", arguments: "-c ls");
+            Log(arguments: "a " + x);
+        }
+    }
 invalid:
   - |
     class Example {
@@ -46,5 +53,11 @@ invalid:
     class Example {
         void Run(string x) {
             System.Diagnostics.Process.Start("sh", string.Format("-c '{0}'", x));
+        }
+    }
+  - |
+    class Example {
+        void Run(string cmd) {
+            Process.Start(arguments: "-c " + cmd, fileName: "sh");
         }
     }

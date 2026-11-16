@@ -8,7 +8,7 @@ message: >-
   string.Format. Untrusted input can inject extra arguments or shell commands.
 note: >-
   Matches Process.Start(file, args) and new ProcessStartInfo(file, args) where
-  args, and an Arguments initializer inside new ProcessStartInfo { ... } whose
+  args (or an argument named `arguments` in any position), and an Arguments initializer inside new ProcessStartInfo { ... } whose
   value, is an interpolated string with an interpolation, a + concatenation
   containing a non-literal operand, or a string.Format call. Literal-only
   arguments are not flagged. This is a single-file syntactic check; it does
@@ -48,9 +48,14 @@ rule:
             kind: argument_list
             has:
               kind: argument
-              nthChild: 2
               has:
                 matches: dynamic-arg-text
+              any:
+                - nthChild: 2
+                - has:
+                    field: name
+                    kind: identifier
+                    regex: '^arguments$'
     - kind: object_creation_expression
       all:
         - has:
@@ -61,9 +66,14 @@ rule:
             kind: argument_list
             has:
               kind: argument
-              nthChild: 2
               has:
                 matches: dynamic-arg-text
+              any:
+                - nthChild: 2
+                - has:
+                    field: name
+                    kind: identifier
+                    regex: '^arguments$'
     - kind: assignment_expression
       all:
         - has:
