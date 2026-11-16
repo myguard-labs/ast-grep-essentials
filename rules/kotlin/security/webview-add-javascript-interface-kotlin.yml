@@ -1,0 +1,29 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: webview-add-javascript-interface-kotlin
+language: kotlin
+severity: warning
+message: >-
+  addJavascriptInterface exposes a Kotlin object to every script in the page.
+  A page that is attacker-influenced, or any injected script, can call its
+  @JavascriptInterface methods. Expose only what the page needs, load trusted
+  origins only, and prefer WebMessagePort or WebViewCompat message listeners.
+note: >-
+  Matches any addJavascriptInterface call with at least one argument. The
+  receiver type is not resolved, and content the app fully controls still
+  matches.
+rule:
+  pattern: $W.addJavascriptInterface($$$ARGS)
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.45.2
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-749'
+  owasp: 'A05:2025|A03:2021'
+  category: 'security'
+  subcategory: 'webview'
+  references: 'https://developer.android.com/reference/android/webkit/WebView#addJavascriptInterface(java.lang.Object,%20java.lang.String)'
