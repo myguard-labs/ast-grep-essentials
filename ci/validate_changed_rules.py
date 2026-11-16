@@ -3,7 +3,10 @@
 
 The latest CLI is installed in a temporary prefix. Each affected rule is then
 copied with its mirrored fixture into an isolated config, so one PR cannot pass
-because another rule or language happened to load successfully.
+because another rule or language happened to load successfully. The
+repository's global utils (``utils/``) are copied read-only into that config so
+``matches: <util>`` resolves; a changed util re-validates every rule that
+references it.
 """
 
 from __future__ import annotations
@@ -385,6 +388,74 @@ def find_rule(root: Path, rule_id: str) -> Path | None:
     return hits[0] if hits else None
 
 
+def _util_id(root: Path, base: str | None, path: PurePosixPath) -> str:
+    """The id a util is referenced by: its ``id:`` line, else its file stem."""
+    data = None
+    if (root / path).is_file():
+        data = (root / path).read_bytes()
+    elif base:
+        data = _base_blob(root, base, path)
+    if data:
+        found = re.search(rb"(?m)^id:[ \t]*['\"]?([^\s'\"#]+)", data)
+        if found:
+            return found.group(1).decode("utf-8", "replace")
+    return path.stem
+
+
+def _references(path: Path, ids: set[str]) -> bool:
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return False
+    for util_id in ids:
+        pattern = rf"(?m)\bmatches:[ \t]*['\"]?{re.escape(util_id)}['\"]?[ \t]*(?:#.*)?$"
+        if re.search(pattern, text):
+            return True
+    return False
+
+
+def util_affected_rules(
+    root: Path, base: str | None, paths: Sequence[str]
+) -> list[PurePosixPath]:
+    """Rules that reference a changed ``utils/**`` file, directly or through
+    another util (``matches: <id>``). Returned for validation only: no mirrored
+    fixture change is demanded for them. A util nothing references selects
+    nothing."""
+    ids = set()
+    for value in paths:
+        path = _safe_path(value)
+        if path is not None and path.parts[:1] == ("utils",):
+            ids.add(_util_id(root, base, path))
+    if not ids:
+        return []
+    utils = sorted((root / "utils").glob("**/*.yml")) if (root / "utils").is_dir() else []
+    grown = True
+    while grown:  # a util that matches a changed util is itself changed
+        grown = False
+        for util in utils:
+            util_id = _util_id(root, None, PurePosixPath(util.relative_to(root).as_posix()))
+            if util_id not in ids and _references(util, ids):
+                ids.add(util_id)
+                grown = True
+    affected = []
+    for language in sorted(SUPPORTED_LANGUAGES):
+        for rule in sorted((root / "rules" / language).glob("*/*.yml")):
+            if _references(rule, ids):
+                affected.append(PurePosixPath(rule.relative_to(root).as_posix()))
+    return affected
+
+
+def _copy_utils(root: Path, isolated: Path) -> None:
+    source = root / "utils"
+    if not source.is_dir():
+        return
+    for util in sorted(source.glob("**/*.yml")):
+        _require_contained_regular(root, util, "util")
+        target = isolated / "utils" / util.relative_to(source)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(util, target)
+
+
 def _require_contained_regular(root: Path, path: Path, label: str) -> None:
     try:
         metadata = path.lstat()
@@ -429,9 +500,11 @@ def validate_rule(root: Path, engine: Path, rule_path: Path) -> None:
         shutil.copy2(fixture, tests / fixture.name)
         if has_snapshot:
             shutil.copy2(snapshot, snapshots / snapshot.name)
+        _copy_utils(root, isolated)
         config = isolated / "sgconfig.yml"
         config.write_text(
-            "ruleDirs: [rules]\ntestConfigs: [{testDir: tests}]\n",
+            "ruleDirs: [rules]\nutilDirs: [utils]\n"
+            "testConfigs: [{testDir: tests}]\n",
             encoding="utf-8",
         )
         command: list[str | Path] = [
@@ -549,9 +622,13 @@ def validate_changed(
         raise ValidationError(
             "changed rules require changed mirrored fixtures: " + ", ".join(missing)
         )
+    selected = {
+        *changed_rule_paths(root, paths),
+        *util_affected_rules(root, base, paths),
+    }
     rules = [
         root / relative
-        for relative in changed_rule_paths(root, paths)
+        for relative in sorted(selected, key=PurePosixPath.as_posix)
         # A removed rule and fixture have nothing left to load.
         if (root / relative).is_file()
     ]
