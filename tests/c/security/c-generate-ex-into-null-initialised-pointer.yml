@@ -9,6 +9,10 @@ valid:
     DH *dh = NULL; DH_check(dh, &codes);
   - |-
     RSA *rsa = RSA_new(); RSA_generate_key_ex(rsa, 2048, e, NULL);
+  - |-
+    DH *dh = NULL; dh = DH_new(); DH_generate_parameters_ex(dh, 2048, 2, NULL);
+  - |-
+    DSA *dsa = NULL; log(); dsa = DSA_new(); DSA_generate_parameters_ex(dsa, 2048, NULL, 0, NULL, NULL, NULL);
 invalid:
   - 'DH *dhparam = NULL; DH_generate_parameters_ex(dhparam, 2048, 2, NULL);'
   - |-
@@ -19,3 +23,7 @@ invalid:
     int f(void) { DH *dh = NULL; log(); DH_generate_parameters_ex(dh, 2048, 2, NULL); return 0; }
   - |-
     EVP_PKEY_CTX *c = NULL; EVP_PKEY_generate_parameters_ex(c, 1);
+  - |-
+    DH *dh = NULL; other = DH_new(); DH_generate_parameters_ex(dh, 2048, 2, NULL);
+  - |-
+    DH *dh = NULL; dh = NULL; DH_generate_parameters_ex(dh, 2048, 2, NULL);

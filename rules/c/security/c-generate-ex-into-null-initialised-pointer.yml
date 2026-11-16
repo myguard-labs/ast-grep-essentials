@@ -7,14 +7,25 @@ message: >-
   Pointer initialised to NULL is passed as the output object of a
   *_generate_parameters_ex call.
 note: >-
-  Syntactic only; it does not check for intervening assignments or allocations
-  between the declaration and the call.
+  Syntactic only; a sibling statement that reassigns the pointer from a call
+  (for example dh = DH_new();) between the declaration and the call counts as
+  an allocation. Conditional or nested assignments and aliasing are not
+  tracked.
 rule:
   all:
     - pattern: '$F($P, $$$ARGS);'
     - follows:
         pattern: '$T *$P = NULL;'
         stopBy: end
+    - not:
+        follows:
+          stopBy: end
+          pattern: '$P = $V;'
+          has:
+            kind: assignment_expression
+            has:
+              field: right
+              kind: call_expression
 constraints:
   F:
     regex: '_generate_parameters_ex$'
