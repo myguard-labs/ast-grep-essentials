@@ -1,0 +1,48 @@
+id: xxe-dtd-processing-enabled-csharp
+valid:
+  - |
+    class Example {
+        void Parse() {
+            var s = new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null };
+        }
+    }
+  - |
+    class Example {
+        void Parse(XmlReaderSettings s, XmlDocument d) {
+            s.DtdProcessing = DtdProcessing.Ignore;
+            d.XmlResolver = null;
+            d.XmlResolver = new XmlSecureResolver(new XmlUrlResolver(), "https://example.test");
+        }
+    }
+  - |
+    class Example {
+        void Parse(Other o) {
+            o.Mode = DtdProcessing.Parse;
+            o.ProhibitDtd = true;
+        }
+    }
+invalid:
+  - |
+    class Example {
+        void Parse() {
+            var s = new XmlReaderSettings { DtdProcessing = DtdProcessing.Parse };
+        }
+    }
+  - |
+    class Example {
+        void Parse(XmlDocument d) {
+            d.XmlResolver = new XmlUrlResolver();
+        }
+    }
+  - |
+    class Example {
+        void Parse(XmlTextReader r) {
+            r.DtdProcessing = System.Xml.DtdProcessing.Parse;
+        }
+    }
+  - |
+    class Example {
+        void Parse(XmlReaderSettings s) {
+            s.ProhibitDtd = false;
+        }
+    }
