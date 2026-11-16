@@ -14,9 +14,15 @@ note: >-
 rule:
   all:
     - kind: if_statement
-    - has:
-        pattern: '!$P'
-        stopBy: end
+    - any:
+        - has:
+            pattern: '!$P'
+            stopBy: end
+        - has:
+            field: condition
+            any:
+              - pattern: '($P == NULL)'
+              - pattern: '(NULL == $P)'
     - has:
         pattern: '$P->$F = $V'
         stopBy: end
@@ -33,6 +39,5 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
   todo_cases:
-    - 'void f(struct s *p) { if (p == NULL) { p->key = 0; } }'
     - 'void f(struct s *p) { if (!p) { p->key += 1; } }'
     - 'void f(struct s *p) { if (!(p)) { p->key = 0; } }'
