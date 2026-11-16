@@ -1,0 +1,37 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ruby-html-safe-non-literal
+language: ruby
+severity: warning
+message: >-
+  html_safe or raw marks a non-literal value as safe HTML, which disables Rails
+  output escaping and allows cross-site scripting when the value is user data.
+note: >-
+  Fires on VALUE.html_safe and raw(VALUE) where VALUE is not a plain string
+  literal and its text does not mention sanitize, html_escape, escapeHTML,
+  escape_once or h(). Literal strings, escaped values and a raw call with no
+  argument are not matched. Content that is built from trusted constants is the
+  routine dismissal.
+rule:
+  any:
+    - pattern: $VALUE.html_safe
+    - pattern: raw($VALUE)
+constraints:
+  VALUE:
+    not:
+      any:
+        - kind: string
+          not:
+            has:
+              kind: interpolation
+        - regex: '(sanitize|html_escape|escapeHTML|escape_once|\bh\()'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-79'
+  owasp: 'A05:2025|A03:2021'
+  category: 'security'
+  subcategory: 'xss'
+  references: 'https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html'

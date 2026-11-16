@@ -1,0 +1,20 @@
+id: ruby-html-safe-non-literal
+valid:
+  - |
+    label = "<b>bold</b>".html_safe
+  - |
+    out = sanitize(params[:bio]).html_safe
+  - |
+    out = raw("<hr>")
+  - |
+    out = raw(h(params[:bio]))
+  - |
+    # raw(params[:bio])
+    note = "params[:bio].html_safe"
+invalid:
+  - |
+    out = params[:bio].html_safe
+  - |
+    out = raw(@comment.body)
+  - |
+    out = "<b>#{name}</b>".html_safe
