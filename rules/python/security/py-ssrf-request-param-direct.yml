@@ -69,6 +69,16 @@ utils:
         has:
           field: attribute
           regex: '^urlopen$'
+  pool-urlopen:
+    kind: attribute
+    all:
+      - has:
+          field: object
+          kind: identifier
+          regex: '^(urllib3|http|pool|manager)$'
+      - has:
+          field: attribute
+          regex: '^urlopen$'
   pool-callee:
     kind: attribute
     all:
@@ -86,6 +96,10 @@ rule:
         - has:
             field: function
             matches: http-callee
+        - not:
+            has:
+              field: function
+              matches: pool-urlopen
         - has:
             field: arguments
             has:
