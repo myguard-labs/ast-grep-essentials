@@ -34,20 +34,22 @@ rule:
           stopBy: end
           kind: variable_name
           regex: '^\$_(GET|POST|REQUEST|COOKIE)$'
-    - not:
-        has:
-          field: arguments
-          has:
-            stopBy: end
-            any:
-              - kind: cast_expression
-                has:
-                  field: type
-                  regex: '^(int|integer|float|double|bool|boolean)$'
-              - kind: function_call_expression
+          not:
+            inside:
+              stopBy:
+                kind: function_call_expression
                 has:
                   field: function
-                  regex: '^(str_replace|preg_replace|json_encode|urlencode|rawurlencode|addcslashes|var_export|filter_var|ctype_\w+|sanitize_\w+|esc_\w+|intval|floatval|absint|strlen|count|bin2hex|base64_encode|md5|sha1|crc32)$'
+                  regex: '^error_log$'
+              any:
+                - kind: cast_expression
+                  has:
+                    field: type
+                    regex: '^(int|integer|float|double|bool|boolean)$'
+                - kind: function_call_expression
+                  has:
+                    field: function
+                    regex: '^(str_replace|preg_replace|json_encode|urlencode|rawurlencode|addcslashes|var_export|filter_var|ctype_\w+|sanitize_\w+|esc_\w+|intval|floatval|absint|strlen|count|bin2hex|base64_encode|md5|sha1|crc32)$'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'

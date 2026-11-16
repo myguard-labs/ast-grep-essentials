@@ -36,16 +36,18 @@ rule:
           stopBy: end
           kind: member_expression
           regex: '^(req|request)\.(query|body|params|headers|cookies)$'
-    - not:
-        has:
-          field: arguments
-          kind: arguments
-          has:
-            stopBy: end
-            kind: call_expression
-            has:
-              field: function
-              regex: '(^|\.)(replace|replaceAll|escape|encodeURIComponent|stringify|parseInt|Number|String|Boolean)$'
+          not:
+            inside:
+              stopBy:
+                kind: call_expression
+                has:
+                  field: function
+                  kind: member_expression
+                  regex: '^(console|logger|log|winston)\.(log|debug|info|warn|error|trace)$'
+              kind: call_expression
+              has:
+                field: function
+                regex: '(^|\.)(replace|replaceAll|escape|encodeURIComponent|stringify|parseInt|Number|Boolean)$'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'

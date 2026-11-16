@@ -38,16 +38,18 @@ rule:
           stopBy: end
           kind: attribute
           regex: '^request\.(args|form|values|headers|cookies|data|json|GET|POST|META|COOKIES|body)$'
-    - not:
-        has:
-          field: arguments
-          kind: argument_list
-          has:
-            stopBy: end
-            kind: call
-            has:
-              field: function
-              regex: '(^|\.)(replace|escape|quote|quote_plus|repr|dumps|sanitize\w*|int|len|bool|float)$'
+          not:
+            inside:
+              stopBy:
+                kind: call
+                has:
+                  field: function
+                  kind: attribute
+                  regex: '^(logging|logger|log|LOG|LOGGER|app\.logger|current_app\.logger)\.(debug|info|warning|warn|error|critical|exception)$'
+              kind: call
+              has:
+                field: function
+                regex: '(^|\.)(replace|escape|quote|quote_plus|repr|dumps|sanitize\w*|int|len|bool|float)$'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'
