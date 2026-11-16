@@ -23,6 +23,14 @@ valid:
             log.CommandLine = "a" + name;
         }
     }
+  - |
+    class Example {
+        void Query(SqlCommand cmd, string x) {
+            cmd.CommandText += " ORDER BY id";
+            cmd.CommandText += "a" + "b";
+            log.CommandLine += x;
+        }
+    }
 invalid:
   - |
     class Example {
@@ -91,5 +99,17 @@ invalid:
     class Example {
         void Run(string x) {
             var cmd = new SqlCommand(cmdText: "SELECT " + x);
+        }
+    }
+  - |
+    class Example {
+        void Query(SqlCommand cmd, string x) {
+            cmd.CommandText += x;
+        }
+    }
+  - |
+    class Example {
+        void Query(SqlCommand cmd, Filter f) {
+            cmd.CommandText += f.Clause;
         }
     }

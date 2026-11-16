@@ -23,6 +23,13 @@ note: >-
   variable named x declared with new ProcessStartInfo(...) anywhere in the
   enclosing method, so a same-named variable in a sibling block or lambda
   is not told apart from the one actually assigned.
+  A `x.Arguments += y` or `.StartInfo.Arguments += y` append is matched when
+  y is an identifier, member, call, indexer or dynamic text; `+= "literal"`
+  is not. Known misses: the `x.Arguments` linkage needs an enclosing method,
+  constructor or local function, so a top-level statement, a property
+  accessor (get/set/init) and a field-initializer lambda are not matched.
+  A qualified receiver such as `this.psi.Arguments += x` is also a known miss,
+  because the receiver is not a bare variable declared with new ProcessStartInfo(...).
 
   [CWE-78] [A05:2025] [A03:2021]
 
@@ -51,6 +58,13 @@ utils:
         has:
           field: function
           regex: '^(?:global::)?(?:string|String|System\.String)\.Format$'
+  appended-arg-text:
+    any:
+      - matches: dynamic-arg-text
+      - kind: identifier
+      - kind: member_access_expression
+      - kind: invocation_expression
+      - kind: element_access_expression
 rule:
   any:
     - kind: invocation_expression
@@ -142,6 +156,42 @@ rule:
         - has:
             field: right
             matches: dynamic-arg-text
+        - inside:
+            stopBy: end
+            any:
+              - kind: method_declaration
+              - kind: constructor_declaration
+              - kind: local_function_statement
+            has:
+              stopBy: end
+              kind: variable_declarator
+              all:
+                - has:
+                    field: name
+                    pattern: $X
+                - has:
+                    kind: object_creation_expression
+                    has:
+                      field: type
+                      regex: '^(?:global::)?(?:System\.Diagnostics\.)?ProcessStartInfo$'
+    - kind: assignment_expression
+      all:
+        - has:
+            field: left
+            kind: member_access_expression
+            regex: '\.StartInfo\.Arguments$'
+        - has:
+            field: operator
+            regex: '^\+=$'
+        - has:
+            field: right
+            matches: appended-arg-text
+    - kind: assignment_expression
+      all:
+        - pattern: $X.Arguments += $V
+        - has:
+            field: right
+            matches: appended-arg-text
         - inside:
             stopBy: end
             any:

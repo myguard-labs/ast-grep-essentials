@@ -51,6 +51,23 @@ valid:
             Process.Start("user" + x, "u", "p" + x, "d");
         }
     }
+  - |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments += " -c ls";
+            var o = new Options();
+            o.Arguments += x;
+            p.StartInfo.Arguments += "--flag";
+        }
+    }
+  - |
+    class Example {
+        void Run(string x, Options o) {
+            var q = new Options();
+            q.Arguments += x;
+        }
+    }
 invalid:
   - |
     class Example {
@@ -109,5 +126,25 @@ invalid:
         void Run(string x) {
             var psi = new ProcessStartInfo("sh");
             psi.Arguments = "-c " + x;
+        }
+    }
+  - |
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments += x;
+        }
+    }
+  - |
+    class Example {
+        void Run(string x, Process p) {
+            p.StartInfo.Arguments += x;
+        }
+    }
+  - |
+    class Example {
+        void Run(Opts o) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments += o.Extra;
         }
     }

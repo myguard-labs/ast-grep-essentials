@@ -9,10 +9,14 @@ message: >-
   deserialization.
 note: >-
   Matches an assignment (statement or object initializer) of
-  TypeNameHandling.All, Auto, Objects or Arrays, alone or inside a bitwise
+  TypeNameHandling.All, Auto, Objects or Arrays, alone or inside a bitwise-or
   combination such as `Objects | Arrays` (TypeNameHandling is a [Flags]
-  enum), to a member named TypeNameHandling. TypeNameHandling.None alone is
-  not flagged. This is a
+  enum), to a member named TypeNameHandling. Other operators are not matched,
+  so clearing a flag with `x & ~TypeNameHandling.Auto` is not reported. A
+  parenthesized right-hand side is matched only when, through nested
+  parentheses alone, it is a bare unsafe member or such a `|` combination;
+  `(x & TypeNameHandling.Auto)` and a parenthesized conditional are not
+  reported. TypeNameHandling.None alone is not flagged. This is a
   single-file syntactic check. Known miss: a conditional (ternary) right-hand
   side such as `c ? TypeNameHandling.All : TypeNameHandling.None` is not
   matched. It does not resolve types, a custom
@@ -23,6 +27,31 @@ note: >-
   [REFERENCES]
       - https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html
       - https://www.newtonsoft.com/json/help/html/SerializationSettings.htm#TypeNameHandling
+utils:
+  unsafe-member:
+    all:
+      - kind: member_access_expression
+        regex: '^(?:global::)?(?:Newtonsoft\.Json\.)?TypeNameHandling\.(?:All|Auto|Objects|Arrays)$'
+      - not:
+          inside:
+            kind: prefix_unary_expression
+            regex: '^~'
+            stopBy: end
+  unsafe-rhs:
+    any:
+      - kind: member_access_expression
+        regex: '^(?:global::)?(?:Newtonsoft\.Json\.)?TypeNameHandling\.(?:All|Auto|Objects|Arrays)$'
+      - kind: binary_expression
+        all:
+          - has:
+              field: operator
+              regex: '^\|$'
+          - has:
+              stopBy: end
+              matches: unsafe-member
+      - kind: parenthesized_expression
+        has:
+          matches: unsafe-rhs
 rule:
   kind: assignment_expression
   all:
@@ -31,16 +60,7 @@ rule:
         regex: '^(?:global::)?(?:[\w.]+\.)?TypeNameHandling$'
     - has:
         field: right
-        any:
-          - kind: member_access_expression
-            regex: '^(?:global::)?(?:Newtonsoft\.Json\.)?TypeNameHandling\.(?:All|Auto|Objects|Arrays)$'
-          - any:
-              - kind: binary_expression
-              - kind: parenthesized_expression
-            has:
-              stopBy: end
-              kind: member_access_expression
-              regex: '^(?:global::)?(?:Newtonsoft\.Json\.)?TypeNameHandling\.(?:All|Auto|Objects|Arrays)$'
+        matches: unsafe-rhs
 metadata:
   rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.51.0

@@ -18,6 +18,20 @@ valid:
             var t = typeof(NetDataContractSerializer);
         }
     }
+  - |
+    class Example {
+        void Load() {
+            DataContractSerializer s = new(typeof(Item));
+            var t = new();
+        }
+    }
+  - |
+    class Example {
+        void Load(Other o) {
+            Other s = new();
+            s = new Other();
+        }
+    }
 invalid:
   - |
     class Example {
@@ -42,4 +56,20 @@ invalid:
         void Run(string x) {
             var s = new global::System.Runtime.Serialization.NetDataContractSerializer();
         }
+    }
+  - |
+    class Example {
+        void Load() {
+            NetDataContractSerializer s = new();
+        }
+    }
+  - |
+    class Example {
+        private readonly System.Runtime.Serialization.NetDataContractSerializer f = new();
+        NetDataContractSerializer P { get; } = new() { AssemblyFormat = FormatterAssemblyStyle.Simple };
+    }
+  - |
+    class Example {
+        public NetDataContractSerializer S { get; } = new();
+        object Load(System.IO.Stream st) { return S.Deserialize(st); }
     }
