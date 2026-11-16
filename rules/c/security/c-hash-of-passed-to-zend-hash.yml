@@ -35,11 +35,19 @@ rule:
             all:
               - has:
                   field: condition
-                  has:
-                    stopBy: end
-                    pattern:
-                      context: 'x = !HASH_OF($X);'
-                      selector: unary_expression
+                  all:
+                    - has:
+                        stopBy: end
+                        pattern:
+                          context: 'x = !HASH_OF($X);'
+                          selector: unary_expression
+                    - any:
+                        # whole condition is (!HASH_OF(x))
+                        - regex: '^\(\s*!\s*HASH_OF\s*\((?:[^()&|?]|\([^()&|?]*\))*\)\s*\)$'
+                        # (!HASH_OF(x) || ...): the negation is the first || operand, no &&/?: at top level
+                        - regex: '^\(\s*!\s*HASH_OF\s*\((?:[^()&|?]|\([^()&|?]*\))*\)\s*\|\|(?:[^&?()]|\([^&?()]*\))*\)$'
+                        # (... || !HASH_OF(x)): the negation is a || operand, no &&/?: at top level
+                        - regex: '^\((?:[^&?()]|\([^&?()]*\))*\|\|\s*!\s*HASH_OF\s*\((?:[^()&|?]|\([^()&|?]*\))*\)\s*\)$'
               - has:
                   field: consequence
                   any:
