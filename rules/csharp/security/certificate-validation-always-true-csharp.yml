@@ -8,7 +8,7 @@ message: >-
   certificate, which disables server authentication and allows
   man-in-the-middle attacks.
 note: >-
-  Matches assignment or += of a lambda or anonymous method whose body is only
+  Matches assignment or += (not -=, which unsubscribes) of a lambda or anonymous method whose body is only
   `true` or `return true;`, or of DangerousAcceptAnyServerCertificateValidator,
   to a member named ServerCertificateValidationCallback,
   ServerCertificateCustomValidationCallback or
@@ -29,6 +29,9 @@ utils:
 rule:
   kind: assignment_expression
   all:
+    - has:
+        field: operator
+        regex: '^\+?=$'
     - has:
         field: left
         regex: '(?:^|\.)(?:ServerCertificateValidationCallback|ServerCertificateCustomValidationCallback|RemoteCertificateValidationCallback)$'
