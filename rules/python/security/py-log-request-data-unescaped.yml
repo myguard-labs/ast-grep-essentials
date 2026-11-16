@@ -19,7 +19,7 @@ note: >-
   re.sub whose first argument (a string or pattern) names CR, LF or whitespace
   (\r, \n, \s, \x0a, \x0d), urllib quote or quote_plus, repr, dumps, a
   helper whose name contains crlf, newline or linebreak, int, len, bool or
-  float; a sanitizer on another argument does not suppress it. A chained replace of only \r is accepted as a sanitizer on purpose (precision over recall). Python has no
+  float; a sanitizer on another argument does not suppress it. A re.sub or re.subn with a nonzero count (keyword or fourth positional) is not accepted, since it leaves later line breaks; only an absent count or count=0 sanitizes. A chained replace of only \r is accepted as a sanitizer on purpose (precision over recall). Python has no
   replaceAll; use str.replace or re.sub. A replace that targets other
   characters, html.escape and markupsafe.escape do not strip CR or LF and are
   still reported. A value copied into a variable first, or a logger
@@ -67,6 +67,19 @@ rule:
                         has:
                           nthChild: 1
                           regex: '\\[rns]|\\x0[adAD]|\\u000[adAD]'
+                    - not:
+                        has:
+                          field: arguments
+                          kind: argument_list
+                          has:
+                            any:
+                              - kind: keyword_argument
+                                all:
+                                  - has: {field: name, regex: '^count$'}
+                                  - has: {field: value, not: {regex: '^0$'}}
+                              - nthChild: 4
+                                not: {kind: keyword_argument}
+                                regex: '^[^0]|^0.'
                 - all:
                     - has:
                         field: function
