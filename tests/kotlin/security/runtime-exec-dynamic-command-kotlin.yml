@@ -15,7 +15,15 @@ valid:
         Runtime.getRuntime().gc()
         other.exec("ls " + cmd)
     }
+  - |
+    fun run() {
+        Runtime.getRuntime().exec("a" + "b" + "c")
+    }
 invalid:
+  - |
+    fun run(a: String, b: String) {
+        Runtime.getRuntime().exec("sh -c " + a + b)
+    }
   - |
     fun run(name: String) {
         Runtime.getRuntime().exec("ls $name")

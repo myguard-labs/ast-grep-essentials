@@ -10,7 +10,7 @@ message: >-
   argument array, and validate each argument against an allow-list.
 note: >-
   Matches Runtime.getRuntime().exec whose first argument is a string template
-  with an interpolation or an additive expression containing a string literal.
+  with an interpolation or an additive expression, however long the chain, that mixes a string literal with a non-literal operand.
   A bare variable is not matched because it can be a String or a String array.
   Runtime may be written java.lang.Runtime. A Runtime held in a local variable
   is not resolved.
@@ -33,7 +33,14 @@ constraints:
               - kind: interpolated_expression
               - kind: interpolated_identifier
         - kind: additive_expression
-          has: {kind: string_literal}
+          all:
+            - has: {kind: string_literal, stopBy: end}
+            - has:
+                stopBy: end
+                any:
+                  - kind: simple_identifier
+                  - kind: interpolated_identifier
+                  - kind: interpolated_expression
 metadata:
   rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.45.2
