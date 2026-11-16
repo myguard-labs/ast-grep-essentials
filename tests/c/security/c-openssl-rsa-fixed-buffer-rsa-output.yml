@@ -7,6 +7,7 @@ valid:
   - 'void f(void) { unsigned char *out = OPENSSL_malloc(RSA_size(rsa)); RSA_private_decrypt(n, buf, out, rsa, p); }'
   - 'void f(void) { unsigned char *out; out = malloc(RSA_size(rsa)); RSA_public_encrypt(n, buf, out, rsa, p); }'
 invalid:
+  - 'void f(void) { unsigned char out[256]; memset(out, 0, RSA_size(rsa)); RSA_private_decrypt(n, buf, out, rsa, p); }'
   - >-
     unsigned char decoded[256]; RSA_private_decrypt(n, buf, decoded, rsa,
     RSA_PKCS1_PADDING);

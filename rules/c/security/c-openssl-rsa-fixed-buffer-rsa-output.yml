@@ -8,8 +8,8 @@ message: >-
   literal array size.
 note: >-
   Syntactic only; it flags RSA public/private encrypt/decrypt calls and cannot
-  verify the output buffer's declared size. A preceding declaration or
-  assignment that sizes the output argument from RSA_size suppresses the match.
+  verify the output buffer's declared size. A preceding initialised declaration or
+  assignment whose value calls RSA_size for the output argument suppresses the match.
 rule:
   pattern: $FN($FLEN, $FROM, $OUT, $$$REST)
   not:
@@ -19,17 +19,38 @@ rule:
         stopBy: end
         any:
           - kind: declaration
+            has:
+              stopBy: end
+              kind: init_declarator
+              all:
+                - has:
+                    field: declarator
+                    has:
+                      stopBy: end
+                      pattern: $OUT
+                - has:
+                    field: value
+                    has:
+                      stopBy: end
+                      kind: call_expression
+                      has:
+                        field: function
+                        regex: '^RSA_size$'
           - kind: expression_statement
-        all:
-          - has:
-              stopBy: end
-              kind: call_expression
-              has:
-                field: function
-                regex: '^RSA_size$'
-          - has:
-              stopBy: end
-              pattern: $OUT
+            has:
+              kind: assignment_expression
+              all:
+                - has:
+                    field: left
+                    pattern: $OUT
+                - has:
+                    field: right
+                    has:
+                      stopBy: end
+                      kind: call_expression
+                      has:
+                        field: function
+                        regex: '^RSA_size$'
 constraints:
   FN:
     regex: '^RSA_(public|private)_(encrypt|decrypt)$'
