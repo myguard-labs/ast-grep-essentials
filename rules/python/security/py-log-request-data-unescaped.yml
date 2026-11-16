@@ -60,13 +60,26 @@ rule:
                 - all:
                     - has:
                         field: function
-                        regex: '(^|\.)(replace|sub|subn)$'
+                        regex: '(^|\.)(sub|subn)$'
                     - has:
                         field: arguments
                         kind: argument_list
                         has:
                           nthChild: 1
                           regex: '\\[rns]|\\x0[adAD]|\\u000[adAD]'
+                - all:
+                    - has:
+                        field: function
+                        regex: '(^|\.)replace$'
+                    - has:
+                        field: arguments
+                        kind: argument_list
+                        has:
+                          nthChild: 1
+                          all:
+                            - not:
+                                regex: '^[bBuU]?[rR]'
+                            - regex: '(^|[^\\])(\\\\)*\\([rn]|x0[adAD]|u000[adAD])'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'
