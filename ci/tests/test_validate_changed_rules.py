@@ -870,6 +870,8 @@ class GlobalUtilTests(unittest.TestCase):
                 "rule:\n  matches_extra: py-clean\n": False,  # other key
                 'rule:\n  note: "matches py-clean"\n': False,  # word in a string
                 "rule:\n  matches: py-clean-extra\n": False,  # longer id
+                "rule: {all: [matches: py-clean]}\n": True,  # flow sequence pair
+                "rule: {any: [{matches: py-clean}, matches: other]}\n": True,
             }
             with patch.dict(sys.modules, {"yaml": None}):
                 for text, expected in cases.items():

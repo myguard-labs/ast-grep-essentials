@@ -474,7 +474,7 @@ def _references(path: Path, ids: set[str]) -> bool:
     for util_id in ids:
         quoted = re.escape(util_id)
         if re.search(
-            rf"(?:^|[\s{{,])['\"]?matches['\"]?[ \t]*:[ \t]*['\"]?{quoted}['\"]?(?![\w.-])",
+            rf"(?:^|[\s{{,\[])['\"]?matches['\"]?[ \t]*:[ \t]*['\"]?{quoted}['\"]?(?![\w.-])",
             text,
             re.MULTILINE,
         ):
