@@ -23,6 +23,9 @@ valid:
     val e = Cipher.getInstance("AES/GCM/$pad")
     val f = Cipher.getInstance("AES" + mode)
     val g = Cipher.getInstance(transformation = "AES/GCM/NoPadding")
+  - |
+    val c = Cipher.getInstance("""AES/GCM/NoPadding""")
+    val d = Cipher.getInstance("AES" + "/GCM/" + pad)
 invalid:
   - |
     val c = Cipher.getInstance("aes")
@@ -65,3 +68,9 @@ invalid:
     )
   - |
     val c = javax.crypto.Cipher.getInstance(/* c */ transformation = "DES")
+  - |
+    val c = Cipher.getInstance("""AES/ECB/NoPadding""")
+  - |
+    val c = Cipher.getInstance("""AES""")
+  - |
+    val c = Cipher.getInstance("AES" + "/ECB/" + pad)

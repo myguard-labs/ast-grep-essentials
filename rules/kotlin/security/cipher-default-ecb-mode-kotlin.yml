@@ -10,7 +10,7 @@ message: >-
   "AES/GCM/NoPadding".
 note: >-
   Matches Cipher.getInstance with a literal block-cipher name that has no mode,
-  or the same name with an explicit ECB mode, including an ECB padding built
+  or the same name with an explicit ECB mode, including a triple-quoted raw string, an ECB padding built
   with a string template or a concatenation, a comment before the argument and a
   named argument. Receivers other than Cipher or javax.crypto.Cipher are not
   resolved. Known misses: a bare algorithm name concatenated with a variable
@@ -37,7 +37,7 @@ rule:
             has:
               any:
                 - kind: string_literal
-                  regex: '(?si)^"(AES|AES_128|AES_192|AES_256|DES|DESede|TripleDES|Blowfish|RC2|Camellia|SEED|ARIA)(/ECB/.*)?"$'
+                  regex: '(?si)^("|""")(AES|AES_128|AES_192|AES_256|DES|DESede|TripleDES|Blowfish|RC2|Camellia|SEED|ARIA)(/ECB/.*)?("|""")$'
                 - kind: additive_expression
                   regex: '(?si)^"(AES|AES_128|AES_192|AES_256|DES|DESede|TripleDES|Blowfish|RC2|Camellia|SEED|ARIA)"\s*\+\s*"/ECB/[^"]*"|^"(AES|AES_128|AES_192|AES_256|DES|DESede|TripleDES|Blowfish|RC2|Camellia|SEED|ARIA)/ECB/[^"]*"\s*\+'
 metadata:
