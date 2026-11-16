@@ -25,6 +25,12 @@ valid:
             s.TypeNameHandling = TypeNameHandling.None | TypeNameHandling.None;
         }
     }
+  - |
+    class Example {
+        void Configure(JsonSerializerSettings s) {
+            s.TypeNameHandling = s.TypeNameHandling & ~TypeNameHandling.Auto;
+        }
+    }
 invalid:
   - |
     class Example {
@@ -61,5 +67,11 @@ invalid:
     class Example {
         void Run(string x) {
             var s = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+        }
+    }
+  - |
+    class Example {
+        void Configure(JsonSerializerSettings s) {
+            s.TypeNameHandling = (TypeNameHandling.None | TypeNameHandling.Auto);
         }
     }
