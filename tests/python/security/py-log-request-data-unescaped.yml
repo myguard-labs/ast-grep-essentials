@@ -1,0 +1,26 @@
+id: py-log-request-data-unescaped
+valid:
+  - |
+    logger.info("user %s", request.args.get("user").replace("\n", " "))
+  - |
+    logging.warning("name %r", repr(request.form["name"]))
+  - |
+    logger.info("count %d", int(request.args["n"]))
+  - |
+    logger.info("login ok for %s", username)
+  - |
+    other.info("user %s", request.args.get("user"))
+  - |
+    # logger.info("user %s", request.args.get("user"))
+    note = 'logger.info("x", request.form["x"])'
+  - |
+    logger.info("path %s", request.path)
+invalid:
+  - |
+    logger.info("user %s", request.args.get("user"))
+  - |
+    logging.warning("name: " + request.form["name"])
+  - |
+    app.logger.error(f"bad agent {request.headers['User-Agent']}")
+  - |
+    log.debug("body %s", request.POST["q"])

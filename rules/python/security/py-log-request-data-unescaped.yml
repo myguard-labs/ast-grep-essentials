@@ -1,0 +1,59 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-log-request-data-unescaped
+language: python
+severity: warning
+message: >-
+  Request data is passed to a logging call without escaping. A caller who sends
+  carriage-return or line-feed characters in the value can forge extra log
+  lines and hide their own activity. Escape or reject CR and LF in the value
+  before logging it, or log it with repr or a JSON encoder.
+note: >-
+  Fires on a debug, info, warning, warn, error, critical or exception call on
+  logging, logger, log, LOG, LOGGER, app.logger or current_app.logger whose
+  arguments, including f-string interpolations, read request.args,
+  request.form, request.values, request.headers, request.cookies, request.data,
+  request.json (Flask) or request.GET, request.POST, request.META,
+  request.COOKIES, request.body (Django). A call that also applies replace,
+  escape, quote, repr, dumps, sanitize, int, len, bool or float anywhere in its
+  arguments is not matched. A value copied into a variable first, or a logger
+  held under another name, is not seen. A log sink that already escapes line
+  breaks is the routine dismissal.
+
+  [CWE-117] [A09:2025] [A09:2021]
+
+  [REFERENCES]
+      - https://owasp.org/www-community/attacks/Log_Injection
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        kind: attribute
+        regex: '^(logging|logger|log|LOG|LOGGER|app\.logger|current_app\.logger)\.(debug|info|warning|warn|error|critical|exception)$'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          stopBy: end
+          kind: attribute
+          regex: '^request\.(args|form|values|headers|cookies|data|json|GET|POST|META|COOKIES|body)$'
+    - not:
+        has:
+          field: arguments
+          kind: argument_list
+          has:
+            stopBy: end
+            kind: call
+            has:
+              field: function
+              regex: '(^|\.)(replace|escape|quote|quote_plus|repr|dumps|sanitize\w*|int|len|bool|float)$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-117'
+  owasp: 'A09:2025|A09:2021'
+  category: 'security'
+  references: 'https://owasp.org/www-community/attacks/Log_Injection'
