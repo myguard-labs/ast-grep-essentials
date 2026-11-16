@@ -434,6 +434,49 @@ snapshots:
       style: secondary
       start: 48
       end: 81
+  "object A {\n  def bad(in: java.io.InputStream) = {\n    val o = new ObjectInputStream(in)\n    def run(n: Int = o.hashCode, t: List[o.type] = Nil) = o.readObject()\n    run()\n  }\n}\n":
+    labels:
+    - source: o.readObject()
+      style: primary
+      start: 146
+      end: 160
+    - source: readObject
+      style: secondary
+      start: 148
+      end: 158
+    - source: o
+      style: secondary
+      start: 146
+      end: 147
+    - source: o.readObject
+      style: secondary
+      start: 146
+      end: 158
+    - source: o
+      style: secondary
+      start: 58
+      end: 59
+    - source: ObjectInputStream
+      style: secondary
+      start: 66
+      end: 83
+    - source: new ObjectInputStream(in)
+      style: secondary
+      start: 62
+      end: 87
+    - source: val o = new ObjectInputStream(in)
+      style: secondary
+      start: 54
+      end: 87
+    - source: |-
+        {
+            val o = new ObjectInputStream(in)
+            def run(n: Int = o.hashCode, t: List[o.type] = Nil) = o.readObject()
+            run()
+          }
+      style: secondary
+      start: 48
+      end: 174
   "object A {\n  def bad(in: java.io.InputStream) = {\n    val s = new ObjectInputStream(in)\n    if (in != null) {\n      s.readObject()\n    } else null\n  }\n}\n":
     labels:
     - source: s.readObject()
@@ -612,6 +655,62 @@ snapshots:
       style: secondary
       start: 57
       end: 172
+  "object A {\n  def bad(in: java.io.InputStream, o2: Json) =\n    Using(new ObjectInputStream(in)) { o => { val other = o2.reader(); o.readObject() } }\n}\n":
+    labels:
+    - source: o.readObject()
+      style: primary
+      start: 129
+      end: 143
+    - source: readObject
+      style: secondary
+      start: 131
+      end: 141
+    - source: o
+      style: secondary
+      start: 129
+      end: 130
+    - source: o.readObject
+      style: secondary
+      start: 129
+      end: 141
+    - source: o
+      style: secondary
+      start: 97
+      end: 98
+    - source: Using
+      style: secondary
+      start: 62
+      end: 67
+    - source: ObjectInputStream
+      style: secondary
+      start: 72
+      end: 89
+    - source: new ObjectInputStream(in)
+      style: secondary
+      start: 68
+      end: 93
+    - source: new ObjectInputStream(in)
+      style: secondary
+      start: 68
+      end: 93
+    - source: Using(new ObjectInputStream(in))
+      style: secondary
+      start: 62
+      end: 94
+    - source: >-
+        Using(new ObjectInputStream(in)) { o => { val other = o2.reader();
+        o.readObject() } }
+      style: secondary
+      start: 62
+      end: 147
+    - source: "{ o => { val other = o2.reader(); o.readObject() } }"
+      style: secondary
+      start: 95
+      end: 147
+    - source: o => { val other = o2.reader(); o.readObject() }
+      style: secondary
+      start: 97
+      end: 145
   "object A {\n  def bad(p: String) = {\n    val stream = new java.io.ObjectInputStream(new FileInputStream(p))\n    try { stream.readObject() } finally stream.close()\n  }\n}\n":
     labels:
     - source: stream.readObject()

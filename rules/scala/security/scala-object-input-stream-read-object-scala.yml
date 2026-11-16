@@ -23,11 +23,134 @@ note: >-
   reported. A fully qualified or `_root_` qualified
   `java.io.ObjectInputStream` is reported like the short name; an alias
   import such as `import java.io.{ObjectInputStream => Stream}` is a known miss. A `var`, a pattern binding or a class member
-  receiver is not tracked, and a `def` parameter or lambda parameter of the same name hides an
-  outer val.
+  receiver is not a source. Between the source and the call, a val or var in a
+  nested block, a `def` parameter (not its default value), a lambda parameter
+  or a case pattern of the same name hides the source, for the val and the
+  `Using` form alike; a binding that comes after the call in the same block is
+  a known miss.
   The rule cannot tell whether the stream carries untrusted bytes, so review
   each hit for the data source.
 utils:
+  # A block with a val bound to a plain ObjectInputStream, named like $STREAM.
+  val-source:
+    kind: block
+    has:
+      kind: val_definition
+      all:
+        - has:
+            field: pattern
+            kind: identifier
+            pattern: $STREAM
+        - has:
+            field: value
+            matches: plain-ois-instance
+  # The single-parameter lambda of Using(new ObjectInputStream(...)) { ... },
+  # Using.resource and scala.util.Using, with the parameter named like $STREAM.
+  using-source:
+    kind: lambda_expression
+    all:
+      - has:
+          field: parameters
+          any:
+            - kind: identifier
+              pattern: $STREAM
+            - kind: bindings
+              all:
+                - has:
+                    kind: binding
+                    has:
+                      field: name
+                      kind: identifier
+                      pattern: $STREAM
+                - not:
+                    has:
+                      kind: binding
+                      nthChild:
+                        position: 2
+                        ofRule:
+                          kind: binding
+      - inside:
+          any:
+            - kind: block
+            - kind: arguments
+          inside:
+            field: arguments
+            kind: call_expression
+            has:
+              field: function
+              kind: call_expression
+              all:
+                - has:
+                    field: function
+                    any:
+                      - kind: identifier
+                        regex: ^Using$
+                      - kind: field_expression
+                        regex: ^((_root_\.)?scala\.util\.)?Using(\.(resource|apply))?$
+                - has:
+                    field: arguments
+                    has:
+                      nthChild:
+                        position: 1
+                        ofRule:
+                          not:
+                            any:
+                              - kind: comment
+                              - kind: block_comment
+                      matches: plain-ois-instance
+  # Nodes that bind the name captured as $STREAM again, shared by both source
+  # kinds. A hit is dropped when such a node sits between the use and its
+  # source: strictly inside the source and an ancestor of the use. The name
+  # cannot go in a stopBy: ast-grep matches a stopBy rule with a fresh
+  # metavariable environment, so $STREAM there matches any identifier; a
+  # `not: inside` keeps the environment. Scope boundaries (tree-sitter-scala):
+  # block: a direct val/var child whose `pattern` field is the name;
+  # function_definition: a `parameter` whose `name` field is the name (the
+  # default_value and type fields are not inspected); lambda_expression: an
+  # identifier parameter or a `binding` named like it; case_clause: the name
+  # anywhere in the `pattern` field. A binding after the use in the same block,
+  # a class parameter and a for generator are known misses.
+  scope-rebinds-stream:
+    any:
+      - kind: block
+        has:
+          any:
+            - kind: val_definition
+            - kind: var_definition
+          has:
+            field: pattern
+            kind: identifier
+            pattern: $STREAM
+      - kind: function_definition
+        has:
+          field: parameters
+          kind: parameters
+          has:
+            kind: parameter
+            has:
+              field: name
+              kind: identifier
+              pattern: $STREAM
+      - kind: lambda_expression
+        has:
+          field: parameters
+          any:
+            - kind: identifier
+              pattern: $STREAM
+            - kind: bindings
+              has:
+                kind: binding
+                has:
+                  field: name
+                  kind: identifier
+                  pattern: $STREAM
+      - kind: case_clause
+        has:
+          field: pattern
+          has:
+            stopBy: end
+            kind: identifier
+            pattern: $STREAM
   plain-ois-instance:
     kind: instance_expression
     all:
@@ -69,113 +192,28 @@ rule:
             has:
               field: value
               matches: plain-ois-instance
-        - inside:
-            stopBy:
-              any:
-                - kind: block
-                  has:
-                    kind: val_definition
-                    has:
-                      field: pattern
-                      kind: identifier
-                      pattern: $STREAM
-                - kind: function_definition
-                  has:
-                    field: parameters
-                    has:
-                      stopBy: end
-                      kind: identifier
-                      pattern: $STREAM
-                - kind: lambda_expression
-                  has:
-                    field: parameters
-                    any:
-                      - kind: identifier
-                        pattern: $STREAM
-                      - kind: bindings
-                        has:
-                          kind: binding
-                          has:
-                            field: name
-                            kind: identifier
-                            pattern: $STREAM
-            kind: block
-            has:
-              kind: val_definition
-              all:
-                - has:
-                    field: pattern
-                    kind: identifier
-                    pattern: $STREAM
-                - has:
-                    field: value
-                    matches: plain-ois-instance
-        - inside:
-            stopBy:
-              kind: lambda_expression
-              has:
-                field: parameters
-                any:
-                  - kind: identifier
-                    pattern: $STREAM
-                  - kind: bindings
-                    has:
-                      kind: binding
-                      has:
-                        field: name
-                        kind: identifier
-                        pattern: $STREAM
-            kind: lambda_expression
-            all:
-              - has:
-                  field: parameters
-                  any:
-                    - kind: identifier
-                      pattern: $STREAM
-                    - kind: bindings
-                      all:
-                        - has:
-                            kind: binding
-                            has:
-                              field: name
-                              kind: identifier
-                              pattern: $STREAM
-                        - not:
-                            has:
-                              kind: binding
-                              nthChild:
-                                position: 2
-                                ofRule:
-                                  kind: binding
-              - inside:
-                  any:
-                    - kind: block
-                    - kind: arguments
+        - all:
+            - inside:
+                stopBy: end
+                matches: val-source
+            - not:
+                inside:
+                  stopBy: end
+                  matches: scope-rebinds-stream
                   inside:
-                    field: arguments
-                    kind: call_expression
-                    has:
-                      field: function
-                      kind: call_expression
-                      all:
-                        - has:
-                            field: function
-                            any:
-                              - kind: identifier
-                                regex: ^Using$
-                              - kind: field_expression
-                                regex: ^((_root_\.)?scala\.util\.)?Using(\.(resource|apply))?$
-                        - has:
-                            field: arguments
-                            has:
-                              nthChild:
-                                position: 1
-                                ofRule:
-                                  not:
-                                    any:
-                                      - kind: comment
-                                      - kind: block_comment
-                              matches: plain-ois-instance
+                    stopBy: end
+                    matches: val-source
+        - all:
+            - inside:
+                stopBy: end
+                matches: using-source
+            - not:
+                inside:
+                  stopBy: end
+                  matches: scope-rebinds-stream
+                  inside:
+                    stopBy: end
+                    matches: using-source
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'

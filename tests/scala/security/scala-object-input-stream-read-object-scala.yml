@@ -92,6 +92,37 @@ valid:
       def ok(in: java.io.InputStream, items: List[Int]) =
         Using(new ObjectInputStream(in)) { o => items.map(o => o.readObject()) }
     }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, json: Json) =
+        Using(new ObjectInputStream(in)) { o => { val o = json.reader(); o.readObject() } }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream) =
+        Using(new ObjectInputStream(in)) { o => def other(o: Json) = o.readObject(); other(null) }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, y: Option[Json]) =
+        Using(new ObjectInputStream(in)) { o => y match { case Some(o) => o.readObject() } }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, y: Option[Json]) = {
+        val o = new ObjectInputStream(in)
+        y match { case Some(o) => o.readObject() }
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, json: Json) = {
+        val o = new ObjectInputStream(in)
+        var other = 1
+        def run(n: Int, o: Json) = o.readObject()
+        run(1, null)
+      }
+    }
 invalid:
   - |
     object A {
@@ -168,4 +199,17 @@ invalid:
     object A {
       def bad(in: java.io.InputStream) =
         Using(new ObjectInputStream(in)) { (o: ObjectInputStream) => o.readObject() }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream, o2: Json) =
+        Using(new ObjectInputStream(in)) { o => { val other = o2.reader(); o.readObject() } }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) = {
+        val o = new ObjectInputStream(in)
+        def run(n: Int = o.hashCode, t: List[o.type] = Nil) = o.readObject()
+        run()
+      }
     }
