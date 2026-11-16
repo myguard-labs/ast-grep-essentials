@@ -9,7 +9,7 @@ message: >-
 note: >-
   Fires on VALUE.html_safe and raw(VALUE) where VALUE is not a plain string
   literal and is not itself a call to sanitize, html_escape, escapeHTML,
-  escape_once, h or strip_tags. Literal strings, escaped values and a raw call with no
+  escape_once or h. strip_tags removes tags but does not escape, so it is not exempt. Literal strings, escaped values and a raw call with no
   argument are not matched. Content that is built from trusted constants is the
   routine dismissal.
 rule:
@@ -43,7 +43,7 @@ rule:
                   - kind: call
                     has:
                       field: method
-                      regex: '^(sanitize|html_escape|escapeHTML|escape_once|h|strip_tags)$'
+                      regex: '^(sanitize|html_escape|escapeHTML|escape_once|h)$'
 constraints:
   VALUE:
     not:
@@ -55,7 +55,7 @@ constraints:
         - kind: call
           has:
             field: method
-            regex: '^(sanitize|html_escape|escapeHTML|escape_once|h|strip_tags)$'
+            regex: '^(sanitize|html_escape|escapeHTML|escape_once|h)$'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'
