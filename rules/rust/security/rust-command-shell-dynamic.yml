@@ -19,7 +19,8 @@ note: >-
   X is not a string literal (an identifier, a format! call, a concatenation).
   A literal command string is not reported. Other calls between new and arg, a
   shell chosen through a variable, a path to another shell and an alias import
-  of Command are not resolved.
+  of Command are not resolved. Known misses: .args(["-c", cmd, "argv0"]) with
+  three elements, .args(vec!["-c", cmd]) and "-c" passed through a variable.
 utils:
   shell-new:
     regex: '(?s)^(?:(?:std::)?process::)?Command::new\(\s*"(?:sh|bash|/bin/sh|/bin/bash)"\s*\)$'
@@ -34,7 +35,9 @@ constraints:
     matches: shell-new
   C:
     not:
-      kind: string_literal
+      any:
+        - kind: string_literal
+        - kind: raw_string_literal
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'

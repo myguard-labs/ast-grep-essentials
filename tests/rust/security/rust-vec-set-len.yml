@@ -17,6 +17,13 @@ valid:
     fn f(v: &mut Vec<u8>) {
         unsafe { v.set_capacity(10); }
     }
+  - |-
+    unsafe fn f(v: &mut Vec<u8>) {
+        fn inner(v: &mut Vec<u8>) {
+            v.set_len(4);
+        }
+        inner(v);
+    }
 invalid:
   - |-
     fn f(v: &mut Vec<u8>, n: usize) {
@@ -32,4 +39,9 @@ invalid:
   - |-
     unsafe fn f(v: &mut Vec<u8>) {
         v.set_len(16);
+    }
+  - |-
+    unsafe fn f(v: &mut Vec<u8>) {
+        let g = || v.set_len(4);
+        g();
     }
