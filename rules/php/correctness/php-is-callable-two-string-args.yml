@@ -11,14 +11,33 @@ note: >-
   arguments are both string literals; it does not resolve classes, methods, or
   runtime values.
 rule:
-  pattern: 'is_callable($C, $D)'
   kind: function_call_expression
-  has:
-    field: arguments
-    kind: arguments
-    has:
-      kind: argument
-      pattern: '$C'
+  all:
+    - has:
+        field: function
+        regex: '^is_callable$'
+    - has:
+        field: arguments
+        kind: arguments
+        all:
+          - has:
+              kind: argument
+              nthChild: 1
+              has:
+                any:
+                  - kind: string
+                  - kind: encapsed_string
+          - has:
+              kind: argument
+              nthChild: 2
+              has:
+                any:
+                  - kind: string
+                  - kind: encapsed_string
+          - not:
+              has:
+                kind: argument
+                nthChild: 3
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0

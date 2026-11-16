@@ -24,6 +24,25 @@ rule:
           has:
             pattern: 'global $post'
             stopBy: end
+    - not:
+        inside:
+          kind: function_definition
+          stopBy: end
+          has:
+            kind: formal_parameters
+            has:
+              pattern: '$post'
+              stopBy: end
+    - not:
+        inside:
+          kind: function_definition
+          stopBy: end
+          has:
+            kind: assignment_expression
+            stopBy: end
+            has:
+              field: left
+              pattern: '$post'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
