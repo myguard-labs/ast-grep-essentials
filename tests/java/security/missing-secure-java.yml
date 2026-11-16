@@ -19,6 +19,34 @@ valid:
         SimpleCookie s = new SimpleCookie("foo", "bar").secure();
       }
     }
+  - |
+    package com.example;
+
+    import io.micronaut.http.*;
+    import static io.micronaut.http.simple.cookies.SimpleCookie.*;
+
+    @Controller("/hello")
+    public class HelloController {
+
+      @Post("/test1")
+      public MutableHttpMessage<Object> postTest1() {
+        SimpleCookie s = new SimpleCookie("foo", "bar");
+      }
+    }
+  - |
+    package com.example;
+
+    import io.micronaut.http.*;
+    import static io.micronaut.http.cookie.Cookie.*;
+
+    @Controller("/hello")
+    public class HelloController {
+
+      @Post("/test1")
+      public MutableHttpMessage<Object> postTest1() {
+        Cookie c = Cookie.of("foo", "bar");
+      }
+    }
 invalid:
   - |
     package com.example;
