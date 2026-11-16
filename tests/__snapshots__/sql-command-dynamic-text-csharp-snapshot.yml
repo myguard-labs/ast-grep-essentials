@@ -1,7 +1,12 @@
 id: sql-command-dynamic-text-csharp
 snapshots:
-  "class Example {\n    void Query(NpgsqlConnection conn, string name) {\n        var cmd = new NpgsqlCommand(string.Format(\"SELECT * FROM t WHERE n = '{0}'\", name), conn);\n    }\n}\n":
-    labels:
+  ? |
+    class Example {
+        void Query(NpgsqlConnection conn, string name) {
+            var cmd = new NpgsqlCommand(string.Format("SELECT * FROM t WHERE n = '{0}'", name), conn);
+        }
+    }
+  : labels:
     - source: new NpgsqlCommand(string.Format("SELECT * FROM t WHERE n = '{0}'", name), conn)
       style: primary
       start: 87
@@ -26,8 +31,13 @@ snapshots:
       style: secondary
       start: 104
       end: 166
-  "class Example {\n    void Query(SqlCommand cmd, string name) {\n        cmd.CommandText = \"DELETE FROM t WHERE n = \" + name;\n    }\n}\n":
-    labels:
+  ? |
+    class Example {
+        void Query(SqlCommand cmd, string name) {
+            cmd.CommandText = "DELETE FROM t WHERE n = " + name;
+        }
+    }
+  : labels:
     - source: cmd.CommandText = "DELETE FROM t WHERE n = " + name
       style: primary
       start: 70
@@ -44,12 +54,17 @@ snapshots:
       style: secondary
       start: 117
       end: 121
-    - source: "\"DELETE FROM t WHERE n = \" + name"
+    - source: '"DELETE FROM t WHERE n = " + name'
       style: secondary
       start: 88
       end: 121
-  "class Example {\n    void Query(SqlConnection conn, int id) {\n        var cmd = new SqlCommand($\"SELECT * FROM t WHERE id = {id}\", conn);\n    }\n}\n":
-    labels:
+  ? |
+    class Example {
+        void Query(SqlConnection conn, int id) {
+            var cmd = new SqlCommand($"SELECT * FROM t WHERE id = {id}", conn);
+        }
+    }
+  : labels:
     - source: new SqlCommand($"SELECT * FROM t WHERE id = {id}", conn)
       style: primary
       start: 79
@@ -58,7 +73,7 @@ snapshots:
       style: secondary
       start: 83
       end: 93
-    - source: "{id}"
+    - source: '{id}'
       style: secondary
       start: 123
       end: 127
@@ -74,8 +89,13 @@ snapshots:
       style: secondary
       start: 93
       end: 135
-  "class Example {\n    void Query(SqlConnection conn, string name) {\n        var cmd = new SqlCommand(\"SELECT * FROM t WHERE n = '\" + name + \"'\", conn);\n    }\n}\n":
-    labels:
+  ? |
+    class Example {
+        void Query(SqlConnection conn, string name) {
+            var cmd = new SqlCommand("SELECT * FROM t WHERE n = '" + name + "'", conn);
+        }
+    }
+  : labels:
     - source: new SqlCommand("SELECT * FROM t WHERE n = '" + name + "'", conn)
       style: primary
       start: 84
@@ -92,11 +112,11 @@ snapshots:
       style: secondary
       start: 131
       end: 135
-    - source: "\"SELECT * FROM t WHERE n = '\" + name + \"'\""
+    - source: '"SELECT * FROM t WHERE n = ''" + name + "''"'
       style: secondary
       start: 99
       end: 141
-    - source: "\"SELECT * FROM t WHERE n = '\" + name + \"'\""
+    - source: '"SELECT * FROM t WHERE n = ''" + name + "''"'
       style: secondary
       start: 99
       end: 141
@@ -104,3 +124,38 @@ snapshots:
       style: secondary
       start: 98
       end: 148
+  ? |
+    class Example {
+        void Run(string x) {
+            var cmd = new SqlCommand(/* q */ "SELECT * FROM t WHERE a = '" + x + "'");
+        }
+    }
+  : labels:
+    - source: new SqlCommand(/* q */ "SELECT * FROM t WHERE a = '" + x + "'")
+      style: primary
+      start: 59
+      end: 122
+    - source: SqlCommand
+      style: secondary
+      start: 63
+      end: 73
+    - source: +
+      style: secondary
+      start: 116
+      end: 117
+    - source: x
+      style: secondary
+      start: 114
+      end: 115
+    - source: '"SELECT * FROM t WHERE a = ''" + x + "''"'
+      style: secondary
+      start: 82
+      end: 121
+    - source: '"SELECT * FROM t WHERE a = ''" + x + "''"'
+      style: secondary
+      start: 82
+      end: 121
+    - source: (/* q */ "SELECT * FROM t WHERE a = '" + x + "'")
+      style: secondary
+      start: 73
+      end: 122
