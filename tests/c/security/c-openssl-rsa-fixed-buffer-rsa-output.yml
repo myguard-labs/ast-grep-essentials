@@ -4,10 +4,14 @@ valid:
   - 'void f(void) { RSA_size(rsa); }'
   - 'void f(void) { EVP_PKEY_decrypt(ctx, out, &outlen, in, inlen); }'
   - 'void f(void) { my_RSA_private_decrypt(n, buf, out, rsa, p); }'
+  - 'void f(void) { unsigned char *out = OPENSSL_malloc(RSA_size(rsa)); RSA_private_decrypt(n, buf, out, rsa, p); }'
+  - 'void f(void) { unsigned char *out; out = malloc(RSA_size(rsa)); RSA_public_encrypt(n, buf, out, rsa, p); }'
 invalid:
+  - 'void f(void) { unsigned char out[256]; memset(out, 0, RSA_size(rsa)); RSA_private_decrypt(n, buf, out, rsa, p); }'
   - >-
     unsigned char decoded[256]; RSA_private_decrypt(n, buf, decoded, rsa,
     RSA_PKCS1_PADDING);
   - 'void f(void) { RSA_public_encrypt(n, buf, out, rsa, RSA_PKCS1_OAEP_PADDING); }'
   - 'void f(void) { int r = RSA_private_decrypt(n, buf, out, rsa, p); }'
   - 'void f(void) { if (RSA_public_encrypt(n, buf, out, rsa, p) < 0) {} }'
+  - 'void f(void) { unsigned char *out = OPENSSL_malloc(RSA_size(rsa)); unsigned char *o2; RSA_private_decrypt(n, buf, o2, rsa, p); }'

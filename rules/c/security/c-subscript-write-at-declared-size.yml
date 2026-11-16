@@ -10,9 +10,27 @@ note: >-
   Syntactic single-file check only. It matches a literal array name and
   literal index written as an assignment target; it does not verify the
   declaration size, scope, aliasing, or whether the index is reachable at
-  runtime.
+  runtime. A preceding same-name array declaration with a decimal literal size
+  greater than 8 suppresses the match. Scopes are not resolved, so an outer
+  larger array can suppress a shadowing local array of size 8.
 rule:
   pattern: '$BUF[8] = $VAL'
+  not:
+    inside:
+      stopBy: end
+      follows:
+        stopBy: end
+        kind: declaration
+        has:
+          stopBy: end
+          kind: array_declarator
+          all:
+            - has:
+                field: declarator
+                pattern: $BUF
+            - has:
+                field: size
+                regex: '^(9|[1-9][0-9]+)$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0

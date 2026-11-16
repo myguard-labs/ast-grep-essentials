@@ -8,7 +8,8 @@ message: >-
   loop condition does not mention that counter.
 note: >-
   Syntactic only; does not verify the array is fixed-size, nor detect bounds
-  checks elsewhere in the body.
+  checks elsewhere in the body. An if statement in the body whose condition
+  relationally (<, <=, >, >=) compares the counter itself, against anything other than a literal 0 or negative constant (a lower-bound check), suppresses the match.
 rule:
   kind: while_statement
   all:
@@ -28,6 +29,42 @@ rule:
           has:
             pattern: '$N'
             stopBy: end
+    - not:
+        has:
+          field: body
+          has:
+            stopBy: end
+            kind: if_statement
+            has:
+              field: condition
+              has:
+                stopBy: end
+                kind: binary_expression
+                all:
+                  - has:
+                      field: operator
+                      regex: '^(<|<=|>|>=)$'
+                  - any:
+                      - has:
+                          field: left
+                          pattern: '$N'
+                      - has:
+                          field: right
+                          pattern: '$N'
+                  - not:
+                      has:
+                        field: left
+                        any:
+                          - regex: '^0+$'
+                          - kind: unary_expression
+                            regex: '^-'
+                  - not:
+                      has:
+                        field: right
+                        any:
+                          - regex: '^0+$'
+                          - kind: unary_expression
+                            regex: '^-'
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
