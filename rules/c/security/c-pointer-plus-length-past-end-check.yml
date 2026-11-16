@@ -2,21 +2,18 @@
 
 id: c-pointer-plus-length-past-end-check
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  Pointer offset compared against an end pointer; compare the length against
-  the remaining span instead.
+  Deprecated rule ID; use c-additive-bounds-check-overflow. A pointer offset
+  is added before the comparison against an end pointer, so the sum can wrap.
 note: >-
-  Single-file syntactic match on a literal binary '+' inside a '>' comparison
-  with a bare identifier end pointer. It does not verify pointer types,
-  aliasing, or that the offset expression is an integer; it may miss other
-  forms and may flag non-pointer arithmetic.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-additive-bounds-check-overflow and do not emit this rule.
 rule:
-  pattern: '$P + $N > $END'
+  pattern: '$A + $B > $LEN'
 metadata:
-  rule_modified_at: '2026-10-15'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-15'
+  deprecated_alias_of: c-additive-bounds-check-overflow
+  rule_modified_at: '2026-11-16'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard

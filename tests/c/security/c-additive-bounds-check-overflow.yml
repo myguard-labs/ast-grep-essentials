@@ -3,7 +3,19 @@ valid:
   - >-
     void f(size_t offset, size_t count, size_t len) { if (offset > len - count)
     { return; } }
+  - |-
+    int f(unsigned char *data, unsigned char *dataend) {
+        if (2 > dataend - data)
+            return 0;
+        return 1;
+    }
 invalid:
   - >-
     void f(size_t offset, size_t count, size_t len) { if (offset + count > len)
     { return; } }
+  - |-
+    int f(unsigned char *data, unsigned char *dataend) {
+        if (data + 2 > dataend)
+            return 0;
+        return 1;
+    }
