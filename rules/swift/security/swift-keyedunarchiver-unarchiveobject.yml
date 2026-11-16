@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: swift-keyedunarchiver-unarchiveobject
+language: swift
+severity: warning
+message: >-
+  NSKeyedUnarchiver.unarchiveObject is deprecated and does not restrict decoded classes; use unarchivedObject(ofClass:from:) with secure coding.
+note: >-
+  [CWE-502]: Deserialization of Untrusted Data
+  [OWASP A08:2021]: Software and Data Integrity Failures
+  Matches the literal receiver NSKeyedUnarchiver with unarchiveObject(with:) or unarchiveObject(withFile:); it cannot tell whether the data is trusted.
+rule:
+  any:
+    - pattern: 'NSKeyedUnarchiver.unarchiveObject(with: $DATA)'
+    - pattern: 'NSKeyedUnarchiver.unarchiveObject(withFile: $PATH)'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-502'
+  owasp: 'A08:2025|A08:2021'
+  category: 'security'
