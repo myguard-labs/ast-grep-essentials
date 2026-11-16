@@ -1,0 +1,69 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-set-cookie-samesite-none-or-missing
+language: python
+severity: warning
+message: >-
+  Cookie set with SameSite=None, or a session-style cookie set without any
+  samesite argument. A cookie sent on cross-site requests lets another site
+  trigger authenticated requests, which is the precondition for cross-site
+  request forgery. Pass samesite="Lax" or "Strict" unless the cookie must
+  really travel cross-site, and then pair None with secure=True and a CSRF
+  token.
+note: >-
+  Fires on a set_cookie call whose samesite keyword is the string None or the
+  value None, and on a set_cookie call with no samesite keyword whose cookie
+  name is a literal containing session, token, auth, jwt, sid, login, remember
+  or csrf. A call that passes **kwargs, or a samesite taken from a variable or
+  setting, is not matched. A cookie that must be embedded cross-site is the
+  routine dismissal.
+
+  [CWE-1275] [A01:2025] [A01:2021]
+
+  [REFERENCES]
+      - https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#samesite_attribute
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        kind: attribute
+        has: {field: attribute, regex: '^set_cookie$'}
+    - any:
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              kind: keyword_argument
+              all:
+                - has: {field: name, regex: '^samesite$'}
+                - has: {field: value, regex: '(?i)^(["'']none["'']|None)$'}
+        - all:
+            - has:
+                field: arguments
+                kind: argument_list
+                has:
+                  nthChild:
+                    position: 1
+                    ofRule: {not: {kind: comment}}
+                  kind: string
+                  regex: '(?i)(session|token|auth|jwt|sid|login|remember|csrf)'
+            - not:
+                has:
+                  field: arguments
+                  kind: argument_list
+                  has:
+                    any:
+                      - kind: dictionary_splat
+                      - all:
+                          - kind: keyword_argument
+                          - has: {field: name, regex: '^samesite$'}
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-1275'
+  owasp: 'A01:2025|A01:2021'
+  category: 'security'
+  references: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#samesite_attribute'
