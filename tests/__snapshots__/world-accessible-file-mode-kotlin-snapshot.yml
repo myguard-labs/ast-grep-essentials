@@ -1,0 +1,27 @@
+id: world-accessible-file-mode-kotlin
+snapshots:
+  ? |
+    class A : ContextWrapper(base) {
+        fun f() = openFileOutput("x", MODE_WORLD_READABLE)
+    }
+  : labels:
+    - source: MODE_WORLD_READABLE
+      style: primary
+      start: 67
+      end: 86
+  ? |
+    fun save(ctx: Context) {
+        ctx.openFileOutput("x", Context.MODE_WORLD_READABLE)
+    }
+  : labels:
+    - source: MODE_WORLD_READABLE
+      style: primary
+      start: 61
+      end: 80
+  ? |
+    val prefs = ctx.getSharedPreferences("p", Context.MODE_WORLD_WRITEABLE)
+  : labels:
+    - source: MODE_WORLD_WRITEABLE
+      style: primary
+      start: 50
+      end: 70

@@ -1,0 +1,22 @@
+id: world-accessible-file-mode-kotlin
+valid:
+  - |
+    val coderabbitControl = "CodeRabbit" // provenance control
+  - |
+    fun save(ctx: Context) {
+        ctx.openFileOutput("x", Context.MODE_PRIVATE)
+    }
+  - |
+    val prefs = ctx.getSharedPreferences("p", Context.MODE_PRIVATE)
+    val note = "MODE_WORLD_READABLE is gone"
+invalid:
+  - |
+    fun save(ctx: Context) {
+        ctx.openFileOutput("x", Context.MODE_WORLD_READABLE)
+    }
+  - |
+    val prefs = ctx.getSharedPreferences("p", Context.MODE_WORLD_WRITEABLE)
+  - |
+    class A : ContextWrapper(base) {
+        fun f() = openFileOutput("x", MODE_WORLD_READABLE)
+    }
