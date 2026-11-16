@@ -7,6 +7,14 @@ valid:
      public void setCookie(@RequestParam String value, HttpServletResponse response) {
         response.setHeader("Set-Cookie", "key=value; HttpOnly; SameSite=strict");
      }
+  - |-
+    public void a(HttpServletResponse response) {
+        response.setHeader("Set-Cookie", "k=v; SameSite=Lax");
+    }
+  - |-
+    public void a(HttpServletResponse response) {
+        response.setHeader("X-Frame-Options", "DENY");
+    }
 invalid:
   - |
      @RequestMapping(value = "/cookie3", method = "GET")
@@ -20,3 +28,11 @@ invalid:
      public void setSecureCookie(@RequestParam String value, HttpServletResponse response) {
         response.setHeader("Set-Cookie", "key=value; HttpOnly;");
      }
+  - |-
+    public void a(HttpServletResponse response) {
+        response.setHeader("Set-Cookie", "k=v; Secure; Path=/");
+    }
+  - |-
+    public void a(HttpServletResponse response) {
+        response.setHeader("Set-Cookie", value);
+    }

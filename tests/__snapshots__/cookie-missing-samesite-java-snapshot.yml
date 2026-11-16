@@ -1,19 +1,66 @@
 id: cookie-missing-samesite-java
 snapshots:
-  ? |
-    @RequestMapping(value = "/cookie3", method = "GET")
-    public void setSecureHttponlyCookie(@RequestParam String value, HttpServletResponse response) {
-       Cookie cookie = new Cookie("cookie", value);
-       cookie.setSecure(true);
-       cookie.setHttpOnly(true);
-       response.addCookie(cookie);
-    }
-    @RequestMapping(value = "/cookie2", method = "GET")
-    public void setSecureCookie(@RequestParam String value, HttpServletResponse response) {
-       response.setHeader("Set-Cookie", "key=value; HttpOnly;");
-    }
-  : labels:
+  "@RequestMapping(value = \"/cookie3\", method = \"GET\")\npublic void setSecureHttponlyCookie(@RequestParam String value, HttpServletResponse response) {\n   Cookie cookie = new Cookie(\"cookie\", value);\n   cookie.setSecure(true);\n   cookie.setHttpOnly(true);\n   response.addCookie(cookie);\n}\n@RequestMapping(value = \"/cookie2\", method = \"GET\")\npublic void setSecureCookie(@RequestParam String value, HttpServletResponse response) {\n   response.setHeader(\"Set-Cookie\", \"key=value; HttpOnly;\");\n}\n":
+    labels:
     - source: response.addCookie(cookie);
       style: primary
       start: 255
       end: 282
+  "public void a(HttpServletResponse response) {\n    response.setHeader(\"Set-Cookie\", \"k=v; Secure; Path=/\");\n}":
+    labels:
+    - source: response.setHeader("Set-Cookie", "k=v; Secure; Path=/");
+      style: primary
+      start: 50
+      end: 106
+    - source: HttpServletResponse
+      style: secondary
+      start: 14
+      end: 33
+    - source: response
+      style: secondary
+      start: 34
+      end: 42
+    - source: HttpServletResponse response
+      style: secondary
+      start: 14
+      end: 42
+    - source: (HttpServletResponse response)
+      style: secondary
+      start: 13
+      end: 43
+    - source: |-
+        {
+            response.setHeader("Set-Cookie", "k=v; Secure; Path=/");
+        }
+      style: secondary
+      start: 44
+      end: 108
+  "public void a(HttpServletResponse response) {\n    response.setHeader(\"Set-Cookie\", value);\n}":
+    labels:
+    - source: response.setHeader("Set-Cookie", value);
+      style: primary
+      start: 50
+      end: 90
+    - source: HttpServletResponse
+      style: secondary
+      start: 14
+      end: 33
+    - source: response
+      style: secondary
+      start: 34
+      end: 42
+    - source: HttpServletResponse response
+      style: secondary
+      start: 14
+      end: 42
+    - source: (HttpServletResponse response)
+      style: secondary
+      start: 13
+      end: 43
+    - source: |-
+        {
+            response.setHeader("Set-Cookie", value);
+        }
+      style: secondary
+      start: 44
+      end: 92
