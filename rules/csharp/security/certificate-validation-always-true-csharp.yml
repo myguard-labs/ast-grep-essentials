@@ -1,0 +1,45 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: certificate-validation-always-true-csharp
+language: csharp
+severity: warning
+message: >-
+  A TLS certificate validation callback unconditionally accepts every
+  certificate, which disables server authentication and allows
+  man-in-the-middle attacks.
+note: >-
+  Matches assignment or += of a lambda or anonymous method whose body is only
+  `true` or `return true;`, or of DangerousAcceptAnyServerCertificateValidator,
+  to a member named ServerCertificateValidationCallback,
+  ServerCertificateCustomValidationCallback or
+  RemoteCertificateValidationCallback. Callbacks that inspect their arguments
+  are not flagged. This is a single-file syntactic check; it does not follow
+  callbacks defined as named methods.
+rule:
+  kind: assignment_expression
+  all:
+    - has:
+        field: left
+        regex: '(?:^|\.)(?:ServerCertificateValidationCallback|ServerCertificateCustomValidationCallback|RemoteCertificateValidationCallback)$'
+    - has:
+        field: right
+        any:
+          - kind: lambda_expression
+            regex: '(?s)^(?:async\s+)?(?:\([^()]*\)|\w+)\s*=>\s*(?:true|\{\s*return\s+true\s*;\s*\})$'
+          - kind: anonymous_method_expression
+            regex: '(?s)^delegate\s*(?:\([^()]*\))?\s*\{\s*return\s+true\s*;\s*\}$'
+          - kind: member_access_expression
+            regex: '(?:^|\.)DangerousAcceptAnyServerCertificateValidator$'
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-295'
+  owasp: 'A02:2025|A02:2021'
+  category: 'security'
+  subcategory: 'certificate-validation'
+  references: 'https://cwe.mitre.org/data/definitions/295.html|https://learn.microsoft.com/en-us/dotnet/api/system.net.servicepointmanager.servercertificatevalidationcallback'
