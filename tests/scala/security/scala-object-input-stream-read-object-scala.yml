@@ -73,6 +73,20 @@ valid:
         other(null)
       }
     }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, items: List[Json]) = {
+        val s = new ObjectInputStream(in)
+        items.map(s => s.readObject())
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, items: List[Json]) = {
+        val s = new ObjectInputStream(in)
+        items.map((s: Json) => s.readObject())
+      }
+    }
 invalid:
   - |
     object A {

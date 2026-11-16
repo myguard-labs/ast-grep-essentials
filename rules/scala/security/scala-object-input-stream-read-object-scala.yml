@@ -23,7 +23,7 @@ note: >-
   reported. A fully qualified or `_root_` qualified
   `java.io.ObjectInputStream` is reported like the short name; an alias
   import such as `import java.io.{ObjectInputStream => Stream}` is a known miss. A `var`, a pattern binding or a class member
-  receiver is not tracked, and a `def` parameter of the same name hides an
+  receiver is not tracked, and a `def` parameter or lambda parameter of the same name hides an
   outer val.
   The rule cannot tell whether the stream carries untrusted bytes, so review
   each hit for the data source.
@@ -86,6 +86,19 @@ rule:
                       stopBy: end
                       kind: identifier
                       pattern: $STREAM
+                - kind: lambda_expression
+                  has:
+                    field: parameters
+                    any:
+                      - kind: identifier
+                        pattern: $STREAM
+                      - kind: bindings
+                        has:
+                          kind: binding
+                          has:
+                            field: name
+                            kind: identifier
+                            pattern: $STREAM
             kind: block
             has:
               kind: val_definition
