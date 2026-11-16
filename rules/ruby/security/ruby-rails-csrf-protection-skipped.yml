@@ -1,0 +1,59 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ruby-rails-csrf-protection-skipped
+language: ruby
+severity: warning
+message: >-
+  Rails request-forgery protection is switched off for a controller. Every
+  state-changing action it covers can then be driven from any other site the
+  signed-in victim visits, because the browser attaches the session cookie to
+  the forged request. Keep the check on, and exempt only a stateless token API
+  action, scoped with only: or except:.
+note: >-
+  Fires on skip_forgery_protection, written with or without arguments, and on
+  skip_before_action whose arguments include the :verify_authenticity_token
+  symbol or string, in any position. Other callbacks named in skip_before_action
+  do not match, and neither does a mention in a comment or a string. A JSON API
+  that authenticates with a bearer token rather than the session cookie is the
+  routine dismissal. It does not see protect_from_forgery with: :null_session
+  or a callback list built elsewhere.
+
+  [CWE-352] [A01:2025]
+
+  [REFERENCES]
+      - https://guides.rubyonrails.org/security.html#cross-site-request-forgery-csrf
+rule:
+  any:
+    - kind: call
+      has:
+        field: method
+        regex: '^skip_forgery_protection$'
+    - kind: identifier
+      regex: '^skip_forgery_protection$'
+      inside:
+        kind: body_statement
+        stopBy: neighbor
+    - kind: call
+      all:
+        - has:
+            field: method
+            regex: '^skip_before_action$'
+        - has:
+            field: arguments
+            kind: argument_list
+            has:
+              any:
+                - kind: simple_symbol
+                - kind: string
+              regex: '^(:verify_authenticity_token|[''"]verify_authenticity_token[''"])$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-352'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/352.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A01:2025'
+  category: 'security'
+  references: 'https://guides.rubyonrails.org/security.html#cross-site-request-forgery-csrf'
