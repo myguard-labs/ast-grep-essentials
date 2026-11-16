@@ -18,3 +18,75 @@ snapshots:
       style: secondary
       start: 67
       end: 77
+  "int f(char *buf) { if (buf) { buf = fetch(); } return *buf; }":
+    labels:
+    - source: if (buf) { buf = fetch(); }
+      style: primary
+      start: 19
+      end: 46
+    - source: buf = fetch()
+      style: secondary
+      start: 30
+      end: 43
+    - source: "*buf"
+      style: secondary
+      start: 54
+      end: 58
+    - source: "*buf"
+      style: secondary
+      start: 54
+      end: 58
+  "void f(int *p) { if (p) { log_it(); free(p); p = NULL; } g(); *p = 1; }":
+    labels:
+    - source: if (p) { log_it(); free(p); p = NULL; }
+      style: primary
+      start: 17
+      end: 56
+    - source: p = NULL
+      style: secondary
+      start: 45
+      end: 53
+    - source: "*p"
+      style: secondary
+      start: 62
+      end: 64
+    - source: "*p"
+      style: secondary
+      start: 62
+      end: 64
+  "void f(int *p) { if (p) { p = lookup(1); } /* c */ h(*p); }":
+    labels:
+    - source: if (p) { p = lookup(1); }
+      style: primary
+      start: 17
+      end: 42
+    - source: p = lookup(1)
+      style: secondary
+      start: 26
+      end: 39
+    - source: "*p"
+      style: secondary
+      start: 53
+      end: 55
+    - source: "*p"
+      style: secondary
+      start: 53
+      end: 55
+  "void f(int *p) { if (p) { p = next(p); } use(*p); }":
+    labels:
+    - source: if (p) { p = next(p); }
+      style: primary
+      start: 17
+      end: 40
+    - source: p = next(p)
+      style: secondary
+      start: 26
+      end: 37
+    - source: "*p"
+      style: secondary
+      start: 45
+      end: 47
+    - source: "*p"
+      style: secondary
+      start: 45
+      end: 47

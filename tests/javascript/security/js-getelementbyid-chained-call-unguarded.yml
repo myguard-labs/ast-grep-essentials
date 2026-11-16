@@ -1,5 +1,25 @@
 id: js-getelementbyid-chained-call-unguarded
 valid:
   - 'document.getElementById( ''mce_ifr'' )?.getBoundingClientRect();'
+  - |-
+    var el = document.getElementById('x'); if (el) { el.focus(); }
+  - |-
+    var el = document.getElementById('x'); if (!el) { return; } el.focus();
+  - |-
+    document.getElementById('x')?.style.display;
+  - |-
+    var n = document.getElementById('x') ? 1 : 0;
+  - |-
+    const el = document.getElementById('x'); el && el.focus();
+
 invalid:
   - 'document.getElementById( ''mce_ifr'' ).getBoundingClientRect();'
+  - |-
+    var w = document.getElementById('w').offsetWidth;
+  - |-
+    document.getElementById(id).style.display = 'none';
+  - |-
+    document.getElementById('x')
+      .focus();
+  - |-
+    document.getElementById('btn').addEventListener('click', go);

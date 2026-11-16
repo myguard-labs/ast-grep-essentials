@@ -5,9 +5,20 @@ valid:
         if (key) { *out = key->val; }
         if (key && key->val[0] == '\0') { *out = 0; }
     }
+  - |-
+    void f(struct s *key) { if (key) { n = key->len; } if (key && key->len) { g(); } }
+  - |-
+    void f(struct s *key) { n = 0; if (key && key->len) { n = key->len; } }
+
 invalid:
   - |-
     void f(struct s *key, const char **out) {
         *out = key->val;
         if (key && key->val[0] == '\0') { *out = 0; }
     }
+  - |-
+    void f(struct s *key) { n = key->len; if (key && key->len > 0) { g(); } }
+  - |-
+    void f(struct s *p) { g(p->v); if (p && p->w) { h(); } }
+  - |-
+    void f(struct s *p) { p->hits++; if (p && p->ok) { h(); } }

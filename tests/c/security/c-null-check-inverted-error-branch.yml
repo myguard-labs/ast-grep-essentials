@@ -8,6 +8,13 @@ valid:
         return len + buf[0];
       }
     }
+  - |-
+    int f(char *buf, int len) { if (buf == NULL) { return 0; } else { return len + buf[0]; } }
+  - |-
+    int f(char *buf, int len) { if (buf) { len = len + buf[0]; } else { return 0; } return len; }
+  - |-
+    int f(char *buf, int len) { if (len) { return 0; } else { return 1; } }
+
 invalid:
   - |-
     int f(char *buf, int len) {
@@ -15,5 +22,18 @@ invalid:
         return 0;
       } else {
         return len + buf[0];
+      }
+    }
+  - |-
+    int f(char *buf, int len) { if (buf) { return -1; } else { len = buf[0]; } return len; }
+  - |-
+    int f(char *buf, int len) { if (buf) { return; } else { log_it(); len = buf[1]; } return len; }
+  - |-
+    int f(char *buf, int len) {
+      if (buf) {
+        return 0;
+      } else {
+        /* no buffer */
+        return buf[0];
       }
     }

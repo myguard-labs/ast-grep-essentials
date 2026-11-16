@@ -3,7 +3,22 @@ valid:
   - >-
     score_idx = apr_hash_get(ht, key, n); if (score_idx) {
     ap_update(*score_idx); }
+  - |-
+    void f(int *p, int *q) { if (p) { q = lookup(p); use(*p); } }
+  - |-
+    void f(int *p) { if (p) { p = next(p); if (p) { use(*p); } } }
+  - |-
+    void f(int *p) { if (p) { total = 1; use(*p); } }
+
 invalid:
   - >-
     if (score_idx) { score_idx = apr_hash_get(ht, key, n); }
     ap_update(*score_idx);
+  - |-
+    void f(int *p) { if (p) { p = next(p); } use(*p); }
+  - |-
+    void f(int *p) { if (p) { log_it(); free(p); p = NULL; } g(); *p = 1; }
+  - |-
+    int f(char *buf) { if (buf) { buf = fetch(); } return *buf; }
+  - |-
+    void f(int *p) { if (p) { p = lookup(1); } /* c */ h(*p); }

@@ -3,7 +3,32 @@ valid:
   - |-
     struct s { int id; };
     void f(struct s *p) { if (p) { g(p->id); } }
+  - |-
+    struct s { int id; };
+    void f(struct s *p) { if (!p) { return; } g(p->id); }
+  - |-
+    struct s { int id; };
+    void f(struct s *p) { if (!p) { g(0); } else { g(p->id); } }
+  - |-
+    struct s { int id; };
+    int f(struct s *p) { if (!p || p->id < 0) { return -1; } return 0; }
+  - |-
+    struct s { int id; };
+    void f(struct s *p) { struct s dflt; if (!p) { g(dflt.id); } }
+
 invalid:
   - |-
     struct s { int id; };
     void f(struct s *p) { if (!p) { g(p->id); } }
+  - |-
+    struct s { int id; };
+    void f(struct s *p) { if (!p) g(p->id); }
+  - |-
+    struct s { int id; };
+    int f(struct s *p) { int x; if (!p) { x = p->id; } return x; }
+  - |-
+    struct s { int id; };
+    int f(struct s *p) { if (!p) { log_it(); return p->id; } return 0; }
+  - |-
+    struct s { int id; };
+    void f(struct s *p, int c) { if (!p) { if (c) { g(p->id); } } }

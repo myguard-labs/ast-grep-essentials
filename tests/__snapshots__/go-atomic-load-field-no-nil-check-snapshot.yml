@@ -1,9 +1,31 @@
 id: go-atomic-load-field-no-nil-check
 snapshots:
-  ? |-
-    type proposer struct{ state atomic.Pointer[build] }
-    func (p *proposer) Pre() *Pre { return p.state.Load().Pre }
-  : labels:
+  "func (p *proposer) Name() string { v := p.state.Load().Name; return v }":
+    labels:
+    - source: p.state.Load().Name
+      style: primary
+      start: 40
+      end: 59
+  "func (p *proposer) Run() { p.state.Load().Run() }":
+    labels:
+    - source: p.state.Load().Run
+      style: primary
+      start: 27
+      end: 45
+  "func (s *srv) N() int { return s.a.b.c.Load().Count }":
+    labels:
+    - source: s.a.b.c.Load().Count
+      style: primary
+      start: 31
+      end: 51
+  "func on(cur *atomic.Pointer[cfg]) bool { if cur.Load().Enabled { return true }; return false }":
+    labels:
+    - source: cur.Load().Enabled
+      style: primary
+      start: 44
+      end: 62
+  "type proposer struct{ state atomic.Pointer[build] }\nfunc (p *proposer) Pre() *Pre { return p.state.Load().Pre }":
+    labels:
     - source: p.state.Load().Pre
       style: primary
       start: 91

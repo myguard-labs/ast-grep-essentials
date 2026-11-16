@@ -3,7 +3,26 @@ valid:
   - |-
     struct o { int p; };
     int f(struct o *s) { return (s != NULL) ? s->p : 0; }
+  - |-
+    struct o { int p; };
+    int f(struct o *s) { return (s == NULL) ? 0 : s->p; }
+  - |-
+    struct o { int p; };
+    int f(struct o *s) { return s ? s->p : 0; }
+  - |-
+    struct o { int p; };
+    int f(struct o *s) { return (s == NULL || s->p == 0) ? 0 : s->p; }
+
 invalid:
   - |-
     struct o { int p; };
     int f(struct o *s) { return (s == NULL) ? s->p : 0; }
+  - |-
+    struct o { int p; int len; };
+    int f(struct o *s) { return (s == NULL) ? s->len : -1; }
+  - |-
+    struct o { int p; };
+    int f(struct o *s) { int v = (s == NULL) ? s->p : g(); return v; }
+  - |-
+    struct o { int p; };
+    int f(struct o *s) { return ((s == NULL) ? s->p : 0) + 1; }

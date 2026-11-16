@@ -9,6 +9,15 @@ valid:
         }
         return 0;
     }
+  - |-
+    int f(struct url *p) { if (p && p->ok) { g(p->x); } return 0; }
+  - |-
+    int f(struct url *p, int c) { if (!p || c) { return 0; } g(p->x); return 1; }
+  - |-
+    int f(struct url *p) { if (!p || p->bad) { return -1; } else { g(p->x); } return 0; }
+  - |-
+    int f(struct url *p, int c) { if (!p || c) { g(0); } return 0; }
+
 invalid:
   - |-
     int f(struct url *resource) {
@@ -19,3 +28,11 @@ invalid:
         }
         return 0;
     }
+  - |-
+    int f(struct url *p) { if (!p || p->flag) { return p->id; } return 0; }
+  - |-
+    int f(struct url *p, int c) { if (!p || c) { g(p->x); } return 0; }
+  - |-
+    int f(struct url *p, int c) { if (!p || c) p->x = 1; return 0; }
+  - |-
+    int f(struct url *p) { if (!p || !p->ok) { log_it(p->name); } return 0; }

@@ -3,5 +3,24 @@ valid:
   - |-
     var id = $( this ).attr( 'id' );
     id.replace( /^sidebar-/, '' );
+  - |-
+    var id = ($(this).attr('id') || '').replace(/^a-/, '');
+  - |-
+    var id = String($(this).attr('id')).replace(/^a-/, '');
+  - |-
+    var id = $(this).attr('id'); if (id) { id = id.replace(/^a-/, ''); }
+  - |-
+    $(this).attr('id', 'x').addClass('y');
+
 invalid:
   - 'var sb = $( this ).attr( ''id'' ).replace( /^sidebar-/, '''' );'
+  - |-
+    var h = $el.attr('data-x').replace('a', 'b');
+  - |-
+    var h = jQuery( this ).attr( "href" ).replace( /#/, '' );
+  - |-
+    function k(e) { return $(e.target).attr('class').replace(/ x/, ''); }
+  - |-
+    var s = $(this)
+      .attr('id')
+      .replace(/^a-/, '');

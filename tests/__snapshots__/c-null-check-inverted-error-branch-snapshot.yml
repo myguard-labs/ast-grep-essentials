@@ -1,14 +1,27 @@
 id: c-null-check-inverted-error-branch
 snapshots:
-  ? |-
-    int f(char *buf, int len) {
-      if (buf) {
-        return 0;
-      } else {
-        return len + buf[0];
-      }
-    }
-  : labels:
+  "int f(char *buf, int len) {\n  if (buf) {\n    return 0;\n  } else {\n    /* no buffer */\n    return buf[0];\n  }\n}":
+    labels:
+    - source: |-
+        if (buf) {
+            return 0;
+          } else {
+            /* no buffer */
+            return buf[0];
+          }
+      style: primary
+      start: 30
+      end: 108
+    - source: buf
+      style: secondary
+      start: 34
+      end: 37
+    - source: (buf)
+      style: secondary
+      start: 33
+      end: 38
+  "int f(char *buf, int len) {\n  if (buf) {\n    return 0;\n  } else {\n    return len + buf[0];\n  }\n}":
+    labels:
     - source: |-
         if (buf) {
             return 0;
@@ -26,3 +39,31 @@ snapshots:
       style: secondary
       start: 33
       end: 38
+  "int f(char *buf, int len) { if (buf) { return -1; } else { len = buf[0]; } return len; }":
+    labels:
+    - source: if (buf) { return -1; } else { len = buf[0]; }
+      style: primary
+      start: 28
+      end: 74
+    - source: buf
+      style: secondary
+      start: 32
+      end: 35
+    - source: (buf)
+      style: secondary
+      start: 31
+      end: 36
+  "int f(char *buf, int len) { if (buf) { return; } else { log_it(); len = buf[1]; } return len; }":
+    labels:
+    - source: if (buf) { return; } else { log_it(); len = buf[1]; }
+      style: primary
+      start: 28
+      end: 81
+    - source: buf
+      style: secondary
+      start: 32
+      end: 35
+    - source: (buf)
+      style: secondary
+      start: 31
+      end: 36

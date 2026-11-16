@@ -1,5 +1,22 @@
 id: js-dom-firstchild-deref-unchecked
 valid:
   - 'var t = node && node.firstChild && node.firstChild.textContent;'
+  - |-
+    var t = node && node.firstChild?.textContent;
+  - |-
+    var t = node?.firstChild?.textContent;
+  - |-
+    var t = node && node.textContent;
+  - |-
+    if (node && node.firstChild) { t = node.firstChild.textContent; }
+
 invalid:
   - 'var t = node && node.firstChild.textContent;'
+  - |-
+    function f(el) { return el && el.firstChild.textContent; }
+  - |-
+    var t = (node && node.firstChild.textContent);
+  - |-
+    var t = node && node.firstChild.textContent || '';
+  - |-
+    var t = this.el && this.el.firstChild.textContent;

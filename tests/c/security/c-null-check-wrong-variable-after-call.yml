@@ -5,9 +5,26 @@ valid:
     if (root == NULL) {
         return NULL;
     }
+  - |-
+    void f(void) { r = f(a); if (r == NULL) { return; } }
+  - |-
+    void f(void) { r = f(a); if (r != NULL) { use(r); } }
+  - |-
+    void f(void) { r = f(a); if (!r) { return; } }
+  - |-
+    void f(void) { p = f(p); if (p == NULL) { return; } }
+  - |-
+    void f(void) { r = f(a, b); if (r == NULL) return; }
+
 invalid:
   - |-
     root = njs_function_scope(scope);
     if (scope == NULL) {
         return NULL;
     }
+  - |-
+    void f(void) { r = lookup(table, key); if (key == NULL) { return; } }
+  - |-
+    void f(void) { res = f(a, b); if (b == NULL) return; }
+  - |-
+    void f(void) { r = outer(inner(x)); if (x == NULL) { return; } }

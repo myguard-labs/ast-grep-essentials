@@ -1,5 +1,71 @@
 id: c-null-guard-deref-in-negated-disjunct
 snapshots:
+  "int f(struct t *p, int c) { if (!p || c) { return p->id; } return 0; }":
+    labels:
+    - source: if (!p || c) { return p->id; }
+      style: primary
+      start: 28
+      end: 58
+    - source: "!p || c"
+      style: secondary
+      start: 32
+      end: 39
+    - source: "!p || c"
+      style: secondary
+      start: 32
+      end: 39
+    - source: p->id
+      style: secondary
+      start: 50
+      end: 55
+    - source: p->id
+      style: secondary
+      start: 50
+      end: 55
+  "int f(struct t *p, int c, int d) { if (c && (!p || d)) { p->x = 0; } return 0; }":
+    labels:
+    - source: if (c && (!p || d)) { p->x = 0; }
+      style: primary
+      start: 35
+      end: 68
+    - source: "!p || d"
+      style: secondary
+      start: 45
+      end: 52
+    - source: "!p || d"
+      style: secondary
+      start: 45
+      end: 52
+    - source: p->x
+      style: secondary
+      start: 57
+      end: 61
+    - source: p->x
+      style: secondary
+      start: 57
+      end: 61
+  "int f(struct t *p, struct t *q) { if (!p || q == NULL) p->x = 1; return 0; }":
+    labels:
+    - source: if (!p || q == NULL) p->x = 1;
+      style: primary
+      start: 34
+      end: 64
+    - source: "!p || q == NULL"
+      style: secondary
+      start: 38
+      end: 53
+    - source: "!p || q == NULL"
+      style: secondary
+      start: 38
+      end: 53
+    - source: p->x
+      style: secondary
+      start: 55
+      end: 59
+    - source: p->x
+      style: secondary
+      start: 55
+      end: 59
   "struct tp_s *tp; void f(void) { if (!tp || tp->start) { g(tp->end); } }":
     labels:
     - source: if (!tp || tp->start) { g(tp->end); }
