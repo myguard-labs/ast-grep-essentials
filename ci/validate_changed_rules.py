@@ -395,9 +395,11 @@ def _load_documents(data: bytes) -> list[object] | None:
     """Parsed YAML documents, or ``None`` when PyYAML or the parse fails."""
     try:
         import yaml  # pylint: disable=import-outside-toplevel
-
+    except ImportError:
+        return None
+    try:
         return list(yaml.safe_load_all(data))
-    except (ImportError, yaml.YAMLError, ValueError, RecursionError):
+    except (yaml.YAMLError, ValueError, RecursionError):
         return None
 
 

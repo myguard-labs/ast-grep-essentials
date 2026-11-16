@@ -803,7 +803,7 @@ class ValidateChangedRulesTests(unittest.TestCase):
         self.assertIn("executable file", stderr.getvalue())
 
 
-REAL_ENGINE = shutil.which("ast-grep")
+REAL_ENGINE = os.environ.get("AST_GREP_UTIL_TESTS") or shutil.which("ast-grep")
 UTIL_TEXT = (
     "id: py-clean\nlanguage: python\nrule:\n  not:\n    kind: ERROR\n"
 )
@@ -830,7 +830,8 @@ class GlobalUtilTests(unittest.TestCase):
         engine.write_text(
             "#!/bin/sh\nls utils/python/py-clean.yml >/dev/null || exit 3\n"
             "grep -q 'utilDirs: \\[utils\\]' sgconfig.yml || exit 4\n"
-            "test ! -e rules/other.yml || exit 5\n"
+            "test \"$(ls rules | wc -l)\" -eq 1 || exit 5\n"
+            "test -e rules/py-util.yml || exit 6\n"
             "echo 'test result: ok. 1 passed; 0 failed;'\n"
         )
         engine.chmod(0o755)
@@ -844,6 +845,18 @@ class GlobalUtilTests(unittest.TestCase):
             other.write_text("id: py-other\nlanguage: python\nrule: {kind: call}\n")
             engine = self.fake_engine(root)
             gate.validate_rule(root, engine, rule)
+
+    def test_missing_pyyaml_uses_text_scan_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            self.make_repo(root)
+            rule = root / "rules/python/security/py-util.yml"
+            with patch.dict(sys.modules, {"yaml": None}):
+                self.assertIsNone(gate._load_documents(b"id: x\n"))
+                with redirect_stderr(io.StringIO()) as stderr:
+                    self.assertTrue(gate._references(rule, {"py-clean"}))
+                    self.assertFalse(gate._references(rule, {"other"}))
+            self.assertIn("text scan", stderr.getvalue())
 
     @unittest.skipUnless(REAL_ENGINE, "ast-grep not installed")
     def test_rule_using_global_util_validates(self) -> None:
