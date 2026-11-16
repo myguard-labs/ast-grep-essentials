@@ -22,6 +22,27 @@ npx ast-grep scan -c sgconfig.yml /path/to/source
 Warnings and informational findings are advisory. Verify a rule ID against
 known positive and negative examples before making it block commits or CI.
 
+## Enriched SARIF for code scanning
+
+`ast-grep scan --format sarif` emits no `tool.driver.rules[]`, so GitHub code
+scanning cannot label or rank an alert. The ast-grep-harness repository's
+`tools/sarif-enrich.py` turns the JSON scan into SARIF whose rule descriptors
+carry `properties.tags` (`security`, `external/owasp/aNN-2025`,
+`external/cwe/cwe-N`) taken from each rule's note tags or metadata. That
+repository is private, so Essentials CI does not fetch it; run the tool from a
+checkout of it:
+
+```sh
+npx ast-grep scan -c sgconfig.yml --json --include-metadata /path/to/source > scan.json
+python3 /path/to/ast-grep-harness/tools/sarif-enrich.py scan.json \
+  --min-severity warning -o enriched.sarif
+```
+
+`--min-severity` (`info`, `warning`, `error`; default `info`) drops results
+below that level; rule descriptors are kept. A rule with no CWE or OWASP tag in
+its note or metadata gets a descriptor without `tags`. Upload `enriched.sarif`
+with `github/codeql-action/upload-sarif` where code scanning is wanted.
+
 CI also loads every non-PowerShell rule on ast-grep 0.45.2, the lowest consumer
 version this pack supports, in the `host-loadability` job of
 `.github/workflows/validate-rules.yml`; a rule that version cannot load fails
