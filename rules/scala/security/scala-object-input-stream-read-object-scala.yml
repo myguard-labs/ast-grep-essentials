@@ -28,7 +28,11 @@ note: >-
   outer source. Between the source and the call, a val or var in a
   nested block, a `def` parameter (not its default value), a lambda parameter
   or a case pattern of the same name hides the source, for the val and the
-  `Using` form alike; a binding that comes after the call in the same block is
+  `Using` form alike; a rebinding hides only a source that encloses it with no
+  other source in between, so a deeper source of the same name nested inside
+  the rebinding is still reported. A `case` pattern that mentions the stream
+  name anywhere, including a stable identifier or backticked reference, is
+  treated as a rebinding. A binding that comes after the call in the same block is
   a known miss.
   The rule cannot tell whether the stream carries untrusted bytes, so review
   each hit for the data source.
@@ -206,7 +210,10 @@ rule:
                 matches: val-source
             - not:
                 inside:
-                  stopBy: end
+                  stopBy:
+                    any:
+                      - matches: val-source
+                      - matches: using-source
                   matches: scope-rebinds-stream
                   inside:
                     stopBy: end
@@ -217,7 +224,10 @@ rule:
                 matches: using-source
             - not:
                 inside:
-                  stopBy: end
+                  stopBy:
+                    any:
+                      - matches: val-source
+                      - matches: using-source
                   matches: scope-rebinds-stream
                   inside:
                     stopBy: end

@@ -24,7 +24,8 @@ note: >-
   parameter-binding interpolators such as `sql"..."` are not reported. A plain identifier
   argument is not reported because its origin cannot be told from syntax. An operand that only calls a method on a string literal, such as
   `"select 1" + "x".trim`, or an `s"..."` without an interpolation counts as
-  literal. Known miss: `execute` and `addBatch` are matched on any receiver, so a
+  literal; a chained method on a literal, such as `"b".trim.toLowerCase` or
+  `s"b".trim`, counts as dynamic (a minor false positive). Known miss: `execute` and `addBatch` are matched on any receiver, so a
   non-JDBC `client.execute(s"key-$id")` is also reported, because the receiver
   type cannot be told from syntax.
 utils:

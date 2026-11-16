@@ -29,7 +29,10 @@ note: >-
   and an argument Seq are not reported. A plain identifier receiver is not
   reported because its origin cannot be told from syntax alone. An operand that only
   calls a method on a string literal, such as `"ls " + "-l".trim`, or an `s"..."`
-  without an interpolation counts as literal; `"a" + "b".trim + x` is dynamic.
+  without an interpolation counts as literal; `"a" + "b".trim + x` is dynamic. A chained method on a literal, such as
+  `"b".trim.toLowerCase` or `s"b".trim`, also counts as dynamic (a minor false
+  positive). The unparenthesized `"ls " + dir ! logger` parses with `dir` as the
+  infix left operand and is judged on that operand only.
 utils:
   # An identifier that is not the interpolator of an interpolation-free
   # s/f/raw string and not a method name called on a string literal, so
