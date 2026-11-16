@@ -11,13 +11,18 @@ message: >-
 note: >-
   Fires on an error_log call whose arguments, including double-quoted string
   interpolation, read $_GET, $_POST, $_REQUEST or $_COOKIE. The finding is
-  suppressed only when the request-data value itself is wrapped in str_replace,
-  preg_replace, json_encode, urlencode, rawurlencode, addcslashes, var_export,
-  filter_var, ctype_*, sanitize_*, esc_*, intval, absint, strlen, count, a hash
-  or encoding function, or a numeric or boolean cast; a sanitizer on another
-  argument does not suppress it. Any str_replace or preg_replace call counts as
-  sanitizing, whatever it replaces (a heuristic that accepts some false
-  negatives). $_SERVER keys such as HTTP_USER_AGENT or REQUEST_URI are excluded
+  suppressed only when the request-data value itself is wrapped in str_replace
+  or str_ireplace whose search argument holds a double-quoted \r or \n (or
+  PHP_EOL, chr(10), chr(13)), preg_replace whose pattern names \r, \n or \s,
+  addcslashes whose charlist holds \r, \n or a range from \0, filter_var with
+  a validating or CR/LF-stripping filter (FILTER_VALIDATE_INT, FILTER_SANITIZE_SPECIAL_CHARS,
+  FILTER_FLAG_STRIP_LOW and similar), json_encode, wp_json_encode, urlencode,
+  rawurlencode, ctype_*, sanitize_text_field, sanitize_key, sanitize_title,
+  sanitize_file_name, sanitize_email, intval, floatval, absint, strlen, count,
+  a hash or encoding function, or a numeric or boolean cast; a sanitizer on
+  another argument does not suppress it. A replace of other characters,
+  var_export and the esc_* family (esc_html, esc_attr) do not strip CR or LF
+  and are still reported. $_SERVER keys such as HTTP_USER_AGENT or REQUEST_URI are excluded
   deliberately (precision over recall). A value copied into a variable
   first is not seen. A log sink that already escapes line breaks is the
   routine dismissal.
@@ -53,7 +58,45 @@ rule:
                 - kind: function_call_expression
                   has:
                     field: function
-                    regex: '^(str_replace|preg_replace|json_encode|urlencode|rawurlencode|addcslashes|var_export|filter_var|ctype_\w+|sanitize_\w+|esc_\w+|intval|floatval|absint|strlen|count|bin2hex|base64_encode|md5|sha1|crc32)$'
+                    regex: '^(json_encode|wp_json_encode|urlencode|rawurlencode|ctype_\w+|sanitize_(text_field|key|title|file_name|email)|intval|floatval|absint|strlen|count|bin2hex|base64_encode|md5|sha1|crc32)$'
+                - kind: function_call_expression
+                  all:
+                    - has:
+                        field: function
+                        regex: '^(str_replace|str_ireplace)$'
+                    - has:
+                        field: arguments
+                        has:
+                          nthChild: 1
+                          regex: '"[^"]*(\\[rn]|\\x0[adAD])|PHP_EOL|chr\(\s*(10|13)\s*\)'
+                - kind: function_call_expression
+                  all:
+                    - has:
+                        field: function
+                        regex: '^preg_replace$'
+                    - has:
+                        field: arguments
+                        has:
+                          nthChild: 1
+                          regex: '\\[rns]|\\x0[adAD]|\[:space:\]'
+                - kind: function_call_expression
+                  all:
+                    - has:
+                        field: function
+                        regex: '^addcslashes$'
+                    - has:
+                        field: arguments
+                        has:
+                          nthChild: 2
+                          regex: '"[^"]*(\\[rn]|\\x0[adAD]|\\0\.\.)'
+                - kind: function_call_expression
+                  all:
+                    - has:
+                        field: function
+                        regex: '^filter_var$'
+                    - has:
+                        field: arguments
+                        regex: 'FILTER_VALIDATE_(INT|FLOAT|BOOL(EAN)?|IP|EMAIL|URL|MAC)|FILTER_SANITIZE_(NUMBER_INT|NUMBER_FLOAT|SPECIAL_CHARS|ENCODED)|FILTER_FLAG_STRIP_LOW'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'
