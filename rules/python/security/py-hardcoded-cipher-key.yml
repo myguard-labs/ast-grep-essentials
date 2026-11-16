@@ -1,0 +1,82 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-hardcoded-cipher-key
+language: python
+severity: warning
+message: >-
+  A string or bytes literal is used directly as a cipher key. Load keys from a
+  secret store or the environment, or derive them with a key derivation
+  function.
+note: >-
+  [CWE-321] [OWASP A02:2021] A key embedded in source is exposed to
+  everyone with the code or the binary. This is a syntactic check: a
+  PyCryptodome cipher module constructor (AES.new, DES3.new, Blowfish.new,
+  ChaCha20.new and similar) or a cryptography Fernet, AESGCM, AESCCM or
+  ChaCha20Poly1305 constructor whose key argument is a plain literal or a literal followed by .encode(). F-strings
+  and values from variables or function calls are not matched.
+utils:
+  plain-literal:
+    kind: string
+    not:
+      has:
+        kind: interpolation
+        stopBy: end
+  key-value:
+    any:
+      - matches: plain-literal
+      - kind: call
+        has:
+          field: function
+          kind: attribute
+          all:
+            - has:
+                field: object
+                matches: plain-literal
+            - has:
+                field: attribute
+                regex: '^encode$'
+  key-argument:
+    any:
+      - nthChild: 1
+        matches: key-value
+      - kind: keyword_argument
+        all:
+          - has:
+              field: name
+              regex: '^key$'
+          - has:
+              field: value
+              matches: key-value
+rule:
+  kind: call
+  any:
+    - has:
+        field: function
+        kind: attribute
+        all:
+          - has:
+              field: object
+              regex: '^(AES|DES|DES3|Blowfish|ARC2|ARC4|CAST|ChaCha20|ChaCha20_Poly1305|Salsa20|XChaCha20_Poly1305)$'
+          - has:
+              field: attribute
+              regex: '^new$'
+    - has:
+        field: function
+        kind: identifier
+        regex: '^(Fernet|AESGCM|AESCCM|AESSIV|ChaCha20Poly1305)$'
+  has:
+    field: arguments
+    has:
+      matches: key-argument
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-321'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/321.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A04:2025|A02:2021'

@@ -1,0 +1,24 @@
+id: py-rsa-pkcs1v15-encrypt
+valid:
+  - |
+    ct = public_key.encrypt(msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+  - |
+    sig = private_key.sign(msg, padding.PKCS1v15(), hashes.SHA256())
+  - |
+    public_key.verify(sig, msg, padding.PKCS1v15(), hashes.SHA256())
+  - |
+    pad = padding.PKCS1v15()
+  - |
+    cipher.encrypt(data)
+  - |
+    ct = public_key.encrypt(msg, padding=padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+invalid:
+  - |
+    ct = public_key.encrypt(msg, padding.PKCS1v15())
+  - |
+    pt = private_key.decrypt(ct, asym_padding.PKCS1v15())
+  - |
+    from cryptography.hazmat.primitives.asymmetric.padding import PKCS1v15
+    ct = key.encrypt(msg, PKCS1v15())
+  - |
+    ct = public_key.encrypt(msg, padding=padding.PKCS1v15())

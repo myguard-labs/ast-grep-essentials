@@ -1,0 +1,44 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-rsa-pkcs1-padding
+language: php
+severity: warning
+message: >-
+  RSA encryption or decryption uses OPENSSL_PKCS1_PADDING. Use
+  OPENSSL_PKCS1_OAEP_PADDING instead.
+note: >-
+  [CWE-780] [OWASP A02:2021] PKCS#1 v1.5 encryption padding is
+  vulnerable to Bleichenbacher padding-oracle attacks. This is a syntactic
+  check: openssl_public_encrypt or openssl_private_decrypt called with the
+  explicit OPENSSL_PKCS1_PADDING constant. openssl_private_encrypt and
+  openssl_public_decrypt are raw RSA signing and verification primitives
+  where OAEP is not available, so they are not matched. Calls that omit the padding argument (which
+  defaults to PKCS#1 v1.5) and values held in variables are not matched.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        any:
+          - kind: name
+          - kind: qualified_name
+        regex: '^\\?(openssl_public_encrypt|openssl_private_decrypt)$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          has:
+            kind: name
+            regex: '^OPENSSL_PKCS1_PADDING$'
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-780'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/780.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A04:2025|A02:2021'

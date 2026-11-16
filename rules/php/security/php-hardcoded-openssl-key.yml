@@ -1,0 +1,62 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-hardcoded-openssl-key
+language: php
+severity: warning
+message: >-
+  openssl_encrypt or openssl_decrypt is called with a string literal as the
+  key. Load keys from a secret store or the environment, or derive them with
+  a key derivation function.
+note: >-
+  [CWE-321] [OWASP A02:2021] A key embedded in source is exposed to
+  everyone with the code. This is a syntactic check: the third argument is a
+  plain single-quoted or double-quoted string without variable interpolation.
+  Keys from variables, constants or function calls are not matched. Calls
+  that use any named argument are skipped, because positions no longer
+  identify the key argument.
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        any:
+          - kind: name
+          - kind: qualified_name
+        regex: '^\\?openssl_(encrypt|decrypt)$'
+    - not:
+        has:
+          field: arguments
+          has:
+            kind: argument
+            has:
+              field: name
+              kind: name
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          nthChild:
+            position: 3
+            ofRule:
+              not:
+                kind: comment
+          has:
+            any:
+              - kind: string
+              - kind: encapsed_string
+                not:
+                  has:
+                    kind: variable_name
+                    stopBy: end
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-321'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/321.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A04:2025|A02:2021'

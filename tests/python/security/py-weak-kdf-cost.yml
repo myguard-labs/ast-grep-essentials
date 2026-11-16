@@ -1,0 +1,33 @@
+id: py-weak-kdf-cost
+valid:
+  - |
+    dk = hashlib.pbkdf2_hmac("sha256", pw, salt, 600000)
+  - |
+    dk = hashlib.pbkdf2_hmac("sha512", pw, salt, iterations=210000)
+  - |
+    salt = bcrypt.gensalt(rounds=12)
+  - |
+    salt = bcrypt.gensalt()
+  - |
+    salt = bcrypt.gensalt(14)
+  - |
+    dk = hashlib.pbkdf2_hmac("sha256", pw, salt, n_iter)
+  - |
+    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=480000)
+  - |
+    result = other.pbkdf2_hmac("sha256", pw, salt, 1000)
+  - |
+    kdf = PBKDF2HMAC(hashes.SHA256(), 32, salt, 600000)
+invalid:
+  - |
+    dk = hashlib.pbkdf2_hmac("sha256", pw, salt, 1000)
+  - |
+    dk = hashlib.pbkdf2_hmac("sha256", pw, salt, iterations=10_000)
+  - |
+    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=50000)
+  - |
+    salt = bcrypt.gensalt(rounds=4)
+  - |
+    salt = bcrypt.gensalt(8)
+  - |
+    kdf = PBKDF2HMAC(hashes.SHA256(), 32, salt, 1000)

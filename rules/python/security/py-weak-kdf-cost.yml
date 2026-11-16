@@ -1,0 +1,111 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-weak-kdf-cost
+language: python
+severity: warning
+message: >-
+  Password key derivation with a literal work factor that is too low:
+  PBKDF2 iterations under 100000 or a bcrypt cost under 10.
+note: >-
+  [CWE-916] [OWASP A02:2021] The OWASP Password Storage Cheat Sheet
+  minimums are 600000 PBKDF2-HMAC-SHA256 iterations (210000 for SHA-512,
+  1300000 for SHA-1) and a bcrypt cost of at least 10. This is a syntactic
+  check on an integer literal: hashlib.pbkdf2_hmac iterations (fourth
+  argument or iterations keyword), the cryptography PBKDF2HMAC iterations
+  (fourth argument or keyword), and bcrypt.gensalt rounds (first argument or
+  rounds keyword). Only literals below 100000 iterations are flagged so a
+  SHA-512 or tuned value is never reported. Values held in variables are not evaluated.
+utils:
+  low-iterations:
+    kind: integer
+    regex: '^([0-9]{1,5}|[0-9]{1,2}_[0-9]{3})$'
+  low-cost:
+    kind: integer
+    regex: '^[0-9]$'
+rule:
+  kind: call
+  any:
+    - all:
+        - has:
+            field: function
+            kind: attribute
+            all:
+              - has:
+                  field: object
+                  regex: '^hashlib$'
+              - has:
+                  field: attribute
+                  regex: '^pbkdf2_hmac$'
+        - has:
+            field: arguments
+            any:
+              - has:
+                  nthChild: 4
+                  matches: low-iterations
+              - has:
+                  kind: keyword_argument
+                  all:
+                    - has:
+                        field: name
+                        regex: '^iterations$'
+                    - has:
+                        field: value
+                        matches: low-iterations
+    - all:
+        - has:
+            field: function
+            kind: identifier
+            regex: '^PBKDF2HMAC$'
+        - has:
+            field: arguments
+            any:
+              - has:
+                  nthChild: 4
+                  matches: low-iterations
+              - has:
+                  kind: keyword_argument
+                  all:
+                    - has:
+                        field: name
+                        regex: '^iterations$'
+                    - has:
+                        field: value
+                        matches: low-iterations
+    - all:
+        - has:
+            field: function
+            kind: attribute
+            all:
+              - has:
+                  field: object
+                  regex: '^bcrypt$'
+              - has:
+                  field: attribute
+                  regex: '^gensalt$'
+        - has:
+            field: arguments
+            any:
+              - has:
+                  nthChild: 1
+                  matches: low-cost
+              - has:
+                  kind: keyword_argument
+                  all:
+                    - has:
+                        field: name
+                        regex: '^rounds$'
+                    - has:
+                        field: value
+                        matches: low-cost
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-916'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/916.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A04:2025|A02:2021'
