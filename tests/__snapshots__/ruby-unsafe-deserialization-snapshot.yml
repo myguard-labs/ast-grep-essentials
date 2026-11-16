@@ -1,8 +1,33 @@
 id: ruby-unsafe-deserialization
 snapshots:
-  ? |
-    obj = Marshal.load(params[:data])
-  : labels:
+  "obj = Marshal.load(# note\n  params[:data])\n":
+    labels:
+    - source: |-
+        Marshal.load(# note
+          params[:data])
+      style: primary
+      start: 6
+      end: 42
+    - source: Marshal
+      style: secondary
+      start: 6
+      end: 13
+    - source: load
+      style: secondary
+      start: 14
+      end: 18
+    - source: params[:data]
+      style: secondary
+      start: 28
+      end: 41
+    - source: |-
+        (# note
+          params[:data])
+      style: secondary
+      start: 18
+      end: 42
+  "obj = Marshal.load(params[:data])\n":
+    labels:
     - source: Marshal.load(params[:data])
       style: primary
       start: 6
@@ -23,9 +48,8 @@ snapshots:
       style: secondary
       start: 18
       end: 33
-  ? |
-    obj = Marshal.restore("#{prefix}#{data}")
-  : labels:
+  "obj = Marshal.restore(\"#{prefix}#{data}\")\n":
+    labels:
     - source: Marshal.restore("#{prefix}#{data}")
       style: primary
       start: 6
@@ -38,7 +62,7 @@ snapshots:
       style: secondary
       start: 14
       end: 21
-    - source: '"#{prefix}#{data}"'
+    - source: "\"#{prefix}#{data}\""
       style: secondary
       start: 22
       end: 40
@@ -46,9 +70,8 @@ snapshots:
       style: secondary
       start: 21
       end: 41
-  ? |
-    obj = Psych.unsafe_load(cookies[:state])
-  : labels:
+  "obj = Psych.unsafe_load(cookies[:state])\n":
+    labels:
     - source: Psych.unsafe_load(cookies[:state])
       style: primary
       start: 6
@@ -69,9 +92,8 @@ snapshots:
       style: secondary
       start: 23
       end: 40
-  ? |
-    obj = YAML.load(request.body.read)
-  : labels:
+  "obj = YAML.load(request.body.read)\n":
+    labels:
     - source: YAML.load(request.body.read)
       style: primary
       start: 6

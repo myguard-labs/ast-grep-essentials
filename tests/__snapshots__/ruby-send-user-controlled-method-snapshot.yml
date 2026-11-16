@@ -1,9 +1,30 @@
 id: ruby-send-user-controlled-method
 snapshots:
-  ? |
-    @user.send(params[:attr])
-  : labels:
-    - source: '@user.send(params[:attr])'
+  "@user.send(# note\n  params[:attr])\n":
+    labels:
+    - source: |-
+        @user.send(# note
+          params[:attr])
+      style: primary
+      start: 0
+      end: 34
+    - source: send
+      style: secondary
+      start: 6
+      end: 10
+    - source: params[:attr]
+      style: secondary
+      start: 20
+      end: 33
+    - source: |-
+        (# note
+          params[:attr])
+      style: secondary
+      start: 10
+      end: 34
+  "@user.send(params[:attr])\n":
+    labels:
+    - source: "@user.send(params[:attr])"
       style: primary
       start: 0
       end: 25
@@ -19,9 +40,8 @@ snapshots:
       style: secondary
       start: 10
       end: 25
-  ? |
-    obj.__send__(params.fetch(:m))
-  : labels:
+  "obj.__send__(params.fetch(:m))\n":
+    labels:
     - source: obj.__send__(params.fetch(:m))
       style: primary
       start: 0
@@ -38,9 +58,8 @@ snapshots:
       style: secondary
       start: 12
       end: 30
-  ? |
-    record.public_send(params[:method].to_sym)
-  : labels:
+  "record.public_send(params[:method].to_sym)\n":
+    labels:
     - source: record.public_send(params[:method].to_sym)
       style: primary
       start: 0
