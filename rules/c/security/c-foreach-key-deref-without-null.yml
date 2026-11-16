@@ -8,8 +8,10 @@ message: >-
   entries; check the key first.
 note: >-
   Syntactic only; matches ZSTR_VAL or ZSTR_LEN calls not inside a conditional
-  expression. It does not verify the enclosing foreach, the key variable
-  identity, or other NULL guards such as if statements.
+  expression, or inside the consequence of an if statement whose condition
+  is exactly the dereferenced variable or a != NULL test of it. It does not
+  verify the enclosing foreach, and other guards (early continue, && chains)
+  are not recognised.
 rule:
   all:
     - kind: call_expression
@@ -20,6 +22,20 @@ rule:
         inside:
           kind: conditional_expression
           stopBy: end
+    - has:
+        field: arguments
+        has:
+          pattern: $K
+    - not:
+        inside:
+          stopBy: end
+          kind: if_statement
+          field: consequence
+          has:
+            field: condition
+            any:
+              - pattern: ($K)
+              - pattern: ($K != NULL)
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
