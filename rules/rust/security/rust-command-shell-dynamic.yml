@@ -1,0 +1,48 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: rust-command-shell-dynamic
+language: rust
+severity: warning
+message: >-
+  A shell is started with -c and a command string that is not a literal. If any
+  part of that string comes from a request, file or environment, it is
+  interpreted as shell syntax. Run the program directly with separate arg
+  calls, or pass the value as a positional shell parameter and validate it.
+note: >-
+  [CWE-78]: Improper Neutralization of Special Elements used in an OS Command
+  [OWASP A05:2025] [A03:2021]: Injection
+  [REFERENCES]
+      - https://cwe.mitre.org/data/definitions/78.html
+      - https://owasp.org/Top10/A03_2021-Injection
+  Matches Command::new("sh"), "bash", "/bin/sh" or "/bin/bash" directly
+  followed by .arg("-c").arg(X) or .args(["-c", X]) or .args(&["-c", X]), where
+  X is not a string literal (an identifier, a format! call, a concatenation).
+  A literal command string is not reported. Other calls between new and arg, a
+  shell chosen through a variable, a path to another shell and an alias import
+  of Command are not resolved.
+utils:
+  shell-new:
+    regex: '(?s)^(?:(?:std::)?process::)?Command::new\(\s*"(?:sh|bash|/bin/sh|/bin/bash)"\s*\)$'
+rule:
+  kind: call_expression
+  any:
+    - pattern: '$CMD.arg("-c").arg($C)'
+    - pattern: '$CMD.args(["-c", $C])'
+    - pattern: '$CMD.args(&["-c", $C])'
+constraints:
+  CMD:
+    matches: shell-new
+  C:
+    not:
+      kind: string_literal
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-78'
+  owasp: 'A05:2025|A03:2021'
+  category: 'security'
+  subcategory: 'command-injection'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/78.html'
+  taxonomy_cited_keys: 'cwe'
