@@ -4,7 +4,29 @@ valid:
     zval *pzdata = zend_read_property(NULL, obj, "data", 4, false, &rv);
     if (EG(exception)) { return; }
     ZVAL_DEREF(pzdata);
+  - |-
+    zval *pzdata = zend_read_property(NULL, obj, "data", 4, false, &rv);
+    if (EG(exception)) return;
+    ZVAL_DEREF(pzdata);
+  - |-
+    zval *pzdata = zend_read_property(NULL, obj, "data", 4, false, &rv);
+    if (UNEXPECTED(EG(exception))) { return; }
+    ZVAL_DEREF(pzdata);
+  - |-
+    zval *pzdata = zend_read_property(NULL, obj, "data", 4, false, &rv);
+    if (EG(exception)) { return; }
+    log();
+    ZVAL_DEREF(pzdata);
 invalid:
   - |-
     zval *pzdata = zend_read_property(NULL, obj, "data", 4, false, &rv);
     ZVAL_DEREF(pzdata);
+  - 'void f(zend_object *obj) { zval rv; zval *pzdata = zend_read_property(NULL, obj, "data", 4, false, &rv); ZVAL_DEREF(pzdata); }'
+  - |-
+    zval *pzdata = zend_read_property(NULL, obj, "data", 4, false, &rv);
+    ZVAL_DEREF(pzdata);
+    if (EG(exception)) { return; }
+  - |-
+    zval *a = zend_read_property(NULL, obj, "a", 1, false, &rv);
+    zval *b = zend_read_property(NULL, obj, "b", 1, false, &rv);
+    ZVAL_DEREF(b);

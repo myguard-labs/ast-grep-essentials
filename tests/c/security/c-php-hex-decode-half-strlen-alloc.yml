@@ -3,5 +3,11 @@ valid:
   - >-
     if (strlen((char*)s->children->content) % 2 != 0) return NULL; str =
     zend_string_alloc(strlen((char*)s->children->content) / 2, 0);
+  - 'if (strlen(hex) % 2) { return NULL; } log(); str = zend_string_alloc(strlen(hex) / 2, 0);'
+  - 'if ((strlen(hex) % 2) == 1) return NULL; str = zend_string_alloc(strlen(hex) / 2, 0);'
+  - 'str = zend_string_alloc(strlen(hex), 0);'
 invalid:
   - 'str = zend_string_alloc(strlen((char*)s->children->content) / 2, 0);'
+  - 'str = zend_string_alloc(strlen(hex) / 2 + 1, 0);'
+  - 'void f(char *hex) { str = zend_string_alloc(strlen(hex) / 2, 0); }'
+  - 'str = zend_string_alloc(strlen(hex) /* c */ / 2, 0);'

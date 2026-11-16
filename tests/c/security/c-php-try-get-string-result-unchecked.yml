@@ -4,7 +4,25 @@ valid:
     zend_string *s = zval_try_get_string(zv);
         if (UNEXPECTED(s == NULL)) return NULL;
         use(s);
+  - |-
+    zend_string *s = zval_try_get_string(zv);
+    if (!s) return NULL;
+    use(s);
+  - |-
+    zend_string *s = zval_get_string(zv);
+    use(s);
+  - |-
+    zend_string *s = zval_try_get_string(zv);
+    zend_long n = 0;
+    if (EXPECTED(s != NULL)) { use(s, n); }
 invalid:
   - |-
     zend_string *s = zval_try_get_string(zv);
         use(s);
+  - |-
+    zend_string *str = zval_try_get_string(&args[0]);
+    ZVAL_STR(rv, str);
+  - 'void f(zval *zv) { zend_string *s = zval_try_get_string(zv); RETURN_STR(s); }'
+  - |-
+    zend_string *s = zval_try_get_string(zv);
+    len = ZSTR_LEN(s);

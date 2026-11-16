@@ -4,7 +4,13 @@ valid:
     void f(zval *cb, zval *arg, zval *ret TSRMLS_DC) { char *name; if
     (zend_is_callable(cb, 0, &name)) { call_user_function(CG(function_table),
     NULL, cb, ret, 1, &arg TSRMLS_CC); } }
+  - 'void f(zval *cb, zval *ret) { char *name; if (!zend_is_callable(cb, 0, &name)) { return; } call_user_function(CG(function_table), NULL, cb, ret, 0, NULL); }'
+  - 'void f(zval *cb, zval *ret) { char *name; if (zend_is_callable(cb, 0, &name)) { efree(name); } else { return; } { call_user_function(CG(function_table), NULL, cb, ret, 0, NULL); } }'
+  - 'void f(zval *cb, zval *ret) { char *name; if (zend_is_callable(cb, IS_CALLABLE_CHECK_SYNTAX_ONLY, &name) == 0) { return; } if (x) { call_user_function(CG(function_table), NULL, cb, ret, 0, NULL); } }'
 invalid:
   - >-
     void f(zval *cb, zval *arg, zval *ret TSRMLS_DC) {
     call_user_function(CG(function_table), NULL, cb, ret, 1, &arg TSRMLS_CC); }
+  - 'void f(zval *cb, zval *ret) { if (x) { call_user_function(CG(function_table), NULL, cb, ret, 0, NULL); } }'
+  - 'void f(zval *cb, zval *ret) { for (;;) { call_user_function(CG(function_table), NULL, cb, ret, 0, NULL); } }'
+  - 'void f(zval *cb, zval *ret) { if (call_user_function(CG(function_table), NULL, cb, ret, 0, NULL) == FAILURE) { return; } }'
