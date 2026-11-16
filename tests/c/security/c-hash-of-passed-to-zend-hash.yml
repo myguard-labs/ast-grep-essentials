@@ -1,5 +1,23 @@
 id: c-hash-of-passed-to-zend-hash
 valid:
   - 'if (HASH_OF(obj)) { zend_hash_internal_pointer_reset(HASH_OF(obj)); }'
+  - |-
+    HashTable *ht = HASH_OF(obj); if (ht) { zend_hash_internal_pointer_reset(ht); }
+  - |-
+    if (HASH_OF(obj) != NULL) { zend_hash_clean(HASH_OF(obj)); }
+  - |-
+    if (!HASH_OF(obj)) { return; } else { zend_hash_clean(HASH_OF(obj)); }
+  - |-
+    zend_hash_find(Z_ARRVAL_P(arr), key);
 invalid:
   - 'zend_hash_internal_pointer_reset(HASH_OF(obj));'
+  - |-
+    n = zend_hash_num_elements(HASH_OF(zv));
+  - |-
+    v = zend_hash_find(HASH_OF(obj), key);
+  - |-
+    if (obj) { zend_hash_clean(HASH_OF(obj)); }
+  - |-
+    while (more) { zend_hash_clean ( HASH_OF (obj) ); }
+  - |-
+    return zend_hash_str_exists(HASH_OF(arg), "k", 1);

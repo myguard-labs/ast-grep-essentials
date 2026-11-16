@@ -1,5 +1,15 @@
 id: c-dlsym-fnptr-called-unchecked
 snapshots:
+  "*(void **)(&fp) = dynlib_sym(h, \"f\"); return fp();":
+    labels:
+    - source: return fp();
+      style: primary
+      start: 38
+      end: 50
+    - source: "*(void **)(&fp) = dynlib_sym(h, \"f\");"
+      style: secondary
+      start: 0
+      end: 37
   "*(void **)(&fp) = dynlib_sym(h, \"f\"); return fp(t);":
     labels:
     - source: return fp(t);
@@ -10,3 +20,33 @@ snapshots:
       style: secondary
       start: 0
       end: 37
+  "*(void **)(&fp) = dynlib_sym(h, \"f\"); return fp(t, 1, 2);":
+    labels:
+    - source: return fp(t, 1, 2);
+      style: primary
+      start: 38
+      end: 57
+    - source: "*(void **)(&fp) = dynlib_sym(h, \"f\");"
+      style: secondary
+      start: 0
+      end: 37
+  "*(void **)(&fp) = dynlib_sym(h, \"f\", 3); return fp(t);":
+    labels:
+    - source: return fp(t);
+      style: primary
+      start: 41
+      end: 54
+    - source: "*(void **)(&fp) = dynlib_sym(h, \"f\", 3);"
+      style: secondary
+      start: 0
+      end: 40
+  "int g(void *h, int t) { *(void **)(&fp) = dynlib_sym(h, \"f\");\n return fp(t); }":
+    labels:
+    - source: return fp(t);
+      style: primary
+      start: 63
+      end: 76
+    - source: "*(void **)(&fp) = dynlib_sym(h, \"f\");"
+      style: secondary
+      start: 24
+      end: 61

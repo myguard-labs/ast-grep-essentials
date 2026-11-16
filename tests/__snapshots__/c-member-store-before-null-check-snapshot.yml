@@ -1,5 +1,77 @@
 id: c-member-store-before-null-check
 snapshots:
+  "ctx->priv->x = 1; if (ctx->priv != NULL) { run(); }":
+    labels:
+    - source: ctx->priv->x = 1;
+      style: primary
+      start: 0
+      end: 17
+    - source: ctx->priv != NULL
+      style: secondary
+      start: 22
+      end: 39
+    - source: ctx->priv != NULL
+      style: secondary
+      start: 22
+      end: 39
+    - source: if (ctx->priv != NULL) { run(); }
+      style: secondary
+      start: 18
+      end: 51
+  "p->x = 1; /* guard */ if (p != NULL) { run(); }":
+    labels:
+    - source: p->x = 1;
+      style: primary
+      start: 0
+      end: 9
+    - source: p != NULL
+      style: secondary
+      start: 26
+      end: 35
+    - source: p != NULL
+      style: secondary
+      start: 26
+      end: 35
+    - source: if (p != NULL) { run(); }
+      style: secondary
+      start: 22
+      end: 47
+  "p->x = 1; log(); if (p != NULL) { run(); } else { fail(); }":
+    labels:
+    - source: p->x = 1;
+      style: primary
+      start: 0
+      end: 9
+    - source: p != NULL
+      style: secondary
+      start: 21
+      end: 30
+    - source: p != NULL
+      style: secondary
+      start: 21
+      end: 30
+    - source: if (p != NULL) { run(); } else { fail(); }
+      style: secondary
+      start: 17
+      end: 59
+  "p->x = compute(1); if (p != NULL) { run(); }":
+    labels:
+    - source: p->x = compute(1);
+      style: primary
+      start: 0
+      end: 18
+    - source: p != NULL
+      style: secondary
+      start: 23
+      end: 32
+    - source: p != NULL
+      style: secondary
+      start: 23
+      end: 32
+    - source: if (p != NULL) { run(); }
+      style: secondary
+      start: 19
+      end: 44
   "prsactx->flag_allow_md = 0;\n    if (prsactx != NULL) { }":
     labels:
     - source: prsactx->flag_allow_md = 0;
@@ -18,3 +90,21 @@ snapshots:
       style: secondary
       start: 32
       end: 56
+  "void f(struct s *p) { p->x = 1; if (p != NULL) run(); }":
+    labels:
+    - source: p->x = 1;
+      style: primary
+      start: 22
+      end: 31
+    - source: p != NULL
+      style: secondary
+      start: 36
+      end: 45
+    - source: p != NULL
+      style: secondary
+      start: 36
+      end: 45
+    - source: if (p != NULL) run();
+      style: secondary
+      start: 32
+      end: 53

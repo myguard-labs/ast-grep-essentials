@@ -3,7 +3,25 @@ valid:
   - >-
     ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, val) { use(key ? ZSTR_VAL(key) :
     NULL); } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, val) { n = key ? ZSTR_LEN(key) : 0; } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, val) { use(Z_STRVAL_P(val)); } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, val) { use((key != NULL) ? ZSTR_VAL(key) : ""); } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, val) { h = ZSTR_H(key); } ZEND_HASH_FOREACH_END();
 invalid:
   - >-
     ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, val) { use(ZSTR_VAL(key)); }
     ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, val) { n = ZSTR_LEN(key); } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, val) { memcpy(buf, ZSTR_VAL(key), ZSTR_LEN(key)); } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, val) { name = (char *)ZSTR_VAL(key); } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { use((ZSTR_VAL(key))); } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, val) { use(idx ? 1 : 0, ZSTR_VAL(key)); } ZEND_HASH_FOREACH_END();

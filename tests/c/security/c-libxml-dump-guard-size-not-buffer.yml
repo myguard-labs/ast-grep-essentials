@@ -3,7 +3,21 @@ valid:
   - >-
     int size; char *mem; xmlDocDumpFormatMemory(doc, &mem, &size, fmt); if
     (!size || !mem) { return 0; } return mem_use(mem, size);
+  - |-
+    xmlDocDumpFormatMemory(doc, &mem, &size, fmt); if (!mem) { return 0; } return mem_use(mem, size);
+  - |-
+    xmlDocDumpFormatMemory(doc, &mem, &size, fmt); if (!mem || !size) { return 0; } return mem_use(mem, size);
+  - |-
+    xmlDocDumpFormatMemory(doc, &mem, &size, fmt); if (mem == NULL || size <= 0) { return 0; } return mem_use(mem, size);
+  - |-
+    xmlDocDumpFormatMemory(doc, &mem, &size, fmt); if (!size || !mem) { return 0; } else { done(); } return mem_use(mem, size);
 invalid:
   - >-
     int size; char *mem; xmlDocDumpFormatMemory(doc, &mem, &size, fmt); if
     (!size) { return 0; } return mem_use(mem, size);
+  - |-
+    xmlDocDumpFormatMemory(doc, &buf, &len, 0); if (!len) { return 0; } return mem_use(buf, len);
+  - |-
+    xmlDocDumpFormatMemory(doc, &mem, &size, fmt); if (!size) { return 0; } else { done(); } return mem_use(mem, size);
+  - |-
+    int f(xmlDocPtr doc) { xmlDocDumpFormatMemory(doc, &mem, &size, 1); if (!size) { log(); return 0; } return 1; }

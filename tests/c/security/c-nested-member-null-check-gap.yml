@@ -3,5 +3,23 @@ valid:
   - >-
     if (!inf->x_pkey || !inf->x_pkey->dec_pkey) { return; } check(inf->x509,
     inf->x_pkey->dec_pkey);
+  - |-
+    if (!inf->x_pkey || !inf->x_pkey->dec_pkey) return; v = inf->x_pkey->dec_pkey;
+  - |-
+    if (inf->x_pkey == NULL) { return; } if (inf->x_pkey->dec_pkey == NULL) { return; } check(inf->x509, inf->x_pkey->dec_pkey);
+  - |-
+    if (!inf->x_pkey) { return; } check(inf->x509, inf->x_pkey);
+  - |-
+    if (!a->k) return; use(b->k);
 invalid:
   - 'if (!inf->x_pkey) { return; } check(inf->x509, inf->x_pkey->dec_pkey);'
+  - |-
+    if (!inf->x_pkey) return; v = inf->x_pkey->dec_pkey;
+  - |-
+    if (!inf->x_pkey) { return; } log(); other(); check(inf->x_pkey->dec_pkey);
+  - |-
+    if (!inf->x_pkey) { return; } n = inf->x_pkey->dec_pkey->len;
+  - |-
+    void f(struct inf *inf) { if (!inf->x_pkey) { return; } check(inf->x509, inf->x_pkey->dec_pkey); }
+  - |-
+    if (!inf->x_pkey) { return; } check(inf->x509, (inf->x_pkey->dec_pkey));

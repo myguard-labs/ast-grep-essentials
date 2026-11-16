@@ -4,8 +4,26 @@ valid:
     struct res { int status; };
     struct obj { void *ptr; };
     int f(struct obj *o) { if (!o->ptr) return 0; return ((struct res *)o->ptr)->status; }
+  - |-
+    int f(struct obj *o) { if (o->ptr == NULL) return 0; return ((struct res *)o->ptr)->status; }
+  - |-
+    int f(struct obj *o) { struct res *r = (struct res *)o->ptr; return r != NULL; }
+  - |-
+    int f(struct obj *o) { return ((struct res)o->val).status; }
+  - |-
+    int f(struct obj *o) { if (!o || !o->vt) return -1; ((struct ops *)o->vt)->run(o); return 0; }
 invalid:
   - |-
     struct res { int status; };
     struct obj { void *ptr; };
     int f(struct obj *o) { return ((struct res *)o->ptr)->status; }
+  - |-
+    int f(struct obj *o) { ((struct res *)o->ptr)->status = 1; return 0; }
+  - |-
+    int f(struct obj *o) { return ((struct res *)o->inner->ptr)->status; }
+  - |-
+    int f(struct obj *o) { ((struct ops *)o->vt)->run(o); return 0; }
+  - |-
+    void f(struct obj *o) { for (;;) { /* walk */ use(((struct res *)o->ptr)->status); } }
+  - |-
+    int f(struct obj *o) { while (o) { n += ((struct res *)o->ptr)->status; o = o->next; } return n; }

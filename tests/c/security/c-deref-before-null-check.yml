@@ -1,5 +1,21 @@
 id: c-deref-before-null-check
 valid:
   - 'void f(struct s *body) { if (!body) return; body->data = 1; }'
+  - |-
+    void f(struct s *a, struct s *b) { a->data = 1; if (!b) return; }
+  - |-
+    void f(struct s *p) { if (!p) { return; } else { p->data = 1; } }
+  - |-
+    void f(struct s *p) { if (!p) return; p->data = 1; if (!p->next) return; }
 invalid:
   - 'void f(struct s *body) { body->data = 1; if (!body) return; }'
+  - |-
+    void f(struct s *body) { body->data = compute(2); if (!body) { cleanup(); return; } }
+  - |-
+    void f(struct s *body) { body->data = 1; log(); if (!body) return; }
+  - |-
+    void f(struct s *ctx) { ctx->body->data = 1; if (!ctx->body) return; }
+  - |-
+    void f(struct s *body) { body->data = 1; if (!body) { return; } else { run(); } }
+  - |-
+    void f(struct s *body) { while (n--) { body->data = n; if (!body) break; } }

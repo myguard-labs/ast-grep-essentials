@@ -1,8 +1,48 @@
 id: c-alloc-null-check-wrong-object
 snapshots:
-  typedef struct { void *c; } R; void *alloc(void); int f(R *r) { r->c = alloc(); if (r == NULL) return -1; return 0; }:
+  "int f(R *r) { r->c = alloc(); if (r == NULL) { free(r); return -1; } return 0; }":
     labels:
-    - source: '{ r->c = alloc(); if (r == NULL) return -1; return 0; }'
+    - source: "{ r->c = alloc(); if (r == NULL) { free(r); return -1; } return 0; }"
+      style: primary
+      start: 12
+      end: 80
+    - source: if (r == NULL) { free(r); return -1; }
+      style: secondary
+      start: 30
+      end: 68
+  "int f(R *r) { r->c = alloc(); if (r == NULL) { return -1; } else { return 0; } }":
+    labels:
+    - source: "{ r->c = alloc(); if (r == NULL) { return -1; } else { return 0; } }"
+      style: primary
+      start: 12
+      end: 80
+    - source: if (r == NULL) { return -1; } else { return 0; }
+      style: secondary
+      start: 30
+      end: 78
+  "int f(R *r) { r->c = alloc(); r->d = alloc(); if (r == NULL) return -1; return 0; }":
+    labels:
+    - source: "{ r->c = alloc(); r->d = alloc(); if (r == NULL) return -1; return 0; }"
+      style: primary
+      start: 12
+      end: 83
+    - source: if (r == NULL) return -1;
+      style: secondary
+      start: 46
+      end: 71
+  "int f(R *r) { while (n--) { r->c = alloc(); if (r == NULL) break; } return 0; }":
+    labels:
+    - source: "{ while (n--) { r->c = alloc(); if (r == NULL) break; } return 0; }"
+      style: primary
+      start: 12
+      end: 79
+    - source: if (r == NULL) break;
+      style: secondary
+      start: 44
+      end: 65
+  "typedef struct { void *c; } R; void *alloc(void); int f(R *r) { r->c = alloc(); if (r == NULL) return -1; return 0; }":
+    labels:
+    - source: "{ r->c = alloc(); if (r == NULL) return -1; return 0; }"
       style: primary
       start: 62
       end: 117
@@ -10,3 +50,13 @@ snapshots:
       style: secondary
       start: 80
       end: 105
+  "void f(R *r) { r->c = alloc(); /* check */ if (r == NULL) return; }":
+    labels:
+    - source: "{ r->c = alloc(); /* check */ if (r == NULL) return; }"
+      style: primary
+      start: 13
+      end: 67
+    - source: if (r == NULL) return;
+      style: secondary
+      start: 43
+      end: 65

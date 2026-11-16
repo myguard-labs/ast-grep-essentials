@@ -3,7 +3,25 @@ valid:
   - >-
     typedef struct { void *c; } R; void *alloc(void); int f(R *r) { r->c =
     alloc(); if (r->c == NULL) return -1; return 0; }
+  - |-
+    int f(R *r) { r->c = alloc(); if (!r->c) return -1; return 0; }
+  - |-
+    int f(R *r) { r->c = alloc(); if (r->c == NULL) { free(r); return -1; } return 0; }
+  - |-
+    int f(R *r) { r->c = alloc(); if (r->c == NULL || r->d == NULL) return -1; return 0; }
+  - |-
+    int f(R *r) { r->c = alloc(); if (NULL == r->c) return -1; return 0; }
 invalid:
   - >-
     typedef struct { void *c; } R; void *alloc(void); int f(R *r) { r->c =
     alloc(); if (r == NULL) return -1; return 0; }
+  - |-
+    int f(R *r) { r->c = alloc(); if (r == NULL) { return -1; } else { return 0; } }
+  - |-
+    int f(R *r) { r->c = alloc(); if (r == NULL) { free(r); return -1; } return 0; }
+  - |-
+    int f(R *r) { while (n--) { r->c = alloc(); if (r == NULL) break; } return 0; }
+  - |-
+    void f(R *r) { r->c = alloc(); /* check */ if (r == NULL) return; }
+  - |-
+    int f(R *r) { r->c = alloc(); r->d = alloc(); if (r == NULL) return -1; return 0; }

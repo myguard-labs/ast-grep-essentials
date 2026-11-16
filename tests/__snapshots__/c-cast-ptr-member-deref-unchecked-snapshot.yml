@@ -1,5 +1,47 @@
 id: c-cast-ptr-member-deref-unchecked
 snapshots:
+  "int f(struct obj *o) { ((struct ops *)o->vt)->run(o); return 0; }":
+    labels:
+    - source: ((struct ops *)o->vt)->run
+      style: primary
+      start: 23
+      end: 49
+    - source: int f(struct obj *o) { ((struct ops *)o->vt)->run(o); return 0; }
+      style: secondary
+      start: 0
+      end: 65
+  "int f(struct obj *o) { ((struct res *)o->ptr)->status = 1; return 0; }":
+    labels:
+    - source: ((struct res *)o->ptr)->status
+      style: primary
+      start: 23
+      end: 53
+    - source: int f(struct obj *o) { ((struct res *)o->ptr)->status = 1; return 0; }
+      style: secondary
+      start: 0
+      end: 70
+  "int f(struct obj *o) { return ((struct res *)o->inner->ptr)->status; }":
+    labels:
+    - source: ((struct res *)o->inner->ptr)->status
+      style: primary
+      start: 30
+      end: 67
+    - source: int f(struct obj *o) { return ((struct res *)o->inner->ptr)->status; }
+      style: secondary
+      start: 0
+      end: 70
+  "int f(struct obj *o) { while (o) { n += ((struct res *)o->ptr)->status; o = o->next; } return n; }":
+    labels:
+    - source: ((struct res *)o->ptr)->status
+      style: primary
+      start: 40
+      end: 70
+    - source: >-
+        int f(struct obj *o) { while (o) { n += ((struct res *)o->ptr)->status; o =
+        o->next; } return n; }
+      style: secondary
+      start: 0
+      end: 98
   "struct res { int status; };\nstruct obj { void *ptr; };\nint f(struct obj *o) { return ((struct res *)o->ptr)->status; }":
     labels:
     - source: ((struct res *)o->ptr)->status
@@ -10,3 +52,15 @@ snapshots:
       style: secondary
       start: 55
       end: 118
+  "void f(struct obj *o) { for (;;) { /* walk */ use(((struct res *)o->ptr)->status); } }":
+    labels:
+    - source: ((struct res *)o->ptr)->status
+      style: primary
+      start: 50
+      end: 80
+    - source: >-
+        void f(struct obj *o) { for (;;) { /* walk */ use(((struct res
+        *)o->ptr)->status); } }
+      style: secondary
+      start: 0
+      end: 86

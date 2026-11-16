@@ -1,5 +1,33 @@
 id: c-alloc-assign-null-check-other-field
 snapshots:
+  ctx->ret->name = OPENSSL_strdup(src); if (ctx->ret->propq == NULL) return NULL;:
+    labels:
+    - source: ctx->ret->name = OPENSSL_strdup(src);
+      style: primary
+      start: 0
+      end: 37
+    - source: ctx->ret->propq == NULL
+      style: secondary
+      start: 42
+      end: 65
+    - source: if (ctx->ret->propq == NULL) return NULL;
+      style: secondary
+      start: 38
+      end: 79
+  "int f(struct r *ret) { ret->buf = OPENSSL_malloc(n);\n if (ret->len == NULL) { return 0; } return 1; }":
+    labels:
+    - source: ret->buf = OPENSSL_malloc(n);
+      style: primary
+      start: 23
+      end: 52
+    - source: ret->len == NULL
+      style: secondary
+      start: 58
+      end: 74
+    - source: if (ret->len == NULL) { return 0; }
+      style: secondary
+      start: 54
+      end: 89
   ret->name = OPENSSL_strdup(propq); if (ret->propq == NULL) return NULL;:
     labels:
     - source: ret->name = OPENSSL_strdup(propq);
@@ -14,3 +42,45 @@ snapshots:
       style: secondary
       start: 35
       end: 71
+  ret->name = OPENSSL_strdup(src); if (ret->propq == NULL) return NULL; else use(ret);:
+    labels:
+    - source: ret->name = OPENSSL_strdup(src);
+      style: primary
+      start: 0
+      end: 32
+    - source: ret->propq == NULL
+      style: secondary
+      start: 37
+      end: 55
+    - source: if (ret->propq == NULL) return NULL; else use(ret);
+      style: secondary
+      start: 33
+      end: 84
+  "ret->name = OPENSSL_strdup(src, 1, 2); if ((ret->propq == NULL)) { free(ret); return NULL; }":
+    labels:
+    - source: ret->name = OPENSSL_strdup(src, 1, 2);
+      style: primary
+      start: 0
+      end: 38
+    - source: ret->propq == NULL
+      style: secondary
+      start: 44
+      end: 62
+    - source: if ((ret->propq == NULL)) { free(ret); return NULL; }
+      style: secondary
+      start: 39
+      end: 92
+  ret->name = strdup(src); if (ret->other == NULL) return NULL;:
+    labels:
+    - source: ret->name = strdup(src);
+      style: primary
+      start: 0
+      end: 24
+    - source: ret->other == NULL
+      style: secondary
+      start: 29
+      end: 47
+    - source: if (ret->other == NULL) return NULL;
+      style: secondary
+      start: 25
+      end: 61
