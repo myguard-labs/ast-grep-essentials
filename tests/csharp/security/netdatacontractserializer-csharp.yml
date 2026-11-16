@@ -1,0 +1,39 @@
+id: netdatacontractserializer-csharp
+valid:
+  - |
+    class Example {
+        void Load() {
+            var s = new DataContractSerializer(typeof(Item));
+        }
+    }
+  - |
+    class Example {
+        void Load() {
+            var s = new MyNetDataContractSerializerWrapper();
+        }
+    }
+  - |
+    class Example {
+        void Load() {
+            var t = typeof(NetDataContractSerializer);
+        }
+    }
+invalid:
+  - |
+    class Example {
+        void Load() {
+            var s = new NetDataContractSerializer();
+        }
+    }
+  - |
+    class Example {
+        void Load() {
+            var s = new System.Runtime.Serialization.NetDataContractSerializer(ctx);
+        }
+    }
+  - |
+    class Example {
+        void Load() {
+            var s = new NetDataContractSerializer { AssemblyFormat = FormatterAssemblyStyle.Simple };
+        }
+    }
