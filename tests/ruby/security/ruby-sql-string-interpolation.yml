@@ -1,0 +1,22 @@
+id: ruby-sql-string-interpolation
+valid:
+  - |
+    User.where("id = ?", params[:id])
+  - |
+    User.where(id: params[:id])
+  - |
+    User.where("active = 1")
+  - |
+    User.find_by_sql(["select * from users where id = ?", id])
+  - |
+    # User.where("name = '#{name}'")
+    note = "User.where(\"name = '#{name}'\")"
+invalid:
+  - |
+    User.where("name = '#{params[:name]}'")
+  - |
+    User.find_by_sql("select * from users where id = #{id}")
+  - |
+    User.where("name = '" + name + "'")
+  - |
+    scope.having("count(*) > #{limit}")

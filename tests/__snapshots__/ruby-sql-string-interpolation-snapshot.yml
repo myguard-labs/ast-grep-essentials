@@ -1,0 +1,90 @@
+id: ruby-sql-string-interpolation
+snapshots:
+  ? |
+    User.find_by_sql("select * from users where id = #{id}")
+  : labels:
+    - source: 'User.find_by_sql("select * from users where id = #{id}")'
+      style: primary
+      start: 0
+      end: 56
+    - source: find_by_sql
+      style: secondary
+      start: 5
+      end: 16
+    - source: '#{id}'
+      style: secondary
+      start: 49
+      end: 54
+    - source: '"select * from users where id = #{id}"'
+      style: secondary
+      start: 17
+      end: 55
+    - source: '("select * from users where id = #{id}")'
+      style: secondary
+      start: 16
+      end: 56
+  ? |
+    User.where("name = '" + name + "'")
+  : labels:
+    - source: User.where("name = '" + name + "'")
+      style: primary
+      start: 0
+      end: 35
+    - source: where
+      style: secondary
+      start: 5
+      end: 10
+    - source: '"name = ''" + name + "''"'
+      style: secondary
+      start: 11
+      end: 34
+    - source: ("name = '" + name + "'")
+      style: secondary
+      start: 10
+      end: 35
+  ? |
+    User.where("name = '#{params[:name]}'")
+  : labels:
+    - source: User.where("name = '#{params[:name]}'")
+      style: primary
+      start: 0
+      end: 39
+    - source: where
+      style: secondary
+      start: 5
+      end: 10
+    - source: '#{params[:name]}'
+      style: secondary
+      start: 20
+      end: 36
+    - source: '"name = ''#{params[:name]}''"'
+      style: secondary
+      start: 11
+      end: 38
+    - source: ("name = '#{params[:name]}'")
+      style: secondary
+      start: 10
+      end: 39
+  ? |
+    scope.having("count(*) > #{limit}")
+  : labels:
+    - source: 'scope.having("count(*) > #{limit}")'
+      style: primary
+      start: 0
+      end: 35
+    - source: having
+      style: secondary
+      start: 6
+      end: 12
+    - source: '#{limit}'
+      style: secondary
+      start: 25
+      end: 33
+    - source: '"count(*) > #{limit}"'
+      style: secondary
+      start: 13
+      end: 34
+    - source: '("count(*) > #{limit}")'
+      style: secondary
+      start: 12
+      end: 35

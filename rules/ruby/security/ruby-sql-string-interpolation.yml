@@ -1,0 +1,41 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ruby-sql-string-interpolation
+language: ruby
+severity: warning
+message: >-
+  where, not, having or find_by_sql builds its SQL from an interpolated or
+  concatenated string. Pass bind values instead of splicing them into the query.
+note: >-
+  Fires on a where, not, having or find_by_sql call whose first argument is a
+  double-quoted string with interpolation or a string concatenation with +. A
+  parameterized where("id = ?", id), a hash condition and a constant string are
+  not matched. Interpolating a trusted constant or a quoted identifier is the
+  routine dismissal.
+rule:
+  kind: call
+  all:
+    - has:
+        field: method
+        regex: '^(where|not|having|find_by_sql)$'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          nthChild: 1
+          any:
+            - kind: string
+              has:
+                kind: interpolation
+            - kind: binary
+              regex: '^"[^"]*"\s*\+'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-89'
+  owasp: 'A05:2025|A03:2021'
+  category: 'security'
+  subcategory: 'sql-injection'
+  references: 'https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html'
