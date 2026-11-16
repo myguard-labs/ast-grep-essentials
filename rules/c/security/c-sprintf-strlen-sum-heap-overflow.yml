@@ -7,17 +7,60 @@ message: >-
   sprintf writes into a destination with no bound; verify the destination
   allocation covers the formatted output.
 note: >-
-  Single-file syntactic match on a sprintf call whose format argument is a
-  literal string and whose destination is a plain identifier. It does not
-  verify that the destination came from malloc, that its size is
-  strlen-derived, or that the write exceeds the allocation; those need
-  dataflow or type information.
+  Syntactic match on a sprintf call whose format argument is a literal string
+  and whose destination identifier was assigned (or initialised) from malloc with a
+  strlen-sum size (an arithmetic expression containing a strlen call) in an
+  enclosing block of the same function body. It does not verify that the formatted
+  output exceeds that allocation; that needs dataflow or type information.
+  A sprintf into a malloc(n) buffer without a strlen sum is not matched here;
+  c-sprintf-into-sized-alloc reports any sprintf call with a variable
+  destination.
 rule:
-  pattern: 'sprintf($DST, "$$$FMT", $$$ARGS)'
+  all:
+    - pattern: 'sprintf($DST, "$$$FMT", $$$ARGS)'
+    - any:
+        - inside:
+            stopBy: end
+            kind: compound_statement
+            has:
+              stopBy: end
+              any:
+                - pattern: '$DST = malloc($SZ)'
+                - pattern:
+                    context: 'char *$DST = malloc($SZ)'
+                    selector: init_declarator
+        - all:
+            - not:
+                inside:
+                  stopBy: end
+                  kind: function_definition
+            - inside:
+                stopBy: end
+                kind: translation_unit
+                has:
+                  stopBy: end
+                  all:
+                    - any:
+                        - pattern: '$DST = malloc($SZ)'
+                        - pattern:
+                            context: 'char *$DST = malloc($SZ)'
+                            selector: init_declarator
+                    - not:
+                        inside:
+                          stopBy: end
+                          kind: function_definition
+constraints:
+  SZ:
+    all:
+      - kind: binary_expression
+      - has:
+          stopBy: end
+          kind: call_expression
+          has: {field: function, regex: '^strlen$'}
 metadata:
-  rule_modified_at: '2026-10-15'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-15'
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-11-16'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard
@@ -26,5 +69,6 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/120.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - "FP: sprintf into a malloc'd buffer sized without a strlen sum ('buf = malloc(n); sprintf(buf, \"%s\", a);') matches; narrowing to a strlen-sum allocation would drop existing invalid cases that use malloc(n)"
     - "FN: concatenated string-literal format 'sprintf(cmd, \"%s\" \"x\", a)' is not matched"
+    - "FN: cast allocation 'cmd = (char *)malloc(strlen(a) + 1); sprintf(cmd, \"%s\", a);' is not matched"
+    - "FN: strlen-sum without arithmetic 'cmd = malloc(strlen(a)); sprintf(cmd, \"%s\", a);' is not matched"

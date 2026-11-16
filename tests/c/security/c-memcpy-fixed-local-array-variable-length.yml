@@ -6,6 +6,10 @@ valid:
   - "int *buf = malloc(n); memcpy(buf, src, n);"
   - "int buf[8]; memcpy(buf, src, 2 * sizeof(int));"
   - "char buf[8]; if (n <= sizeof(buf)) { memcpy(buf, src, n); }"
+  - "char buf[8]; if (n <= sizeof buf) { memcpy(buf, src, n); }"
+  - "char buf[8]; if (sizeof(buf) >= n) { memcpy(buf, src, n); }"
+  - "char buf[8]; if (ok && n <= sizeof(buf)) { memcpy(buf, src, n); }"
+  - "int buf[8]; memcpy(buf, src, sizeof(int) * 2);"
 invalid:
   - 'int buf[2]; memcpy(buf, src, n * sizeof(int));'
   - "int buf[2]; memcpy(buf, src, n);"
@@ -13,3 +17,6 @@ invalid:
   - "char buf[8]; if (n <= sizeof(buf)) { f(); } else { memcpy(buf, src, n); }"
   - "char buf[8]; if (m <= sizeof(buf)) memcpy(buf, src, n);"
   - "char buf[8]; if (n <= sizeof(buf)) { memcpy(buf, src, n); } else { memcpy(buf, src, n); }"
+  - "char buf[8]; if (n <= sizeof(buf) || force) { memcpy(buf, src, n); }"
+  - "char buf[8]; if (!(n <= sizeof(buf))) { memcpy(buf, src, n); }"
+  - "char buf[8]; if (sizeof(buf) >= n || force) { memcpy(buf, src, n); }"

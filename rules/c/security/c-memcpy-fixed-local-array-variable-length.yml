@@ -9,11 +9,13 @@ message: >-
 note: >-
   Syntactic only; requires the destination identifier to be declared as an
   array in an enclosing block (or at file level for top-level statements),
-  skips a constant N * sizeof(T) length (not variable-length, so out of scope)
-  and a copy inside the then-branch of an if whose condition is
-  `<len> <= sizeof(dst)` on the same length expression; a copy in the else
-  branch or guarded by a different length still matches. Other guards still
-  match; a destination that is a global array used inside a function is not
+  skips a constant N * sizeof(T) or sizeof(T) * N length (not
+  variable-length, so out of scope) and a copy inside the then-branch of an if
+  whose condition is, or has an && operand that is,
+  `<len> <= sizeof(dst)` or `sizeof(dst) >= <len>` (sizeof with or without
+  parentheses) on the same length expression; a copy in the else branch,
+  guarded by a different length, or whose guard is an operand of || or ! still
+  matches. Other guards still match; a destination that is a global array used inside a function is not
   matched. The array declaration is looked up by name, so it may match a
   declaration in a sibling block or one that appears later in the scope.
 rule:
@@ -50,8 +52,29 @@ rule:
             has:
               field: condition
               has:
-                stopBy: end
-                pattern: '$LEN <= sizeof($DST)'
+                any:
+                  - pattern: '$LEN <= sizeof($DST)'
+                  - pattern: '$LEN <= sizeof $DST'
+                  - pattern: 'sizeof($DST) >= $LEN'
+                  - pattern: 'sizeof $DST >= $LEN'
+                  - all:
+                      - kind: binary_expression
+                      - has: {field: operator, regex: '^&&$'}
+                      - has:
+                          any:
+                            - pattern: '$LEN <= sizeof($DST)'
+                            - pattern: '$LEN <= sizeof $DST'
+                            - pattern: 'sizeof($DST) >= $LEN'
+                            - pattern: 'sizeof $DST >= $LEN'
+                            - all:
+                                - kind: binary_expression
+                                - has: {field: operator, regex: '^&&$'}
+                                - has:
+                                    any:
+                                      - pattern: '$LEN <= sizeof($DST)'
+                                      - pattern: '$LEN <= sizeof $DST'
+                                      - pattern: 'sizeof($DST) >= $LEN'
+                                      - pattern: 'sizeof $DST >= $LEN'
 constraints:
   DST:
     kind: identifier
@@ -61,13 +84,18 @@ constraints:
         - kind: sizeof_expression
         - all:
             - kind: binary_expression
-            - has: {field: left, kind: number_literal}
             - has: {field: operator, regex: '^\*$'}
-            - has: {field: right, kind: sizeof_expression}
+            - any:
+                - all:
+                    - has: {field: left, kind: number_literal}
+                    - has: {field: right, kind: sizeof_expression}
+                - all:
+                    - has: {field: left, kind: sizeof_expression}
+                    - has: {field: right, kind: number_literal}
 metadata:
-  rule_modified_at: '2026-10-20'
+  rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.51.0
-  validated_at: '2026-10-20'
+  validated_at: '2026-11-16'
   created_at: '2026-10-20'
   source: 'MyGuard'
   modified_by: MyGuard
@@ -79,3 +107,6 @@ metadata:
     - "FN: constant N * sizeof(T) length that exceeds the array 'int buf[2]; memcpy(buf, src, 8 * sizeof(int));' is not matched (not variable-length)"
     - "FN: global array destination used inside a function 'char g[4]; void f(size_t n){ memcpy(g, src, n); }' is not matched"
     - "FN: member destination 'memcpy(s->buf, src, n)' with unchecked n is not matched (rule requires identifier destination)"
+    - "FP: strictly smaller guard 'if (n < sizeof(buf)) memcpy(buf, src, n);' and a doubly parenthesised guard 'if ((n <= sizeof(buf)))' still match (only <= / >= with a single parenthesis level are recognised)"
+    - "FP: && guard unrolled two levels 'if (n <= sizeof(buf) && a && b && c) memcpy(buf, src, n);' still matches (the guard operand is only searched two && levels deep)"
+    - "FP: cast guard 'if ((size_t)n <= sizeof(buf)) memcpy(buf, src, n);' still matches (a cast on the length is not recognised)"
