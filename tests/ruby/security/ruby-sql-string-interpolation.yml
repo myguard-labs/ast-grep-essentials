@@ -9,6 +9,8 @@ valid:
   - |
     User.find_by_sql(["select * from users where id = ?", id])
   - |
+    User.where('id = 1')
+  - |
     # User.where("name = '#{name}'")
     note = "User.where(\"name = '#{name}'\")"
 invalid:
@@ -20,3 +22,5 @@ invalid:
     User.where("name = '" + name + "'")
   - |
     scope.having("count(*) > #{limit}")
+  - |
+    User.where('id = ' + params[:id])

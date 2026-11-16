@@ -8,7 +8,7 @@ message: >-
   concatenated string. Pass bind values instead of splicing them into the query.
 note: >-
   Fires on a where, not, having or find_by_sql call whose first argument is a
-  double-quoted string with interpolation or a string concatenation with +. A
+  double-quoted string with interpolation or a string concatenation with + that starts with a quoted literal. A
   parameterized where("id = ?", id), a hash condition and a constant string are
   not matched. Interpolating a trusted constant or a quoted identifier is the
   routine dismissal.
@@ -28,7 +28,7 @@ rule:
               has:
                 kind: interpolation
             - kind: binary
-              regex: '^"[^"]*"\s*\+'
+              regex: '^("[^"]*"|''[^'']*'')\s*\+'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'
