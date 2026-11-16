@@ -6,6 +6,18 @@ snapshots:
       style: primary
       start: 29
       end: 50
+    - source: strlen
+      style: secondary
+      start: 13
+      end: 19
+    - source: strlen(a)
+      style: secondary
+      start: 13
+      end: 22
+    - source: strlen(a) + 1
+      style: secondary
+      start: 13
+      end: 26
     - source: cmd = malloc(strlen(a) + 1)
       style: secondary
       start: 0
@@ -14,6 +26,12 @@ snapshots:
       style: secondary
       start: 0
       end: 51
+  "cmd = malloc(strlen(a) + strlen(b) + 4); sprintf(cmd, \"%s /c %s\", a, b);":
+    labels:
+    - source: sprintf(cmd, "%s /c %s", a, b)
+      style: primary
+      start: 41
+      end: 71
     - source: strlen
       style: secondary
       start: 13
@@ -22,12 +40,10 @@ snapshots:
       style: secondary
       start: 13
       end: 22
-  "cmd = malloc(strlen(a) + strlen(b) + 4); sprintf(cmd, \"%s /c %s\", a, b);":
-    labels:
-    - source: sprintf(cmd, "%s /c %s", a, b)
-      style: primary
-      start: 41
-      end: 71
+    - source: strlen(a) + strlen(b) + 4
+      style: secondary
+      start: 13
+      end: 38
     - source: cmd = malloc(strlen(a) + strlen(b) + 4)
       style: secondary
       start: 0
@@ -36,28 +52,38 @@ snapshots:
       style: secondary
       start: 0
       end: 72
+  "void f(char *a, char *b) { char *cmd = malloc(n); cmd = malloc(strlen(a) + strlen(b) + 2); sprintf(cmd, \"%s %s\", a, b); }":
+    labels:
+    - source: sprintf(cmd, "%s %s", a, b)
+      style: primary
+      start: 91
+      end: 118
     - source: strlen
       style: secondary
-      start: 13
-      end: 19
+      start: 63
+      end: 69
     - source: strlen(a)
       style: secondary
-      start: 13
-      end: 22
+      start: 63
+      end: 72
+    - source: strlen(a) + strlen(b) + 2
+      style: secondary
+      start: 63
+      end: 88
+    - source: cmd = malloc(strlen(a) + strlen(b) + 2)
+      style: secondary
+      start: 50
+      end: 89
+    - source: "{ char *cmd = malloc(n); cmd = malloc(strlen(a) + strlen(b) + 2); sprintf(cmd, \"%s %s\", a, b); }"
+      style: secondary
+      start: 25
+      end: 121
   "void f(void) { char *cmd = malloc(strlen(a) + 4); sprintf(cmd, \"%s\", a); }":
     labels:
     - source: sprintf(cmd, "%s", a)
       style: primary
       start: 50
       end: 71
-    - source: "*cmd = malloc(strlen(a) + 4)"
-      style: secondary
-      start: 20
-      end: 48
-    - source: "{ char *cmd = malloc(strlen(a) + 4); sprintf(cmd, \"%s\", a); }"
-      style: secondary
-      start: 13
-      end: 74
     - source: strlen
       style: secondary
       start: 34
@@ -66,3 +92,15 @@ snapshots:
       style: secondary
       start: 34
       end: 43
+    - source: strlen(a) + 4
+      style: secondary
+      start: 34
+      end: 47
+    - source: "*cmd = malloc(strlen(a) + 4)"
+      style: secondary
+      start: 20
+      end: 48
+    - source: "{ char *cmd = malloc(strlen(a) + 4); sprintf(cmd, \"%s\", a); }"
+      style: secondary
+      start: 13
+      end: 74
