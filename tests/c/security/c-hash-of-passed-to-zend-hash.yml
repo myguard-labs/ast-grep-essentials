@@ -15,6 +15,9 @@ valid:
     if (!HASH_OF(obj)) return; n = zend_hash_num_elements(HASH_OF(obj));
   - |-
     void f(zval *obj, int enabled) { if (!HASH_OF(obj) || !enabled) return; zend_hash_clean(HASH_OF(obj)); }
+  - 'void f(zval *obj, int enabled) { if (enabled || !HASH_OF(obj)) return; zend_hash_clean(HASH_OF(obj)); }'
+  - 'void f(zval *obj, int a, int b) { if (a) { if (b) { if (HASH_OF(obj)) { zend_hash_clean(HASH_OF(obj)); } } } }'
+  - 'void f(zval *obj, int a) { if (a) { if (!HASH_OF(obj)) return; zend_hash_clean(HASH_OF(obj)); } }'
 invalid:
   - 'zend_hash_internal_pointer_reset(HASH_OF(obj));'
   - |-
@@ -33,3 +36,7 @@ invalid:
     if (!HASH_OF(obj)) { log(); } zend_hash_clean(HASH_OF(obj));
   - |-
     void f(zval *obj, int enabled) { if (!HASH_OF(obj) && enabled) return; zend_hash_clean(HASH_OF(obj)); }
+  - 'void f(zval *obj, int enabled) { if (enabled && !HASH_OF(obj)) return; zend_hash_clean(HASH_OF(obj)); }'
+  - 'void f(zval *obj, int a, int b) { if (a) { if (b) { zend_hash_clean(HASH_OF(obj)); } } }'
+  - 'void f(zval *obj, int enabled) { if (enabled || !HASH_OF(obj)) log(); zend_hash_clean(HASH_OF(obj)); }'
+  - 'void f(zval *a, zval *b) { if (!HASH_OF(b)) return; zend_hash_merge(HASH_OF(a), HASH_OF(b), 0); }'
