@@ -1,0 +1,32 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: cipher-default-ecb-mode-kotlin
+language: kotlin
+severity: warning
+message: >-
+  This Cipher transformation uses ECB, either implicitly (a bare algorithm name
+  such as "AES" falls back to ECB with PKCS5 padding) or explicitly. ECB leaks
+  plaintext patterns and gives no integrity. Use an authenticated mode such as
+  "AES/GCM/NoPadding".
+note: >-
+  Matches Cipher.getInstance with a literal block-cipher name that has no mode,
+  or the same name with an explicit ECB mode. Nonliteral transformations, string
+  templates and receivers other than a plain Cipher identifier are not resolved.
+rule:
+  pattern: Cipher.getInstance($ALG)
+constraints:
+  ALG:
+    regex: '^"(AES|AES_128|AES_192|AES_256|DES|DESede|TripleDES|Blowfish|RC2|Camellia|SEED|ARIA)(/ECB/[A-Za-z0-9]+)?"$'
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.45.2
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-327'
+  owasp: 'A04:2025|A02:2021'
+  category: 'security'
+  subcategory: 'cryptography'
+  references: 'https://cwe.mitre.org/data/definitions/327.html'
