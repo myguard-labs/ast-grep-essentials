@@ -1,0 +1,22 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: swift-keychain-accessible-always
+language: swift
+severity: warning
+message: >-
+  kSecAttrAccessibleAlways keeps the Keychain item readable while the device is locked; use kSecAttrAccessibleWhenUnlocked or AfterFirstUnlock.
+note: >-
+  [CWE-311]: Missing Encryption of Sensitive Data
+  [OWASP A02:2021]: Cryptographic Failures
+  Matches the deprecated identifiers kSecAttrAccessibleAlways and kSecAttrAccessibleAlwaysThisDeviceOnly by name wherever they appear.
+rule:
+  kind: simple_identifier
+  regex: '^kSecAttrAccessibleAlways(ThisDeviceOnly)?$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-311'
+  owasp: 'A04:2025|A02:2021'
+  category: 'security'

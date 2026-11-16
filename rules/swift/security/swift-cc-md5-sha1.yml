@@ -1,0 +1,23 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: swift-cc-md5-sha1
+language: swift
+severity: warning
+message: >-
+  CC_MD5 and CC_SHA1 are broken hash functions; use CC_SHA256 or CryptoKit SHA256 instead.
+note: >-
+  [CWE-327]: Use of a Broken or Risky Cryptographic Algorithm
+  [OWASP A02:2021]: Cryptographic Failures
+  Syntactic match on calls to CC_MD5 or CC_SHA1 by name; it does not resolve the declaration or judge whether the digest is security relevant.
+rule:
+  any:
+    - pattern: 'CC_MD5($$$ARGS)'
+    - pattern: 'CC_SHA1($$$ARGS)'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-327'
+  owasp: 'A04:2025|A02:2021'
+  category: 'security'
