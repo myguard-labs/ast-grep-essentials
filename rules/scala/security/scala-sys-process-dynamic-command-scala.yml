@@ -1,0 +1,83 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: scala-sys-process-dynamic-command-scala
+language: scala
+severity: warning
+message: >-
+  A scala.sys.process command is built from a string that is interpolated or
+  concatenated at run time and then executed with the `!` or `!!` operator.
+  The process library splits that string on whitespace, so a value that
+  carries spaces, quotes or option-like text changes the program name or its
+  arguments. Pass the program and each argument as separate elements of a Seq
+  or Process(Seq(...)) and validate or allow-list any value that comes from a
+  request, file or environment.
+note: >-
+  [CWE-78]: Improper Neutralization of Special Elements used in an OS Command
+  [OWASP A05:2025]: Injection
+  [REFERENCES]
+      - https://cwe.mitre.org/data/definitions/78.html
+      - https://owasp.org/Top10/A03_2021-Injection
+  Matches `s"..."`, `f"..."` or `raw"..."` with an interpolation, or a `+`
+  concatenation with a non-literal operand, run through `.!` or `.!!`, both
+  directly and inside `Process(...)`. A literal command and an argument Seq
+  are not reported. A plain identifier receiver is not reported because its
+  origin cannot be told from syntax alone.
+utils:
+  dynamic-string:
+    any:
+      - kind: interpolated_string_expression
+        all:
+          - has:
+              field: interpolator
+              kind: identifier
+              regex: ^(s|f|raw)$
+          - has:
+              stopBy: end
+              kind: interpolation
+      - kind: infix_expression
+        all:
+          - has:
+              field: operator
+              regex: ^\+$
+          - has:
+              stopBy: end
+              field: right
+              not:
+                kind: string
+rule:
+  kind: field_expression
+  all:
+    - has:
+        field: field
+        kind: operator_identifier
+        regex: ^!!?$
+    - has:
+        field: value
+        any:
+          - matches: dynamic-string
+          - kind: parenthesized_expression
+            has:
+              matches: dynamic-string
+          - kind: call_expression
+            all:
+              - has:
+                  field: function
+                  kind: identifier
+                  regex: ^Process$
+              - has:
+                  field: arguments
+                  kind: arguments
+                  has:
+                    nthChild: 1
+                    matches: dynamic-string
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-78'
+  owasp: 'A05:2025|A03:2021'
+  category: 'security'
+  subcategory: 'command-injection'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/78.html'
+  taxonomy_cited_keys: 'cwe'

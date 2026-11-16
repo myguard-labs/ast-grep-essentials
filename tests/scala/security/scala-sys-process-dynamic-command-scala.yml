@@ -1,0 +1,47 @@
+id: scala-sys-process-dynamic-command-scala
+valid:
+  - |
+    import scala.sys.process._
+    object A {
+      def ok(): Int = "ls -l".!
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def ok(dir: String): String = Seq("ls", "-l", dir).!!
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def ok(dir: String): Int = Process(Seq("ls", dir)).!
+    }
+  - |
+    object A {
+      def ok(name: String): String = s"hello $name".length.toString
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def ok(): Int = ("ls " + "-l").!
+    }
+invalid:
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String): Int = s"ls -l $dir".!
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String): String = ("ls -l " + dir).!!
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(dir: String): Int = Process(s"tar xf $dir").!
+    }
+  - |
+    import scala.sys.process._
+    object A {
+      def bad(host: String): String = Process("ping -c1 " + host).!!
+    }
