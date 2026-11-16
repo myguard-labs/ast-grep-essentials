@@ -38,6 +38,21 @@ rule:
                 has:
                   field: alternative
                   kind: else_clause
+            - not:
+                precedes:
+                  stopBy: end
+                  all:
+                    - kind: expression_statement
+                    - has:
+                        kind: assignment_expression
+                        has:
+                          field: left
+                          pattern: '$X'
+                    - precedes:
+                        stopBy: end
+                        has:
+                          pattern: '$X->$F'
+                          stopBy: end
             - has:
                 field: consequence
                 any:
