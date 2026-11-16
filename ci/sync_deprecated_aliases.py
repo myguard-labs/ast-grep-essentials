@@ -128,14 +128,30 @@ def expected_alias(document: dict, target_path: Path, target_id: str) -> dict:
     return expected
 
 
-def sync(root: Path, *, check: bool) -> int:
+def sync(root: Path, *, check: bool, rule_ids: tuple[str, ...] = ()) -> int:
+    """Sync every alias, or only those of ``rule_ids`` when given.
+
+    A named rule selects the aliases whose ``deprecated_alias_of`` is that rule,
+    and the rule itself when it is an alias. Every named rule must exist.
+    Without ``rule_ids`` the whole tree is checked, as before.
+    """
+    scoped = set(rule_ids)
+    for rule_id in sorted(scoped):
+        find_rule(root, rule_id)
     drifted: list[str] = []
     for path in sorted(root.glob("rules/*/*/*.yml")):
-        document = yaml.safe_load(path.read_text())
+        text = path.read_text()
+        if scoped:
+            # Cheap text prefilter: skip the YAML parse for non-alias files.
+            if ALIAS_KEY not in text:
+                continue
+        document = yaml.safe_load(text)
         if not isinstance(document, dict):
             continue
         target_id = alias_target(document)
         if target_id is None:
+            continue
+        if scoped and path.stem not in scoped and target_id not in scoped:
             continue
 
         target_path = find_rule(root, target_id)
@@ -166,8 +182,14 @@ def main() -> int:
         action="store_true",
         help="fail instead of rewriting when an alias has drifted",
     )
+    parser.add_argument(
+        "rule_ids",
+        nargs="*",
+        metavar="RULE_ID",
+        help="sync only the aliases of these rules (default: every alias)",
+    )
     args = parser.parse_args()
-    return sync(args.root.resolve(), check=args.check)
+    return sync(args.root.resolve(), check=args.check, rule_ids=tuple(args.rule_ids))
 
 
 if __name__ == "__main__":
