@@ -22,6 +22,16 @@ rule:
       pattern: buf
   any:
     - pattern: 'if (buf) { return $$$A; } else { $$$B }'
+  all:
+    - has:
+        field: alternative
+        kind: else_clause
+        has:
+          any:
+            - pattern: 'buf[$I]'
+            - pattern: '*buf'
+            - pattern: 'buf->$F'
+          stopBy: end
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
