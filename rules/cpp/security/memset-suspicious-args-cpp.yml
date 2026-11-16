@@ -1,0 +1,57 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: memset-suspicious-args-cpp
+language: cpp
+severity: warning
+message: >-
+  Suspicious memset arguments: either the fill value is the character '0'
+  (byte 0x30) instead of the integer 0, or the length is the literal 0 while
+  the fill value is a sizeof expression, so size and value are swapped and the
+  buffer is left uninitialised. Use memset(ptr, 0, size).
+note: >-
+  [CWE-628]: Function Call with Incorrectly Specified Arguments
+  [OWASP A06:2025]
+  Syntactic subset of bugprone-suspicious-memset-usage. It matches memset or
+  std::memset called with the char literal '0' as the fill value, or with a
+  sizeof expression as the fill value and the literal 0 as the length. Filling
+  with the digit character on purpose is legitimate and is the dismissal for
+  the first form. Out-of-range fill values need type information and are not
+  matched.
+rule:
+  any:
+    - pattern: "memset($P, '0', $N)"
+    - pattern: "std::memset($P, '0', $N)"
+    - pattern: 'memset($P, sizeof($X), 0)'
+    - pattern: 'std::memset($P, sizeof($X), 0)'
+    - pattern: 'memset($P, sizeof $X, 0)'
+    - pattern: 'std::memset($P, sizeof $X, 0)'
+    - all:
+        - kind: call_expression
+        - has:
+            field: function
+            regex: '^(std::)?memset$'
+        - has:
+            field: arguments
+            all:
+              - has:
+                  nthChild: 2
+                  kind: sizeof_expression
+              - has:
+                  nthChild: 3
+                  kind: number_literal
+                  regex: '^0$'
+              - not:
+                  has:
+                    nthChild: 4
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.51.0
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-628'
+  owasp: 'A06:2025'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/628.html'
+  taxonomy_cited_keys: 'cwe'

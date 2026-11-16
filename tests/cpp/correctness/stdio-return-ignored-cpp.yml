@@ -1,0 +1,19 @@
+id: stdio-return-ignored-cpp
+valid:
+  - 'void f(char *b, FILE *fp) { if (fgets(b, 10, fp) == nullptr) { return; } }'
+  - 'void f(char *b, FILE *fp) { char *r = fgets(b, 10, fp); if (!r) { return; } }'
+  - 'void f(char *b, FILE *fp) { (void) fwrite(b, 1, 4, fp); }'
+  - 'void f(std::vector<int> &v) { v.erase(std::remove(v.begin(), v.end(), 3), v.end()); }'
+  - 'void f(std::list<int> &l) { l.remove(3); }'
+  - 'void f(const char *a) { if (std::remove(a) != 0) { perror("remove"); } }'
+  - 'void f(const char *a, const char *b) { int rc = ::rename(a, b); (void) rc; }'
+  - 'void f() { my_fgets(); }'
+invalid:
+  - 'void f(char *b, FILE *fp) { fgets(b, 10, fp); }'
+  - 'void f(char *b, FILE *fp) { fwrite(b, 1, 4, fp); }'
+  - 'void f(char *b, FILE *fp) { std::fread(b, 1, 4, fp); }'
+  - 'void f(const char *a) { std::remove(a); }'
+  - 'void f(const char *a) { ::remove(a); }'
+  - 'void f(const char *a, const char *b) { std::rename(a, b); }'
+  - 'void f(char *b, FILE *fp) { ::fgets(b, 10, fp); }'
+  - 'void f(char *b, FILE *fp) { ::fwrite(b, 1, 4, fp); }'

@@ -1,0 +1,16 @@
+id: memset-suspicious-args-cpp
+valid:
+  - 'void f(char *p, int n) { memset(p, 0, n); }'
+  - 'void f(char *p) { memset(p, 0, sizeof(p)); }'
+  - 'void f(char *p) { std::memset(p, 0xff, sizeof(p)); }'
+  - 'void f(char *p) { memset(p, 0, 0); }'
+  - 'void f(char *p, int n) { memset(p, 48, n); }'
+  - 'void f(char *p) { memset(p, 0, sizeof(int)); }'
+  - 'void f(char *p, int n) { my_memset(p, 0x30, n); }'
+invalid:
+  - "void f(char *p, int n) { memset(p, '0', n); }"
+  - "void f(char *p, int n) { std::memset(p, '0', n); }"
+  - 'void f(char *p) { memset(p, sizeof(p), 0); }'
+  - 'void f(char *p) { std::memset(p, sizeof(buf), 0); }'
+  - 'void f(char *p) { memset(p, sizeof(int), 0); }'
+  - 'void f(char *p) { memset(p, sizeof(struct foo), 0); }'
