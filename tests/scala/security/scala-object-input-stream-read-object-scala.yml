@@ -123,6 +123,33 @@ valid:
         run(1, null)
       }
     }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, in2: java.io.InputStream) = {
+        val o = new ObjectInputStream(in)
+        def run(o: Json) = {
+          val p = new ObjectInputStream(in2)
+          o.readObject()
+        }
+        run(null)
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, in2: java.io.InputStream) = {
+        val o = new ObjectInputStream(in)
+        def run(o: Json) = Using(new ObjectInputStream(in2)) { p => o.readObject() }
+        run(null)
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, in2: java.io.InputStream) =
+        Using(new ObjectInputStream(in)) { o =>
+          def run(o: Json) = Using(new ObjectInputStream(in2)) { p => o.readObject() }
+          run(null)
+        }
+    }
 invalid:
   - |
     object A {
@@ -255,4 +282,20 @@ invalid:
             Using(new ObjectInputStream(b)) { o => o.readObject() }
           }
         }
+    }
+  # Known residual, pinned: a shadowed `o.readObject()` that sits in a block
+  # also reading its own differently named source `p` is still reported
+  # (the stop rule only ties a source to a readObject() call on its own name
+  # somewhere below it, not to this very call).
+  - |
+    object A {
+      def bad(in: java.io.InputStream, in2: java.io.InputStream) = {
+        val o = new ObjectInputStream(in)
+        def run(o: Json) = {
+          val p = new ObjectInputStream(in2)
+          p.readObject()
+          o.readObject()
+        }
+        run(null)
+      }
     }
