@@ -9,7 +9,7 @@ message: >-
 note: >-
   Syntactic only; does not verify the array is fixed-size, nor detect bounds
   checks elsewhere in the body. An if statement in the body whose condition
-  compares the counter suppresses the match.
+  relationally (<, <=, >, >=) compares the counter itself suppresses the match.
 rule:
   kind: while_statement
   all:
@@ -43,10 +43,14 @@ rule:
                 all:
                   - has:
                       field: operator
-                      regex: '^(<|<=|>|>=|==)$'
-                  - has:
-                      pattern: '$N'
-                      stopBy: end
+                      regex: '^(<|<=|>|>=)$'
+                  - any:
+                      - has:
+                          field: left
+                          pattern: '$N'
+                      - has:
+                          field: right
+                          pattern: '$N'
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
