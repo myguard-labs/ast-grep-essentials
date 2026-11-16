@@ -129,8 +129,24 @@ rule:
             all:
               - has:
                   field: parameters
-                  kind: identifier
-                  pattern: $STREAM
+                  any:
+                    - kind: identifier
+                      pattern: $STREAM
+                    - kind: bindings
+                      all:
+                        - has:
+                            kind: binding
+                            has:
+                              field: name
+                              kind: identifier
+                              pattern: $STREAM
+                        - not:
+                            has:
+                              kind: binding
+                              nthChild:
+                                position: 2
+                                ofRule:
+                                  kind: binding
               - inside:
                   any:
                     - kind: block
