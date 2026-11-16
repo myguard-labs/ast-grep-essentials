@@ -68,7 +68,12 @@ rule:
                         field: arguments
                         has:
                           nthChild: 1
-                          regex: '"[^"]*(\\[rn]|\\x0[adAD])|PHP_EOL|chr\(\s*(10|13)\s*\)'
+                          any:
+                            - regex: 'PHP_EOL|chr\(\s*(10|13)\s*\)'
+                            - has:
+                                stopBy: end
+                                kind: encapsed_string
+                                regex: '(^|[^\\])(\\\\)*\\([rn]|x0[adAD])'
                 - kind: function_call_expression
                   all:
                     - has:
