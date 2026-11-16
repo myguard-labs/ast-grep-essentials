@@ -23,7 +23,12 @@ rule:
           stopBy: end
           has:
             pattern: 'global $post'
-            stopBy: end
+            stopBy:
+              any:
+                - kind: function_definition
+                - kind: anonymous_function
+                - kind: arrow_function
+                - kind: method_declaration
     - not:
         inside:
           kind: function_definition
@@ -39,7 +44,12 @@ rule:
           stopBy: end
           has:
             kind: assignment_expression
-            stopBy: end
+            stopBy:
+              any:
+                - kind: function_definition
+                - kind: anonymous_function
+                - kind: arrow_function
+                - kind: method_declaration
             has:
               field: left
               pattern: '$post'
