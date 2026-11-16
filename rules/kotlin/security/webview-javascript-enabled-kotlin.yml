@@ -1,0 +1,58 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: webview-javascript-enabled-kotlin
+language: kotlin
+severity: warning
+message: >-
+  JavaScript is enabled on a WebView. Any script the page loads then runs
+  inside the app, so XSS or a hostile page can reach app data and bridges.
+  Enable it only for content you control, and keep the allowed origins narrow.
+note: >-
+  Matches the assignment settings.javaScriptEnabled = true, the bare
+  javaScriptEnabled = true used inside settings.apply, and the call
+  setJavaScriptEnabled(true), also as a safe call (?.), a bare call inside a
+  scope function, or with a comment or named argument. The receiver type is not
+  resolved, and a WebView that only loads trusted bundled pages still matches.
+  Known misses: a parenthesized value such as (true), and a value held in a
+  variable.
+rule:
+  any:
+    - kind: assignment
+      all:
+        - has:
+            kind: directly_assignable_expression
+            regex: '(^|\.|\?\.)javaScriptEnabled$'
+        - has:
+            kind: boolean_literal
+            regex: '^true$'
+    - kind: call_expression
+      all:
+        - has:
+            any:
+              - kind: simple_identifier
+                regex: '^setJavaScriptEnabled$'
+              - kind: navigation_expression
+                has:
+                  kind: navigation_suffix
+                  has: {kind: simple_identifier, regex: '^setJavaScriptEnabled$'}
+        - has:
+            kind: call_suffix
+            has:
+              kind: value_arguments
+              has:
+                kind: value_argument
+                nthChild: {position: 1, ofRule: {kind: value_argument}}
+                has: {kind: boolean_literal, regex: '^true$'}
+metadata:
+  rule_modified_at: '2026-11-16'
+  ast_grep_tested_version: 0.45.2
+  validated_at: '2026-11-16'
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-749'
+  owasp: 'A05:2025|A03:2021'
+  category: 'security'
+  subcategory: 'webview'
+  references: 'https://developer.android.com/privacy-and-security/risks/unsafe-webview-javascript'

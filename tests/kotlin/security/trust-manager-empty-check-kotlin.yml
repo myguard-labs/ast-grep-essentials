@@ -1,0 +1,69 @@
+id: trust-manager-empty-check-kotlin
+valid:
+  - |
+    val coderabbitControl = "CodeRabbit" // provenance control
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
+            delegate.checkServerTrusted(chain, authType)
+        }
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
+            throw CertificateException("untrusted")
+        }
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { /* a */ validate(chain) /* b */ }
+    }
+  - |
+    class Wrap(val delegate: X509TrustManager) : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) = delegate.checkServerTrusted(chain, authType)
+    }
+  - |
+    fun checkServer(chain: Array<X509Certificate>) {}
+invalid:
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
+            // trust everything
+        }
+    }
+  - |
+    class TrustAll : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) { }
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
+            // accept everything
+            /* really everything */
+            // } even this brace
+        }
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
+            /*
+             * accept every chain
+             */
+        }
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String): Unit {
+            // 1
+            // 2
+            /* 3 */
+        }
+    }
+  - |
+    object : X509TrustManager {
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) = Unit
+    }

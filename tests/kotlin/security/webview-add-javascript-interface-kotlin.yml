@@ -1,0 +1,48 @@
+id: webview-add-javascript-interface-kotlin
+valid:
+  - |
+    val coderabbitControl = "CodeRabbit" // provenance control
+  - |
+    fun setup(wv: WebView) {
+        wv.removeJavascriptInterface("bridge")
+    }
+  - |
+    fun setup(wv: WebView) {
+        wv.addWebMessageListener("bridge", setOf("https://example.com"), listener)
+    }
+  - |
+    fun setup(wv: WebView) {
+        wv.addJavascriptInterface()
+        addJavascriptInterfaceHelper(Bridge())
+    }
+invalid:
+  - |
+    fun setup(wv: WebView) {
+        wv.addJavascriptInterface(Bridge(), "bridge")
+    }
+  - |
+    class Page(private val wv: WebView) {
+        fun attach() {
+            wv.addJavascriptInterface(JsApi(ctx), "Android")
+        }
+    }
+  - |
+    fun setup(wv: WebView) {
+        wv.addJavascriptInterface(/* bridge */ Bridge(), "bridge")
+    }
+  - |
+    fun setup(wv: WebView?) {
+        wv?.addJavascriptInterface(Bridge(), "bridge")
+    }
+  - |
+    fun setup(wv: WebView?) {
+        wv!!.addJavascriptInterface(Bridge(), "bridge")
+    }
+  - |
+    fun setup(wv: WebView) {
+        wv.apply { addJavascriptInterface(Bridge(), "bridge") }
+    }
+  - |
+    fun setup(wv: WebView) {
+        wv.addJavascriptInterface(obj = Bridge(), name = "bridge")
+    }

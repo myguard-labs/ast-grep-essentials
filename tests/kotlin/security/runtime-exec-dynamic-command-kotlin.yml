@@ -1,0 +1,77 @@
+id: runtime-exec-dynamic-command-kotlin
+valid:
+  - |
+    val coderabbitControl = "CodeRabbit" // provenance control
+  - |
+    fun run() {
+        Runtime.getRuntime().exec("ls -l /sdcard")
+    }
+  - |
+    fun run(arg: String) {
+        Runtime.getRuntime().exec(arrayOf("ls", "-l", arg))
+    }
+  - |
+    fun run(cmd: String) {
+        Runtime.getRuntime().gc()
+        other.exec("ls " + cmd)
+    }
+  - |
+    fun run() {
+        Runtime.getRuntime().exec("a" + "b" + "c")
+    }
+  - |
+    fun run(name: Array<String>) {
+        Runtime.getRuntime().exec(arrayOf("ls") + name)
+    }
+invalid:
+  - |
+    fun run(a: String, b: String) {
+        Runtime.getRuntime().exec("sh -c " + a + b)
+    }
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec("ls $name")
+    }
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec("ls " + name)
+    }
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec("ls ${name}", envp)
+    }
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec(/* cmd */ "ls $name")
+    }
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec(
+            // the command
+            "ls " + name,
+            /* env */ envp,
+        )
+    }
+  - |
+    fun run(name: String) {
+        java.lang.Runtime.getRuntime().exec("ls $name")
+    }
+  - |
+    fun run(name: String) {
+        java.lang.Runtime.getRuntime().exec("ls " + name, envp)
+    }
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec(command = "ls $name")
+    }
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec("ls " + name + " -l")
+    }
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec(
+            "ls " +
+                name,
+        )
+    }
