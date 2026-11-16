@@ -1,0 +1,35 @@
+id: rust-vec-set-len
+valid:
+  - |-
+    fn f(v: &mut Vec<u8>) {
+        unsafe { v.set_len(0); }
+    }
+  - |-
+    fn f(v: &mut Vec<u8>) {
+        v.truncate(4);
+        v.resize(8, 0);
+    }
+  - |-
+    fn f(w: &mut Window) {
+        w.set_len(10);
+    }
+  - |-
+    fn f(v: &mut Vec<u8>) {
+        unsafe { v.set_capacity(10); }
+    }
+invalid:
+  - |-
+    fn f(v: &mut Vec<u8>, n: usize) {
+        unsafe { v.set_len(n); }
+    }
+  - |-
+    fn f(buf: &mut Vec<u8>) {
+        let n = read_into(buf.as_mut_ptr());
+        unsafe {
+            buf.set_len(n);
+        }
+    }
+  - |-
+    unsafe fn f(v: &mut Vec<u8>) {
+        v.set_len(16);
+    }
