@@ -1,5 +1,14 @@
 id: c-preproc-bitwise-or-in-if
 valid:
   - '#if HAVE_LIBTTF || HAVE_LIBFREETYPE'
+  - |-
+    #if FEATURE
+    int flags = a | b;
+    #endif
 invalid:
   - '#if HAVE_LIBTTF|HAVE_LIBFREETYPE'
+  - '#if (HAVE_A|HAVE_B) && HAVE_C'
+  - |-
+    #if X
+    #elif (P|Q)
+    #endif

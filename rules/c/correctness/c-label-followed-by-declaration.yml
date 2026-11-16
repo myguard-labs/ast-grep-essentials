@@ -7,12 +7,15 @@ message: >-
   Declaration directly follows a case label; wrap the case body in braces or
   put a statement first.
 note: >-
-  Purely syntactic; matches only case labels with a direct declaration child
+  Purely syntactic; matches only case labels whose first body item is a declaration
   and does not check the C standard version or ordinary labels.
 rule:
   kind: case_statement
   has:
     kind: declaration
+    follows:
+      regex: '^:$'
+      stopBy: neighbor
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0

@@ -13,15 +13,17 @@ note: >-
   variable is unchanged between the tests.
 rule:
   kind: binary_expression
-  pattern: '$X == $A && $X == $B'
   all:
-    - has:
-        pattern: '$X == $A'
-        stopBy: end
+    - pattern: '$X == $A && $X == $B'
     - not:
-        has:
-          kind: identifier
-          regex: '^$'
+        pattern: '$X == $A && $X == $A'
+constraints:
+  X:
+    kind: identifier
+  A:
+    kind: number_literal
+  B:
+    kind: number_literal
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0

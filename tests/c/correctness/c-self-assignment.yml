@@ -1,5 +1,8 @@
 id: c-self-assignment
 valid:
   - "struct s { int len; int other; };\nvoid f(struct s *stmt, struct s *src) {\n\tstmt->len = src->len;\n}"
+  - 'void f(void) { int x = 2; x += x; }'
+  - 'void f(int x) { x <<= x; }'
 invalid:
   - "struct s { int len; int other; };\nvoid f(struct s *stmt) {\n\tstmt->len = stmt->len;\n}"
+  - 'void f(int x) { x = x; }'

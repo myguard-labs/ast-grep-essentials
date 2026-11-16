@@ -11,7 +11,20 @@ note: >-
   TSRMLS_DC. It does not verify macro definitions, types, or whether the call
   is in a ZTS build.
 rule:
-  pattern: 'g(p TSRMLS_DC)'
+  any:
+    - kind: macro_type_specifier
+      has:
+        kind: type_descriptor
+        regex: '^TSRMLS_DC$'
+    - kind: call_expression
+      has:
+        field: arguments
+        has:
+          kind: identifier
+          regex: '^TSRMLS_DC$'
+          follows:
+            kind: ERROR
+            stopBy: neighbor
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0

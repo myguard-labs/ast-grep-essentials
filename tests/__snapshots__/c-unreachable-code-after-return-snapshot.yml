@@ -1,8 +1,8 @@
 id: c-unreachable-code-after-return
 snapshots:
-  int f(int x) { if (x) { return 0; return 1; } return 2; }:
+  "int f(int x) { if (x) { return 0; return 1; } return 2; }":
     labels:
-    - source: '{ return 0; return 1; }'
+    - source: "{ return 0; return 1; }"
       style: primary
       start: 22
       end: 45
@@ -13,4 +13,32 @@ snapshots:
     - source: return 1;
       style: secondary
       start: 34
+      end: 43
+  "int f(void) { return 1; cleanup(); }":
+    labels:
+    - source: "{ return 1; cleanup(); }"
+      style: primary
+      start: 12
+      end: 36
+    - source: return 1;
+      style: secondary
+      start: 14
+      end: 23
+    - source: cleanup();
+      style: secondary
+      start: 24
+      end: 34
+  "void f(int x) { if (x) { return; int y = x; (void)y; } }":
+    labels:
+    - source: "{ return; int y = x; (void)y; }"
+      style: primary
+      start: 23
+      end: 54
+    - source: return;
+      style: secondary
+      start: 25
+      end: 32
+    - source: int y = x;
+      style: secondary
+      start: 33
       end: 43
