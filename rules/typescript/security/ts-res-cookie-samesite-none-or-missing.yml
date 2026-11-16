@@ -1,0 +1,82 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-res-cookie-samesite-none-or-missing
+language: typescript
+severity: warning
+message: >-
+  Cookie set with sameSite none or false, or a session-style cookie set without
+  any sameSite option. A cookie sent on cross-site requests lets another site
+  trigger authenticated requests, which is the precondition for cross-site
+  request forgery. Set sameSite to lax or strict unless the cookie must really
+  travel cross-site, and then pair none with secure true and a CSRF token.
+note: >-
+  Fires on res.cookie or response.cookie whose options object has a sameSite
+  key set to the string none or to false, and on a call whose cookie name is a
+  string literal containing session, token, auth, jwt, sid, login, remember or
+  csrf and whose options object has no sameSite key, or that has no options
+  object at all. A call whose options come from a variable, or an options object
+  that spreads another object, is not matched. A cookie that must be embedded
+  cross-site is the routine dismissal.
+
+  [CWE-1275] [A01:2025] [A01:2021]
+
+  [REFERENCES]
+      - https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#samesite_attribute
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: member_expression
+        regex: '^(res|response)\.cookie$'
+    - any:
+        - has:
+            field: arguments
+            kind: arguments
+            has:
+              kind: object
+              has:
+                kind: pair
+                all:
+                  - has: {field: key, regex: '^sameSite$'}
+                  - has: {field: value, regex: '(?i)^(["'']none["'']|false)$'}
+        - all:
+            - has:
+                field: arguments
+                kind: arguments
+                has:
+                  nthChild:
+                    position: 1
+                    ofRule: {not: {kind: comment}}
+                  kind: string
+                  regex: '(?i)(session|token|auth|jwt|sid|login|remember|csrf)'
+            - not:
+                has:
+                  field: arguments
+                  kind: arguments
+                  has:
+                    nthChild:
+                      position: 3
+                      ofRule: {not: {kind: comment}}
+                    not: {kind: object}
+            - not:
+                has:
+                  field: arguments
+                  kind: arguments
+                  has:
+                    kind: object
+                    has:
+                      any:
+                        - kind: spread_element
+                        - all:
+                            - kind: pair
+                            - has: {field: key, regex: '^sameSite$'}
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-1275'
+  owasp: 'A01:2025|A01:2021'
+  category: 'security'
+  references: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#samesite_attribute'
