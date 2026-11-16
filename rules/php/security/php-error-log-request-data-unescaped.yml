@@ -1,0 +1,65 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-error-log-request-data-unescaped
+language: php
+severity: warning
+message: >-
+  Request data is passed to error_log without escaping. A caller who sends
+  carriage-return or line-feed characters in the value can forge extra log
+  lines and hide their own activity. Strip or encode CR and LF in the value
+  (for example with json_encode or str_replace) before logging it.
+note: >-
+  Fires on an error_log call whose arguments, including double-quoted string
+  interpolation, read $_GET, $_POST, $_REQUEST or $_COOKIE. The finding is
+  suppressed only when the request-data value itself is wrapped in str_replace,
+  preg_replace, json_encode, urlencode, rawurlencode, addcslashes, var_export,
+  filter_var, ctype_*, sanitize_*, esc_*, intval, absint, strlen, count, a hash
+  or encoding function, or a numeric or boolean cast; a sanitizer on another
+  argument does not suppress it. Any str_replace or preg_replace call counts as
+  sanitizing, whatever it replaces (a heuristic that accepts some false
+  negatives). $_SERVER keys such as HTTP_USER_AGENT or REQUEST_URI are excluded
+  deliberately (precision over recall). A value copied into a variable
+  first is not seen. A log sink that already escapes line breaks is the
+  routine dismissal.
+
+  [CWE-117] [A09:2025] [A09:2021]
+
+  [REFERENCES]
+      - https://owasp.org/www-community/attacks/Log_Injection
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '^error_log$'
+    - has:
+        field: arguments
+        has:
+          stopBy: end
+          kind: variable_name
+          regex: '^\$_(GET|POST|REQUEST|COOKIE)$'
+          not:
+            inside:
+              stopBy:
+                kind: function_call_expression
+                has:
+                  field: function
+                  regex: '^error_log$'
+              any:
+                - kind: cast_expression
+                  has:
+                    field: type
+                    regex: '^(int|integer|float|double|bool|boolean)$'
+                - kind: function_call_expression
+                  has:
+                    field: function
+                    regex: '^(str_replace|preg_replace|json_encode|urlencode|rawurlencode|addcslashes|var_export|filter_var|ctype_\w+|sanitize_\w+|esc_\w+|intval|floatval|absint|strlen|count|bin2hex|base64_encode|md5|sha1|crc32)$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-117'
+  owasp: 'A09:2025|A09:2021'
+  category: 'security'
+  references: 'https://owasp.org/www-community/attacks/Log_Injection'

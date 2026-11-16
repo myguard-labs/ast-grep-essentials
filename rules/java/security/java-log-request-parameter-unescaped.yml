@@ -1,0 +1,57 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: java-log-request-parameter-unescaped
+language: java
+severity: warning
+message: >-
+  Request data is passed to a logger call without escaping. A caller who sends
+  carriage-return or line-feed characters in the value can forge extra log
+  lines and hide their own activity. Strip or encode CR and LF in the value
+  before logging it, or rely on a structured layout that escapes them.
+note: >-
+  Fires on a trace, debug, info, warn, error or fatal call on a receiver named
+  log, logger, LOG or LOGGER whose arguments, including string concatenation,
+  contain a getParameter, getHeader or getQueryString call on a receiver named
+  request or req. The finding is suppressed only when the request-data
+  call itself is wrapped in a call to replace, replaceAll, encode, escapeJava,
+  escapeHtml, escapeHtml4, parseInt, parseLong or length; a sanitizer on another
+  argument does not suppress it. Any replace or replaceAll call counts as sanitizing, whatever it replaces (a heuristic that accepts some false negatives). A value copied into a variable first, or a
+  logger held under another name, is not seen. A sink that already escapes line
+  breaks is the routine dismissal.
+
+  [CWE-117] [A09:2025] [A09:2021]
+
+  [REFERENCES]
+      - https://owasp.org/www-community/attacks/Log_Injection
+rule:
+  kind: method_invocation
+  all:
+    - has: {field: object, regex: '^(log|logger|LOG|LOGGER)$'}
+    - has: {field: name, regex: '^(trace|debug|info|warn|error|fatal)$'}
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          stopBy: end
+          kind: method_invocation
+          all:
+            - has: {field: object, regex: '^(request|req)$'}
+            - has: {field: name, regex: '^(getParameter|getHeader|getQueryString)$'}
+          not:
+            inside:
+              stopBy:
+                kind: method_invocation
+                all:
+                  - has: {field: object, regex: '^(log|logger|LOG|LOGGER)$'}
+                  - has: {field: name, regex: '^(trace|debug|info|warn|error|fatal)$'}
+              kind: method_invocation
+              has: {field: name, regex: '^(replace|replaceAll|encode|escapeJava|escapeHtml|escapeHtml4|parseInt|parseLong|length)$'}
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-117'
+  owasp: 'A09:2025|A09:2021'
+  category: 'security'
+  references: 'https://owasp.org/www-community/attacks/Log_Injection'

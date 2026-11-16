@@ -1,0 +1,28 @@
+id: java-log-request-parameter-unescaped
+valid:
+  - |
+    class A { void f(HttpServletRequest request) { log.info("user {}", request.getParameter("user").replace("\n", " ")); } }
+  - |
+    class A { void f(HttpServletRequest request) { log.info("page {}", Integer.parseInt(request.getParameter("page"))); } }
+  - |
+    class A { void f(String user) { log.info("login ok for {}", user); } }
+  - |
+    class A { void f(HttpServletRequest request) { other.info("user {}", request.getParameter("user")); } }
+  - |
+    class A {
+      // log.info("user {}", request.getParameter("user"));
+      String s = "log.info(request.getParameter(x))";
+    }
+  - |
+    class A { void f(HttpServletRequest request) { log.info("method {}", request.getMethod()); } }
+invalid:
+  - |
+    class A { void f(HttpServletRequest request) { log.info("user {}", request.getParameter("user")); } }
+  - |
+    class A { void f(HttpServletRequest req) { logger.warn("agent " + req.getHeader("User-Agent")); } }
+  - |
+    class A { void f(HttpServletRequest request) { LOG.error("q=" + request.getQueryString(), ex); } }
+  - |
+    class A { void f(HttpServletRequest request) { log.debug(request.getParameter("x")); } }
+  - |
+    class A { void f(HttpServletRequest request) { log.info("{} {}", request.getParameter("user"), Integer.parseInt("1")); } }
