@@ -8,7 +8,7 @@ message: >-
   integrity attribute; add a Subresource Integrity hash so a compromised host
   cannot change the page.
 note: >-
-  Matches a link start tag whose rel includes stylesheet, whose href starts with
+  Matches a link start tag or self-closing tag whose rel includes stylesheet, whose href starts with
   http://, https:// or //, and that has no integrity attribute on the same tag.
   It does not verify the hash value, the crossorigin attribute, or a policy that
   pins the origin elsewhere. Relative hrefs are not matched.
@@ -18,8 +18,10 @@ note: >-
   [REFERENCES]
       - https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity
 rule:
-  kind: start_tag
   all:
+    - any:
+        - kind: start_tag
+        - kind: self_closing_tag
     - has:
         kind: tag_name
         regex: '(?i)^link$'

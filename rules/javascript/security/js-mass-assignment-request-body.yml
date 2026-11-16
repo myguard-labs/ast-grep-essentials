@@ -11,7 +11,8 @@ note: >-
   Matches Model.create(req.body) or Model.create(request.body) as the first
   argument, and Object.assign(target, req.body) or request.body as a source
   argument. Destructured fields, a picked or validated copy, and other call
-  names are not matched. A body already validated by a strict schema upstream is
+  names are not matched. Object.create(req.body) builds a prototype and is
+  excluded. Koa ctx.request.body and TypeScript variants are not covered. A body already validated by a strict schema upstream is
   the routine dismissal.
 
   [CWE-915] [A08:2025] [A08:2021]
@@ -32,6 +33,11 @@ rule:
             has:
               field: property
               regex: '^create$'
+        - not:
+            has:
+              field: function
+              kind: member_expression
+              regex: '^Object\.create$'
         - has:
             field: arguments
             has:
