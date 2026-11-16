@@ -54,6 +54,60 @@ snapshots:
       style: secondary
       start: 11
       end: 56
+  "logger.info(\"user %s\", html.escape(request.args[\"x\"]))\n":
+    labels:
+    - source: logger.info("user %s", html.escape(request.args["x"]))
+      style: primary
+      start: 0
+      end: 54
+    - source: logger.info
+      style: secondary
+      start: 0
+      end: 11
+    - source: request.args
+      style: secondary
+      start: 35
+      end: 47
+    - source: ("user %s", html.escape(request.args["x"]))
+      style: secondary
+      start: 11
+      end: 54
+  "logger.info(\"user %s\", markupsafe.escape(request.args[\"x\"]))\n":
+    labels:
+    - source: logger.info("user %s", markupsafe.escape(request.args["x"]))
+      style: primary
+      start: 0
+      end: 60
+    - source: logger.info
+      style: secondary
+      start: 0
+      end: 11
+    - source: request.args
+      style: secondary
+      start: 41
+      end: 53
+    - source: ("user %s", markupsafe.escape(request.args["x"]))
+      style: secondary
+      start: 11
+      end: 60
+  "logger.info(\"user %s\", re.sub(r\"[<>]\", \"\", request.args[\"x\"]))\n":
+    labels:
+    - source: logger.info("user %s", re.sub(r"[<>]", "", request.args["x"]))
+      style: primary
+      start: 0
+      end: 62
+    - source: logger.info
+      style: secondary
+      start: 0
+      end: 11
+    - source: request.args
+      style: secondary
+      start: 43
+      end: 55
+    - source: ("user %s", re.sub(r"[<>]", "", request.args["x"]))
+      style: secondary
+      start: 11
+      end: 62
   "logger.info(\"user %s\", request.args.get(\"user\"))\n":
     labels:
     - source: logger.info("user %s", request.args.get("user"))
@@ -72,6 +126,42 @@ snapshots:
       style: secondary
       start: 11
       end: 48
+  "logger.info(\"user %s\", request.args.get(\"user\").replace(\"<\", \"&lt;\"))\n":
+    labels:
+    - source: logger.info("user %s", request.args.get("user").replace("<", "&lt;"))
+      style: primary
+      start: 0
+      end: 69
+    - source: logger.info
+      style: secondary
+      start: 0
+      end: 11
+    - source: request.args
+      style: secondary
+      start: 23
+      end: 35
+    - source: ("user %s", request.args.get("user").replace("<", "&lt;"))
+      style: secondary
+      start: 11
+      end: 69
+  "logger.info(\"user %s\", request.args.get(\"user\").replace(\"\\\\n\", \"\"))\n":
+    labels:
+    - source: logger.info("user %s", request.args.get("user").replace("\\n", ""))
+      style: primary
+      start: 0
+      end: 67
+    - source: logger.info
+      style: secondary
+      start: 0
+      end: 11
+    - source: request.args
+      style: secondary
+      start: 23
+      end: 35
+    - source: ("user %s", request.args.get("user").replace("\\n", ""))
+      style: secondary
+      start: 11
+      end: 67
   "logging.warning(\"name: \" + request.form[\"name\"])\n":
     labels:
     - source: "logging.warning(\"name: \" + request.form[\"name\"])"

@@ -13,10 +13,15 @@ note: >-
   log or winston whose arguments, including template-literal substitutions,
   read req.query, req.body, req.params, req.headers or req.cookies (also under
   the name request). The finding is suppressed only when the request-data value
-  itself is wrapped in a call to replace, replaceAll, escape,
-  encodeURIComponent, JSON.stringify, parseInt, Number or Boolean; a sanitizer
-  on another argument does not suppress it. String(...) does not strip CR or LF
-  and is still reported. Any replace or replaceAll call counts as sanitizing, whatever it replaces (a heuristic that accepts some false negatives). A value copied into a variable
+  itself is wrapped in a call to replaceAll whose first argument (a string or
+  regular expression) names CR, LF or whitespace (\r, \n, \s, \x0a, \x0d; \s counts only in a regular expression literal, and in a string literal only a real CR or LF escape counts, so "\s" and "\\n" are still reported), or
+  to replace whose first argument is a regular expression literal with the g
+  flag that names them (replace with a string or a non-global regular expression
+  changes only the first match and is still reported), the global escape, encodeURIComponent, JSON.stringify,
+  parseInt, Number or Boolean; a sanitizer on another argument does not
+  suppress it. A chained replace of only \r is accepted as a sanitizer on purpose (precision over recall). A replace that targets other characters, String(...) and HTML
+  escapers such as _.escape or escapeHtml do not strip CR or LF and are still
+  reported. A value copied into a variable
   first, or a logger held under another name, is not seen. A log sink that
   already escapes line breaks is the routine dismissal.
 
@@ -47,9 +52,36 @@ rule:
                   kind: member_expression
                   regex: '^(console|logger|log|winston)\.(log|debug|info|warn|error|trace)$'
               kind: call_expression
-              has:
-                field: function
-                regex: '(^|\.)(replace|replaceAll|escape|encodeURIComponent|stringify|parseInt|Number|Boolean)$'
+              any:
+                - has:
+                    field: function
+                    regex: '(^|\.)(encodeURIComponent|stringify|parseInt|Number|Boolean)$|^escape$'
+                - all:
+                    - has:
+                        field: function
+                        regex: '\.replaceAll$'
+                    - has:
+                        field: arguments
+                        kind: arguments
+                        has:
+                          nthChild: 1
+                          any:
+                            - kind: regex
+                              regex: '\\[rns]|\\x0[adAD]|\\u000[adAD]'
+                            - not:
+                                kind: regex
+                              regex: '(^|[^\\])(\\\\)*\\([rn]|x0[adAD]|u000[adAD])'
+                - all:
+                    - has:
+                        field: function
+                        regex: '\.replace$'
+                    - has:
+                        field: arguments
+                        kind: arguments
+                        has:
+                          nthChild: 1
+                          kind: regex
+                          regex: '^/.*(\\[rns]|\\x0[adAD]|\\u000[adAD]).*/[a-fh-z]*g[a-z]*$'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'

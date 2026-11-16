@@ -15,9 +15,14 @@ note: >-
   request.form, request.values, request.headers, request.cookies, request.data,
   request.json (Flask) or request.GET, request.POST, request.META,
   request.COOKIES, request.body (Django). The finding is suppressed only
-  when the request-data value itself is wrapped in a call to replace, escape,
-  quote, repr, dumps, sanitize, int, len, bool or float; a sanitizer on another
-  argument does not suppress it. Any replace or replaceAll call counts as sanitizing, whatever it replaces (a heuristic that accepts some false negatives). A value copied into a variable first, or a logger
+  when the request-data value itself is wrapped in a call to str.replace or
+  re.sub whose first argument (a string or pattern) names CR, LF or whitespace
+  (\r, \n, \s, \x0a, \x0d), urllib quote or quote_plus, repr, dumps, a
+  helper whose name contains crlf, newline or linebreak, int, len, bool or
+  float; a sanitizer on another argument does not suppress it. A chained replace of only \r is accepted as a sanitizer on purpose (precision over recall). Python has no
+  replaceAll; use str.replace or re.sub. A replace that targets other
+  characters, html.escape and markupsafe.escape do not strip CR or LF and are
+  still reported. A value copied into a variable first, or a logger
   held under another name, is not seen. A log sink that already escapes line
   breaks is the routine dismissal.
 
@@ -48,9 +53,33 @@ rule:
                   kind: attribute
                   regex: '^(logging|logger|log|LOG|LOGGER|app\.logger|current_app\.logger)\.(debug|info|warning|warn|error|critical|exception)$'
               kind: call
-              has:
-                field: function
-                regex: '(^|\.)(replace|escape|quote|quote_plus|repr|dumps|sanitize\w*|int|len|bool|float)$'
+              any:
+                - has:
+                    field: function
+                    regex: '(^|\.)(repr|dumps|int|len|bool|float)$|^((urllib\.)?parse\.)?quote(_plus)?$|(^|\.)\w*(?i:crlf|newline|line_?break)\w*$'
+                - all:
+                    - has:
+                        field: function
+                        regex: '(^|\.)(sub|subn)$'
+                    - has:
+                        field: arguments
+                        kind: argument_list
+                        has:
+                          nthChild: 1
+                          regex: '\\[rns]|\\x0[adAD]|\\u000[adAD]'
+                - all:
+                    - has:
+                        field: function
+                        regex: '(^|\.)replace$'
+                    - has:
+                        field: arguments
+                        kind: argument_list
+                        has:
+                          nthChild: 1
+                          all:
+                            - not:
+                                regex: '^[bBuU]?[rR]'
+                            - regex: '(^|[^\\])(\\\\)*\\([rn]|x0[adAD]|u000[adAD])'
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'
