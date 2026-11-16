@@ -1,0 +1,46 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ruby-unsafe-deserialization
+language: ruby
+severity: warning
+message: >-
+  Marshal.load, Marshal.restore, YAML.load or YAML.unsafe_load is called on a
+  non-literal value. Deserializing attacker-controlled bytes can instantiate
+  arbitrary objects and lead to code execution.
+note: >-
+  Fires on a call spelled Marshal.load, Marshal.restore, YAML.load,
+  YAML.unsafe_load, Psych.load or Psych.unsafe_load whose first argument is not a
+  plain string literal. YAML.safe_load, JSON.parse and calls on a literal string
+  are not matched. YAML.load is safe by default from Psych 4 (Ruby 3.1), and
+  data that is never user-controlled is the routine dismissal.
+rule:
+  kind: call
+  all:
+    - has:
+        field: receiver
+        regex: '^(Marshal|YAML|Psych)$'
+    - has:
+        field: method
+        regex: '^(load|restore|unsafe_load)$'
+    - has:
+        field: arguments
+        kind: argument_list
+        has:
+          nthChild: 1
+          not:
+            any:
+              - kind: comment
+              - kind: string
+                not:
+                  has:
+                    kind: interpolation
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-502'
+  owasp: 'A08:2025|A08:2021'
+  category: 'security'
+  subcategory: 'unsafe-deserialization'
+  references: 'https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html'

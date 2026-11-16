@@ -1,0 +1,22 @@
+id: ruby-unsafe-deserialization
+valid:
+  - |
+    obj = YAML.safe_load(params[:data])
+  - |
+    obj = JSON.parse(request.body.read)
+  - |
+    obj = YAML.load("a: 1")
+  - |
+    # Marshal.load(params[:data])
+    note = "Marshal.load(params[:data])"
+  - |
+    obj = Marshal.dump(params[:data])
+invalid:
+  - |
+    obj = Marshal.load(params[:data])
+  - |
+    obj = YAML.load(request.body.read)
+  - |
+    obj = Psych.unsafe_load(cookies[:state])
+  - |
+    obj = Marshal.restore("#{prefix}#{data}")
