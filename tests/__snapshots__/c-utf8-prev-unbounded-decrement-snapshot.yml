@@ -1,17 +1,35 @@
 id: c-utf8-prev-unbounded-decrement
 snapshots:
-  ? |-
-    static const u_char *
-    prev(const u_char *p, const u_char *start)
-    {
-        u_char c;
-        do {
-            p--;
-            c = *p;
-        } while ((c & 0xc0) == 0x80);
-        return p;
-    }
-  : labels:
+  "const u_char *prev(const u_char *p) { do { p--; } while ((*p & 0xc0) == 0x80); return p; }":
+    labels:
+    - source: do { p--; } while ((*p & 0xc0) == 0x80);
+      style: primary
+      start: 38
+      end: 78
+    - source: p--
+      style: secondary
+      start: 43
+      end: 46
+    - source: "*p"
+      style: secondary
+      start: 58
+      end: 60
+  "const u_char *prev(const u_char *p, u_char c) { do { p--; c = *p; } while (c >= 0x80 && c < 0xc0); return p; }":
+    labels:
+    - source: do { p--; c = *p; } while (c >= 0x80 && c < 0xc0);
+      style: primary
+      start: 48
+      end: 98
+    - source: p--
+      style: secondary
+      start: 53
+      end: 56
+    - source: "*p"
+      style: secondary
+      start: 62
+      end: 64
+  "static const u_char *\nprev(const u_char *p, const u_char *start)\n{\n    u_char c;\n    do {\n        p--;\n        c = *p;\n    } while ((c & 0xc0) == 0x80);\n    return p;\n}":
+    labels:
     - source: |-
         do {
                 p--;
@@ -24,7 +42,7 @@ snapshots:
       style: secondary
       start: 98
       end: 101
-    - source: '*p'
+    - source: "*p"
       style: secondary
       start: 115
       end: 117

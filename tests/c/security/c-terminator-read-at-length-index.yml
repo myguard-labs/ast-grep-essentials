@@ -1,5 +1,9 @@
 id: c-terminator-read-at-length-index
 valid:
   - 'void f(char *buf, size_t len) { if (buf[len - 1] == ''\0'') return; }'
+  - "void f(char *buf, size_t n) { if (buf[n] == '\\0') return; }"
+  - "void f(char *buf, size_t len) { if (buf[len] == 'x') return; }"
 invalid:
   - 'void f(char *buf, size_t len) { if (buf[len] == ''\0'') return; }'
+  - "void f(struct t *s, size_t len) { if (s->buf[len] == '\\0') return; }"
+  - "int f(char *buf, size_t len) { return buf[len] == '\\0'; }"

@@ -1,5 +1,9 @@
 id: c-memchr-result-plus-one-unchecked
 valid:
   - "char *p = memchr(s, '\\n', n);\nif (p + 1 < e && *(p + 1) == ' ') {\n\ts = p + 1;\n}"
+  - "return p + 1 < e && *(p + 1) == ' ';"
+  - "while (p + 1 < e && *(p + 1) != '\\n') p++;"
 invalid:
   - "char *p = memchr(s, '\\n', n);\nif (*(p + 1) == ' ') {\n\ts = p + 1;\n}"
+  - "c = *(p + 1);"
+  - "if (p < e && *(p + 1) == ' ') { s = p; }"

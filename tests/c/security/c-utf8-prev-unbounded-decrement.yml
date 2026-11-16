@@ -14,6 +14,8 @@ valid:
         } while ((c & 0xc0) == 0x80);
         return p;
     }
+  - "const u_char *prev(const u_char *p, u_char c) { do { c = *p; p++; } while ((c & 0xc0) == 0x80); return p; }"
+  - "const u_char *prev(const u_char *p, const u_char *start) { do { if (p < start) { return NULL; } p--; } while ((*p & 0xc0) == 0x80); return p; }"
 invalid:
   - |-
     static const u_char *
@@ -26,3 +28,5 @@ invalid:
         } while ((c & 0xc0) == 0x80);
         return p;
     }
+  - "const u_char *prev(const u_char *p) { do { p--; } while ((*p & 0xc0) == 0x80); return p; }"
+  - "const u_char *prev(const u_char *p, u_char c) { do { p--; c = *p; } while (c >= 0x80 && c < 0xc0); return p; }"

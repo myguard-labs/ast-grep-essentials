@@ -1,32 +1,43 @@
 id: dont-call-system-c
 snapshots:
-  ? |
-    void test_002(const char *input)
-    {
-    char cmdbuf[BUFFERSIZE];
-    int len_wanted = snprintf(cmdbuf, BUFFERSIZE,
-                              "any_cmd '%s'", input);
-    system(cmdbuf);
-    }
-    void test_001(const char *input)
-    {
-    char cmdbuf[BUFFERSIZE];
-    int len_wanted = snprintf(cmdbuf, BUFFERSIZE,
-                              "any_cmd '%s'", input);
-    if (len_wanted >= BUFFERSIZE)
-    {
-        /* Handle error */
-    }
-    else if (len_wanted < 0)
-    {
-        /* Handle error */
-    }
-    else if (system(cmdbuf) == -1)
-    {
-        /* Handle error */
-    }
-    }
-  : labels:
+  "int f(const char *c) { return system(c); }":
+    labels:
+    - source: return system(c);
+      style: primary
+      start: 23
+      end: 40
+    - source: system
+      style: secondary
+      start: 30
+      end: 36
+    - source: (c)
+      style: secondary
+      start: 36
+      end: 39
+    - source: system(c)
+      style: secondary
+      start: 30
+      end: 39
+  "void f(const char *c) { system(c); }":
+    labels:
+    - source: system(c);
+      style: primary
+      start: 24
+      end: 34
+    - source: system
+      style: secondary
+      start: 24
+      end: 30
+    - source: (c)
+      style: secondary
+      start: 30
+      end: 33
+    - source: system(c)
+      style: secondary
+      start: 24
+      end: 33
+  "void test_002(const char *input)\n{\nchar cmdbuf[BUFFERSIZE];\nint len_wanted = snprintf(cmdbuf, BUFFERSIZE,\n                          \"any_cmd '%s'\", input);\nsystem(cmdbuf);\n}\nvoid test_001(const char *input)\n{\nchar cmdbuf[BUFFERSIZE];\nint len_wanted = snprintf(cmdbuf, BUFFERSIZE,\n                          \"any_cmd '%s'\", input);\nif (len_wanted >= BUFFERSIZE)\n{\n    /* Handle error */\n}\nelse if (len_wanted < 0)\n{\n    /* Handle error */\n}\nelse if (system(cmdbuf) == -1)\n{\n    /* Handle error */\n}\n}\n":
+    labels:
     - source: system(cmdbuf);
       style: primary
       start: 156

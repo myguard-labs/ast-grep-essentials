@@ -5,7 +5,11 @@ valid:
     if (status_line->len > 3) {
         u->headers_in.status_line = *status_line;
     }
+  - "if (status_line->len > 3 && ok) { u->headers_in.status_line = *status_line; }"
+  - "if (status_line->len > 3) { if (x) { u->headers_in.status_line = *status_line; } }"
 invalid:
   - |-
     u->headers_in.status_n = status;
     u->headers_in.status_line = *status_line;
+  - "if (status_line->len > 0) { u->headers_in.status_line = *status_line; }"
+  - "h.status_line = *status_line;"

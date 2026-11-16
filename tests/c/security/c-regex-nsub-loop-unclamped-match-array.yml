@@ -3,7 +3,11 @@ valid:
   - >-
     regmatch_t matches[10]; for (i = 0; i <= re.re_nsub && i < 10; i++) {
     use(matches[i]); }
+  - "for (i = 0; i < n; i++) { use(matches[i]); }"
+  - "for (i = 0; i <= re.re_nsub; i++) { if (i < MAXM) use(matches[i]); }"
 invalid:
   - >-
     regmatch_t matches[10]; for (i = 0; i <= re.re_nsub; i++) { use(matches[i]);
     }
+  - "for (i = 1; i <= re.re_nsub; i++) { use(matches[i]); }"
+  - "for (j = 0; j <= re.re_nsub; ++j) use(matches[j]);"

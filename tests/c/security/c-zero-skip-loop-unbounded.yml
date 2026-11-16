@@ -1,5 +1,9 @@
 id: c-zero-skip-loop-unbounded
 valid:
   - 'void f(char *p, char *end) { while (p < end && *p == 0) { p++; } }'
+  - "void f(char *p) { while (*p != 0) p++; }"
+  - "void f(char *p) { if (*p == 0) { p++; } }"
 invalid:
   - 'void f(char *p) { while (*p == 0) { p++; } }'
+  - "void f(char *p) { while (*p == 0) p++; }"
+  - "void f(char *p, int n) { while (*p == 0) { p++; n++; } }"
