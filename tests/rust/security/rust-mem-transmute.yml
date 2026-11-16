@@ -1,0 +1,35 @@
+id: rust-mem-transmute
+valid:
+  - |-
+    fn f(x: f32) -> u32 {
+        x.to_bits()
+    }
+  - |-
+    fn f(x: [u8; 4]) -> u32 {
+        u32::from_ne_bytes(x)
+    }
+  - |-
+    fn f(x: &T) -> U {
+        unsafe { std::mem::transmute_copy(x) }
+    }
+  - |-
+    fn f(x: &T) -> U {
+        x.transmute()
+    }
+invalid:
+  - |-
+    fn f(x: f32) -> u32 {
+        unsafe { ::std::mem::transmute(x) }
+    }
+  - |-
+    fn f(x: f32) -> u32 {
+        unsafe { std::mem::transmute(x) }
+    }
+  - |-
+    fn f(x: f32) -> u32 {
+        unsafe { mem::transmute::<f32, u32>(x) }
+    }
+  - |-
+    fn f(x: &T) -> &'static T {
+        unsafe { core::mem::transmute(x) }
+    }

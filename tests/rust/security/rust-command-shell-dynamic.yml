@@ -1,0 +1,39 @@
+id: rust-command-shell-dynamic
+valid:
+  - |-
+    fn f() {
+        let _ = std::process::Command::new("sh").arg("-c").arg("ls -l").output();
+    }
+  - |-
+    fn f(dir: &str) {
+        let _ = Command::new("ls").arg("-l").arg(dir).output();
+    }
+  - |-
+    fn f(cmd: &str) {
+        let _ = Command::new("python3").arg("-c").arg(cmd).output();
+    }
+  - |-
+    fn f() {
+        let _ = Command::new("bash").args(["-c", "make all"]).status();
+    }
+  - |-
+    fn f() {
+        let _ = Command::new("sh").arg("-c").arg(r"ls -l").output();
+    }
+invalid:
+  - |-
+    fn f(cmd: &str) {
+        let _ = std::process::Command::new("sh").arg("-c").arg(cmd).output();
+    }
+  - |-
+    fn f(name: &str) {
+        let _ = Command::new("/bin/sh").arg("-c").arg(format!("ls {}", name)).status();
+    }
+  - |-
+    fn f(cmd: &str) {
+        let _ = Command::new("bash").args(["-c", cmd]).spawn();
+    }
+  - |-
+    fn f(cmd: &str) {
+        let _ = Command::new("sh").args(&["-c", cmd]).spawn();
+    }

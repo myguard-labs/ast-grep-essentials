@@ -1,0 +1,47 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: rust-vec-set-len
+language: rust
+severity: warning
+message: >-
+  Vec::set_len changes the length without initializing or dropping elements.
+  A length above the initialized prefix exposes uninitialized memory and one
+  above the capacity is an out-of-bounds access. Prefer resize, extend,
+  spare_capacity_mut with MaybeUninit, or truncate.
+note: >-
+  [CWE-119]: Improper Restriction of Operations within the Bounds of a Memory Buffer
+  [CWE-908]: Use of Uninitialized Resource
+  [REFERENCES]
+      - https://cwe.mitre.org/data/definitions/119.html
+      - https://cwe.mitre.org/data/definitions/908.html
+      - https://doc.rust-lang.org/std/vec/struct.Vec.html#method.set_len
+  Matches a one-argument .set_len(...) method call inside an unsafe block or
+  an unsafe fn. A literal 0 argument is not matched because it only forgets the
+  elements. The receiver type is not resolved, so an unsafe set_len on another
+  type still matches; a safe method of that name outside unsafe code does not.
+rule:
+  kind: call_expression
+  pattern: '$V.set_len($N)'
+  any:
+    - inside:
+        kind: unsafe_block
+        stopBy: {kind: function_item}
+    - inside:
+        kind: function_item
+        stopBy: {kind: function_item}
+        has:
+          kind: function_modifiers
+          regex: '\bunsafe\b'
+constraints:
+  N:
+    not:
+      regex: '^0(_?usize)?$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-119|CWE-908'
+  category: 'security'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/119.html|https://cwe.mitre.org/data/definitions/908.html'
+  taxonomy_cited_keys: 'cwe'
