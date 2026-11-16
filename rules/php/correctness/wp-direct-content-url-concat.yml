@@ -8,10 +8,12 @@ message: >-
   WP_CONTENT_URL with a path.
 note: >-
   Purely syntactic check for a literal WP_CONTENT_URL constant as a direct
-  operand of a binary concatenation. It does not resolve constants, filters,
-  or runtime values.
+  left or right operand of a binary concatenation, with or without a leading
+  operand. It does not resolve constants, filters, or runtime values.
 rule:
-  pattern: '$A . WP_CONTENT_URL . $B'
+  any:
+    - pattern: 'WP_CONTENT_URL . $B'
+    - pattern: '$A . WP_CONTENT_URL'
 metadata:
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0

@@ -11,7 +11,11 @@ note: >-
   AND-NOT argument naming E_NOTICE or E_USER_NOTICE. It does not resolve
   constants, runtime values, or whether the call runs in a bootstrap path.
 rule:
-  pattern: 'error_reporting($A ^ E_NOTICE)'
+  any:
+    - pattern: 'error_reporting($A ^ E_NOTICE)'
+    - pattern: 'error_reporting($A ^ E_USER_NOTICE)'
+    - pattern: 'error_reporting($A & ~E_NOTICE)'
+    - pattern: 'error_reporting($A & ~E_USER_NOTICE)'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0

@@ -7,12 +7,21 @@ message: >-
   Integer literal division inside the count argument of array_fill() yields a
   float; use intdiv() instead.
 note: >-
-  Syntactic only. Matches a parenthesized literal-by-literal `/` expression
-  anywhere inside the second argument of a direct array_fill() call; it does
-  not resolve types, imports, or runtime values, and it does not check other
-  int-typed builtins.
+  Syntactic only. Matches an integer-literal-by-integer-literal `/` expression
+  that is the second (count) argument of a direct array_fill() call, bare,
+  parenthesized, or as the left operand of a `+`; it does not resolve types,
+  imports, or runtime values, does not flag variable operands, and does not
+  check other int-typed builtins.
 rule:
-  pattern: 'array_fill($A, $$$BEFORE, ($B / $C) + $D, $$$AFTER)'
+  any:
+    - pattern: 'array_fill($A, ($B / $C) + $D, $$$AFTER)'
+    - pattern: 'array_fill($A, ($B / $C), $$$AFTER)'
+    - pattern: 'array_fill($A, $B / $C, $$$AFTER)'
+constraints:
+  B:
+    kind: integer
+  C:
+    kind: integer
 metadata:
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0

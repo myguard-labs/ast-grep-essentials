@@ -1,8 +1,67 @@
 id: php-http-response-header-unglobaled-read
 snapshots:
-  ? "<?php\nfunction read_headers() {\n\treturn $http_response_header;\n}"
-  : labels:
-    - source: "function read_headers() {\n\treturn $http_response_header;\n}"
+  "<?php\nfunction f() {\n\t$g = fn() => file_get_contents( 'http://x' );\n\treturn $http_response_header;\n}":
+    labels:
+    - source: |-
+        function f() {
+        	$g = fn() => file_get_contents( 'http://x' );
+        	return $http_response_header;
+        }
+      style: primary
+      start: 6
+      end: 100
+    - source: $http_response_header
+      style: secondary
+      start: 76
+      end: 97
+  "<?php\nfunction f() {\n\t$g = function () { file_get_contents( 'http://x' ); };\n\treturn $http_response_header;\n}":
+    labels:
+    - source: |-
+        function f() {
+        	$g = function () { file_get_contents( 'http://x' ); };
+        	return $http_response_header;
+        }
+      style: primary
+      start: 6
+      end: 109
+    - source: $http_response_header
+      style: secondary
+      start: 85
+      end: 106
+  "<?php\nfunction f() {\n\tfunction inner() { file_get_contents( 'http://x' ); }\n\treturn $http_response_header;\n}":
+    labels:
+    - source: |-
+        function f() {
+        	function inner() { file_get_contents( 'http://x' ); }
+        	return $http_response_header;
+        }
+      style: primary
+      start: 6
+      end: 108
+    - source: $http_response_header
+      style: secondary
+      start: 84
+      end: 105
+  "<?php\nfunction read_headers( $u ) {\n\t$h = get_headers( $u );\n\treturn $http_response_header;\n}":
+    labels:
+    - source: |-
+        function read_headers( $u ) {
+        	$h = get_headers( $u );
+        	return $http_response_header;
+        }
+      style: primary
+      start: 6
+      end: 93
+    - source: $http_response_header
+      style: secondary
+      start: 69
+      end: 90
+  "<?php\nfunction read_headers() {\n\treturn $http_response_header;\n}":
+    labels:
+    - source: |-
+        function read_headers() {
+        	return $http_response_header;
+        }
       style: primary
       start: 6
       end: 64

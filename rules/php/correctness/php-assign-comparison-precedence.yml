@@ -8,10 +8,20 @@ message: >-
   boolean instead of the call result.
 note: >-
   Purely syntactic check. Matches an assignment expression whose right operand
-  is a comparison with !==, !=, ===, or ==. It does not resolve the called
-  function or verify runtime values.
+  is a !== comparison and that is the unparenthesized condition of a while, if
+  or do statement. A standalone `$found = f() !== false;` statement is a common
+  intentional boolean idiom and is not flagged; the other comparison operators
+  (!=, ===, ==) are not matched. It does not resolve the called function or
+  verify runtime values.
 rule:
   kind: assignment_expression
+  inside:
+    kind: parenthesized_expression
+    inside:
+      any:
+        - kind: while_statement
+        - kind: if_statement
+        - kind: do_statement
   has:
     field: right
     kind: binary_expression
