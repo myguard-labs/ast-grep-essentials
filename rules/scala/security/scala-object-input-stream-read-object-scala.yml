@@ -40,16 +40,20 @@ utils:
   # A block with a val bound to a plain ObjectInputStream, named like $STREAM.
   val-source:
     kind: block
-    has:
-      kind: val_definition
-      all:
-        - has:
-            field: pattern
-            kind: identifier
-            pattern: $STREAM
-        - has:
-            field: value
-            matches: plain-ois-instance
+    all:
+      - has:
+          kind: val_definition
+          all:
+            - has:
+                field: pattern
+                kind: identifier
+                pattern: $STREAM
+            - has:
+                field: value
+                matches: plain-ois-instance
+      - has:
+          stopBy: end
+          matches: reads-stream
   # The single-parameter lambda of Using(new ObjectInputStream(...)) { ... },
   # Using.resource and scala.util.Using, with the parameter named like $STREAM.
   using-source:
@@ -75,6 +79,9 @@ utils:
                         position: 2
                         ofRule:
                           kind: binding
+      - has:
+          stopBy: end
+          matches: reads-stream
       - inside:
           any:
             - kind: block
@@ -161,6 +168,25 @@ utils:
           field: pattern
           has:
             stopBy: end
+            kind: identifier
+            pattern: $STREAM
+  # A readObject() call on an identifier named like $STREAM. A stopBy rule is
+  # matched with a fresh metavariable environment, so a source util cannot
+  # take the receiver name from the reported call; instead each source util
+  # requires such a call below it, which ties a stop to a source bound to
+  # the same name as the receiver of a call it encloses.
+  reads-stream:
+    kind: call_expression
+    has:
+      field: function
+      kind: field_expression
+      all:
+        - has:
+            field: field
+            kind: identifier
+            regex: ^readObject$
+        - has:
+            field: value
             kind: identifier
             pattern: $STREAM
   plain-ois-instance:
