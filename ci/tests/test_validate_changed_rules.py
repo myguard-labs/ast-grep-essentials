@@ -182,6 +182,30 @@ class ValidateChangedRulesTests(unittest.TestCase):
             with self.subTest(label):
                 self.assertEqual(self.non_matching(self.BASE, text)[0], frozenset())
 
+    def test_stray_key_removal_alone_is_exempt_but_still_validated(self) -> None:
+        stray = "ast-grep-essentials: true\n" + self.BASE
+        exempt, count = self.non_matching(stray, self.BASE)
+        self.assertEqual(exempt, frozenset({self.PATH}))
+        self.assertEqual(count, 1)  # validate_rule still ran
+
+    def test_stray_key_removal_plus_metadata_change_is_exempt(self) -> None:
+        stray = "ast-grep-essentials: true\n" + self.BASE
+        exempt, _ = self.non_matching(stray, self.BASE + "metadata: {a: 1}\n")
+        self.assertEqual(exempt, frozenset({self.PATH}))
+
+    def test_stray_key_other_changes_are_not_exempt(self) -> None:
+        stray = "ast-grep-essentials: true\n" + self.BASE
+        for label, (base_text, text) in {
+            "key added": (self.BASE, stray),
+            "removed plus rule change": (
+                stray,
+                self.BASE.replace("call", "call_expression"),
+            ),
+            "value changed": (stray, stray.replace("true", "false")),
+        }.items():
+            with self.subTest(label):
+                self.assertEqual(self.non_matching(base_text, text)[0], frozenset())
+
     def test_message_change_is_not_exempt(self) -> None:
         exempt, _ = self.non_matching(self.BASE, self.BASE.replace("m\n", "other\n"))
         self.assertEqual(exempt, frozenset())

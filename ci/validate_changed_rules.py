@@ -169,6 +169,10 @@ def header_only_rule_changes(
 
 
 NON_MATCHING_KEYS = frozenset({"metadata", "note"})
+# Top-level keys whose REMOVAL alone is not a matcher change: the stray
+# ``ast-grep-essentials: true`` marker, which the latest ast-grep rejects as an
+# unknown field. Adding it, or changing its value while kept, is never exempt.
+REMOVABLE_KEYS = frozenset({"ast-grep-essentials"})
 
 
 def _strict_documents(data: bytes) -> list[object]:
@@ -234,7 +238,8 @@ def non_matching_rule_changes(
     root: Path, base: str, paths: Sequence[str]
 ) -> frozenset[str]:
     """Changed rules whose parsed document differs from ``base`` only in the
-    non-matching keys ``metadata`` and ``note``.
+    non-matching keys ``metadata`` and ``note``, or by the removal of a
+    ``REMOVABLE_KEYS`` key (present in ``base``, absent now).
 
     Only the mirrored-fixture requirement is waived: ``validate_changed`` still
     runs ``validate_rule`` on every exempt rule. An added rule, an unreadable
@@ -255,7 +260,17 @@ def non_matching_rule_changes(
         if previous is None:
             continue
         document = _matcher_document(current.read_bytes())
-        if document is not None and document == _matcher_document(previous):
+        before = _matcher_document(previous)
+        if document is None or before is None:
+            continue
+        # Only a removal is waived: drop a removable key from the base copy
+        # when the current document no longer carries it.
+        before = {
+            k: v
+            for k, v in before.items()
+            if not (k in REMOVABLE_KEYS and k not in document)
+        }
+        if document == before:
             exempt.add(value)
     return frozenset(exempt)
 
