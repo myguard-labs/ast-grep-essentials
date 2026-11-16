@@ -10,7 +10,9 @@ note: >-
   Purely syntactic check on a single && expression whose operands are equality
   tests of one identifier against two literal numbers. It does not resolve
   macros, types, aliasing, or runtime values, and it cannot confirm the
-  variable is unchanged between the tests.
+  variable is unchanged between the tests. Known limitation: constants are
+  compared by spelling, so `x == 1 && x == 0x1` is reported although both tests
+  use the same value (no matcher change; recorded here, not in todo_cases).
 rule:
   kind: binary_expression
   all:
