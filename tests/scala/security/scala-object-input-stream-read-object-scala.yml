@@ -87,6 +87,11 @@ valid:
         items.map((s: Json) => s.readObject())
       }
     }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, items: List[Int]) =
+        Using(new ObjectInputStream(in)) { o => items.map(o => o.readObject()) }
+    }
 invalid:
   - |
     object A {

@@ -111,7 +111,20 @@ rule:
                     field: value
                     matches: plain-ois-instance
         - inside:
-            stopBy: end
+            stopBy:
+              kind: lambda_expression
+              has:
+                field: parameters
+                any:
+                  - kind: identifier
+                    pattern: $STREAM
+                  - kind: bindings
+                    has:
+                      kind: binding
+                      has:
+                        field: name
+                        kind: identifier
+                        pattern: $STREAM
             kind: lambda_expression
             all:
               - has:
@@ -119,30 +132,34 @@ rule:
                   kind: identifier
                   pattern: $STREAM
               - inside:
-                  stopBy: end
-                  kind: call_expression
-                  has:
-                    field: function
+                  any:
+                    - kind: block
+                    - kind: arguments
+                  inside:
+                    field: arguments
                     kind: call_expression
-                    all:
-                      - has:
-                          field: function
-                          any:
-                            - kind: identifier
-                              regex: ^Using$
-                            - kind: field_expression
-                              regex: ^((_root_\.)?scala\.util\.)?Using(\.(resource|apply))?$
-                      - has:
-                          field: arguments
-                          has:
-                            nthChild:
-                              position: 1
-                              ofRule:
-                                not:
-                                  any:
-                                    - kind: comment
-                                    - kind: block_comment
-                            matches: plain-ois-instance
+                    has:
+                      field: function
+                      kind: call_expression
+                      all:
+                        - has:
+                            field: function
+                            any:
+                              - kind: identifier
+                                regex: ^Using$
+                              - kind: field_expression
+                                regex: ^((_root_\.)?scala\.util\.)?Using(\.(resource|apply))?$
+                        - has:
+                            field: arguments
+                            has:
+                              nthChild:
+                                position: 1
+                                ofRule:
+                                  not:
+                                    any:
+                                      - kind: comment
+                                      - kind: block_comment
+                              matches: plain-ois-instance
 metadata:
   created_at: '2026-11-16'
   source: 'MyGuard'
