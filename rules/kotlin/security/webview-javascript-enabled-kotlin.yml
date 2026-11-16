@@ -10,8 +10,11 @@ message: >-
 note: >-
   Matches the assignment settings.javaScriptEnabled = true, the bare
   javaScriptEnabled = true used inside settings.apply, and the call
-  setJavaScriptEnabled(true). The receiver type is not resolved, and a WebView
-  that only loads trusted bundled pages still matches.
+  setJavaScriptEnabled(true), also as a safe call (?.), a bare call inside a
+  scope function, or with a comment or named argument. The receiver type is not
+  resolved, and a WebView that only loads trusted bundled pages still matches.
+  Known misses: a parenthesized value such as (true), and a value held in a
+  variable.
 rule:
   any:
     - kind: assignment
@@ -25,10 +28,13 @@ rule:
     - kind: call_expression
       all:
         - has:
-            kind: navigation_expression
-            has:
-              kind: navigation_suffix
-              has: {kind: simple_identifier, regex: '^setJavaScriptEnabled$'}
+            any:
+              - kind: simple_identifier
+                regex: '^setJavaScriptEnabled$'
+              - kind: navigation_expression
+                has:
+                  kind: navigation_suffix
+                  has: {kind: simple_identifier, regex: '^setJavaScriptEnabled$'}
         - has:
             kind: call_suffix
             has:

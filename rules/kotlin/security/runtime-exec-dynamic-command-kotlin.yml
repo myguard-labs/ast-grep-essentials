@@ -12,11 +12,14 @@ note: >-
   Matches Runtime.getRuntime().exec whose first argument is a string template
   with an interpolation or an additive expression containing a string literal.
   A bare variable is not matched because it can be a String or a String array.
-  A Runtime held in a local variable is not resolved.
+  Runtime may be written java.lang.Runtime. A Runtime held in a local variable
+  is not resolved.
 rule:
   any:
     - pattern: Runtime.getRuntime().exec($CMD)
     - pattern: Runtime.getRuntime().exec($CMD, $$$REST)
+    - pattern: java.lang.Runtime.getRuntime().exec($CMD)
+    - pattern: java.lang.Runtime.getRuntime().exec($CMD, $$$REST)
 constraints:
   CMD:
     kind: value_argument

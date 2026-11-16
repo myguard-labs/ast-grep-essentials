@@ -16,6 +16,12 @@ valid:
         var javaScriptEnabledFlag = true
         val javaScriptEnabled = computeFlag()
     }
+  - |
+    fun setup(wv: WebView?) {
+        wv?.settings?.javaScriptEnabled = false
+        wv?.settings?.setJavaScriptEnabled(false)
+        setJavaScriptEnabledFlag(true)
+    }
 invalid:
   - |
     fun setup(wv: WebView) {
@@ -38,4 +44,32 @@ invalid:
   - |
     fun setup(wv: WebView) {
         wv.settings.javaScriptEnabled = /* on */ true
+    }
+  - |
+    fun setup(wv: WebView?) {
+        wv?.settings?.javaScriptEnabled = true
+    }
+  - |
+    fun setup(wv: WebView?) {
+        wv?.settings?.setJavaScriptEnabled(true)
+    }
+  - |
+    fun setup(wv: WebView?) {
+        wv?.settings?.apply { javaScriptEnabled = true }
+    }
+  - |
+    fun setup(wv: WebView) {
+        wv.settings.apply { setJavaScriptEnabled(true) }
+    }
+  - |
+    fun setup(wv: WebView) {
+        with(wv.settings) { javaScriptEnabled = true }
+    }
+  - |
+    fun setup(wv: WebView) {
+        wv.settings.also { it.javaScriptEnabled = true }
+    }
+  - |
+    fun setup(wv: WebView) {
+        wv.settings.setJavaScriptEnabled(enabled = true)
     }

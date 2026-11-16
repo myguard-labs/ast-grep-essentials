@@ -10,10 +10,25 @@ message: >-
   origins only, and prefer WebMessagePort or WebViewCompat message listeners.
 note: >-
   Matches any addJavascriptInterface call with at least one argument. The
-  receiver type is not resolved, and content the app fully controls still
-  matches.
+  call can be a safe call (?.), a non-null-asserted call, or a bare call inside
+  a scope function such as apply. The receiver type is not resolved, and
+  content the app fully controls still matches.
 rule:
-  pattern: $W.addJavascriptInterface($$$ARGS)
+  kind: call_expression
+  all:
+    - has:
+        any:
+          - kind: simple_identifier
+            regex: '^addJavascriptInterface$'
+          - kind: navigation_expression
+            has:
+              kind: navigation_suffix
+              has: {kind: simple_identifier, regex: '^addJavascriptInterface$'}
+    - has:
+        kind: call_suffix
+        has:
+          kind: value_arguments
+          has: {kind: value_argument}
 metadata:
   rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.45.2

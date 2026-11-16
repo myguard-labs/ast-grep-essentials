@@ -11,13 +11,14 @@ message: >-
 note: >-
   Matches Cipher.getInstance with a literal block-cipher name that has no mode,
   or the same name with an explicit ECB mode. Nonliteral transformations, string
-  templates and receivers other than a plain Cipher identifier are not resolved.
+  templates and receivers other than Cipher or javax.crypto.Cipher are not resolved. A
+  comment before the argument and a named argument are handled.
 rule:
   kind: call_expression
   all:
     - has:
         kind: navigation_expression
-        regex: '^Cipher\.getInstance$'
+        regex: '^(javax\.crypto\.)?Cipher\.getInstance$'
     - has:
         kind: call_suffix
         has:
