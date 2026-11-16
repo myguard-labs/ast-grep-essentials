@@ -10,7 +10,7 @@ message: >-
   argument array, and validate each argument against an allow-list.
 note: >-
   Matches Runtime.getRuntime().exec whose first argument is a string template
-  with an interpolation or an additive expression, however long the chain, that mixes a string literal with a non-literal operand.
+  with an interpolation or an additive expression, however long the chain, that mixes a string literal operand with a non-literal operand. The literal must be a direct operand of the chain, so an array concatenation such as arrayOf("ls") + name is not matched.
   A bare variable is not matched because it can be a String or a String array.
   Runtime may be written java.lang.Runtime. A Runtime held in a local variable
   is not resolved.
@@ -34,7 +34,9 @@ constraints:
               - kind: interpolated_identifier
         - kind: additive_expression
           all:
-            - has: {kind: string_literal, stopBy: end}
+            - has:
+                kind: string_literal
+                stopBy: {not: {kind: additive_expression}}
             - has:
                 stopBy: end
                 any:
