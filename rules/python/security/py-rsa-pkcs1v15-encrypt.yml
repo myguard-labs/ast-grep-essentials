@@ -9,7 +9,8 @@ message: >-
 note: >-
   [CWE-780] [OWASP A02:2021] PKCS#1 v1.5 encryption padding is
   vulnerable to Bleichenbacher padding-oracle attacks. This is a syntactic
-  check: an encrypt or decrypt method call with a direct PKCS1v15() argument.
+  check: an encrypt or decrypt method call with a direct PKCS1v15() argument
+  or a padding= keyword argument holding PKCS1v15().
   It does not resolve the receiver type or aliases of the constructor, and
   PKCS1v15 used for signing is not matched.
 rule:
@@ -23,11 +24,24 @@ rule:
           regex: '^(encrypt|decrypt)$'
     - has:
         field: arguments
-        has:
-          kind: call
-          has:
-            field: function
-            regex: '(^|\.)PKCS1v15$'
+        any:
+          - has:
+              kind: call
+              has:
+                field: function
+                regex: '(^|\.)PKCS1v15$'
+          - has:
+              kind: keyword_argument
+              all:
+                - has:
+                    field: name
+                    regex: '^padding$'
+                - has:
+                    field: value
+                    kind: call
+                    has:
+                      field: function
+                      regex: '(^|\.)PKCS1v15$'
 metadata:
   rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.51.3

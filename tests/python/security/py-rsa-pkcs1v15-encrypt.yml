@@ -10,6 +10,8 @@ valid:
     pad = padding.PKCS1v15()
   - |
     cipher.encrypt(data)
+  - |
+    ct = public_key.encrypt(msg, padding=padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
 invalid:
   - |
     ct = public_key.encrypt(msg, padding.PKCS1v15())
@@ -18,3 +20,5 @@ invalid:
   - |
     from cryptography.hazmat.primitives.asymmetric.padding import PKCS1v15
     ct = key.encrypt(msg, PKCS1v15())
+  - |
+    ct = public_key.encrypt(msg, padding=padding.PKCS1v15())
