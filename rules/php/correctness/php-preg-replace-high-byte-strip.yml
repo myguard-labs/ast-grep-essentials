@@ -12,9 +12,7 @@ note: >-
   not determine whether the input is multibyte or whether the pattern is
   applied to such input.
 rule:
-  any:
-    - pattern: 'preg_replace(''$PAT'', '''', $$$ARGS)'
-    - pattern: 'preg_replace($PAT, "", $$$ARGS)'
+  pattern: preg_replace($PAT, $REP, $$$ARGS)
   has:
     kind: arguments
     has:
@@ -37,6 +35,9 @@ rule:
           kind: string_content
           regex: '[^A-Za-z0-9][A-Za-z]*u[A-Za-z]*$'
           stopBy: end
+constraints:
+  REP:
+    regex: '^(''''|"")$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
