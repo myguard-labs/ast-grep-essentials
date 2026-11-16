@@ -3,7 +3,26 @@ valid:
   - |-
     type proposer struct{ state atomic.Pointer[build] }
     func (p *proposer) Pre() *Pre { if s := p.state.Load(); s != nil { return s.Pre }; return nil }
+  - |-
+    func (p *proposer) Pre() *Pre { s := p.state.Load(); if s == nil { return nil }; return s.Pre }
+  - |-
+    func (p *proposer) On() bool { if s := p.state.Load(); s != nil && s.Enabled { return true }; return false }
+  - |-
+    func (p *proposer) N() int64 { return p.count.Load() + 1 }
+  - |-
+    func get(m *sync.Map, k string) (any, bool) { v, ok := m.Load(k); return v, ok }
+  - |-
+    func (p *proposer) Has() bool { return p.state.Load() != nil }
+
 invalid:
   - |-
     type proposer struct{ state atomic.Pointer[build] }
     func (p *proposer) Pre() *Pre { return p.state.Load().Pre }
+  - |-
+    func (p *proposer) Name() string { v := p.state.Load().Name; return v }
+  - |-
+    func (p *proposer) Run() { p.state.Load().Run() }
+  - |-
+    func on(cur *atomic.Pointer[cfg]) bool { if cur.Load().Enabled { return true }; return false }
+  - |-
+    func (s *srv) N() int { return s.a.b.c.Load().Count }
