@@ -1,0 +1,14 @@
+id: js-mass-assignment-request-body
+valid:
+  - 'User.create({ name: req.body.name, email: req.body.email });'
+  - 'User.create(pick(req.body, ["name"]));'
+  - 'const { name } = req.body; User.create({ name });'
+  - 'Object.assign(doc, { name: req.body.name });'
+  - 'User.create(body);'
+  - 'Object.assign(req.body, defaults);'
+  - '// User.create(req.body);'
+invalid:
+  - 'User.create(req.body);'
+  - 'await models.Account.create(request.body);'
+  - 'Object.assign(doc, req.body);'
+  - 'Object.assign({}, defaults, req.body);'
