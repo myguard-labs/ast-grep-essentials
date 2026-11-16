@@ -11,7 +11,7 @@ message: >-
 note: >-
   Matches Runtime.getRuntime().exec whose first argument is a string template
   with an interpolation or an additive expression, however long the chain, that mixes a string literal operand with a non-literal operand. The literal must be a direct operand of the chain, so an array concatenation such as arrayOf("ls") + name is not matched.
-  A bare variable is not matched because it can be a String or a String array.
+  A method or property name after a dot is not itself a dynamic operand, so a constant call on a literal such as "x".trim() is not matched, while a call on a variable is. A bare variable is not matched because it can be a String or a String array.
   Runtime may be written java.lang.Runtime. A Runtime held in a local variable
   is not resolved.
 
@@ -46,6 +46,9 @@ constraints:
                 stopBy: end
                 any:
                   - kind: simple_identifier
+                    not:
+                      inside: {kind: navigation_suffix, stopBy: neighbor}
+                  - kind: this_expression
                   - kind: interpolated_identifier
                   - kind: interpolated_expression
 metadata:

@@ -23,6 +23,14 @@ valid:
     fun run(name: Array<String>) {
         Runtime.getRuntime().exec(arrayOf("ls") + name)
     }
+  - |
+    fun run() {
+        Runtime.getRuntime().exec("ls " + "x".trim())
+    }
+  - |
+    fun run() {
+        Runtime.getRuntime().exec("ls " + "a".trim() + "b".lowercase())
+    }
 invalid:
   - |
     fun run(a: String, b: String) {
@@ -74,4 +82,12 @@ invalid:
             "ls " +
                 name,
         )
+    }
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec("ls " + name.trim())
+    }
+  - |
+    fun run(name: String) {
+        Runtime.getRuntime().exec("ls " + "x".plus(name))
     }
