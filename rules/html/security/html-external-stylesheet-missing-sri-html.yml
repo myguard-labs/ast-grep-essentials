@@ -1,0 +1,63 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: html-external-stylesheet-missing-sri-html
+language: html
+severity: warning
+message: >-
+  Stylesheet loaded from an absolute or protocol-relative URL without an
+  integrity attribute; add a Subresource Integrity hash so a compromised host
+  cannot change the page.
+note: >-
+  Matches a link start tag or self-closing tag whose rel includes stylesheet, whose href starts with
+  http://, https:// or //, and that has no integrity attribute on the same tag.
+  It does not verify the hash value, the crossorigin attribute, or a policy that
+  pins the origin elsewhere. Relative hrefs are not matched.
+
+  [CWE-830] [A08:2025] [A08:2021]
+
+  [REFERENCES]
+      - https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity
+rule:
+  all:
+    - any:
+        - kind: start_tag
+        - kind: self_closing_tag
+    - has:
+        kind: tag_name
+        regex: '(?i)^link$'
+    - has:
+        kind: attribute
+        all:
+          - has:
+              kind: attribute_name
+              regex: '(?i)^rel$'
+          - has:
+              stopBy: end
+              kind: attribute_value
+              regex: '(?i)(^|\s)stylesheet(\s|$)'
+    - has:
+        kind: attribute
+        all:
+          - has:
+              kind: attribute_name
+              regex: '(?i)^href$'
+          - has:
+              stopBy: end
+              kind: attribute_value
+              regex: '(?i)^(https?:)?//'
+    - not:
+        has:
+          kind: attribute
+          has:
+            kind: attribute_name
+            regex: '(?i)^integrity$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-830'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/830.html'
+  owasp: 'A08:2025|A08:2021'
+  category: 'security'
+  references: 'https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity'

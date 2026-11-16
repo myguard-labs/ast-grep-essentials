@@ -1,0 +1,12 @@
+id: c-libxml2-parse-huge
+valid:
+  - 'xmlDocPtr d = xmlReadMemory(buf, len, "in.xml", NULL, XML_PARSE_NONET);'
+  - 'xmlCtxtUseOptions(ctxt, XML_PARSE_NONET | XML_PARSE_NOENT);'
+  - 'xmlCtxtUseOptions(ctxt, opts & ~XML_PARSE_HUGE);'
+  - 'int o = XML_PARSE_HUGE;'
+  - '/* xmlReadFile(f, NULL, XML_PARSE_HUGE); */'
+invalid:
+  - 'xmlDocPtr d = xmlReadMemory(buf, len, "in.xml", NULL, XML_PARSE_HUGE);'
+  - 'xmlDocPtr d = xmlReadFile(path, NULL, XML_PARSE_NONET | XML_PARSE_HUGE);'
+  - 'xmlCtxtUseOptions(ctxt, XML_PARSE_HUGE);'
+  - 'xmlCtxtReadMemory(ctxt, buf, len, NULL, NULL, XML_PARSE_RECOVER | XML_PARSE_HUGE);'

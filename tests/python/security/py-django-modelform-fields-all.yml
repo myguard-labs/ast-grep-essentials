@@ -1,0 +1,32 @@
+id: py-django-modelform-fields-all
+valid:
+  - |
+    class UserForm(forms.ModelForm):
+        class Meta:
+            model = User
+            fields = ["name", "email"]
+  - |
+    class UserForm(forms.ModelForm):
+        class Meta:
+            model = User
+            exclude = ["is_admin"]
+  - |
+    class Config:
+        fields = "__all__"
+  - |
+    class UserForm(forms.ModelForm):
+        class Meta:
+            model = User
+            # fields = "__all__"
+            note = "fields = '__all__'"
+invalid:
+  - |
+    class UserForm(forms.ModelForm):
+        class Meta:
+            model = User
+            fields = "__all__"
+  - |
+    class OrderForm(ModelForm):
+        class Meta:
+            model = Order
+            fields = '__all__'

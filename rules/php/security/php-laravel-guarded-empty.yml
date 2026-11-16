@@ -1,0 +1,39 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-laravel-guarded-empty
+language: php
+severity: warning
+message: >-
+  An empty $guarded array disables Eloquent mass-assignment protection, so a
+  request can set any attribute, including roles or ownership. Declare an
+  explicit $fillable list instead.
+note: >-
+  Matches a property declaration named $guarded whose value is an empty array
+  literal, written as [] or array(). A non-empty $guarded list and a $fillable
+  property are not matched. A model that is only filled from trusted, validated
+  data is the routine dismissal.
+
+  [CWE-915] [A08:2025] [A08:2021]
+
+  [REFERENCES]
+      - https://laravel.com/docs/eloquent#mass-assignment
+rule:
+  kind: property_element
+  all:
+    - has:
+        kind: variable_name
+        regex: '^\$guarded$'
+    - has:
+        field: default_value
+        kind: array_creation_expression
+        regex: '^(\[\s*\]|(?i:array)\s*\(\s*\))$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-915'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/915.html'
+  owasp: 'A08:2025|A08:2021'
+  category: 'security'
+  references: 'https://laravel.com/docs/eloquent#mass-assignment'

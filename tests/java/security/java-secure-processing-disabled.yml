@@ -1,0 +1,28 @@
+id: java-secure-processing-disabled
+valid:
+  - |
+    class A { void f(DocumentBuilderFactory dbf) throws Exception {
+      dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    } }
+  - |
+    class A { void f(DocumentBuilderFactory dbf) throws Exception {
+      dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+    } }
+  - |
+    class A { void f(DocumentBuilderFactory dbf, boolean on) throws Exception {
+      dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, on);
+    } }
+  - |
+    class A { void f() {
+      // dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+      String s = "setFeature(FEATURE_SECURE_PROCESSING, false)";
+    } }
+invalid:
+  - |
+    class A { void f(DocumentBuilderFactory dbf) throws Exception {
+      dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    } }
+  - |
+    class A { void f(TransformerFactory tf) throws Exception {
+      tf.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", false);
+    } }

@@ -1,0 +1,45 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: java-secure-processing-disabled
+language: java
+severity: warning
+message: >-
+  FEATURE_SECURE_PROCESSING is set to false, which removes the JAXP limits on
+  entity expansion and element depth, so a crafted XML document can exhaust
+  memory. Leave secure processing on.
+note: >-
+  Matches a setFeature call whose first argument names FEATURE_SECURE_PROCESSING
+  (bare, XMLConstants-qualified, or the literal feature URI) and whose second
+  argument is the literal false. A value of true and a value held in a variable
+  are not matched. A parser fed only trusted, size-limited documents is the
+  routine dismissal.
+
+  [CWE-776] [A02:2025] [A05:2021]
+
+  [REFERENCES]
+      - https://docs.oracle.com/en/java/javase/21/security/java-api-xml-processing-jaxp-security-guide.html
+rule:
+  kind: method_invocation
+  all:
+    - has:
+        field: name
+        regex: '^setFeature$'
+    - has:
+        field: arguments
+        all:
+          - has:
+              nthChild: 1
+              regex: '(FEATURE_SECURE_PROCESSING|XMLConstants/feature/secure-processing)'
+          - has:
+              nthChild: 2
+              kind: 'false'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-776'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/776.html'
+  owasp: 'A02:2025|A05:2021'
+  category: 'security'
+  references: 'https://docs.oracle.com/en/java/javase/21/security/java-api-xml-processing-jaxp-security-guide.html'

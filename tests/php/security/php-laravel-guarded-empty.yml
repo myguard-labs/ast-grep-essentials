@@ -1,0 +1,32 @@
+id: php-laravel-guarded-empty
+valid:
+  - |
+    <?php
+    class User extends Model {
+        protected $guarded = ['is_admin'];
+    }
+  - |
+    <?php
+    class User extends Model {
+        protected $fillable = ['name', 'email'];
+    }
+  - |
+    <?php
+    class User extends Model {
+        protected $hidden = [];
+    }
+  - |
+    <?php
+    // protected $guarded = [];
+    $note = 'protected $guarded = [];';
+invalid:
+  - |
+    <?php
+    class User extends Model {
+        protected $guarded = [];
+    }
+  - |
+    <?php
+    class Post extends Model {
+        protected $guarded = array();
+    }

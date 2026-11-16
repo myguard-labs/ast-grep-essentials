@@ -1,0 +1,62 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-libxml-parsehuge-flag
+language: php
+severity: warning
+message: >-
+  LIBXML_PARSEHUGE lifts the libxml2 limits on tree depth, text size and entity
+  expansion, so a crafted document can exhaust memory. Drop the flag for
+  untrusted XML.
+note: >-
+  Matches the LIBXML_PARSEHUGE constant name when it is an argument itself or
+  sits in a binary or parenthesized flag expression of that argument, for
+  simplexml_load_string, simplexml_load_file, a ->load, ->loadXML, ->loadHTML,
+  ->XML or ->open method call, or a static XMLReader::XML or XMLReader::open
+  call. The constant inside a closure passed to such a call is not matched. A flag held in a variable is not seen,
+  and a document from a trusted, size-limited source is the routine dismissal.
+  Entity flags are covered by php-libxml-entity-loading-enabled.
+
+  [CWE-776] [A02:2025] [A05:2021]
+
+  [REFERENCES]
+      - https://www.php.net/manual/en/libxml.constants.php
+rule:
+  kind: name
+  regex: '^LIBXML_PARSEHUGE$'
+  inside:
+    kind: argument
+    stopBy:
+      not:
+        any:
+          - kind: binary_expression
+          - kind: parenthesized_expression
+    inside:
+      kind: arguments
+      inside:
+        any:
+          - kind: function_call_expression
+            has:
+              field: function
+              regex: '(?i)^\\?(simplexml_load_string|simplexml_load_file)$'
+          - kind: member_call_expression
+            has:
+              field: name
+              regex: '(?i)^(loadXML|loadHTML|load|XML|open)$'
+          - kind: scoped_call_expression
+            all:
+              - has:
+                  field: scope
+                  regex: '(?i)^\\?XMLReader$'
+              - has:
+                  field: name
+                  regex: '(?i)^(XML|open)$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-776'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/776.html'
+  owasp: 'A02:2025|A05:2021'
+  category: 'security'
+  references: 'https://www.php.net/manual/en/libxml.constants.php'

@@ -1,0 +1,42 @@
+id: php-libxml-parsehuge-flag
+valid:
+  - |
+    <?php
+    $x = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NONET);
+  - |
+    <?php
+    $d->loadXML($xml, LIBXML_NONET | LIBXML_COMPACT);
+  - |
+    <?php
+    $flags = LIBXML_PARSEHUGE;
+  - |
+    <?php
+    // $d->loadXML($xml, LIBXML_PARSEHUGE);
+    $note = 'simplexml_load_string($x, null, LIBXML_PARSEHUGE)';
+  - |
+    <?php
+    $app->load(function () { return LIBXML_PARSEHUGE; });
+  - |
+    <?php
+    $r->open($p, null, LIBXML_NONET);
+  - |
+    <?php
+    XMLReader::open($p, null, LIBXML_NONET);
+invalid:
+  - |
+    <?php
+    $x = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_PARSEHUGE);
+  - |
+    <?php
+    $d = new DOMDocument();
+    $d->loadXML($xml, LIBXML_NONET | LIBXML_PARSEHUGE);
+  - |
+    <?php
+    $r = new XMLReader();
+    $r->open($p, null, LIBXML_PARSEHUGE);
+  - |
+    <?php
+    XMLReader::open($p, null, LIBXML_PARSEHUGE);
+  - |
+    <?php
+    XMLReader::XML($x, null, LIBXML_NONET | (LIBXML_PARSEHUGE));

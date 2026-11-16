@@ -1,0 +1,46 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: c-libxml2-parse-huge
+language: c
+severity: warning
+message: >-
+  XML_PARSE_HUGE lifts the libxml2 limits on tree depth, text size and entity
+  expansion, so a crafted document can exhaust memory. Drop the flag for
+  untrusted XML.
+note: >-
+  Matches the XML_PARSE_HUGE option constant in an argument of an xmlRead*,
+  xmlCtxtRead*, xmlReadMemory-style or xmlCtxtUseOptions call, including inside
+  a bitwise OR. A flag set through a variable, and a document from a trusted,
+  size-limited source, are not seen or are the routine dismissal. Clearing the
+  flag with a bitwise AND NOT (opts & ~XML_PARSE_HUGE) is not matched.
+
+  [CWE-776] [A02:2025] [A05:2021]
+
+  [REFERENCES]
+      - https://gnome.pages.gitlab.gnome.org/libxml2/html/parser_8h.html
+rule:
+  kind: identifier
+  regex: '^XML_PARSE_HUGE$'
+  all:
+    - inside:
+        kind: argument_list
+        stopBy:
+          not:
+            any:
+              - kind: binary_expression
+              - kind: parenthesized_expression
+        inside:
+          kind: call_expression
+          has:
+            field: function
+            regex: '^xml(Ctxt)?(Read\w*|UseOptions)$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-776'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/776.html'
+  owasp: 'A02:2025|A05:2021'
+  category: 'security'
+  references: 'https://gnome.pages.gitlab.gnome.org/libxml2/html/parser_8h.html'
