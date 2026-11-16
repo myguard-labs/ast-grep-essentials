@@ -14,7 +14,7 @@ note: >-
   contain a getParameter, getHeader or getQueryString call on a receiver named
   request or req. The finding is suppressed only when the request-data
   call itself is wrapped in a call to replace or replaceAll whose first
-  argument names CR, LF or whitespace (\r, \n, \s), encode, escapeJava,
+  argument names CR, LF or whitespace (\r, \n, \s) or the regex line-break matcher \R, encode, escapeJava,
   parseInt, parseLong or length; a sanitizer on another argument does not
   suppress it. A chained replace of only \r is accepted as a sanitizer on purpose (precision over recall). A replace that targets other characters, escapeHtml and
   escapeHtml4 do not strip CR or LF and are still reported. A value copied
@@ -57,7 +57,7 @@ rule:
                         kind: argument_list
                         has:
                           nthChild: 1
-                          regex: '\\[rns]|\\x0[adAD]|\\u000[adAD]'
+                          regex: '\\[rnsR]|\\x0[adAD]|\\u000[adAD]'
                 - all:
                     - has: {field: name, regex: '^replace$'}
                     - has:

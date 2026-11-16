@@ -20,6 +20,9 @@ valid:
     logger.info("user %s", re.sub(r"[\r\n]", "", request.args.get("user")))
   - |
     logger.info("user %s", re.sub(r"\s", "", request.args["x"]))
+  - |
+    import re
+    logger.info("user %s", re.sub(r"[\r\n]", "", request.args.get("user"), count=0))
 invalid:
   - |
     logger.info("user %s", request.args.get("user"))
@@ -41,3 +44,9 @@ invalid:
     logger.info("user %s", re.sub(r"[<>]", "", request.args["x"]))
   - |
     logger.info("user %s", request.args.get("user").replace("\\n", ""))
+  - |
+    import re
+    logger.info("user %s", re.sub(r"[\r\n]", "", request.args.get("user"), count=1))
+  - |
+    import re
+    logger.info("user %s", re.sub(r"[\r\n]", "", request.args.get("user"), 1))
