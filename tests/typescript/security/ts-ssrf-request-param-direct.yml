@@ -1,0 +1,15 @@
+id: ts-ssrf-request-param-direct
+valid:
+- fetch("https://api.example.com/items")
+- fetch(ALLOWED[req.query.name])
+- axios.post(API_URL, req.body)
+- cache.get(req.query.key)
+- fetch(url)
+- '// fetch(req.query.url)'
+- const s = 'fetch(req.query.url)'
+invalid:
+- fetch(req.query.url)
+- axios.get(req.body.target)
+- 'got.post(request.params.callback, { json: payload })'
+- 'await fetch(req.query["feed"])'
+- superagent.get(req.query.u).end(cb)
