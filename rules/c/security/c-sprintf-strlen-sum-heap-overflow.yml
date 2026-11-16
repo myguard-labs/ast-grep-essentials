@@ -36,14 +36,16 @@ rule:
                 - has:
                     stopBy: end
                     kind: binary_expression
-                    not:
-                      inside:
-                        stopBy: end
-                        kind: sizeof_expression
-                    has:
-                      stopBy: end
-                      kind: call_expression
-                      has: {field: function, regex: '^strlen$'}
+                    all:
+                      - has: {field: operator, regex: '^\+$'}
+                      - not:
+                          inside:
+                            stopBy: end
+                            kind: sizeof_expression
+                      - has:
+                          stopBy: end
+                          kind: call_expression
+                          has: {field: function, regex: '^strlen$'}
         - all:
             - not:
                 inside:
@@ -63,14 +65,16 @@ rule:
                     - has:
                         stopBy: end
                         kind: binary_expression
-                        not:
-                          inside:
-                            stopBy: end
-                            kind: sizeof_expression
-                        has:
-                          stopBy: end
-                          kind: call_expression
-                          has: {field: function, regex: '^strlen$'}
+                        all:
+                          - has: {field: operator, regex: '^\+$'}
+                          - not:
+                              inside:
+                                stopBy: end
+                                kind: sizeof_expression
+                          - has:
+                              stopBy: end
+                              kind: call_expression
+                              has: {field: function, regex: '^strlen$'}
                     - not:
                         inside:
                           stopBy: end
