@@ -8,13 +8,14 @@ message: >-
   NULL argument would crash.
 note: >-
   Textual match on the macro definition; it does not verify that the argument
-  is a macro parameter or that callers never pass NULL.
+  is a macro parameter or that callers never pass NULL. A truthiness guard
+  written as (p) && strncmp(...) counts as a NULL test.
 rule:
   kind: preproc_function_def
   all:
     - regex: '\bstrn?cmp\s*\(\s*\(?\s*[A-Za-z_]\w*'
     - not:
-        regex: 'NULL|\bnullptr\b|!\s*[A-Za-z_(]'
+        regex: 'NULL|\bnullptr\b|!\s*[A-Za-z_(]|[A-Za-z_]\w*\s*\)?\s*&&\s*\(?\s*strncmp\b'
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
@@ -28,4 +29,5 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
   todo_cases:
+    - "FN: '(other) && strncmp(uri, PFX, 4)' and '(a) && strncmp(a, b, n)' are treated as guarded because the regex cannot tie the tested name to the compared pointers"
     - "FN: partial NULL guard '(!(a) ? 0 : strcmp(a, b) == 0)' leaves b unchecked and is treated as safe by the regex exclusion"
