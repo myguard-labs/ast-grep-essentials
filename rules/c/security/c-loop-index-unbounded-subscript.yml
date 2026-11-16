@@ -8,7 +8,8 @@ message: >-
   condition never mentions; check for buffer overrun.
 note: >-
   Syntactic only; does not check whether the index is bounded elsewhere,
-  aliasing, or actual buffer sizes. Likely noisy.
+  aliasing, or actual buffer sizes. Likely noisy. An if statement in the body
+  whose condition compares the index suppresses the match.
 rule:
   kind: while_statement
   all:
@@ -23,6 +24,24 @@ rule:
           has:
             pattern: '$I'
             stopBy: end
+    - not:
+        has:
+          field: body
+          has:
+            stopBy: end
+            kind: if_statement
+            has:
+              field: condition
+              has:
+                stopBy: end
+                kind: binary_expression
+                all:
+                  - has:
+                      field: operator
+                      regex: '^(<|<=|>|>=|==)$'
+                  - has:
+                      pattern: '$I'
+                      stopBy: end
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
