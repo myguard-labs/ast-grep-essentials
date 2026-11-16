@@ -26,3 +26,11 @@ invalid:
     log.debug("body %s", request.POST["q"])
   - |
     logger.info("%s %d", request.args.get("user"), int("1"))
+  - |
+    logger.info("user %s", html.escape(request.args["x"]))
+  - |
+    logger.info("user %s", markupsafe.escape(request.args["x"]))
+  - |
+    logger.info("user %s", request.args.get("user").replace("<", "&lt;"))
+  - |
+    logger.info("user %s", re.sub(r"[<>]", "", request.args["x"]))
