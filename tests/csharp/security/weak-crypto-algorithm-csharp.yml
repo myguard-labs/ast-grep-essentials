@@ -1,0 +1,52 @@
+id: weak-crypto-algorithm-csharp
+valid:
+  - |
+    class Example {
+        void Hash() {
+            var h = SHA256.Create();
+            var a = Aes.Create();
+            var b = SHA256.HashData(data);
+        }
+    }
+  - |
+    class Example {
+        void Hash() {
+            var h = new SHA256CryptoServiceProvider();
+            var r = new AesCng();
+        }
+    }
+  - |
+    class Example {
+        void Hash() {
+            var h = MyMD5.Create();
+            var t = typeof(MD5);
+            var s = "MD5";
+        }
+    }
+invalid:
+  - |
+    class Example {
+        void Hash() {
+            var h = MD5.Create();
+        }
+    }
+  - |
+    class Example {
+        void Hash() {
+            var h = System.Security.Cryptography.SHA1.Create();
+        }
+    }
+  - |
+    class Example {
+        void Hash() {
+            var h = new MD5CryptoServiceProvider();
+        }
+    }
+  - |
+    class Example {
+        void Crypt() {
+            var d = DES.Create();
+            var t = new TripleDESCryptoServiceProvider();
+            var x = SHA1.HashData(data);
+        }
+    }
