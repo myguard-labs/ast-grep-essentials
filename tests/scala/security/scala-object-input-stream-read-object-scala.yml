@@ -1,0 +1,171 @@
+id: scala-object-input-stream-read-object-scala
+valid:
+  - |
+    object A {
+      def ok(in: java.io.InputStream) = {
+        val stream = new ObjectInputStream(in)
+        stream.close()
+      }
+    }
+  - |
+    object A {
+      def ok(reader: Reader) = {
+        val r = new BufferedReader(reader)
+        r.readObject()
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream) = {
+        val stream = new ObjectInputStream(in) {
+          override def resolveClass(d: ObjectStreamClass): Class[_] = checked(d)
+        }
+        stream.readObject()
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream) = new ValidatingObjectInputStream(in).readObject()
+    }
+  - |
+    object A {
+      def ok(json: Json) = json.readObject()
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream) =
+        Using(new BufferedReader(in)) { o => o.readObject() }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream) =
+        Using.resource(new BufferedReader(in)) { o => o.readObject() }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, j: Json) = {
+        {
+          val s = new ObjectInputStream(in)
+          s.close()
+        }
+        {
+          val s = j.reader()
+          s.readObject()
+        }
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, j: Json) = {
+        val s = new ObjectInputStream(in)
+        s.close()
+        {
+          val s = j.reader()
+          s.readObject()
+        }
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream) = {
+        val s = new ObjectInputStream(in)
+        def other(s: Json) = s.readObject()
+        other(null)
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, items: List[Json]) = {
+        val s = new ObjectInputStream(in)
+        items.map(s => s.readObject())
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, items: List[Json]) = {
+        val s = new ObjectInputStream(in)
+        items.map((s: Json) => s.readObject())
+      }
+    }
+  - |
+    object A {
+      def ok(in: java.io.InputStream, items: List[Int]) =
+        Using(new ObjectInputStream(in)) { o => items.map(o => o.readObject()) }
+    }
+invalid:
+  - |
+    object A {
+      def bad(in: java.io.InputStream) = new ObjectInputStream(in).readObject()
+    }
+  - |
+    object A {
+      def bad(p: String) = {
+        val stream = new java.io.ObjectInputStream(new FileInputStream(p))
+        try { stream.readObject() } finally stream.close()
+      }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) =
+        Using(new ObjectInputStream(in)) { o => o.readObject() }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) =
+        Using(/* untrusted stream */ new ObjectInputStream(in)) { o => o.readObject() }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) = new java.io.ObjectInputStream(in).readObject()
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) = new _root_.java.io.ObjectInputStream(in).readObject()
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) = {
+        val stream = new _root_.java.io.ObjectInputStream(in)
+        stream.readObject()
+      }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) =
+        Using.resource(new ObjectInputStream(in)) { o => o.readObject() }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) =
+        scala.util.Using(new java.io.ObjectInputStream(in)) { o => o.readObject() }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) =
+        _root_.scala.util.Using.resource(new ObjectInputStream(in))(o => o.readObject())
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream, j: Json) = {
+        val s = new ObjectInputStream(in)
+        locally {
+          val t = j.reader()
+          t.close()
+        }
+        s.readObject()
+      }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) = {
+        val s = new ObjectInputStream(in)
+        if (in != null) {
+          s.readObject()
+        } else null
+      }
+    }
+  - |
+    object A {
+      def bad(in: java.io.InputStream) =
+        Using(new ObjectInputStream(in)) { (o: ObjectInputStream) => o.readObject() }
+    }

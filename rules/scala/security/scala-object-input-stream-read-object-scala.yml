@@ -1,0 +1,189 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: scala-object-input-stream-read-object-scala
+language: scala
+severity: warning
+message: >-
+  readObject() is called on a plain java.io.ObjectInputStream. Java
+  deserialization instantiates whatever class the stream names, so bytes from
+  an attacker can run gadget-chain code in the application. Do not
+  deserialize untrusted data; use a data format such as JSON, or filter the
+  accepted classes with an ObjectInputFilter or a resolveClass allow-list.
+note: >-
+  [CWE-502]: Deserialization of Untrusted Data
+  [OWASP A08:2025]: Software or Data Integrity Failures
+  [REFERENCES]
+      - https://cwe.mitre.org/data/definitions/502.html
+      - https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures
+  Matches readObject() on `new ObjectInputStream(...)` directly, on a val
+  bound to one in the nearest enclosing block that declares that name, and on the lambda parameter of
+  `Using(new ObjectInputStream(...)) { ... }`, `Using.resource(...)` and
+  `scala.util.Using(...)`. An anonymous subclass with a body, which is the
+  usual place for a resolveClass allow-list, and other stream types are not
+  reported. A fully qualified or `_root_` qualified
+  `java.io.ObjectInputStream` is reported like the short name; an alias
+  import such as `import java.io.{ObjectInputStream => Stream}` is a known miss. A `var`, a pattern binding or a class member
+  receiver is not tracked, and a `def` parameter or lambda parameter of the same name hides an
+  outer val.
+  The rule cannot tell whether the stream carries untrusted bytes, so review
+  each hit for the data source.
+utils:
+  plain-ois-instance:
+    kind: instance_expression
+    all:
+      - has:
+          nthChild:
+            position: 1
+            ofRule:
+              not:
+                any:
+                  - kind: comment
+                  - kind: block_comment
+          any:
+            - kind: type_identifier
+            - kind: stable_type_identifier
+          regex: (^|\.)ObjectInputStream$
+      - not:
+          has:
+            kind: template_body
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: field_expression
+        all:
+          - has:
+              field: field
+              kind: identifier
+              regex: ^readObject$
+          - has:
+              field: value
+              any:
+                - matches: plain-ois-instance
+                - kind: identifier
+                  pattern: $STREAM
+    - any:
+        - has:
+            field: function
+            has:
+              field: value
+              matches: plain-ois-instance
+        - inside:
+            stopBy:
+              any:
+                - kind: block
+                  has:
+                    kind: val_definition
+                    has:
+                      field: pattern
+                      kind: identifier
+                      pattern: $STREAM
+                - kind: function_definition
+                  has:
+                    field: parameters
+                    has:
+                      stopBy: end
+                      kind: identifier
+                      pattern: $STREAM
+                - kind: lambda_expression
+                  has:
+                    field: parameters
+                    any:
+                      - kind: identifier
+                        pattern: $STREAM
+                      - kind: bindings
+                        has:
+                          kind: binding
+                          has:
+                            field: name
+                            kind: identifier
+                            pattern: $STREAM
+            kind: block
+            has:
+              kind: val_definition
+              all:
+                - has:
+                    field: pattern
+                    kind: identifier
+                    pattern: $STREAM
+                - has:
+                    field: value
+                    matches: plain-ois-instance
+        - inside:
+            stopBy:
+              kind: lambda_expression
+              has:
+                field: parameters
+                any:
+                  - kind: identifier
+                    pattern: $STREAM
+                  - kind: bindings
+                    has:
+                      kind: binding
+                      has:
+                        field: name
+                        kind: identifier
+                        pattern: $STREAM
+            kind: lambda_expression
+            all:
+              - has:
+                  field: parameters
+                  any:
+                    - kind: identifier
+                      pattern: $STREAM
+                    - kind: bindings
+                      all:
+                        - has:
+                            kind: binding
+                            has:
+                              field: name
+                              kind: identifier
+                              pattern: $STREAM
+                        - not:
+                            has:
+                              kind: binding
+                              nthChild:
+                                position: 2
+                                ofRule:
+                                  kind: binding
+              - inside:
+                  any:
+                    - kind: block
+                    - kind: arguments
+                  inside:
+                    field: arguments
+                    kind: call_expression
+                    has:
+                      field: function
+                      kind: call_expression
+                      all:
+                        - has:
+                            field: function
+                            any:
+                              - kind: identifier
+                                regex: ^Using$
+                              - kind: field_expression
+                                regex: ^((_root_\.)?scala\.util\.)?Using(\.(resource|apply))?$
+                        - has:
+                            field: arguments
+                            has:
+                              nthChild:
+                                position: 1
+                                ofRule:
+                                  not:
+                                    any:
+                                      - kind: comment
+                                      - kind: block_comment
+                              matches: plain-ois-instance
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-502'
+  owasp: 'A08:2025|A08:2021'
+  category: 'security'
+  subcategory: 'deserialization'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/502.html'
+  taxonomy_cited_keys: 'cwe'

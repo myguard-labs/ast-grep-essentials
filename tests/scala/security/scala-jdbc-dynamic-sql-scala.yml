@@ -1,0 +1,106 @@
+id: scala-jdbc-dynamic-sql-scala
+valid:
+  - |
+    object A {
+      def ok(conn: java.sql.Connection, id: Long) = {
+        val ps = conn.prepareStatement("select * from users where id = ?")
+        ps.setLong(1, id)
+        ps.executeQuery()
+      }
+    }
+  - |
+    object A {
+      def ok(stmt: java.sql.Statement) = stmt.executeQuery("select 1")
+    }
+  - |
+    object A {
+      def ok(stmt: java.sql.Statement) = stmt.executeUpdate("delete from a " + "where b = 1")
+    }
+  - |
+    object A {
+      def ok(db: Database, id: Long) = db.run(sql"select * from users where id = $id".as[User])
+    }
+  - |
+    object A {
+      def ok(stmt: java.sql.Statement, q: String) = stmt.executeQuery(q)
+    }
+  - |
+    object A {
+      def ok(stmt: java.sql.Statement) =
+        stmt.executeQuery("select a " + "from b " + "where c = 1")
+    }
+  - |
+    object A {
+      def ok(stmt: java.sql.Statement) =
+        stmt.executeQuery("""select 1
+          |from dual""".stripMargin)
+    }
+invalid:
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, name: String) =
+        stmt.executeQuery(s"select * from users where name = '$name'")
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, id: String) =
+        stmt.executeUpdate("delete from users where id = " + id)
+    }
+  - |
+    object A {
+      def bad(conn: java.sql.Connection, table: String) =
+        conn.prepareStatement(s"select * from ${table}")
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, name: String) =
+        stmt.executeQuery(/* user input */ s"select * from users where name = '$name'")
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, id: String) =
+        stmt.executeUpdate(
+          // built from the request
+          "delete from users where id = " + id)
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, id: String) =
+        stmt.executeQuery("select * from users where id = " + id + " limit 1")
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, id: String) =
+        stmt.executeQuery(id + " limit 1")
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, name: String) =
+        stmt.executeQuery(s"""select * from users
+          |where name = '$name'""".stripMargin)
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, name: String) =
+        stmt.executeQuery(f"select * from users where name = '$name%s'".trim)
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, id: String) =
+        stmt.executeQuery(("select * from users where id = " + id).trim)
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, id: String) =
+        stmt.executeQuery((("select * from users where id = " + id)).stripMargin)
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, name: String) =
+        stmt.executeQuery((s"select * from users where name = '$name'").stripLineEnd)
+    }
+  - |
+    object A {
+      def bad(stmt: java.sql.Statement, name: String) =
+        stmt.executeQuery((s"select * from users where name = '$name'"))
+    }

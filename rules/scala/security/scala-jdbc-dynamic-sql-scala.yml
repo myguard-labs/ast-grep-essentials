@@ -1,0 +1,102 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: scala-jdbc-dynamic-sql-scala
+language: scala
+severity: warning
+message: >-
+  A JDBC statement method receives SQL text that is interpolated with `s"..."`
+  or concatenated with `+` at run time. A value that carries quotes or SQL
+  syntax changes the query, which allows SQL injection. Use a
+  PreparedStatement with `?` placeholders and bind each value with the typed
+  setters, or a library interpolator that binds parameters, and allow-list any
+  identifier that cannot be bound.
+note: >-
+  [CWE-89]: Improper Neutralization of Special Elements used in an SQL Command
+  [OWASP A05:2025]: Injection
+  [REFERENCES]
+      - https://cwe.mitre.org/data/definitions/89.html
+      - https://owasp.org/Top10/A03_2021-Injection
+  Matches executeQuery, executeUpdate, executeLargeUpdate, execute,
+  addBatch, prepareStatement and prepareCall called with an `s`, `f` or `raw`
+  interpolated string that has an interpolation, or a `+` concatenation with a
+  non-literal operand on either side, also when the string, or the parenthesized
+  concatenation, is followed by `.stripMargin`, `.trim` or `.stripLineEnd`. Literal SQL, `?` placeholders and
+  parameter-binding interpolators such as `sql"..."` are not reported. A plain identifier
+  argument is not reported because its origin cannot be told from syntax.
+utils:
+  dynamic-sql:
+    any:
+      - kind: interpolated_string_expression
+        all:
+          - has:
+              field: interpolator
+              kind: identifier
+              regex: ^(s|f|raw)$
+          - has:
+              stopBy: end
+              kind: interpolation
+      - kind: infix_expression
+        all:
+          - has:
+              field: operator
+              regex: ^\+$
+          - has:
+              stopBy: end
+              kind: identifier
+  paren-dynamic-sql:
+    any:
+      - matches: dynamic-sql
+      - kind: parenthesized_expression
+        has:
+          matches: paren-dynamic-sql
+  sql-trimmed:
+    kind: field_expression
+    all:
+      - has:
+          field: value
+          matches: paren-dynamic-sql
+      - has:
+          field: field
+          kind: identifier
+          regex: ^(stripMargin|trim|stripLineEnd)$
+  sql-argument:
+    any:
+      - matches: paren-dynamic-sql
+      - matches: sql-trimmed
+      - kind: call_expression
+        has:
+          field: function
+          matches: sql-trimmed
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        kind: field_expression
+        has:
+          field: field
+          kind: identifier
+          regex: ^(executeQuery|executeUpdate|executeLargeUpdate|execute|addBatch|prepareStatement|prepareCall)$
+    - has:
+        field: arguments
+        kind: arguments
+        has:
+          nthChild:
+            position: 1
+            ofRule:
+              not:
+                any:
+                  - kind: comment
+                  - kind: block_comment
+          matches: sql-argument
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-89'
+  owasp: 'A05:2025|A03:2021'
+  category: 'security'
+  subcategory: 'sql-injection'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/89.html'
+  taxonomy_cited_keys: 'cwe'
