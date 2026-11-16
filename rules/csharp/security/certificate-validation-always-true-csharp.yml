@@ -16,7 +16,9 @@ note: >-
   `new RemoteCertificateValidationCallback((s, c, ch, e) => true)`, are
   matched too. Callbacks that inspect their arguments
   are not flagged. This is a single-file syntactic check; it does not follow
-  callbacks defined as named methods.
+  callbacks defined as named methods. Known misses: callbacks passed as
+  constructor arguments, such as `new SslStream(stream, false, (s, c, ch, e) =>
+  true)`, and `static` lambdas are not matched.
 utils:
   always-true-callback:
     any:
