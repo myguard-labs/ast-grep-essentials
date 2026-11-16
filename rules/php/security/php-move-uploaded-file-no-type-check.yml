@@ -1,0 +1,73 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-move-uploaded-file-no-type-check
+language: php
+severity: warning
+message: >-
+  move_uploaded_file in a function that never checks what kind of file arrived.
+  Without an extension allowlist or a content check, an attacker uploads a .php
+  or other executable file and requests it from the webroot, which gives code
+  execution. Validate the extension and the real content type before the move,
+  and store the file outside the document root under a generated name.
+note: >-
+  Fires on move_uploaded_file inside a function, method or closure whose body
+  contains no call to wp_check_filetype, wp_check_filetype_and_ext,
+  wp_handle_upload, mime_content_type, finfo_file, getimagesize or
+  exif_imagetype, and no ->file() or ->buffer() method call (the finfo object
+  API). The check is per function and only the nearest enclosing one counts: a
+  check inside a nested closure or function does not cover the outer one, and
+  validation done by a caller or in a sibling helper is not seen, which is the
+  routine dismissal. An extension allowlist built with pathinfo() and in_array()
+  is not recognised either, and is also a routine dismissal. A call outside any
+  function is not matched. It does not judge whether the check result is
+  actually used. An upload name built from the client field is also covered by
+  php-upload-unvalidated-name.
+
+  [CWE-434] [A06:2025]
+
+  [REFERENCES]
+      - https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html
+utils:
+  validation-call:
+    any:
+      - kind: function_call_expression
+        has:
+          field: function
+          regex: '(?i)^\\?(wp_check_filetype|wp_check_filetype_and_ext|wp_handle_upload|mime_content_type|finfo_file|getimagesize|exif_imagetype)$'
+      - kind: member_call_expression
+        has:
+          field: name
+          regex: '(?i)^(file|buffer)$'
+rule:
+  kind: function_call_expression
+  all:
+    - has:
+        field: function
+        regex: '(?i)^\\?move_uploaded_file$'
+    - inside:
+        stopBy: &fn
+          any:
+            - kind: function_definition
+            - kind: method_declaration
+            - kind: anonymous_function
+            - kind: arrow_function
+        any:
+          - kind: function_definition
+          - kind: method_declaration
+          - kind: anonymous_function
+          - kind: arrow_function
+        not:
+          has:
+            stopBy: *fn
+            matches: validation-call
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-434'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/434.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A06:2025'
+  category: 'security'
+  references: 'https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html'

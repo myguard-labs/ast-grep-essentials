@@ -1,0 +1,69 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: js-ssrf-request-param-direct
+language: javascript
+severity: error
+message: >-
+  Outbound HTTP request whose URL is read straight from the incoming request.
+  A caller who sets that parameter makes the server fetch any address it can
+  reach, including cloud metadata (169.254.169.254), localhost admin ports and
+  internal hosts that the caller cannot. Resolve the target against an
+  allowlist of schemes and hosts before requesting it.
+note: >-
+  Fires on fetch, and on axios, got, superagent or request called as get, post,
+  put, patch, delete or head, when the first argument is a property read of
+  req or request under query, params or body, by dot or bracket access. A URL
+  copied into a local variable first, and any allowlist check on that variable,
+  is not seen, and neither is a template literal that interpolates the value.
+  A fixed host with a request value only in the path is not matched when the
+  value is interpolated, and is the routine dismissal otherwise. Roots other
+  than req and request, such as Koa ctx.request.query or ctx.query, are not
+  covered.
+
+  [CWE-918] [A01:2025]
+
+  [REFERENCES]
+      - https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+utils:
+  request-access:
+    any:
+      - kind: member_expression
+      - kind: subscript_expression
+    regex: '^req(uest)?\s*(\?\.|\.|\[\s*[''"`])\s*(query|params|body)\b'
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        any:
+          - kind: identifier
+            regex: '^fetch$'
+          - kind: member_expression
+            all:
+              - has:
+                  field: object
+                  kind: identifier
+                  regex: '^(axios|got|superagent|request)$'
+              - has:
+                  field: property
+                  regex: '^(get|post|put|patch|delete|head)$'
+    - has:
+        field: arguments
+        kind: arguments
+        has:
+          nthChild:
+            position: 1
+            ofRule:
+              not: {kind: comment}
+          matches: request-access
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-918'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/918.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A01:2025'
+  category: 'security'
+  references: 'https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html'

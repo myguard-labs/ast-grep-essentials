@@ -1,0 +1,56 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-django-csrf-exempt
+language: python
+severity: warning
+message: >-
+  Django CSRF protection is switched off for a view. A state-changing request
+  to it from any other site the signed-in victim visits then carries the session
+  cookie and is accepted. Keep the middleware check on, and exempt only a view
+  that authenticates every call by a token or signature rather than by cookie.
+note: >-
+  Fires on csrf_exempt used as a decorator, called on a view, or passed to
+  method_decorator, whether imported by name or reached through a module path
+  such as csrf.csrf_exempt. The import statement itself, a comment and a string
+  do not match, and neither does csrf_protect or requires_csrf_token. A webhook
+  endpoint that verifies a provider signature is the routine dismissal. It does
+  not follow a re-export under another name.
+
+  [CWE-352] [A01:2025]
+
+  [REFERENCES]
+      - https://docs.djangoproject.com/en/stable/howto/csrf/#exempt-views-from-csrf-protection
+rule:
+  all:
+    - any:
+        - kind: identifier
+          regex: '^csrf_exempt$'
+        - kind: attribute
+          has:
+            field: attribute
+            regex: '^csrf_exempt$'
+    - any:
+        - inside:
+            kind: decorator
+        - inside:
+            field: function
+            kind: call
+        - inside:
+            kind: argument_list
+            inside:
+              kind: call
+              has:
+                field: function
+                kind: identifier
+                regex: '^method_decorator$'
+metadata:
+  created_at: '2026-11-16'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-352'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/352.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A01:2025'
+  category: 'security'
+  references: 'https://docs.djangoproject.com/en/stable/howto/csrf/#exempt-views-from-csrf-protection'

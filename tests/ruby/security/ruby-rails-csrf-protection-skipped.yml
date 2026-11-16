@@ -1,0 +1,38 @@
+id: ruby-rails-csrf-protection-skipped
+valid:
+  - |
+    class A < ApplicationController
+      skip_before_action :authenticate_user!, only: [:index]
+    end
+  - |
+    class A < ApplicationController
+      protect_from_forgery with: :exception
+    end
+  - |
+    # skip_forgery_protection
+    note = "skip_before_action :verify_authenticity_token"
+  - |
+    class A < ApplicationController
+      before_action :verify_authenticity_token
+    end
+invalid:
+  - |
+    class A < ApplicationController
+      skip_forgery_protection
+    end
+  - |
+    class A < ApplicationController
+      skip_forgery_protection only: [:webhook]
+    end
+  - |
+    class A < ApplicationController
+      skip_before_action :verify_authenticity_token, only: [:create]
+    end
+  - |
+    class A < ApplicationController
+      skip_before_action :authenticate_user!, :verify_authenticity_token
+    end
+  - |
+    class A < ApplicationController
+      skip_before_action("verify_authenticity_token")
+    end

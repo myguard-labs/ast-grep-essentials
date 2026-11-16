@@ -1,0 +1,29 @@
+id: py-django-csrf-exempt
+valid:
+- from django.views.decorators.csrf import csrf_exempt
+- |
+  @csrf_protect
+  def view(request):
+      pass
+- |
+  @require_POST
+  def view(request):
+      pass
+- '# @csrf_exempt'
+- text = "@csrf_exempt"
+- view.csrf_exempt = False
+- flag = view.csrf_exempt
+invalid:
+- |
+  @csrf_exempt
+  def view(request):
+      pass
+- |
+  @method_decorator(csrf_exempt, name="dispatch")
+  class V(View):
+      pass
+- urlpatterns = [path("hook/", csrf_exempt(hook))]
+- |
+  @csrf.csrf_exempt
+  def view(request):
+      pass
