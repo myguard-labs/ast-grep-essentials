@@ -8,7 +8,8 @@ message: >-
   to use on untrusted data. Use DataContractSerializer or System.Text.Json.
 note: >-
   Matches construction of NetDataContractSerializer, with or without
-  arguments or an initializer. It does not verify that Deserialize is called
+  arguments or an initializer, and a target-typed `NetDataContractSerializer s
+  = new();` (local, field or property initializer). It does not verify that Deserialize is called
   or that the input is untrusted, and does not resolve types or namespaces.
 
   [CWE-502] [A08:2025] [A08:2021]
@@ -17,10 +18,24 @@ note: >-
       - https://learn.microsoft.com/en-us/dotnet/standard/serialization/binaryformatter-security-guide
       - https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html
 rule:
-  kind: object_creation_expression
-  has:
-    field: type
-    regex: '^(?:global::)?(?:System\.Runtime\.Serialization\.)?NetDataContractSerializer$'
+  any:
+    - kind: object_creation_expression
+      has:
+        field: type
+        regex: '^(?:global::)?(?:System\.Runtime\.Serialization\.)?NetDataContractSerializer$'
+    - kind: implicit_object_creation_expression
+      inside:
+        any:
+          - kind: variable_declarator
+            inside:
+              kind: variable_declaration
+              has:
+                field: type
+                regex: '^(?:global::)?(?:System\.Runtime\.Serialization\.)?NetDataContractSerializer$'
+          - kind: property_declaration
+            has:
+              field: type
+              regex: '^(?:global::)?(?:System\.Runtime\.Serialization\.)?NetDataContractSerializer$'
 metadata:
   rule_modified_at: '2026-11-16'
   ast_grep_tested_version: 0.51.0
