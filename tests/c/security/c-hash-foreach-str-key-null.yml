@@ -11,6 +11,12 @@ valid:
     void f(void) { zend_string *s = zend_string_init(p, n, 0); use(ZSTR_VAL(s)); }
   - |-
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (key == NULL) { continue; } n = ZSTR_LEN(key); } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (key != NULL) { use(ZSTR_VAL(key)); } } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (!key) { continue; } n = ZSTR_LEN(key); } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (!key) continue; use(ZSTR_VAL(key)); } ZEND_HASH_FOREACH_END();
 invalid:
   - >-
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { use(ZSTR_VAL(key)); }
@@ -23,3 +29,9 @@ invalid:
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { return ZSTR_VAL(key); } ZEND_HASH_FOREACH_END();
   - |-
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { memcpy(b, ZSTR_VAL(key), ZSTR_LEN(key)); } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (!key) { use(ZSTR_VAL(key)); } } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (key != NULL) { log(); } use(ZSTR_VAL(key)); } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (!key) { log(); } use(ZSTR_VAL(key)); } ZEND_HASH_FOREACH_END();
