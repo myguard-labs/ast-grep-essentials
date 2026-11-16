@@ -13,7 +13,23 @@ valid:
   - |
     # User.where("name = '#{name}'")
     note = "User.where(\"name = '#{name}'\")"
+  - |
+    User.where('a' + 'b')
+  - |
+    User.where('a' + 'b' + 'c')
 invalid:
+  - |
+    User.where('name = \'' + params[:name] + '\'')
+  - |
+    User.where("name = \"" + params[:name] + "\"")
+  - |
+    User.where(%q(id = ) + params[:id])
+  - |
+    User.where(%Q(id = ) + params[:id])
+  - |
+    User.where('a' + 'b' + params[:x])
+  - |
+    User.where('a' + params[:x] + 'b')
   - |
     User.where("name = '#{params[:name]}'")
   - |
