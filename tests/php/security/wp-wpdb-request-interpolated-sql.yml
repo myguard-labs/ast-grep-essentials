@@ -1,5 +1,11 @@
 id: wp-wpdb-request-interpolated-sql
 valid:
   - '$wpdb->get_row("SELECT * FROM t WHERE id = ''{$id}''");'
+  - "<?php $wpdb->get_row($wpdb->prepare(\"SELECT * FROM t WHERE id = %d\", $_GET['id']));"
+  - "<?php $wpdb->get_results(\"SELECT * FROM t WHERE id = \" . absint($_GET['id']));"
+  - "<?php $wpdb->get_var('SELECT COUNT(*) FROM t WHERE a = $_GET');"
 invalid:
   - '$wpdb->get_row("SELECT * FROM t WHERE id = ''{$_GET[''id'']}''");'
+  - "<?php $wpdb->query(\"DELETE FROM t WHERE id = {$_POST['id']}\");"
+  - "<?php $wpdb->get_col(\"SELECT id FROM t WHERE k = '$_REQUEST[k]'\");"
+  - "<?php $wpdb->get_results( \"SELECT * FROM t WHERE c = '{$_COOKIE['c']}'\", ARRAY_A );"

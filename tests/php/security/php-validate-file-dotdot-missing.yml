@@ -1,5 +1,11 @@
 id: php-validate-file-dotdot-missing
 valid:
   - "<?php\nfunction validate_file( $file, $allowed_files = '' ) {\n\tif ( false !== strpos( $file, '..' ) )\n\t\treturn 1;\n\tif ( false !== strpos( $file, './' ) )\n\t\treturn 1;\n\treturn 0;\n}\n"
+  - "<?php\nfunction validate_path( $path ) {\n\tif ( strpos( $path, '..' ) !== false ) {\n\t\treturn false;\n\t}\n\tif ( strpos( $path, './' ) !== false ) {\n\t\treturn false;\n\t}\n\treturn true;\n}\n"
+  - "<?php\nfunction validate_file( $file ) {\n\tif ( strpos( $file, './' ) !== false || strpos( $file, '..' ) !== false ) {\n\t\treturn 1;\n\t}\n\treturn 0;\n}\n"
+  - "<?php\nfunction validate_file( $file ) {\n\tif ( strpos( $file, '..' ) !== false ) {\n\t\treturn 1;\n\t}\n\treturn 0;\n}\n"
 invalid:
   - "<?php\nfunction validate_file( $file, $allowed_files = '' ) {\n\tif ( false !== strpos( $file, './' ) )\n\t\treturn 1;\n\treturn 0;\n}\n"
+  - "<?php\nfunction validate_path( $path ) {\n\tif ( strpos( $path, './' ) !== false ) {\n\t\treturn false;\n\t}\n\treturn true;\n}\n"
+  - "<?php\nclass V {\n\tpublic function check( $file ) {\n\t\tif ( strpos( $file, './' ) !== false ) {\n\t\t\treturn 1;\n\t\t}\n\t\treturn 0;\n\t}\n}\n"
+  - "<?php\nfunction a( $f ) {\n\tif ( strpos( $f, './' ) !== false ) {\n\t\treturn 1;\n\t}\n\treturn 0;\n}\nfunction b( $f ) {\n\tif ( strpos( $f, '..' ) !== false ) {\n\t\treturn 1;\n\t}\n\treturn 0;\n}\n"

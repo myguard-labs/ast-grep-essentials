@@ -1,5 +1,11 @@
 id: php-nonce-check-nested-in-request-branch
 valid:
   - "<?php\ncheck_admin_referer('custom-background');\nif ( isset($_POST['reset-background']) ) {\n\tremove_theme_mods();\n}"
+  - "<?php\ncurrent_user_can('manage_options') || wp_die();\ncheck_admin_referer('save-x');\nif ( isset($_POST['x']) ) {\n\tupdate_option('x', 1);\n}"
+  - "<?php\nif ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {\n\tcheck_admin_referer('save-x');\n\tupdate_option('x', 1);\n}"
+  - "<?php\nfunction save_x() {\n\tcheck_ajax_referer('save-x');\n\tif ( isset($_POST['x']) ) {\n\t\tupdate_option('x', 1);\n\t}\n}"
 invalid:
   - "<?php\nif ( isset($_POST['reset-background']) ) {\n\tcheck_admin_referer('custom-background');\n\tremove_theme_mods();\n}"
+  - "<?php\nif ( ! empty( $_REQUEST['action'] ) ) {\n\tcheck_admin_referer('act');\n}"
+  - "<?php\nif ( isset( $_POST['a'] ) && isset( $_POST['b'] ) ) {\n\tcheck_ajax_referer('n');\n\tupdate_option('a', 1);\n}"
+  - "<?php\nif ( isset( $_POST['a'] ) ) {\n\tif ( $ok ) {\n\t\tcheck_admin_referer('a');\n\t}\n}"

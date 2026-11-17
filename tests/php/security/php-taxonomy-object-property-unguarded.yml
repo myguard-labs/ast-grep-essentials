@@ -1,5 +1,11 @@
 id: php-taxonomy-object-property-unguarded
 valid:
   - "<?php\n$taxonomy = get_taxonomy( $tax_name );\nif ( $taxonomy && $taxonomy->hierarchical ) {\n\t$x = 1;\n}"
+  - "<?php $tax = get_taxonomy( 'category' ); $label = $tax ? $tax->labels->name : '';"
+  - "<?php $label = get_taxonomy( 'category' )?->labels->name;"
+  - "<?php $tax = get_taxonomy( $t ); if ( $tax instanceof stdClass ) { echo $tax->label; }"
 invalid:
   - "<?php\nif ( get_taxonomy( $tax_name )->hierarchical ) {\n\t$x = 1;\n}"
+  - "<?php echo get_taxonomy( $t )->labels->singular_name;"
+  - "<?php $cap = get_taxonomy( $taxonomy )->cap->manage_terms;"
+  - "<?php $x = get_taxonomy( $t )->show_ui ? 1 : 0;"
