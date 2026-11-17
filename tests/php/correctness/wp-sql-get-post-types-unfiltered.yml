@@ -3,7 +3,12 @@ valid:
   - >-
     $ids = $wpdb->get_col( "SELECT ID FROM $wpdb->posts WHERE post_type IN ('" .
     join( "', '", get_post_types( array( 'public' => false ) ) ) . "')" );
+  - '$ids = $wpdb->get_col( "SELECT ID FROM $wpdb->posts WHERE post_type IN (''" . join( "'', ''", array( ''post'', ''page'' ) ) . "'')" );'
+  - '$types = join( "'', ''", get_post_types( array( ''public'' => true ), ''names'' ) );'
 invalid:
   - >-
     $ids = $wpdb->get_col( "SELECT ID FROM $wpdb->posts WHERE post_type IN ('" .
     join( "', '", get_post_types() ) . "')" );
+  - '$types = join( "'', ''", get_post_types() );'
+  - '$sql = "SELECT ID FROM $wpdb->posts WHERE post_type IN (''" . join("'', ''",get_post_types()) . "'')";'
+  - '$ids = $wpdb->get_col( "SELECT ID FROM $wpdb->posts WHERE post_type IN (''" . join( "'', ''", get_post_types() ) . "'') AND post_status = ''publish''" );'

@@ -1,8 +1,13 @@
 id: wp-sitemeta-direct-query-bypasses-cache
 valid:
   - 'function f( $option ) { global $wpdb; return get_site_option( $option ); }'
+  - 'function f( $id ) { global $wpdb; return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE ID = %d", $id ) ); }'
+  - 'function f( $nid, $option ) { return get_network_option( $nid, $option, false ); }'
 invalid:
   - >-
     function f( $option ) { global $wpdb; return $wpdb->get_row( $wpdb->prepare(
     "SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s AND site_id =
     %d", $option, $wpdb->siteid ) ); }
+  - 'function f( $option ) { global $wpdb; return $wpdb->get_row( $wpdb->prepare( ''SELECT meta_value FROM '' . $wpdb->sitemeta . '' WHERE meta_key = %s'', $option ), ARRAY_A ); }'
+  - 'function f( $option ) { global $wpdb; $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->sitemeta} WHERE meta_key = %s", $option ) ); return $row; }'
+  - 'function f( $option ) { global $wpdb; return $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s", $option ), OBJECT, 0 ); }'
