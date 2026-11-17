@@ -3,5 +3,11 @@ valid:
   - >-
     long f(long len) { return ((len + sizeof(chunk) - 1) / sizeof(long)) *
     sizeof(long) + sizeof(long); }
+  - 'long f(long len) { return ((len + sizeof(chunk) - 1) / sizeof(chunk)) * sizeof(chunk); }'
+  - 'long f(long len) { return ((len + sizeof(chunk) - 1) / sizeof(chunk)) * sizeof(chunk) + sizeof(chunk); }'
+  - 'long f(long len) { return ((len + ALIGN - 1) / ALIGN) * ALIGN; }'
 invalid:
   - 'long f(long len) { return ((len + sizeof(chunk) - 1) / 4) * 4 + 4; }'
+  - 'long f(long len) { long sz = ((len + sizeof(chunk) - 1) / 4) * 4 + 4; return sz; }'
+  - 'void *f(long len) { return alloc(((len * 2 + sizeof(hdr) - 1) / 4) * 4 + 4); }'
+  - 'long f(long len) { return ((len + sizeof(buf) - 1) / 4) * 4 + 4; }'

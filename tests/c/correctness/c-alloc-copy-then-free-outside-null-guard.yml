@@ -1,5 +1,11 @@
 id: c-alloc-copy-then-free-outside-null-guard
 valid:
   - 'void *r = malloc(n); if (r) { memcpy(r, s, n); free(s); }'
+  - 'void f(void *s, int n) { void *r = malloc(n); if (r) { memcpy(r, s, n); free(s); } }'
+  - 'void f(void *s, void *t, int n) { void *r = malloc(n); if (r) { memcpy(r, s, n); free(s); } free(t); }'
+  - 'void f(void *s, int n) { void *r = malloc(n); if (!r) return; memcpy(r, s, n); free(s); }'
 invalid:
   - 'void *r = malloc(n); if (r) memcpy(r, s, n); free(s);'
+  - 'void f(void *s, int n) { void *r = malloc(n); if (r) { memcpy(r, s, n); } free(s); }'
+  - 'void f(void *s, int n) { void *r = malloc(n); if (r != NULL) memcpy(r + 1, s, n - 1); free(s); }'
+  - 'void f(void *s, int n) { void *r = malloc(n); if (r) { n++; memcpy(r, s, n); } free(s); }'

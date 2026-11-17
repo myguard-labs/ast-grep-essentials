@@ -1,5 +1,41 @@
 id: c-alloc-context-stored-only-on-success
 snapshots:
+  "int f(struct in *i) { struct buf *ret = alloc_out(); if (ret != NULL) { ret->context = i->ctx; ret->n = 1; } return 0; }":
+    labels:
+    - source: if (ret != NULL) { ret->context = i->ctx; ret->n = 1; }
+      style: primary
+      start: 53
+      end: 108
+    - source: (ret != NULL)
+      style: secondary
+      start: 56
+      end: 69
+    - source: ret->context = i->ctx;
+      style: secondary
+      start: 72
+      end: 94
+    - source: ret->context = i->ctx;
+      style: secondary
+      start: 72
+      end: 94
+  "int f(void *ctx) { struct buf *ret = alloc_out(); if (ret != NULL) { for (int k = 0; k < 2; k++) { ret->context = ctx; } } return 0; }":
+    labels:
+    - source: if (ret != NULL) { for (int k = 0; k < 2; k++) { ret->context = ctx; } }
+      style: primary
+      start: 50
+      end: 122
+    - source: (ret != NULL)
+      style: secondary
+      start: 53
+      end: 66
+    - source: ret->context = ctx;
+      style: secondary
+      start: 99
+      end: 118
+    - source: ret->context = ctx;
+      style: secondary
+      start: 99
+      end: 118
   "int f(void *ctx) { struct buf *ret = alloc_out(); if (ret != NULL) { ret->context = ctx; } return 0; }":
     labels:
     - source: if (ret != NULL) { ret->context = ctx; }
@@ -18,3 +54,21 @@ snapshots:
       style: secondary
       start: 69
       end: 88
+  "int f(void *ctx) { struct buf *ret = alloc_out(); if (ret != NULL) { ret->name = 0; if (ctx) { ret->context = ctx; } } return 0; }":
+    labels:
+    - source: if (ret != NULL) { ret->name = 0; if (ctx) { ret->context = ctx; } }
+      style: primary
+      start: 50
+      end: 118
+    - source: (ret != NULL)
+      style: secondary
+      start: 53
+      end: 66
+    - source: ret->context = ctx;
+      style: secondary
+      start: 95
+      end: 114
+    - source: ret->context = ctx;
+      style: secondary
+      start: 95
+      end: 114
