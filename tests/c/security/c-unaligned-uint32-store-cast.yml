@@ -1,5 +1,12 @@
 id: c-unaligned-uint32-store-cast
 valid:
   - 'void put(unsigned char *buf, uint32_t v) { memcpy(buf, &v, 4); }'
+  - 'void f(unsigned char *b, uint32_t v) { memcpy(b + 4, &v, sizeof v); }'
+  - 'void f(unsigned char *b, uint32_t v) { b[0] = v >> 24; b[1] = v >> 16; b[2] = v >> 8; b[3] = v; }'
+  - 'void f(uint32_t *w, uint32_t v) { *w = v; }'
 invalid:
   - 'void put(unsigned char *buf, uint32_t v) { *(uint32_t *)(buf) = v; }'
+  - 'void f(unsigned char *b, uint32_t v) { *(uint32_t *)(b + 4) = v; }'
+  - 'void f(unsigned char *b, uint32_t v) { *(uint32_t *)(b) = htonl(v); }'
+  - 'void f(unsigned char *b, int i) { *(uint32_t *)(&b[i]) = 0; }'
+  - 'void f(unsigned char *b, uint32_t v) { if (v) { *(uint32_t *)(b) = v; } }'

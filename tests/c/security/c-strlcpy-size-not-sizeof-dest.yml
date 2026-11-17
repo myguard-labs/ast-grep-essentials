@@ -3,7 +3,14 @@ valid:
   - >-
     struct s { char d[8]; }; void f(struct s *x, const char *t) { strlcpy(x->d,
     t, sizeof(x->d)); }
+  - 'char dst[8]; void f(const char *src) { strlcpy(dst, src, sizeof dst); }'
+  - 'char dst[8]; void f(const char *src) { strlcpy(dst, src, sizeof(dst) - 1); }'
+  - 'char dst[16]; void f(const char *src) { if (strlcpy(dst, src, sizeof(dst)) >= sizeof(dst)) { return; } }'
 invalid:
   - >-
     struct s { char d[8]; }; void f(struct s *x, const char *t) { strlcpy(x->d,
     t, 16); }
+  - 'void f(char *dst, const char *src, size_t n) { strlcpy(dst, src, n); }'
+  - 'void f(char *dst, const char *src) { strlcpy(dst, src, strlen(src) + 1); }'
+  - 'struct s { char name[8]; }; void f(struct s *p, const char *src) { strlcpy(p->name, src, 64); }'
+  - 'void f(char *dst, const char *src) { if (strlcpy(dst, src, 16) >= 16) { return; } }'

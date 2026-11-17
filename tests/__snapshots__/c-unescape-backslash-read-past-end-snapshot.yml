@@ -1,16 +1,72 @@
 id: c-unescape-backslash-read-past-end
 snapshots:
-  if (*src++ == '\\') { *dst = *src++; }:
+  "if (*src++ == '\\\\') { *dst = *src++; }":
     labels:
     - source: if (*src++ == '\\') { *dst = *src++; }
       style: primary
       start: 0
       end: 38
-    - source: '{ *dst = *src++; }'
+    - source: "{ *dst = *src++; }"
       style: secondary
       start: 20
       end: 38
-    - source: '*src++'
+    - source: "*src++"
       style: secondary
       start: 29
       end: 35
+  "void f(const char *p, char *dst) { if (*p++ == '\\\\') { *dst++ = *p++; } }":
+    labels:
+    - source: if (*p++ == '\\') { *dst++ = *p++; }
+      style: primary
+      start: 35
+      end: 71
+    - source: "{ if (*p++ == '\\\\') { *dst++ = *p++; } }"
+      style: secondary
+      start: 33
+      end: 73
+    - source: "*p++"
+      style: secondary
+      start: 39
+      end: 43
+  "void f(const char *p, char *dst) { if (*p++ == '\\\\') { c = *p++; } }":
+    labels:
+    - source: if (*p++ == '\\') { c = *p++; }
+      style: primary
+      start: 35
+      end: 66
+    - source: "{ if (*p++ == '\\\\') { c = *p++; } }"
+      style: secondary
+      start: 33
+      end: 68
+    - source: "*p++"
+      style: secondary
+      start: 39
+      end: 43
+  "void f(const char *p, char *dst) { if (*p++ == '\\\\') { switch (*p++) { case 'n': *dst = 10; break; } } }":
+    labels:
+    - source: "if (*p++ == '\\\\') { switch (*p++) { case 'n': *dst = 10; break; } }"
+      style: primary
+      start: 35
+      end: 102
+    - source: "{ if (*p++ == '\\\\') { switch (*p++) { case 'n': *dst = 10; break; } } }"
+      style: secondary
+      start: 33
+      end: 104
+    - source: "*p++"
+      style: secondary
+      start: 39
+      end: 43
+  "void f(const char *p, char *dst) { while (*p) { if (*p++ == '\\\\') { *dst++ = *p++; } } }":
+    labels:
+    - source: if (*p++ == '\\') { *dst++ = *p++; }
+      style: primary
+      start: 48
+      end: 84
+    - source: "{ if (*p++ == '\\\\') { *dst++ = *p++; } }"
+      style: secondary
+      start: 46
+      end: 86
+    - source: "*p++"
+      style: secondary
+      start: 52
+      end: 56

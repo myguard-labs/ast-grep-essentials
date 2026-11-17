@@ -1,6 +1,6 @@
 id: c-syscall-ssize-return-in-int
 snapshots:
-  int n; n = sendfile(fd, file_fd, &offset, size);:
+  "int n; n = sendfile(fd, file_fd, &offset, size);":
     labels:
     - source: n = sendfile(fd, file_fd, &offset, size)
       style: primary
@@ -14,3 +14,59 @@ snapshots:
       style: secondary
       start: 0
       end: 6
+  "void f(void) { int a; int n; n = sendfile(o, i, NULL, sz); }":
+    labels:
+    - source: n = sendfile(o, i, NULL, sz)
+      style: primary
+      start: 29
+      end: 57
+    - source: int n;
+      style: secondary
+      start: 22
+      end: 28
+    - source: int n;
+      style: secondary
+      start: 22
+      end: 28
+  "void f(void) { int n; if ((n = sendfile(o, i, NULL, sz)) < 0) { return; } }":
+    labels:
+    - source: n = sendfile(o, i, NULL, sz)
+      style: primary
+      start: 27
+      end: 55
+    - source: int n;
+      style: secondary
+      start: 15
+      end: 21
+    - source: int n;
+      style: secondary
+      start: 15
+      end: 21
+  "void f(void) { int n; while (1) { n = sendfile(o, i, NULL, sz); if (n <= 0) break; } }":
+    labels:
+    - source: n = sendfile(o, i, NULL, sz)
+      style: primary
+      start: 34
+      end: 62
+    - source: int n;
+      style: secondary
+      start: 15
+      end: 21
+    - source: int n;
+      style: secondary
+      start: 15
+      end: 21
+  "void f(void) { int sent; sent = sendfile(o, i, NULL, sz); }":
+    labels:
+    - source: sent = sendfile(o, i, NULL, sz)
+      style: primary
+      start: 25
+      end: 56
+    - source: int sent;
+      style: secondary
+      start: 15
+      end: 24
+    - source: int sent;
+      style: secondary
+      start: 15
+      end: 24

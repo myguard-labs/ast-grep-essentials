@@ -1,8 +1,32 @@
 id: c-type-punned-deref-byte-buffer
 snapshots:
-  static void f(unsigned char *out, const unsigned char *in) { *(size_t *)(out) = *(const size_t *)(in); }:
+  "size_t f(unsigned char *b) { return *(size_t *)(b); }":
     labels:
-    - source: '*(size_t *)(out)'
+    - source: "*(size_t *)(b)"
+      style: primary
+      start: 36
+      end: 50
+  "static void f(unsigned char *out, const unsigned char *in) { *(size_t *)(out) = *(const size_t *)(in); }":
+    labels:
+    - source: "*(size_t *)(out)"
       style: primary
       start: 61
       end: 77
+  "void f(unsigned char *b) { if (*(size_t *)(b) == 0) { } }":
+    labels:
+    - source: "*(size_t *)(b)"
+      style: primary
+      start: 31
+      end: 45
+  "void f(unsigned char *b, size_t o) { size_t x; x = *(size_t *)(b + o); }":
+    labels:
+    - source: "*(size_t *)(b + o)"
+      style: primary
+      start: 51
+      end: 69
+  "void f(unsigned char *b, size_t v) { *(size_t *)(b + 8) = v; }":
+    labels:
+    - source: "*(size_t *)(b + 8)"
+      style: primary
+      start: 37
+      end: 55

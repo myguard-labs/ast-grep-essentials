@@ -1,8 +1,32 @@
 id: c-type-pun-address-of-cast-deref
 snapshots:
-  static void f(void) { long v; *(void **)(&v) = 0; }:
+  "static void f(void) { long v; *(void **)(&v) = 0; }":
     labels:
-    - source: '*(void **)(&v)'
+    - source: "*(void **)(&v)"
       style: primary
       start: 30
       end: 44
+  "void f(double d) { unsigned long u = *(unsigned long *)(&d); }":
+    labels:
+    - source: "*(unsigned long *)(&d)"
+      style: primary
+      start: 37
+      end: 59
+  "void f(float *a) { unsigned u = *(unsigned *)(&a[1]); }":
+    labels:
+    - source: "*(unsigned *)(&a[1])"
+      style: primary
+      start: 32
+      end: 52
+  "void f(float fl) { unsigned u = *(unsigned *)(&fl); }":
+    labels:
+    - source: "*(unsigned *)(&fl)"
+      style: primary
+      start: 32
+      end: 50
+  "void f(float fl) { unsigned u; u = *(uint32_t *)(&fl); }":
+    labels:
+    - source: "*(uint32_t *)(&fl)"
+      style: primary
+      start: 35
+      end: 53
