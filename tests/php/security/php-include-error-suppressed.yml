@@ -1,5 +1,17 @@
 id: php-include-error-suppressed
 valid:
   - '$ok = include_once $classfile;'
+  - |-
+    <?php $ok = @file_get_contents($classfile);
+  - |-
+    <?php if (is_readable($classfile)) { include_once $classfile; }
+  - |-
+    <?php require_once $classfile;
 invalid:
   - '$ok = @include_once $classfile;'
+  - |-
+    <?php @include_once("a.php");
+  - |-
+    <?php if (@include_once $classfile) { run(); }
+  - |-
+    <?php @ include_once __DIR__ . "/a.php";

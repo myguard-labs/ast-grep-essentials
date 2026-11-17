@@ -3,7 +3,21 @@ valid:
   - >-
     <?php if ( ! isset($headers['user-agent']) && !
     isset($headers['User-Agent']) ) { $headers['user-agent'] = 'x'; }
+  - |-
+    <?php if ( ! isset($h['user-agent']) || ! isset($g['User-Agent']) ) { $h[1] = 1; }
+  - |-
+    <?php if ( ! isset($h['user-agent']) || ! isset($h['user-agent']) ) { $h[1] = 1; }
+  - |-
+    <?php if ( isset($h['user-agent']) || isset($h['User-Agent']) ) { $h[1] = 1; }
+  - |-
+    <?php if ( ! isset($h['user-agent'], $h['User-Agent']) ) { $h[1] = 1; }
 invalid:
   - >-
     <?php if ( ! isset($headers['user-agent']) || !
     isset($headers['User-Agent']) ) { $headers['user-agent'] = 'x'; }
+  - |-
+    <?php if ( ! isset($req['user-agent']) || ! isset($req['User-Agent']) ) { return false; }
+  - |-
+    <?php if ( ! isset($h['user-agent']) || ! isset($h['User-Agent']) ) { }
+  - |-
+    <?php function f($server) { if ( ! isset($server['user-agent']) || ! isset($server['User-Agent']) ) { $server['user-agent'] = ''; } }

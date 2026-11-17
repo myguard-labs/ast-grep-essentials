@@ -1,5 +1,17 @@
 id: php-kses-wraps-trim-with-extra-arg
 valid:
   - '$t = wp_kses( trim( $a[1] ), $tags );'
+  - |-
+    <?php $t = wp_kses( trim( $a ), $tags );
+  - |-
+    <?php $t = wp_kses( trim( $a[1] ) , trim( $tags, "," ) );
+  - |-
+    <?php $t = wp_kses( $a );
 invalid:
   - '$t = wp_kses( trim( $a[1], $tags ) );'
+  - |-
+    <?php $t = wp_kses(trim($a, $tags));
+  - |-
+    <?php return wp_kses(trim($a[1], $allowed));
+  - |-
+    <?php $t = wp_kses(trim(string: $a, characters: $tags));
