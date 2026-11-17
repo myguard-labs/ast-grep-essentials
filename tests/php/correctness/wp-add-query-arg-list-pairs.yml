@@ -1,5 +1,11 @@
 id: wp-add-query-arg-list-pairs
 valid:
   - '<?php $url = add_query_arg( array( ''doing_wp_cron'' => $doing ), $base ); ?>'
+  - '<?php $u = add_query_arg( ''a'', ''b'', $base );'
+  - '<?php $u = add_query_arg( array( ''a'' => 1, ''b'' => 2 ), $base );'
+  - '<?php $u = add_query_arg( array( $k => $v ), $base );'
 invalid:
   - '<?php $url = add_query_arg( array( ''doing_wp_cron'', $doing ), $base ); ?>'
+  - '<?php $u = add_query_arg( array( $k, $v ), $base );'
+  - '<?php echo esc_url( add_query_arg( array( ''tab'', $tab ), admin_url( ''options-general.php'' ) ) );'
+  - '<?php $u = add_query_arg( array( ''a'', ''b'' ), ''c'', get_permalink() );'
