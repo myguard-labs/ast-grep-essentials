@@ -1,5 +1,11 @@
 id: php-mysql-ext-removed-function-call
 valid:
   - '<?php $r = $wpdb->query( "SELECT 1" ); ?>'
+  - '<?php $r = mysqli_query($link, $sql);'
+  - '<?php $r = $db->mysql_query($sql);'
+  - '<?php $r = my_mysql_query($sql);'
 invalid:
   - '<?php $r = mysql_query( "SELECT 1" ); ?>'
+  - '<?php if (mysql_query("DELETE FROM t")) { echo 1; }'
+  - '<?php $r = mysql_query($sql, $link, 1);'
+  - '<?php $r = mysql_query();'
