@@ -13,9 +13,15 @@ note: >-
   not check, so some reports may be false positives.
 rule:
   pattern: 'if ( ! $VAR ) return $LIT;'
+constraints:
+  VAR:
+    any:
+      - kind: variable_name
+      - kind: parenthesized_expression
+        has:
+          kind: variable_name
 metadata:
   todo_cases:
-    - 'if (!isset($k)) return false; and if (!is_string($k)) return false; are matched although the condition is not a bare negated variable (false positive)'
     - 'if (!$k) { return false; } braced body of the falsy guard is not matched'
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
