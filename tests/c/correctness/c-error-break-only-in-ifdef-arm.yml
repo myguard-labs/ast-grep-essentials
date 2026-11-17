@@ -9,6 +9,39 @@ valid:
     #endif
     break;
     } p += r; n -= r; } return 0; }
+  - |-
+    int w(char *p, int n) {
+        while (n > 0) {
+            int r = write_it(p, n);
+            if (!r) {
+    #ifdef WIN32_NO_CONSOLE
+                handle_abort_win();
+    #else
+                handle_abort();
+    #endif
+            }
+            if (r < 0)
+                break;
+            p += r; n -= r;
+        }
+        return 0;
+    }
+  - |-
+    int w(char *p, int n) {
+        while (n > 0) {
+            int r = write_it(p, n);
+            if (!r) {
+    #ifdef WIN32_NO_CONSOLE
+                log_win();
+    #else
+                log_unix();
+    #endif
+                break;
+            }
+            p += r; n -= r;
+        }
+        return 0;
+    }
 invalid:
   - |-
     int w(char *p, int n) { while (n > 0) { int r = write_it(p, n); if (!r) {
@@ -18,3 +51,34 @@ invalid:
     handle_abort();
     #endif
     } p += r; n -= r; } return 0; }
+  - |-
+    int w(char *p, int n) {
+        while (n > 0) {
+            int r = write_it(p, n);
+            if (!r) {
+    #ifndef WIN32_NO_CONSOLE
+                break;
+    #else
+                handle_abort_win();
+    #endif
+            }
+            p += r; n -= r;
+        }
+        return 0;
+    }
+  - |-
+    int w(char *p, int n) {
+        while (n > 0) {
+            int r = read_it(p, n);
+            if (r < 0) {
+                log_err();
+    #ifdef HAVE_STOP
+                break;
+    #else
+                retry();
+    #endif
+            }
+            p += r; n -= r;
+        }
+        return 0;
+    }

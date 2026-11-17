@@ -10,3 +10,33 @@ snapshots:
       style: secondary
       start: 31
       end: 64
+  "void f(struct st *s) {\n    s->status = EG(exit_status);\n    php_request_shutdown(NULL);\n}":
+    labels:
+    - source: s->status = EG(exit_status);
+      style: primary
+      start: 27
+      end: 55
+    - source: php_request_shutdown(NULL);
+      style: secondary
+      start: 60
+      end: 87
+  "void f(void) {\n    int exit_status;\n    exit_status = EG(exit_status);\n    cleanup();\n    php_request_shutdown((void *) 0);\n    return;\n}":
+    labels:
+    - source: exit_status = EG(exit_status);
+      style: primary
+      start: 40
+      end: 70
+    - source: php_request_shutdown((void *) 0);
+      style: secondary
+      start: 90
+      end: 123
+  "void f(void) {\n    int rc;\n    rc = EG(exit_status);\n    log_it(rc);\n    php_request_shutdown((void *) 0);\n    exit(rc);\n}":
+    labels:
+    - source: rc = EG(exit_status);
+      style: primary
+      start: 31
+      end: 52
+    - source: php_request_shutdown((void *) 0);
+      style: secondary
+      start: 73
+      end: 106

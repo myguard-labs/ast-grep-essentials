@@ -1,11 +1,40 @@
 id: c-evp-pkey-get-id-switch
 snapshots:
-  ? |-
-    switch (EVP_PKEY_get_id(pkey)) {
-        case EVP_PKEY_RSA:
-            break;
-    }
-  : labels:
+  "int f(EVP_PKEY *pkey) {\n    switch (EVP_PKEY_get_id(pkey)) {\n    case EVP_PKEY_EC:\n        return 1;\n    default:\n        return 0;\n    }\n}":
+    labels:
+    - source: |-
+        switch (EVP_PKEY_get_id(pkey)) {
+            case EVP_PKEY_EC:
+                return 1;
+            default:
+                return 0;
+            }
+      style: primary
+      start: 28
+      end: 137
+  "int f(SSL *s) {\n    switch (EVP_PKEY_get_id(s->cert->pkeys[0].privatekey)) {\n    case EVP_PKEY_ED25519:\n        break;\n    }\n    return 0;\n}":
+    labels:
+    - source: |-
+        switch (EVP_PKEY_get_id(s->cert->pkeys[0].privatekey)) {
+            case EVP_PKEY_ED25519:
+                break;
+            }
+      style: primary
+      start: 20
+      end: 124
+  "int f(X509 *x) {\n    switch (EVP_PKEY_get_id(X509_get0_pubkey(x))) {\n    case EVP_PKEY_RSA:\n    case EVP_PKEY_RSA_PSS:\n        return 1;\n    }\n    return 0;\n}":
+    labels:
+    - source: |-
+        switch (EVP_PKEY_get_id(X509_get0_pubkey(x))) {
+            case EVP_PKEY_RSA:
+            case EVP_PKEY_RSA_PSS:
+                return 1;
+            }
+      style: primary
+      start: 21
+      end: 142
+  "switch (EVP_PKEY_get_id(pkey)) {\n    case EVP_PKEY_RSA:\n        break;\n}":
+    labels:
     - source: |-
         switch (EVP_PKEY_get_id(pkey)) {
             case EVP_PKEY_RSA:

@@ -3,8 +3,47 @@ valid:
   - |-
     zend_eval_const_expr(&ast->child[0]);
     zend_ast *class_ast = ast->child[0];
+  - |-
+    void f(zend_ast *ast) {
+        zend_ast *class_ast = ast->child[0];
+        zend_eval_const_expr(&ast->child[0]);
+        use(class_ast);
+    }
+  - |-
+    void f(zend_ast *ast) {
+        zend_ast *tmp = zend_ast_create_zval(&zv);
+        zend_eval_const_expr(&tmp);
+        ast->child[0] = tmp;
+    }
+  - |-
+    void f(zend_ast *ast) {
+        zend_ast *name_ast = ast->child[1];
+        zend_eval_const_expr(&ast->child[1]);
+        name_ast = ast->child[1];
+        use(name_ast);
+    }
 invalid:
   - |-
     zend_ast *class_ast = ast->child[0];
     zend_eval_const_expr(&class_ast);
     use(class_ast);
+  - |-
+    void f(zend_ast *ast) {
+        zend_ast *name_ast = ast->child[1];
+        zend_eval_const_expr(&name_ast);
+    }
+  - |-
+    void f(zend_ast *ast) {
+        zend_ast *a = ast->child[0];
+        prepare(ast);
+        check(a);
+        zend_eval_const_expr(&a);
+        use(a);
+    }
+  - |-
+    void f(zend_ast *ast) {
+        if (ast->kind == ZEND_AST_CALL) {
+            zend_ast *args_ast = ast->child[2];
+            zend_eval_const_expr(&args_ast);
+        }
+    }
