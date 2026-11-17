@@ -14,6 +14,10 @@ rule:
   pattern: |
     try { $$$BODY } catch ( Exception $E ) { $$$HANDLER }
 metadata:
+  todo_cases:
+    - "catch ( InvalidArgumentException $a ) { } catch ( Exception $e ) { } (Exception in a later catch clause) is not reported"
+    - "catch ( \\Exception $e ) { } (leading namespace separator) is not reported"
+    - "false positive: catch ( Exception | Error $e ) { } is reported although Error is also caught"
   rule_modified_at: '2026-10-17'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-17'

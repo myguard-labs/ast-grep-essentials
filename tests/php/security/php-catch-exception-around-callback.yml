@@ -3,7 +3,13 @@ valid:
   - >-
     try { $value = call_user_func( $callback, $input ); } catch ( Throwable $e )
     { $value = null; }
+  - "<?php try { $v = $cb( $in ); } catch ( \\Throwable $e ) { $v = null; }"
+  - "<?php try { $v = $cb( $in ); } catch ( Throwable $e ) { $v = null; } finally { cleanup(); }"
+  - "<?php try { $v = $cb( $in ); } catch ( Throwable $e ) { throw new RuntimeException( 'cb failed', 0, $e ); }"
 invalid:
   - >-
     try { $value = call_user_func( $callback, $input ); } catch ( Exception $e )
     { $value = null; }
+  - "<?php try { $v = $cb( $in ); } catch ( Exception $e ) { error_log( $e->getMessage() ); }"
+  - "<?php try { $v = array_map( $cb, $items ); } catch ( Exception $e ) { throw new RuntimeException( 'x', 0, $e ); } finally { cleanup(); }"
+  - "<?php function f( $cb ) { try { return call_user_func( $cb ); } catch ( Exception $ex ) { return false; } }"

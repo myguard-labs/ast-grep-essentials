@@ -3,7 +3,13 @@ valid:
   - >-
     <?php if ( preg_match('/From: /', $line) || preg_match('/Reply-To: /',
     $line) ) { $x = 1; }
+  - "<?php if ( preg_match( '/a/', $s ) || preg_match( '/b/', $s ) ) { }"
+  - "<?php if ( $a | $b ) { }"
+  - "<?php $m = preg_match( '/a/', $s ) + preg_match( '/b/', $s );"
 invalid:
   - >-
     <?php if ( preg_match('/From: /', $line) | preg_match('/Reply-To: /', $line)
     ) { $x = 1; }
+  - "<?php $found = preg_match( \"/a/\", $s, $m1 ) | preg_match( \"/b/\", $s, $m2 );"
+  - "<?php if ( ! ( preg_match( '/a/', $s ) | preg_match( '/b/', $s ) ) ) { }"
+  - "<?php return preg_match( '/a/', $s ) | \\preg_match( '/b/', $s );"
