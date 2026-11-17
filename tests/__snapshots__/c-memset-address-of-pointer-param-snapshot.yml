@@ -6,21 +6,105 @@ snapshots:
       style: primary
       start: 39
       end: 67
+    - source: key
+      style: secondary
+      start: 32
+      end: 35
+    - source: "*key"
+      style: secondary
+      start: 31
+      end: 35
+    - source: static void wipe(unsigned char *key) { memset(&key, 0, sizeof(key)); }
+      style: secondary
+      start: 0
+      end: 70
   "struct s { int x; }; void f(struct s *pi) { memset(&pi, 0, sizeof(pi)); }":
     labels:
     - source: memset(&pi, 0, sizeof(pi))
       style: primary
       start: 44
       end: 70
+    - source: pi
+      style: secondary
+      start: 38
+      end: 40
+    - source: "*pi"
+      style: secondary
+      start: 37
+      end: 40
+    - source: void f(struct s *pi) { memset(&pi, 0, sizeof(pi)); }
+      style: secondary
+      start: 21
+      end: 73
   "void f(char *buf) { memset(&buf, 0, sizeof(buf)); }":
     labels:
     - source: memset(&buf, 0, sizeof(buf))
       style: primary
       start: 20
       end: 48
+    - source: buf
+      style: secondary
+      start: 13
+      end: 16
+    - source: "*buf"
+      style: secondary
+      start: 12
+      end: 16
+    - source: void f(char *buf) { memset(&buf, 0, sizeof(buf)); }
+      style: secondary
+      start: 0
+      end: 51
+  "void f(char *p) { memset(&p, 0, sizeof(p)); }":
+    labels:
+    - source: memset(&p, 0, sizeof(p))
+      style: primary
+      start: 18
+      end: 42
+    - source: p
+      style: secondary
+      start: 13
+      end: 14
+    - source: "*p"
+      style: secondary
+      start: 12
+      end: 14
+    - source: void f(char *p) { memset(&p, 0, sizeof(p)); }
+      style: secondary
+      start: 0
+      end: 45
   "void f(void *ctx) { if (ctx) { memset(&ctx, 0, sizeof(ctx)); } }":
     labels:
     - source: memset(&ctx, 0, sizeof(ctx))
       style: primary
       start: 31
       end: 59
+    - source: ctx
+      style: secondary
+      start: 13
+      end: 16
+    - source: "*ctx"
+      style: secondary
+      start: 12
+      end: 16
+    - source: void f(void *ctx) { if (ctx) { memset(&ctx, 0, sizeof(ctx)); } }
+      style: secondary
+      start: 0
+      end: 64
+  "void f(void) { char *p = 0; memset(&p, 0, sizeof(p)); }":
+    labels:
+    - source: memset(&p, 0, sizeof(p))
+      style: primary
+      start: 28
+      end: 52
+    - source: p
+      style: secondary
+      start: 21
+      end: 22
+    - source: "*p"
+      style: secondary
+      start: 20
+      end: 22
+    - source: void f(void) { char *p = 0; memset(&p, 0, sizeof(p)); }
+      style: secondary
+      start: 0
+      end: 55

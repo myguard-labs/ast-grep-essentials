@@ -7,6 +7,16 @@ valid:
     void f(char **pp) { memset(*pp, 0, sizeof(**pp)); }
   - |-
     void f(struct s *pi) { memset(pi, 0, sizeof *pi); }
+  - |-
+    void f(void) { struct s st; memset(&st, 0, sizeof(st)); }
+  - |-
+    void f(void) { char a[8]; memset(&a, 0, sizeof(a)); }
+  - |-
+    void f(struct s st) { memset(&st, 0, sizeof(st)); }
+  - |-
+    void g(char *st) { (void)st; } void f(void) { struct s st; memset(&st, 0, sizeof(st)); }
+  - |-
+    void f(void) { int buf[4]; memset(&buf[0], 0, sizeof(buf[0])); }
 invalid:
   - 'struct s { int x; }; void f(struct s *pi) { memset(&pi, 0, sizeof(pi)); }'
   - |-
@@ -15,3 +25,7 @@ invalid:
     void f(void *ctx) { if (ctx) { memset(&ctx, 0, sizeof(ctx)); } }
   - |-
     static void wipe(unsigned char *key) { memset(&key, 0, sizeof(key)); }
+  - |-
+    void f(void) { char *p = 0; memset(&p, 0, sizeof(p)); }
+  - |-
+    void f(char *p) { memset(&p, 0, sizeof(p)); }
