@@ -1,8 +1,34 @@
 id: c-log-rerror-null-request
 snapshots:
-  ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, NULL, "msg");:
+  "ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, NULL, \"msg\");":
     labels:
     - source: ap_log_rerror(APLOG_MARK, APLOG_DEBUG, 0, NULL, "msg")
       style: primary
       start: 0
       end: 54
+  "int f(request_rec *r) {\n    if (!r->filename) {\n        ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, NULL, \"missing filename for %s\", r->uri);\n    }\n    return DECLINED;\n}":
+    labels:
+    - source: >-
+        ap_log_rerror(APLOG_MARK, APLOG_WARNING, 0, NULL, "missing filename for %s",
+        r->uri)
+      style: primary
+      start: 56
+      end: 140
+  "void f(apr_status_t rv, int n) {\n    ap_log_rerror(APLOG_MARK, APLOG_DEBUG | APLOG_TOCLIENT, rv, NULL, \"n=%d\", n);\n}":
+    labels:
+    - source: ap_log_rerror(APLOG_MARK, APLOG_DEBUG | APLOG_TOCLIENT, rv, NULL, "n=%d", n)
+      style: primary
+      start: 37
+      end: 113
+  "void f(apr_status_t status) {\n    ap_log_rerror(APLOG_MARK, APLOG_ERR, status, NULL, \"failed: %s\", \"x\");\n}":
+    labels:
+    - source: "ap_log_rerror(APLOG_MARK, APLOG_ERR, status, NULL, \"failed: %s\", \"x\")"
+      style: primary
+      start: 34
+      end: 103
+  "void f(void) {\n    ap_log_rerror(APLOG_MARK, APLOG_NOTICE, APR_SUCCESS, NULL, \"no args\");\n}":
+    labels:
+    - source: ap_log_rerror(APLOG_MARK, APLOG_NOTICE, APR_SUCCESS, NULL, "no args")
+      style: primary
+      start: 19
+      end: 88

@@ -1,5 +1,47 @@
 id: c-loop-body-trailing-unconditional-break
 snapshots:
+  "void f(int *p) { while (p) { process(p); break; } }":
+    labels:
+    - source: break;
+      style: primary
+      start: 41
+      end: 47
+    - source: while (p) { process(p); break; }
+      style: secondary
+      start: 17
+      end: 49
+    - source: "{ process(p); break; }"
+      style: secondary
+      start: 27
+      end: 49
+  "void f(int n) { int total = 0; while (n--) { total += n; break; } }":
+    labels:
+    - source: break;
+      style: primary
+      start: 57
+      end: 63
+    - source: while (n--) { total += n; break; }
+      style: secondary
+      start: 31
+      end: 65
+    - source: "{ total += n; break; }"
+      style: secondary
+      start: 43
+      end: 65
+  "void f(int n) { while (n > 0) { break; } }":
+    labels:
+    - source: break;
+      style: primary
+      start: 32
+      end: 38
+    - source: while (n > 0) { break; }
+      style: secondary
+      start: 16
+      end: 40
+    - source: "{ break; }"
+      style: secondary
+      start: 30
+      end: 40
   "void f(int n) { while (n > 0) { n--; break; } }":
     labels:
     - source: break;
@@ -14,3 +56,17 @@ snapshots:
       style: secondary
       start: 30
       end: 45
+  "void f(void) { while (1) { if (poll()) handle(); break; } }":
+    labels:
+    - source: break;
+      style: primary
+      start: 49
+      end: 55
+    - source: while (1) { if (poll()) handle(); break; }
+      style: secondary
+      start: 15
+      end: 57
+    - source: "{ if (poll()) handle(); break; }"
+      style: secondary
+      start: 25
+      end: 57

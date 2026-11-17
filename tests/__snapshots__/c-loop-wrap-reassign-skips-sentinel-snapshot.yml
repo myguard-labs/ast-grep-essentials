@@ -1,5 +1,75 @@
 id: c-loop-wrap-reassign-skips-sentinel
 snapshots:
+  "struct n *cur = head; while (cur != end) { if (!cur) { { cur = start; } } emit(cur->name); cur = cur->next; }":
+    labels:
+    - source: >-
+        while (cur != end) { if (!cur) { { cur = start; } } emit(cur->name); cur =
+        cur->next; }
+      style: primary
+      start: 22
+      end: 109
+    - source: cur = start
+      style: secondary
+      start: 57
+      end: 68
+    - source: cur->name
+      style: secondary
+      start: 79
+      end: 88
+    - source: cur->name
+      style: secondary
+      start: 79
+      end: 88
+    - source: if (!cur) { { cur = start; } }
+      style: secondary
+      start: 43
+      end: 73
+  "struct n *p = head; while (p != last) { if (!p->next) { p = head; } use(p->fd); p = p->next; }":
+    labels:
+    - source: while (p != last) { if (!p->next) { p = head; } use(p->fd); p = p->next; }
+      style: primary
+      start: 20
+      end: 94
+    - source: p = head
+      style: secondary
+      start: 56
+      end: 64
+    - source: p->fd
+      style: secondary
+      start: 72
+      end: 77
+    - source: p->fd
+      style: secondary
+      start: 72
+      end: 77
+    - source: if (!p->next) { p = head; }
+      style: secondary
+      start: 40
+      end: 67
+  "struct n *p = head; while (p != last) { if (p->flag) { p = alt; } else { n++; } use(p->fd); p = p->next; }":
+    labels:
+    - source: >-
+        while (p != last) { if (p->flag) { p = alt; } else { n++; } use(p->fd); p =
+        p->next; }
+      style: primary
+      start: 20
+      end: 106
+    - source: p = alt
+      style: secondary
+      start: 55
+      end: 62
+    - source: p->fd
+      style: secondary
+      start: 84
+      end: 89
+    - source: p->fd
+      style: secondary
+      start: 84
+      end: 89
+    - source: if (p->flag) { p = alt; } else { n++; }
+      style: secondary
+      start: 40
+      end: 79
   "struct n *p = last->next; while (p != last) { if (!p) { p = head; } use(p->fd); p = p->next; }":
     labels:
     - source: while (p != last) { if (!p) { p = head; } use(p->fd); p = p->next; }
@@ -22,3 +92,27 @@ snapshots:
       style: secondary
       start: 46
       end: 67
+  "struct n *p = last->next; while (p != last) { if (p == NULL) p = list->first; total += p->len; p = p->next; }":
+    labels:
+    - source: >-
+        while (p != last) { if (p == NULL) p = list->first; total += p->len; p =
+        p->next; }
+      style: primary
+      start: 26
+      end: 109
+    - source: p = list->first
+      style: secondary
+      start: 61
+      end: 76
+    - source: p->len
+      style: secondary
+      start: 87
+      end: 93
+    - source: p->len
+      style: secondary
+      start: 87
+      end: 93
+    - source: if (p == NULL) p = list->first;
+      style: secondary
+      start: 46
+      end: 77

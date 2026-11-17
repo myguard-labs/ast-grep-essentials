@@ -3,7 +3,31 @@ valid:
   - |-
     #include <lua.h>
     void f(void) { lua_State *L = luaL_newstate(); (void)L; }
+  - |-
+    #include <lua.h>
+    void f(lua_State *L) { luaL_openlibs(L); lua_close(L); }
+  - |-
+    #include <lua.h>
+    void f(void *ud) { lua_State *L = lua_newstate(alloc, ud); (void)L; }
+  - |-
+    void f(void) { void *h = skynet_lua_open(); (void)h; }
+  - |-
+    #include <lua.h>
+    void f(void) { lua_State *L = luaL_newstate(); luaopen_base(L); lua_close(L); }
 invalid:
   - |-
     #include <lua.h>
     void f(void) { lua_State *L = lua_open(); (void)L; }
+  - |-
+    #include <lua.h>
+    lua_State *L;
+    void f(void) { L = lua_open(); }
+  - |-
+    #include <lua.h>
+    int f(void) { lua_State *L; if ((L = lua_open()) == NULL) return -1; return 0; }
+  - |-
+    #include <lua.h>
+    lua_State *f(void) { return lua_open(); }
+  - |-
+    #include <lua.h>
+    void f(void) { lua_State *L = lua_open (); (void)L; }

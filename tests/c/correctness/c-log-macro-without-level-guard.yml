@@ -3,7 +3,23 @@ valid:
   - >-
     #define TLLM_LOG(level, ...) (logger_enabled(level) ?
     ::tensorrt_llm::common::log((level), __VA_ARGS__) : (void) 0)
+  - |-
+    #define LOG(level, ...) do { if ((level) <= cur_level) log((level), __VA_ARGS__); } while (0)
+  - |-
+    #define LOG(level, ...) (isEnabled(level) && (log((level), __VA_ARGS__), 1))
+  - |-
+    #define LOG_ERR(...) ((cur_level >= LVL_ERR) ? log(LVL_ERR, __VA_ARGS__) : (void) 0)
+  - |-
+    #define LOG_DEBUG(fmt, ...) (log_debug_on ? log(LVL_DEBUG, fmt, __VA_ARGS__) : (void) 0)
 invalid:
   - >-
     #define TLLM_LOG(level, ...) ::tensorrt_llm::common::log((level),
     __VA_ARGS__)
+  - |-
+    #define LOG_ERR(fmt, ...) log(LVL_ERR, fmt, __VA_ARGS__)
+  - |-
+    #define DBG(fmt, ...) log (LVL_DEBUG, fmt, __VA_ARGS__)
+  - |-
+    #define LOGF(...) do { log(LVL_INFO, __VA_ARGS__); } while (0)
+  - |-
+    #define TRACE(...) app_log(LVL_TRACE, __VA_ARGS__)

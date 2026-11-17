@@ -3,7 +3,23 @@ valid:
   - >-
     struct n { struct n *next; }; void g(struct n *); void f(struct n *head) {
     struct n *cur; for (cur = head; cur; cur = cur->next) { g(cur); } }
+  - |-
+    struct n { struct n *next; int v; }; void g(int); void f(struct n *head) { struct n *cur; for (cur = head; cur; cur = cur->next) { g(cur->v); } }
+  - |-
+    struct n { struct n *prev; struct n *next; }; void g(struct n *); void f(struct n *head) { struct n *cur; for (cur = head->next; cur != head; cur = cur->next) { g(cur); } }
+  - |-
+    struct n { struct n *next; }; void g(struct n *); void f(struct n *head) { struct n *cur; g(head); for (cur = head; cur; cur = cur->next) { g(cur); } }
+  - |-
+    struct n { struct n *next; }; void g(struct n *); void f(struct n *head) { struct n *cur; for (cur = head; cur; cur = cur->next) { if (cur != head) g(cur); } }
 invalid:
   - >-
     struct n { struct n *next; }; void g(struct n *); void f(struct n *head) {
     struct n *cur; for (cur = head; cur; cur = cur->next) { g(head); } }
+  - |-
+    struct n { struct n *next; }; void g(int, struct n *); void f(struct n *head) { struct n *cur; for (cur = head; cur; cur = cur->next) { g(1, head); } }
+  - |-
+    struct n { struct n *next; int v; }; int check(struct n *); void f(struct n *head) { struct n *cur; int ok = 0; for (cur = head; cur; cur = cur->next) { if (check(head)) { ok++; } } }
+  - |-
+    struct n { struct n *next; }; void g(struct n *); void f(struct n *list) { struct n *it; for (it = list; it != 0; it = it->next) { g(list); } }
+  - |-
+    struct n { struct n *next; int v; }; void g(struct n *); int n; void f(struct n *head) { struct n *cur; for (cur = head; cur; cur = cur->next) { if (cur->v) { g(head); } else { n++; } } }
