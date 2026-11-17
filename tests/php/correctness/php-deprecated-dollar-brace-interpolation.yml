@@ -1,5 +1,12 @@
 id: php-deprecated-dollar-brace-interpolation
 valid:
   - '<?php $x = ''a''; $s = "{$x}";'
+  - '<?php $x = ''a''; $s = "$x";'
+  - '<?php $x = ''a''; $s = ''${x}'';'
+  - '<?php $x = [''k''=>1]; $s = "{$x[''k'']}";'
 invalid:
   - '<?php $x = ''a''; $s = "${x}";'
+  - '<?php $name = ''a''; echo "${name}";'
+  - '<?php $x = ''a''; $n = strlen( "${x}" );'
+  - '<?php $x = ''a''; $a = array( ''k'' => "${x}" );'
+  - '<?php $x = ''a''; function f( $x ) { return "${x}"; }'

@@ -4,7 +4,14 @@ valid:
     function f( $tag_stack ) { list( $opening_tag_name, $directives_prefixes ) =
     ! empty( $tag_stack ) ? end( $tag_stack ) : array( null, null ); return
     $opening_tag_name; }
+  - 'function f( $stack ) { $last = end( $stack ); if ( false !== $last ) { list( $a, $b ) = $last; } return $a; }'
+  - 'function f( $stack ) { list( $a ) = ! empty( $stack ) ? end( $stack ) : array( null ); return $a; }'
+  - 'function f( $pair ) { list( $a, $b ) = $pair; return $a; }'
 invalid:
   - >-
     function f( $tag_stack ) { list( $opening_tag_name, $directives_prefixes ) =
     end( $tag_stack ); return $opening_tag_name; }
+  - 'function f( $s ) { list( $a ) = end( $s ); return $a; }'
+  - 'function f() { list( , $b ) = end( $this->stack ); return $b; }'
+  - 'function f( $rows ) { list( $a, $b, $c ) = end( $rows ); return $c; }'
+  - 'function f( $s ) { list( ''k'' => $a ) = end( $s ); return $a; }'
