@@ -3,7 +3,13 @@ valid:
   - >-
     function f( $t, $post ) { $t = apply_filters( 'the_title', $t, $post->ID );
     return $t; }
+  - "<?php $t = apply_filters( 'the_title', $t, $post_id );"
+  - "<?php $t = apply_filters( 'the_title', $t, get_the_ID() );"
+  - "<?php $t = apply_filters( 'the_title', $t, $item->ID );"
 invalid:
   - >-
     function f( $t, $post ) { $t = apply_filters( 'the_title', $t, $post );
     return $t; }
+  - "<?php echo apply_filters( 'the_title', get_the_title(), $post );"
+  - "<?php $t = apply_filters('the_title', $p->post_title, $post);"
+  - "<?php return apply_filters( 'the_title', $title, $post );"

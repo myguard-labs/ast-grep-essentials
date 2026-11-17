@@ -3,7 +3,13 @@ valid:
   - >-
     <?php if ( get_option( $transient_timeout ) < time() ) { delete_option(
     $transient_option ); delete_option( $transient_timeout ); return false; }
+  - "<?php if ( get_option( $t ) > time() ) { return get_option( $v ); }"
+  - "<?php if ( time() > get_option( $t ) ) { delete_option( $v ); delete_option( $t ); }"
+  - "<?php if ( get_option( $t ) <= time() ) { delete_option( $v ); }"
 invalid:
   - >-
     <?php if ( get_option( $transient_timeout ) > time() ) { delete_option(
     $transient_option ); delete_option( $transient_timeout ); return false; }
+  - "<?php function f( $t, $o ) { if ( get_option( $t ) > time() ) { delete_option( $o ); } }"
+  - "<?php if ( get_option( $t ) > time() ) delete_option( $o );"
+  - "<?php if ( $force && get_option( $t ) > time() ) { delete_option( $o ); }"

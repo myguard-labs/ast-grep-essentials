@@ -3,5 +3,12 @@ valid:
   - >-
     $c = get_the_terms( $id, 'category' ); if ( ! $c || is_wp_error( $c ) ) $c =
     array();
+  - "$c = get_the_terms( $id, 'category' ); if ( is_wp_error( $c ) || empty( $c ) ) { return; }"
+  - "$c = get_the_terms( $id, 'category' ); if ( ! is_wp_error( $c ) ) { echo count( $c ); }"
+  - "$c = get_the_terms( $id, 'category' ); if ( ! $c || is_wp_error( $c ) ) { return array(); }"
 invalid:
   - '$c = get_the_terms( $id, ''category'' ); if ( ! $c ) $c = array();'
+  - "$c = get_the_terms( $id, 'post_tag' ); if ( ! $c ) { return ''; }"
+  - "$terms = get_the_terms( get_the_ID(), 'category' ); if ( ! $terms ) echo 'none';"
+  - "$c = get_the_terms( $id, 'category' ); if ( ! $c ) { return; } if ( is_wp_error( $other ) ) { return; }"
+  - "<?php function f( $id ) { $c = get_the_terms( $id, 'category' ); if ( ! $c ) { return; } return $c; }"

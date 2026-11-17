@@ -1,5 +1,11 @@
 id: wp-the-title-filter-missing-post-id
 valid:
   - '<?php $t = apply_filters( ''the_title'', $page->post_title, $page->ID );'
+  - "<?php $t = apply_filters( 'the_title', $t, get_the_ID() );"
+  - "<?php $c = apply_filters( 'the_content', $c );"
+  - "<?php $t = apply_filters( 'the_title', $t, $post_id );"
 invalid:
   - '<?php $t = apply_filters( ''the_title'', $page->post_title );'
+  - "<?php echo apply_filters( 'the_title', get_the_title() );"
+  - "<?php $t = apply_filters('the_title', $title);"
+  - "<?php function f( $p ) { return apply_filters( 'the_title', $p->post_title ); }"

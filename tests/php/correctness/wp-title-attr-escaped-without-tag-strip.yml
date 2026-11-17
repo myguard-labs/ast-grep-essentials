@@ -3,5 +3,11 @@ valid:
   - >-
     $t = esc_attr( wp_strip_all_tags( apply_filters( 'the_title',
     $post->post_title ) ) );
+  - "$t = esc_attr( wp_strip_all_tags( apply_filters( 'the_title', $t, $id ) ) );"
+  - "$t = esc_html( apply_filters( 'the_title', $post->post_title ) );"
+  - "$t = the_title_attribute( array( 'echo' => false ) );"
 invalid:
   - '$t = esc_attr( apply_filters( ''the_title'', $post->post_title ) );'
+  - "echo '<a title=\"' . esc_attr( apply_filters( 'the_title', $t ) ) . '\">';"
+  - "return esc_attr(apply_filters('the_title', $t));"
+  - "$attrs['title'] = esc_attr( apply_filters( 'the_title', get_post_field( 'post_title', $id ) ) );"
