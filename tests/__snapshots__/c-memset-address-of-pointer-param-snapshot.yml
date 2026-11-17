@@ -1,8 +1,26 @@
 id: c-memset-address-of-pointer-param
 snapshots:
-  struct s { int x; }; void f(struct s *pi) { memset(&pi, 0, sizeof(pi)); }:
+  "static void wipe(unsigned char *key) { memset(&key, 0, sizeof(key)); }":
+    labels:
+    - source: memset(&key, 0, sizeof(key))
+      style: primary
+      start: 39
+      end: 67
+  "struct s { int x; }; void f(struct s *pi) { memset(&pi, 0, sizeof(pi)); }":
     labels:
     - source: memset(&pi, 0, sizeof(pi))
       style: primary
       start: 44
       end: 70
+  "void f(char *buf) { memset(&buf, 0, sizeof(buf)); }":
+    labels:
+    - source: memset(&buf, 0, sizeof(buf))
+      style: primary
+      start: 20
+      end: 48
+  "void f(void *ctx) { if (ctx) { memset(&ctx, 0, sizeof(ctx)); } }":
+    labels:
+    - source: memset(&ctx, 0, sizeof(ctx))
+      style: primary
+      start: 31
+      end: 59

@@ -3,7 +3,19 @@ valid:
   - >-
     static void put(unsigned char *p, unsigned int s) { p[0] = (unsigned char)
     (s >> 8); }
+  - |-
+    void put(unsigned char *p, unsigned int s) { p[0] = (unsigned char) s >> 7; }
+  - |-
+    void put(unsigned char *p, unsigned int s) { p[0] = ((unsigned char) s) >> 4; }
+  - |-
+    void put(unsigned char *p, unsigned int s) { p[0] = (unsigned short) s >> 8; }
 invalid:
   - >-
     static void put(unsigned char *p, unsigned int s) { p[0] = (unsigned char) s
     >> 8; }
+  - |-
+    void put(unsigned char *p, unsigned int s) { p[0] = (unsigned char) s >> 16; }
+  - |-
+    void put(unsigned char *p, unsigned int s) { p[0] = (unsigned char) s >> 9; }
+  - |-
+    void put(unsigned char *p, unsigned int s) { p[0] = (unsigned char) s >> 0x8; }

@@ -1,11 +1,7 @@
 id: c-memchr-loop-no-advance
 snapshots:
-  ? |-
-    char *p = s;
-    while ((p = memchr(p, '\\', end - p)) != NULL) {
-        *p = '/';
-    }
-  : labels:
+  "char *p = s;\nwhile ((p = memchr(p, '\\\\', end - p)) != NULL) {\n    *p = '/';\n}":
+    labels:
     - source: |-
         while ((p = memchr(p, '\\', end - p)) != NULL) {
             *p = '/';
@@ -17,7 +13,49 @@ snapshots:
       style: secondary
       start: 21
       end: 49
-    - source: '*p = ''/'''
+    - source: "*p = '/'"
       style: secondary
       start: 66
       end: 74
+  "void f(char *p, char *end) { while ((p = memchr(p, 0, end - p)) != NULL) { *p = 47; } }":
+    labels:
+    - source: while ((p = memchr(p, 0, end - p)) != NULL) { *p = 47; }
+      style: primary
+      start: 29
+      end: 85
+    - source: p = memchr(p, 0, end - p)
+      style: secondary
+      start: 37
+      end: 62
+    - source: "*p = 47"
+      style: secondary
+      start: 75
+      end: 82
+  "void f(char *p, char *end) { while (p = memchr(p, 92, end - p)) { *p = 47; } }":
+    labels:
+    - source: while (p = memchr(p, 92, end - p)) { *p = 47; }
+      style: primary
+      start: 29
+      end: 76
+    - source: p = memchr(p, 92, end - p)
+      style: secondary
+      start: 36
+      end: 62
+    - source: "*p = 47"
+      style: secondary
+      start: 66
+      end: 73
+  "void f(char *p, char *end, int *n) { while ((p = memchr(p, 92, end - p)) != 0) { (*n)++; *p = 47; } }":
+    labels:
+    - source: while ((p = memchr(p, 92, end - p)) != 0) { (*n)++; *p = 47; }
+      style: primary
+      start: 37
+      end: 99
+    - source: p = memchr(p, 92, end - p)
+      style: secondary
+      start: 45
+      end: 71
+    - source: "*p = 47"
+      style: secondary
+      start: 89
+      end: 96

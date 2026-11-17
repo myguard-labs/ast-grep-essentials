@@ -3,7 +3,19 @@ valid:
   - >-
     void f(int t, int *x) { switch (t) { case 1: *x = 1; break; case 2: *x = 2;
     break; } }
+  - |-
+    void f(int t, int *x) { switch (t) { case 1: *x = 1; return; case 2: *x = 2; break; } }
+  - |-
+    void f(int t, int *x) { switch (t) { case 1: case 2: *x = 2; break; } }
+  - |-
+    void f(int t, int *x) { switch (t) { case 1: *x = 1; goto out; case 2: *x = 2; break; } out: return; }
 invalid:
   - >-
     void f(int t, int *x) { switch (t) { case 1: *x = 1; case 2: *x = 2; break;
     } }
+  - |-
+    void f(int t, int *x) { switch (t) { case 1: *x = 1; default: *x = 2; } }
+  - |-
+    void f(int t, int *x) { switch (t) { case 1: g(x); case 2: break; } }
+  - |-
+    void f(int t, int *x) { switch (t) { case 1: *x = 1; (*x)++; case 2: break; } }

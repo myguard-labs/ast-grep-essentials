@@ -1,5 +1,17 @@
 id: c-mask-narrower-than-shift
 valid:
   - 'unsigned char b(unsigned long t) { return (t >> 8) & 0xff; }'
+  - |-
+    unsigned long b(unsigned long t) { return (t & 0xff) << 8; }
+  - |-
+    unsigned long b(unsigned long t) { return (t | 0xff) >> 8; }
+  - |-
+    unsigned long b(unsigned long t) { return (t & 0xff) > 8; }
 invalid:
   - 'unsigned char b(unsigned long t) { return (t & 0xff) >> 8; }'
+  - |-
+    unsigned char b(unsigned long t) { return (t & 0x0f) >> 4; }
+  - |-
+    unsigned char b(unsigned long t) { unsigned char r = (t & 0xff) >> 16; return r; }
+  - |-
+    unsigned char b(unsigned long t) { return (t & 0xff) >> 8u; }

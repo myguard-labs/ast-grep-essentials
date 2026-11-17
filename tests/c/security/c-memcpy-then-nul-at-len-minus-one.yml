@@ -3,7 +3,19 @@ valid:
   - |-
     memcpy(buf, src, n);
     buf[n] = '\0';
+  - |-
+    void f(struct s *p, char *src, int len) { memcpy(p->name, src, len); p->name[len] = '\0'; }
+  - |-
+    void f(char *out, char *src, int off, int len) { memcpy(&out[off], src, len); out[off + len] = '\0'; }
+  - |-
+    void f(char *buf, char *src, int n, int size) { if (n < size) { memcpy(buf, src, n); buf[n] = '\0'; } }
 invalid:
   - |-
     memcpy(buf, src, n);
     buf[n - 1] = '\0';
+  - |-
+    void f(struct s *p, char *src, int len) { memcpy(p->name, src, len); p->name[len - 1] = '\0'; }
+  - |-
+    void f(char *out, char *src, int off, int len) { memcpy(&out[off], src, len); out[off + len - 1] = '\0'; }
+  - |-
+    void f(char *buf, char *src, int n) { memcpy(buf, src, n); if (n > 0) { buf[n - 1] = '\0'; } }

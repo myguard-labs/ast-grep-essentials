@@ -1,7 +1,25 @@
 id: c-misaligned-cast-of-byte-array-member
 snapshots:
-  ? struct node { unsigned short key_len; unsigned char data[1]; }; long *ring(struct node *n) { return (long *) (n->data + n->key_len); }
-  : labels:
+  "long *f(struct hdr *h, int i) { return (long *) (h->data + (i * 8)); }":
+    labels:
+    - source: (long *) (h->data + (i * 8))
+      style: primary
+      start: 39
+      end: 67
+  "long *f(struct node *n) { return (long *) (n->data + 4); }":
+    labels:
+    - source: (long *) (n->data + 4)
+      style: primary
+      start: 33
+      end: 55
+  "long f(struct node *n, int off) { return *(long *) (n->data + off); }":
+    labels:
+    - source: (long *) (n->data + off)
+      style: primary
+      start: 42
+      end: 66
+  "struct node { unsigned short key_len; unsigned char data[1]; }; long *ring(struct node *n) { return (long *) (n->data + n->key_len); }":
+    labels:
     - source: (long *) (n->data + n->key_len)
       style: primary
       start: 100

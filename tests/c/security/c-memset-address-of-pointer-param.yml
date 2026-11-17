@@ -1,5 +1,17 @@
 id: c-memset-address-of-pointer-param
 valid:
   - 'struct s { int x; }; void f(struct s *pi) { memset(pi, 0, sizeof(*pi)); }'
+  - |-
+    void f(char *buf) { memset(buf, 0, sizeof(buf)); }
+  - |-
+    void f(char **pp) { memset(*pp, 0, sizeof(**pp)); }
+  - |-
+    void f(struct s *pi) { memset(pi, 0, sizeof *pi); }
 invalid:
   - 'struct s { int x; }; void f(struct s *pi) { memset(&pi, 0, sizeof(pi)); }'
+  - |-
+    void f(char *buf) { memset(&buf, 0, sizeof(buf)); }
+  - |-
+    void f(void *ctx) { if (ctx) { memset(&ctx, 0, sizeof(ctx)); } }
+  - |-
+    static void wipe(unsigned char *key) { memset(&key, 0, sizeof(key)); }

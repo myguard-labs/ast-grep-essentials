@@ -3,7 +3,19 @@ valid:
   - >-
     zend_mangle_property_name(&n, &l, "*", 1, s, sl, ce->type &
     ZEND_INTERNAL_CLASS); pefree(n, ce->type & ZEND_INTERNAL_CLASS);
+  - |-
+    void f(char *tmp, int p) { zend_mangle_property_name(&n, &l, "*", 1, s, sl, 0); efree(tmp); pefree(n, p); }
+  - |-
+    void f(char *n) { n = emalloc(8); efree(n); }
+  - |-
+    void f(char *n, int p) { efree(n); zend_mangle_property_name(&n, &l, "*", 1, s, sl, 0); pefree(n, p); }
 invalid:
   - >-
     zend_mangle_property_name(&n, &l, "*", 1, s, sl, ce->type &
     ZEND_INTERNAL_CLASS); efree(n);
+  - |-
+    void f(char *n, char *s) { zend_mangle_property_name(&n, &l, "*", 1, s, sl, 1); efree(n); }
+  - |-
+    void f(char *n, char *s) { zend_mangle_property_name(&n, &l, "*", 1, s, sl, 0); zend_hash_find(h, n, l); efree(n); }
+  - |-
+    void f(char *n, char *s) { if (s) { zend_mangle_property_name(&n, &l, "*", 1, s, sl, 0); log_it(n); efree(n); } }
