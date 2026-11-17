@@ -1,5 +1,9 @@
 id: php-savequeries-bare-constant
 valid:
   - "<?php\nif ( defined('SAVEQUERIES') && SAVEQUERIES ) {\n\t$this->timer_start();\n}\n"
+  - "<?php\nif (defined('SAVEQUERIES')) {\n\t$this->timer_start();\n}\n"
+  - "<?php\nif ($wpdb->savequeries) {\n\t$this->timer_start();\n}\n"
 invalid:
   - "<?php\nif (SAVEQUERIES) {\n\t$this->timer_start();\n}\n"
+  - "<?php\nif (SAVEQUERIES) {\n\techo count($wpdb->queries);\n}\n"
+  - "<?php\nif ( SAVEQUERIES ) {\n\t$n = 1;\n} else {\n\t$n = 0;\n}\n"

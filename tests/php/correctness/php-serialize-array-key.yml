@@ -3,7 +3,11 @@ valid:
   - >-
     <?php $wp_filter[$tag][$priority][$idx] = array('function' =>
     $function_to_add); ?>
+  - "<?php $cache[md5(serialize($args))] = $result; ?>"
+  - "<?php $map[$key] = serialize($value); ?>"
 invalid:
   - >-
     <?php $wp_filter[$tag][$priority][serialize($function_to_add)] =
     array('function' => $function_to_add); ?>
+  - "<?php $cache[serialize($args)] = $result; ?>"
+  - "<?php $this->cache[serialize($obj)] = true; ?>"
