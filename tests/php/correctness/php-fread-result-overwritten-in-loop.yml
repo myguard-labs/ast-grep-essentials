@@ -7,6 +7,9 @@ valid:
         $file_content .= fread($fp, 8192);
     }
     fclose($fp);
+  - '<?php $c = fread($fp, 8192); while (!feof($fp)) { echo $c; }'
+  - '<?php while (!feof($fp)) { $out = $out . fread($fp, 8192); }'
+  - '<?php while (!feof($fp)) { echo fread($fp, 8192); }'
 invalid:
   - |-
     <?php
@@ -15,3 +18,6 @@ invalid:
         $file_content = fread($fp, 8192);
     }
     fclose($fp);
+  - '<?php while ($n > 0) { $buf = fread($fp, $n); $n--; }'
+  - '<?php while (!feof($fp)) { if ($ok) { $c = fread($fp, 10); } }'
+  - '<?php while (!feof($fp)) { $data["k"] = fread($fp, 10); }'

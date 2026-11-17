@@ -1,6 +1,48 @@
 id: php-function-declaration-nested-in-function-body
 snapshots:
-  <?php function a() { return 1; function b() { return 2; } }:
+  "<?php function a() { echo 1; function b() { return 2; } echo 3; }":
+    labels:
+    - source: function b() { return 2; }
+      style: primary
+      start: 29
+      end: 55
+    - source: function a() { echo 1; function b() { return 2; } echo 3; }
+      style: secondary
+      start: 6
+      end: 65
+    - source: "{ echo 1; function b() { return 2; } echo 3; }"
+      style: secondary
+      start: 19
+      end: 65
+  "<?php function a() { foreach ($x as $y) { function b() { return 1; } } }":
+    labels:
+    - source: function b() { return 1; }
+      style: primary
+      start: 42
+      end: 68
+    - source: function a() { foreach ($x as $y) { function b() { return 1; } } }
+      style: secondary
+      start: 6
+      end: 72
+    - source: "{ function b() { return 1; } }"
+      style: secondary
+      start: 40
+      end: 70
+  "<?php function a() { if ($x) { function b() { return 1; } } }":
+    labels:
+    - source: function b() { return 1; }
+      style: primary
+      start: 31
+      end: 57
+    - source: function a() { if ($x) { function b() { return 1; } } }
+      style: secondary
+      start: 6
+      end: 61
+    - source: "{ function b() { return 1; } }"
+      style: secondary
+      start: 29
+      end: 59
+  "<?php function a() { return 1; function b() { return 2; } }":
     labels:
     - source: function b() { return 2; }
       style: primary
@@ -10,7 +52,7 @@ snapshots:
       style: secondary
       start: 6
       end: 59
-    - source: '{ return 1; function b() { return 2; } }'
+    - source: "{ return 1; function b() { return 2; } }"
       style: secondary
       start: 19
       end: 59

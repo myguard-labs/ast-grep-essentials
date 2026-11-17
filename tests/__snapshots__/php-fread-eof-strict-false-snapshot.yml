@@ -1,6 +1,20 @@
 id: php-fread-eof-strict-false
 snapshots:
-  <?php $line = fread($pipes[1], 8192); if ($line === false) { break; }:
+  "<?php $buf = fread($this->handle, 100); if ($buf === false) { throw new Exception(\"eof\"); }":
+    labels:
+    - source: if ($buf === false) { throw new Exception("eof"); }
+      style: primary
+      start: 40
+      end: 91
+    - source: $buf = fread($this->handle, 100)
+      style: secondary
+      start: 6
+      end: 38
+    - source: $buf = fread($this->handle, 100);
+      style: secondary
+      start: 6
+      end: 39
+  "<?php $line = fread($pipes[1], 8192); if ($line === false) { break; }":
     labels:
     - source: if ($line === false) { break; }
       style: primary
@@ -14,3 +28,31 @@ snapshots:
       style: secondary
       start: 6
       end: 37
+  "<?php function r($fp) { $data = fread($fp, 4096); if ($data === false) { return null; } return $data; }":
+    labels:
+    - source: if ($data === false) { return null; }
+      style: primary
+      start: 50
+      end: 87
+    - source: $data = fread($fp, 4096)
+      style: secondary
+      start: 24
+      end: 48
+    - source: $data = fread($fp, 4096);
+      style: secondary
+      start: 24
+      end: 49
+  "<?php while (true) { $chunk = fread($fp, 1024); if ($chunk === false) { break; } echo $chunk; }":
+    labels:
+    - source: if ($chunk === false) { break; }
+      style: primary
+      start: 48
+      end: 80
+    - source: $chunk = fread($fp, 1024)
+      style: secondary
+      start: 21
+      end: 46
+    - source: $chunk = fread($fp, 1024);
+      style: secondary
+      start: 21
+      end: 47

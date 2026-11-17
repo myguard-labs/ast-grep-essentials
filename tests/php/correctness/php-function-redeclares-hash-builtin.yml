@@ -1,5 +1,11 @@
 id: php-function-redeclares-hash-builtin
 valid:
   - 'function hash1($n) { return $n; }'
+  - '<?php class A { function hash($n) { return $n; } }'
+  - '<?php function hash_data($n) { return $n; }'
+  - '<?php if (!function_exists("hash")) { function hash($a, $d) { return md5($d); } }'
 invalid:
   - 'function hash($n) { return $n; }'
+  - '<?php function &hash($n) { return $n; }'
+  - '<?php function hash(string $algo, string $data): string { return md5($data); }'
+  - '<?php function hash() {} function other() {}'
