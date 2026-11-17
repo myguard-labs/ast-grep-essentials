@@ -1,5 +1,10 @@
 id: php-strrchr-extension-keeps-dot
 valid:
   - '$ext = ltrim(strrchr($name, ''.''), ''.'');'
+  - "<?php\n$ext = substr( strrchr( $name, '.' ), 1 );"
+  - "<?php\n$ext = pathinfo( $name, PATHINFO_EXTENSION );"
 invalid:
   - '$ext = strrchr($name, ''.'');'
+  - "<?php\n$this->ext = strrchr( $name, '.' );"
+  - "<?php\n$info['ext'] = strrchr( $path, '.' );"
+  - "<?php\n$ext = strrchr( basename( $file ), '.' );"
