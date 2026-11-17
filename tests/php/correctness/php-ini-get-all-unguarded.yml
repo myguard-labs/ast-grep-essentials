@@ -4,7 +4,15 @@ valid:
     function wp_is_changeable( $setting ) { $ini_all = false; if (
     function_exists( 'ini_get_all' ) ) { $ini_all = ini_get_all(); } return
     isset( $ini_all[ $setting ] ); }
+  - 'if ( function_exists( "ini_get_all" ) ) { $a = ini_get_all( "pcre" ); }'
+  - 'if ( function_exists( "ini_get_all" ) && $x ) { $a = ini_get_all( null, false ); }'
+  - 'function f() { if ( ! function_exists( "ini_get_all" ) ) { return array(); } else { return ini_get_all(); } }'
+  - 'if ( function_exists( "ini_get_all" ) ) { foreach ( array( "a" ) as $e ) { $a = ini_get_all( $e ); } }'
 invalid:
   - >-
     function wp_is_changeable( $setting ) { $ini_all = ini_get_all(); return
     isset( $ini_all[ $setting ] ); }
+  - '$a = ini_get_all( "pcre" );'
+  - 'class C { public function m() { return ini_get_all(); } }'
+  - '$f = function() { return ini_get_all( "session" ); };'
+  - '$a = @ini_get_all();'

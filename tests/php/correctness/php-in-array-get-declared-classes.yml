@@ -1,5 +1,13 @@
 id: php-in-array-get-declared-classes
 valid:
   - 'if ( !in_array(''Snoopy'', $known_classes ) ) :'
+  - '$ok = class_exists( $name, false );'
+  - '$ok = in_array( $name, array( ''Snoopy'', ''Requests'' ), true );'
+  - '$ok = in_array( $name, $this->allowed_classes );'
+  - '$ok = class_exists( $name ) || interface_exists( $name );'
 invalid:
   - 'if ( !in_array(''Snoopy'', get_declared_classes() ) ) :'
+  - '$ok = in_array( $name, get_declared_classes() );'
+  - 'if ( in_array( strtolower( $c ), get_declared_classes() ) ) { $x = 1; }'
+  - 'return ! in_array( $name, get_declared_classes() );'
+  - '$ok = in_array($name, get_declared_classes());'

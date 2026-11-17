@@ -1,5 +1,13 @@
 id: php-int-literal-loose-compare
 valid:
   - 'if ( ''0'' == $approved ) { $status = ''hold''; }'
+  - 'if ( 0 === $approved ) { $status = 1; }'
+  - 'if ( $approved === 0 ) { $status = 1; }'
+  - 'if ( 0 < $approved ) { $status = 1; }'
+  - 'if ( 0 === (int) $approved ) { $status = 1; }'
 invalid:
   - 'if ( 0 == $approved ) { $status = ''hold''; }'
+  - 'if ( 0 == $obj->count ) { $status = 1; }'
+  - 'return 0 == $count;'
+  - 'while ( 0 == $n ) { $n = next_n(); }'
+  - 'if ( 0 == $a["k"] ) { $status = 1; }'
