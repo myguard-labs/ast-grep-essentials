@@ -4,8 +4,13 @@ valid:
     <?php function switch_blog_user($blog_id) { if ( did_action('init') ) {
     $current_user = wp_get_current_user(); $current_user->for_blog($blog_id); }
     }
+  - '<?php function defer_user_refresh() { if ( ! did_action(''init'') ) { add_action( ''init'', ''refresh_current_user'' ); } }'
+  - '<?php function load_user_late() { if ( did_action(''init'') ) { $current_user = wp_get_current_user(); } }'
+  - '<?php function lookup_user() { if ( ! did_action(''init'') ) { $user = get_userdata( 1 ); } }'
 invalid:
   - >-
     <?php function switch_blog_user($blog_id) { if ( ! did_action('init') ) {
     $current_user = wp_get_current_user(); $current_user->for_blog($blog_id); }
     }
+  - '<?php function f() { if ( ! did_action(''init'') ) { if ( $force ) { $u = wp_get_current_user(); } } }'
+  - '<?php function f() { if ( ! did_action(''init'') ) { $id = wp_get_current_user()->ID; log_it( $id ); } }'

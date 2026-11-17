@@ -1,8 +1,30 @@
 id: wp-negated-did-action-init-user-load
 snapshots:
-  ? <?php function switch_blog_user($blog_id) { if ( ! did_action('init') ) { $current_user = wp_get_current_user(); $current_user->for_blog($blog_id); } }
-  : labels:
-    - source: if ( ! did_action('init') ) { $current_user = wp_get_current_user(); $current_user->for_blog($blog_id); }
+  "<?php function f() { if ( ! did_action('init') ) { $id = wp_get_current_user()->ID; log_it( $id ); } }":
+    labels:
+    - source: if ( ! did_action('init') ) { $id = wp_get_current_user()->ID; log_it( $id ); }
+      style: primary
+      start: 21
+      end: 100
+    - source: wp_get_current_user()
+      style: secondary
+      start: 57
+      end: 78
+  "<?php function f() { if ( ! did_action('init') ) { if ( $force ) { $u = wp_get_current_user(); } } }":
+    labels:
+    - source: if ( ! did_action('init') ) { if ( $force ) { $u = wp_get_current_user(); } }
+      style: primary
+      start: 21
+      end: 98
+    - source: wp_get_current_user()
+      style: secondary
+      start: 72
+      end: 93
+  "<?php function switch_blog_user($blog_id) { if ( ! did_action('init') ) { $current_user = wp_get_current_user(); $current_user->for_blog($blog_id); } }":
+    labels:
+    - source: >-
+        if ( ! did_action('init') ) { $current_user = wp_get_current_user();
+        $current_user->for_blog($blog_id); }
       style: primary
       start: 44
       end: 149

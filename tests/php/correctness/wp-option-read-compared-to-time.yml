@@ -3,5 +3,11 @@ valid:
   - >-
     <?php $t = get_site_option( $k ); if ( false !== $t && $t < time() ) {
     return false; }
+  - '<?php $t = (int) get_site_option( ''k'', 0 ); if ( $t > 0 && $t < time() ) { run(); }'
+  - '<?php if ( false !== ( $t = get_option( ''k'' ) ) && $t < time() ) { run(); }'
+  - '<?php if ( time() < $expires ) { run(); }'
 invalid:
   - '<?php if ( get_site_option( $k ) < time() ) { return false; }'
+  - '<?php return get_option( ''my_expires'' ) < time();'
+  - '<?php $x = get_site_option( ''k'' ) < time() ? ''old'' : ''new'';'
+  - '<?php if ( get_option( ''a'' ) < time() && $b ) { run(); }'

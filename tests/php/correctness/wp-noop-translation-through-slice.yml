@@ -3,7 +3,13 @@ valid:
   - >-
     'lintError' => wp_array_slice_assoc( _n( 'There is %d error.', 'There are %d
     errors.', 1 ), array( 'singular', 'plural' ) ),
+  - '<?php $x = wp_array_slice_assoc( $row, array( ''id'', ''name'' ) );'
+  - '<?php $x = wp_array_slice_assoc( array( ''a'' => 1, ''b'' => 2 ), array( ''a'' ) );'
+  - '<?php $x = translate_nooped_plural( _n_noop( ''a'', ''b'' ), $count );'
 invalid:
   - >-
     'lintError' => wp_array_slice_assoc( _n_noop( 'There is %d error.', 'There
     are %d errors.' ), array( 'singular', 'plural' ) ),
+  - '<?php $x = wp_array_slice_assoc( _n_noop( ''a'', ''b'', ''my-domain'' ), array( ''singular'' ) );'
+  - '<?php return wp_array_slice_assoc( _n_noop( ''a'', ''b'' ), array( ''singular'', ''plural'' ) );'
+  - '<?php $x = wp_array_slice_assoc( _n_noop( ''a'', ''b'' ), $keys );'
