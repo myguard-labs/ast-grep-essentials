@@ -1,8 +1,26 @@
 id: java-bytebuf-release-outside-finally
 snapshots:
-  class A { void f(ByteBuf buf) { process(buf); buf.release(); } }:
+  "class A { void f(ByteBuf buf) { process(buf); buf.release(); } }":
     labels:
     - source: buf.release();
       style: primary
       start: 46
       end: 60
+  "class A { void f(ByteBuf buf) { try { process(buf); buf.release(); } finally { cleanup(); } } }":
+    labels:
+    - source: buf.release();
+      style: primary
+      start: 52
+      end: 66
+  "class A { void f(ByteBuf buf) { try { process(buf); } catch (Exception e) { buf.release(); } } }":
+    labels:
+    - source: buf.release();
+      style: primary
+      start: 76
+      end: 90
+  "class A { void f(ByteBuf outBuf, boolean x) { if (x) { outBuf.release(); } } }":
+    labels:
+    - source: outBuf.release();
+      style: primary
+      start: 55
+      end: 72

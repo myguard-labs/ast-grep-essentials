@@ -16,3 +16,27 @@ snapshots:
       style: primary
       start: 252
       end: 278
+  "class A { void f() { this.cookie.setHttpOnly(false); } }\n":
+    fixed: |
+      class A { void f() { this.cookie.setHttpOnly(true); } }
+    labels:
+    - source: this.cookie.setHttpOnly(false);
+      style: primary
+      start: 21
+      end: 52
+  "class A { void f(Cookie c, boolean x) { if (x) c.setHttpOnly(false); } }\n":
+    fixed: |
+      class A { void f(Cookie c, boolean x) { if (x) c.setHttpOnly(true); } }
+    labels:
+    - source: c.setHttpOnly(false);
+      style: primary
+      start: 47
+      end: 68
+  "class A { void f(HttpServletResponse r) { Cookie c = new Cookie(\"a\", \"b\"); c.setHttpOnly(false); r.addCookie(c); } }\n":
+    fixed: |
+      class A { void f(HttpServletResponse r) { Cookie c = new Cookie("a", "b"); c.setHttpOnly(true); r.addCookie(c); } }
+    labels:
+    - source: c.setHttpOnly(false);
+      style: primary
+      start: 75
+      end: 96

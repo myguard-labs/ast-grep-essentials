@@ -6,3 +6,6 @@ valid:
 - class A { void f(ByteBuf buf, boolean ok) { try { process(buf); } finally { if (ok) { buf.release(); } } } }
 invalid:
 - class A { void f(ByteBuf buf) { process(buf); buf.release(); } }
+- class A { void f(ByteBuf buf) { try { process(buf); buf.release(); } finally { cleanup(); } } }
+- class A { void f(ByteBuf buf) { try { process(buf); } catch (Exception e) { buf.release(); } } }
+- class A { void f(ByteBuf outBuf, boolean x) { if (x) { outBuf.release(); } } }

@@ -1,12 +1,78 @@
 id: java-exception-message-embeds-uri
 snapshots:
-  'class A { void f(String uri, Exception e) { throw new IllegalArgumentException("Error while setting AMQP URI: " + uri, e); } }':
+  "class A { void f(String uri) { throw new IllegalStateException(\"bad uri \" + uri); } }":
     labels:
-    - source: 'throw new IllegalArgumentException("Error while setting AMQP URI: " + uri, e);'
+    - source: throw new IllegalStateException("bad uri " + uri);
+      style: primary
+      start: 31
+      end: 81
+    - source: "\"bad uri \""
+      style: secondary
+      start: 63
+      end: 73
+    - source: uri
+      style: secondary
+      start: 76
+      end: 79
+    - source: "\"bad uri \" + uri"
+      style: secondary
+      start: 63
+      end: 79
+    - source: new IllegalStateException("bad uri " + uri)
+      style: secondary
+      start: 37
+      end: 80
+  "class A { void f(String uri) { throw new IllegalStateException(\"bad uri \" + uri.trim()); } }":
+    labels:
+    - source: throw new IllegalStateException("bad uri " + uri.trim());
+      style: primary
+      start: 31
+      end: 88
+    - source: "\"bad uri \""
+      style: secondary
+      start: 63
+      end: 73
+    - source: uri
+      style: secondary
+      start: 76
+      end: 79
+    - source: "\"bad uri \" + uri.trim()"
+      style: secondary
+      start: 63
+      end: 86
+    - source: new IllegalStateException("bad uri " + uri.trim())
+      style: secondary
+      start: 37
+      end: 87
+  "class A { void f(String uri) { throw new IllegalStateException(uri + \" is bad\"); } }":
+    labels:
+    - source: throw new IllegalStateException(uri + " is bad");
+      style: primary
+      start: 31
+      end: 80
+    - source: "\" is bad\""
+      style: secondary
+      start: 69
+      end: 78
+    - source: uri
+      style: secondary
+      start: 63
+      end: 66
+    - source: uri + " is bad"
+      style: secondary
+      start: 63
+      end: 78
+    - source: new IllegalStateException(uri + " is bad")
+      style: secondary
+      start: 37
+      end: 79
+  "class A { void f(String uri, Exception e) { throw new IllegalArgumentException(\"Error while setting AMQP URI: \" + uri, e); } }":
+    labels:
+    - source: "throw new IllegalArgumentException(\"Error while setting AMQP URI: \" + uri, e);"
       style: primary
       start: 44
       end: 122
-    - source: '"Error while setting AMQP URI: "'
+    - source: "\"Error while setting AMQP URI: \""
       style: secondary
       start: 79
       end: 111
@@ -14,11 +80,11 @@ snapshots:
       style: secondary
       start: 114
       end: 117
-    - source: '"Error while setting AMQP URI: " + uri'
+    - source: "\"Error while setting AMQP URI: \" + uri"
       style: secondary
       start: 79
       end: 117
-    - source: 'new IllegalArgumentException("Error while setting AMQP URI: " + uri, e)'
+    - source: "new IllegalArgumentException(\"Error while setting AMQP URI: \" + uri, e)"
       style: secondary
       start: 50
       end: 121

@@ -16,6 +16,8 @@ valid:
             cookie.setSecure(false);
         }
     }
+  - |
+    class A { void f(Cookie c, boolean b) { c.setHttpOnly(b); } }
 invalid:
   - |
     class A {
@@ -27,3 +29,9 @@ invalid:
             response.addCookie(cookie);
         }
     }
+  - |
+    class A { void f(HttpServletResponse r) { Cookie c = new Cookie("a", "b"); c.setHttpOnly(false); r.addCookie(c); } }
+  - |
+    class A { void f() { this.cookie.setHttpOnly(false); } }
+  - |
+    class A { void f(Cookie c, boolean x) { if (x) c.setHttpOnly(false); } }

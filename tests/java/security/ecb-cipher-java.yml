@@ -4,6 +4,16 @@ valid:
     class CodeRabbitControl { String text = "CodeRabbit"; }
   - |
     Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
+  - |
+    class A { void f() throws Exception { Cipher c = Cipher.getInstance("ChaCha20-Poly1305"); } }
+  - |
+    class A { void f() throws Exception { String ecb = "x"; Cipher c = Cipher.getInstance("AES/GCM/NoPadding"); } }
 invalid:
   - |
     Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
+  - |
+    class A { void f() throws Exception { Cipher c = Cipher.getInstance("AES/ECB/PKCS5Padding"); } }
+  - |
+    class A { void f() throws Exception { Cipher c = Cipher.getInstance("DES/ECB/NoPadding"); } }
+  - |
+    class A { void f() throws Exception { final Cipher c = Cipher.getInstance("AES/ECB/PKCS5Padding"); } }
