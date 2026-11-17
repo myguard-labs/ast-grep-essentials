@@ -1,8 +1,35 @@
 id: c-num-args-return-false
 snapshots:
-  ? "if (ZEND_NUM_ARGS()) {\n\t\tRETURN_FALSE;\n\t}"
-  : labels:
-    - source: "if (ZEND_NUM_ARGS()) {\n\t\tRETURN_FALSE;\n\t}"
+  "PHP_FUNCTION(foo)\n{\n    if (ZEND_NUM_ARGS()) {\n        RETURN_FALSE;\n    }\n    RETURN_TRUE;\n}":
+    labels:
+    - source: |-
+        if (ZEND_NUM_ARGS()) {
+                RETURN_FALSE;
+            }
+      style: primary
+      start: 24
+      end: 74
+  "if (ZEND_NUM_ARGS()) {\n\t\tRETURN_FALSE;\n\t}":
+    labels:
+    - source: |-
+        if (ZEND_NUM_ARGS()) {
+        		RETURN_FALSE;
+        	}
       style: primary
       start: 0
       end: 41
+  "void f(int argc)\n{\n    if (ZEND_NUM_ARGS()) { RETURN_FALSE; }\n    RETURN_TRUE;\n}":
+    labels:
+    - source: if (ZEND_NUM_ARGS()) { RETURN_FALSE; }
+      style: primary
+      start: 23
+      end: 61
+  "void f(int argc)\n{\n    if (argc < 0) {\n        RETURN_NULL();\n    } else if (argc == 0) {\n        RETURN_TRUE;\n    } else {\n        if (ZEND_NUM_ARGS()) {\n            RETURN_FALSE;\n        }\n    }\n}":
+    labels:
+    - source: |-
+        if (ZEND_NUM_ARGS()) {
+                    RETURN_FALSE;
+                }
+      style: primary
+      start: 132
+      end: 190

@@ -4,8 +4,68 @@ valid:
     buf[12] = '\0';
     n = atoi(&buf[9]);
     buf[12] = keep;
+  - |-
+    int f(char *buf, int len)
+    {
+        char keep;
+        int n;
+        if (len < 13) return -1;
+        keep = buf[12];
+        buf[12] = '\0';
+        n = atoi(&buf[9]);
+        buf[12] = keep;
+        return n;
+    }
+  - |-
+    void pad(char *buf, int len)
+    {
+        if (len < 13) return;
+        buf[11] = ' ';
+        buf[12] = '\0';
+    }
+  - |-
+    int f(struct req *r)
+    {
+        char saved = r->buf[12];
+        int n;
+        r->buf[12] = '\0';
+        n = atoi(&r->buf[9]);
+        r->buf[12] = saved;
+        return n;
+    }
 invalid:
   - |-
     buf[12] = '\0';
     n = atoi(&buf[9]);
     buf[12] = ' ';
+  - |-
+    int f(struct req *r)
+    {
+        int n;
+        r->buf[12] = '\0';
+        n = atoi(&r->buf[9]);
+        r->buf[12] = ' ';
+        return n;
+    }
+  - |-
+    int f(char *buf, int len)
+    {
+        int n;
+        if (len < 13) return -1;
+        buf[12] = '\0';
+        n = atoi(&buf[9]);
+        if (n > 0) {
+            buf[12] = ' ';
+        }
+        return n;
+    }
+  - |-
+    int f(char **lines, int len)
+    {
+        int n;
+        if (len < 13) return -1;
+        lines[1][12] = '\0';
+        n = atoi(&lines[1][9]);
+        lines[1][12] = ' ';
+        return n;
+    }

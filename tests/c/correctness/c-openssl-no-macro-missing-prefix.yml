@@ -1,5 +1,37 @@
 id: c-openssl-no-macro-missing-prefix
 valid:
   - '#ifndef OPENSSL_NO_DSA'
+  - |-
+    #ifndef OPENSSL_NO_RSA
+    int have_rsa;
+    #endif
+  - |-
+    #ifndef OPENSSL_NO_DSA
+    int have_dsa;
+    #endif
+  - |-
+    #ifdef OPENSSL_NO_DSA
+    int no_dsa;
+    #endif
 invalid:
   - '#ifndef NO_DSA'
+  - |-
+    #ifndef NO_DSA
+    int have_dsa;
+    #endif
+  - |-
+    #ifdef OPENSSL_NO_EC
+    #ifndef NO_DSA
+    int have_dsa;
+    #endif
+    #endif
+  - |-
+    #ifndef NO_DSA /* legacy */
+    int have_dsa;
+    #endif
+  - |-
+    #ifndef NO_DSA
+    int a;
+    #else
+    int b;
+    #endif

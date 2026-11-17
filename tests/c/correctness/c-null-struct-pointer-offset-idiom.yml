@@ -4,8 +4,27 @@ valid:
     #include <stddef.h>
     struct s { int a; char b[4]; };
     size_t f(struct s *p) { return (size_t)(((struct s *)p)->b); }
+  - |-
+    #include <stddef.h>
+    struct s { int a; char b[4]; };
+    size_t f(void) { return offsetof(struct s, b); }
+  - |-
+    struct s { int a; char b[4]; };
+    int f(void *buf) { return ((struct s *)buf)->a; }
+  - |-
+    struct s { int a; char b[4]; };
+    char f(struct s *p) { return ((struct s *)p)->b[0]; }
 invalid:
   - |-
     #include <stddef.h>
     struct s { int a; char b[4]; };
     size_t f(void) { return (size_t)(((struct s *)0)->b); }
+  - |-
+    struct s { int a; char b[4]; };
+    unsigned long f(void) { return (unsigned long)&(((struct s *)0)->b); }
+  - |-
+    struct s { int a; char b[4]; };
+    long f(void) { return (long)&((struct s *)0)->a; }
+  - |-
+    struct s { int a; struct { int x; int y; } in; };
+    unsigned long f(void) { return (unsigned long)&(((struct s *)0)->in.y); }

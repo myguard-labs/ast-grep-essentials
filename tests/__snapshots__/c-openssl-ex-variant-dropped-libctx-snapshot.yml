@@ -1,6 +1,24 @@
 id: c-openssl-ex-variant-dropped-libctx
 snapshots:
-  struct c { void *libctx; }; void *f(struct c *k) { (void)k->libctx; return X509_new(); }:
+  "#include <openssl/x509.h>\nX509 *f(OSSL_LIB_CTX *libctx)\n{\n    X509 *x = X509_new();\n    (void)libctx;\n    return x;\n}":
+    labels:
+    - source: X509_new()
+      style: primary
+      start: 72
+      end: 82
+  "#include <openssl/x509.h>\nX509 *f(OSSL_LIB_CTX *libctx, int want)\n{\n    X509 *x = NULL;\n    if (want && libctx != NULL) {\n        x = X509_new();\n    }\n    return x;\n}":
+    labels:
+    - source: X509_new()
+      style: primary
+      start: 134
+      end: 144
+  "#include <openssl/x509.h>\nstruct c { OSSL_LIB_CTX *libctx; };\nint f(struct c *k)\n{\n    X509 *x;\n    if (k->libctx == NULL) return 0;\n    x = X509_new();\n    if (x == NULL) return 0;\n    X509_free(x);\n    return 1;\n}":
+    labels:
+    - source: X509_new()
+      style: primary
+      start: 141
+      end: 151
+  "struct c { void *libctx; }; void *f(struct c *k) { (void)k->libctx; return X509_new(); }":
     labels:
     - source: X509_new()
       style: primary

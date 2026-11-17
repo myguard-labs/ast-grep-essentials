@@ -1,9 +1,28 @@
 id: c-open-fd-checked-gt-zero
 snapshots:
-  ? |-
-    int fd = open("/proc/self/status", O_RDONLY);
-    if (fd > 0) { close(fd); }
-  : labels:
+  "int f(const char *path)\n{\n    int sock = open(path, O_RDONLY);\n    if (sock > 0) {\n        close(sock);\n    }\n    return 0;\n}":
+    labels:
+    - source: |-
+        if (sock > 0) {
+                close(sock);
+            }
+      style: primary
+      start: 67
+      end: 109
+  "int f(int fds[2])\n{\n    if (pipe(fds) != 0) return -1;\n    if (fds[0] > 0) { close(fds[0]); }\n    close(fds[1]);\n    return 0;\n}":
+    labels:
+    - source: if (fds[0] > 0) { close(fds[0]); }
+      style: primary
+      start: 59
+      end: 93
+  "int f(struct conn *c)\n{\n    if (c->fd > 0) { close(c->fd); }\n    return 0;\n}":
+    labels:
+    - source: if (c->fd > 0) { close(c->fd); }
+      style: primary
+      start: 28
+      end: 60
+  "int fd = open(\"/proc/self/status\", O_RDONLY);\nif (fd > 0) { close(fd); }":
+    labels:
     - source: if (fd > 0) { close(fd); }
       style: primary
       start: 46

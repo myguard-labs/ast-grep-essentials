@@ -1,8 +1,46 @@
 id: c-openssl-no-macro-missing-prefix
 snapshots:
-  '#ifndef NO_DSA':
+  "#ifdef OPENSSL_NO_EC\n#ifndef NO_DSA\nint have_dsa;\n#endif\n#endif":
     labels:
-    - source: '#ifndef NO_DSA'
+    - source: |-
+        #ifndef NO_DSA
+        int have_dsa;
+        #endif
+      style: primary
+      start: 21
+      end: 56
+  "#ifndef NO_DSA":
+    labels:
+    - source: "#ifndef NO_DSA"
       style: primary
       start: 0
       end: 14
+  "#ifndef NO_DSA\nint a;\n#else\nint b;\n#endif":
+    labels:
+    - source: |-
+        #ifndef NO_DSA
+        int a;
+        #else
+        int b;
+        #endif
+      style: primary
+      start: 0
+      end: 41
+  "#ifndef NO_DSA\nint have_dsa;\n#endif":
+    labels:
+    - source: |-
+        #ifndef NO_DSA
+        int have_dsa;
+        #endif
+      style: primary
+      start: 0
+      end: 35
+  "#ifndef NO_DSA /* legacy */\nint have_dsa;\n#endif":
+    labels:
+    - source: |-
+        #ifndef NO_DSA /* legacy */
+        int have_dsa;
+        #endif
+      style: primary
+      start: 0
+      end: 48

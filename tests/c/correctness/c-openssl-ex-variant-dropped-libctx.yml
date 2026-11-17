@@ -3,7 +3,58 @@ valid:
   - >-
     struct c { void *libctx; }; void *f(struct c *k) { (void)k->libctx; return
     X509_new_ex(k->libctx, NULL); }
+  - |-
+    #include <openssl/x509.h>
+    X509 *f(OSSL_LIB_CTX *libctx, const char *propq)
+    {
+        return X509_new_ex(libctx, propq);
+    }
+  - |-
+    #include <openssl/x509.h>
+    struct c { OSSL_LIB_CTX *libctx; const char *propq; };
+    X509 *f(struct c *k)
+    {
+        X509 *x = X509_new_ex(k->libctx, k->propq);
+        if (x == NULL) return NULL;
+        return x;
+    }
+  - |-
+    #include <openssl/x509.h>
+    X509_REQ *f(OSSL_LIB_CTX *libctx, const char *propq)
+    {
+        return X509_REQ_new_ex(libctx, propq);
+    }
 invalid:
   - >-
     struct c { void *libctx; }; void *f(struct c *k) { (void)k->libctx; return
     X509_new(); }
+  - |-
+    #include <openssl/x509.h>
+    X509 *f(OSSL_LIB_CTX *libctx)
+    {
+        X509 *x = X509_new();
+        (void)libctx;
+        return x;
+    }
+  - |-
+    #include <openssl/x509.h>
+    struct c { OSSL_LIB_CTX *libctx; };
+    int f(struct c *k)
+    {
+        X509 *x;
+        if (k->libctx == NULL) return 0;
+        x = X509_new();
+        if (x == NULL) return 0;
+        X509_free(x);
+        return 1;
+    }
+  - |-
+    #include <openssl/x509.h>
+    X509 *f(OSSL_LIB_CTX *libctx, int want)
+    {
+        X509 *x = NULL;
+        if (want && libctx != NULL) {
+            x = X509_new();
+        }
+        return x;
+    }

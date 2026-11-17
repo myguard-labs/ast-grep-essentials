@@ -1,11 +1,26 @@
 id: c-nul-restore-literal-char
 snapshots:
-  ? |-
-    buf[12] = '\0';
-    n = atoi(&buf[9]);
-    buf[12] = ' ';
-  : labels:
+  "buf[12] = '\\0';\nn = atoi(&buf[9]);\nbuf[12] = ' ';":
+    labels:
     - source: buf[12] = ' '
       style: primary
       start: 35
       end: 48
+  "int f(char **lines, int len)\n{\n    int n;\n    if (len < 13) return -1;\n    lines[1][12] = '\\0';\n    n = atoi(&lines[1][9]);\n    lines[1][12] = ' ';\n    return n;\n}":
+    labels:
+    - source: lines[1][12] = ' '
+      style: primary
+      start: 128
+      end: 146
+  "int f(char *buf, int len)\n{\n    int n;\n    if (len < 13) return -1;\n    buf[12] = '\\0';\n    n = atoi(&buf[9]);\n    if (n > 0) {\n        buf[12] = ' ';\n    }\n    return n;\n}":
+    labels:
+    - source: buf[12] = ' '
+      style: primary
+      start: 136
+      end: 149
+  "int f(struct req *r)\n{\n    int n;\n    r->buf[12] = '\\0';\n    n = atoi(&r->buf[9]);\n    r->buf[12] = ' ';\n    return n;\n}":
+    labels:
+    - source: r->buf[12] = ' '
+      style: primary
+      start: 87
+      end: 103
