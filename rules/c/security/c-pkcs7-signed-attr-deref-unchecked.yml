@@ -8,7 +8,7 @@ note: >-
   Syntactic only; matches an if condition using -> on the assigned variable
   unless the condition guards it (`V && ...`, `V != NULL && ...`, `!V || ...`,
   `V == NULL || ...`) or an earlier if tests `!V` / `V == NULL` and returns
-  unconditionally (a goto does not count), with no reassignment of the variable between that guard and the dereference. It does not track aliasing or other guards.
+  unconditionally (or jumps with `goto L` to a label that follows the dereference), with no reassignment of the variable between that guard and the dereference. It does not track aliasing or other guards.
 rule:
   kind: if_statement
   all:
@@ -31,32 +31,71 @@ rule:
               - pattern: '!$V || $X'
               - pattern: '$V == NULL || $X'
     - not:
-        follows:
-          stopBy: end
-          kind: if_statement
-          all:
-            - not:
-                precedes:
-                  pattern: '$V = $B;'
-                  stopBy:
-                    kind: if_statement
-                    has:
-                      field: condition
+        any:
+          - all:
+              - follows:
+                  stopBy: end
+                  kind: if_statement
+                  all:
+                    - has:
+                        field: condition
+                        has:
+                          any:
+                            - pattern: '!$V'
+                            - pattern: '$V == NULL'
+                    - has:
+                        field: consequence
+                        any:
+                          - kind: return_statement
+                          - has:
+                              kind: return_statement
+              - not:
+                  follows:
+                    stopBy: end
+                    pattern: '$V = $B;'
+                    follows:
+                      stopBy: end
+                      kind: if_statement
                       has:
-                        stopBy: end
-                        pattern: '$V->$F'
-            - has:
-                field: condition
-                has:
-                  any:
-                    - pattern: '!$V'
-                    - pattern: '$V == NULL'
-            - has:
-                field: consequence
-                any:
-                  - kind: return_statement
-                  - has:
-                      kind: return_statement
+                        field: condition
+                        has:
+                          any:
+                            - pattern: '!$V'
+                            - pattern: '$V == NULL'
+          - all:
+              - follows:
+                  stopBy: end
+                  kind: if_statement
+                  all:
+                    - has:
+                        field: condition
+                        has:
+                          any:
+                            - pattern: '!$V'
+                            - pattern: '$V == NULL'
+                    - has:
+                        field: consequence
+                        any:
+                          - pattern: 'goto $L;'
+                          - has:
+                              stopBy: end
+                              pattern: 'goto $L;'
+              - precedes:
+                  stopBy: end
+                  pattern: '$L: $S'
+              - not:
+                  follows:
+                    stopBy: end
+                    pattern: '$V = $B;'
+                    follows:
+                      stopBy: end
+                      kind: if_statement
+                      has:
+                        field: condition
+                        has:
+                          any:
+                            - pattern: '!$V'
+                            - pattern: '$V == NULL'
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0

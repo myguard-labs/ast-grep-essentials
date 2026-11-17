@@ -31,6 +31,13 @@ valid:
         if (pinit) { return pinit(ctx); }
         return 1;
     }
+  - |-
+    static int (*pinit)(EVP_PKEY_CTX *);
+    static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) {
+        EVP_PKEY_meth_get_paramgen(base, &pinit, NULL);
+        if (ok && pinit) { return pinit(ctx); }
+        return 1;
+    }
 invalid:
   - |-
     static int (*pinit)(EVP_PKEY_CTX *);
@@ -59,5 +66,12 @@ invalid:
     static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) {
         EVP_PKEY_meth_get_paramgen(base, &pinit, NULL);
         if (pinit == NULL) { return pinit(ctx); }
+        return 1;
+    }
+  - |-
+    static int (*pinit)(EVP_PKEY_CTX *);
+    static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) {
+        EVP_PKEY_meth_get_paramgen(base, &pinit, NULL);
+        if (ok || pinit) { return pinit(ctx); }
         return 1;
     }

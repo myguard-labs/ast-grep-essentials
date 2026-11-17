@@ -5,6 +5,7 @@ valid:
   - 'ZVAL_STRING(retval, "literal", 1);'
   - 'void f(zval *retval) { ZVAL_STRING(retval, MyG(error_msg) ? MyG(error_msg) : "", 1); }'
   - 'void f(zval *retval) { if (!MyG(error_msg)) { return; } ZVAL_STRING(retval, MyG(error_msg), 1); }'
+  - 'void f(zval *retval) { if (!MyG(error_msg)) { return; } MyG(other) = NULL; ZVAL_STRING(retval, MyG(error_msg), 1); if (x) { MyG(error_msg) = NULL; } }'
 invalid:
   - 'ZVAL_STRING(retval, MyG(error_msg), 1);'
   - 'void f(zval *retval) { ZVAL_STRING(retval, MyG(error_msg) /* c */, 1); }'
@@ -13,3 +14,4 @@ invalid:
   - 'void f(zval *retval) { if (!MyG(other_msg)) { return; } ZVAL_STRING(retval, MyG(error_msg), 1); }'
   - 'void f(zval *retval) { if (!MyG(error_msg)) { log_it(); } ZVAL_STRING(retval, MyG(error_msg), 1); }'
   - 'void f(zval *retval) { if (!MyG(error_msg)) { if (x) { return; } } ZVAL_STRING(retval, MyG(error_msg), 1); }'
+  - 'void f(zval *retval) { if (!MyG(error_msg)) { return; } MyG(error_msg) = NULL; ZVAL_STRING(retval, MyG(error_msg), 1); }'
