@@ -22,47 +22,49 @@ rule:
         stopBy: end
         not:
           has:
-            stopBy: end
-            all:
-              - any:
-                  - pattern: 'isset( $C[$K] )'
-                  - pattern: '! empty( $C[$K] )'
-              - not:
-                  inside:
-                    stopBy: end
-                    kind: binary_expression
-                    has:
-                      field: left
-                      any:
-                        - pattern: '''publish'' == $C[$K]'
-                        - has:
-                            stopBy: end
-                            pattern: '''publish'' == $C[$K]'
-              - any:
-                  - all:
-                      - not:
-                          inside:
+            field: condition
+            has:
+              stopBy: end
+              all:
+                - any:
+                    - pattern: 'isset( $C[$K] )'
+                    - pattern: '! empty( $C[$K] )'
+                - not:
+                    inside:
+                      stopBy: end
+                      kind: binary_expression
+                      has:
+                        field: left
+                        any:
+                          - pattern: '''publish'' == $C[$K]'
+                          - has:
+                              stopBy: end
+                              pattern: '''publish'' == $C[$K]'
+                - any:
+                    - all:
+                        - not:
+                            inside:
+                              stopBy: end
+                              kind: unary_op_expression
+                              regex: '^!'
+                        - not:
+                            inside:
+                              stopBy: end
+                              kind: binary_expression
+                              has:
+                                field: operator
+                                regex: '^(\|\||or)$'
+                    - all:
+                        - inside:
                             stopBy: end
                             kind: unary_op_expression
                             regex: '^!'
-                      - not:
-                          inside:
+                        - inside:
                             stopBy: end
                             kind: binary_expression
                             has:
                               field: operator
                               regex: '^(\|\||or)$'
-                  - all:
-                      - inside:
-                          stopBy: end
-                          kind: unary_op_expression
-                          regex: '^!'
-                      - inside:
-                          stopBy: end
-                          kind: binary_expression
-                          has:
-                            field: operator
-                            regex: '^(\|\||or)$'
     - not:
         inside:
           kind: if_statement
