@@ -1,5 +1,11 @@
 id: php-preg-match-unquoted-concat
 valid:
   - '<?php preg_match(''#^/*'' . preg_quote($name, ''#'') . ''#'', $s);'
+  - '<?php preg_match(''#^/foo$#'', $s);'
+  - '<?php preg_match(''#^'' . PATTERN_BODY . ''$#'', $s);'
+  - '<?php preg_match(''#^'' . self::BODY . ''$#'', $s);'
 invalid:
   - '<?php preg_match(''#^/*'' . $name . ''#'', $s);'
+  - '<?php preg_match(''#^'' . $a . ''/'' . $b . ''$#'', $s);'
+  - '<?php preg_match(''#^'' . $_GET[''q''] . ''#i'', $s);'
+  - '<?php preg_match(''#^'' . implode(''|'', $names) . ''#'', $s);'
