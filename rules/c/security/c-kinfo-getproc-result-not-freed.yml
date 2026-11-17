@@ -14,8 +14,17 @@ rule:
     - pattern: '$T *$P = kinfo_getproc($$$ARGS);'
     - not:
         precedes:
-          pattern: 'free($P);'
           stopBy: end
+          any:
+            - pattern: 'free($P);'
+            - pattern: 'return $P;'
+            - has:
+                stopBy: end
+                any:
+                  - pattern:
+                      context: 'void f(void) { free($P); }'
+                      selector: call_expression
+                  - pattern: 'return $P;'
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
@@ -27,5 +36,3 @@ metadata:
   cwe: 'CWE-401'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/401.html'
   taxonomy_cited_keys: 'cwe'
-  todo_cases:
-    - "FP: a free() nested in a branch ('if (kp) { free(kp); }') or a returned/transferred result ('return kp;') is reported because only sibling free() statements count"

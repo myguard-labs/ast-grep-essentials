@@ -8,8 +8,9 @@ message: >-
   call.
 note: >-
   Syntactic only; matches a same-block later call mentioning the variable
-  name, without checking for intervening initialization, dataflow, or
-  shadowing.
+  name, without dataflow or shadowing. A later sibling memset/bzero/
+  explicit_bzero or getsockname/getpeername/accept/recvfrom call taking
+  &variable counts as initialization.
 rule:
   all:
     - pattern: 'struct $T $V;'
@@ -24,9 +25,22 @@ rule:
           has:
             pattern: '$V'
             stopBy: end
+    - not:
+        precedes:
+          stopBy: end
+          kind: expression_statement
+          has:
+            kind: call_expression
+            all:
+              - has:
+                  field: function
+                  regex: '^(memset|bzero|explicit_bzero|getsockname|getpeername|accept|recvfrom)$'
+              - has:
+                  pattern: '&$V'
+                  stopBy: end
 constraints:
   T:
-    regex: '^sockaddr(_in6)?$'
+    regex: '^sockaddr(_in6?)?$'
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
@@ -39,5 +53,5 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/457.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - "FN: struct sockaddr_in (IPv4) and struct sockaddr_un locals are not matched; the constraint accepts only sockaddr and sockaddr_in6"
-    - "FP: 'struct sockaddr sa; memset(&sa, 0, sizeof sa); ...' or an output-parameter call such as getsockname(fd, &sa, &len) counts as a use of an uninitialised local"
+    - "FN: struct sockaddr_un and struct sockaddr_storage locals are not matched; the constraint accepts only sockaddr, sockaddr_in and sockaddr_in6"
+    - "FP: a memset/bzero/getsockname-style initialiser nested in a branch (if (x) { memset(&sa, 0, sizeof sa); } connect(...)) is not a sibling statement and is still reported; the initialiser is also accepted anywhere after the declaration, not only before the use"
