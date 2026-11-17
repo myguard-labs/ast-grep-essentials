@@ -13,6 +13,10 @@ note: >-
 rule:
   pattern: '$FN($$$ARGS, (apply_func_arg_t) $CB, $$$REST)'
 metadata:
+  todo_cases:
+    - 'A cast as the last argument with no argument after it, zend_hash_apply_with_argument(h, (apply_func_arg_t) cb);, is not reported: the pattern needs an argument after the cast.'
+    - 'A cast of an address-of callback, (apply_func_arg_t)&cb, is not reported: it parses as a bitwise-and, not a cast.'
+    - 'zend_hash_apply(h, (apply_func_t) cb) with the sibling cast type is not reported.'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

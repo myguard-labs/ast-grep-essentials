@@ -3,7 +3,52 @@ valid:
   - >-
     int f(int a) { int need = 0; int out = 0; need = a; if (need) { out = a; }
     return out; }
+  - |-
+    int f(int a) {
+        int need = 0;
+        int out = 0;
+        if (a > 0) { need = 1; }
+        if (need) { out = a; }
+        return out;
+    }
+  - |-
+    int f(int a) {
+        int need = 0;
+        int out = 0;
+        if (a) { need = a; out = 1; }
+        if (need) { out += a; }
+        return out;
+    }
+  - |-
+    int f(int n, int a) {
+        int need = 0;
+        int out = 0;
+        for (int i = 0; i < n; i++) { need = 1; }
+        if (need) { out = a; }
+        return out;
+    }
 invalid:
   - >-
     int f(int a) { int need = 0; int out = 0; if (need) { out = a; } return out;
+    }
+  - |-
+    int f(int a) {
+        int need = 0;
+        int out = 0;
+        if (need) out = a;
+        return out;
+    }
+  - |-
+    int f(int a) {
+        int need = 0;
+        int out = 0;
+        if (need) { out = a; } else { out = 1; }
+        return out;
+    }
+  - |-
+    int f(int a) {
+        int need = 0;
+        int out = 0;
+        for (;;) { if (need) { out = a; break; } break; }
+        return out;
     }

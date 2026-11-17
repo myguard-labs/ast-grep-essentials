@@ -1,10 +1,26 @@
 id: c-hash-apply-function-pointer-cast
 snapshots:
-  ? |-
-    static int cb(module_t *m, void *arg) { return 0; }
-    void f(HashTable *h) { zend_hash_apply_with_argument(h, (apply_func_arg_t) cb, NULL); }
-  : labels:
+  "static int cb(module_t *m, void *arg) { return 0; }\nvoid f(HashTable *h) { zend_hash_apply_with_argument(h, (apply_func_arg_t) cb, NULL); }":
+    labels:
     - source: zend_hash_apply_with_argument(h, (apply_func_arg_t) cb, NULL)
       style: primary
       start: 75
       end: 136
+  "static int cb(module_t *m, void *arg) { return 0; }\nvoid f(zval *zv) {\n    zend_hash_apply_with_argument(Z_ARRVAL_P(zv), (apply_func_arg_t) cb, ctx);\n}":
+    labels:
+    - source: zend_hash_apply_with_argument(Z_ARRVAL_P(zv), (apply_func_arg_t) cb, ctx)
+      style: primary
+      start: 75
+      end: 148
+  "static int cb(zval *e, void *arg) { return 0; }\nvoid f(HashTable *h) {\n    zend_hash_apply_with_argument(h, (apply_func_arg_t) cb, &state);\n}":
+    labels:
+    - source: zend_hash_apply_with_argument(h, (apply_func_arg_t) cb, &state)
+      style: primary
+      start: 75
+      end: 138
+  "static int cb(zval *e, void *arg) { return 0; }\nvoid f(HashTable *h, int flag) {\n    zend_hash_apply_with_argument(h, (apply_func_arg_t) cb, NULL, flag);\n}":
+    labels:
+    - source: zend_hash_apply_with_argument(h, (apply_func_arg_t) cb, NULL, flag)
+      style: primary
+      start: 85
+      end: 152

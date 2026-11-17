@@ -1,5 +1,17 @@
 id: c-hardcoded-dso-so-suffix
 valid:
   - '#define P_TEST_PATH "/../test/p_test" DSO_EXTENSION'
+  - |-
+    #define MOD_PATH "/usr/lib/mod_auth.sock"
+  - |-
+    #define MOD_PATH(n) "/usr/lib/" n DSO_EXTENSION
+  - |-
+    #define SOCK_PATH "/run/app/ctl.sock"
 invalid:
   - '#define P_TEST_PATH "/../test/p_test.so"'
+  - |-
+    #define MOD_PATH(x) "/usr/lib/" x ".so"
+  - |-
+    #define MOD_PATH "/usr/lib/" "mod" ".so"
+  - |-
+    #define SO_NAME "libfoo.so"

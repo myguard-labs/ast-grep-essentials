@@ -1,5 +1,58 @@
 id: c-hash-foreach-val-no-deref
 valid:
   - "ZEND_HASH_FOREACH_VAL(ht, v) {\n\tZVAL_DEREF(v);\n\tif (Z_TYPE_P(v) != IS_ARRAY) {\n\t\tcontinue;\n\t}\n} ZEND_HASH_FOREACH_END();"
+  - |-
+    ZEND_HASH_FOREACH_VAL(ht, v) {
+    	ZVAL_DEREF(v);
+    	switch (Z_TYPE_P(v)) {
+    		case IS_STRING:
+    			use(v);
+    			break;
+    		default:
+    			break;
+    	}
+    } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_VAL(ht, v) {
+    	zval *w = v;
+    	ZVAL_DEREF(w);
+    	if (Z_TYPE_P(w) == IS_STRING) {
+    		use(w);
+    	}
+    } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_VAL(ht, v) {
+    	ZVAL_DEREF(v);
+    	if (Z_TYPE_P(v) == IS_STRING) {
+    		use(v);
+    	} else if (Z_TYPE_P(v) == IS_LONG) {
+    		count++;
+    	}
+    } ZEND_HASH_FOREACH_END();
 invalid:
   - "ZEND_HASH_FOREACH_VAL(ht, v) {\n\tif (Z_TYPE_P(v) != IS_ARRAY) {\n\t\tcontinue;\n\t}\n} ZEND_HASH_FOREACH_END();"
+  - |-
+    ZEND_HASH_FOREACH_VAL(ht, v) {
+    	switch (Z_TYPE_P(v)) {
+    		case IS_STRING:
+    			use(v);
+    			break;
+    		default:
+    			break;
+    	}
+    } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_VAL(ht, v) {
+    	if (Z_TYPE_P(v) == IS_STRING) {
+    		use(v);
+    	} else if (Z_TYPE_P(v) == IS_LONG) {
+    		count++;
+    	}
+    } ZEND_HASH_FOREACH_END();
+  - |-
+    ZEND_HASH_FOREACH_VAL(ht, v) {
+    	use(v);
+    	if (Z_TYPE_P(v) == IS_ARRAY) {
+    		depth++;
+    	}
+    } ZEND_HASH_FOREACH_END();
