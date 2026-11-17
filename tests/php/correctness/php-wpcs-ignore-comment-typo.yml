@@ -1,5 +1,11 @@
 id: php-wpcs-ignore-comment-typo
 valid:
   - "function f() {\n\t// phpcs:ignore WordPress.Security.NonceVerification\n\t$x = $_GET['a'];\n}"
+  - "// phpcs:disable WordPress.Security\n$x = 1;"
+  - "// phpcs:enable\n$x = 1;"
+  - "// phpcs:ignore Generic.Commenting.Todo\n$x = 1;"
 invalid:
   - "function f() {\n\t// wpcs:ignore WordPress.Security.NonceVerification\n\t$x = $_GET['a'];\n}"
+  - "//  wpcs:ignore WordPress.DB\n$x = 1;"
+  - "//\twpcs:ignore WordPress.DB.DirectDatabaseQuery\n$x = 1;"
+  - '$x = 1; // wpcs:ignore WordPress.DB'
