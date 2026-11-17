@@ -4,7 +4,7 @@ valid:
     int f(void *ctx) { struct buf *ret = alloc_out(); if (ret != NULL) {
     ret->context = ctx; } else { release(ctx); } return 0; }
   - 'int f(void *ctx) { struct buf *ret = alloc_out(); if (ret != NULL) { ret->context = ctx; } else { free(ctx); } return 0; }'
-  - 'int f(void *ctx) { struct buf *ret = alloc_out(); if (ret != NULL) { ret->name = ctx; } return 0; }'
+  - 'int f(void *ctx) { struct buf *ret = alloc_out(); if (ret == NULL) { ctx_put(ctx); return -1; } else { ret->context = ctx; } return 0; }'
   - 'int f(void *ctx) { struct buf *ret = alloc_out(); if (ret == NULL) { release(ctx); return -1; } ret->context = ctx; return 0; }'
 invalid:
   - >-
