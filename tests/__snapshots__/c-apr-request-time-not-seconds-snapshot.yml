@@ -1,8 +1,26 @@
 id: c-apr-request-time-not-seconds
 snapshots:
-  static time_t get_req_time(struct req *r) { return r->request_time; }:
+  "static time_t g(request_rec *rr) { if (rr) { return rr->request_time; } return 0; }":
+    labels:
+    - source: return rr->request_time;
+      style: primary
+      start: 45
+      end: 69
+  "static time_t g(struct req *r) { return c->r->request_time; }":
+    labels:
+    - source: return c->r->request_time;
+      style: primary
+      start: 33
+      end: 59
+  "static time_t get_req_time(struct req *r) { return r->request_time; }":
     labels:
     - source: return r->request_time;
       style: primary
       start: 44
       end: 67
+  "time_t g(request_rec *r) { return r->request_time; }":
+    labels:
+    - source: return r->request_time;
+      style: primary
+      start: 27
+      end: 50

@@ -1,5 +1,13 @@
 id: c-apr-sleep-absolute-time-delta
 valid:
   - 'apr_sleep(apr_time_from_sec(1) - (apr_time_now() % APR_USEC_PER_SEC));'
+  - 'void f(void) { apr_sleep(apr_time_from_msec(100)); }'
+  - 'void f(void) { apr_sleep(apr_time_from_sec(2) - elapsed); }'
+  - 'void f(apr_time_t t) { apr_sleep(apr_time_from_sec(1) - (t % APR_USEC_PER_SEC)); }'
+  - 'void f(void) { apr_sleep(apr_time_now() % APR_USEC_PER_SEC); }'
 invalid:
   - 'apr_sleep(apr_time_from_sec(1) - apr_time_now());'
+  - 'void f(void) { apr_sleep(APR_USEC_PER_SEC - apr_time_now()); }'
+  - 'void f(void) { apr_sleep(timeout - apr_time_now()); }'
+  - 'void f(void) { apr_sleep(apr_time_from_msec(500) - apr_time_now()); }'
+  - 'void f(void) { apr_sleep((interval) - apr_time_now()); }'

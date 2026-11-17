@@ -3,7 +3,15 @@ valid:
   - >-
     apr_status_t rv; void f(void) { rv = apr_thread_pool_pop(); if
     (APR_STATUS_IS_EOF(rv)) { return; } }
+  - 'void f(void) { if (rv == APR_SUCCESS) { return; } }'
+  - 'void f(void) { if (!APR_STATUS_IS_EINTR(rv)) { return; } }'
+  - 'void f(void) { if (rv == APR_EGENERAL) { return; } }'
+  - 'void f(void) { while (APR_STATUS_IS_EINTR(rv = apr_poll(fds, n, &c, t))) { } }'
 invalid:
   - >-
     apr_status_t rv; void f(void) { rv = apr_thread_pool_pop(); if (rv ==
     APR_EOF) { return; } }
+  - 'void f(void) { if (rv != APR_EOF) { return; } }'
+  - 'void f(void) { if (rv == APR_EINTR) { return; } }'
+  - 'void f(void) { while ((rv = apr_file_read(fd, buf, &len)) == APR_EOF) { } }'
+  - 'void f(void) { if (s->rv != APR_EINTR) { retry(); } }'

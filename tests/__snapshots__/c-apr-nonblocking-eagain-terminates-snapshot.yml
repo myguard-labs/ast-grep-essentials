@@ -1,5 +1,25 @@
 id: c-apr-nonblocking-eagain-terminates
 snapshots:
+  "apr_status_t f(void) { apr_status_t rv; rv = ap_get_brigade(f->next, bb, AP_MODE_READBYTES, APR_NONBLOCK_READ, len); if (rv != APR_SUCCESS) { return rv; } return APR_SUCCESS; }":
+    labels:
+    - source: if (rv != APR_SUCCESS) { return rv; }
+      style: primary
+      start: 117
+      end: 154
+    - source: rv = ap_get_brigade(f->next, bb, AP_MODE_READBYTES, APR_NONBLOCK_READ, len);
+      style: secondary
+      start: 40
+      end: 116
+  "apr_status_t f(void) { rv = ap_get_brigade(f->next, bb, AP_MODE_GETLINE, APR_NONBLOCK_READ, 0); if (rv != APR_SUCCESS) { return rv; } use(bb); return APR_SUCCESS; }":
+    labels:
+    - source: if (rv != APR_SUCCESS) { return rv; }
+      style: primary
+      start: 96
+      end: 133
+    - source: rv = ap_get_brigade(f->next, bb, AP_MODE_GETLINE, APR_NONBLOCK_READ, 0);
+      style: secondary
+      start: 23
+      end: 95
   "rv = ap_get_brigade(f->next, bb, mode, block, n); if (rv != APR_SUCCESS) { return rv; }":
     labels:
     - source: if (rv != APR_SUCCESS) { return rv; }
@@ -10,3 +30,13 @@ snapshots:
       style: secondary
       start: 0
       end: 49
+  "static int h(ap_filter_t *f) { int x = 1; rv = ap_get_brigade(f, bb, m, b, n); if (rv != APR_SUCCESS) { return rv; } }":
+    labels:
+    - source: if (rv != APR_SUCCESS) { return rv; }
+      style: primary
+      start: 79
+      end: 116
+    - source: rv = ap_get_brigade(f, bb, m, b, n);
+      style: secondary
+      start: 42
+      end: 78
