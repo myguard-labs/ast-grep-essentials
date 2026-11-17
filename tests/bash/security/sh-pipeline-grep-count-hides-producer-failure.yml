@@ -1,5 +1,12 @@
 id: sh-pipeline-grep-count-hides-producer-failure
 valid:
   - 'exported=$(grep -c '' sym_'' syms.txt || true)'
+  - 'n=$(ls | grep -c x)'
+  - 'n=$(ls | grep -v x || true)'
+  - 'n=$(grep -c x file || echo 0)'
 invalid:
   - 'exported=$(nm -D --defined-only lib.so | grep -c '' sym_'' || true)'
+  - 'n=$(ls /srv | grep -c ''.log'' || true)'
+  - 'n=$(find . -name x | grep -c . || true)'
+  - 'echo "$(ps aux | grep -c nginx || true)"'
+  - 'n=$(ls | grep -c x || true) && echo ok'

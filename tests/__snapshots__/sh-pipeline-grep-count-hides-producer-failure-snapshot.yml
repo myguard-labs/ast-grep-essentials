@@ -1,8 +1,32 @@
 id: sh-pipeline-grep-count-hides-producer-failure
 snapshots:
+  echo "$(ps aux | grep -c nginx || true)":
+    labels:
+    - source: $(ps aux | grep -c nginx || true)
+      style: primary
+      start: 6
+      end: 39
   exported=$(nm -D --defined-only lib.so | grep -c ' sym_' || true):
     labels:
     - source: $(nm -D --defined-only lib.so | grep -c ' sym_' || true)
       style: primary
       start: 9
       end: 65
+  n=$(find . -name x | grep -c . || true):
+    labels:
+    - source: $(find . -name x | grep -c . || true)
+      style: primary
+      start: 2
+      end: 39
+  n=$(ls /srv | grep -c '.log' || true):
+    labels:
+    - source: $(ls /srv | grep -c '.log' || true)
+      style: primary
+      start: 2
+      end: 37
+  n=$(ls | grep -c x || true) && echo ok:
+    labels:
+    - source: $(ls | grep -c x || true)
+      style: primary
+      start: 2
+      end: 27

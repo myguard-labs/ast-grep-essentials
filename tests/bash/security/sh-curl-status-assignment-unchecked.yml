@@ -1,5 +1,11 @@
 id: sh-curl-status-assignment-unchecked
 valid:
   - 'size=$(curl -s -o /dev/null -w "%{size_download}" "$url") || return 1'
+  - 'size=$(curl -s "$url") && echo ok'
+  - 'size=$(date +%s)'
+  - 'size=$(curl -s "$url" || echo 0)'
 invalid:
   - 'size=$(curl -s -o /dev/null -w "%{size_download}" "$url")'
+  - 'body=$(curl -fsS "$url")'
+  - 'export body=$(curl -s "$url")'
+  - 'body=$(cd /tmp; curl -s "$url")'

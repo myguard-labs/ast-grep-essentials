@@ -1,5 +1,12 @@
 id: sh-jq-program-built-from-variable
 valid:
   - 'jq -e "getpath([\"a\"]) != null" "$manifest"'
+  - 'jq --arg k "$key" ''.[$k]'' file.json'
+  - 'jq -r ".name" "$file"'
+  - 'jq -e ''.a == $v'' --argjson v "$n" file'
 invalid:
   - 'jq -e "getpath($jq_array) != null" "$manifest"'
+  - 'jq -r ".${field}" "$file"'
+  - 'jq ".items[] | select(.id == $id)" data.json'
+  - 'jq --arg a 1 ".$key" file'
+  - 'echo x | jq "select(.a == ${v})"'

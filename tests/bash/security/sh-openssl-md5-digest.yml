@@ -1,5 +1,12 @@
 id: sh-openssl-md5-digest
 valid:
   - openssl req -new -sha256 -newkey 1024 -keyout key.pem -out req.pem -nodes
+  - 'openssl dgst -sha256 file'
+  - 'openssl req -new -sha384 -key k.pem'
+  - 'openssl dgst -sha512 -out out.txt file'
 invalid:
   - openssl req -new -md5 -newkey 1024 -keyout key.pem -out req.pem -nodes
+  - 'openssl dgst -md5 file.bin'
+  - 'openssl dgst -md5 -hex "$file"'
+  - 'openssl x509 -fingerprint -md5 -noout -in cert.pem'
+  - 'openssl dgst -md5 -binary file | base64'

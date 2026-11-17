@@ -1,5 +1,11 @@
 id: sh-curl-exit-masked-by-pipe
 valid:
   - 'value=$(curl -s "$url")'
+  - 'value=$(curl -fsS -o out.txt "$url" && jq -r .name out.txt)'
+  - 'value=$(curl -s "$url") || exit 1'
+  - 'value=$(grep x file | curl -s -d @- "$url")'
 invalid:
   - 'value=$(curl -s "$url" | grep -i ''^x-test:'')'
+  - 'value=$(curl -fsS "$url" | jq -r .name)'
+  - 'echo "$(curl -s "$url" | head -n1)"'
+  - 'value=$(curl "$url" | wc -c)'

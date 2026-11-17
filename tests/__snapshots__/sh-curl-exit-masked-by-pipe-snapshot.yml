@@ -1,6 +1,24 @@
 id: sh-curl-exit-masked-by-pipe
 snapshots:
-  value=$(curl -s "$url" | grep -i '^x-test:'):
+  echo "$(curl -s "$url" | head -n1)":
+    labels:
+    - source: $(curl -s "$url" | head -n1)
+      style: primary
+      start: 6
+      end: 34
+  value=$(curl "$url" | wc -c):
+    labels:
+    - source: $(curl "$url" | wc -c)
+      style: primary
+      start: 6
+      end: 28
+  value=$(curl -fsS "$url" | jq -r .name):
+    labels:
+    - source: $(curl -fsS "$url" | jq -r .name)
+      style: primary
+      start: 6
+      end: 39
+  "value=$(curl -s \"$url\" | grep -i '^x-test:')":
     labels:
     - source: $(curl -s "$url" | grep -i '^x-test:')
       style: primary

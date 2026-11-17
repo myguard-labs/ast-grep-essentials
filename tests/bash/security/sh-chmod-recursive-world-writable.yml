@@ -1,5 +1,12 @@
 id: sh-chmod-recursive-world-writable
 valid:
   - chmod 1777 /tmp
+  - 'chmod -R 755 /srv'
+  - 'chmod -R 1775 /tmp'
+  - 'chmod -R u=rwX,go=rX /srv'
 invalid:
   - chmod -R 1777 /tmp
+  - 'chmod -R 1777 "$dir"'
+  - 'chmod -R 1777 /var/tmp /srv/share'
+  - 'if true; then chmod -R 1777 /tmp; fi'
+  - 'chmod -R 1777 /tmp || exit 1'
