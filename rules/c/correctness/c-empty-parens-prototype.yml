@@ -8,10 +8,25 @@ message: >-
   arguments are unspecified and prototype checks are disabled.
 note: >-
   Syntactic match only on a C function declaration whose parameter list is
-  literally empty, written as f(). It does not verify call sites or resolve
-  declarations across files.
+  literally empty, written as name(), with any return type, pointer return or
+  storage class, at file or block scope. Function definitions, function-pointer
+  declarators and call sites are not reported, and declarations are not
+  resolved across files.
 rule:
-  pattern: 'int f();'
+  kind: declaration
+  has:
+    kind: function_declarator
+    stopBy:
+      not:
+        kind: pointer_declarator
+    all:
+      - has:
+          field: declarator
+          kind: identifier
+      - has:
+          field: parameters
+          kind: parameter_list
+          regex: '^\(\s*\)$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -21,4 +36,4 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FN: the pattern is the literal `int f();`, so `extern int f();`, `static int f();`, `int g();` and the definition `int f() { return 0; }` are not reported.'
+    - 'FN: a K&R function definition `int f() { return 0; }` is not reported (only declarations are matched).'
