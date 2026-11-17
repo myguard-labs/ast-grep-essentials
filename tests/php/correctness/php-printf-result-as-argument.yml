@@ -3,7 +3,13 @@ valid:
   - |-
     <?php
     wp_die( sprintf( '%s', $msg ) );
+  - '<?php wp_die( sprintf( ''%s'', $msg ), ''Error'' );'
+  - '<?php wp_die( print_r( $msg, true ) );'
+  - '<?php printf( ''%s'', wp_kses_post( $msg ) );'
 invalid:
   - |-
     <?php
     wp_die( printf( '%s', $msg ) );
+  - '<?php error_log( printf( ''%s'', $msg ) );'
+  - '<?php trigger_error( printf( ''%s'', $msg ) );'
+  - '<?php \wp_die( printf( ''%s'', $msg ) );'

@@ -1,5 +1,11 @@
 id: php-preg-required-attr-char
 valid:
   - '<?php preg_match(''|<guid.*?>(.*?)</guid>|is'', $post, $guid); ?>'
+  - '<?php preg_match(''|<guid[^>]*>(.*?)</guid>|is'', $post, $guid); ?>'
+  - '<?php preg_match(''|<guid>(.*?)</guid>|is'', $post, $guid); ?>'
+  - '<?php preg_match(''|<guid.?>(.*?)</guid>|is'', $post, $guid); ?>'
 invalid:
   - '<?php preg_match(''|<guid.+?>(.*?)</guid>|is'', $post, $guid); ?>'
+  - '<?php preg_match(''|<guid.+?>(.*?)</guid>|is'', $this->body, $guid); ?>'
+  - '<?php if (preg_match(''|<guid.+?>(.*?)</guid>|is'', $post, $guid)) { echo $guid[1]; } ?>'
+  - '<?php $found = preg_match(''|<guid.+?>(.*?)</guid>|is'', $post, $guid) === 1; ?>'
