@@ -9,6 +9,10 @@ valid:
   - "function f( $c ) { if ( isset( $c['post_status'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
   - "function f( $c ) { if ( ! empty( $c['post_status'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
   - "function f( $c, $x ) { if ( isset( $c['post_status'] ) && ( $x || $c ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
+  - "function f( $c, $x ) { if ( ! isset( $c['post_status'] ) || 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c, $x ) { if ( ! ( ! empty( $c['post_status'] ) ) || 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c, $x ) { if ( isset( $c['post_status'] ) and 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c, $x ) { if ( isset( $c['post_status'] ) ) if ( 'publish' == $c['post_status'] ) { return 1; } }"
 invalid:
   - >-
     function f( $c ) { if ( 'publish' == $c['post_status'] ) { return
@@ -24,3 +28,10 @@ invalid:
   - "function f( $c ) { if ( isset( $c['ID'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
   - "function f( $c, $d ) { if ( isset( $d['post_status'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
   - "function f( $c, $x ) { if ( isset( $c['post_status'] ) || $x ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
+  - "function f( $c, $x ) { if ( ! empty( $c['post_status'] ) || 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c, $x ) { if ( ! ( ! empty( $c['post_status'] ) ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
+  - "function f( $c, $x ) { if ( ! ( isset( $c['post_status'] ) ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
+  - "function f( $c, $x ) { if ( isset( $c['post_status'] ) || 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c, $x ) { if ( ! isset( $c['post_status'] ) && 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c, $x ) { if ( ! ( ! empty( $c['post_status'] ) ) && 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c, $x ) { if ( 'publish' == $c['post_status'] && ! empty( $c['post_status'] ) ) { return 1; } }"
