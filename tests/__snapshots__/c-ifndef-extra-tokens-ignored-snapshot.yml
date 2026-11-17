@@ -1,5 +1,23 @@
 id: c-ifndef-extra-tokens-ignored
 snapshots:
+  "#ifdef FOO BAR\nint x;\n#endif":
+    labels:
+    - source: |-
+        #ifdef FOO BAR
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 28
+  "#ifndef FOO\t&& defined(BAR)\nint x;\n#endif":
+    labels:
+    - source: |-
+        #ifndef FOO	&& defined(BAR)
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 41
   "#ifndef FOO && defined(BAR)\nint x;\n#endif":
     labels:
     - source: |-
@@ -9,3 +27,12 @@ snapshots:
       style: primary
       start: 0
       end: 41
+  "#ifndef FOO || BAR\nint x;\n#endif":
+    labels:
+    - source: |-
+        #ifndef FOO || BAR
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 32

@@ -4,8 +4,37 @@ valid:
     #if !(WIN32||WINNT)
     #define X 1
     #endif
+  - |-
+    #ifndef FOO_H
+    #define FOO_H
+    int x;
+    #endif
+  - |-
+    #if !defined(A) && !defined(B)
+    int x;
+    #endif
+  - |-
+    #ifndef FOO // a || b
+    int x;
+    #endif
+  - |-
+    #ifndef FOO
+    int x = a || b;
+    #endif
 invalid:
   - |-
     #ifndef WIN32||WINNT
     #define X 1
+    #endif
+  - |-
+    #ifndef A && B
+    int x;
+    #endif
+  - |-
+    #  ifndef A || B
+    int x;
+    #endif
+  - |-
+    #ifndef A	&& B
+    int x;
     #endif

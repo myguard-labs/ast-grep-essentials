@@ -3,7 +3,37 @@ valid:
   - |-
     #ifdef PHP_WIN32
     #endif
+  - |-
+    #ifndef FOO
+    int x;
+    #endif
+  - |-
+    #ifdef A
+    int x = a && b;
+    #endif
+  - |-
+    #ifdef A
+    int x;
+    #else
+    int y = a || b;
+    #endif
+  - |-
+    #if defined(A) && defined(B)
+    int x;
+    #endif
 invalid:
   - |-
     #ifdef PHP_WIN32 && ZTS
+    #endif
+  - |-
+    #ifndef A || B
+    int x;
+    #endif
+  - |-
+    #ifdef A||B
+    int x;
+    #endif
+  - |-
+    #  ifdef A && B
+    int x;
     #endif

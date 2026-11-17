@@ -1,5 +1,22 @@
 id: c-implicit-int-static-function-definition
 valid:
   - 'static inline void f(int x) { (void)x; }'
+  - |-
+    static void f(void) { }
+  - |-
+    extern int f(int x) { return x; }
+  - |-
+    static inline int f(int x) { return x; }
+  - |-
+    static void
+    f(void)
+    {
+    }
 invalid:
   - 'static inline f(int x) { return x; }'
+  - |-
+    extern f(int x) { return x; }
+  - |-
+    static f(void) { return 0; }
+  - |-
+    inline static f(int x) { return x; }
