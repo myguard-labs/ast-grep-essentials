@@ -1,8 +1,32 @@
 id: php-ini-get-safe-mode-probe
 snapshots:
-  <?php if ( ini_get( 'safe_mode' ) ) { $flat = 1; }:
+  $s = ini_get('safe_mode');:
+    labels:
+    - source: ini_get('safe_mode')
+      style: primary
+      start: 5
+      end: 25
+  "<?php if ( ini_get( 'safe_mode' ) ) { $flat = 1; }":
     labels:
     - source: ini_get( 'safe_mode' )
       style: primary
       start: 11
       end: 33
+  "if ( ! ini_get( 'safe_mode' ) ) { $x = 1; }":
+    labels:
+    - source: ini_get( 'safe_mode' )
+      style: primary
+      start: 7
+      end: 29
+  "if ( ini_get('safe_mode') == 'On' ) { $x = 1; }":
+    labels:
+    - source: ini_get('safe_mode')
+      style: primary
+      start: 5
+      end: 25
+  "return ini_get( 'safe_mode' ) ? 1 : 0;":
+    labels:
+    - source: ini_get( 'safe_mode' )
+      style: primary
+      start: 7
+      end: 29

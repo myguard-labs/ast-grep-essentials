@@ -1,5 +1,13 @@
 id: php-ini-get-safe-mode-probe
 valid:
   - '<?php if ( ini_get( ''display_errors'' ) ) { $flat = 1; }'
+  - '$s = ini_get( ''open_basedir'' );'
+  - '$s = ini_get( ''max_execution_time'' );'
+  - '$s = ini_get( $dir );'
+  - '$s = ini_get( ''disable_functions'' );'
 invalid:
   - '<?php if ( ini_get( ''safe_mode'' ) ) { $flat = 1; }'
+  - '$s = ini_get(''safe_mode'');'
+  - 'if ( ini_get(''safe_mode'') == ''On'' ) { $x = 1; }'
+  - 'if ( ! ini_get( ''safe_mode'' ) ) { $x = 1; }'
+  - 'return ini_get( ''safe_mode'' ) ? 1 : 0;'

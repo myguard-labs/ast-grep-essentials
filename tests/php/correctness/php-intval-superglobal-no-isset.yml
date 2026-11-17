@@ -3,5 +3,13 @@ valid:
   - >-
     <?php $post_id = isset( $_REQUEST['post_id'] ) ? intval(
     $_REQUEST['post_id'] ) : 0;
+  - '$id = empty( $_POST["id"] ) ? 0 : intval( $_POST["id"] );'
+  - '$id = intval( $_GET["id"] ?? 0 );'
+  - '$id = ! empty( $_GET["id"] ) ? intval( $_GET["id"] ) : 0;'
+  - 'function f() { return isset( $_POST["n"] ) ? intval( $_POST["n"] ) : -1; }'
 invalid:
   - '<?php $post_id = intval( $_REQUEST[''post_id''] );'
+  - '$id = intval( $_POST[ "qty" ] );'
+  - '$id = intval( $_REQUEST[ $key ] );'
+  - 'if ( intval( $_POST["id"] ) > 0 ) { $x = 1; }'
+  - '$id = $ok ? intval( $_GET["id"] ) : 0;'
