@@ -3,7 +3,16 @@ valid:
   - >-
     function f( $obj, $a ) { if ( current_user_can( $obj->cap->create_posts ) )
     { $a[] = 'post-new.php'; } return $a; }
+  - |-
+    function f( $obj, $a ) { if ( current_user_can( $obj->cap->publish_posts ) ) { $a[] = 'post-new.php'; } return $a; }
+  - |-
+    function f( $pto, $a ) { if ( current_user_can( $pto->cap->edit_others_posts ) ) { $a[] = 'post-new.php'; } return $a; }
+
 invalid:
   - >-
     function f( $obj, $a ) { if ( current_user_can( $obj->cap->edit_posts ) ) {
     $a[] = 'post-new.php'; } return $a; }
+  - |-
+    function f( $post_type_object, $a ) { if ( current_user_can( $post_type_object->cap->edit_posts ) ) { $a[] = 'post-new.php'; } return $a; }
+  - |-
+    function f( $obj, $a ) { if ( current_user_can( $obj->cap->edit_posts ) ) { $a[] = 'post-new.php'; } else { $a = array(); } return $a; }

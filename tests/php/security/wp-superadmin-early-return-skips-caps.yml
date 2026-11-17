@@ -4,7 +4,21 @@ valid:
     function has_cap( $cap ) { if ( is_multisite() && is_super_admin() ) {
     return ! in_array( 'do_not_allow', map_meta_cap( $cap, 1 ), true ); } return
     map_meta_cap( $cap, 1 ); }
+  - |-
+    function has_cap( $cap ) { if ( is_multisite() && is_super_admin() ) { return false; } return map_meta_cap( $cap, 1 ); }
+  - |-
+    function has_cap( $cap ) { if ( is_multisite() && current_user_can( 'manage_network' ) ) { return map_meta_cap( $cap, 1 ); } return false; }
+
 invalid:
   - >-
     function has_cap( $cap ) { if ( is_multisite() && is_super_admin() ) {
     return true; } return map_meta_cap( $cap, 1 ); }
+  - |-
+    class C { public function has_cap( $cap ) {
+        if ( is_multisite() && is_super_admin() ) {
+            return true;
+        }
+        return map_meta_cap( $cap, 1 );
+    } }
+  - |-
+    add_filter( 'user_has_cap', function ( $caps ) { if ( is_multisite() && is_super_admin() ) { return true; } return $caps; } );

@@ -1,5 +1,14 @@
 id: wp-current-user-can-meta-cap-no-object
 valid:
   - '<?php if ( current_user_can( ''resume_plugin'', $plugin_file ) ) { echo ''x''; }'
+  - |-
+    <?php $ok = current_user_can( 'manage_options' );
+  - |-
+    <?php $ok = current_user_can( 'resume_plugin', 'hello.php' );
+
 invalid:
   - '<?php if ( current_user_can( ''resume_plugin'' ) ) { echo ''x''; }'
+  - |-
+    <?php $ok = ! current_user_can( 'resume_plugin' );
+  - |-
+    <?php if ( $x && current_user_can( 'resume_plugin' ) ) { echo 'x'; }

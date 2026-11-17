@@ -1,5 +1,14 @@
 id: php-foreach-request-no-array-cast
 valid:
   - '<?php foreach ( (array) $_POST[''author_in''] as $i => $name ) { echo $name; }'
+  - |-
+    <?php foreach ( $ids as $id ) { echo $id; }
+  - |-
+    <?php foreach ( array_map( 'intval', (array) $_POST['ids'] ) as $id ) { echo $id; }
+
 invalid:
   - '<?php foreach ( $_POST[''author_in''] as $i => $name ) { echo $name; }'
+  - |-
+    <?php foreach ( $_GET['tags'] as $t ) { echo $t; }
+  - |-
+    <?php foreach ( $_REQUEST['rows'] as $k => &$row ) { $row = 1; }
