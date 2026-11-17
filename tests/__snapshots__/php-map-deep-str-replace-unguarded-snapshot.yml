@@ -1,8 +1,10 @@
 id: php-map-deep-str-replace-unguarded
 snapshots:
-  <?php $v = map_deep( $v, static function ( $value ) { return str_replace( "\r\n", "\n", $value ); } );:
+  "<?php $v = map_deep( $v, static function ( $value ) { return str_replace( \"\\r\\n\", \"\\n\", $value ); } );":
     labels:
-    - source: map_deep( $v, static function ( $value ) { return str_replace( "\r\n", "\n", $value ); } )
+    - source: >-
+        map_deep( $v, static function ( $value ) { return str_replace( "\r\n", "\n",
+        $value ); } )
       style: primary
       start: 11
       end: 101
@@ -10,3 +12,37 @@ snapshots:
       style: secondary
       start: 61
       end: 96
+  "<?php $v = map_deep($v, fn($value) => str_replace('a', 'b', $value));":
+    labels:
+    - source: map_deep($v, fn($value) => str_replace('a', 'b', $value))
+      style: primary
+      start: 11
+      end: 68
+    - source: str_replace('a', 'b', $value)
+      style: secondary
+      start: 38
+      end: 67
+  "<?php $v = map_deep($v, function ($value) { $value = str_replace(\"\\r\", '', $value); return trim($value); });":
+    labels:
+    - source: >-
+        map_deep($v, function ($value) { $value = str_replace("\r", '', $value); return
+        trim($value); })
+      style: primary
+      start: 11
+      end: 107
+    - source: str_replace("\r", '', $value)
+      style: secondary
+      start: 53
+      end: 82
+  "<?php $v = map_deep($v, static function ($value) use ($map) { return str_replace(array_keys($map), array_values($map), $value); });":
+    labels:
+    - source: >-
+        map_deep($v, static function ($value) use ($map) { return
+        str_replace(array_keys($map), array_values($map), $value); })
+      style: primary
+      start: 11
+      end: 130
+    - source: str_replace(array_keys($map), array_values($map), $value)
+      style: secondary
+      start: 69
+      end: 126

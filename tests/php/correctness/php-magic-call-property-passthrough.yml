@@ -3,7 +3,13 @@ valid:
   - >-
     <?php class A { public function __call( $callee, $args ) { return
     $this->handlers[ $callee ]; } } ?>
+  - '<?php class A { public function __call($m, $args) { return $this->proxy->$m(...$args); } } ?>'
+  - '<?php class A { public function __call($m, $args) { return $this->handlers[$m] ?? null; } } ?>'
+  - '<?php class A { public function get($name) { return $this->$name; } } ?>'
 invalid:
   - >-
     <?php class A { public function __call( $callee, $args ) { return
     $this->$callee; } } ?>
+  - '<?php class A { public function __call($method, $args) { return $this->$method; } } ?>'
+  - '<?php class A { public function __call($name, $args) { log_call($name); return $this->$name; } } ?>'
+  - '<?php class A { public function __call($name, $args) { if ($args) { return $this->$name; } return null; } } ?>'

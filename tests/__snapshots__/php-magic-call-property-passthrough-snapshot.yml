@@ -1,6 +1,6 @@
 id: php-magic-call-property-passthrough
 snapshots:
-  <?php class A { public function __call( $callee, $args ) { return $this->$callee; } } ?>:
+  "<?php class A { public function __call( $callee, $args ) { return $this->$callee; } } ?>":
     labels:
     - source: return $this->$callee;
       style: primary
@@ -10,3 +10,35 @@ snapshots:
       style: secondary
       start: 16
       end: 83
+  "<?php class A { public function __call($method, $args) { return $this->$method; } } ?>":
+    labels:
+    - source: return $this->$method;
+      style: primary
+      start: 57
+      end: 79
+    - source: public function __call($method, $args) { return $this->$method; }
+      style: secondary
+      start: 16
+      end: 81
+  "<?php class A { public function __call($name, $args) { if ($args) { return $this->$name; } return null; } } ?>":
+    labels:
+    - source: return $this->$name;
+      style: primary
+      start: 68
+      end: 88
+    - source: >-
+        public function __call($name, $args) { if ($args) { return $this->$name; }
+        return null; }
+      style: secondary
+      start: 16
+      end: 105
+  "<?php class A { public function __call($name, $args) { log_call($name); return $this->$name; } } ?>":
+    labels:
+    - source: return $this->$name;
+      style: primary
+      start: 72
+      end: 92
+    - source: public function __call($name, $args) { log_call($name); return $this->$name; }
+      style: secondary
+      start: 16
+      end: 94
