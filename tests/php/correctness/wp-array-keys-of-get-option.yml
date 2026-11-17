@@ -3,7 +3,17 @@ valid:
   - |-
     <?php
     $first = array_shift(array_keys((array) get_option('cron')));
+  - |-
+    <?php $o = get_option('cron'); $k = is_array($o) ? array_keys($o) : array();
+  - |-
+    <?php $k = array_keys( (array) get_option('cron', array()) );
 invalid:
   - |-
     <?php
     $first = array_shift(array_keys(get_option('cron')));
+  - |-
+    <?php $k = array_keys(get_option('cron', array()));
+  - |-
+    <?php foreach ( array_keys( get_option( 'widget_text' ) ) as $k ) { echo $k; }
+  - |-
+    <?php $k = array_keys(get_option($name));

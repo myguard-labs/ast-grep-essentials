@@ -3,7 +3,19 @@ valid:
   - |-
     <?php
     $object = array( 'post_mime_type' => $image_type );
+  - |-
+    <?php $o = array( 'post_title' => 'image/jpeg', 'post_mime_type' => $type );
+  - |-
+    <?php $o = array( 'post_mime_type' => $info['type'], 'post_status' => 'inherit' );
+  - |-
+    <?php $o = array( 'post_mime_type' => $a, 'other' => 'image/jpeg' );
 invalid:
   - |-
     <?php
     $object = array( 'post_mime_type' => 'image/jpeg' );
+  - |-
+    <?php $o = [ 'post_mime_type' => 'image/jpeg', 'post_status' => 'inherit' ];
+  - |-
+    <?php $id = wp_insert_attachment( array( 'post_status' => 'inherit', 'post_mime_type' => 'image/jpeg' ), $file );
+  - |-
+    <?php $attachment = array( 'guid' => $url, 'post_mime_type' => 'image/jpeg', 'post_title' => $name, 'post_status' => 'inherit' );

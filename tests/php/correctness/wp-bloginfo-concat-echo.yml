@@ -1,5 +1,15 @@
 id: wp-bloginfo-concat-echo
 valid:
   - '<?php $title = '' | '' . get_bloginfo( ''description'' );'
+  - |-
+    <?php echo '<title>' . esc_html( get_bloginfo( 'name' ) ) . '</title>';
+  - |-
+    <?php echo '<title>'; bloginfo( 'name' ); echo '</title>';
 invalid:
   - '<?php $title = '' | '' . bloginfo( ''description'' );'
+  - |-
+    <?php echo 'Site: ' . bloginfo( 'name' );
+  - |-
+    <?php $f = $base . bloginfo( 'url' ) . '/feed';
+  - |-
+    <?php echo '<a href="' . bloginfo( 'url' ) . '">' . $t . '</a>';
