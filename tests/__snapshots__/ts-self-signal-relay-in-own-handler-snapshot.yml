@@ -1,6 +1,28 @@
 id: ts-self-signal-relay-in-own-handler
 snapshots:
-  process.on('SIGTERM', () => { process.kill(process.pid, 'SIGTERM'); });:
+  "process.on('SIGHUP', () => { if (x) { process.kill(process.pid, 'SIGHUP'); } });":
+    labels:
+    - source: process.kill(process.pid, 'SIGHUP')
+      style: primary
+      start: 38
+      end: 73
+    - source: process.on('SIGHUP', () => { if (x) { process.kill(process.pid, 'SIGHUP'); } })
+      style: secondary
+      start: 0
+      end: 79
+  "process.on('SIGINT', function () { cleanup(); process.kill(process.pid, 'SIGINT'); });":
+    labels:
+    - source: process.kill(process.pid, 'SIGINT')
+      style: primary
+      start: 46
+      end: 81
+    - source: >-
+        process.on('SIGINT', function () { cleanup(); process.kill(process.pid,
+        'SIGINT'); })
+      style: secondary
+      start: 0
+      end: 85
+  "process.on('SIGTERM', () => { process.kill(process.pid, 'SIGTERM'); });":
     labels:
     - source: process.kill(process.pid, 'SIGTERM')
       style: primary
@@ -10,3 +32,15 @@ snapshots:
       style: secondary
       start: 0
       end: 70
+  "process.on('SIGTERM', async () => { await stop(); process.kill(process.pid, 'SIGTERM'); });":
+    labels:
+    - source: process.kill(process.pid, 'SIGTERM')
+      style: primary
+      start: 50
+      end: 86
+    - source: >-
+        process.on('SIGTERM', async () => { await stop(); process.kill(process.pid,
+        'SIGTERM'); })
+      style: secondary
+      start: 0
+      end: 90

@@ -1,10 +1,30 @@
 id: ts-object-entries-transformed-key-assignment
 snapshots:
-  ? |-
-    const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(input)) { out[redactKey(k)] = v; }
-  : labels:
+  "const out: Record<string, unknown> = {};\nfor (const [k, v] of Object.entries(input)) { out[redactKey(k)] = v; }":
+    labels:
     - source: for (const [k, v] of Object.entries(input)) { out[redactKey(k)] = v; }
       style: primary
       start: 41
       end: 111
+  "for (const [k, v] of Object.entries(a.b)) { this.out[slug(k)] = v; }":
+    labels:
+    - source: for (const [k, v] of Object.entries(a.b)) { this.out[slug(k)] = v; }
+      style: primary
+      start: 0
+      end: 68
+  "for (const [k, v] of Object.entries(input as Record<string, string>)) { out[normalize(k)] = v; }":
+    labels:
+    - source: >-
+        for (const [k, v] of Object.entries(input as Record<string, string>)) {
+        out[normalize(k)] = v; }
+      style: primary
+      start: 0
+      end: 96
+  "for (const [key, value] of Object.entries(obj ?? {})) { result[encodeURIComponent(key)] = value; }":
+    labels:
+    - source: >-
+        for (const [key, value] of Object.entries(obj ?? {})) {
+        result[encodeURIComponent(key)] = value; }
+      style: primary
+      start: 0
+      end: 98

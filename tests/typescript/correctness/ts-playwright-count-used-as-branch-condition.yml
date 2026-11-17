@@ -1,8 +1,14 @@
 id: ts-playwright-count-used-as-branch-condition
 valid:
   - 'const n = await miniCartTitleLabelBlock.count();'
+  - 'await expect(items).toHaveCount(2);'
+  - 'if (await loc.isVisible()) { doThing(); }'
+  - 'await expect.poll(() => loc.count()).toBeGreaterThan(0);'
 invalid:
   - |-
     if ( await miniCartTitleLabelBlock.count() ) {
       doThing();
     }
+  - 'if (await page.locator(''.a'').count()) { doThing(); }'
+  - 'if (await this.items.count()) { a(); } else { b(); }'
+  - 'if (await loc.first().count()) doThing();'

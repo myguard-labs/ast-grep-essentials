@@ -1,5 +1,11 @@
 id: ts-query-template-interpolation
 valid:
   - 'connection.query("SELECT * FROM t WHERE id = @0", [id])'
+  - 'connection.query(`SELECT * FROM t`)'
+  - 'db.query(`SELECT * FROM t WHERE id = $1`, [id])'
+  - 'logger.log(`id ${id}`)'
 invalid:
   - 'connection.query(`SELECT * FROM t WHERE id = ${id}`)'
+  - 'await client.query(`SELECT ${cols} FROM t`)'
+  - 'this.pool.query(`SELECT * FROM t WHERE id = ${id}`, [])'
+  - 'pool?.query(`DELETE FROM t WHERE id = ${id}`)'

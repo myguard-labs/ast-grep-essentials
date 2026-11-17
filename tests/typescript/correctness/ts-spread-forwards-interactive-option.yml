@@ -1,5 +1,11 @@
 id: ts-spread-forwards-interactive-option
 valid:
   - 'await update.handler({ ...updateOpts, interactive: false }, [])'
+  - 'await cmd.handler({ ...opts, force: true, interactive: false }, [])'
+  - 'await cmd.handler({ interactive: true, ...opts })'
+  - 'await cmd.handler({ ...opts, interactive: opts.interactive ?? false })'
 invalid:
   - 'await update.handler({ ...updateOpts }, [])'
+  - 'await cmd.handler({ ...opts, force: true }, [])'
+  - 'await x.handler({ ...a, ...b })'
+  - 'await cmd.handler(args, { ...opts })'

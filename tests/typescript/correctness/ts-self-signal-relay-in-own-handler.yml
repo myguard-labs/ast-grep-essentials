@@ -1,5 +1,11 @@
 id: ts-self-signal-relay-in-own-handler
 valid:
   - 'process.on(''SIGTERM'', () => { child.kill(''SIGTERM''); });'
+  - 'process.once(''SIGTERM'', () => { cleanup(); process.kill(process.pid, ''SIGTERM''); });'
+  - 'process.kill(process.pid, ''SIGTERM'');'
+  - 'process.on(''SIGTERM'', () => { process.kill(child.pid, ''SIGTERM''); });'
 invalid:
   - 'process.on(''SIGTERM'', () => { process.kill(process.pid, ''SIGTERM''); });'
+  - 'process.on(''SIGINT'', function () { cleanup(); process.kill(process.pid, ''SIGINT''); });'
+  - 'process.on(''SIGTERM'', async () => { await stop(); process.kill(process.pid, ''SIGTERM''); });'
+  - 'process.on(''SIGHUP'', () => { if (x) { process.kill(process.pid, ''SIGHUP''); } });'

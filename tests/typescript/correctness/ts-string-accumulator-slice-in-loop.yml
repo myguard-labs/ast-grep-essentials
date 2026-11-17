@@ -3,7 +3,13 @@ valid:
   - >-
     let acc = ''; for (const t of tokens) { if (t.slice(-1) === '@') n++; acc +=
     t; }
+  - 'let last = ''''; for (const t of tokens) { if (last === ''@'') n++; acc += t; last = t.slice(-1); }'
+  - 'for (const t of tokens) { if (acc.slice(-1) === ''@'') n++; parts.push(t); }'
+  - 'for (const t of tokens) { acc += t; } const last = acc.slice(-1);'
 invalid:
   - >-
     let acc = ''; for (const t of tokens) { if (acc.slice(-1) === '@') n++; acc
     += t; }
+  - 'for (const k in obj) { if (out.slice(-1) === '','') n++; out += k; }'
+  - 'for (const [a, b] of pairs) { if (buf.slice(-1) === ''@'') n++; buf += a; }'
+  - 'for (const t of tokens) { if (this.buf.slice(-1) === ''@'') n++; this.buf += t; }'

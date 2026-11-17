@@ -1,5 +1,11 @@
 id: ts-pg-regtype-cast-without-text
 valid:
   - 'const sql = ''SELECT ("udt_name")::"regtype"::text AS "regtype"'''
+  - 'const sql = ''SELECT "udt_name"::text AS "regtype"'''
+  - 'const sql = ''SELECT ("a")::"regtype"::text, ("b")::"regtype"::text'''
+  - 'const sql = ''SELECT oid::"regclass"::text'''
 invalid:
   - 'const sql = ''SELECT ("udt_name")::"regtype" AS "regtype"'''
+  - 'const sql = ''SELECT ("a")::"regtype", ("b")::"regtype"'''
+  - 'await pool.query(''SELECT ("a")::"regtype"::int FROM t'')'
+  - 'const sql = ''SELECT ("a")::"regtype" FROM t WHERE x = 1'''

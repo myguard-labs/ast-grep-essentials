@@ -1,8 +1,28 @@
 id: ts-string-agg-without-order-by
 snapshots:
-  const sql = `SELECT string_agg(e.enumlabel, '|') AS value FROM pg_enum e`:
+  "const sql = `SELECT STRING_AGG(x, ',') FROM t`":
     labels:
-    - source: '`SELECT string_agg(e.enumlabel, ''|'') AS value FROM pg_enum e`'
+    - source: "`SELECT STRING_AGG(x, ',') FROM t`"
+      style: primary
+      start: 12
+      end: 46
+  "const sql = `SELECT a,\n string_agg(x, ',') AS v FROM t`":
+    labels:
+    - source: |-
+        `SELECT a,
+         string_agg(x, ',') AS v FROM t`
+      style: primary
+      start: 12
+      end: 55
+  "const sql = `SELECT string_agg (x, ',') FROM t GROUP BY ${col}`":
+    labels:
+    - source: "`SELECT string_agg (x, ',') FROM t GROUP BY ${col}`"
+      style: primary
+      start: 12
+      end: 63
+  "const sql = `SELECT string_agg(e.enumlabel, '|') AS value FROM pg_enum e`":
+    labels:
+    - source: "`SELECT string_agg(e.enumlabel, '|') AS value FROM pg_enum e`"
       style: primary
       start: 12
       end: 73
