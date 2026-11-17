@@ -7,16 +7,16 @@ message: Duplicate parameter name in ZEND_ARG_INFO / ZEND_ARG_TYPE_INFO entries 
 note: >-
   Reports a ZEND_ARG_INFO or ZEND_ARG_TYPE_INFO entry whose name (second
   argument) equals the name of an earlier ZEND_ARG_INFO or ZEND_ARG_TYPE_INFO
-  entry in the same ZEND_BEGIN_ARG_INFO_EX block. The search for an earlier
-  entry stops at the nearest ZEND_BEGIN_ARG_INFO_EX, so two blocks that reuse a
-  name are not reported. Other arg-info macros are not matched.
+  entry in the same arg-info block. The search for an earlier entry stops at
+  the nearest ZEND_BEGIN_ARG* or ZEND_END_ARG_INFO line, so two blocks that
+  reuse a name are not reported. Other arg-info entry macros are not matched.
 rule:
   any:
     - pattern: ZEND_ARG_INFO($A, $N);
     - pattern: ZEND_ARG_TYPE_INFO($A, $N, $T, $X);
   follows:
     stopBy:
-      pattern: ZEND_BEGIN_ARG_INFO_EX($$$B);
+      regex: '^ZEND_(BEGIN_ARG|END_ARG_INFO)'
     any:
       - pattern: ZEND_ARG_INFO($C, $N);
       - pattern: ZEND_ARG_TYPE_INFO($C, $N, $U, $Y);
