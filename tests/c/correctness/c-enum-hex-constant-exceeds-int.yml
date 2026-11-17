@@ -1,5 +1,12 @@
 id: c-enum-hex-constant-exceeds-int
 valid:
   - 'enum mem_magic { MEM_BLOCK_VALID = 0x7312F8DC };'
+  - 'enum e { A = 0x7FFFFFFF };'
+  - 'enum e { A = 0x0FFFFFFF, B = 0x80 };'
+  - 'enum e { A = 0xFFFFFFF };'
 invalid:
   - 'enum mem_magic { MEM_BLOCK_FREED = 0x99954317 };'
+  - 'enum e { A = 0x80000000 };'
+  - 'enum e { A = 0xFFFFFFFF };'
+  - 'enum e { A = 0xdeadbeef, B = 1 };'
+  - 'enum e { A = 0X8000ABCD };'

@@ -1,5 +1,13 @@
 id: c-err-macro-library-mismatch
 valid:
   - '#define BNerr(f, r) ERR_raise(ERR_LIB_BN, (r))'
+  - '#define BNerr(f, r) ERR_raise( ERR_LIB_BN, (r))'
+  - '#  define BNerr(f, r) ERR_raise(ERR_LIB_BN, (r))'
+  - '#define RSAerr(f, r) ERR_raise(ERR_LIB_RSA, (r))'
 invalid:
   - '#define BNerr(f, r) ERR_raise(ERR_LIB_RSA, (r))'
+  - '#define BNerr(f, r) ERR_raise(ERR_LIB_EC, (r))'
+  - '#  define BNerr(f, r) ERR_raise( ERR_LIB_DSA, (r))'
+  - |-
+    #define BNerr(f, r) \
+      ERR_raise(ERR_LIB_RSA, (r))

@@ -5,8 +5,38 @@ valid:
     int f_x(void);
     #endif
     int g(void);
+  - |-
+    #include <stdio.h>
+    #ifdef FOO
+    int a;
+    #endif
+  - |-
+    int g(void);
+    #ifdef FOO
+    int a;
+    #endif
+  - |-
+    #ifdef FOO
+    int a;
+    #endif
+    int g(void) { return 0; }
 invalid:
   - |-
     #ifndef FOO_X
     int f_x(void);
+    #endif
+  - |-
+    #ifdef A
+    #ifdef B
+    int a;
+    #endif
+    #endif
+  - |-
+    #ifdef FOO
+    int a;
+    int b;
+    #endif
+  - |-
+    #ifndef FOO
+    void f(void) { }
     #endif
