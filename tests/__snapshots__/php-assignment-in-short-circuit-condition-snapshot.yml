@@ -1,6 +1,6 @@
 id: php-assignment-in-short-circuit-condition
 snapshots:
-  <?php function f($a) { if ( !$a || $m = g() ) { return $m; } }:
+  "<?php function f($a) { if ( !$a || $m = g() ) { return $m; } }":
     labels:
     - source: $m = g()
       style: primary
@@ -14,7 +14,61 @@ snapshots:
       style: secondary
       start: 35
       end: 43
-    - source: '!$a || $m = g()'
+    - source: "!$a || $m = g()"
       style: secondary
       start: 28
       end: 43
+  "<?php function f($a) { if ( $a && $m = g() ) { return $m; } }":
+    labels:
+    - source: $m = g()
+      style: primary
+      start: 34
+      end: 42
+    - source: if ( $a && $m = g() ) { return $m; }
+      style: secondary
+      start: 23
+      end: 59
+    - source: $m = g()
+      style: secondary
+      start: 34
+      end: 42
+    - source: $a && $m = g()
+      style: secondary
+      start: 28
+      end: 42
+  "<?php function f($a) { if ( $a ) { return 0; } elseif ( !$a or $m = g() ) { return $m; } }":
+    labels:
+    - source: $m = g()
+      style: primary
+      start: 63
+      end: 71
+    - source: if ( $a ) { return 0; } elseif ( !$a or $m = g() ) { return $m; }
+      style: secondary
+      start: 23
+      end: 88
+    - source: $m = g()
+      style: secondary
+      start: 63
+      end: 71
+    - source: "!$a or $m = g()"
+      style: secondary
+      start: 56
+      end: 71
+  "<?php function f($a) { if ( $a || $b && $m = g() ) { return $m; } }":
+    labels:
+    - source: $m = g()
+      style: primary
+      start: 40
+      end: 48
+    - source: if ( $a || $b && $m = g() ) { return $m; }
+      style: secondary
+      start: 23
+      end: 65
+    - source: $m = g()
+      style: secondary
+      start: 40
+      end: 48
+    - source: $b && $m = g()
+      style: secondary
+      start: 34
+      end: 48

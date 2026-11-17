@@ -1,12 +1,42 @@
 id: php-bitwise-or-preg-match-condition
 snapshots:
-  'function f($line) { if ( preg_match(''/From: /'', $line) | preg_match(''/Reply-To: /'', $line) ) { return 1; } }':
+  "<?php function f($s) { if ( ! ( preg_match('/a/', $s) | preg_match('/b/', $s) ) ) { return 0; } }":
     labels:
-    - source: 'preg_match(''/From: /'', $line) | preg_match(''/Reply-To: /'', $line)'
+    - source: preg_match('/a/', $s) | preg_match('/b/', $s)
+      style: primary
+      start: 32
+      end: 77
+    - source: "|"
+      style: secondary
+      start: 54
+      end: 55
+  "<?php function f($s) { return ( preg_match('/a/', $s) | preg_match('/b/', $s) ) ? 1 : 0; }":
+    labels:
+    - source: preg_match('/a/', $s) | preg_match('/b/', $s)
+      style: primary
+      start: 32
+      end: 77
+    - source: "|"
+      style: secondary
+      start: 54
+      end: 55
+  "<?php function f($s) { while ( preg_match('/a/', $s, $m) | preg_match('/b/', $s, $n) ) { $s = 'x'; } }":
+    labels:
+    - source: preg_match('/a/', $s, $m) | preg_match('/b/', $s, $n)
+      style: primary
+      start: 31
+      end: 84
+    - source: "|"
+      style: secondary
+      start: 57
+      end: 58
+  "function f($line) { if ( preg_match('/From: /', $line) | preg_match('/Reply-To: /', $line) ) { return 1; } }":
+    labels:
+    - source: "preg_match('/From: /', $line) | preg_match('/Reply-To: /', $line)"
       style: primary
       start: 25
       end: 90
-    - source: '|'
+    - source: "|"
       style: secondary
       start: 55
       end: 56
