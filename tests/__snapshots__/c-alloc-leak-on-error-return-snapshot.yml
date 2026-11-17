@@ -20,3 +20,45 @@ snapshots:
       style: secondary
       start: 58
       end: 79
+  "int f(void) {\n char *b = emalloc(8);\n use(b);\n if (x) {\n log_it();\n return -1;\n }\n return 0;\n}":
+    labels:
+    - source: |-
+        if (x) {
+         log_it();
+         return -1;
+         }
+      style: primary
+      start: 47
+      end: 81
+    - source: char *b = emalloc(8);
+      style: secondary
+      start: 15
+      end: 36
+    - source: |-
+        {
+         log_it();
+         return -1;
+         }
+      style: secondary
+      start: 54
+      end: 81
+  "zval *z = emalloc(sizeof(zval));\nif (bad) {\n RETURN_NULL();\n}":
+    labels:
+    - source: |-
+        if (bad) {
+         RETURN_NULL();
+        }
+      style: primary
+      start: 33
+      end: 61
+    - source: zval *z = emalloc(sizeof(zval));
+      style: secondary
+      start: 0
+      end: 32
+    - source: |-
+        {
+         RETURN_NULL();
+        }
+      style: secondary
+      start: 42
+      end: 61

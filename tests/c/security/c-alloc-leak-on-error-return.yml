@@ -6,9 +6,34 @@ valid:
         efree(buf);
         RETURN_FALSE;
     }
+  - |-
+      char *buf = emalloc(n);
+      if (bad) {
+       log_it();
+      }
+  - |-
+      if (bad) {
+       return NULL;
+      }
+      char *buf = emalloc(n);
 invalid:
   - |-
     char *buf = emalloc(n);
     if (get_args(ht, buf) == FAILURE) {
         RETURN_FALSE;
     }
+  - |-
+      zval *z = emalloc(sizeof(zval));
+      if (bad) {
+       RETURN_NULL();
+      }
+  - |-
+      int f(void) {
+       char *b = emalloc(8);
+       use(b);
+       if (x) {
+       log_it();
+       return -1;
+       }
+       return 0;
+      }

@@ -4,7 +4,21 @@ valid:
     if (UNEXPECTED(--GC_REFCOUNT(r) == 0)) { efree_size(r,
     sizeof(zend_reference)); } else if (Z_OPT_REFCOUNTED_P(value)) {
     Z_ADDREF_P(value); }
+  - |-
+      if (UNEXPECTED(--GC_REFCOUNT(r) == 0)) { efree(r); }
+      if (Z_OPT_REFCOUNTED_P(value)) Z_ADDREF_P(value);
+  - |-
+      if (Z_OPT_REFCOUNTED_P(value)) Z_ADDREF_P(value);
+      if (GC_REFCOUNT(r) == 1) { efree(r); }
 invalid:
   - |-
     if (Z_OPT_REFCOUNTED_P(value)) Z_ADDREF_P(value);
     if (UNEXPECTED(--GC_REFCOUNT(r) == 0)) { efree_size(r, sizeof(zend_reference)); }
+  - |-
+      if (c) Z_ADDREF_P(v);
+      if (--GC_REFCOUNT(ref) == 0) { efree(ref); }
+  - |-
+      void f(void) {
+       if (a) Z_ADDREF_P(p);
+       if (!--GC_REFCOUNT(q)) { efree(q); }
+      }

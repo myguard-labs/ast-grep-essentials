@@ -3,5 +3,9 @@ valid:
   - >-
     static unsigned long long f(long long i) { return i >= 0 ? (unsigned long
     long)i : -(unsigned long long)i; }
+  - 'static int f(int i) { return i >= 0 ? i : (i == INT_MIN ? INT_MAX : -i); }'
+  - 'static unsigned f(int i) { return i >= 0 ? (unsigned)i : 0u - (unsigned)i; }'
 invalid:
   - 'static long long f(long long i) { return i >= 0 ? i : -i; }'
+  - 'static int f(int x) { int a = x >= 0 ? x : -x; return a; }'
+  - 'static int f(struct s *p) { return p->len >= 0 ? p->len : -p->len; }'

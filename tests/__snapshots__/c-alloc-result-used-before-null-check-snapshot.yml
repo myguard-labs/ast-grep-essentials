@@ -1,5 +1,39 @@
 id: c-alloc-result-used-before-null-check
 snapshots:
+  "buf = malloc(n); memset(buf, 0, n); if (!buf) return;":
+    labels:
+    - source: memset(buf, 0, n);
+      style: primary
+      start: 17
+      end: 35
+    - source: buf
+      style: secondary
+      start: 24
+      end: 27
+    - source: (buf, 0, n)
+      style: secondary
+      start: 23
+      end: 34
+    - source: memset(buf, 0, n)
+      style: secondary
+      start: 17
+      end: 34
+    - source: buf = malloc(n)
+      style: secondary
+      start: 0
+      end: 15
+    - source: buf = malloc(n);
+      style: secondary
+      start: 0
+      end: 16
+    - source: "!buf"
+      style: secondary
+      start: 40
+      end: 44
+    - source: if (!buf) return;
+      style: secondary
+      start: 36
+      end: 53
   ctx = BN_CTX_new(); BN_CTX_start(ctx); if (!ctx) goto err;:
     labels:
     - source: BN_CTX_start(ctx);
@@ -34,3 +68,37 @@ snapshots:
       style: secondary
       start: 39
       end: 58
+  "p = xmalloc(n); strcpy(p, s); if (!p) goto err;":
+    labels:
+    - source: strcpy(p, s);
+      style: primary
+      start: 16
+      end: 29
+    - source: p
+      style: secondary
+      start: 23
+      end: 24
+    - source: (p, s)
+      style: secondary
+      start: 22
+      end: 28
+    - source: strcpy(p, s)
+      style: secondary
+      start: 16
+      end: 28
+    - source: p = xmalloc(n)
+      style: secondary
+      start: 0
+      end: 14
+    - source: p = xmalloc(n);
+      style: secondary
+      start: 0
+      end: 15
+    - source: "!p"
+      style: secondary
+      start: 34
+      end: 36
+    - source: if (!p) goto err;
+      style: secondary
+      start: 30
+      end: 47
