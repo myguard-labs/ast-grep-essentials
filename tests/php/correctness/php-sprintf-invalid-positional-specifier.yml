@@ -1,5 +1,15 @@
 id: php-sprintf-invalid-positional-specifier
 valid:
   - '<?php $m = sprintf( ''Problem updating %1$s.'', $siteurl ); ?>'
+  - |-
+    <?php $m = sprintf('%1$s of %2$d items', $a, $b); ?>
+  - |-
+    <?php $m = sprintf('Rate is 100%% of $5', $a); ?>
 invalid:
   - '<?php $m = sprintf( ''Problem updating %$1s.'', $siteurl ); ?>'
+  - |-
+    <?php $m = sprintf('%$2d of %$1d items', $a, $b); ?>
+  - |-
+    <?php printf("Total: %$10s", $x); ?>
+  - |-
+    <?php $fmt = '%$3s'; echo sprintf($fmt, $a, $b, $c); ?>

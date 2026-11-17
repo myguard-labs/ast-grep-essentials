@@ -1,8 +1,28 @@
 id: php-ssh2-ltrim-root-stream-path
 snapshots:
-  function get_contents( $file ) { return file_get_contents( 'ssh2.sftp://' . $this->sftp_link . '/' . ltrim( $file, '/' ) ); }:
+  "function g( $p ) { return trim( file_get_contents( 'ssh2.sftp://' . $this->sftp_link . '/' . ltrim( $p, '/' ) ) ); }":
     labels:
-    - source: file_get_contents( 'ssh2.sftp://' . $this->sftp_link . '/' . ltrim( $file, '/' ) )
+    - source: file_get_contents( 'ssh2.sftp://' . $this->sftp_link . '/' . ltrim( $p, '/' ) )
+      style: primary
+      start: 32
+      end: 111
+  "function g( $remote ) { return file_get_contents('ssh2.sftp://'.intval($this->sftp).'/'.ltrim($remote,'/')); }":
+    labels:
+    - source: file_get_contents('ssh2.sftp://'.intval($this->sftp).'/'.ltrim($remote,'/'))
+      style: primary
+      start: 31
+      end: 107
+  "function g( $sftp, $remote ) { $d = file_get_contents( 'ssh2.sftp://' . $sftp . '/' . ltrim( $remote, '/' ) ); return $d; }":
+    labels:
+    - source: file_get_contents( 'ssh2.sftp://' . $sftp . '/' . ltrim( $remote, '/' ) )
+      style: primary
+      start: 36
+      end: 109
+  "function get_contents( $file ) { return file_get_contents( 'ssh2.sftp://' . $this->sftp_link . '/' . ltrim( $file, '/' ) ); }":
+    labels:
+    - source: >-
+        file_get_contents( 'ssh2.sftp://' . $this->sftp_link . '/' . ltrim( $file, '/'
+        ) )
       style: primary
       start: 40
       end: 122

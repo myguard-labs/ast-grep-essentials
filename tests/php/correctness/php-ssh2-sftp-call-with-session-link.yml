@@ -3,7 +3,19 @@ valid:
   - >-
     <?php class T { public function move( $s, $d ) { return ssh2_sftp_rename(
     $this->sftp_link, $s, $d ); } }
+  - |-
+    <?php class T { public function open() { $this->sftp = ssh2_sftp( $this->link ); } }
+  - |-
+    <?php function mv( $sftp, $s, $d ) { return ssh2_sftp_rename( $sftp, $s, $d ); }
+  - |-
+    <?php class T { public function mv( $s, $d ) { return ssh2_sftp_rename( $this->sftp, $s, $d ); } }
 invalid:
   - >-
     <?php class T { public function move( $s, $d ) { return ssh2_sftp_rename(
     $this->link, $s, $d ); } }
+  - |-
+    <?php class T { public function mv( $s, $d ) { if ( ! ssh2_sftp_rename( $this->link, $s, $d ) ) { return false; } return true; } }
+  - |-
+    <?php class T { public function mv( $s, $d ) { return @ssh2_sftp_rename( $this->link, $s, $d ); } }
+  - |-
+    <?php class T { public function mv() { $ok = ssh2_sftp_rename($this->link, '/a', '/b'); return $ok; } }

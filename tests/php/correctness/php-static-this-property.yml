@@ -1,5 +1,17 @@
 id: php-static-this-property
 valid:
   - '<?php class A { function f() { echo $this->_help_sidebar; } }'
+  - |-
+    <?php class A { function f() { return $this->items; } }
+  - |-
+    <?php class A { static $items = []; function f() { return self::$items; } }
+  - |-
+    <?php class A { function f() { echo static::$this_cfg; } }
 invalid:
   - '<?php class A { function f() { echo self::$this->_help_sidebar; } }'
+  - |-
+    <?php class A { function f() { return self::$this->items; } }
+  - |-
+    <?php class A { function f() { self::$this->count = 1; } }
+  - |-
+    <?php class A { function f() { foreach ( self::$this->rows as $r ) { echo $r; } } }

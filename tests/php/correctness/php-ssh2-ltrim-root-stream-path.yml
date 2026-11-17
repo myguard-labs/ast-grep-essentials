@@ -3,7 +3,19 @@ valid:
   - >-
     function get_contents( $file ) { return file_get_contents( 'ssh2.sftp://' .
     $this->sftp_link . '/' . $file ); }
+  - |-
+    function g( $file ) { return file_get_contents( 'ssh2.sftp://' . $this->sftp_link . '/' . $file ); }
+  - |-
+    function g( $f ) { return file_get_contents( '/tmp/cache/' . ltrim( $f, '/' ) ); }
+  - |-
+    function g( $f ) { return file_get_contents( 'ssh2.sftp://' . $s . '/' . ( $f === '' ? '.' : $f ) ); }
 invalid:
   - >-
     function get_contents( $file ) { return file_get_contents( 'ssh2.sftp://' .
     $this->sftp_link . '/' . ltrim( $file, '/' ) ); }
+  - |-
+    function g( $sftp, $remote ) { $d = file_get_contents( 'ssh2.sftp://' . $sftp . '/' . ltrim( $remote, '/' ) ); return $d; }
+  - |-
+    function g( $remote ) { return file_get_contents('ssh2.sftp://'.intval($this->sftp).'/'.ltrim($remote,'/')); }
+  - |-
+    function g( $p ) { return trim( file_get_contents( 'ssh2.sftp://' . $this->sftp_link . '/' . ltrim( $p, '/' ) ) ); }
