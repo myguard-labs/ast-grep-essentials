@@ -7,14 +7,15 @@ message: EC-related call outside an OPENSSL_NO_EC guard may break no-ec builds.
 note: >-
   Name-based heuristic on the callee identifier; does not resolve the
   function, and guards are matched by literal OPENSSL_NO_EC text in an
-  enclosing ifdef/ifndef.
+  enclosing ifdef/ifndef or `#if !defined(OPENSSL_NO_EC)` (alone or as an
+  `&&` operand). Callee names are anchored: `EC_*` and `*_EC_KEY`.
 rule:
   all:
     - kind: call_expression
     - has:
         field: function
         kind: identifier
-        regex: 'EC_|_EC_KEY'
+        regex: '^(EC_|\w+_EC_KEY)'
     - not:
         inside:
           stopBy: end
@@ -22,11 +23,26 @@ rule:
           has:
             field: name
             regex: OPENSSL_NO_EC
+    - not:
+        inside:
+          stopBy: end
+          kind: preproc_if
+          has:
+            field: condition
+            any:
+              - kind: unary_expression
+                regex: '^!\s*defined\b[\s(]*OPENSSL_NO_EC[\s)]*$'
+              - kind: binary_expression
+                all:
+                  - has:
+                      field: operator
+                      regex: '^&&$'
+                  - has:
+                      kind: unary_expression
+                      regex: '^!\s*defined\b[\s(]*OPENSSL_NO_EC[\s)]*$'
 metadata:
   todo_cases:
-    - 'FP: an EC call inside `#if !defined(OPENSSL_NO_EC)` is reported (guard is preproc_if, not preproc_ifdef): `#if !defined(OPENSSL_NO_EC) int f(EVP_PKEY *k) { return EC_KEY_can_sign(k); } #endif`'
-    - 'FN: an EC call inside `#ifdef OPENSSL_NO_EC` (compiled only when EC is absent) is not reported because any OPENSSL_NO_EC name suppresses it, whether ifdef or ifndef side'
-    - 'FP: the unanchored regex EC_ matches non-EC callees: `int f(int k) { return SEC_alloc(k); }` is reported'
+    - 'FN: an EC call inside `#ifdef OPENSSL_NO_EC` (compiled only when EC is absent) is not reported because any OPENSSL_NO_EC name suppresses it, whether ifdef or ifndef side; the same holds for an EC call in the `#else` branch of `#if !defined(OPENSSL_NO_EC)`'
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
