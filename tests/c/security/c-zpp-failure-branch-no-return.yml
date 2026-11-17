@@ -6,6 +6,11 @@ valid:
   - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) return; use(r, s);'
   - 'if (zend_parse_parameters(argc, "rs", &r, &s) != FAILURE) { use(r, s); }'
   - 'int f(int argc) { if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { return FAILURE; } use(r, s); return 0; }'
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { RETURN_NULL(); } use(r, s);'
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { RETURN_FALSE; } use(r, s);'
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { RETURN_THROWS(); } use(r, s);'
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { ZEND_WRONG_PARAM_COUNT(); } use(r, s);'
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { warn(); goto out; } use(r, s); out: cleanup();'
 invalid:
   - >-
     if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { warn_bad_args();
@@ -13,3 +18,7 @@ invalid:
   - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { } use(r, s);'
   - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { log_err(); r = NULL; } use(r, s);'
   - 'if (zend_parse_parameters(argc TSRMLS_CC, "rs", &r, &s) == FAILURE) { warn(); } use(r, s);'
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { php_error_docref(NULL, E_WARNING, "bad"); } use(r, s);'
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { warn(); } RETURN_NULL(); use(r, s);'
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { if (RETURN_VALUE_USED(x)) { warn(); } } use(r, s);'
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { RETURN_VALUE_USED(x); } use(r, s);'
