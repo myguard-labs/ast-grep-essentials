@@ -8,14 +8,79 @@ message: >-
   value, so the pieces are emitted with no separator.
 note: >-
   Syntactic check only. It matches a PHP echo with two or more comma-separated
-  arguments written inside an HTML tag attribute in the same template text; it
-  does not verify the attribute semantics or runtime output.
+  arguments whose PHP block opens inside an HTML tag attribute value (the
+  template text before the opening tag ends in an open attribute value), and
+  skips an argument list that alternates values with whitespace-only string
+  literals; it does not verify the attribute semantics or runtime output.
+utils:
+  attr-php-block:
+    any:
+      - follows:
+          stopBy:
+            kind: php_end_tag
+          kind: php_tag
+          follows:
+            kind: ERROR
+            regex: '(?s)<[A-Za-z][^>]*=\s*("[^"]*|''[^'']*|[^\s"''>]*)$'
+      - follows:
+          stopBy:
+            kind: php_end_tag
+          kind: ERROR
+          regex: '(?s)<[A-Za-z][^>]*=\s*("[^"]*|''[^'']*|[^\s"''>]*)<\?php\s*$'
 rule:
-  pattern: 'echo $A, $B'
+  kind: echo_statement
+  any:
+    - matches: attr-php-block
+    - inside:
+        stopBy: end
+        matches: attr-php-block
+  has:
+    kind: sequence_expression
+    any:
+      - all:
+          - has:
+              nthChild: 1
+              not:
+                regex: '^(''\s+''|"\s+")$'
+          - any:
+              - has:
+                  nthChild: 2
+                  not:
+                    any:
+                      - regex: '^(''\s+''|"\s+")$'
+                      - kind: sequence_expression
+              - has:
+                  nthChild: 2
+                  kind: sequence_expression
+                  has:
+                    nthChild: 1
+                    not:
+                      regex: '^(''\s+''|"\s+")$'
+      - has:
+          stopBy: end
+          kind: sequence_expression
+          all:
+            - has:
+                nthChild: 1
+                not:
+                  regex: '^(''\s+''|"\s+")$'
+            - any:
+                - has:
+                    nthChild: 2
+                    not:
+                      any:
+                        - regex: '^(''\s+''|"\s+")$'
+                        - kind: sequence_expression
+                - has:
+                    nthChild: 2
+                    kind: sequence_expression
+                    has:
+                      nthChild: 1
+                      not:
+                        regex: '^(''\s+''|"\s+")$'
 metadata:
   todo_cases:
-    - "wp-echo-attribute-comma-args: false positive, `<?php echo $a, $b;` outside any HTML attribute and `<td><?php echo $label, $value; ?></td>` in element text are reported (probed) although comma echo arguments are legal there; the pattern `echo $A, $B` has no attribute context."
-    - "wp-echo-attribute-comma-args: false positive, `<tr class='<?php echo $class, ' ', $class1; ?>'>` is reported (probed) although the literal ' ' argument supplies the separator."
+    - "wp-echo-attribute-comma-args: false negative, an attribute value with leading text (`<div class=\"row <?php echo $a, $b; ?>\">`), `value=\"<?php echo $a, $b; ?>\"` after an `<input` tag, `href=\"http://<?php echo $a, $b; ?>\"` and `class = \"<?php ...` with spaces around `=` are not reported (also on the previous matcher) because the PHP-only grammar's error recovery swallows the echo; the attribute context is read from the ERROR node before the php tag."
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
