@@ -3,7 +3,13 @@ valid:
   - >-
     function f($line) { if ( preg_match('/From: /', $line) ||
     preg_match('/Reply-To: /', $line) ) { return 1; } }
+  - '<?php function f($s) { if ( preg_match(''/a/'', $s) && preg_match(''/b/'', $s) ) { return 1; } }'
+  - '<?php function f($s) { return preg_match(''/a/'', $s) || preg_match(''/b/'', $s); }'
+  - '<?php function f($flags) { return $flags | PREG_OFFSET_CAPTURE; }'
 invalid:
   - >-
     function f($line) { if ( preg_match('/From: /', $line) |
     preg_match('/Reply-To: /', $line) ) { return 1; } }
+  - '<?php function f($s) { while ( preg_match(''/a/'', $s, $m) | preg_match(''/b/'', $s, $n) ) { $s = ''x''; } }'
+  - '<?php function f($s) { return ( preg_match(''/a/'', $s) | preg_match(''/b/'', $s) ) ? 1 : 0; }'
+  - '<?php function f($s) { if ( ! ( preg_match(''/a/'', $s) | preg_match(''/b/'', $s) ) ) { return 0; } }'

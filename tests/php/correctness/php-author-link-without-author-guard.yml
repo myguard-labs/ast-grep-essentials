@@ -3,7 +3,13 @@ valid:
   - >-
     if ( ! empty($d['AuthorURI']) && ! empty($d['Author']) ) $d['Author'] = '<a
     href="' . $d['AuthorURI'] . '">' . $d['Author'] . '</a>';
+  - '<?php if ( ! empty($d[''Author'']) ) $d[''Author''] = ''<a href="'' . $d[''AuthorURI''] . ''">'' . $d[''Author''] . ''</a>'';'
+  - '<?php if ( ! empty($d[''AuthorURI'']) && ! empty($d[''Author'']) ) { $d[''Author''] = ''<a href="'' . $d[''AuthorURI''] . ''">'' . $d[''Author''] . ''</a>''; }'
+  - '<?php if ( ! empty($d[''AuthorURI'']) ) $d[''Author''] = esc_html($d[''Author'']);'
 invalid:
   - >-
     if ( ! empty($d['AuthorURI']) ) $d['Author'] = '<a href="' . $d['AuthorURI']
     . '">' . $d['Author'] . '</a>';
+  - '<?php if (!empty($d[''AuthorURI''])) $d[''Author''] = ''<a href="'' . $d[''AuthorURI''] . ''">'' . $d[''Author''] . ''</a>'';'
+  - '<?php class T { function f($d) { if ( ! empty($d[''AuthorURI'']) ) $d[''Author''] = ''<a href="'' . $d[''AuthorURI''] . ''">'' . $d[''Author''] . ''</a>''; return $d; } }'
+  - '<?php foreach ($all as $k) { if ( ! empty($d[''AuthorURI'']) ) $d[''Author''] = ''<a href="'' . $d[''AuthorURI''] . ''">'' . $d[''Author''] . ''</a>''; }'
