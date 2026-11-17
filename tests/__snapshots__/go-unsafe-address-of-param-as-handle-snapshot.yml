@@ -1,8 +1,20 @@
 id: go-unsafe-address-of-param-as-handle
 snapshots:
-  ? "package p\n\nimport \"unsafe\"\n\nfunc handle(tx T) uint64 {\n\treturn *(*uint64)(unsafe.Pointer(&tx))\n}"
-  : labels:
-    - source: '*(*uint64)(unsafe.Pointer(&tx))'
+  "package p\n\nimport \"unsafe\"\n\nfunc (s S) handle() uint64 {\n\treturn *(*uint64)(unsafe.Pointer(&s))\n}":
+    labels:
+    - source: "*(*uint64)(unsafe.Pointer(&s))"
+      style: primary
+      start: 65
+      end: 95
+  "package p\n\nimport \"unsafe\"\n\nfunc handle(tx T) uint64 {\n\treturn *(*uint64)(unsafe.Pointer(&tx))\n}":
+    labels:
+    - source: "*(*uint64)(unsafe.Pointer(&tx))"
       style: primary
       start: 63
       end: 94
+  "package p\n\nimport \"unsafe\"\n\nfunc open(req Request) uint64 {\n\th := *(*uint64)(unsafe.Pointer(&req))\n\treturn h\n}":
+    labels:
+    - source: "*(*uint64)(unsafe.Pointer(&req))"
+      style: primary
+      start: 66
+      end: 98

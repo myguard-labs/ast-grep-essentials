@@ -12,6 +12,9 @@ valid:
       http.ListenAndServe(":8000",
         csrf.Protect([]byte(os.Getenv("CSRF_AUTH_KEY")))(r))
         }
+  - "import (\n\t\"os\"\n\t\"github.com/gorilla/csrf\"\n)\nfunc main() {\n\tkey := os.Getenv(\"CSRF_AUTH_KEY\")\n\thttp.ListenAndServe(\":8000\", csrf.Protect([]byte(key), csrf.Secure(true))(r))\n}"
+  - "import (\n\t\"github.com/gorilla/csrf\"\n)\nfunc form(r *http.Request) string {\n\treturn csrf.Token(r)\n}"
+  - "import (\n\t\"github.com/gorilla/csrf\"\n)\nfunc main() {\n\tr.Use(csrf.Protect([]byte(cfg.AuthKey)))\n}"
 invalid:
   - |
      import (
@@ -21,3 +24,5 @@ invalid:
       http.ListenAndServe(":8000",
         csrf.Protect([]byte("32-byte-long-auth-key"))(r))
       }
+  - "import (\n\t\"github.com/gorilla/csrf\"\n)\nfunc main() {\n\tCSRF := csrf.Protect([]byte(\"placeholder-auth-key-32-bytes-xx\"), csrf.Secure(false))\n\thttp.ListenAndServe(\":8000\", CSRF(r))\n}"
+  - "import (\n\t\"github.com/gorilla/csrf\"\n)\nfunc main() {\n\tr.Use(csrf.Protect([]byte(\"placeholder-auth-key-32-bytes-xx\"), csrf.Path(\"/\")))\n}"

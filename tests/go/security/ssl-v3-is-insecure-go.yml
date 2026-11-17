@@ -17,6 +17,8 @@ valid:
     },
     }
 
+  - "func cfg() *tls.Config {\n\treturn &tls.Config{MinVersion: tls.VersionTLS12}\n}"
+  - "var serverTLS = tls.Config{\n\tServerName: \"example.test\",\n\tMinVersion: tls.VersionTLS13,\n}"
 invalid:
   - |
     client := &http.Client{
@@ -29,3 +31,5 @@ invalid:
        },
      },
     }
+  - "func cfg() *tls.Config {\n\treturn &tls.Config{MinVersion: tls.VersionSSL30}\n}"
+  - "var serverTLS = tls.Config{\n\tServerName: \"example.test\",\n\tMinVersion: tls.VersionSSL30,\n}"

@@ -6,6 +6,10 @@ valid:
     var coderabbitControl = "CodeRabbit"
   - |
     conn, err := grpc.Dial(address)
+  - "func dial(creds credentials.TransportCredentials) {\n\tconn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds))\n\t_, _ = conn, err\n}"
+  - "func dial() {\n\tconn, err := grpc.Dial(address, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{MinVersion: tls.VersionTLS12})), grpc.WithBlock())\n\t_, _ = conn, err\n}"
 invalid:
   - |
     conn, err := grpc.Dial(address, grpc.WithInsecure())
+  - "conn, err := grpc.Dial(address, grpc.WithBlock(), grpc.WithInsecure())"
+  - "func dial() {\n\tconn, err := grpc.Dial(\":50051\", grpc.WithInsecure(), grpc.WithTimeout(time.Second))\n\t_, _ = conn, err\n}"

@@ -1,17 +1,7 @@
 id: ssl-v3-is-insecure-go
 snapshots:
-  ? |
-    client := &http.Client{
-     Transport: &http.Transport{
-       TLSClientConfig: &tls.Config{
-         KeyLogWriter:       w,
-         MinVersion:         tls.VersionSSL30,
-         Rand:               zeroSource{}, // for reproducible output; don't do this.
-         InsecureSkipVerify: true,         // test server certificate is not trusted.
-       },
-     },
-    }
-  : labels:
+  "client := &http.Client{\n Transport: &http.Transport{\n   TLSClientConfig: &tls.Config{\n     KeyLogWriter:       w,\n     MinVersion:         tls.VersionSSL30,\n     Rand:               zeroSource{}, // for reproducible output; don't do this.\n     InsecureSkipVerify: true,         // test server certificate is not trusted.\n   },\n },\n}\n":
+    labels:
     - source: |-
         tls.Config{
              KeyLogWriter:       w,
@@ -46,7 +36,7 @@ snapshots:
       style: secondary
       start: 139
       end: 155
-    - source: 'MinVersion:         tls.VersionSSL30'
+    - source: "MinVersion:         tls.VersionSSL30"
       style: secondary
       start: 119
       end: 155
@@ -60,3 +50,87 @@ snapshots:
       style: secondary
       start: 84
       end: 325
+  "func cfg() *tls.Config {\n\treturn &tls.Config{MinVersion: tls.VersionSSL30}\n}":
+    labels:
+    - source: "tls.Config{MinVersion: tls.VersionSSL30}"
+      style: primary
+      start: 34
+      end: 74
+    - source: tls.Config
+      style: secondary
+      start: 34
+      end: 44
+    - source: MinVersion
+      style: secondary
+      start: 45
+      end: 55
+    - source: tls
+      style: secondary
+      start: 57
+      end: 60
+    - source: VersionSSL30
+      style: secondary
+      start: 61
+      end: 73
+    - source: tls.VersionSSL30
+      style: secondary
+      start: 57
+      end: 73
+    - source: tls.VersionSSL30
+      style: secondary
+      start: 57
+      end: 73
+    - source: "MinVersion: tls.VersionSSL30"
+      style: secondary
+      start: 45
+      end: 73
+    - source: "{MinVersion: tls.VersionSSL30}"
+      style: secondary
+      start: 44
+      end: 74
+  "var serverTLS = tls.Config{\n\tServerName: \"example.test\",\n\tMinVersion: tls.VersionSSL30,\n}":
+    labels:
+    - source: |-
+        tls.Config{
+        	ServerName: "example.test",
+        	MinVersion: tls.VersionSSL30,
+        }
+      style: primary
+      start: 16
+      end: 89
+    - source: tls.Config
+      style: secondary
+      start: 16
+      end: 26
+    - source: MinVersion
+      style: secondary
+      start: 58
+      end: 68
+    - source: tls
+      style: secondary
+      start: 70
+      end: 73
+    - source: VersionSSL30
+      style: secondary
+      start: 74
+      end: 86
+    - source: tls.VersionSSL30
+      style: secondary
+      start: 70
+      end: 86
+    - source: tls.VersionSSL30
+      style: secondary
+      start: 70
+      end: 86
+    - source: "MinVersion: tls.VersionSSL30"
+      style: secondary
+      start: 58
+      end: 86
+    - source: |-
+        {
+        	ServerName: "example.test",
+        	MinVersion: tls.VersionSSL30,
+        }
+      style: secondary
+      start: 26
+      end: 89
