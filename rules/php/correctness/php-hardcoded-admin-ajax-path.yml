@@ -9,12 +9,25 @@ message: >-
 note: >-
   Single-file syntactic match on a string literal containing admin-ajax.php.
   It does not resolve whether the string is actually used as a request URL or
-  whether a different admin path is in effect.
+  whether a different admin path is in effect. A literal that is the first
+  (path) argument of admin_url(), network_admin_url() or self_admin_url() is
+  the recommended form and is not reported.
 rule:
   any:
     - kind: string
     - kind: encapsed_string
   regex: 'admin-ajax\.php'
+  not:
+    inside:
+      kind: argument
+      nthChild: 1
+      inside:
+        kind: arguments
+        inside:
+          kind: function_call_expression
+          has:
+            field: function
+            regex: '^\\?(admin_url|network_admin_url|self_admin_url)$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
