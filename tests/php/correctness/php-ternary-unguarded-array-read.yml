@@ -3,7 +3,12 @@ valid:
   - >-
     $nonce = isset( $_REQUEST['_ajax_nonce'] ) ? $_REQUEST['_ajax_nonce'] :
     $_REQUEST['_wpnonce'];
+  - "<?php $n = !empty( $_REQUEST['_ajax_nonce'] ) ? $_REQUEST['_ajax_nonce'] : '';"
+  - "<?php $n = array_key_exists( '_ajax_nonce', $_REQUEST ) ? $_REQUEST['_ajax_nonce'] : '';"
+  - "<?php $n = isset( $_REQUEST['_ajax_nonce'], $_REQUEST['x'] ) ? $_REQUEST['_ajax_nonce'] : '';"
 invalid:
   - >-
     $nonce = $_REQUEST['_ajax_nonce'] ? $_REQUEST['_ajax_nonce'] :
     $_REQUEST['_wpnonce'];
+  - "<?php $n = $_POST['_ajax_nonce'] ? $_POST['_ajax_nonce'] : '';"
+  - "<?php function f() { return $_REQUEST['_ajax_nonce'] ? $_REQUEST['_ajax_nonce'] : wp_create_nonce('a'); }"

@@ -1,6 +1,6 @@
 id: php-this-in-static-closure
 snapshots:
-  <?php $f = static function (int $x) { return $this->name; };:
+  "<?php $f = static function (int $x) { return $this->name; };":
     labels:
     - source: static function (int $x) { return $this->name; }
       style: primary
@@ -14,3 +14,45 @@ snapshots:
       style: secondary
       start: 45
       end: 50
+  "<?php class A { function f() { return array_map(static function ($x) { return $this->scale($x); }, $this->items); } }":
+    labels:
+    - source: static function ($x) { return $this->scale($x); }
+      style: primary
+      start: 48
+      end: 97
+    - source: static
+      style: secondary
+      start: 48
+      end: 54
+    - source: $this
+      style: secondary
+      start: 78
+      end: 83
+  "<?php class A { function f() { return static function () { return $this->x ?? 0; }; } }":
+    labels:
+    - source: static function () { return $this->x ?? 0; }
+      style: primary
+      start: 38
+      end: 82
+    - source: static
+      style: secondary
+      start: 38
+      end: 44
+    - source: $this
+      style: secondary
+      start: 66
+      end: 71
+  "<?php class A { function f() { return static function () { return $this; }; } }":
+    labels:
+    - source: static function () { return $this; }
+      style: primary
+      start: 38
+      end: 74
+    - source: static
+      style: secondary
+      start: 38
+      end: 44
+    - source: $this
+      style: secondary
+      start: 66
+      end: 71

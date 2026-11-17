@@ -1,5 +1,13 @@
 id: php-this-in-plain-function
 valid:
   - '<?php class A { function f() { return $this->get_var( ''SELECT 1'' ); } }'
+  - "<?php class A { function f() { return $this->get_var('a'); } function g() { return $this->get_var('b'); } }"
+  - "<?php trait T { function f() { return $this->get_var('a'); } }"
+  - "<?php class A { function f() { return function() { return $this->get_var('a'); }; } }"
+  - "<?php function f($db) { return $db->get_var('a'); }"
 invalid:
   - '<?php function f() { return $this->get_var( ''SELECT 1'' ); }'
+  - "<?php function f() { $r = $this->get_var( 'SELECT 1' ); return $r; }"
+  - "<?php function f($x) { if ($x) { return $this->get_var($x, 1); } }"
+  - "<?php function f() { return $this->get_var(); }"
+  - "<?php namespace N; function f() { return $this->get_var('a'); }"

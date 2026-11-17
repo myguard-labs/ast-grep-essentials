@@ -1,5 +1,11 @@
 id: php-translate-wrapped-sprintf
 valid:
   - '<?php echo sprintf(''Dir %s'', PLUGINDIR); ?>'
+  - "<?php printf(__('Dir %s'), $d);"
+  - "<?php echo sprintf(__('Dir %s', 'td'), $d);"
+  - "<?php $s = sprintf(__('Dir %s', 'td'), $d); _e($s);"
 invalid:
   - '<?php _e(sprintf(''Dir %s'', PLUGINDIR)); ?>'
+  - "<?php function show($n) { _e(sprintf('Found %d items', $n)); }"
+  - "<?php _e(sprintf($fmt, ...$args));"
+  - "<?php if ($ok) { _e(sprintf('Hello %s', wp_get_current_user()->display_name)); }"

@@ -1,5 +1,11 @@
 id: php-tostring-missing-return-type
 valid:
   - '<?php class A { public function __toString(): string { return ''''; } }'
+  - "<?php class A { public function __toString() : string { return 'x'; } }"
+  - "<?php class A { public function toString() { return 'x'; } }"
+  - "<?php class A { public function __toString(): string { return 'x'; } public function __get($n) { return 1; } }"
 invalid:
   - '<?php class A { public function __toString() { return ''''; } }'
+  - "<?php class A { final public function __toString() { return $this->n; } }"
+  - "<?php abstract class A { abstract public function __toString(); }"
+  - "<?php trait T { public function __toString() { return 'x'; } }"

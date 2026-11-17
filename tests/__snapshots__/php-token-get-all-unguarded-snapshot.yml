@@ -1,12 +1,48 @@
 id: php-token-get-all-unguarded
 snapshots:
-  ? "function tokens( $c ) {\n\t$t = token_get_all( $c );\n\treturn $t;\n}"
-  : labels:
+  "<?php function a($c) { if (extension_loaded('tokenizer')) { return token_get_all($c); } return []; }":
+    labels:
+    - source: token_get_all($c)
+      style: primary
+      start: 67
+      end: 84
+    - source: >-
+        function a($c) { if (extension_loaded('tokenizer')) { return token_get_all($c);
+        } return []; }
+      style: secondary
+      start: 6
+      end: 100
+  "<?php function a($c) { return array_filter(token_get_all($c), 'is_array'); }":
+    labels:
+    - source: token_get_all($c)
+      style: primary
+      start: 43
+      end: 60
+    - source: function a($c) { return array_filter(token_get_all($c), 'is_array'); }
+      style: secondary
+      start: 6
+      end: 76
+  "<?php function a($c) { return token_get_all($c, TOKEN_PARSE); }":
+    labels:
+    - source: token_get_all($c, TOKEN_PARSE)
+      style: primary
+      start: 30
+      end: 60
+    - source: function a($c) { return token_get_all($c, TOKEN_PARSE); }
+      style: secondary
+      start: 6
+      end: 63
+  "function tokens( $c ) {\n\t$t = token_get_all( $c );\n\treturn $t;\n}":
+    labels:
     - source: token_get_all( $c )
       style: primary
       start: 30
       end: 49
-    - source: "function tokens( $c ) {\n\t$t = token_get_all( $c );\n\treturn $t;\n}"
+    - source: |-
+        function tokens( $c ) {
+        	$t = token_get_all( $c );
+        	return $t;
+        }
       style: secondary
       start: 0
       end: 64

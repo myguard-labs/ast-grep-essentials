@@ -1,5 +1,11 @@
 id: php-token-get-all-unguarded
 valid:
   - "function tokens( $c ) {\n\tif ( ! function_exists( 'token_get_all' ) ) return array();\n\t$t = token_get_all( $c );\n\treturn $t;\n}"
+  - "<?php function a($c) { if (function_exists('token_get_all')) { return token_get_all($c); } return []; }"
+  - "<?php function a($c) { return function_exists('token_get_all') ? token_get_all($c) : []; }"
+  - "<?php function a($c) { if (!function_exists('token_get_all')) { return []; } return count(token_get_all($c)); }"
 invalid:
   - "function tokens( $c ) {\n\t$t = token_get_all( $c );\n\treturn $t;\n}"
+  - "<?php function a($c) { return token_get_all($c, TOKEN_PARSE); }"
+  - "<?php function a($c) { return array_filter(token_get_all($c), 'is_array'); }"
+  - "<?php function a($c) { if (extension_loaded('tokenizer')) { return token_get_all($c); } return []; }"
