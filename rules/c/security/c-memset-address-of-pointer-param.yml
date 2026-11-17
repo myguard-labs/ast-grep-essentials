@@ -8,11 +8,22 @@ message: >-
   pointer, which clears the pointer rather than the pointee.
 note: >-
   Purely syntactic check on a single file. It matches memset(&x, 0, sizeof(x))
-  with the same identifier in the address-of and sizeof positions; it does not
-  verify that x is a pointer-typed parameter, so it cannot confirm types or
-  aliasing.
+  with the same identifier in the address-of and sizeof positions; it reports
+  only when x is declared as a pointer (a parameter or local declared `T *x`)
+  in the enclosing function. The declaration check ignores block scope, and it
+  cannot confirm types or aliasing.
 rule:
-  pattern: 'memset(&$P, 0, sizeof($P))'
+  all:
+    - pattern: 'memset(&$P, 0, sizeof($P))'
+    - inside:
+        stopBy: end
+        kind: function_definition
+        has:
+          stopBy: end
+          kind: pointer_declarator
+          has:
+            field: declarator
+            pattern: $P
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -25,7 +36,6 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/467.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - "FP (high noise): 'struct s st; memset(&st, 0, sizeof(st));' on a local struct or array element is reported; the rule cannot tell a pointer from a non-pointer"
-    - "FP: 'memset(&buf[0], 0, sizeof(buf[0]))' is reported"
+    - "FP: 'void f(char *p) { { struct s p; memset(&p, 0, sizeof(p)); } }' is reported; the pointer-declaration check ignores block scope, so an inner redeclaration as a non-pointer still matches"
     - "FN: 'memset(&pi, 0, sizeof pi)' (sizeof without parentheses) is not reported"
     - "FN: 'memset(&(pi), 0, sizeof(pi))' (parenthesised address operand) is not reported"
