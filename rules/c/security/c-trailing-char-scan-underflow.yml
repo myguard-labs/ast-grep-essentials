@@ -29,6 +29,9 @@ rule:
           kind: binary_expression
           all:
             - has:
+                field: operator
+                regex: '^&&$'
+            - has:
                 field: left
                 any:
                   - pattern: '$N'
@@ -79,5 +82,6 @@ metadata:
     - 'FP: a bare N in a longer && chain is not recognised, e.g. while (a && n && s[--n] == '' '') is reported'
     - 'FP: unbraced loop body is not recognised as guarded, e.g. while (n > 0) if (s[--n] != '' '') break;'
     - 'FN: a bound test inside an || is accepted as a guard, e.g. while (n > 0 || a) { if (s[--n] == '' '') break; }'
+    - 'FN: an unguarded inner while nested in a guarded outer loop body is treated as guarded, e.g. while (n > 0) { while (s[--m] == '' '') { } }; a bound test nested under || or ! inside the left operand, e.g. (n > 0 || a) && s[--n], is accepted'
     - 'FN: while (--n > 0 && s[n] == '' '') { } wraps a size_t n of 0 to SIZE_MAX before the bound test and then reads s[n]; it is not reported because the decrement sits in the bound test, not in the index'
     - 'FN: do { } while (s[--n] == '' ''); and for (; s[--n] == '' '';) are missed (rule requires a while_statement)'
