@@ -3,7 +3,15 @@ valid:
   - >-
     HMODULE dll = LoadLibraryA("x"); FARPROC p = GetProcAddress(dll, "y"); if (p
     == NULL) { FreeLibrary(dll); return -1; }
+  - "HMODULE dll = LoadLibraryA(\"x\"); FARPROC p = GetProcAddress(dll, \"y\"); if (p == NULL) { log_err(); FreeLibrary(dll); return 0; }"
+  - "HMODULE dll = LoadLibraryA(\"x\"); FARPROC p = GetProcAddress(dll, \"y\"); if (p == NULL) { rc = -1; }"
+  - "HMODULE dll = LoadLibraryA(\"x\"); FARPROC p = GetProcAddress(dll, \"y\"); if (p != NULL) { return 0; }"
+  - "HMODULE dll = LoadLibraryA(\"x\"); FARPROC p = GetProcAddress(dll, \"y\"); if (p == NULL) { if (dll) { FreeLibrary(dll); } return -1; }"
 invalid:
   - >-
     HMODULE dll = LoadLibraryA("x"); FARPROC p = GetProcAddress(dll, "y"); if (p
     == NULL) { return -1; }
+  - "HMODULE dll = LoadLibraryA(\"x\"); FARPROC p = GetProcAddress(dll, \"y\"); if (p == NULL) { log_err(); return 0; }"
+  - "HMODULE dll = LoadLibraryA(\"x\"); FARPROC p = GetProcAddress(dll, \"y\"); if (p == NULL) { return NULL; }"
+  - "HMODULE dll = LoadLibraryA(\"x\"); FARPROC p = GetProcAddress(dll, \"y\"); if (p == NULL) { if (verbose) { return -1; } }"
+  - "HMODULE dll = LoadLibraryA(\"x\"); FARPROC p = GetProcAddress(dll, \"y\"); use(1); if (p == NULL) { return -1; }"

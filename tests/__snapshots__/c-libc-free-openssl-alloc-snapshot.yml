@@ -10,3 +10,53 @@ snapshots:
       style: secondary
       start: 0
       end: 28
+  "void f(const char *s) { char *p = OPENSSL_strdup(s); use(p); free(p); return; }":
+    labels:
+    - source: free(p);
+      style: primary
+      start: 61
+      end: 69
+    - source: char *p = OPENSSL_strdup(s);
+      style: secondary
+      start: 24
+      end: 52
+  "void f(size_t n) { char *p = OPENSSL_malloc(n); char *q = malloc(n); free(q); free(p); }":
+    labels:
+    - source: free(p);
+      style: primary
+      start: 78
+      end: 86
+    - source: char *p = OPENSSL_malloc(n);
+      style: secondary
+      start: 19
+      end: 47
+  "void f(size_t n) { unsigned char *p = OPENSSL_malloc(n); if (!p) return; use(p); free(p); }":
+    labels:
+    - source: free(p);
+      style: primary
+      start: 81
+      end: 89
+    - source: unsigned char *p = OPENSSL_malloc(n);
+      style: secondary
+      start: 19
+      end: 56
+  "void f(size_t n) { unsigned char *p = OPENSSL_malloc(n); use(p); free(p); }":
+    labels:
+    - source: free(p);
+      style: primary
+      start: 65
+      end: 73
+    - source: unsigned char *p = OPENSSL_malloc(n);
+      style: secondary
+      start: 19
+      end: 56
+  "void f(size_t n) { unsigned char *p = OPENSSL_zalloc(n); free(p); }":
+    labels:
+    - source: free(p);
+      style: primary
+      start: 57
+      end: 65
+    - source: unsigned char *p = OPENSSL_zalloc(n);
+      style: secondary
+      start: 19
+      end: 56

@@ -1,5 +1,14 @@
 id: c-libc-free-openssl-alloc
 valid:
   - 'char *p = OPENSSL_strdup(s); OPENSSL_free(p);'
+  - "void f(size_t n) { char *p = OPENSSL_malloc(n); OPENSSL_free(p); }"
+  - "void f(const char *s) { char *p = strdup(s); free(p); }"
+  - "void f(size_t n) { unsigned char *p = OPENSSL_zalloc(n); OPENSSL_clear_free(p, n); }"
+  - "void f(size_t n) { char *p = OPENSSL_malloc(n); char *q = malloc(n); OPENSSL_free(p); free(q); }"
 invalid:
   - 'char *p = OPENSSL_strdup(s); free(p);'
+  - "void f(size_t n) { unsigned char *p = OPENSSL_malloc(n); use(p); free(p); }"
+  - "void f(size_t n) { unsigned char *p = OPENSSL_zalloc(n); free(p); }"
+  - "void f(size_t n) { unsigned char *p = OPENSSL_malloc(n); if (!p) return; use(p); free(p); }"
+  - "void f(size_t n) { char *p = OPENSSL_malloc(n); char *q = malloc(n); free(q); free(p); }"
+  - "void f(const char *s) { char *p = OPENSSL_strdup(s); use(p); free(p); return; }"

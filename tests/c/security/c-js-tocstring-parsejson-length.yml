@@ -3,5 +3,13 @@ valid:
   - >-
     cstr = JS_ToCStringLen(cx, &len, str); str = JS_ParseJSON(cx, cstr, len,
     "<body>");
+  - "cstr = JS_ToCStringLen(cx, &len, str); v = JS_ParseJSON(cx, cstr, len, \"<b>\");"
+  - "v = JS_ParseJSON(cx, cstr, len, \"<b>\"); cstr = JS_ToCString(cx, str);"
+  - "cstr = JS_ToCString(cx, str); JS_FreeCString(cx, cstr); buf = JS_ToCStringLen(cx, &len, str2); v = JS_ParseJSON(cx, buf, len, \"<b>\");"
+  - "cstr = JS_ToCStringLen2(cx, &len, str, 0); v = JS_ParseJSON(cx, cstr, len, \"<b>\");"
 invalid:
   - 'cstr = JS_ToCString(cx, str); str = JS_ParseJSON(cx, cstr, len, "<body>");'
+  - "void f(void) { cstr = JS_ToCString(cx, str); if (!cstr) return; v = JS_ParseJSON(cx, cstr, n, \"<b>\"); }"
+  - "cstr = JS_ToCString(cx, str); other = 1; r = JS_ParseJSON(cx, cstr, len, \"<b>\");"
+  - "buf = JS_ToCString(cx, str); v = JS_ParseJSON(cx, buf, sizeof(buf), \"<b>\");"
+  - "struct s *r; cstr = JS_ToCString(cx, str); r->v = JS_ParseJSON(cx, cstr, len, \"<b>\");"

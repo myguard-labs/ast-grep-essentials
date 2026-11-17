@@ -1,5 +1,15 @@
 id: c-libpq-connect-failure-no-finish
 valid:
   - "PGconn *c = PQconnectdb(s);\nif (PQstatus(c) == CONNECTION_BAD) {\n\tPQfinish(c);\n\treturn 0;\n}"
+  - "PGconn *c = PQconnectdb(s);\nif (PQstatus(c) == CONNECTION_BAD) {\n\tfprintf(stderr, \"x\");\n\tPQfinish(c);\n\treturn 0;\n}"
+  - "PGconn *c = PQconnectdb(s);\nif (PQstatus(c) == CONNECTION_OK) {\n\treturn 1;\n}"
+  - "PGconn *c = PQconnectdb(s);\nif (PQstatus(c) != CONNECTION_BAD) {\n\treturn 1;\n}"
+  - "PGconn *c = PQconnectdb(s);\nif (PQstatus(c) == CONNECTION_BAD) {\n\tPQfinish(c);\n\tc = NULL;\n}"
+  - "PGconn *c = PQconnectdb(s);\nif (PQstatus(c) == CONNECTION_BAD) {\n\tif (c) { PQfinish(c); }\n\treturn 0;\n}"
 invalid:
   - "PGconn *c = PQconnectdb(s);\nif (PQstatus(c) == CONNECTION_BAD) {\n\treturn 0;\n}"
+  - "PGconn *c = PQconnectdb(s);\nif (PQstatus(c) == CONNECTION_BAD) {\n\tfprintf(stderr, \"%s\", PQerrorMessage(c));\n\treturn -1;\n}"
+  - "PGconn *c = PQconnectdb(s);\nif (PQstatus(db->conn) == CONNECTION_BAD) {\n\treturn NULL;\n}"
+  - "PGconn *c = PQconnectdb(s);\nif (PQstatus(c) == CONNECTION_BAD) {\n\tif (retry) { return 0; }\n}"
+  - "PGconn *c = PQconnectdb(s);\nif (PQstatus(c) == CONNECTION_BAD && !retry) {\n\treturn 0;\n}"
+  - "PGconn *c = PQconnectdb(s);\nif (PQstatus(c) == CONNECTION_BAD) {\n\tPQreset(c);\n\treturn 0;\n}"

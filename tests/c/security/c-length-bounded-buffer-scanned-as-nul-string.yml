@@ -3,7 +3,13 @@ valid:
   - >-
     static int f(const char *buf, size_t len) { const char *p = buf; while
     (len-- > 0 && *p) p++; return len > 0; }
+  - "static int f(const char *s) { while (*s) s++; return 0; }"
+  - "static int f(const char *buf, size_t len) { const char *p = buf, *end = buf + len; while (p < end && *p) p++; return p == end; }"
+  - "static int f(const char *buf, size_t len) { const char *p = buf; while (len > 0 && *p) { p++; len--; } return len > 0; }"
 invalid:
   - >-
     static int f(const char *buf, size_t len) { const char *p = buf; while (*p)
     p++; return len > 0; }
+  - "static int f(const char *buf, size_t len) { const char *p = buf; while (*p) { p++; } return len > 0; }"
+  - "static int f(const uint8_t *buf, const size_t len) { const uint8_t *p = buf; while (*p++) { } return len > 0; }"
+  - "static int f(const char *buf, size_t len, int mode) { const char *p = buf; while (*p) { if (mode) p++; else p += 2; } return 0; }"

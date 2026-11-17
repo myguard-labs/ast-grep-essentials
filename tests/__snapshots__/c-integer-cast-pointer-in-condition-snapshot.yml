@@ -1,8 +1,32 @@
 id: c-integer-cast-pointer-in-condition
 snapshots:
-  'unsigned int f(void *set, unsigned int count) { return (unsigned int) set ? count : 4; }':
+  "unsigned int f(struct s *set, unsigned int c) { return (unsigned int) set->p ? c : 4; }":
     labels:
-    - source: '(unsigned int) set ? count : 4'
+    - source: "(unsigned int) set->p ? c : 4"
+      style: primary
+      start: 55
+      end: 84
+  "unsigned int f(void *set, unsigned int c) { return (unsigned int) (set) ? c : 4; }":
+    labels:
+    - source: "(unsigned int) (set) ? c : 4"
+      style: primary
+      start: 51
+      end: 79
+  "unsigned int f(void *set, unsigned int c) { return c + ((unsigned int) set ? c : 4); }":
+    labels:
+    - source: "(unsigned int) set ? c : 4"
+      style: primary
+      start: 56
+      end: 82
+  "unsigned int f(void *set, unsigned int c) { unsigned int r = (unsigned int) set ? c : 4; return r; }":
+    labels:
+    - source: "(unsigned int) set ? c : 4"
+      style: primary
+      start: 61
+      end: 87
+  "unsigned int f(void *set, unsigned int count) { return (unsigned int) set ? count : 4; }":
+    labels:
+    - source: "(unsigned int) set ? count : 4"
       style: primary
       start: 55
       end: 85
