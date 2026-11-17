@@ -4,8 +4,39 @@ valid:
     static const char *check_name(const char *name) {
         return name;
     }
+  - |-
+    const unsigned char *f(void) {
+      return 0;
+    }
+  - |-
+    struct cfg;
+    const struct cfg *get(void) {
+      return 0;
+    }
+  - |-
+    int f(const int n) {
+      return n;
+    }
 invalid:
   - |-
     static const int check_name(const char *name) {
         return 0;
+    }
+  - |-
+    const int f(void) {
+      return 0;
+    }
+  - |-
+    static const unsigned long f(int x) {
+      return x;
+    }
+  - |-
+    struct pt { int x; };
+    const struct pt make(int x) {
+      struct pt p = { x };
+      return p;
+    }
+  - |-
+    int const f(void) {
+      return 0;
     }

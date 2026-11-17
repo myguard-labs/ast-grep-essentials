@@ -3,7 +3,46 @@ valid:
   - |-
     e[n] = ';';
     e[n + 1] = '\0';
+  - |-
+    void f(int *a, int *b, int i) {
+      a[i] = 1;
+      b[i] = 2;
+    }
+  - |-
+    void f(int *a, int i, int j) {
+      a[i] = 1;
+      a[j] = 2;
+    }
+  - |-
+    int g(int);
+    void f(int *a, int i) {
+      a[i] = 1;
+      g(a[i]);
+      a[i] = 2;
+    }
+  - |-
+    void f(int *a, int i) {
+      a[i] = 1;
+      a[i] += 2;
+    }
 invalid:
   - |-
     e[n] = ';';
     e[n] = '\0';
+  - |-
+    void f(int *buf, int i) {
+      buf[i] = 1;
+      buf[i] = 2;
+    }
+  - |-
+    struct s { int arr[4]; };
+    void f(struct s *p, int k, int a, int b) {
+      p->arr[k] = a;
+      p->arr[k] = b;
+    }
+  - |-
+    void f(char *out) {
+      out[0] = 1;
+      out[0] = 2;
+      out[0] = 3;
+    }

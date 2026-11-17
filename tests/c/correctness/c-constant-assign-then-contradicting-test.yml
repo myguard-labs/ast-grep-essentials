@@ -1,5 +1,11 @@
 id: c-constant-assign-then-contradicting-test
 valid:
   - "int f(int x) {\n\tint ret;\n\tret = 0;\n\tif (!ret && x) {\n\t\treturn -1;\n\t}\n\treturn 0;\n}"
+  - "int f(int x) {\n\tint ret;\n\tret = 1;\n\tif (ret && x) {\n\t\treturn -1;\n\t}\n\treturn 0;\n}"
+  - "int g(void);\nint f(int x) {\n\tint ret;\n\tret = 1;\n\tret = g();\n\tif (!ret && x) {\n\t\treturn -1;\n\t}\n\treturn 0;\n}"
+  - "int f(int x, int err) {\n\tint ret;\n\tret = 1;\n\tif (!err) {\n\t\treturn -1;\n\t}\n\treturn ret + x;\n}"
 invalid:
   - "int f(int x) {\n\tint ret;\n\tret = 1;\n\tif (!ret && x) {\n\t\treturn -1;\n\t}\n\treturn 0;\n}"
+  - "int f(int x) {\n\tint ret;\n\tret = 5;\n\tif (!ret) {\n\t\treturn -1;\n\t}\n\treturn x;\n}"
+  - "struct s { int ok; };\nint f(struct s *p, int x) {\n\tp->ok = 1;\n\tif (!p->ok && x > 0) {\n\t\treturn -1;\n\t}\n\treturn 0;\n}"
+  - "int f(int x) {\n\tint flag;\n\tflag = 12;\n\tif (x > 0 && !flag) {\n\t\treturn -1;\n\t}\n\treturn 0;\n}"

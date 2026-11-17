@@ -3,7 +3,27 @@ valid:
   - >-
     int f(int type, void *h TSRMLS_DC) { return zend_compile_file(h, type
     TSRMLS_CC) != NULL; }
+  - |-
+    void *f(int type, void *h) { return zend_compile_file(h, type); }
+  - |-
+    struct ctx { int type; };
+    void *f(struct ctx *c, void *h) { return zend_compile_file(h, c->type); }
+  - |-
+    void *f(unsigned mode, void *h) { return zend_compile_file(h, (int) mode); }
 invalid:
   - >-
     int f(int type, void *h TSRMLS_DC) { return zend_compile_file(h,
     ZEND_INCLUDE TSRMLS_CC) != NULL; }
+  - |-
+    int f(int type, void *h) { return zend_compile_file(h, ZEND_INCLUDE) != NULL; }
+  - |-
+    void *f(void *h) {
+      void *op = zend_compile_file (h, ZEND_INCLUDE);
+      return op;
+    }
+  - |-
+    void *f(void *h TSRMLS_DC) {
+      return zend_compile_file(
+          h,
+          ZEND_INCLUDE TSRMLS_CC);
+    }

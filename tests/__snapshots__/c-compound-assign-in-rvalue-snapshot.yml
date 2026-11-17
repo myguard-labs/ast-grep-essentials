@@ -1,6 +1,36 @@
 id: c-compound-assign-in-rvalue
 snapshots:
-  void f(unsigned long *out, unsigned long *s, unsigned long *t) { out[0] = s[0] ^= t[0]; }:
+  "struct s { int a; int b; };\nvoid f(struct s *p, int k) { p->a = p->b ^= k; }":
+    labels:
+    - source: p->a = p->b ^= k
+      style: primary
+      start: 57
+      end: 73
+    - source: p->b ^= k
+      style: secondary
+      start: 64
+      end: 73
+  "void f(int x, int y, int z) {\n  x = y ^= (z + 1);\n}":
+    labels:
+    - source: x = y ^= (z + 1)
+      style: primary
+      start: 32
+      end: 48
+    - source: y ^= (z + 1)
+      style: secondary
+      start: 36
+      end: 48
+  "void f(unsigned long *a, unsigned long b, unsigned long c) { a[1] = b ^= c; }":
+    labels:
+    - source: a[1] = b ^= c
+      style: primary
+      start: 61
+      end: 74
+    - source: b ^= c
+      style: secondary
+      start: 68
+      end: 74
+  "void f(unsigned long *out, unsigned long *s, unsigned long *t) { out[0] = s[0] ^= t[0]; }":
     labels:
     - source: out[0] = s[0] ^= t[0]
       style: primary

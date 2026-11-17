@@ -1,11 +1,7 @@
 id: c-comment-nested-opener
 snapshots:
-  ? |-
-    int a;
-    /* deprecated /*
-    int b;
-    /* end */
-  : labels:
+  "int a;\n/* deprecated /*\nint b;\n/* end */":
+    labels:
     - source: |-
         /* deprecated /*
         int b;
@@ -13,3 +9,23 @@ snapshots:
       style: primary
       start: 7
       end: 40
+  "int a;\n/* old /* new */\nint b;":
+    labels:
+    - source: /* old /* new */
+      style: primary
+      start: 7
+      end: 23
+  "int a;\n/* start of block /* inner\n   more */\nint b;":
+    labels:
+    - source: |-
+        /* start of block /* inner
+           more */
+      style: primary
+      start: 7
+      end: 44
+  int a; /* x /* y */ int b;:
+    labels:
+    - source: /* x /* y */
+      style: primary
+      start: 7
+      end: 19
