@@ -1,5 +1,11 @@
 id: c-ignored-call-result-then-return-success
 valid:
   - 'if (!php_date_initialize(obj, s, n, NULL, NULL, 0)) return 0; return 1;'
+  - 'int f(int fd) { (void)close(fd); return 1; }'
+  - 'int f(int fd) { int rc = close(fd); if (rc != 0) return 0; return 1; }'
+
 invalid:
   - 'php_date_initialize(obj, s, n, NULL, NULL, 0); return 1;'
+  - 'int f(int fd) { close(fd); return 1; }'
+  - 'int f(struct ctx *c, int fd) { c->close(fd); return 1; }'
+  - 'int f(int a) { if (a) { flush_all(); return 1; } return 0; }'

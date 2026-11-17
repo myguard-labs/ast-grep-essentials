@@ -1,12 +1,7 @@
 id: c-index-bound-uses-greater-than
 snapshots:
-  ? |-
-    #define N 8
-    int f(const int *t, int i) {
-     if (i > N) return -1;
-     return t[i];
-    }
-  : labels:
+  "#define N 8\nint f(const int *t, int i) {\n if (i > N) return -1;\n return t[i];\n}":
+    labels:
     - source: if (i > N) return -1;
       style: primary
       start: 42
@@ -19,3 +14,33 @@ snapshots:
       style: secondary
       start: 12
       end: 79
+  "int f(const int *t, int i) { if (i > N) return -1; else return t[i]; }":
+    labels:
+    - source: if (i > N) return -1; else return t[i];
+      style: primary
+      start: 29
+      end: 68
+    - source: int f(const int *t, int i) { if (i > N) return -1; else return t[i]; }
+      style: secondary
+      start: 0
+      end: 70
+  "int f(const int *t, int i, int n) { if (i > n) return NULL; return t[i]; }":
+    labels:
+    - source: if (i > n) return NULL;
+      style: primary
+      start: 36
+      end: 59
+    - source: int f(const int *t, int i, int n) { if (i > n) return NULL; return t[i]; }
+      style: secondary
+      start: 0
+      end: 74
+  "void f(const int *t, int i) { if (i > N) return; use(t[i]); }":
+    labels:
+    - source: if (i > N) return;
+      style: primary
+      start: 30
+      end: 48
+    - source: void f(const int *t, int i) { if (i > N) return; use(t[i]); }
+      style: secondary
+      start: 0
+      end: 61

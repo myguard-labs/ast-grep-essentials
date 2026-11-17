@@ -3,7 +3,13 @@ valid:
   - >-
     static int locks[NUM_LOCKS]; void f(int t) { if (t < 0 || t >= NUM_LOCKS)
     return; locks[t] = 0; }
+  - 'void f(int t) { if (t < 0 || t > NUM_LOCKS - 1) return; locks[t] = 0; }'
+  - 'void f(int t, int u) { if (t < 0 || u > NUM_LOCKS) return; locks[t] = 0; }'
+
 invalid:
   - >-
     static int locks[NUM_LOCKS]; void f(int t) { if (t < 0 || t > NUM_LOCKS)
     return; locks[t] = 0; }
+  - 'void f(int t) { if (t < 0 || t > NUM_LOCKS || bad(t)) return; locks[t] = 0; }'
+  - 'int f(int t) { int ok = (t < 0 || t > MAX_SLOTS); return ok; }'
+  - 'void f(int t) { if (t < 0 || t > NUM_LOCKS) { err(); return; } locks[t] = 0; }'

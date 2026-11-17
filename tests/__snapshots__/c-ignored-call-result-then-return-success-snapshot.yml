@@ -1,5 +1,47 @@
 id: c-ignored-call-result-then-return-success
 snapshots:
+  "int f(int a) { if (a) { flush_all(); return 1; } return 0; }":
+    labels:
+    - source: flush_all();
+      style: primary
+      start: 24
+      end: 36
+    - source: flush_all()
+      style: secondary
+      start: 24
+      end: 35
+    - source: return 1;
+      style: secondary
+      start: 37
+      end: 46
+  "int f(int fd) { close(fd); return 1; }":
+    labels:
+    - source: close(fd);
+      style: primary
+      start: 16
+      end: 26
+    - source: close(fd)
+      style: secondary
+      start: 16
+      end: 25
+    - source: return 1;
+      style: secondary
+      start: 27
+      end: 36
+  "int f(struct ctx *c, int fd) { c->close(fd); return 1; }":
+    labels:
+    - source: c->close(fd);
+      style: primary
+      start: 31
+      end: 44
+    - source: c->close(fd)
+      style: secondary
+      start: 31
+      end: 43
+    - source: return 1;
+      style: secondary
+      start: 45
+      end: 54
   "php_date_initialize(obj, s, n, NULL, NULL, 0); return 1;":
     labels:
     - source: php_date_initialize(obj, s, n, NULL, NULL, 0);

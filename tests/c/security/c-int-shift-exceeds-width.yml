@@ -1,5 +1,12 @@
 id: c-int-shift-exceeds-width
 valid:
   - 'void f(void) { unsigned int m = ~(1 << 30); (void)m; }'
+  - 'void f(void) { unsigned long long m = 1ULL << 40; (void)m; }'
+  - 'void f(void) { uint64_t m = (uint64_t)1 << 32; (void)m; }'
+  - 'void f(void) { int m = 1 << 16; (void)m; }'
+
 invalid:
   - 'void f(void) { unsigned int m = ~(1 << 60); (void)m; }'
+  - 'void f(void) { int m = 1 << 32; (void)m; }'
+  - 'void f(unsigned *x) { *x |= 1 << 33; }'
+  - 'void f(void) { long m = 1 << 100; (void)m; }'

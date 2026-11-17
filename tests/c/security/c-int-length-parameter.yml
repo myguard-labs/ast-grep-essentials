@@ -3,5 +3,11 @@ valid:
   - >-
     int zend_disable_class(char *class_name, size_t class_name_len) { return 0;
     }
+  - 'int f(char *s, ssize_t s_len) { return 0; }'
+  - 'int f(char *s, uint64_t buf_size) { return 0; }'
+
 invalid:
   - 'int zend_disable_class(char *class_name, int class_name_len) { return 0; }'
+  - 'int f(char *s, unsigned int buf_size) { return 0; }'
+  - 'int f(char *s, uint buf_length) { return 0; }'
+  - 'int f(char *s, const int s_len) { return 0; }'
