@@ -1,5 +1,32 @@
 id: c-ifdef-multiple-tokens
 snapshots:
+  "#  ifdef FOO || BAR\nint x;\n#endif":
+    labels:
+    - source: |-
+        #  ifdef FOO || BAR
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 33
+  "#ifdef FOO (BAR)\nint x;\n#endif":
+    labels:
+    - source: |-
+        #ifdef FOO (BAR)
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 30
+  "#ifdef FOO BAR\nint x;\n#endif":
+    labels:
+    - source: |-
+        #ifdef FOO BAR
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 28
   "#ifdef HAVE_IMAP_KRB && defined(HAVE_IMAP_AUTH_GSS)\nint x;\n#endif":
     labels:
     - source: |-
@@ -9,3 +36,14 @@ snapshots:
       style: primary
       start: 0
       end: 65
+  "void f(void) {\n#ifdef FOO && BAR\n  g();\n#endif\n}":
+    labels:
+    - source: |-
+        void f(void) {
+        #ifdef FOO && BAR
+          g();
+        #endif
+        }
+      style: primary
+      start: 0
+      end: 48

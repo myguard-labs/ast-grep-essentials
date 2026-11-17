@@ -4,8 +4,44 @@ valid:
     #ifndef HAVE_FOPENCOOKIE
     int x;
     #endif
+  - |-
+      #if defined(HAVE_X)
+      int x;
+      #endif
+  - |-
+      #if !defined(HAVE_X)
+      int x;
+      #endif
+  - |-
+      #if !HAVE_X && HAVE_Y
+      int x;
+      #endif
+  - |-
+      #if !__has_include(<x.h>)
+      int x;
+      #endif
 invalid:
   - |-
     #if !HAVE_FOPENCOOKIE
     int x;
     #endif
+  - |-
+      #if ! HAVE_X
+      int x;
+      #endif
+  - |-
+      #if !HAVE_X
+      int x;
+      #else
+      int y;
+      #endif
+  - |-
+      #  if !_WIN32
+      int x;
+      #  endif
+  - |-
+      void f(void) {
+      #if !HAVE_X
+        g();
+      #endif
+      }

@@ -4,8 +4,49 @@ valid:
     #ifdef FOO
     int x;
     #endif
+  - |-
+      #ifndef FOO_H
+      #define FOO_H
+      int x;
+      #endif
+  - |-
+      #ifdef FOO /* why */
+      int x;
+      #endif
+  - |-
+      #ifdef FOO // why
+      int x;
+      #endif
+  - |-
+      #if defined(FOO) && defined(BAR)
+      int x;
+      #endif
 invalid:
   - |-
     #ifdef FOO && BAR
     int x;
     #endif
+  - |-
+      #ifndef FOO && BAR
+      int x;
+      #endif
+  - |-
+      #ifdef FOO BAR
+      int x;
+      #endif
+  - |-
+      #  ifdef FOO || BAR
+      int x;
+      #endif
+  - |-
+      #ifdef A
+      #ifndef FOO BAR
+      int x;
+      #endif
+      #endif
+  - |-
+      void f(void) {
+      #ifdef FOO && BAR
+        g();
+      #endif
+      }

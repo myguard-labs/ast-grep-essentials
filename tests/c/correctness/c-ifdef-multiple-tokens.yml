@@ -4,8 +4,43 @@ valid:
     #ifdef HAVE_IMAP_KRB
     int x;
     #endif
+  - |-
+      #ifndef FOO_H
+      #define FOO_H
+      int x;
+      #endif
+  - |-
+      #ifdef FOO /* why */
+      int x;
+      #endif
+  - |-
+      #ifdef FOO // why
+      int x;
+      #endif
+  - |-
+      #if defined(FOO) && defined(BAR)
+      int x;
+      #endif
 invalid:
   - |-
     #ifdef HAVE_IMAP_KRB && defined(HAVE_IMAP_AUTH_GSS)
     int x;
     #endif
+  - |-
+      #ifdef FOO BAR
+      int x;
+      #endif
+  - |-
+      #  ifdef FOO || BAR
+      int x;
+      #endif
+  - |-
+      #ifdef FOO (BAR)
+      int x;
+      #endif
+  - |-
+      void f(void) {
+      #ifdef FOO && BAR
+        g();
+      #endif
+      }

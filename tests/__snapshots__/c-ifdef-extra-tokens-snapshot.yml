@@ -1,5 +1,25 @@
 id: c-ifdef-extra-tokens
 snapshots:
+  "#  ifdef FOO || BAR\nint x;\n#endif":
+    labels:
+    - source: |-
+        #  ifdef FOO || BAR
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 33
+  "#ifdef A\n#ifndef FOO BAR\nint x;\n#endif\n#endif":
+    labels:
+    - source: |-
+        #ifdef A
+        #ifndef FOO BAR
+        int x;
+        #endif
+        #endif
+      style: primary
+      start: 0
+      end: 45
   "#ifdef FOO && BAR\nint x;\n#endif":
     labels:
     - source: |-
@@ -9,3 +29,32 @@ snapshots:
       style: primary
       start: 0
       end: 31
+  "#ifdef FOO BAR\nint x;\n#endif":
+    labels:
+    - source: |-
+        #ifdef FOO BAR
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 28
+  "#ifndef FOO && BAR\nint x;\n#endif":
+    labels:
+    - source: |-
+        #ifndef FOO && BAR
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 32
+  "void f(void) {\n#ifdef FOO && BAR\n  g();\n#endif\n}":
+    labels:
+    - source: |-
+        void f(void) {
+        #ifdef FOO && BAR
+          g();
+        #endif
+        }
+      style: primary
+      start: 0
+      end: 48

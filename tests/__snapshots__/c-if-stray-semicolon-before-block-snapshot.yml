@@ -1,5 +1,66 @@
 id: c-if-stray-semicolon-before-block
 snapshots:
+  "void f(int a) {\n  if (a)\n    ;\n  {\n    a = 0;\n  }\n}":
+    labels:
+    - source: |-
+        if (a)
+            ;
+      style: primary
+      start: 18
+      end: 30
+    - source: ;
+      style: secondary
+      start: 29
+      end: 30
+    - source: |-
+        {
+            a = 0;
+          }
+      style: secondary
+      start: 33
+      end: 49
+  "void f(int a) { for (;;) { if (a == 1 && a > 0); { a = 0; } } }":
+    labels:
+    - source: if (a == 1 && a > 0);
+      style: primary
+      start: 27
+      end: 48
+    - source: ;
+      style: secondary
+      start: 47
+      end: 48
+    - source: "{ a = 0; }"
+      style: secondary
+      start: 49
+      end: 59
+  "void f(int a) { if ((a)); { a = 0; } }":
+    labels:
+    - source: if ((a));
+      style: primary
+      start: 16
+      end: 25
+    - source: ;
+      style: secondary
+      start: 24
+      end: 25
+    - source: "{ a = 0; }"
+      style: secondary
+      start: 26
+      end: 36
+  "void f(int a) { if (check(a)); { a = 0; } }":
+    labels:
+    - source: if (check(a));
+      style: primary
+      start: 16
+      end: 30
+    - source: ;
+      style: secondary
+      start: 29
+      end: 30
+    - source: "{ a = 0; }"
+      style: secondary
+      start: 31
+      end: 41
   "void f(int flag) { if (flag); { flag = 0; } }":
     labels:
     - source: if (flag);

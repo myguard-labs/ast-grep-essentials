@@ -1,5 +1,55 @@
 id: c-ifdef-inside-macro-arguments
 valid:
   - "#ifdef HAVE_TLSV1_X\n#define SSL_PROTOCOLS \"a\"\n#else\n#define SSL_PROTOCOLS \"b\"\n#endif\nstatic const command_rec cmds[] = {\n\tCMD(Protocol, RAW_ARGS, SSL_PROTOCOLS)\n};\n"
+  - |-
+      void f(void) {
+        g(a, b);
+      #ifdef X
+        h();
+      #endif
+      }
+  - |-
+      void f(void) {
+        g(a,
+          "#ifdef X");
+      }
+  - |-
+      #ifdef X
+      #define ARG 1
+      #else
+      #define ARG 2
+      #endif
+      void f(void) {
+        g(a,
+          ARG);
+      }
 invalid:
   - "static const command_rec cmds[] = {\n\tCMD(Protocol, RAW_ARGS,\n#ifdef HAVE_TLSV1_X\n\t\t\"a\")\n#else\n\t\t\"b\")\n#endif\n};\n"
+  - |-
+      void f(void) {
+        g(a,
+      #if X > 1
+          b,
+      #else
+          c,
+      #endif
+          d);
+      }
+  - |-
+      void f(void) {
+        g(h(a,
+      #ifdef X
+          b,
+      #endif
+          c));
+      }
+  - |-
+      void f(void) {
+        int r = g(a,
+      #ifdef X
+          b
+      #else
+          c
+      #endif
+        );
+      }
