@@ -1,5 +1,11 @@
 id: c-size-compare-0xffffffff-no-header
 valid:
   - 'if ((uint64_t) n > (uint64_t) 0xffffffff - sizeof(hdr_t)) { size = 1; }'
+  - 'if ((uint64_t) n > ((uint64_t) 0xffffffff - sizeof(box_t))) { size = 1; }'
+  - 'if ((uint64_t) n + 8 > (uint64_t) 0xffffffff) { size = 1; }'
+  - 'if ((uint64_t) n > UINT32_MAX - HDR_SIZE) { size = 1; }'
 invalid:
   - 'if ((uint64_t) n > (uint64_t) 0xffffffff) { size = 1; }'
+  - 'int f(size_t len) { return (uint64_t) len > (uint64_t) 0xffffffff; }'
+  - 'void f(size_t len) { while ((uint64_t) len > (uint64_t) 0xffffffff) { len >>= 1; } }'
+  - 'int f(size_t *p) { return (uint64_t) *p > (uint64_t) 0xffffffff; }'

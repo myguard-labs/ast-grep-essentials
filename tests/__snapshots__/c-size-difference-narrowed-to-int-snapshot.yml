@@ -1,8 +1,26 @@
 id: c-size-difference-narrowed-to-int
 snapshots:
-  int cmp(size_t a, size_t b) { return (int)(a - b); }:
+  "int cmp(const char *a, const char *b) { return (int)(strlen(a) - strlen(b)); }":
+    labels:
+    - source: return (int)(strlen(a) - strlen(b));
+      style: primary
+      start: 40
+      end: 76
+  "int cmp(size_t a, size_t b) { if (a != b) return (int)(a - b); return 0; }":
+    labels:
+    - source: return (int)(a - b);
+      style: primary
+      start: 42
+      end: 62
+  "int cmp(size_t a, size_t b) { return (int)(a - b); }":
     labels:
     - source: return (int)(a - b);
       style: primary
       start: 30
       end: 50
+  "int cmp(struct s *a, struct s *b) { return (int)(a->size - b->size); }":
+    labels:
+    - source: return (int)(a->size - b->size);
+      style: primary
+      start: 36
+      end: 68

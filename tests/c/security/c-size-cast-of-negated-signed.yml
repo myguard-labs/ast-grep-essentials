@@ -1,5 +1,11 @@
 id: c-size-cast-of-negated-signed
 valid:
   - 'size_t n = -(size_t)offset;'
+  - 'size_t n = (size_t)(-1);'
+  - 'size_t n = (size_t)off;'
+  - 'size_t n = (size_t)0 - (size_t)off;'
 invalid:
   - 'size_t n = (size_t)(-offset);'
+  - 'size_t f(int d) { return (size_t)(-d); }'
+  - 'void f(char *d, char *s, int off) { memcpy(d, s, (size_t)(-off)); }'
+  - 'size_t n = (size_t)( -delta );'

@@ -1,5 +1,11 @@
 id: c-size-difference-narrowed-to-int
 valid:
   - 'int cmp(size_t a, size_t b) { return (size_t)(a - b); }'
+  - 'int cmp(size_t a, size_t b) { return (a > b) - (a < b); }'
+  - 'int cmp(size_t a, size_t b) { return a > b ? 1 : (a < b ? -1 : 0); }'
+  - 'int cmp(size_t a, size_t b) { return (int)(a < b); }'
 invalid:
   - 'int cmp(size_t a, size_t b) { return (int)(a - b); }'
+  - 'int cmp(size_t a, size_t b) { if (a != b) return (int)(a - b); return 0; }'
+  - 'int cmp(struct s *a, struct s *b) { return (int)(a->size - b->size); }'
+  - 'int cmp(const char *a, const char *b) { return (int)(strlen(a) - strlen(b)); }'

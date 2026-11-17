@@ -1,5 +1,11 @@
 id: c-signed-overflow-check-after-add
 valid:
   - 'int f(int len) { if (len < 1) { return 0; } return 1; }'
+  - 'int f(int x) { if (x > INT_MAX - 100) { return 0; } return 1; }'
+  - 'int f(int len) { if (len < 0 || len > INT_MAX - 4) { return -1; } return len + 4; }'
+  - 'int f(int x) { int r; if (__builtin_add_overflow(x, 1, &r)) { return 0; } return r; }'
 invalid:
   - 'int f(int len) { if (len + 1 < 1) { return 0; } return 1; }'
+  - 'int f(int x) { if (x + 100 < x) { return 0; } return 1; }'
+  - 'int f(struct s *a) { if (a->n + 1 < a->n) { return 0; } return 1; }'
+  - 'int f(int off) { return off + 4 < off; }'

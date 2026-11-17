@@ -3,7 +3,13 @@ valid:
   - >-
     static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { int done =
     0; if (done) { return 0; } done++; return 0; }
+  - 'static int g = 0; static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { int n = g; return n; }'
+  - 'static int other_fn(int x) { static int calls = 0; calls++; return x + calls; }'
+  - 'static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { int *st = f->ctx; if (*st) { return 0; } (*st)++; return 0; }'
 invalid:
   - >-
     static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { static int
     done = 0; if (done) { return 0; } done++; return 0; }
+  - 'static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { static char *cache = NULL; if (cache) { return 0; } return 1; }'
+  - 'static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { int a = 1; static unsigned long count = 0; count += a; return 0; }'
+  - 'static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { static int seen = 0; if (seen) { return 0; } seen = 1; return 1; }'

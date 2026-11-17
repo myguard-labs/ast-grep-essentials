@@ -1,5 +1,11 @@
 id: c-signed-char-shift-left
 valid:
   - 'static int f(void *p) { return ((unsigned char *)p)[0] << 24; }'
+  - 'unsigned f(void *p) { return ((uint8_t *)p)[1] << 16; }'
+  - 'unsigned f(const void *p) { return ((const unsigned char *)p)[2] << 8; }'
+  - 'unsigned f(void *p) { return (unsigned char)((char *)p)[0] << 24; }'
 invalid:
   - 'static int f(void *p) { return ((char *)p)[0] << 24; }'
+  - 'int f(void *p) { return ((char *)p)[1] << 16; }'
+  - 'int f(void *buf, int i) { return ((char *)buf)[i] << 8; }'
+  - 'int f(void *p, int sh) { int x = ((char *)p)[0] << sh; return x; }'

@@ -1,5 +1,11 @@
 id: c-slash-only-absolute-path-test
 valid:
   - 'int is_abs(const char *p) { return p[0] == ''.''; }'
+  - 'int f(const char *p) { return p[1] == ''/''; }'
+  - 'int f(const char *p) { return p[0] == ''\0''; }'
+  - 'int f(const char *p) { return p[1] == '':''; }'
 invalid:
   - 'int is_abs(const char *p) { return p[0] == ''/''; }'
+  - 'int f(const char *path) { if (path[0] == ''/'') { return 1; } return 0; }'
+  - 'int f(char **argv) { return argv[1][0] == ''/''; }'
+  - 'int f(struct s *s) { return !(s->path[0] == ''/''); }'
