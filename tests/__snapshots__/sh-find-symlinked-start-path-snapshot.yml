@@ -1,6 +1,6 @@
 id: sh-find-symlinked-start-path
 snapshots:
-  if [ -d "$d" ]; then find "$d" -type f -name '*.sh'; fi:
+  "if [ -d \"$d\" ]; then find \"$d\" -type f -name '*.sh'; fi":
     labels:
     - source: find "$d" -type f -name '*.sh'
       style: primary
@@ -10,3 +10,37 @@ snapshots:
       style: secondary
       start: 0
       end: 55
+  "if [ -d \"$dir\" ]; then\n  echo \"scanning $dir\"\n  find \"$dir\" -type f -name '*.log' -exec gzip -- {} +\nfi":
+    labels:
+    - source: find "$dir" -type f -name '*.log' -exec gzip -- {} +
+      style: primary
+      start: 48
+      end: 100
+    - source: |-
+        if [ -d "$dir" ]; then
+          echo "scanning $dir"
+          find "$dir" -type f -name '*.log' -exec gzip -- {} +
+        fi
+      style: secondary
+      start: 0
+      end: 103
+  "if [ -d \"$dir\" ]; then find \"$dir\" -maxdepth 1 -type f; fi":
+    labels:
+    - source: find "$dir" -maxdepth 1 -type f
+      style: primary
+      start: 23
+      end: 54
+    - source: if [ -d "$dir" ]; then find "$dir" -maxdepth 1 -type f; fi
+      style: secondary
+      start: 0
+      end: 58
+  "if [ -d /etc/app.d ]; then find /etc/app.d -type f -print; fi":
+    labels:
+    - source: find /etc/app.d -type f -print
+      style: primary
+      start: 27
+      end: 57
+    - source: if [ -d /etc/app.d ]; then find /etc/app.d -type f -print; fi
+      style: secondary
+      start: 0
+      end: 61

@@ -1,5 +1,25 @@
 id: sh-grep-quiet-pipe-under-pipefail
 valid:
   - 'grep -qvE ''^#'' <<<"$changed"'
+  - |-
+    set -o pipefail
+    if grep -q foo <<<"$text"; then echo found; fi
+  - |-
+    set -o pipefail
+    if grep -q foo < <(printf "%s\n" "$text"); then echo found; fi
+  - |-
+    set -o pipefail
+    printf "%s\n" "$text" | grep -E "foo|bar" >/dev/null && echo found
 invalid:
   - 'printf ''%s\n'' "$changed" | grep -qvE ''^#'''
+  - |-
+    set -o pipefail
+    if echo "$text" | grep -q foo; then echo found; fi
+  - |-
+    set -o pipefail
+    echo "$text" | grep -iqE "foo|bar" && echo found
+  - |-
+    set -o pipefail
+    while read -r l; do
+      printf "%s\n" "$l" | grep -qF -- "$pat" && echo "$l"
+    done < "$file"

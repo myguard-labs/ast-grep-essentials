@@ -1,5 +1,22 @@
 id: sh-single-quoted-variable-reference
 valid:
   - 'sed -i "s/#T#/${VERSION}/" file.txt'
+  - |-
+    VERSION=1.2
+    echo "Building ${VERSION}"
+  - |-
+    NAME=web
+    printf '%s\n' "${NAME}"
+  - |-
+    VERSION=1.2
+    awk -v v="${VERSION}" '{ print v, $1 }' file.txt
 invalid:
   - 'sed -i ''s/#T#/${VERSION}/'' file.txt'
+  - |-
+    VERSION=1.2
+    curl -fsSo out.tgz 'https://example.org/${VERSION}/pkg.tgz'
+  - |-
+    export PATH='${HOME}/bin:/usr/bin'
+  - |-
+    NAME=x
+    echo 'hello' "$NAME" '${NAME}-suffix'

@@ -1,5 +1,20 @@
 id: sh-find-symlinked-start-path
 valid:
   - 'if [ -d "$d" ]; then find -H "$d" -type f -name ''*.sh''; fi'
+  - |-
+    if [ -d "$d" ]; then find -L "$d" -maxdepth 2 -name '*.conf'; fi
+  - |-
+    if [ -d "$d" ]; then find "$d"/ -type f -name '*.sh'; fi
+  - |-
+    if [ -d "$d" ]; then find -H "$d" -type f -print0 | xargs -0 rm -f --; fi
 invalid:
   - 'if [ -d "$d" ]; then find "$d" -type f -name ''*.sh''; fi'
+  - |-
+    if [ -d "$dir" ]; then find "$dir" -maxdepth 1 -type f; fi
+  - |-
+    if [ -d "$dir" ]; then
+      echo "scanning $dir"
+      find "$dir" -type f -name '*.log' -exec gzip -- {} +
+    fi
+  - |-
+    if [ -d /etc/app.d ]; then find /etc/app.d -type f -print; fi

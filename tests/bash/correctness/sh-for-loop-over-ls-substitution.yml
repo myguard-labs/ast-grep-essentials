@@ -1,7 +1,28 @@
 id: sh-for-loop-over-ls-substitution
 valid:
   - 'for core in test/perl-framework/t/core.*; do echo "$core"; done'
+  - |-
+    for f in "$dir"/*.log; do
+      [ -e "$f" ] || continue
+      gzip -- "$f"
+    done
+  - |-
+    shopt -s nullglob
+    files=(*.txt)
+    for f in "${files[@]}"; do
+      printf "%s\n" "$f"
+    done
+  - |-
+    for n in $(seq 1 3); do echo "$n"; done
 invalid:
   - >-
     for core in `ls test/perl-framework/t/core.* 2>/dev/null`; do echo "$core";
+    done
+  - |-
+    for f in $(ls "$dir"); do gzip "$f"; done
+  - |-
+    for f in $(ls -1 *.txt); do wc -l "$f"; done
+  - |-
+    for f in `ls -t "$dir"`; do
+      echo "$f"
     done

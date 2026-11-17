@@ -1,8 +1,26 @@
 id: sh-single-quoted-variable-reference
 snapshots:
-  sed -i 's/#T#/${VERSION}/' file.txt:
+  "NAME=x\necho 'hello' \"$NAME\" '${NAME}-suffix'":
     labels:
-    - source: '''s/#T#/${VERSION}/'''
+    - source: "'${NAME}-suffix'"
+      style: primary
+      start: 28
+      end: 44
+  "VERSION=1.2\ncurl -fsSo out.tgz 'https://example.org/${VERSION}/pkg.tgz'":
+    labels:
+    - source: "'https://example.org/${VERSION}/pkg.tgz'"
+      style: primary
+      start: 31
+      end: 71
+  "export PATH='${HOME}/bin:/usr/bin'":
+    labels:
+    - source: "'${HOME}/bin:/usr/bin'"
+      style: primary
+      start: 12
+      end: 34
+  "sed -i 's/#T#/${VERSION}/' file.txt":
+    labels:
+    - source: "'s/#T#/${VERSION}/'"
       style: primary
       start: 7
       end: 26
