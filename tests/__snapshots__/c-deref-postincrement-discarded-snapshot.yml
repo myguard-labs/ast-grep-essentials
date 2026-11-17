@@ -1,12 +1,52 @@
 id: c-deref-postincrement-discarded
 snapshots:
-  void f(char *s) { *s++; }:
+  "void f(char *p) { *p = 0; *p++; }":
     labels:
-    - source: '*s++;'
+    - source: "*p++;"
+      style: primary
+      start: 26
+      end: 31
+    - source: "*p++"
+      style: secondary
+      start: 26
+      end: 30
+  "void f(char *p) { if (p) { *p++; } }":
+    labels:
+    - source: "*p++;"
+      style: primary
+      start: 27
+      end: 32
+    - source: "*p++"
+      style: secondary
+      start: 27
+      end: 31
+  "void f(char *p, int n) { for (int i = 0; i < n; i++) { *p++; } }":
+    labels:
+    - source: "*p++;"
+      style: primary
+      start: 55
+      end: 60
+    - source: "*p++"
+      style: secondary
+      start: 55
+      end: 59
+  "void f(char *p, int n) { while (n--) *p++; }":
+    labels:
+    - source: "*p++;"
+      style: primary
+      start: 37
+      end: 42
+    - source: "*p++"
+      style: secondary
+      start: 37
+      end: 41
+  "void f(char *s) { *s++; }":
+    labels:
+    - source: "*s++;"
       style: primary
       start: 18
       end: 23
-    - source: '*s++'
+    - source: "*s++"
       style: secondary
       start: 18
       end: 22

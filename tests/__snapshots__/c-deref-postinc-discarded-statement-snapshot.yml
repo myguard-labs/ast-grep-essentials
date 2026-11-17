@@ -1,8 +1,32 @@
 id: c-deref-postinc-discarded-statement
 snapshots:
-  void f(char *key) { *key++; }:
+  "void f(char *key) { *key++; }":
     labels:
-    - source: '*key++;'
+    - source: "*key++;"
       style: primary
       start: 20
       end: 27
+  "void f(char *p) { *p = 0; *p++; }":
+    labels:
+    - source: "*p++;"
+      style: primary
+      start: 26
+      end: 31
+  "void f(char *p) { if (p) { *p++; } }":
+    labels:
+    - source: "*p++;"
+      style: primary
+      start: 27
+      end: 32
+  "void f(char *p, int n) { for (int i = 0; i < n; i++) { *p++; } }":
+    labels:
+    - source: "*p++;"
+      style: primary
+      start: 55
+      end: 60
+  "void f(char *p, int n) { while (n--) *p++; }":
+    labels:
+    - source: "*p++;"
+      style: primary
+      start: 37
+      end: 42
