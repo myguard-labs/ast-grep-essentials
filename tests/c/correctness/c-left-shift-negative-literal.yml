@@ -1,5 +1,11 @@
 id: c-left-shift-negative-literal
 valid:
   - 'int f(int n) { return (1) << n; }'
+  - 'unsigned f(int n) { return ~0U << n; }'
+  - 'int f(int n) { return -(1 << n); }'
+  - 'unsigned f(int n) { return (unsigned) -1 << n; }'
 invalid:
   - 'int f(int n) { return (-1) << n; }'
+  - 'int f(int n) { return -1 << n; }'
+  - 'long f(void) { return (-1L) << 3; }'
+  - 'int f(int n) { int x = -8 << n; return x; }'

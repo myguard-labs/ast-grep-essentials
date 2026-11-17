@@ -1,5 +1,11 @@
 id: c-int-store-through-cast-byte-pointer
 valid:
   - 'static void f(u_char *s) { *(unsigned char *) (s + 4) = 0; }'
+  - 'static void f(u_char *p, int v) { memcpy(p + 4, &v, sizeof(v)); }'
+  - |-
+    static void f(char *p) { *(char *) p = 'x'; }
 invalid:
   - 'static void f(u_char *s) { *(int *) (s + 4) = 0; }'
+  - 'static void f(u_char *p) { *(int *) p = 0; }'
+  - 'static void f(u_char *s, int x) { *(int *) (s + 4) = htonl(x); }'
+  - 'static void f(u_char *buf, size_t n) { *(int *) &buf[8] = n; }'
