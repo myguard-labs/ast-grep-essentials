@@ -1,5 +1,15 @@
 id: c-php-hex-decode-half-strlen-alloc
 snapshots:
+  "if (debug) { log(strlen(hex) % 2); } str = zend_string_alloc(strlen(hex) / 2, 0);":
+    labels:
+    - source: str = zend_string_alloc(strlen(hex) / 2, 0);
+      style: primary
+      start: 37
+      end: 81
+    - source: strlen(hex) / 2
+      style: secondary
+      start: 61
+      end: 76
   "if (flags & 1) return NULL; str = zend_string_alloc(strlen(hex) / 2, 0);":
     labels:
     - source: str = zend_string_alloc(strlen(hex) / 2, 0);
@@ -80,6 +90,56 @@ snapshots:
       style: secondary
       start: 24
       end: 47
+  "void f(char *hex) { size_t len = strlen(hex); if (debug) log(len % 2); str = zend_string_alloc(strlen(hex) / 2, 0); }":
+    labels:
+    - source: str = zend_string_alloc(strlen(hex) / 2, 0);
+      style: primary
+      start: 71
+      end: 115
+    - source: strlen(hex) / 2
+      style: secondary
+      start: 95
+      end: 110
+  "void f(char *hex) { size_t len = strlen(hex); if (flags & 1) return; str = zend_string_alloc(strlen(hex) / 2, 0); }":
+    labels:
+    - source: str = zend_string_alloc(strlen(hex) / 2, 0);
+      style: primary
+      start: 69
+      end: 113
+    - source: strlen(hex) / 2
+      style: secondary
+      start: 93
+      end: 108
+  "void f(char *hex) { size_t len = strlen(hex); len = 0; if (len % 2) return; str = zend_string_alloc(strlen(hex) / 2, 0); }":
+    labels:
+    - source: str = zend_string_alloc(strlen(hex) / 2, 0);
+      style: primary
+      start: 76
+      end: 120
+    - source: strlen(hex) / 2
+      style: secondary
+      start: 100
+      end: 115
+  "void f(char *hex) { size_t len = strlen(hex); len--; if (len % 2) return; str = zend_string_alloc(strlen(hex) / 2, 0); }":
+    labels:
+    - source: str = zend_string_alloc(strlen(hex) / 2, 0);
+      style: primary
+      start: 74
+      end: 118
+    - source: strlen(hex) / 2
+      style: secondary
+      start: 98
+      end: 113
+  "void f(char *hex) { size_t len; len = strlen(hex); len += 2; if (len & 1) return; str = zend_string_alloc(strlen(hex) / 2, 0); }":
+    labels:
+    - source: str = zend_string_alloc(strlen(hex) / 2, 0);
+      style: primary
+      start: 82
+      end: 126
+    - source: strlen(hex) / 2
+      style: secondary
+      start: 106
+      end: 121
   "void f(char *hex) { str = zend_string_alloc(strlen(hex) / 2, 0); }":
     labels:
     - source: str = zend_string_alloc(strlen(hex) / 2, 0);
@@ -90,3 +150,13 @@ snapshots:
       style: secondary
       start: 44
       end: 59
+  "void f(char *hex, char *o) { size_t len = strlen(o); if (len % 2) return; str = zend_string_alloc(strlen(hex) / 2, 0); }":
+    labels:
+    - source: str = zend_string_alloc(strlen(hex) / 2, 0);
+      style: primary
+      start: 74
+      end: 118
+    - source: strlen(hex) / 2
+      style: secondary
+      start: 98
+      end: 113

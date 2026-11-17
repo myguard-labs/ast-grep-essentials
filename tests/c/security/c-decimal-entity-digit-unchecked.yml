@@ -10,6 +10,7 @@ valid:
   - 'static int f(const char *buf, int n) { int ent = 0; if (buf[0] >= ''0'' && buf[0] <= ''9'') { ent = ent * 10 + (buf[0] - ''0''); } return ent; }'
   - 'static int f(const char *buf) { int ent = 0; if (buf[0] >= ''0'' && buf[0] <= ''9'' && ent < 100000) { ent = ent * 10 + (buf[0] - ''0''); } return ent; }'
   - 'static int f(char c) { int n = 0; if (isdigit((unsigned char)c) && n < 10) { n = n * 10 + (c - ''0''); } return n; }'
+  - 'static int f(const char *buf, int n, int x) { int ent = 0; for (int pos = 0; pos < n; pos++) { if (x && buf[pos] >= ''0'' && buf[pos] <= ''9'') { ent = ent * 10 + (buf[pos] - ''0''); } } return ent; }'
 invalid:
   - >-
     static int f(const char *buf, int n) { int ent = 0; for (int pos = 0; pos <
@@ -23,3 +24,5 @@ invalid:
   - 'static int f(const char *buf, int x) { int ent = 0; if (x >= ''0'' && x <= ''9'') { ent = ent * 10 + (buf[0] - ''0''); } return ent; }'
   - 'static int f(const char *buf, int x) { int ent = 0; if (isdigit(x)) { ent = ent * 10 + (buf[0] - ''0''); } return ent; }'
   - 'static int f(char c, int other) { int n = 0; if (isdigit(c) || other) { n = n * 10 + (c - ''0''); } return n; }'
+  - 'static int f(const char *buf, int n, int x) { int ent = 0; for (int pos = 0; pos < n; pos++) { if (x || buf[pos] >= ''0'' && buf[pos] <= ''9'') { ent = ent * 10 + (buf[pos] - ''0''); } } return ent; }'
+  - 'static int f(const char *buf, int n, int x) { int ent = 0; for (int pos = 0; pos < n; pos++) { if (x && buf[pos] >= ''0'' && buf[pos + 1] <= ''9'') { ent = ent * 10 + (buf[pos] - ''0''); } } return ent; }'
