@@ -3,5 +3,13 @@ valid:
   - >-
     switch ( isset( $_GET['action'] ) ? $_GET['action'] : 'show' ) { case
     'upgrade': break; default: break; }
+  - "<?php switch ( $action ) { case \"a\": break; }"
+  - "<?php switch ( isset( $_GET[\"action\"] ) ? sanitize_key( $_GET[\"action\"] ) : \"show\" ) { case \"a\": break; }"
+  - "<?php switch ( strtolower( $mode ) ) { case \"a\": break; }"
 invalid:
   - 'switch ( $_GET[''action''] ) { case ''upgrade'': break; default: break; }'
+  - "<?php switch ( $_GET[\"tab\"] ) { case \"a\": break; default: break; }"
+  - "<?php switch ($_GET[\"tab\"]) { case \"a\": break; }"
+  - "<?php function f() { switch ( $_GET [ \"tab\" ] ) { case 1: return 1; } }"
+  - "<?php switch ( $_GET[\"tab\"] ) : case \"a\": break; endswitch;"
+  - "<?php switch ( $_GET[\"tab\"] . \"x\" ) { case \"a\": break; }"

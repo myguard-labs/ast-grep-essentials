@@ -3,5 +3,14 @@ valid:
   - >-
     <?php if ( isset( $_GET['updated'] ) && $_GET['updated'] == 'true' ) { echo
     'ok'; } ?>
+  - "<?php if ( isset( $_GET[\"a\"] ) && $_GET[\"a\"] === \"b\" ) { echo 1; }"
+  - "<?php if ( array_key_exists( \"a\", $_GET ) && $_GET[\"a\"] != \"b\" ) { echo 1; }"
+  - "<?php if ( $local[\"a\"] == \"b\" ) { echo 1; }"
+  - "<?php if ( ( $_GET[\"a\"] ?? \"\" ) === \"b\" ) { echo 1; }"
 invalid:
   - '<?php if ( $_GET[''updated''] == ''true'' ) { echo ''ok''; } ?>'
+  - "<?php if ( $_POST[\"a\"] === \"b\" ) { echo 1; }"
+  - "<?php if ( $_REQUEST[\"a\"] != \"b\" ) { echo 1; }"
+  - "<?php if ( $_GET[\"a\"] !== \"b\" ) { echo 1; }"
+  - "<?php if ( $x && $_GET[\"a\"] == \"b\" ) { echo 1; }"
+  - "<?php if ( $_GET[\"a\"] == \"b\" || $x ) { echo 1; }"

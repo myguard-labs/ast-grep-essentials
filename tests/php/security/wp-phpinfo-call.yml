@@ -1,5 +1,13 @@
 id: wp-phpinfo-call
 valid:
   - '<?php phpversion();'
+  - "<?php $x = \"phpinfo()\";"
+  - "<?php $o->phpinfo();"
+  - "<?php /* phpinfo(); */"
+  - "<?php $info = php_uname();"
 invalid:
   - '<?php phpinfo( 8 );'
+  - "<?php if ( current_user_can( \"manage_options\" ) ) { phpinfo(); }"
+  - "<?php add_action( \"init\", function () { phpinfo(); } );"
+  - "<?php echo phpinfo();"
+  - "<?php function f() { return phpinfo(); }"

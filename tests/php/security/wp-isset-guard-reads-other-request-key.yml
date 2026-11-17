@@ -3,7 +3,15 @@ valid:
   - >-
     <?php if ( isset( $_POST['metakeyselect'] ) ) { $k =
     $_POST['metakeyselect']; } ?>
+  - "<?php if ( isset( $_POST['a'] ) ) { $k = $_POST['a']; $l = $_POST['a']; }"
+  - "<?php if ( isset( $_POST['a'] ) ) { $k = sanitize_text_field( wp_unslash( $_POST['a'] ) ); }"
+  - "<?php if ( isset( $_POST['a'] ) ) { $k = $other['b']; }"
 invalid:
   - >-
     <?php if ( isset( $_POST['metakeyselect'] ) ) { $k = $_POST['metakeyinput'];
     } ?>
+  - "<?php if ( isset( $_POST['key1'] ) ) { $k = $_POST['key2']; }"
+  - "<?php if ( isset( $_POST['key1'] ) ) { $k = sanitize_text_field( $_POST['key2'] ); }"
+  - "<?php if ( isset( $_POST['key1'] ) && $x ) { $k = $_POST['key2']; }"
+  - "<?php if ( isset( $_POST['key1'] ) ) { if ( $y ) { $k = $_POST['key2']; } }"
+  - "<?php if ( isset( $_POST['key1'] ) ): $k = $_POST['key2']; endif;"

@@ -1,5 +1,13 @@
 id: php-superglobal-index-unguarded
 valid:
   - '$d = 0 + ($_ENV[''TEST_PHP_DETAILED''] ?? 0);'
+  - "<?php $x = $_POST[\"a\"] ?? $_GET[\"a\"] ?? \"\";"
+  - "<?php if ( isset( $_GET[\"a\"], $_GET[\"b\"] ) ) { echo 1; }"
+  - "<?php if ( empty( $_COOKIE[\"a\"] ) ) { die(); }"
+  - "<?php $x = $local[\"a\"];"
 invalid:
   - '$d = 0 + $_ENV[''TEST_PHP_DETAILED''];'
+  - "<?php $x = $_GET[\"a\"];"
+  - "<?php $x = $_COOKIE[\"sid\"];"
+  - "<?php echo strtolower( $_SERVER[\"HTTP_HOST\"] );"
+  - "<?php if ( $_GET[\"a\"] ) { die(); }"
