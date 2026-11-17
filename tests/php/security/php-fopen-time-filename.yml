@@ -1,5 +1,11 @@
 id: php-fopen-time-filename
 valid:
   - '$h = fopen( ABSPATH . ''.'' . wp_generate_password( 12, false ), ''w'' );'
+  - '<?php $tmp = tempnam( $dir, ''up_'' ); $h = fopen( $tmp, ''w'' );'
+  - '<?php $h = fopen( $dir . ''/'' . bin2hex( random_bytes( 16 ) ), ''xb'' );'
+  - '<?php $h = fopen( wp_tempnam( ''x'' ), ''w'' );'
 invalid:
   - '$h = fopen( ABSPATH . ''.'' . time(), ''w'' );'
+  - '<?php $h = fopen( ''/tmp/log-'' . time(), ''a'' );'
+  - '<?php $h = fopen( $dir . ''/up-'' . time(), ''wb'' );'
+  - '<?php $h = fopen( $dir . time(), "w" );'

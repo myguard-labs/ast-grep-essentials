@@ -1,5 +1,11 @@
 id: php-hook-name-from-request-superglobal
 valid:
   - '<?php do_action( ''wp_ajax_'' . $action );'
+  - '<?php do_action( ''pfx_save'', $_GET[''a''] );'
+  - '<?php $act = $_GET[''a''] ?? ''''; if ( in_array( $act, array( ''save'', ''load'' ), true ) ) { do_action( ''x_'' . $act ); }'
+  - '<?php do_action( ''x_fixed'' );'
 invalid:
   - '<?php do_action( ''wp_ajax_'' . $_GET[''action''] );'
+  - '<?php do_action( "my_" . $_GET[ $key ] );'
+  - '<?php do_action( ''x_'' . $_POST[''a''] );'
+  - '<?php do_action( ''x_'' . $_REQUEST[''a''] );'
