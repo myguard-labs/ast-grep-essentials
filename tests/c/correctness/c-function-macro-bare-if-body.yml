@@ -1,5 +1,17 @@
 id: c-function-macro-bare-if-body
 valid:
   - '#define exit(s) do { if (s) { pressanykey(); } exit(s); } while (0)'
+  - |-
+    #define CHECK(s) do { if (s) { fail(); } cleanup(s); } while (0)
+  - |-
+    #define CHECK(s) { if (s) { fail(); } cleanup(s); }
+  - |-
+    #define IS_OK(s) ((s) != NULL)
 invalid:
   - '#define exit(s) if (s) { pressanykey(); } exit(s);'
+  - |-
+    #define CHECK(s) if (s) { fail(); } cleanup(s);
+  - |-
+    #define CHECK(p) if ((p) == NULL) { abort(); } use(p);
+  - |-
+    #define CHECK() if (err) { fail(); } cleanup();

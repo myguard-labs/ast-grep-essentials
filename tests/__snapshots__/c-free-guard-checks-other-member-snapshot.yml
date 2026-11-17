@@ -1,9 +1,59 @@
 id: c-free-guard-checks-other-member
 snapshots:
-  ? |-
-    struct s { char *a; char *b; };
-    void f(struct s *p) { if (p->a != NULL) { free(p->b); } }
-  : labels:
+  "struct s { char *a; char *abuf; };\nvoid f(struct s *p) {\n    if (p->a != NULL) {\n        free(p->abuf);\n    }\n}":
+    labels:
+    - source: |-
+        if (p->a != NULL) {
+                free(p->abuf);
+            }
+      style: primary
+      start: 61
+      end: 109
+    - source: p->a != NULL
+      style: secondary
+      start: 65
+      end: 77
+    - source: free(p->abuf)
+      style: secondary
+      start: 89
+      end: 102
+  "struct s { char *a; char *b; };\nvoid f(struct s *p) {\n    if (p->a != NULL)\n        free(p->b);\n}":
+    labels:
+    - source: |-
+        if (p->a != NULL)
+                free(p->b);
+      style: primary
+      start: 58
+      end: 95
+    - source: p->a != NULL
+      style: secondary
+      start: 62
+      end: 74
+    - source: free(p->b)
+      style: secondary
+      start: 84
+      end: 94
+  "struct s { char *a; char *b; };\nvoid f(struct s *p) {\n    if (p->a != NULL) {\n        log_release(p);\n        free(p->b);\n        p->b = NULL;\n    }\n}":
+    labels:
+    - source: |-
+        if (p->a != NULL) {
+                log_release(p);
+                free(p->b);
+                p->b = NULL;
+            }
+      style: primary
+      start: 58
+      end: 148
+    - source: p->a != NULL
+      style: secondary
+      start: 62
+      end: 74
+    - source: free(p->b)
+      style: secondary
+      start: 110
+      end: 120
+  "struct s { char *a; char *b; };\nvoid f(struct s *p) { if (p->a != NULL) { free(p->b); } }":
+    labels:
     - source: if (p->a != NULL) { free(p->b); }
       style: primary
       start: 54

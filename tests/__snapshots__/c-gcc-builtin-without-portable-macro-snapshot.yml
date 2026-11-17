@@ -6,3 +6,21 @@ snapshots:
       style: primary
       start: 11
       end: 29
+  "struct hdr { int len; char data[8]; };\nunsigned long base(void) { return __builtin_offsetof(struct hdr, data) + 1; }":
+    labels:
+    - source: __builtin_offsetof
+      style: primary
+      start: 73
+      end: 91
+  "struct s { int a; int m; };\nint too_small(unsigned long n) {\n    if (n < __builtin_offsetof(struct s, m))\n        return 1;\n    return 0;\n}":
+    labels:
+    - source: __builtin_offsetof
+      style: primary
+      start: 73
+      end: 91
+  "struct s { int a; int m; };\nunsigned long off(void) { return __builtin_offsetof(struct s, m); }":
+    labels:
+    - source: __builtin_offsetof
+      style: primary
+      start: 61
+      end: 79

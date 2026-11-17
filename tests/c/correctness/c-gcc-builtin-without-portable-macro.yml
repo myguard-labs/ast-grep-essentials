@@ -1,5 +1,30 @@
 id: c-gcc-builtin-without-portable-macro
 valid:
   - 'size_t n = offsetof(struct s, m);'
+  - |-
+    #include <stddef.h>
+    struct s { int a; int m; };
+    size_t off(void) { return offsetof(struct s, m); }
+  - |-
+    #include <stddef.h>
+    struct s { int a; int m; };
+    _Static_assert(offsetof(struct s, m) == sizeof(int), "layout");
+  - |-
+    #include <stddef.h>
+    struct hdr { int len; char data[8]; };
+    size_t base(void) { return offsetof(struct hdr, data); }
 invalid:
   - 'size_t n = __builtin_offsetof(struct s, m);'
+  - |-
+    struct s { int a; int m; };
+    unsigned long off(void) { return __builtin_offsetof(struct s, m); }
+  - |-
+    struct s { int a; int m; };
+    int too_small(unsigned long n) {
+        if (n < __builtin_offsetof(struct s, m))
+            return 1;
+        return 0;
+    }
+  - |-
+    struct hdr { int len; char data[8]; };
+    unsigned long base(void) { return __builtin_offsetof(struct hdr, data) + 1; }

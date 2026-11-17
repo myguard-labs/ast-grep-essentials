@@ -1,5 +1,17 @@
 id: c-function-like-macro-multi-stmt-no-do-while
 valid:
   - '#define RETURN_LEN(s) do { foo(s); return; } while (0)'
+  - |-
+    #define SWAP_INT(a, b) do { int t = a; a = b; b = t; } while (0)
+  - |-
+    #define MAX_OF(a, b) ((a) > (b) ? (a) : (b))
+  - |-
+    #define BUMP(a, b, c) do { a++; b++; c++; } while (0)
 invalid:
   - '#define RETURN_LEN(s) { foo(s); return; }'
+  - |-
+    #define SWAP_INT(a, b) { int t = a; a = b; b = t; }
+  - |-
+    #define BUMP(a, b, c) { a++; b++; c++; }
+  - |-
+    #define CLEAR(p) {  (p)->a = 0;  (p)->b = 0;  }

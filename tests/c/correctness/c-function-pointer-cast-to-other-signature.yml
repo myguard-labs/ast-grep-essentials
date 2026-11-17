@@ -4,8 +4,44 @@ valid:
     typedef int (*cb_t)(void *ctx, int v);
     int use(cb_t fn, void *ctx);
     int run(void *ctx) { return use((void *)ctx, ctx); }
+  - |-
+    typedef int (*cb_t)(void *ctx, int v);
+    int use(cb_t fn, void *ctx);
+    int other(int x);
+    int same(void *ctx, int v);
+    int run(void *ctx) { return use(same, ctx); }
+  - |-
+    typedef int (*cb_t)(void *ctx, int v);
+    int use(cb_t fn, void *ctx);
+    int other(int x);
+    int same(void *ctx, int v);
+    int run(void *ctx) { cb_t fn = same; return fn(ctx, 1); }
+  - |-
+    typedef int (*cb_t)(void *ctx, int v);
+    int use(cb_t fn, void *ctx);
+    int other(int x);
+    int same(void *ctx, int v);
+    int run(long n) { return other((int)n); }
 invalid:
   - |-
     typedef int (*cb_t)(void *ctx, int v);
     int use(cb_t fn, void *ctx);
     int run(void *ctx) { return use((cb_t)ctx, ctx); }
+  - |-
+    typedef int (*cb_t)(void *ctx, int v);
+    int use(cb_t fn, void *ctx);
+    int other(int x);
+    int same(void *ctx, int v);
+    int run(void *ctx) { return use((cb_t)other, ctx); }
+  - |-
+    typedef int (*cb_t)(void *ctx, int v);
+    int use(cb_t fn, void *ctx);
+    int other(int x);
+    int same(void *ctx, int v);
+    int run(void *ctx) { cb_t fn = (cb_t)other; return fn(ctx, 1); }
+  - |-
+    typedef int (*cb_t)(void *ctx, int v);
+    int use(cb_t fn, void *ctx);
+    int other(int x);
+    int same(void *ctx, int v);
+    int run(void *ctx) { return ((cb_t)other)(ctx, 1); }
