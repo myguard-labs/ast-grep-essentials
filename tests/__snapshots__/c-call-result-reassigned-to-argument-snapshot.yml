@@ -1,5 +1,59 @@
 id: c-call-result-reassigned-to-argument
 snapshots:
+  "int f(char *name) { name = strip(name); if (!name) { return -1; } return 0; }":
+    labels:
+    - source: name = strip(name);
+      style: primary
+      start: 20
+      end: 39
+    - source: "!name"
+      style: secondary
+      start: 44
+      end: 49
+    - source: "!name"
+      style: secondary
+      start: 44
+      end: 49
+    - source: if (!name) { return -1; }
+      style: secondary
+      start: 40
+      end: 65
+  "void f(S *s) { s->buf = dup(s->buf); if (!s->buf) return; }":
+    labels:
+    - source: s->buf = dup(s->buf);
+      style: primary
+      start: 15
+      end: 36
+    - source: "!s->buf"
+      style: secondary
+      start: 41
+      end: 48
+    - source: "!s->buf"
+      style: secondary
+      start: 41
+      end: 48
+    - source: if (!s->buf) return;
+      style: secondary
+      start: 37
+      end: 57
+  "void f(char *p) { p = dup(p); if (!p) { return; } else { use(p); } }":
+    labels:
+    - source: p = dup(p);
+      style: primary
+      start: 18
+      end: 29
+    - source: "!p"
+      style: secondary
+      start: 34
+      end: 36
+    - source: "!p"
+      style: secondary
+      start: 34
+      end: 36
+    - source: if (!p) { return; } else { use(p); }
+      style: secondary
+      start: 30
+      end: 66
   zobj = init(zobj); if (!zobj) return err;:
     labels:
     - source: zobj = init(zobj);

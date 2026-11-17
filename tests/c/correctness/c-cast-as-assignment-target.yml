@@ -1,5 +1,11 @@
 id: c-cast-as-assignment-target
 valid:
   - 'void f(char *p, unsigned long n) { p += n; }'
+  - 'void f(long a, long b) { long c = (long)a + b; (void)c; }'
+  - 'void f(char *p, unsigned long n) { *(char *)p += n; }'
+  - 'void f(long a, long b) { a = (long)(a ^ b); }'
 invalid:
   - 'void f(char *p, unsigned long n) { (char *)p += n; }'
+  - 'void f(long a, long b) { (long)a -= b; }'
+  - 'void f(unsigned *p) { (unsigned)*p <<= 2; }'
+  - 'void f(char c) { (char)c |= 1; }'

@@ -1,5 +1,11 @@
 id: c-cast-wraps-comparison-before-ternary
 valid:
   - 'int f(long x) { int s = (int)(x < 0 ? 0 : x); return s; }'
+  - 'int f(long x) { int s = x < 0 ? 0 : (int)x; return s; }'
+  - 'int f(long x) { int s = ((int)x < 0) ? 0 : 1; return s; }'
+  - 'int f(long a, long b) { int s = (int)(a < b ? a : b); return s; }'
 invalid:
   - 'int f(long x) { int s = (int) ((int)x < 0) ? 0 : x; return s; }'
+  - 'int f(long a, long b) { int s = (int) (a < b) ? a : b; return s; }'
+  - 'int f(long a, long b) { g((int)(a < b) ? a : b); return 0; }'
+  - 'int f(long a, long b) { return (int)(a < b) ? a : b; }'
