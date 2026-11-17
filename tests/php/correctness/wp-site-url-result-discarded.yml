@@ -1,5 +1,13 @@
 id: wp-site-url-result-discarded
 valid:
   - '<a href="<?php echo site_url(''wp-login.php''); ?>">Log in</a>'
+  - '<?php $u = site_url( ''wp-login.php'' );'
+  - '<?php function f() { return site_url(); }'
+  - '<?php echo esc_url( site_url( ''/x'', ''https'' ) );'
+  - '<?php $this->site_url( ''/x'' );'
 invalid:
   - '<a href="<?php site_url(''wp-login.php''); ?>">Log in</a>'
+  - '<?php site_url();'
+  - '<?php function f() { site_url( ''/x'', ''https'' ); }'
+  - '<?php if ( $x ) { site_url( ''/x'' ); }'
+  - '<?php site_url( home_url( ''/x'' ) );'

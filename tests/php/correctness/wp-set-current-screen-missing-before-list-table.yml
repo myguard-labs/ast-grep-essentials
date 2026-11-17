@@ -3,7 +3,14 @@ valid:
   - >-
     <?php function f() { set_current_screen( 'edit-post' ); $wp_list_table =
     get_list_table( 'WP_Terms_List_Table' ); return $wp_list_table; }
+  - '<?php function f() { set_current_screen(); return get_list_table( ''WP_Posts_List_Table'' ); }'
+  - '<?php function f() { set_current_screen( ''edit-post'' ); if ( true ) { return get_list_table( ''WP_Posts_List_Table'', array( ''screen'' => ''edit-post'' ) ); } }'
+  - '<?php function f() { $id = ''edit-post''; set_current_screen( $id ); $t = get_list_table( ''WP_Posts_List_Table'' ); return $t; }'
 invalid:
   - >-
     <?php function f() { $wp_list_table = get_list_table( 'WP_Terms_List_Table'
     ); return $wp_list_table; }
+  - '<?php function f() { if ( true ) { return get_list_table( ''WP_Posts_List_Table'' ); } }'
+  - '<?php function a() { set_current_screen( ''x'' ); } function b() { return get_list_table( ''WP_Posts_List_Table'' ); }'
+  - '<?php function f() { $s = get_current_screen(); return get_list_table( ''WP_Posts_List_Table'', array( ''screen'' => $s ) ); }'
+  - '<?php function f() { my_set_current_screen( ''x'' ); return get_list_table( ''WP_Terms_List_Table'' ); }'

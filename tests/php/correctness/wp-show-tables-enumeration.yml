@@ -1,5 +1,11 @@
 id: wp-show-tables-enumeration
 valid:
   - '<?php $tables = $cache->get_col(''SHOW TABLES'');'
+  - '<?php $ids = $wpdb->get_col( ''SELECT user_id FROM wp_usermeta WHERE meta_key = \''x\'''' );'
+  - '<?php $t = $wpdb->get_col( ''SHOW TABLES LIKE \''wp_posts\'''' );'
+  - '<?php $ids = $wpdb->get_col( ''SELECT ID FROM wp_posts'' );'
 invalid:
   - '<?php $tables = $wpdb->get_col(''SHOW TABLES'');'
+  - '<?php function f() { return $wpdb->get_col( ''SHOW TABLES'' ); }'
+  - '<?php foreach ( $wpdb->get_col( ''SHOW TABLES'' ) as $t ) { echo $t; }'
+  - '<?php $n = count( $wpdb->get_col( ''SHOW TABLES'' ) );'
