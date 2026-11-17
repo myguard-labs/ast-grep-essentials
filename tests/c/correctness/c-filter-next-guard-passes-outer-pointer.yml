@@ -1,5 +1,11 @@
 id: c-filter-next-guard-passes-outer-pointer
 valid:
   - '#define F(s,t) ((t)->next ? (t)->next->fops->flush((s), (t)->next, 0) : 0)'
+  - '#define F(s,t) ((t) ? (t)->fops->flush((s), (t), 0) : 0)'
+  - '#define F(s,t) ((t)->next ? (t)->next->fops->flush((s), (t)->next) : 0)'
+  - '#define F(s,t) ((t)->next ? (t)->next->fops->close((s), (t)->next, 1) : 0)'
 invalid:
   - '#define F(s,t) ((t)->next ? (t)->next->fops->flush((s), (t), 0) : 0)'
+  - '#define F(s,t) ((t)->next ? (t)->next->fops->flush((s), (t)) : 0)'
+  - '#define F(s,t) ((t)->next ? (t)->next->fops->close((s), (t), 1) : 0)'
+  - '#define F(s,t) ((t)->next ? (t)->next->fops->write((s), (t), 4) : 0)'

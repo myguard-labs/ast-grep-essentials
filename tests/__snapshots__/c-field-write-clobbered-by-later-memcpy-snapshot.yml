@@ -1,5 +1,23 @@
 id: c-field-write-clobbered-by-later-memcpy
 snapshots:
+  "dst->a = 1;\nlog_it();\nmemcpy(dst, src, sizeof(*dst));":
+    labels:
+    - source: memcpy(dst, src, sizeof(*dst));
+      style: primary
+      start: 22
+      end: 53
+    - source: dst->a
+      style: secondary
+      start: 0
+      end: 6
+    - source: dst->a = 1
+      style: secondary
+      start: 0
+      end: 10
+    - source: dst->a = 1;
+      style: secondary
+      start: 0
+      end: 11
   "dst->bits |= 4;\nmemcpy(dst, src, sizeof(*dst));":
     labels:
     - source: memcpy(dst, src, sizeof(*dst));
@@ -18,3 +36,39 @@ snapshots:
       style: secondary
       start: 0
       end: 15
+  "dst->len = n;\nmemcpy(dst, src, sizeof(*dst));":
+    labels:
+    - source: memcpy(dst, src, sizeof(*dst));
+      style: primary
+      start: 14
+      end: 45
+    - source: dst->len
+      style: secondary
+      start: 0
+      end: 8
+    - source: dst->len = n
+      style: secondary
+      start: 0
+      end: 12
+    - source: dst->len = n;
+      style: secondary
+      start: 0
+      end: 13
+  "void f(void) {\n p->hdr = h;\n memcpy(p, buf, sizeof(*p));\n}":
+    labels:
+    - source: memcpy(p, buf, sizeof(*p));
+      style: primary
+      start: 29
+      end: 56
+    - source: p->hdr
+      style: secondary
+      start: 16
+      end: 22
+    - source: p->hdr = h
+      style: secondary
+      start: 16
+      end: 26
+    - source: p->hdr = h;
+      style: secondary
+      start: 16
+      end: 27

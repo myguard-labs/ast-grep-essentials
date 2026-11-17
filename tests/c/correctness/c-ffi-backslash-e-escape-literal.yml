@@ -1,5 +1,13 @@
 id: c-ffi-backslash-e-escape-literal
 valid:
   - 'static const char *s = "\n";'
+  - 'static const char *s = "\\e";'
+  - 'static const char *s = "\x1b[0m";'
+  - |-
+    static const char c = '\033';
 invalid:
   - 'static const char *s = "\e";'
+  - |-
+    static const char c = '\e';
+  - 'static const char *s = "\e[0m";'
+  - 'static const char *s = "abc\e" "def";'

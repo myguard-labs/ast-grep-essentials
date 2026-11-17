@@ -6,9 +6,41 @@ valid:
     if (!ce) {
      zend_error_noreturn(E_ERROR, "missing");
     }
+  - |-
+    ce = zend_fetch_class(n, l, 0);
+    if (!ce) {
+     return;
+    }
+  - |-
+    fn = zend_hash_find_ptr(ht, name);
+    if (!fn) {
+     zend_throw_error(NULL, "missing");
+     return;
+    }
+  - |-
+    ce = zend_lookup_class(name);
+    if (ce) {
+     use(ce);
+    }
 invalid:
   - |-
     ce = zend_fetch_class(n, l, 0);
     if (!ce) {
      zend_error_noreturn(E_ERROR, "missing");
+    }
+  - |-
+    fn = zend_hash_find_ptr(ht, name);
+    if (!fn) {
+     zend_error_noreturn(E_ERROR, "no %s", ZSTR_VAL(name));
+    }
+  - |-
+    ce = zend_lookup_class(name);
+    if (!ce) {
+     cleanup();
+     zend_error_noreturn(E_ERROR, "gone");
+    }
+  - |-
+    ce = zend_lookup_class_ex(name, NULL, 0);
+    if (!ce) {
+     zend_error_noreturn(E_ERROR, "class %s not found", ZSTR_VAL(name));
     }

@@ -3,7 +3,28 @@ valid:
   - |-
     memcpy(dst, src, sizeof(*dst));
     dst->bits |= 4;
+  - |-
+    dst->bits |= 4;
+    memcpy(other, src, 8);
+  - |-
+    dst->len = n;
+    memcpy(dst->data, src, n);
+  - |-
+    memcpy(dst, src, sizeof(*dst));
+    dst->len = n;
 invalid:
   - |-
     dst->bits |= 4;
     memcpy(dst, src, sizeof(*dst));
+  - |-
+    dst->len = n;
+    memcpy(dst, src, sizeof(*dst));
+  - |-
+    dst->a = 1;
+    log_it();
+    memcpy(dst, src, sizeof(*dst));
+  - |-
+    void f(void) {
+     p->hdr = h;
+     memcpy(p, buf, sizeof(*p));
+    }

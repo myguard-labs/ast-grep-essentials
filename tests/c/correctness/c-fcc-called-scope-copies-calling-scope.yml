@@ -3,7 +3,29 @@ valid:
   - |-
     fcc.calling_scope = obj_ce;
     fcc.called_scope = intern->ce;
+  - 'fcc.calling_scope = obj_ce;'
+  - 'fcc.called_scope = obj_ce->parent;'
+  - |-
+    fcc.calling_scope = obj_ce;
+    fcc.called_scope = zend_get_called_scope(ex);
 invalid:
   - |-
     fcc.calling_scope = obj_ce;
     fcc.called_scope = obj_ce;
+  - |-
+    void f(void) {
+     fcc.calling_scope = obj_ce;
+     fcc.called_scope = obj_ce;
+    }
+  - |-
+    void f(void) {
+     if (obj_ce) {
+      fcc.calling_scope = obj_ce;
+      fcc.called_scope = obj_ce;
+     }
+    }
+  - |-
+    void f(void) {
+     fcc.called_scope = obj_ce;
+     fcc.calling_scope = obj_ce;
+    }
