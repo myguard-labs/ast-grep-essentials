@@ -2,7 +2,25 @@ id: php-include-error-suppressed
 snapshots:
   $ok = @include_once $classfile;:
     labels:
-    - source: '@include_once $classfile'
+    - source: "@include_once $classfile"
       style: primary
       start: 6
       end: 30
+  <?php @ include_once __DIR__ . "/a.php";:
+    labels:
+    - source: "@ include_once __DIR__ . \"/a.php\""
+      style: primary
+      start: 6
+      end: 39
+  <?php @include_once("a.php");:
+    labels:
+    - source: "@include_once(\"a.php\")"
+      style: primary
+      start: 6
+      end: 28
+  "<?php if (@include_once $classfile) { run(); }":
+    labels:
+    - source: "@include_once $classfile"
+      style: primary
+      start: 10
+      end: 34

@@ -4,8 +4,20 @@ valid:
     <?php
     if ( $x )
         return false;
+  - |-
+    <?php if ($x) { return false; }
+  - |-
+    <?php if ($a): return false; endif;
+  - |-
+    <?php if ($x) { } else { return false; }
 invalid:
   - |-
     <?php
     if ( $x );
         return false;
+  - |-
+    <?php if ($x > 0 && $y) ; echo 1;
+  - |-
+    <?php if (!is_admin()) ; die();
+  - |-
+    <?php if ($x) ; else { echo 1; }

@@ -1,5 +1,17 @@
 id: php-leftover-var-dump
 valid:
   - 'function f( $x ) { my_dump( $x ); }'
+  - |-
+    <?php $s = var_export($x, true);
+  - |-
+    <?php $o->var_dump($x);
+  - |-
+    <?php Foo::var_dump($x);
 invalid:
   - 'function f( $x ) { var_dump( $x ); }'
+  - |-
+    <?php var_dump($a, $b);
+  - |-
+    <?php if ($debug) { var_dump($x); }
+  - |-
+    <?php var_dump(...$args);
