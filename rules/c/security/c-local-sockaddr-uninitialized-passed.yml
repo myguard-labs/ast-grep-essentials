@@ -10,7 +10,8 @@ note: >-
   Syntactic only; matches a same-block later call mentioning the variable
   name, without dataflow or shadowing. A later sibling memset/bzero/
   explicit_bzero or getsockname/getpeername/accept/recvfrom call taking
-  &variable counts as initialization when it comes before the reported use.
+  &variable counts as initialization when it comes before the reported use;
+  a sibling use that precedes such an initializer is still reported.
 rule:
   all:
     - pattern: 'struct $T $V;'
@@ -25,28 +26,62 @@ rule:
           has:
             pattern: '$V'
             stopBy: end
-    - not:
-        precedes:
-          stopBy: end
-          all:
-            - kind: expression_statement
-            - has:
-                kind: call_expression
-                all:
-                  - has:
-                      field: function
-                      regex: '^(memset|bzero|explicit_bzero|getsockname|getpeername|accept|recvfrom)$'
-                  - has:
-                      pattern: '&$V'
+    - any:
+        - not:
+            precedes:
+              stopBy: end
+              all:
+                - kind: expression_statement
+                - has:
+                    kind: call_expression
+                    all:
+                      - has:
+                          field: function
+                          regex: '^(memset|bzero|explicit_bzero|getsockname|getpeername|accept|recvfrom)$'
+                      - has:
+                          pattern: '&$V'
+                          stopBy: end
+                - precedes:
+                    stopBy: end
+                    has:
+                      kind: call_expression
                       stopBy: end
-            - precedes:
-                stopBy: end
-                has:
+                      has:
+                        pattern: '$V'
+                        stopBy: end
+        - precedes:
+            stopBy: end
+            all:
+              - kind: expression_statement
+              - has:
                   kind: call_expression
                   stopBy: end
                   has:
                     pattern: '$V'
                     stopBy: end
+              - not:
+                  has:
+                    kind: call_expression
+                    all:
+                      - has:
+                          field: function
+                          regex: '^(memset|bzero|explicit_bzero|getsockname|getpeername|accept|recvfrom)$'
+                      - has:
+                          pattern: '&$V'
+                          stopBy: end
+              - precedes:
+                  stopBy: end
+                  all:
+                    - kind: expression_statement
+                    - has:
+                        kind: call_expression
+                        all:
+                          - has:
+                              field: function
+                              regex: '^(memset|bzero|explicit_bzero|getsockname|getpeername|accept|recvfrom)$'
+                          - has:
+                              pattern: '&$V'
+                              stopBy: end
 constraints:
   T:
     regex: '^sockaddr(_in6?)?$'
@@ -64,3 +99,4 @@ metadata:
   todo_cases:
     - "FN: struct sockaddr_un and struct sockaddr_storage locals are not matched; the constraint accepts only sockaddr, sockaddr_in and sockaddr_in6"
     - "FP: a memset/bzero/getsockname-style initialiser nested in a branch (if (x) { memset(&sa, 0, sizeof sa); } connect(...)) is not a sibling statement and is still reported; the initialiser must be a sibling statement that precedes a later statement using the variable"
+    - "FP/FN: memset(&sa, 0, sizeof(&sa)) clears only a pointer-sized prefix but still counts as initialisation; the byte count is not checked"
