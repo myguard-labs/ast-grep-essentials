@@ -1,5 +1,11 @@
 id: php-hardcoded-category-taxonomy-guard
 valid:
   - 'function f( $taxonomy ) { if ( $taxonomy != $other ) return; }'
+  - '<?php function f( $t ) { if ( ! current_user_can( ''manage_categories'' ) ) { return; } }'
+  - '<?php function f( $t ) { if ( ''post_tag'' != $t ) { return; } }'
+  - '<?php function f( $cap ) { if ( $cap != ''manage_categories'' ) { return; } }'
 invalid:
   - 'function f( $taxonomy ) { if ( ''category'' != $taxonomy ) return; }'
+  - '<?php function f( $t ) { if ( ''category'' != $t ) { return; } else { x(); } }'
+  - '<?php if ( ''category'' != get_query_var( ''taxonomy'' ) ) { return; }'
+  - '<?php function f( $t ) { if ( ''category'' != $t ) { return; } }'

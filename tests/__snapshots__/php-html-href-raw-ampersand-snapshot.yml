@@ -2,7 +2,25 @@ id: php-html-href-raw-ampersand
 snapshots:
   $out = '<a href="/x?a=1&b=2">x</a>';:
     labels:
-    - source: '''<a href="/x?a=1&b=2">x</a>'''
+    - source: "'<a href=\"/x?a=1&b=2\">x</a>'"
       style: primary
       start: 7
       end: 35
+  <?php $o = '<a href="/x?a=1&amp;b=2&c=3">x</a>';:
+    labels:
+    - source: "'<a href=\"/x?a=1&amp;b=2&c=3\">x</a>'"
+      style: primary
+      start: 11
+      end: 47
+  "<?php $o = '<a href=\"https://e.com/?a=1&b=2\">x</a>';":
+    labels:
+    - source: "'<a href=\"https://e.com/?a=1&b=2\">x</a>'"
+      style: primary
+      start: 11
+      end: 51
+  <?php $o = '<link href="/x?a=1&b=2" rel="x">';:
+    labels:
+    - source: "'<link href=\"/x?a=1&b=2\" rel=\"x\">'"
+      style: primary
+      start: 11
+      end: 45
