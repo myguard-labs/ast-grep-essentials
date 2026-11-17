@@ -1,7 +1,13 @@
 id: php-xml-cdata-assign-overwrite
 valid:
   - 'function _pkginfo_cdata($xp, $data) { $this->pkginfo[''summary''] .= $data; }'
+  - '<?php function cb( $xp, $data ) { $this->buf[ $k ] .= trim( $data ); }'
+  - '<?php function cb( $xp, $data ) { $this->buf[ $k ] = $this->buf[ $k ] . trim( $data ); }'
+  - '<?php function cb( $xp, $data ) { if ( ! isset( $this->buf[ $k ] ) ) { $this->buf[ $k ] = ''''; } $this->buf[ $k ] .= trim( $data ); }'
 invalid:
   - >-
     function _pkginfo_cdata($xp, $data) { $this->pkginfo['summary'] =
     trim($data); }
+  - '<?php function cb( $xp, $data ) { $this->buf[ $this->tag ] = trim( $data ); }'
+  - '<?php function cb( $xp, $data ) { if ( $this->in ) { $this->buf["summary"] = trim( $data ); } }'
+  - '<?php function cb( $xp, $data ) { self::$buf[ $k ] = trim( $data ); }'

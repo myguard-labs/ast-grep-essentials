@@ -1,5 +1,10 @@
 id: php-wpdb-delete-comments-bypasses-api
 valid:
   - '$wpdb->query( "DELETE FROM $wpdb->options WHERE option_id = 1" );'
+  - '<?php $rows = $wpdb->get_results( "SELECT * FROM $wpdb->comments WHERE comment_ID = 1" );'
+  - '<?php wp_delete_comment( $comment_id, true );'
 invalid:
   - '$wpdb->query( "DELETE FROM $wpdb->comments WHERE comment_ID = 1" );'
+  - '<?php $wpdb->query( "DELETE FROM $wpdb->comments" );'
+  - '<?php $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->comments WHERE comment_ID = %d", $id ) );'
+  - '<?php $wpdb->query( "DELETE FROM $wpdb->comments WHERE comment_approved = ''spam''" );'

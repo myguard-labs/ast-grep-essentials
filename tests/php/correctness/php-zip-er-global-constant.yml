@@ -1,5 +1,12 @@
 id: php-zip-er-global-constant
 valid:
   - '<?php if ( $r !== ZipArchive::ER_OK ) { return; }'
+  - '<?php if ( $r !== ZipArchive::ER_EXISTS ) { return; }'
+  - '<?php $label = ''ZIP_ER_OK'';'
+  - '<?php $e = ZipArchive::ER_NOENT;'
 invalid:
   - '<?php if ( $r !== ZIP_ER_OK ) { return; }'
+  - '<?php switch ( $code ) { case ZIP_ER_NOENT: break; }'
+  - '<?php return ZIP_ER_READ;'
+  - '<?php define( ''MY_ERR'', ZIP_ER_MEMORY );'
+  - '<?php if ( $r === \ZIP_ER_OK ) { return; }'
