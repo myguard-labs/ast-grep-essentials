@@ -8,7 +8,7 @@ message: >-
   visible.
 note: >-
   Syntactic only; does not track aliasing, ownership transfer, or frees in
-  other functions or via different expressions.
+  other functions or via different expressions. A free nested in a branch counts only inside an if whose condition mentions the variable.
 rule:
   all:
     - pattern: '$T *$P = kinfo_getproc($$$ARGS);'
@@ -18,12 +18,33 @@ rule:
           any:
             - pattern: 'free($P);'
             - pattern: 'return $P;'
+            - all:
+                  - kind: if_statement
+                  - has:
+                      field: condition
+                      stopBy: end
+                      pattern: '$P'
+                  - has:
+                      field: consequence
+                      stopBy: end
+                      pattern:
+                        context: 'void f(void) { free($P); }'
+                        selector: call_expression
             - has:
                 stopBy: end
                 any:
-                  - pattern:
-                      context: 'void f(void) { free($P); }'
-                      selector: call_expression
+                  - all:
+                      - kind: if_statement
+                      - has:
+                          field: condition
+                          stopBy: end
+                          pattern: '$P'
+                      - has:
+                          field: consequence
+                          stopBy: end
+                          pattern:
+                            context: 'void f(void) { free($P); }'
+                            selector: call_expression
                   - pattern: 'return $P;'
 metadata:
   rule_modified_at: '2026-10-20'
@@ -36,3 +57,5 @@ metadata:
   cwe: 'CWE-401'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/401.html'
   taxonomy_cited_keys: 'cwe'
+  todo_cases:
+    - "FP: a free in both branches of an unrelated condition (if (c) { free(kp); } else { free(kp); }) is reported; FN: a condition that merely mentions the variable (if (c && kp) { free(kp); }) is accepted, and a nested return of the variable under any condition counts as ownership transfer"

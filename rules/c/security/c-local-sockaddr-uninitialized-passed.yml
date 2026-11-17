@@ -10,7 +10,7 @@ note: >-
   Syntactic only; matches a same-block later call mentioning the variable
   name, without dataflow or shadowing. A later sibling memset/bzero/
   explicit_bzero or getsockname/getpeername/accept/recvfrom call taking
-  &variable counts as initialization.
+  &variable counts as initialization when it comes before the reported use.
 rule:
   all:
     - pattern: 'struct $T $V;'
@@ -28,16 +28,25 @@ rule:
     - not:
         precedes:
           stopBy: end
-          kind: expression_statement
-          has:
-            kind: call_expression
-            all:
-              - has:
-                  field: function
-                  regex: '^(memset|bzero|explicit_bzero|getsockname|getpeername|accept|recvfrom)$'
-              - has:
-                  pattern: '&$V'
+          all:
+            - kind: expression_statement
+            - has:
+                kind: call_expression
+                all:
+                  - has:
+                      field: function
+                      regex: '^(memset|bzero|explicit_bzero|getsockname|getpeername|accept|recvfrom)$'
+                  - has:
+                      pattern: '&$V'
+                      stopBy: end
+            - precedes:
+                stopBy: end
+                has:
+                  kind: call_expression
                   stopBy: end
+                  has:
+                    pattern: '$V'
+                    stopBy: end
 constraints:
   T:
     regex: '^sockaddr(_in6?)?$'
@@ -54,4 +63,4 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   todo_cases:
     - "FN: struct sockaddr_un and struct sockaddr_storage locals are not matched; the constraint accepts only sockaddr, sockaddr_in and sockaddr_in6"
-    - "FP: a memset/bzero/getsockname-style initialiser nested in a branch (if (x) { memset(&sa, 0, sizeof sa); } connect(...)) is not a sibling statement and is still reported; the initialiser is also accepted anywhere after the declaration, not only before the use"
+    - "FP: a memset/bzero/getsockname-style initialiser nested in a branch (if (x) { memset(&sa, 0, sizeof sa); } connect(...)) is not a sibling statement and is still reported; the initialiser must be a sibling statement that precedes a later statement using the variable"
