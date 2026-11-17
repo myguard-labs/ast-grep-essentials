@@ -3,5 +3,11 @@ valid:
   - >-
     function f( $s ) { try { return new DateTime( $s ); } catch ( Exception $e )
     { return false; } }
+  - '<?php function f( $s ) { $d = date_create( $s ); return $d; }'
+  - '<?php function f() { return new DateTime(); }'
+  - '<?php function f( $s ) { try { if ( $s ) { $d = new DateTime( $s ); } } catch ( Exception $e ) { return false; } return $d; }'
 invalid:
   - 'function f( $s ) { return new DateTime( $s ); }'
+  - '<?php function f( $s ) { $d = new DateTime( $s ); return $d; }'
+  - '<?php function f( $r ) { return new DateTime( $r->post_date ); }'
+  - '<?php function f( $s ) { try { g(); } catch ( Exception $e ) { } return new DateTime( $s ); }'

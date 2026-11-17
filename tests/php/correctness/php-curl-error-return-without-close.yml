@@ -8,6 +8,9 @@ valid:
             return new WP_Error('http_request_failed', $curl_error);
         }
     }
+  - '<?php function f( $ch ) { if ( curl_error( $ch ) ) { error_log( ''curl failed'' ); } return 1; }'
+  - '<?php function f( $ch ) { if ( $status !== 200 ) { return null; } }'
+  - '<?php function f( $ch ) { if ( curl_error( $ch ) ) { $e = 1; curl_close( $ch ); return false; } }'
 invalid:
   - |-
     <?php
@@ -16,3 +19,7 @@ invalid:
             return new WP_Error('http_request_failed', $curl_error);
         }
     }
+  - '<?php function f( $ch ) { if ( curl_error( $ch ) ) { return false; } }'
+  - '<?php function f( $ch ) { if ( curl_error( $ch ) !== '''' ) { error_log( ''x'' ); return null; } }'
+  - '<?php function f( $ch ) { if ( ! empty( curl_error( $ch ) ) ) { return false; } }'
+  - '<?php function f( $ch ) { if ( curl_error( $ch ) ) { if ( $a ) { return false; } } }'

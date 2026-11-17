@@ -1,5 +1,11 @@
 id: php-dead-false-and-branch
 valid:
   - 'if ( $flag && foo() ) { bar(); }'
+  - '<?php if ( false || foo() ) { bar(); }'
+  - '<?php if ( ! false && foo() ) { bar(); }'
+  - '<?php if ( true && foo() ) { bar(); }'
 invalid:
   - 'if ( false && foo() ) { bar(); }'
+  - '<?php if ( false && $x ) { bar(); }'
+  - '<?php if ( false && foo() ) bar();'
+  - '<?php if ( false && foo() ) { bar(); } else { baz(); }'

@@ -1,5 +1,10 @@
 id: php-current-user-can-legacy-edit-themes
 valid:
   - 'if ( ! current_user_can(''switch_themes'') ) wp_die(''no'');'
+  - '<?php if ( ! current_user_can( ''edit_theme_options'' ) ) wp_die( ''no'' );'
+  - '<?php if ( ! current_user_can( ''manage_options'' ) ) wp_die( ''no'' );'
 invalid:
   - 'if ( ! current_user_can(''edit_themes'') ) wp_die(''no'');'
+  - '<?php if ( ! current_user_can( ''edit_themes'' ) ) wp_die( ''no'' );'
+  - '<?php if ( is_admin() && current_user_can( ''edit_themes'' ) ) { render(); }'
+  - '<?php $ok = current_user_can(''edit_themes'');'

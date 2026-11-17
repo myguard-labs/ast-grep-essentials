@@ -1,13 +1,7 @@
 id: php-curl-error-return-without-close
 snapshots:
-  ? |-
-    <?php
-    function f($handle) {
-        if ($curl_error = curl_error($handle)) {
-            return new WP_Error('http_request_failed', $curl_error);
-        }
-    }
-  : labels:
+  "<?php\nfunction f($handle) {\n    if ($curl_error = curl_error($handle)) {\n        return new WP_Error('http_request_failed', $curl_error);\n    }\n}":
+    labels:
     - source: |-
         if ($curl_error = curl_error($handle)) {
                 return new WP_Error('http_request_failed', $curl_error);
@@ -23,3 +17,59 @@ snapshots:
       style: secondary
       start: 81
       end: 137
+  "<?php function f( $ch ) { if ( ! empty( curl_error( $ch ) ) ) { return false; } }":
+    labels:
+    - source: if ( ! empty( curl_error( $ch ) ) ) { return false; }
+      style: primary
+      start: 26
+      end: 79
+    - source: curl_error( $ch )
+      style: secondary
+      start: 40
+      end: 57
+    - source: return false;
+      style: secondary
+      start: 64
+      end: 77
+  "<?php function f( $ch ) { if ( curl_error( $ch ) !== '' ) { error_log( 'x' ); return null; } }":
+    labels:
+    - source: if ( curl_error( $ch ) !== '' ) { error_log( 'x' ); return null; }
+      style: primary
+      start: 26
+      end: 92
+    - source: curl_error( $ch )
+      style: secondary
+      start: 31
+      end: 48
+    - source: return null;
+      style: secondary
+      start: 78
+      end: 90
+  "<?php function f( $ch ) { if ( curl_error( $ch ) ) { if ( $a ) { return false; } } }":
+    labels:
+    - source: if ( curl_error( $ch ) ) { if ( $a ) { return false; } }
+      style: primary
+      start: 26
+      end: 82
+    - source: curl_error( $ch )
+      style: secondary
+      start: 31
+      end: 48
+    - source: return false;
+      style: secondary
+      start: 65
+      end: 78
+  "<?php function f( $ch ) { if ( curl_error( $ch ) ) { return false; } }":
+    labels:
+    - source: if ( curl_error( $ch ) ) { return false; }
+      style: primary
+      start: 26
+      end: 68
+    - source: curl_error( $ch )
+      style: secondary
+      start: 31
+      end: 48
+    - source: return false;
+      style: secondary
+      start: 53
+      end: 66
