@@ -1,5 +1,21 @@
 id: php-esc-html-wrapping-url-builder
 valid:
   - '<?php return esc_url( add_query_arg( ''_wpnonce'', $nonce, $url ) ); ?>'
+  - |-
+    <?php echo esc_html( $label );
+  - |-
+    <?php echo esc_html( sanitize_text_field( $x ) );
+  - |-
+    <?php echo esc_url( add_query_arg( array( 'a' => 1 ), $url ) );
+  - |-
+    <?php echo esc_html__( 'Add', 'td' );
 invalid:
   - '<?php return esc_html( add_query_arg( ''_wpnonce'', $nonce, $url ) ); ?>'
+  - |-
+    <?php echo esc_html( add_query_arg( 'a', 'b' ) );
+  - |-
+    <?php echo esc_html( add_query_arg( array( 'a' => 1 ), $url ) );
+  - |-
+    <?php $h = '<a href="' . esc_html( add_query_arg( 'p', 2 ) ) . '">x</a>';
+  - |-
+    <?php echo esc_html( add_query_arg( $args ) );

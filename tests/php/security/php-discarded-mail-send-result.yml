@@ -1,5 +1,19 @@
 id: php-discarded-mail-send-result
 valid:
   - "function wp_mail_demo( $phpmailer ) {\n\ttry {\n\t\treturn $phpmailer->Send();\n\t} catch ( Exception $e ) {\n\t\treturn false;\n\t}\n}"
+  - |-
+    <?php function f( $mail ) { if ( ! $mail->Send() ) { throw new Exception( 'mail failed' ); } }
+  - |-
+    <?php function f( $mail ) { return (bool) $mail->Send(); }
+  - |-
+    <?php function f( $mail ) { if ( $mail->Send() ) { return 1; } return 0; }
+  - |-
+    <?php function f( $mail ) { return $mail->Send() && true; }
 invalid:
   - "function wp_mail_demo( $phpmailer ) {\n\ttry {\n\t\t$phpmailer->Send();\n\t} catch ( Exception $e ) {\n\t\treturn false;\n\t}\n\treturn true;\n}"
+  - |-
+    <?php function f( $mail ) { $mail->Send(); return true; }
+  - |-
+    <?php function f() { $this->mailer->Send(); }
+  - |-
+    <?php function f( $mail ) { if ( $x ) { $mail->Send(); } }

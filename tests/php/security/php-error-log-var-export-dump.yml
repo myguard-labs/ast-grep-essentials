@@ -1,5 +1,19 @@
 id: php-error-log-var-export-dump
 valid:
   - '<?php $dump = var_export($data, true);'
+  - |-
+    <?php error_log( 'login failed for ' . (int) $uid );
+  - |-
+    <?php Log::error_log( var_export( $x, true ) );
+  - |-
+    <?php $s = var_export( $x, true ); return $s;
+  - |-
+    <?php error_log( sanitize_key( $name ) );
 invalid:
   - '<?php error_log(var_export($data, true));'
+  - |-
+    <?php error_log( var_export( $_SERVER, true ) );
+  - |-
+    <?php error_log( var_export( $user->data, false ) );
+  - |-
+    <?php error_log( var_export( $_POST['password'], true ) );

@@ -1,7 +1,37 @@
 id: php-discarded-mail-send-result
 snapshots:
-  ? "function wp_mail_demo( $phpmailer ) {\n\ttry {\n\t\t$phpmailer->Send();\n\t} catch ( Exception $e ) {\n\t\treturn false;\n\t}\n\treturn true;\n}"
-  : labels:
+  "<?php function f( $mail ) { $mail->Send(); return true; }":
+    labels:
+    - source: $mail->Send()
+      style: primary
+      start: 28
+      end: 41
+    - source: $mail->Send();
+      style: secondary
+      start: 28
+      end: 42
+  "<?php function f( $mail ) { if ( $x ) { $mail->Send(); } }":
+    labels:
+    - source: $mail->Send()
+      style: primary
+      start: 40
+      end: 53
+    - source: $mail->Send();
+      style: secondary
+      start: 40
+      end: 54
+  "<?php function f() { $this->mailer->Send(); }":
+    labels:
+    - source: $this->mailer->Send()
+      style: primary
+      start: 21
+      end: 42
+    - source: $this->mailer->Send();
+      style: secondary
+      start: 21
+      end: 43
+  "function wp_mail_demo( $phpmailer ) {\n\ttry {\n\t\t$phpmailer->Send();\n\t} catch ( Exception $e ) {\n\t\treturn false;\n\t}\n\treturn true;\n}":
+    labels:
     - source: $phpmailer->Send()
       style: primary
       start: 47
