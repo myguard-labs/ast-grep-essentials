@@ -17,23 +17,27 @@ valid:
       if (exec 3<>"/dev/tcp/127.0.0.1/8080") 2>/dev/null; then ready=1; break; fi
       sleep 0.2
     done
-    kill  -0 "$PID" 2>/dev/null || { echo "server exited" >&2; exit 1; }
+    kill -0 "$PID" 2>/dev/null || { echo "server exited" >&2; exit 1; }
     [ "$ready" = 1 ] || exit 1
   - |-
+    ready=0
     for i in 1 2 3 4 5; do
-      if (exec 3<>"/dev/tcp/127.0.0.1/5432") 2>/dev/null; then break; fi
+      if (exec 3<>"/dev/tcp/127.0.0.1/5432") 2>/dev/null; then ready=1; break; fi
       sleep 1
     done
+    [ "$ready" = 1 ] || exit 1
   - |-
     serve --port 8080 &
     PID=$!
     trap 'kill "$PID" 2>/dev/null' EXIT
+    ready=0
     for i in 1 2 3 4 5; do
       kill -0 "$PID" 2>/dev/null || exit 1
-      if (exec 3<>"/dev/tcp/127.0.0.1/8080") 2>/dev/null; then break; fi
+      if (exec 3<>"/dev/tcp/127.0.0.1/8080") 2>/dev/null; then ready=1; break; fi
       sleep 0.2
     done
     kill -0 "$PID" 2>/dev/null || exit 1
+    [ "$ready" = 1 ] || exit 1
 invalid:
   - |-
     serve --port 8080 &
