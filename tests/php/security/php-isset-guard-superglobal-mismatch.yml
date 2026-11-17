@@ -1,5 +1,12 @@
 id: php-isset-guard-superglobal-mismatch
 valid:
   - "<?php\nfunction f() {\n\tif ( isset( $_POST['post_type'] ) ) {\n\t\t$post_type = $_POST['post_type'];\n\t}\n}"
+  - "<?php if ( isset( $_GET[\"id\"] ) ) { $id = $_GET[\"id\"]; }"
+  - "<?php if ( isset( $_GET[\"id\"] ) && isset( $_GET[\"tab\"] ) ) { $id = $_GET[\"id\"]; $t = $_GET[\"tab\"]; }"
+  - "<?php if ( isset( $_POST[\"id\"] ) ) { $id = $_POST[\"id\"]; foo( $_POST[\"id\"] ); }"
 invalid:
   - "<?php\nfunction f() {\n\tif ( isset( $_POST['post_type'] ) ) {\n\t\t$post_type = $_GET['post_type'];\n\t}\n}"
+  - "<?php if ( isset( $_POST[\"id\"] ) && $x ) { echo $_GET[\"id\"]; }"
+  - "<?php if ( isset( $_POST[\"id\"] ) ) { foo( $_GET[\"id\"] ); }"
+  - "<?php if ( isset( $_POST[\"id\"] ) ) { if ($y) { $z = intval( $_GET[\"id\"] ); } }"
+  - "<?php if ( ! empty($x) && isset( $_POST[\"id\"] ) ) { $id = $_GET[\"id\"]; }"

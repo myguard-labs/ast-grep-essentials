@@ -3,5 +3,14 @@ valid:
   - >-
     <?php function f() { return isset($_GET['author']) ? $_GET['author'] :
     'all'; }
+  - "<?php $x = empty( $_POST[\"a\"] ) ? \"\" : \"y\";"
+  - "<?php if ( ISSET( $_GET[\"a\"] ) ) { echo 1; }"
+  - "<?php $x = $other[\"a\"];"
+  - "<?php $x = isset( $_GET[\"a\"] ) ? esc_html( $_GET[\"a\"] ) : \"\";"
 invalid:
   - '<?php function f() { return $_GET[''author'']; }'
+  - "<?php $x = $_POST[\"a\"];"
+  - "<?php echo esc_html( $_GET[\"a\"] );"
+  - "<?php if ( $_GET[\"a\"] == \"y\" ) { die(); }"
+  - "<?php $x = array( \"k\" => $_POST[\"k\"] );"
+  - "<?php foreach ( $_POST[\"ids\"] as $id ) { echo $id; }"

@@ -1,5 +1,13 @@
 id: php-superglobal-index-read-unguarded
 valid:
   - 'if ( $new != '''' ) { die(); }'
+  - "<?php if ( count( $_GET ) > 0 ) { die(); }"
+  - "<?php if ( empty( $_GET[\"a\"] ) ) { die(); }"
+  - "<?php if ( $arr[\"a\"] == \"x\" ) { die(); }"
 invalid:
   - 'if ( $_GET[''new''] != '''' ) { die(); }'
+  - "<?php if ( $_POST[\"a\"] === \"x\" ) { die(); }"
+  - "<?php if ( $_REQUEST[\"a\"] == 5 ) { die(); }"
+  - "<?php $ok = $_GET[\"a\"] && $b;"
+  - "<?php $s = \"x\" . $_GET[\"a\"];"
+  - "<?php $ok = 3 < $_POST[\"a\"];"

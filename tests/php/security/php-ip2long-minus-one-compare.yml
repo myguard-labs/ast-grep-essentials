@@ -1,5 +1,12 @@
 id: php-ip2long-minus-one-compare
 valid:
   - '<?php if ( ip2long($ip) === false ) { return false; }'
+  - "<?php if ( ip2long($ip) !== false ) { $ok = true; }"
+  - "<?php if ( false === ip2long($ip) ) { return false; }"
+  - "<?php if ( filter_var($ip, FILTER_VALIDATE_IP) !== false ) { $ok = true; }"
 invalid:
   - '<?php if ( ip2long($ip) === -1 ) { return false; }'
+  - "<?php return ip2long($addr) === -1;"
+  - "<?php if ( ip2long( trim( $_SERVER[\"REMOTE_ADDR\"] ) ) === -1 ) { die(); }"
+  - "<?php $bad = ( ip2long($ip) === -1 ) || empty($ip);"
+  - "<?php if ( ip2long($ip) === -1 ) { return false; } else { return true; }"

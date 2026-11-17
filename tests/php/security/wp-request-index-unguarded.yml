@@ -3,5 +3,16 @@ valid:
   - >-
     <?php get_sample_permalink(1, isset($_POST['new_title']) ?
     $_POST['new_title'] : '');
+  - "<?php foo( isset( $_GET[\"a\"] ) ? $_GET[\"a\"] : \"\" );"
+  - "<?php foo( array_key_exists( \"a\", $_GET ) );"
+  - "<?php foo( $local[\"a\"] );"
+  - "<?php foo( $_POST[\"a\"] ?? \"\" );"
 invalid:
   - '<?php get_sample_permalink(1, $_POST[''new_title'']);'
+  - "<?php foo( $_GET[\"a\"] );"
+  - "<?php wp_redirect( $_GET[\"redirect_to\"] );"
+  - "<?php $o->run( 1, $_POST[\"a\"] );"
+  - "<?php foo( bar( $_POST[\"a\"] ) );"
+  - "<?php foo( name: $_POST[\"a\"] );"
+  - "<?php new Foo( $_GET[\"a\"] );"
+  - "<?php Foo::run( $_GET[\"a\"] );"

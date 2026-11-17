@@ -3,7 +3,16 @@ valid:
   - >-
     function page_offset($per_page) { return ( absint( $_GET['paged'] ) - 1 ) *
     $per_page; }
+  - "<?php $n = (int) $_GET[\"n\"] + 1;"
+  - "<?php $n = $_POST ? 1 : 0;"
+  - "<?php $n = $count + intval( $_GET[\"n\"] );"
+  - "<?php $n = $count * 2;"
 invalid:
   - >-
     function page_offset($per_page) { return ( $_GET['paged'] - 1 ) * $per_page;
     }
+  - "<?php $n = $_GET[\"n\"] + 1;"
+  - "<?php $n = 10 * $_GET[\"n\"];"
+  - "<?php $n = $_GET[\"n\"] / $d;"
+  - "<?php $n = $_GET[\"n\"] % 7;"
+  - "<?php $n = $_GET [ \"n\" ] * 2;"

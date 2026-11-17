@@ -1,5 +1,13 @@
 id: php-server-superglobal-unguarded-read
 valid:
   - '<?php $client_etag = stripslashes($other[''HTTP_IF_NONE_MATCH'']);'
+  - "<?php $h = $headers[\"HTTP_HOST\"];"
+  - "<?php $x = filter_input(INPUT_SERVER, \"HTTP_HOST\");"
+  - "<?php $ua = $server[\"HTTP_USER_AGENT\"] ?? \"\";"
 invalid:
   - '<?php $client_etag = stripslashes($_SERVER[''HTTP_IF_NONE_MATCH'']);'
+  - "<?php $host = $_SERVER[\"HTTP_HOST\"];"
+  - "<?php $host = strtolower( $_SERVER[\"HTTP_HOST\"] );"
+  - "<?php $this->ip = $_SERVER['REMOTE_ADDR'];"
+  - "<?php $h = trim( (string) $_SERVER[\"HTTP_HOST\"] );"
+  - "<?php $a = [ \"h\" => $_SERVER[\"HTTP_HOST\"] ];"

@@ -1,5 +1,14 @@
 id: wp-superglobal-post-assign-no-unslash
 valid:
   - '<?php function f() { $pass1 = wp_unslash( $_POST[''pass1''] ); }'
+  - "<?php $p = sanitize_text_field( wp_unslash( $_POST[\"p\"] ) );"
+  - "<?php $p = isset( $_POST[\"p\"] ) ? wp_unslash( $_POST[\"p\"] ) : \"\";"
+  - "<?php $p = absint( $_POST[\"p\"] );"
+  - "<?php $p = $post[\"p\"];"
 invalid:
   - '<?php function f() { $pass1 = $_POST[''pass1'']; }'
+  - "<?php $p = $_POST[\"p\"];"
+  - "<?php $this->p = $_POST[\"p\"];"
+  - "<?php $p = $q = $_POST[\"p\"];"
+  - "<?php $p[\"x\"] = $_POST[\"p\"];"
+  - "<?php $p = $_POST[\"p\"][\"q\"];"
