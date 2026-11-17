@@ -3,7 +3,13 @@ valid:
   - >-
     function clear_caps( $user_id ) { update_user_option( $user_id,
     'capabilities', 'editor' ); }
+  - "<?php update_user_option( $id, 'admin_color', 'midnight' );"
+  - "<?php update_user_option( $id, 'k', 0 );"
+  - "<?php delete_user_option( $id, 'k' );"
 invalid:
   - >-
     function clear_caps( $user_id ) { update_user_option( $user_id,
     'capabilities', '' ); }
+  - "<?php update_user_option( get_current_user_id(), 'dashboard', '' );"
+  - "<?php $ok = update_user_option( $id, 'k', '' );"
+  - "<?php if ( $reset ) { update_user_option( $id, 'k', '' ); }"

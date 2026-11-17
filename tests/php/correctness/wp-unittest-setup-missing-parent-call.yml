@@ -3,7 +3,15 @@ valid:
   - >-
     <?php class Tests_Foo extends WP_UnitTestCase { public function setUp() {
     parent::setUp(); $this->foo = 1; } }
+  - "<?php class Tests_Foo extends WP_UnitTestCase { public function setUp() { $this->foo = 1; parent::setUp(); } }"
+  - "<?php class Tests_Foo extends WP_UnitTestCase { public function setUp(): void { parent::setUp(); } }"
+  - "<?php class Tests_Foo extends PHPUnit_Framework_TestCase { public function setUp() { $this->foo = 1; } }"
+  - "<?php class Tests_Foo extends WP_UnitTestCase { public function test_a() { $this->assertTrue( true ); } }"
 invalid:
   - >-
     <?php class Tests_Foo extends WP_UnitTestCase { public function setUp() {
     $this->foo = 1; } }
+  - "<?php class Tests_Foo extends WP_UnitTestCase { public function setUp(): void { $this->foo = 1; } }"
+  - "<?php class Tests_Foo extends WP_UnitTestCase { protected function setUp() { } }"
+  - "<?php class Tests_Foo extends WP_UnitTestCase { public function setUp() { parent::tearDown(); $this->foo = 1; } }"
+  - "<?php namespace T; class Tests_Foo extends WP_UnitTestCase { public function setUp() { $this->foo = 1; } }"

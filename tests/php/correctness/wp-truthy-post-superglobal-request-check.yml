@@ -1,5 +1,11 @@
 id: wp-truthy-post-superglobal-request-check
 valid:
   - 'if ( $_POST[''log''] ) { handle_login(); }'
+  - "<?php if ( isset( $_POST['submit'] ) ) { go(); }"
+  - "<?php if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) { go(); }"
+  - "<?php if ( wp_doing_ajax() ) { go(); }"
 invalid:
   - 'if ( $_POST ) { handle_login(); }'
+  - "<?php if($_POST){ go(); }"
+  - "<?php if ( $_POST ): go(); endif;"
+  - "<?php if ( $a ) { x(); } else if ( $_POST ) { go(); }"
