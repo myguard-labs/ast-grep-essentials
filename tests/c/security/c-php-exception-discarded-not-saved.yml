@@ -1,5 +1,15 @@
 id: c-php-exception-discarded-not-saved
 valid:
   - 'zval *saved = EG(exception); EG(exception) = NULL;'
+  - 'if (EG(exception)) { saved = EG(exception); EG(exception) = NULL; }'
+  - 'if (EG(exception)) { return; }'
+  - 'zend_exception_save(); run(); zend_exception_restore();'
 invalid:
   - 'if (EG(exception)) { zval_ptr_dtor(&EG(exception)); EG(exception) = NULL; }'
+  - |-
+    if (EG(exception)) {
+      zval_ptr_dtor(&EG(exception));
+      EG(exception) = NULL;
+    }
+  - 'void f(void) { if (EG(exception)) { zval_ptr_dtor(&EG(exception)); EG(exception) = NULL; } }'
+  - 'while (n--) { if (EG(exception)) { zval_ptr_dtor(&EG(exception)); EG(exception) = NULL; } run(); }'

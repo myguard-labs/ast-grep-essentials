@@ -1,6 +1,26 @@
 id: c-parse-offset-minus2-without-length-guard
 snapshots:
-  if (buf[total - 2] == '\r'):
+  "if (!buf[total - 2]) { return -1; }":
+    labels:
+    - source: if (!buf[total - 2]) { return -1; }
+      style: primary
+      start: 0
+      end: 35
+    - source: buf[total - 2]
+      style: secondary
+      start: 5
+      end: 19
+  "if (buf[total - 2] == '\\n' && buf[total - 1] == '\\r')":
+    labels:
+    - source: if (buf[total - 2] == '\n' && buf[total - 1] == '\r')
+      style: primary
+      start: 0
+      end: 53
+    - source: buf[total - 2]
+      style: secondary
+      start: 4
+      end: 18
+  "if (buf[total - 2] == '\\r')":
     labels:
     - source: if (buf[total - 2] == '\r')
       style: primary
@@ -10,3 +30,13 @@ snapshots:
       style: secondary
       start: 4
       end: 18
+  "if (total > 0 && buf[total - 2] == '\\r') { done = 1; }":
+    labels:
+    - source: if (total > 0 && buf[total - 2] == '\r') { done = 1; }
+      style: primary
+      start: 0
+      end: 54
+    - source: buf[total - 2]
+      style: secondary
+      start: 17
+      end: 31

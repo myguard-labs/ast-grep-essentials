@@ -4,5 +4,19 @@ valid:
     if (php_stream_can_cast(stream, PHP_STREAM_AS_STDIO)) {
         php_stream_cast(stream, PHP_STREAM_AS_STDIO, &fp, REPORT_ERRORS);
     }
+  - |-
+    if (stream && php_stream_can_cast(stream, PHP_STREAM_AS_FD) == SUCCESS) {
+        php_stream_cast(stream, PHP_STREAM_AS_FD, (void **)&fd, 0);
+    }
+  - |-
+    if (php_stream_can_cast(stream, PHP_STREAM_AS_FD) == SUCCESS) {
+        for (;;) {
+            php_stream_cast(stream, PHP_STREAM_AS_FD, (void **)&fd, 0);
+        }
+    }
+  - 'if (php_stream_can_cast(stream, PHP_STREAM_AS_FD) == SUCCESS && php_stream_cast(stream, PHP_STREAM_AS_FD, (void **)&fd, 0) == SUCCESS) { use(fd); }'
 invalid:
   - 'php_stream_cast(stream, PHP_STREAM_AS_STDIO, &fp, REPORT_ERRORS);'
+  - 'if (stream) { php_stream_cast(stream, PHP_STREAM_AS_FD, (void **)&fd, 0); }'
+  - 'if (php_stream_cast(stream, PHP_STREAM_AS_FD, (void **)&fd, 0) == FAILURE) { return; }'
+  - 'r = php_stream_cast(stream, PHP_STREAM_AS_STDIO, &fp, REPORT_ERRORS);'

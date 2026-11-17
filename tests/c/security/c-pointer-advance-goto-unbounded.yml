@@ -6,9 +6,44 @@ valid:
         if (p >= e) return;
         goto ready;
     }
+  - |-
+    void f(char *p, char *e, size_t n) {
+        if (n > (size_t)(e - p)) { goto fail; }
+        p += n;
+        len -= n;
+        goto done;
+    }
+  - |-
+    void f(char *p, char *e, size_t n) {
+        if (n > (size_t)(e - p)) { return; }
+        p += n;
+        return;
+    }
+  - |-
+    void f(char *p, char *e, size_t n) {
+        if (n <= (size_t)(e - p)) { p += n; len -= n; }
+        goto done;
+    }
 invalid:
   - |-
     void f(char *p, char *e, size_t n) {
         p += n;
         goto ready;
+    }
+  - |-
+    void f(char *p, size_t n) {
+        p += strlen(s);
+        goto next;
+    }
+  - |-
+    void f(struct ctx *c, size_t n) {
+        c->p += n;
+        goto out;
+    }
+  - |-
+    void f(char *p, size_t n) {
+        if (x) {
+            p += n;
+            goto done;
+        }
     }

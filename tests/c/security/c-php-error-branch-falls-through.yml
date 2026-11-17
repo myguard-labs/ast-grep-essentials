@@ -4,7 +4,13 @@ valid:
     if (f_ind < 0) { php_error_docref(NULL TSRMLS_CC, E_WARNING, "T1Lib Error:
     %s", T1_StrError(f_ind)); RETURN_FALSE; } if (T1_LoadFont(f_ind)) {
     RETURN_FALSE; }
+  - 'if (n < 0) { php_error_docref(NULL TSRMLS_CC, E_WARNING, "bad"); return; }'
+  - 'if (n < 0) { php_error_docref(NULL TSRMLS_CC, E_WARNING, "bad"); goto out; }'
+  - 'if (n < 0) { n = 0; }'
 invalid:
   - >-
     if (f_ind < 0) { php_error_docref(NULL TSRMLS_CC, E_WARNING, "T1Lib Error:
     %s", T1_StrError(f_ind)); } if (T1_LoadFont(f_ind)) { RETURN_FALSE; }
+  - 'if (n < 0) { php_error_docref(NULL TSRMLS_CC, E_WARNING, "bad"); }'
+  - 'if (n < 0) { php_error_docref(NULL TSRMLS_CC, E_NOTICE, "bad"); n = 0; }'
+  - 'if (n < 0) { php_error_docref(NULL TSRMLS_CC, E_WARNING, "bad"); } else { n++; }'

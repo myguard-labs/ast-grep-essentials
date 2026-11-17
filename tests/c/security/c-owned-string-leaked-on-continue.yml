@@ -8,6 +8,22 @@ valid:
         continue;
       }
     }
+  - 'for (i = 0; i < n; i++) { if (!e) { continue; } }'
+  - |-
+    while (more) {
+      key = zend_long_to_str(n);
+      zend_string_release(key);
+      continue;
+    }
+  - |-
+    for (i = 0; i < n; i++) {
+      key = zend_long_to_str(i);
+      if (bad) {
+        use(key);
+        zend_string_release(key);
+        continue;
+      }
+    }
 invalid:
   - |-
     ZEND_HASH_FOREACH_KEY_VAL(pats, n, k, e) {
@@ -15,4 +31,25 @@ invalid:
       if (len > slen) {
         continue;
       }
+    }
+  - |-
+    for (i = 0; i < n; i++) {
+      key = zend_long_to_str(i);
+      if (!e) {
+        continue;
+      }
+    }
+  - |-
+    while (more) {
+      key = zend_long_to_str(n);
+      continue;
+    }
+  - |-
+    for (i = 0; i < n; i++) {
+      key = zend_long_to_str(i);
+      if (len > slen) {
+        log_skip(key);
+        continue;
+      }
+      zend_string_release(key);
     }

@@ -1,5 +1,11 @@
 id: c-pointer-arith-on-hashtable-struct
 valid:
   - 'zval *v = (zval*)((char*)op_array->static_variables->arData + off);'
+  - 'char *v = (char*)op_array->vars + off;'
+  - 'char *v = (char*)ht->arData + off;'
+  - 'zval *v = zend_hash_str_find(op_array->static_variables, "x", 1);'
 invalid:
   - 'zval *v = (zval*)((char*)op_array->static_variables + off);'
+  - 'char *v = (char*)op_array->static_variables + off;'
+  - 'p = (char *)ce->static_variables + idx * sizeof(Bucket);'
+  - 'zval *v = (zval*)((char*)func->static_variables + 8);'
