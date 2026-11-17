@@ -1,8 +1,34 @@
 id: wp-wpdb-query-result-discarded
 valid:
   - "<?php\nglobal $wpdb;\nif ( false === $wpdb->query( \"DELETE FROM $wpdb->options WHERE option_name = 'x'\" ) ) {\n\treturn;\n}\n"
+  - |
+    <?php
+    global $wpdb;
+    return $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name = 'x'" );
+  - |
+    <?php
+    global $wpdb;
+    $rows = $wpdb->get_results( "SELECT option_name FROM $wpdb->options" );
+  - |
+    <?php
+    global $wpdb;
+    echo $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name = 'x'" );
 invalid:
   - |
     <?php
     global $wpdb;
     $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name = 'x'" );
+  - |
+    <?php
+    global $wpdb;
+    $wpdb->query( $wpdb->prepare( 'DELETE FROM t WHERE id = %d', $id ) );
+  - |
+    <?php
+    global $wpdb;
+    @$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name = 'x'" );
+  - |
+    <?php
+    global $wpdb;
+    foreach ( $ids as $id ) {
+    	$wpdb->query( $wpdb->prepare( 'DELETE FROM t WHERE id = %d', $id ) );
+    }
