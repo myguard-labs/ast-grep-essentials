@@ -1,5 +1,12 @@
 id: ts-url-allowlist-regex-unanchored
 valid:
   - 'const re = `^https?:\/\/${domain}\/.*$`;'
+  - "const re = `^https?:\\/\\/(www\\.)?${host}\\/`;"
+  - "const msg = `visit https://example.com for details`;"
+  - "const label = `host ${host} is allowed`;"
 invalid:
   - 'const re = `https?:\/\/${domain}\/.*`;'
+  - "const re = `https?:\\/\\/(www\\.)?${host}\\/`;"
+  - "const re = new RegExp(`https?:\\/\\/${domain}$`);"
+  - "const re = `https?:\\/\\/example\\.com`;"
+  - "const re = new RegExp(`https?:\\/\\/${domain}\\/.*`, 'i');"

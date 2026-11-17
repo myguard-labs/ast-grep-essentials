@@ -3,7 +3,13 @@ valid:
   - |-
     const seenIds = this.db.get("seenIds");
     const firstRun = seenIds === undefined;
+  - "const seenIds = this.db.get('seenIds') ?? null;\nconst firstRun = seenIds === null;"
+  - "const seenIds = this.db.get('seenIds');\nif (seenIds === undefined) { this.db.set('seenIds', []); }"
+  - "const seenIds = this.cache.get('seenIds') ?? [];"
 invalid:
   - |-
     const seenIds = this.db.get("seenIds") ?? [];
     const firstRun = seenIds.length === 0;
+  - "const ids = this.db.get(key) ?? [];"
+  - "const seen = this.db.get( 'seen' ) ?? [];\nconst firstRun = !seen.length;"
+  - "async run() { const prev = this.db.get('prev') ?? []; return prev; }"

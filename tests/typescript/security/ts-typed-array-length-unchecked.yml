@@ -3,5 +3,12 @@ valid:
 - function read(node) { if (node.l > MAX) throw new Error('too long'); return new Uint8Array(node.l); }
 - // function read(node) { return new Uint8Array(node.l); }
 - 'const astgrepFixture: string = "function read(node) { return new Uint8Array(node.l); }";'
+- "function read(node) { return new Uint8Array(64); }"
+- "function read(node) { return new Uint8Array(node.length); }"
+- "function read(node) { if (node.l < 0 || node.l > LIMIT) { return null; } return new ArrayBuffer(node.l); }"
 invalid:
 - function read(node) { return new Uint8Array(node.l); }
+- "function read(node) { return new ArrayBuffer(node.l); }"
+- "function read(node) { return new Float64Array(node.l); }"
+- "const alloc = (node) => new Uint32Array(node.l);"
+- "function read(node) { if (node.l === 0) return null; return new Int16Array(node.l); }"

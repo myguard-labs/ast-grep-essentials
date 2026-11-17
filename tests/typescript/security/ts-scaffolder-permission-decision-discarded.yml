@@ -3,5 +3,11 @@ valid:
 - const [decision] = await permissions.authorizeConditional(requests, options);
 - // await permissions.authorizeConditional(requests, options);
 - 'const astgrepFixture: string = "await permissions.authorizeConditional(requests, options);";'
+- "const decision = await permissions.authorizeConditional(requests, options);"
+- "return await permissions.authorizeConditional(requests, options);"
+- "if ((await permissions.authorizeConditional(requests, options))[0].result === 'DENY') { throw new Error('denied'); }"
 invalid:
 - await permissions.authorizeConditional(requests, options);
+- "async function list(requests, options) { await permissions.authorizeConditional(requests, options); return tasks; }"
+- "const run = async () => { await permissions.authorizeConditional(req, { credentials }); };"
+- "if (enabled) { await permissions.authorizeConditional([{ permission: taskListPermission }], { credentials }); }"
