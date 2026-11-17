@@ -1,9 +1,20 @@
 id: sh-unquoted-scalar-word-list-in-for
 snapshots:
-  ? |-
-    files="a b"
-    for file in $files; do :; done
-  : labels:
+  "dir=\"/var/lib/my dir\"\nfor f in $dir; do\n  printf '%s\\n' \"$f\"\ndone":
+    labels:
+    - source: |-
+        for f in $dir; do
+          printf '%s\n' "$f"
+        done
+      style: primary
+      start: 22
+      end: 65
+    - source: $dir
+      style: secondary
+      start: 31
+      end: 35
+  "files=\"a b\"\nfor file in $files; do :; done":
+    labels:
     - source: for file in $files; do :; done
       style: primary
       start: 12
@@ -12,3 +23,29 @@ snapshots:
       style: secondary
       start: 24
       end: 30
+  "for arg in $@; do\n  printf '%s\\n' \"$arg\"\ndone":
+    labels:
+    - source: |-
+        for arg in $@; do
+          printf '%s\n' "$arg"
+        done
+      style: primary
+      start: 0
+      end: 45
+    - source: $@
+      style: secondary
+      start: 11
+      end: 13
+  "for f in $*; do\n  printf '%s\\n' \"$f\"\ndone":
+    labels:
+    - source: |-
+        for f in $*; do
+          printf '%s\n' "$f"
+        done
+      style: primary
+      start: 0
+      end: 41
+    - source: $*
+      style: secondary
+      start: 9
+      end: 11

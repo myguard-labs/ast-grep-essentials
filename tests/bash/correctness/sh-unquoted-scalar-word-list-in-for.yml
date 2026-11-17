@@ -3,7 +3,35 @@ valid:
   - |-
     files=("a b")
     for file in "${files[@]}"; do :; done
+  - |-
+    for arg in "$@"; do
+      printf '%s\n' "$arg"
+    done
+  - |-
+    dir="/var/lib/my dir"
+    for f in "$dir"/*.txt; do
+      [ -e "$f" ] || continue
+      printf '%s\n' "$f"
+    done
+  - |-
+    name="a b"
+    for f in "$name"; do
+      printf '%s\n' "$f"
+    done
 invalid:
   - |-
     files="a b"
     for file in $files; do :; done
+  - |-
+    for arg in $@; do
+      printf '%s\n' "$arg"
+    done
+  - |-
+    dir="/var/lib/my dir"
+    for f in $dir; do
+      printf '%s\n' "$f"
+    done
+  - |-
+    for f in $*; do
+      printf '%s\n' "$f"
+    done
