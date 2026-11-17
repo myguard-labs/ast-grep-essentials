@@ -1,11 +1,89 @@
 id: js-static-import-after-runtime-guard
 snapshots:
-  ? |-
-    if (major < 22) {
-      process.exit(1)
-    }
-    import './dist/app.mjs'
-  : labels:
+  "if (major < 22) {\n  console.error('too old')\n  process.exit(2)\n}\nimport './dist/app.mjs'":
+    labels:
+    - source: import './dist/app.mjs'
+      style: primary
+      start: 65
+      end: 88
+    - source: |-
+        if (major < 22) {
+          console.error('too old')
+          process.exit(2)
+        }
+        import './dist/app.mjs'
+      style: secondary
+      start: 0
+      end: 88
+    - source: process.exit(2)
+      style: secondary
+      start: 47
+      end: 62
+    - source: |-
+        if (major < 22) {
+          console.error('too old')
+          process.exit(2)
+        }
+      style: secondary
+      start: 0
+      end: 64
+  "if (major < 22) {\n  if (strict) {\n    process.exit(1)\n  }\n}\nimport './dist/app.mjs'":
+    labels:
+    - source: import './dist/app.mjs'
+      style: primary
+      start: 60
+      end: 83
+    - source: |-
+        if (major < 22) {
+          if (strict) {
+            process.exit(1)
+          }
+        }
+        import './dist/app.mjs'
+      style: secondary
+      start: 0
+      end: 83
+    - source: process.exit(1)
+      style: secondary
+      start: 38
+      end: 53
+    - source: |-
+        if (major < 22) {
+          if (strict) {
+            process.exit(1)
+          }
+        }
+      style: secondary
+      start: 0
+      end: 59
+  "if (major < 22) {\n  process.exit(1)\n}\nconst x = 1\nimport './dist/app.mjs'":
+    labels:
+    - source: import './dist/app.mjs'
+      style: primary
+      start: 50
+      end: 73
+    - source: |-
+        if (major < 22) {
+          process.exit(1)
+        }
+        const x = 1
+        import './dist/app.mjs'
+      style: secondary
+      start: 0
+      end: 73
+    - source: process.exit(1)
+      style: secondary
+      start: 20
+      end: 35
+    - source: |-
+        if (major < 22) {
+          process.exit(1)
+        }
+      style: secondary
+      start: 0
+      end: 37
+  "if (major < 22) {\n  process.exit(1)\n}\nimport './dist/app.mjs'":
+    labels:
     - source: import './dist/app.mjs'
       style: primary
       start: 38

@@ -8,12 +8,56 @@ valid:
         },
       },
     };
+  - |-
+    class Api {
+      async _makeRequest($, id) {
+        return axios($, { url: `https://api.example.com/v1/${id}` });
+      }
+    }
+  - |-
+    export default {
+      methods: {
+        async getResult($, id) {
+          return this._makeRequest($, { url: `/v1/${id}` });
+        },
+      },
+    };
+  - |-
+    export default {
+      methods: {
+        async getResult(id) {
+          return client.get(`/v1/${id}`);
+        },
+      },
+    };
 invalid:
   - |-
     export default {
       methods: {
         async getResult($, id) {
           return axios($, { url: `https://api.example.com/v1/${id}` });
+        },
+      },
+    };
+  - |-
+    class Api {
+      async getResult($, id) {
+        return axios($, { url: `https://api.example.com/v1/${id}` });
+      }
+    }
+  - |-
+    export default {
+      methods: {
+        list($) {
+          return axios($, { url: 'https://api.example.com/v1/items' });
+        },
+      },
+    };
+  - |-
+    export default {
+      methods: {
+        async remove($, id) {
+          await axios({ url: `/v1/${id}` });
         },
       },
     };

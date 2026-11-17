@@ -1,10 +1,85 @@
 id: js-test-failure-only-logged
 snapshots:
-  ? |-
-    if (lib1.get() != 0) {
-        console.log('failed!');
-    }
-  : labels:
+  "function t() {\n  if (a) {\n    cleanup();\n    console.log('failed!');\n  }\n}":
+    labels:
+    - source: |-
+        if (a) {
+            cleanup();
+            console.log('failed!');
+          }
+      style: primary
+      start: 17
+      end: 72
+    - source: console.log('failed!')
+      style: secondary
+      start: 45
+      end: 67
+    - source: console.log('failed!');
+      style: secondary
+      start: 45
+      end: 68
+    - source: |-
+        {
+            cleanup();
+            console.log('failed!');
+          }
+      style: secondary
+      start: 24
+      end: 72
+  "if (a !== b) {\n    console.log('failed!');\n} else {\n    done();\n}":
+    labels:
+    - source: |-
+        if (a !== b) {
+            console.log('failed!');
+        } else {
+            done();
+        }
+      style: primary
+      start: 0
+      end: 65
+    - source: console.log('failed!')
+      style: secondary
+      start: 19
+      end: 41
+    - source: console.log('failed!');
+      style: secondary
+      start: 19
+      end: 42
+    - source: |-
+        {
+            console.log('failed!');
+        }
+      style: secondary
+      start: 13
+      end: 44
+  "if (lib1.get() != 0) {\n    console.log('failed!');\nconsole.log('see log');\n}":
+    labels:
+    - source: |-
+        if (lib1.get() != 0) {
+            console.log('failed!');
+        console.log('see log');
+        }
+      style: primary
+      start: 0
+      end: 76
+    - source: console.log('failed!')
+      style: secondary
+      start: 27
+      end: 49
+    - source: console.log('failed!');
+      style: secondary
+      start: 27
+      end: 50
+    - source: |-
+        {
+            console.log('failed!');
+        console.log('see log');
+        }
+      style: secondary
+      start: 21
+      end: 76
+  "if (lib1.get() != 0) {\n    console.log('failed!');\n}":
+    labels:
     - source: |-
         if (lib1.get() != 0) {
             console.log('failed!');

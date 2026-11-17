@@ -7,6 +7,20 @@ valid:
       }
       return {};
     }
+  - |-
+    async run({ $ }) {
+      throw new TypeError("Domain must be a string.");
+    }
+  - |-
+    async run({ $ }) {
+      try { await go(); } catch (err) { throw err; }
+    }
+  - |-
+    async run({ $ }) {
+      if (!this.id) {
+        throw new ConfigurationError(`Missing id`);
+      }
+    }
 invalid:
   - |-
     async run({ $ }) {
@@ -15,3 +29,13 @@ invalid:
       }
       return {};
     }
+  - |-
+    async run({ $ }) {
+      throw new Error();
+    }
+  - |-
+    async run({ $ }) {
+      throw new Error(`Invalid domain ${this.domain}`);
+    }
+  - |-
+    const fail = () => { throw new Error("bad", { cause: err }); };

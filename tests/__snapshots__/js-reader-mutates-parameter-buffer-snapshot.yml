@@ -1,11 +1,87 @@
 id: js-reader-mutates-parameter-buffer
 snapshots:
-  ? |-
-    function readInt64BE (buf, offset) {
-      buf[offset] = buf[offset] ^ 0xff
-      return buf.readUInt32BE(offset)
-    }
-  : labels:
+  "function decodeFoo (data, i) {\n  data[i] = 0\n  return data\n}":
+    labels:
+    - source: data[i] = 0
+      style: primary
+      start: 33
+      end: 44
+    - source: decodeFoo
+      style: secondary
+      start: 9
+      end: 18
+    - source: data
+      style: secondary
+      start: 20
+      end: 24
+    - source: data
+      style: secondary
+      start: 20
+      end: 24
+    - source: |-
+        function decodeFoo (data, i) {
+          data[i] = 0
+          return data
+        }
+      style: secondary
+      start: 0
+      end: 60
+  "function readByte (buf, i) {\n  if (i > 0) {\n    buf[i - 1] = 0\n  }\n  return buf[i]\n}":
+    labels:
+    - source: buf[i - 1] = 0
+      style: primary
+      start: 48
+      end: 62
+    - source: readByte
+      style: secondary
+      start: 9
+      end: 17
+    - source: buf
+      style: secondary
+      start: 19
+      end: 22
+    - source: buf
+      style: secondary
+      start: 19
+      end: 22
+    - source: |-
+        function readByte (buf, i) {
+          if (i > 0) {
+            buf[i - 1] = 0
+          }
+          return buf[i]
+        }
+      style: secondary
+      start: 0
+      end: 84
+  "function readHeader (a, b) {\n  b[0] = 1\n  return a\n}":
+    labels:
+    - source: b[0] = 1
+      style: primary
+      start: 31
+      end: 39
+    - source: readHeader
+      style: secondary
+      start: 9
+      end: 19
+    - source: b
+      style: secondary
+      start: 24
+      end: 25
+    - source: b
+      style: secondary
+      start: 24
+      end: 25
+    - source: |-
+        function readHeader (a, b) {
+          b[0] = 1
+          return a
+        }
+      style: secondary
+      start: 0
+      end: 52
+  "function readInt64BE (buf, offset) {\n  buf[offset] = buf[offset] ^ 0xff\n  return buf.readUInt32BE(offset)\n}":
+    labels:
     - source: buf[offset] = buf[offset] ^ 0xff
       style: primary
       start: 39

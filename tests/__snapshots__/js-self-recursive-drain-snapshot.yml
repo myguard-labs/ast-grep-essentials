@@ -1,14 +1,21 @@
 id: js-self-recursive-drain
 snapshots:
-  ? |-
-    Decoder.prototype._transform = function (buf, enc, done) {
-      if (this._chunks.length > 0) {
-        this._transform(null, enc, done)
-      } else {
-        done()
-      }
-    }
-  : labels:
+  "Decoder.prototype._transform = function (a, b, done) {\n\n  if (this._chunks.length > 0) {\n    this._transform(null, b, done)\n  } else {\n    done()\n  }\n}":
+    labels:
+    - source: |-
+        Decoder.prototype._transform = function (a, b, done) {
+
+          if (this._chunks.length > 0) {
+            this._transform(null, b, done)
+          } else {
+            done()
+          }
+        }
+      style: primary
+      start: 0
+      end: 151
+  "Decoder.prototype._transform = function (buf, enc, done) {\n  if (this._chunks.length > 0) {\n    this._transform(null, enc, done)\n  } else {\n    done()\n  }\n}":
+    labels:
     - source: |-
         Decoder.prototype._transform = function (buf, enc, done) {
           if (this._chunks.length > 0) {
@@ -20,3 +27,16 @@ snapshots:
       style: primary
       start: 0
       end: 156
+  "Decoder.prototype._transform = function (chunk, encoding, done) {\n  if (this._chunks.length > 0) {\n    this._transform(null, encoding, done);\n  } else {\n    done();\n  }\n};":
+    labels:
+    - source: |-
+        Decoder.prototype._transform = function (chunk, encoding, done) {
+          if (this._chunks.length > 0) {
+            this._transform(null, encoding, done);
+          } else {
+            done();
+          }
+        }
+      style: primary
+      start: 0
+      end: 170
