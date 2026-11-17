@@ -1,5 +1,11 @@
 id: php-superglobal-unguarded-read
 valid:
   - 'if ( isset( $_GET[''s''] ) ) { $all = false; }'
+  - '<?php if ( ! empty( $_GET[''s''] ) ) {}'
+  - '<?php if ( isset( $_GET[''s''] ) && $_GET[''s''] ) {}'
+  - '<?php if ( ( $_GET[''s''] ?? '''' ) ) {}'
 invalid:
   - 'if ( $_GET[''s''] ) { $all = false; }'
+  - '<?php if ( $_GET["s"] ) {}'
+  - '<?php if ( $_GET[''s''] ) : endif;'
+  - '<?php if ( $x ) {} else if ( $_GET[''s''] ) {}'

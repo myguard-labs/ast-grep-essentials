@@ -3,7 +3,13 @@ valid:
   - |-
     <?php
     $x = $cond ? 'a' : 'b';
+  - '<?php if ( $c ) { $x = ''a''; } else { $x = ''b''; }'
+  - '<?php $x = $c ? ''a'' : ''b''; $y = $d ? 3 : 4;'
+  - '<?php $c ? f() : g();'
 invalid:
   - |-
     <?php
     $cond ? $x = 'a' : $x = 'b';
+  - '<?php $c ? $x = 1 : $y = 2;'
+  - '<?php $c ? $this->a = 1 : $this->b = 2;'
+  - '<?php $c ? $a[0] = 1 : $a[1] = 2;'

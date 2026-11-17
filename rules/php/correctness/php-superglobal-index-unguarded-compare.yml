@@ -31,6 +31,11 @@ rule:
             kind: function_call_expression
             regex: '^(isset|empty)\s*\('
 metadata:
+  todo_cases:
+    - 'FP: `if ( array_key_exists( ''s'', $_GET ) && $_GET[''s''] === ''a'' )` is reported (only isset/empty guards are recognized).'
+    - 'FP: `if ( ( $_GET[''s''] ?? '''' ) === ''a'' )` is reported although the coalesce supplies a default.'
+    - 'FN: `if ( $_GET[''s''] === ''a'' && isset( $_GET[''t''] ) )` is not reported (an isset of another key or after the read suppresses it).'
+    - 'FN: `if ( $_GET[''s''] != ''a'' )` is not reported (only == and === are matched).'
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-18'

@@ -1,5 +1,11 @@
 id: php-superglobal-negation-unset-key
 valid:
   - 'if ( empty( $_SERVER[''QUERY_STRING''] ) ) { return false; }'
+  - '<?php if ( ! isset( $_SERVER[''HTTPS''] ) ) { return false; }'
+  - '<?php $on = ! empty( $_SERVER[''HTTPS''] );'
+  - '<?php if ( ! ( $_SERVER[''HTTPS''] ?? '''' ) ) { return; }'
 invalid:
   - 'if ( ! $_SERVER[''QUERY_STRING''] ) { return false; }'
+  - '<?php if ( !$_SERVER[''HTTPS''] ) { return false; }'
+  - '<?php $off = ! $_SERVER["HTTPS"];'
+  - '<?php if ( !$_SERVER[''HTTPS''] && !$_SERVER[''HTTP_HOST''] ) { return; }'

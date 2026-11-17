@@ -1,5 +1,11 @@
 id: php-suppressed-closedir
 valid:
   - '<?php closedir( $plugins_dir );'
+  - '<?php if ( is_resource( $h ) ) { closedir( $h ); }'
+  - '<?php closedir( $this->handle );'
+  - '<?php $r = closedir( $h );'
 invalid:
   - '<?php @closedir( $plugins_dir );'
+  - '<?php @closedir( $this->handle );'
+  - '<?php $r = @closedir( $h );'
+  - '<?php if ( $h ) { @closedir( $h ); }'
