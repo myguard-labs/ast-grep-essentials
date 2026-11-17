@@ -1,11 +1,26 @@
 id: ts-build-script-rewrites-manifest-in-place
 snapshots:
-  ? |-
-    const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'))
-    delete manifest.dependencies
-    fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, undefined, 2)}\n`)
-  : labels:
+  "const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'))\ndelete manifest.dependencies\nfs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, undefined, 2)}\\n`)":
+    labels:
     - source: fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, undefined, 2)}\n`)
       style: primary
       start: 97
       end: 175
+  "const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'))\nmanifest.private = false\nfs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest))":
+    labels:
+    - source: fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest))
+      style: primary
+      start: 93
+      end: 150
+  "const raw = fs.readFileSync(MANIFEST_PATH, 'utf8')\nfs.writeFileSync(MANIFEST_PATH, raw.replace('dev', 'prod'), { encoding: 'utf8' })":
+    labels:
+    - source: "fs.writeFileSync(MANIFEST_PATH, raw.replace('dev', 'prod'), { encoding: 'utf8' })"
+      style: primary
+      start: 51
+      end: 132
+  "function strip() {\n  const m = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'))\n  delete m.scripts\n  fs.writeFileSync(MANIFEST_PATH, JSON.stringify(m, null, 2) + '\\n', 'utf8')\n}":
+    labels:
+    - source: fs.writeFileSync(MANIFEST_PATH, JSON.stringify(m, null, 2) + '\n', 'utf8')
+      style: primary
+      start: 103
+      end: 177

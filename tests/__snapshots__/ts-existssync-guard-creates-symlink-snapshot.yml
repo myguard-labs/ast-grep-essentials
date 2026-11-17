@@ -1,20 +1,34 @@
 id: ts-existssync-guard-creates-symlink
 snapshots:
-  ? |-
-    import { existsSync, symlinkSync } from 'node:fs'
-    export function link (target: string, dest: string) {
-      if (!existsSync(dest)) symlinkSync(target, dest)
-    }
-  : labels:
+  "import { existsSync, symlinkSync } from 'node:fs'\nexport const link = (target: string, dest: string): void => {\n  if (!existsSync(dest)) symlinkSync(target as string, dest)\n}":
+    labels:
+    - source: if (!existsSync(dest)) symlinkSync(target as string, dest)
+      style: primary
+      start: 114
+      end: 172
+    - source: "!existsSync(dest)"
+      style: secondary
+      start: 118
+      end: 135
+    - source: "!existsSync(dest)"
+      style: secondary
+      start: 118
+      end: 135
+    - source: symlinkSync(target as string, dest)
+      style: secondary
+      start: 137
+      end: 172
+  "import { existsSync, symlinkSync } from 'node:fs'\nexport function link (target: string, dest: string) {\n  if (!existsSync(dest)) symlinkSync(target, dest)\n}":
+    labels:
     - source: if (!existsSync(dest)) symlinkSync(target, dest)
       style: primary
       start: 106
       end: 154
-    - source: '!existsSync(dest)'
+    - source: "!existsSync(dest)"
       style: secondary
       start: 110
       end: 127
-    - source: '!existsSync(dest)'
+    - source: "!existsSync(dest)"
       style: secondary
       start: 110
       end: 127
@@ -22,3 +36,43 @@ snapshots:
       style: secondary
       start: 129
       end: 154
+  "import { existsSync, symlinkSync } from 'node:fs'\nexport function link (target: string, dest: string) {\n  if (!existsSync(dest)) {\n    log('linking')\n    symlinkSync(target, dest)\n  }\n}":
+    labels:
+    - source: |-
+        if (!existsSync(dest)) {
+            log('linking')
+            symlinkSync(target, dest)
+          }
+      style: primary
+      start: 106
+      end: 183
+    - source: "!existsSync(dest)"
+      style: secondary
+      start: 110
+      end: 127
+    - source: "!existsSync(dest)"
+      style: secondary
+      start: 110
+      end: 127
+    - source: symlinkSync(target, dest)
+      style: secondary
+      start: 154
+      end: 179
+  "import { existsSync, symlinkSync } from 'node:fs'\nexport function link (target: string, dest: string) {\n  if (!existsSync(dest)) { symlinkSync(target, dest) } else { log('exists') }\n}":
+    labels:
+    - source: if (!existsSync(dest)) { symlinkSync(target, dest) } else { log('exists') }
+      style: primary
+      start: 106
+      end: 181
+    - source: "!existsSync(dest)"
+      style: secondary
+      start: 110
+      end: 127
+    - source: "!existsSync(dest)"
+      style: secondary
+      start: 110
+      end: 127
+    - source: symlinkSync(target, dest)
+      style: secondary
+      start: 131
+      end: 156

@@ -8,6 +8,28 @@ valid:
       }
       return target;
     }
+  - |-
+    function merge(target: any, source: any) {
+      for (const key in source) {
+        if (['__proto__', 'constructor', 'prototype'].includes(key)) continue;
+        target[key] = source[key];
+      }
+      return target;
+    }
+  - |-
+    function keysOf(source: any) {
+      const out: string[] = [];
+      for (const key in source) {
+        out.push(key);
+      }
+      return out;
+    }
+  - |-
+    function copy(target: Map<string, unknown>, source: any) {
+      for (const key in source) {
+        target.set(key, source[key]);
+      }
+    }
 invalid:
   - |-
     function merge(target: any, source: any) {
@@ -16,3 +38,26 @@ invalid:
       }
       return target;
     }
+  - |-
+    function merge(target: any, source: any): any {
+      for (const key in source) {
+        if (typeof source[key] === 'object') {
+          target[key] = merge(target[key] ?? {}, source[key]);
+        } else {
+          target[key] = source[key];
+        }
+      }
+      return target;
+    }
+  - |-
+    function merge(target: any, source: any) {
+      for (const key in source) if (source.hasOwnProperty(key)) target[key] = source[key];
+      return target;
+    }
+  - |-
+    const merge = (target: Record<string, unknown>, source: Record<string, unknown>) => {
+      for (const k in source) {
+        target[k] = source[k];
+      }
+      return target;
+    };

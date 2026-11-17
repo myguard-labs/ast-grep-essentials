@@ -5,9 +5,43 @@ valid:
     export function link (target: string, dest: string) {
       if (!existsSync(dest)) mkdirSync(dest)
     }
+  - |-
+    import { lstatSync, symlinkSync } from 'node:fs'
+    export function link (target: string, dest: string) {
+      try { lstatSync(dest) } catch { symlinkSync(target, dest) }
+    }
+  - |-
+    import { existsSync, symlinkSync } from 'node:fs'
+    export function link (target: string, dest: string) {
+      if (!existsSync(dirname(dest))) mkdirSync(dirname(dest), { recursive: true })
+      symlinkSync(target, dest)
+    }
+  - |-
+    import { existsSync, rmSync } from 'node:fs'
+    export function reset (dest: string) {
+      if (existsSync(dest)) rmSync(dest)
+    }
 invalid:
   - |-
     import { existsSync, symlinkSync } from 'node:fs'
     export function link (target: string, dest: string) {
       if (!existsSync(dest)) symlinkSync(target, dest)
+    }
+  - |-
+    import { existsSync, symlinkSync } from 'node:fs'
+    export function link (target: string, dest: string) {
+      if (!existsSync(dest)) {
+        log('linking')
+        symlinkSync(target, dest)
+      }
+    }
+  - |-
+    import { existsSync, symlinkSync } from 'node:fs'
+    export function link (target: string, dest: string) {
+      if (!existsSync(dest)) { symlinkSync(target, dest) } else { log('exists') }
+    }
+  - |-
+    import { existsSync, symlinkSync } from 'node:fs'
+    export const link = (target: string, dest: string): void => {
+      if (!existsSync(dest)) symlinkSync(target as string, dest)
     }

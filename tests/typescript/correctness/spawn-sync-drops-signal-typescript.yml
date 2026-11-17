@@ -3,7 +3,29 @@ valid:
   - |-
     const { status, signal } = spawn.sync(bin, args)
     process.exit(status ?? 0)
+  - |-
+    const result = spawn.sync(bin, args, { stdio: 'inherit' })
+    process.exit(result.status ?? (result.signal ? 1 : 0))
+  - |-
+    const { status, signal } = spawn.sync(bin, args)
+    if (signal) process.kill(process.pid, signal)
+    process.exit(status ?? 1)
+  - |-
+    const { status } = spawn.sync(bin, args)
+    logger.info('child finished')
 invalid:
   - |-
     const { status } = spawn.sync(bin, args)
     process.exit(status ?? 0)
+  - |-
+    const { status } = spawn.sync(bin, args, { stdio: 'inherit' })
+    if (status !== 0) {
+      process.exit(status)
+    }
+  - |-
+    const { status } = spawn.sync(bin, args)
+    cleanup()
+    process.exit(status || 0)
+  - |-
+    const { status } = spawn.sync(bin as string, args as string[])
+    process.exit(status as number)

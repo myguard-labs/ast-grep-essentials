@@ -1,11 +1,21 @@
 id: readdir-lstat-unguarded-typescript
 snapshots:
-  ? |-
-    import fs from 'fs'
-    for (const entry of fs.readdirSync(dir)) {
-      fs.lstatSync(path.join(dir, entry))
-    }
-  : labels:
+  "import fs from 'fs'\nfor (const entry of fs.readdirSync(dir)) {\n  const st = fs.statSync(path.join(dir, entry))\n  if (st.isFile()) files.push(entry)\n}":
+    labels:
+    - source: fs.statSync(path.join(dir, entry))
+      style: primary
+      start: 76
+      end: 110
+    - source: |-
+        for (const entry of fs.readdirSync(dir)) {
+          const st = fs.statSync(path.join(dir, entry))
+          if (st.isFile()) files.push(entry)
+        }
+      style: secondary
+      start: 20
+      end: 149
+  "import fs from 'fs'\nfor (const entry of fs.readdirSync(dir)) {\n  fs.lstatSync(path.join(dir, entry))\n}":
+    labels:
     - source: fs.lstatSync(path.join(dir, entry))
       style: primary
       start: 65
@@ -17,3 +27,31 @@ snapshots:
       style: secondary
       start: 20
       end: 102
+  "import fs from 'fs'\nfor (const entry of fs.readdirSync(dir, { withFileTypes: true })) {\n  if (fs.lstatSync(`${dir}/${entry.name}`).isSymbolicLink()) links++\n}":
+    labels:
+    - source: fs.lstatSync(`${dir}/${entry.name}`)
+      style: primary
+      start: 94
+      end: 130
+    - source: |-
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+          if (fs.lstatSync(`${dir}/${entry.name}`).isSymbolicLink()) links++
+        }
+      style: secondary
+      start: 20
+      end: 158
+  "import fs from 'fs'\nfor (const name of fs.readdirSync(dir)) {\n  if (!name.startsWith('.')) {\n    total += fs.statSync(path.join(dir, name))?.size ?? 0\n  }\n}":
+    labels:
+    - source: fs.statSync(path.join(dir, name))
+      style: primary
+      start: 106
+      end: 139
+    - source: |-
+        for (const name of fs.readdirSync(dir)) {
+          if (!name.startsWith('.')) {
+            total += fs.statSync(path.join(dir, name))?.size ?? 0
+          }
+        }
+      style: secondary
+      start: 20
+      end: 156

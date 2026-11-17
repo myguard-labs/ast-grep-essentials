@@ -1,5 +1,17 @@
 id: ts-empty-home-env-override
 valid:
   - 'const env = { HOME: home, PATH: process.env.PATH }'
+  - |-
+    const env = { HOME: os.homedir(), PATH: process.env.PATH }
+  - |-
+    const env = { HOME: '/home/ci', PATH: process.env.PATH }
+  - |-
+    const env = { HOMEBREW_PREFIX: '', PATH: process.env.PATH }
 invalid:
   - 'const env = { HOME: '''', PATH: process.env.PATH }'
+  - |-
+    const env = { HOME: "", PATH: process.env.PATH }
+  - |-
+    const env = { ...process.env, HOME: '' }
+  - |-
+    spawnSync(bin, args, { env: { HOME: '' } })

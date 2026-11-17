@@ -3,5 +3,17 @@ valid:
   - >-
     try { await run(); } catch (error) { setErrorMessage(error instanceof Error
     ? error.message : String(error)); }
+  - |-
+    try { run(); } catch (error) { console.error(error); }
+  - |-
+    try { run(); } catch (error) { report(error instanceof HttpError ? error.message : 'unknown'); }
+  - |-
+    try { run(); } catch (error) { if (!(error instanceof Error)) throw error; report(error.message); }
 invalid:
   - 'try { await run(); } catch (error) { setErrorMessage(error.message); }'
+  - |-
+    try { run(); } catch (e) { throw new Error(`failed: ${e.message}`); }
+  - |-
+    try { run(); } catch (error: any) { report(error.message); }
+  - |-
+    try { run(); } catch (error) { report(error.message.toLowerCase()); } finally { done(); }

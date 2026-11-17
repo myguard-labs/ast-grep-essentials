@@ -1,5 +1,19 @@
 id: ts-dataurl-mime-regex-excludes-plus
 valid:
   - 'const b64 = dataUrl.replace(/^data:image\/[^;]+;base64,/, '''');'
+  - |-
+    const ok = /^data:image\/[\w+.-]+;base64,/.test(src);
+  - |-
+    const ok = /^data:image\/(png|jpeg);base64,/.test(src);
+  - |-
+    const re = /^data:text\/plain;base64,/;
 invalid:
   - 'const b64 = dataUrl.replace(/^data:image\/\w+;base64,/, '''');'
+  - |-
+    const ok = /^data:image\/\w+;base64,/.test(src);
+  - |-
+    const m = src.match(/^data:image\/\w+;base64,/);
+  - |-
+    const re: RegExp = /^data:image\/\w+;base64,/;
+  - |-
+    const b64 = dataUrl.replace(/^data:image\/\w+;base64,/i, '');
