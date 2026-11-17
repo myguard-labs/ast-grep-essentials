@@ -7,12 +7,13 @@ note: Bytes from ThreadLocalRandom feed security values such as digest cnonces, 
   and keys. The same call recurs wherever such values are generated, so the syntax
   is the reusable signal. Reviewers must confirm the value is security-relevant.
 rule:
-  pattern: class A { void $V0(byte[] $V1) { ThreadLocalRandom.current().nextBytes($V1);
-    } }
+  any:
+    - pattern: ThreadLocalRandom.current().nextBytes($B)
+    - pattern: java.util.concurrent.ThreadLocalRandom.current().nextBytes($B)
 metadata:
   cwe: 'CWE-338|CWE-330'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/338.html|https://cwe.mitre.org/data/definitions/330.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A04:2025'
   todo_cases:
-    - 'Not matched: a method with a modifier (`public static void f(byte[] b)`) or final parameter, a package-qualified `java.util.concurrent.ThreadLocalRandom`, a class other than A, a body with an earlier statement, or a local array filled in the same method; the pattern pins one exact class and method shape.'
+    - 'Not matched: a parenthesised receiver `(ThreadLocalRandom.current()).nextBytes(b)` or a generator held in a local variable first (`Random r = ThreadLocalRandom.current(); r.nextBytes(b)`); the pattern needs the literal call chain.'
