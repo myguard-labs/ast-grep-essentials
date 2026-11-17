@@ -1,5 +1,12 @@
 id: wp-hardcoded-core-table-name
 valid:
   - '<?php $sql = "SELECT ID FROM {$wpdb->users}";'
+  - '<?php $sql = ''SELECT ID FROM '' . $wpdb->posts;'
+  - '<?php $sql = "SELECT ID FROM {$wpdb->prefix}posts";'
+  - '<?php $sql = "SELECT ID FROM $wpdb->users";'
 invalid:
   - '<?php $sql = "SELECT ID FROM wp_users";'
+  - '<?php $sql = ''SELECT ID FROM wp_posts WHERE 1'';'
+  - '<?php $sql = "SELECT * FROM wp_options WHERE option_name = ''siteurl''";'
+  - '<?php $sql = "SELECT meta_id FROM wp_postmeta WHERE post_id = $id";'
+  - '<?php $sql = "SELECT term_id FROM wp_term_taxonomy";'
