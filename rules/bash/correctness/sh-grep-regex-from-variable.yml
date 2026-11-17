@@ -7,14 +7,41 @@ message: >-
   grep runs in regex mode with a pattern built from a shell variable;
   metacharacters in the value change the match. Use -F for literal matching.
 note: >-
-  Single-file syntactic check only. It flags grep invocations using -E whose
-  argument contains a variable expansion; it does not verify the value is
-  untrusted or that a regex was unintended.
+  Single-file syntactic check only. It flags grep invocations using -qE whose
+  pattern argument contains a variable expansion: the argument after -e or
+  --regexp (or attached to it), or else, when no -e or -f option precedes it,
+  the first argument that is neither an option nor the value of a value-taking
+  option (-m, -A, -B, -C, -d, -D, --include, --exclude and similar long
+  forms). A variable in a later file operand or a -f pattern-file path is not
+  reported. It does not verify the value is untrusted or that a regex was
+  unintended.
 rule:
-  pattern: 'grep -qE $ARG $$$REST'
+  pattern: 'grep -qE $$$ARGS'
   has:
     regex: '\$\{?[A-Za-z_]'
-    stopBy: end
+    any:
+      - follows:
+          regex: '^(-[A-Za-z]*e|--regexp)$'
+      - regex: '^(--regexp=|-[A-Za-z]*e.)'
+      - all:
+          - not:
+              regex: '^-'
+          - not:
+              follows:
+                regex: '^(-[A-Za-z]*[mABCdD]|--(max-count|after-context|before-context|context|directories|devices|binary-files|label|include|exclude|exclude-dir|exclude-from|group-separator))$'
+          - not:
+              follows:
+                stopBy: end
+                regex: '^(-[A-Za-z]*[ef]|-[A-Za-z]*[ef].+|--(regexp|file)(=.*)?)$'
+          - not:
+              follows:
+                stopBy: end
+                not:
+                  any:
+                    - kind: command_name
+                    - regex: '^-'
+                    - follows:
+                        regex: '^(-[A-Za-z]*[mABCdD]|--(max-count|after-context|before-context|context|directories|devices|binary-files|label|include|exclude|exclude-dir|exclude-from|group-separator))$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -25,4 +52,3 @@ metadata:
   license: MyGuard Internal Use License 1.0
   todo_cases:
     - 'grep -qEi "^${prefix}" "$f": same -E regex-from-variable smell is not flagged (pattern requires the exact -qE flag cluster)'
-    - 'grep -qE "^[a-z]+$" "$f": flagged although the only variable is the filename operand (false positive; the has-regex scans every argument)'

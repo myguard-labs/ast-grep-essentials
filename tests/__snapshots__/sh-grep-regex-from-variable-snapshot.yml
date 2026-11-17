@@ -1,5 +1,15 @@
 id: sh-grep-regex-from-variable
 snapshots:
+  cat "$f" | grep -qE "$p":
+    labels:
+    - source: grep -qE "$p"
+      style: primary
+      start: 11
+      end: 24
+    - source: "\"$p\""
+      style: secondary
+      start: 20
+      end: 24
   grep -qE "$a|$b" /etc/hosts:
     labels:
     - source: grep -qE "$a|$b" /etc/hosts
@@ -30,6 +40,60 @@ snapshots:
       style: secondary
       start: 12
       end: 18
+  grep -qE -e "^x" -e "$p" "$f":
+    labels:
+    - source: grep -qE -e "^x" -e "$p" "$f"
+      style: primary
+      start: 0
+      end: 29
+    - source: -e
+      style: secondary
+      start: 17
+      end: 19
+    - source: "\"$p\""
+      style: secondary
+      start: 20
+      end: 24
+  grep -qE -e"$p" "$f":
+    labels:
+    - source: grep -qE -e"$p" "$f"
+      style: primary
+      start: 0
+      end: 20
+    - source: -e"$p"
+      style: secondary
+      start: 9
+      end: 15
+  grep -qE -im 1 "$p" "$f":
+    labels:
+    - source: grep -qE -im 1 "$p" "$f"
+      style: primary
+      start: 0
+      end: 24
+    - source: "\"$p\""
+      style: secondary
+      start: 15
+      end: 19
+  grep -qE -m 1 "$p" "$f":
+    labels:
+    - source: grep -qE -m 1 "$p" "$f"
+      style: primary
+      start: 0
+      end: 23
+    - source: "\"$p\""
+      style: secondary
+      start: 14
+      end: 18
+  "grep -qE -x \"^${p}x\" \"$f\"":
+    labels:
+    - source: grep -qE -x "^${p}x" "$f"
+      style: primary
+      start: 0
+      end: 25
+    - source: "\"^${p}x\""
+      style: secondary
+      start: 12
+      end: 20
   "if grep -qE \"^${prefix}-[0-9]+$\" \"$f\"; then echo hit; fi":
     labels:
     - source: grep -qE "^${prefix}-[0-9]+$" "$f"

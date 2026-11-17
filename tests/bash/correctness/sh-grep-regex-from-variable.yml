@@ -7,6 +7,22 @@ valid:
     grep -qF -- "$pat" /etc/hosts
   - |-
     grep -qE "^[a-z]+$" /etc/hosts
+  - |-
+    grep -qE "^[a-z]+$" "$f"
+  - |-
+    grep -qE "^x" -- "$f"
+  - |-
+    grep -qE "^[a-z]+$" "$f1" "$f2"
+  - |-
+    grep -qE -m "$n" "^x" "$f"
+  - |-
+    grep -qE -e "^x" "$f"
+  - |-
+    grep -qE -f "$pf" "$f"
+  - |-
+    grep -qE -e"^x" "$f"
+  - |-
+    grep -qE --exclude "$skip" "^x" -r .
 invalid:
   - 'grep -qE "id=${label}" "$f"'
   - |-
@@ -15,3 +31,15 @@ invalid:
     if grep -qE "^${prefix}-[0-9]+$" "$f"; then echo hit; fi
   - |-
     grep -qE "$a|$b" /etc/hosts
+  - |-
+    grep -qE -x "^${p}x" "$f"
+  - |-
+    cat "$f" | grep -qE "$p"
+  - |-
+    grep -qE -e "^x" -e "$p" "$f"
+  - |-
+    grep -qE -m 1 "$p" "$f"
+  - |-
+    grep -qE -im 1 "$p" "$f"
+  - |-
+    grep -qE -e"$p" "$f"
