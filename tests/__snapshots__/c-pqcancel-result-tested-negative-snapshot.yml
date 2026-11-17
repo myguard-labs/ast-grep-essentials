@@ -1,5 +1,40 @@
 id: c-pqcancel-result-tested-negative
 snapshots:
+  "int f(PGcancel *c, char *err) { int rc = PQcancel(c, err, 256); log(err); if (rc < 0) { return -1; } return 0; }":
+    labels:
+    - source: if (rc < 0) { return -1; }
+      style: primary
+      start: 74
+      end: 100
+    - source: int rc = PQcancel(c, err, 256);
+      style: secondary
+      start: 32
+      end: 63
+  "int ok = PQcancel(c, err, 256);\nif (ok < 0) {\n\twarn(err);\n} else {\n\tdone();\n}":
+    labels:
+    - source: |-
+        if (ok < 0) {
+        	warn(err);
+        } else {
+        	done();
+        }
+      style: primary
+      start: 32
+      end: 77
+    - source: int ok = PQcancel(c, err, 256);
+      style: secondary
+      start: 0
+      end: 31
+  "int rc = PQcancel(c, err, sizeof(err));\nif (rc < 0) return -1;":
+    labels:
+    - source: if (rc < 0) return -1;
+      style: primary
+      start: 40
+      end: 62
+    - source: int rc = PQcancel(c, err, sizeof(err));
+      style: secondary
+      start: 0
+      end: 39
   "int rc = PQcancel(c, err, sizeof(err));\nif (rc < 0) {\n\tzend_error(E_WARNING, \"cannot cancel the query: %s\", err);\n}":
     labels:
     - source: |-

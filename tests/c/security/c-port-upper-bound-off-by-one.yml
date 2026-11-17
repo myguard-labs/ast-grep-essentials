@@ -1,5 +1,10 @@
 id: c-port-upper-bound-off-by-one
 valid:
   - 'int f(long n) { if (n < 1 || n > 65535) return -1; return 0; }'
+  - "int f(long port) { if (port >= 65536) return -1; return 0; }"
+  - "int f(long port) { if (port < 1 || port > 65535) return -1; return 0; }"
 invalid:
   - 'int f(long n) { if (n < 1 || n > 65536) return -1; return 0; }'
+  - "int f(long port) { return port > 65536 ? -1 : 0; }"
+  - "int f(struct cfg *p) { if (p->port > 65536) return -1; return 0; }"
+  - "int f(long port) { if ((port) > 65536) return -1; return 0; }"

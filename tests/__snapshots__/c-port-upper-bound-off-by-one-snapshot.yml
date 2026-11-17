@@ -1,8 +1,26 @@
 id: c-port-upper-bound-off-by-one
 snapshots:
-  int f(long n) { if (n < 1 || n > 65536) return -1; return 0; }:
+  "int f(long n) { if (n < 1 || n > 65536) return -1; return 0; }":
     labels:
     - source: n > 65536
       style: primary
       start: 29
       end: 38
+  "int f(long port) { if ((port) > 65536) return -1; return 0; }":
+    labels:
+    - source: (port) > 65536
+      style: primary
+      start: 23
+      end: 37
+  "int f(long port) { return port > 65536 ? -1 : 0; }":
+    labels:
+    - source: port > 65536
+      style: primary
+      start: 26
+      end: 38
+  "int f(struct cfg *p) { if (p->port > 65536) return -1; return 0; }":
+    labels:
+    - source: p->port > 65536
+      style: primary
+      start: 27
+      end: 42
