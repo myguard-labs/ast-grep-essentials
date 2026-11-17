@@ -1,6 +1,26 @@
 id: php-this-in-plain-function
 snapshots:
-  <?php function f() { return $this->get_var( 'SELECT 1' ); }:
+  "<?php function f($x) { if ($x) { return $this->get_var($x, 1); } }":
+    labels:
+    - source: $this->get_var($x, 1)
+      style: primary
+      start: 40
+      end: 61
+    - source: function f($x) { if ($x) { return $this->get_var($x, 1); } }
+      style: secondary
+      start: 6
+      end: 66
+  "<?php function f() { $r = $this->get_var( 'SELECT 1' ); return $r; }":
+    labels:
+    - source: $this->get_var( 'SELECT 1' )
+      style: primary
+      start: 26
+      end: 54
+    - source: function f() { $r = $this->get_var( 'SELECT 1' ); return $r; }
+      style: secondary
+      start: 6
+      end: 68
+  "<?php function f() { return $this->get_var( 'SELECT 1' ); }":
     labels:
     - source: $this->get_var( 'SELECT 1' )
       style: primary
@@ -10,3 +30,23 @@ snapshots:
       style: secondary
       start: 6
       end: 59
+  "<?php function f() { return $this->get_var(); }":
+    labels:
+    - source: $this->get_var()
+      style: primary
+      start: 28
+      end: 44
+    - source: function f() { return $this->get_var(); }
+      style: secondary
+      start: 6
+      end: 47
+  "<?php namespace N; function f() { return $this->get_var('a'); }":
+    labels:
+    - source: $this->get_var('a')
+      style: primary
+      start: 41
+      end: 60
+    - source: function f() { return $this->get_var('a'); }
+      style: secondary
+      start: 19
+      end: 63

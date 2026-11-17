@@ -1,5 +1,12 @@
 id: php-this-in-static-closure
 valid:
   - '<?php $f = function (int $x) { return $this->name; };'
+  - "<?php $f = static function ($x) use ($y) { return $x + $y; };"
+  - "<?php class A { function f() { return function ($x) { return $this->scale($x); }; } }"
+  - "<?php class A { function f() { $self = $this; return static function ($x) use ($self) { return $self->scale($x); }; } }"
+  - "<?php class A { static function f() { return static function () { return A::make(); }; } }"
 invalid:
   - '<?php $f = static function (int $x) { return $this->name; };'
+  - "<?php class A { function f() { return array_map(static function ($x) { return $this->scale($x); }, $this->items); } }"
+  - "<?php class A { function f() { return static function () { return $this; }; } }"
+  - "<?php class A { function f() { return static function () { return $this->x ?? 0; }; } }"
