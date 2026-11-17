@@ -18,10 +18,13 @@ rule:
         regex: '^static$'
     - not:
         has:
-          kind: primitive_type
-    - not:
-        has:
-          kind: type_identifier
+          any:
+            - kind: primitive_type
+            - kind: type_identifier
+            - kind: sized_type_specifier
+            - kind: struct_specifier
+            - kind: union_specifier
+            - kind: enum_specifier
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -31,7 +34,6 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - "False positive: 'static unsigned long f(void) { return 0; }' is reported (explicit sized type, no direct primitive_type child)."
-    - "False positive: 'static struct s *f(void) { return 0; }' is reported (explicit struct return type)."
+    - "False positive: 'static MACRO(int) f(void) { return 0; }' is reported; macro_type_specifier cannot be excluded because implicit-int definitions such as 'static f(int x)' also parse as macro_type_specifier."
     - "Miss: 'static f(void) { return 0; }' is not reported."
     - "Miss: 'static f(int x, int y) { return x + y; }' is not reported."
