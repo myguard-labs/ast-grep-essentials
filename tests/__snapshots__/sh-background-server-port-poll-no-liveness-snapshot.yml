@@ -1,5 +1,49 @@
 id: sh-background-server-port-poll-no-liveness
 snapshots:
+  "nginx -g \"daemon off;\" &\nSRV=$!\nfor i in 1 2 3 4 5; do\n  if timeout 1 bash -c \"</dev/tcp/127.0.0.1/8080\" 2>/dev/null; then break; fi\n  sleep 0.2\ndone\necho started":
+    labels:
+    - source: |-
+        for i in 1 2 3 4 5; do
+          if timeout 1 bash -c "</dev/tcp/127.0.0.1/8080" 2>/dev/null; then break; fi
+          sleep 0.2
+        done
+      style: primary
+      start: 32
+      end: 149
+    - source: |-
+        do
+          if timeout 1 bash -c "</dev/tcp/127.0.0.1/8080" 2>/dev/null; then break; fi
+          sleep 0.2
+        done
+      style: secondary
+      start: 52
+      end: 149
+    - source: SRV=$!
+      style: secondary
+      start: 25
+      end: 31
+  "python3 -m http.server 8000 &\nPID=$!\nfor i in $(seq 1 30); do\n  (echo > /dev/tcp/127.0.0.1/8000) 2>/dev/null && break\n  sleep 0.1\ndone\ncurl -fsS http://127.0.0.1:8000/ >/dev/null":
+    labels:
+    - source: |-
+        for i in $(seq 1 30); do
+          (echo > /dev/tcp/127.0.0.1/8000) 2>/dev/null && break
+          sleep 0.1
+        done
+      style: primary
+      start: 37
+      end: 134
+    - source: |-
+        do
+          (echo > /dev/tcp/127.0.0.1/8000) 2>/dev/null && break
+          sleep 0.1
+        done
+      style: secondary
+      start: 59
+      end: 134
+    - source: PID=$!
+      style: secondary
+      start: 30
+      end: 36
   "serve --port 8080 &\nPID=$!\nfor i in 1 2 3; do\n  if (exec 3<>\"/dev/tcp/127.0.0.1/8080\") 2>/dev/null; then break; fi\n  sleep 0.1\ndone":
     labels:
     - source: |-
@@ -22,3 +66,25 @@ snapshots:
       style: secondary
       start: 20
       end: 26
+  "start_server() {\n  serve --port 9000 &\n  SERVER_PID=$!\n  for n in 1 2 3 4 5 6 7 8; do\n    (exec 3<>\"/dev/tcp/127.0.0.1/9000\") 2>/dev/null && return 0\n    sleep 0.25\n  done\n  return 1\n}":
+    labels:
+    - source: |-
+        for n in 1 2 3 4 5 6 7 8; do
+            (exec 3<>"/dev/tcp/127.0.0.1/9000") 2>/dev/null && return 0
+            sleep 0.25
+          done
+      style: primary
+      start: 57
+      end: 171
+    - source: |-
+        do
+            (exec 3<>"/dev/tcp/127.0.0.1/9000") 2>/dev/null && return 0
+            sleep 0.25
+          done
+      style: secondary
+      start: 83
+      end: 171
+    - source: SERVER_PID=$!
+      style: secondary
+      start: 41
+      end: 54

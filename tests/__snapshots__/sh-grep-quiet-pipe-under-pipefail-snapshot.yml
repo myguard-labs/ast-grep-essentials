@@ -14,3 +14,53 @@ snapshots:
       style: secondary
       start: 32
       end: 36
+  "set -o pipefail\necho \"$text\" | grep -iqE \"foo|bar\" && echo found":
+    labels:
+    - source: echo "$text" | grep -iqE "foo|bar"
+      style: primary
+      start: 16
+      end: 50
+    - source: |-
+        set -o pipefail
+        echo "$text" | grep -iqE "foo|bar" && echo found
+      style: secondary
+      start: 0
+      end: 64
+    - source: -iqE
+      style: secondary
+      start: 36
+      end: 40
+  "set -o pipefail\nif echo \"$text\" | grep -q foo; then echo found; fi":
+    labels:
+    - source: echo "$text" | grep -q foo
+      style: primary
+      start: 19
+      end: 45
+    - source: |-
+        set -o pipefail
+        if echo "$text" | grep -q foo; then echo found; fi
+      style: secondary
+      start: 0
+      end: 66
+    - source: -q
+      style: secondary
+      start: 39
+      end: 41
+  "set -o pipefail\nwhile read -r l; do\n  printf \"%s\\n\" \"$l\" | grep -qF -- \"$pat\" && echo \"$l\"\ndone < \"$file\"":
+    labels:
+    - source: printf "%s\n" "$l" | grep -qF -- "$pat"
+      style: primary
+      start: 38
+      end: 77
+    - source: |-
+        set -o pipefail
+        while read -r l; do
+          printf "%s\n" "$l" | grep -qF -- "$pat" && echo "$l"
+        done < "$file"
+      style: secondary
+      start: 0
+      end: 105
+    - source: -qF
+      style: secondary
+      start: 64
+      end: 67

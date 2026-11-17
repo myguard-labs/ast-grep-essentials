@@ -6,7 +6,40 @@ snapshots:
       style: primary
       start: 0
       end: 80
-    - source: '`ls test/perl-framework/t/core.* 2>/dev/null`'
+    - source: "`ls test/perl-framework/t/core.* 2>/dev/null`"
       style: secondary
       start: 12
       end: 57
+  for f in $(ls "$dir"); do gzip "$f"; done:
+    labels:
+    - source: for f in $(ls "$dir"); do gzip "$f"; done
+      style: primary
+      start: 0
+      end: 41
+    - source: $(ls "$dir")
+      style: secondary
+      start: 9
+      end: 21
+  for f in $(ls -1 *.txt); do wc -l "$f"; done:
+    labels:
+    - source: for f in $(ls -1 *.txt); do wc -l "$f"; done
+      style: primary
+      start: 0
+      end: 44
+    - source: $(ls -1 *.txt)
+      style: secondary
+      start: 9
+      end: 23
+  "for f in `ls -t \"$dir\"`; do\n  echo \"$f\"\ndone":
+    labels:
+    - source: |-
+        for f in `ls -t "$dir"`; do
+          echo "$f"
+        done
+      style: primary
+      start: 0
+      end: 44
+    - source: "`ls -t \"$dir\"`"
+      style: secondary
+      start: 9
+      end: 23

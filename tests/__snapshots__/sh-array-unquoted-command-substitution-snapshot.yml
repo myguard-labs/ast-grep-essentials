@@ -1,5 +1,41 @@
 id: sh-array-unquoted-command-substitution
 snapshots:
+  versions+=($(list_versions)):
+    labels:
+    - source: $(list_versions)
+      style: primary
+      start: 11
+      end: 27
+    - source: ($(list_versions))
+      style: secondary
+      start: 10
+      end: 28
+    - source: versions+=($(list_versions))
+      style: secondary
+      start: 0
+      end: 28
+  "versions=(\n  1.0\n  $(list_versions)\n)":
+    labels:
+    - source: $(list_versions)
+      style: primary
+      start: 19
+      end: 35
+    - source: |-
+        (
+          1.0
+          $(list_versions)
+        )
+      style: secondary
+      start: 9
+      end: 37
+    - source: |-
+        versions=(
+          1.0
+          $(list_versions)
+        )
+      style: secondary
+      start: 0
+      end: 37
   versions=($(list_versions)):
     labels:
     - source: $(list_versions)
@@ -14,3 +50,17 @@ snapshots:
       style: secondary
       start: 0
       end: 27
+  versions=(a $(list_versions) b):
+    labels:
+    - source: $(list_versions)
+      style: primary
+      start: 12
+      end: 28
+    - source: (a $(list_versions) b)
+      style: secondary
+      start: 9
+      end: 31
+    - source: versions=(a $(list_versions) b)
+      style: secondary
+      start: 0
+      end: 31

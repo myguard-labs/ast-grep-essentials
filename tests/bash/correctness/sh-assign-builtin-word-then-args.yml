@@ -1,5 +1,29 @@
 id: sh-assign-builtin-word-then-args
 valid:
   - 'eret=$(wait $pid)'
+  - |-
+    sleep 1 &
+    pid=$!
+    wait "$pid"
+    eret=$?
+    echo "$eret"
+  - |-
+    sleep 1 &
+    pid=$!
+    eret=0
+    wait "$pid" || eret=$?
+    echo "$eret"
+  - |-
+    sleep 1 &
+    pid=$!
+    if wait "$pid"; then eret=0; else eret=$?; fi
+    echo "$eret"
 invalid:
   - 'eret=wait $pid'
+  - |-
+    eret=wait "$pid"
+  - |-
+    eret=wait -n
+  - |-
+    eret=wait $pid1 $pid2
+    echo "$eret"

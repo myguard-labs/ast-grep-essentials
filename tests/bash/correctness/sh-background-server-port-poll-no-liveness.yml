@@ -8,6 +8,32 @@ valid:
       sleep 0.1
     done
     kill -0 "$PID" 2>/dev/null || exit 1
+  - |-
+    serve --port 8080 &
+    PID=$!
+    trap 'kill "$PID" 2>/dev/null' EXIT
+    ready=0
+    for i in 1 2 3 4 5; do
+      if (exec 3<>"/dev/tcp/127.0.0.1/8080") 2>/dev/null; then ready=1; break; fi
+      sleep 0.2
+    done
+    kill  -0 "$PID" 2>/dev/null || { echo "server exited" >&2; exit 1; }
+    [ "$ready" = 1 ] || exit 1
+  - |-
+    for i in 1 2 3 4 5; do
+      if (exec 3<>"/dev/tcp/127.0.0.1/5432") 2>/dev/null; then break; fi
+      sleep 1
+    done
+  - |-
+    serve --port 8080 &
+    PID=$!
+    trap 'kill "$PID" 2>/dev/null' EXIT
+    for i in 1 2 3 4 5; do
+      kill -0 "$PID" 2>/dev/null || exit 1
+      if (exec 3<>"/dev/tcp/127.0.0.1/8080") 2>/dev/null; then break; fi
+      sleep 0.2
+    done
+    kill -0 "$PID" 2>/dev/null || exit 1
 invalid:
   - |-
     serve --port 8080 &
@@ -16,3 +42,29 @@ invalid:
       if (exec 3<>"/dev/tcp/127.0.0.1/8080") 2>/dev/null; then break; fi
       sleep 0.1
     done
+  - |-
+    nginx -g "daemon off;" &
+    SRV=$!
+    for i in 1 2 3 4 5; do
+      if timeout 1 bash -c "</dev/tcp/127.0.0.1/8080" 2>/dev/null; then break; fi
+      sleep 0.2
+    done
+    echo started
+  - |-
+    start_server() {
+      serve --port 9000 &
+      SERVER_PID=$!
+      for n in 1 2 3 4 5 6 7 8; do
+        (exec 3<>"/dev/tcp/127.0.0.1/9000") 2>/dev/null && return 0
+        sleep 0.25
+      done
+      return 1
+    }
+  - |-
+    python3 -m http.server 8000 &
+    PID=$!
+    for i in $(seq 1 30); do
+      (echo > /dev/tcp/127.0.0.1/8000) 2>/dev/null && break
+      sleep 0.1
+    done
+    curl -fsS http://127.0.0.1:8000/ >/dev/null

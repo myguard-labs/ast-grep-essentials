@@ -1,5 +1,22 @@
 id: sh-array-unquoted-command-substitution
 valid:
   - 'versions=("$(list_versions)")'
+  - |-
+    mapfile -t versions < <(list_versions)
+    for v in "${versions[@]}"; do echo "$v"; done
+  - |-
+    versions=("$(list_versions)" "extra")
+  - |-
+    versions=$(list_versions)
+    echo "$versions"
 invalid:
   - 'versions=($(list_versions))'
+  - |-
+    versions=(a $(list_versions) b)
+  - |-
+    versions+=($(list_versions))
+  - |-
+    versions=(
+      1.0
+      $(list_versions)
+    )

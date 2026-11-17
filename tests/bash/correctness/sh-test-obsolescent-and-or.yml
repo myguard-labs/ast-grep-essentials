@@ -1,5 +1,17 @@
 id: sh-test-obsolescent-and-or
 valid:
   - 'if [ -z "$A" ] || [ -z "$B" ]; then :; fi'
+  - |-
+    if [ -f "$f" ] && [ -r "$f" ]; then cat "$f"; fi
+  - |-
+    if [[ -f $f && -r $f ]]; then cat "$f"; fi
+  - |-
+    if [ "$mode" = fast ] || [ "$mode" = quick ]; then echo go; fi
 invalid:
   - 'if [ -z "$A" -o -z "$B" ]; then :; fi'
+  - |-
+    if [ -f "$f" -a -r "$f" ]; then cat "$f"; fi
+  - |-
+    if [ "$a" = 1 -o "$b" = 2 ]; then echo hit; fi
+  - |-
+    while [ ! -d "$d" -a -n "$x" ]; do sleep 1; done
