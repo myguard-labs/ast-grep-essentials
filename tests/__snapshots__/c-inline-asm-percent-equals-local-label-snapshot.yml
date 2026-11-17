@@ -1,5 +1,37 @@
 id: c-inline-asm-percent-equals-local-label
 snapshots:
+  "void f(int *p) {\n    __asm__ __volatile__(\".Lx%=: decl %0\\n\\tjnz .Lx%=\" : \"+m\"(*p));\n}":
+    labels:
+    - source: "\".Lx%=: decl %0\\n\\tjnz .Lx%=\""
+      style: primary
+      start: 42
+      end: 71
+    - source: "__asm__ __volatile__(\".Lx%=: decl %0\\n\\tjnz .Lx%=\" : \"+m\"(*p))"
+      style: secondary
+      start: 21
+      end: 83
+  "void f(int in) {\n    asm volatile(\"cmp %0, %0\\n\\tje .Lskip%=\\n\\tnop\\n.Lskip%=:\" : : \"r\"(in) : \"cc\");\n}":
+    labels:
+    - source: "\"cmp %0, %0\\n\\tje .Lskip%=\\n\\tnop\\n.Lskip%=:\""
+      style: primary
+      start: 34
+      end: 79
+    - source: "asm volatile(\"cmp %0, %0\\n\\tje .Lskip%=\\n\\tnop\\n.Lskip%=:\" : : \"r\"(in) : \"cc\")"
+      style: secondary
+      start: 21
+      end: 99
+  "void f(void) {\n    asm(\"jmp 1f\\n\"\n        \"1%=:\\n\");\n}":
+    labels:
+    - source: "\"1%=:\\n\""
+      style: primary
+      start: 42
+      end: 50
+    - source: |-
+        asm("jmp 1f\n"
+                "1%=:\n")
+      style: secondary
+      start: 19
+      end: 51
   "void f(void) { __asm__ volatile(\".LL0%=:\\n\\tjmp .LL0%=\\n\"); }":
     labels:
     - source: "\".LL0%=:\\n\\tjmp .LL0%=\\n\""

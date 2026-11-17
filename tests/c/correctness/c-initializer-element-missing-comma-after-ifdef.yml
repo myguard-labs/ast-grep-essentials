@@ -7,6 +7,31 @@ valid:
         b_ptr
     #endif
     };
+  - |-
+    static int t[] = {
+        1,
+    #ifdef A
+        2,
+    #else
+        3,
+    #endif
+        4
+    };
+  - |-
+    static int t[] = {
+    #ifdef A
+        1,
+    #endif
+        2
+    };
+  - |-
+    static int t[] = {
+        1,
+        2
+    #ifdef A
+        ,3
+    #endif
+    };
 invalid:
   - |-
     static void *table[] = {
@@ -14,4 +39,29 @@ invalid:
     #if HAVE_DOM
         b_ptr
     #endif
+    };
+  - |-
+    static void *t[] = {
+        first_ptr,
+    #ifdef A
+        a_ptr
+    #else
+        b_ptr
+    #endif
+        c_ptr
+    };
+  - |-
+    static int t[] = {
+        sizeof(int)
+    #if X
+        sizeof(long),
+    #endif
+    };
+  - |-
+    static int *t[] = {
+        &x[0]
+    #ifdef Y
+        &y[0],
+    #endif
+        &z[0]
     };
