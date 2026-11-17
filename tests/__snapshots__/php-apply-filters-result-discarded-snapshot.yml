@@ -1,9 +1,27 @@
 id: php-apply-filters-result-discarded
 snapshots:
-  ? |-
-    <?php
-    function f($p) { apply_filters('wp_create_thumbnail', $p); return $p; }
-  : labels:
+  "<?php\napply_filters( 'the_content', $content );":
+    labels:
+    - source: apply_filters( 'the_content', $content )
+      style: primary
+      start: 6
+      end: 46
+    - source: apply_filters( 'the_content', $content );
+      style: secondary
+      start: 6
+      end: 47
+  "<?php\nclass A { function f($p) { apply_filters('x', $p, $this); return $p; } }":
+    labels:
+    - source: apply_filters('x', $p, $this)
+      style: primary
+      start: 33
+      end: 62
+    - source: apply_filters('x', $p, $this);
+      style: secondary
+      start: 33
+      end: 63
+  "<?php\nfunction f($p) { apply_filters('wp_create_thumbnail', $p); return $p; }":
+    labels:
     - source: apply_filters('wp_create_thumbnail', $p)
       style: primary
       start: 23
@@ -12,3 +30,13 @@ snapshots:
       style: secondary
       start: 23
       end: 64
+  "<?php\nfunction f($p) { apply_filters('x', $p); }":
+    labels:
+    - source: apply_filters('x', $p)
+      style: primary
+      start: 23
+      end: 45
+    - source: apply_filters('x', $p);
+      style: secondary
+      start: 23
+      end: 46

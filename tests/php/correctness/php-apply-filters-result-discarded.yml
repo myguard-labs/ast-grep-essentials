@@ -3,7 +3,13 @@ valid:
   - |-
     <?php
     function f($p) { return apply_filters('wp_create_thumbnail', $p); }
+  - "<?php\nfunction f($p) { $p = apply_filters('x', $p); return $p; }"
+  - "<?php\nfunction f($p) { return esc_html( apply_filters('x', $p) ); }"
+  - "<?php\nfunction f($p) { echo apply_filters('x', $p); }"
 invalid:
   - |-
     <?php
     function f($p) { apply_filters('wp_create_thumbnail', $p); return $p; }
+  - "<?php\nfunction f($p) { apply_filters('x', $p); }"
+  - "<?php\napply_filters( 'the_content', $content );"
+  - "<?php\nclass A { function f($p) { apply_filters('x', $p, $this); return $p; } }"

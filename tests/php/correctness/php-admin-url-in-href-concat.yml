@@ -1,5 +1,11 @@
 id: php-admin-url-in-href-concat
 valid:
   - '<?php $a = ''<a href="'' . self_admin_url( ''themes.php'' ) . ''">x</a>'';'
+  - "<?php $u = admin_url('themes.php');"
+  - "<?php $a = '<form action=\"' . admin_url('post.php') . '\">';"
+  - "<?php $a = '<p>' . admin_url('themes.php') . '</p>';"
 invalid:
   - '<?php $a = ''<a href="'' . admin_url( ''themes.php'' ) . ''">x</a>'';'
+  - "<?php $a = '<a href=\"' . admin_url('themes.php');"
+  - "<?php $a = '<a href=\"' . admin_url() . '\">x</a>';"
+  - "<?php $a = '<a href=\"' . admin_url( 'admin.php?page=' . $slug ) . '\">x</a>';"

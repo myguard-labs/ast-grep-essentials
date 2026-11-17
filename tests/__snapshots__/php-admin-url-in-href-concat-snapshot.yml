@@ -1,16 +1,58 @@
 id: php-admin-url-in-href-concat
 snapshots:
+  <?php $a = '<a href="' . admin_url( 'admin.php?page=' . $slug ) . '">x</a>';:
+    labels:
+    - source: admin_url( 'admin.php?page=' . $slug )
+      style: primary
+      start: 25
+      end: 63
+    - source: "'<a href=\"'"
+      style: secondary
+      start: 11
+      end: 22
+    - source: "'<a href=\"' . admin_url( 'admin.php?page=' . $slug )"
+      style: secondary
+      start: 11
+      end: 63
   <?php $a = '<a href="' . admin_url( 'themes.php' ) . '">x</a>';:
     labels:
     - source: admin_url( 'themes.php' )
       style: primary
       start: 25
       end: 50
-    - source: '''<a href="'''
+    - source: "'<a href=\"'"
       style: secondary
       start: 11
       end: 22
-    - source: '''<a href="'' . admin_url( ''themes.php'' )'
+    - source: "'<a href=\"' . admin_url( 'themes.php' )"
       style: secondary
       start: 11
       end: 50
+  <?php $a = '<a href="' . admin_url('themes.php');:
+    labels:
+    - source: admin_url('themes.php')
+      style: primary
+      start: 25
+      end: 48
+    - source: "'<a href=\"'"
+      style: secondary
+      start: 11
+      end: 22
+    - source: "'<a href=\"' . admin_url('themes.php')"
+      style: secondary
+      start: 11
+      end: 48
+  <?php $a = '<a href="' . admin_url() . '">x</a>';:
+    labels:
+    - source: admin_url()
+      style: primary
+      start: 25
+      end: 36
+    - source: "'<a href=\"'"
+      style: secondary
+      start: 11
+      end: 22
+    - source: "'<a href=\"' . admin_url()"
+      style: secondary
+      start: 11
+      end: 36
