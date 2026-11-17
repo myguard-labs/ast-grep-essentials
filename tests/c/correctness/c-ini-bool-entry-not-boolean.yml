@@ -1,5 +1,26 @@
 id: c-ini-bool-entry-not-boolean
 valid:
   - "PHP_INI_BEGIN()\n\tSTD_PHP_INI_BOOLEAN(\"x.flag\", \"0\", PHP_INI_SYSTEM, OnUpdateBool, flag, zend_x_globals, x_globals)\nPHP_INI_END()"
+  - |-
+    PHP_INI_BEGIN()
+    	STD_PHP_INI_ENTRY("x.level", "1", PHP_INI_SYSTEM, OnUpdateLong, level, zend_x_globals, x_globals)
+    PHP_INI_END()
+  - |-
+    PHP_INI_BEGIN()
+    	STD_PHP_INI_ENTRY("x.name", "a", PHP_INI_ALL, OnUpdateString, name, zend_x_globals, x_globals)
+    PHP_INI_END()
 invalid:
   - "PHP_INI_BEGIN()\n\tSTD_PHP_INI_ENTRY(\"x.flag\", \"0\", PHP_INI_SYSTEM, OnUpdateBool, flag, zend_x_globals, x_globals)\nPHP_INI_END()"
+  - |-
+    PHP_INI_BEGIN()
+    	STD_PHP_INI_ENTRY("x.flag", "0", PHP_INI_ALL, OnUpdateBool, flag, zend_x_globals, x_globals)
+    PHP_INI_END()
+  - |-
+    PHP_INI_BEGIN()
+    	STD_PHP_INI_BOOLEAN("x.a", "1", PHP_INI_ALL, OnUpdateBool, a, zend_x_globals, x_globals)
+    	STD_PHP_INI_ENTRY("x.b", "0", PHP_INI_PERDIR, OnUpdateBool, b, zend_x_globals, x_globals)
+    PHP_INI_END()
+  - |-
+    PHP_INI_BEGIN()
+    	STD_PHP_INI_ENTRY("x.f", "1", PHP_INI_SYSTEM|PHP_INI_PERDIR, OnUpdateBool, f, zend_x_globals, x_globals)
+    PHP_INI_END()

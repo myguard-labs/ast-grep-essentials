@@ -9,6 +9,32 @@ valid:
     #endif
         return 1;
     }
+  - |-
+    static int init_strings(void)
+    {
+        load_strings();
+        strings_inited = 1;
+        return 1;
+    }
+  - |-
+    static int init_strings(void)
+    {
+    #if !defined(OPENSSL_NO_ERR)
+        #define STRINGS_ON 1
+    #endif
+        strings_inited = 1;
+        return 1;
+    }
+  - |-
+    static int init_strings(void)
+    {
+    #if !defined(OPENSSL_NO_ERR)
+        load_strings();
+        strings_inited = 1;
+    #endif
+        pending = 0;
+        return 1;
+    }
 invalid:
   - |-
     static int init_strings(void)
@@ -17,5 +43,32 @@ invalid:
         load_strings();
     #endif
         strings_inited = 1;
+        return 1;
+    }
+  - |-
+    static int init_crypto(void)
+    {
+    #if defined(CONFIG_CRYPTO)
+        setup_crypto();
+    #endif
+        crypto_inited = 1;
+        return 1;
+    }
+  - |-
+    static void init_all(void)
+    {
+    #if OPENSSL_API_COMPAT < 0x10100000L
+        ERR_load_crypto_strings();
+        ssl_load();
+    #endif
+        all_inited = 1;
+    }
+  - |-
+    static int init_x(void)
+    {
+    #if defined(USE_X)
+        x_init();
+    #endif
+        inited = 1;
         return 1;
     }

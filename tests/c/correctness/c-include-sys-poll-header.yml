@@ -1,5 +1,16 @@
 id: c-include-sys-poll-header
 valid:
   - '#include <poll.h>'
+  - '#include <sys/types.h>'
+  - |-
+    #ifdef HAVE_POLL_H
+    #include <poll.h>
+    #endif
 invalid:
   - '#include <sys/poll.h>'
+  - |-
+    #include <stdio.h>
+    #include <sys/poll.h>
+    #include <string.h>
+  - '# include <sys/poll.h>'
+  - '#include <sys/poll.h> /* poll(2) */'
