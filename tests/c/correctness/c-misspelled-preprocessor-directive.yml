@@ -3,7 +3,41 @@ valid:
   - |-
     #ifdef CURLOPT_FTPSSLAUTH
     #endif
+  - |-
+    #pragma once
+    #include <stdio.h>
+    #define LIMIT 4
+    #undef LIMIT
+  - |-
+    #if defined(A)
+    int a;
+    #elif defined(B)
+    int b;
+    #else
+    int c;
+    #endif
+  - |-
+    #line 100 "gen.c"
+    #error unsupported platform
 invalid:
   - |-
     #ifdef CURLOPT_FTPSSLAUTH
     #edif
+  - |-
+    #ifdef A
+    int a;
+    #esle
+    int b;
+    #endif
+  - |-
+    #inlcude <stdio.h>
+    int a;
+  - |-
+    #defnie LIMIT 4
+    int a;
+  - |-
+    #ifdef A
+    int a;
+    #elsif B
+    int b;
+    #endif

@@ -1,5 +1,25 @@
 id: c-multi-statement-macro-no-do-while
 snapshots:
+  "#define DO_BOTH(a) do_one(a); do_two(a)":
+    labels:
+    - source: "#define DO_BOTH(a) do_one(a); do_two(a)"
+      style: primary
+      start: 0
+      end: 39
+    - source: do_one(a); do_two(a)
+      style: secondary
+      start: 19
+      end: 39
+  "#define GUARD(x) if (x) bar(); baz();":
+    labels:
+    - source: "#define GUARD(x) if (x) bar(); baz();"
+      style: primary
+      start: 0
+      end: 37
+    - source: if (x) bar(); baz();
+      style: secondary
+      start: 17
+      end: 37
   "#define INIT_PAIR(q) (q)->prev = (q); (q)->next = (q)":
     labels:
     - source: "#define INIT_PAIR(q) (q)->prev = (q); (q)->next = (q)"
@@ -10,3 +30,27 @@ snapshots:
       style: secondary
       start: 21
       end: 53
+  "#define RESET(p) (p)->a = 0; \\\n    (p)->b = 0":
+    labels:
+    - source: |-
+        #define RESET(p) (p)->a = 0; \
+            (p)->b = 0
+      style: primary
+      start: 0
+      end: 45
+    - source: |-
+        (p)->a = 0; \
+            (p)->b = 0
+      style: secondary
+      start: 17
+      end: 45
+  "#define SWAP(a, b) t = a; a = b; b = t":
+    labels:
+    - source: "#define SWAP(a, b) t = a; a = b; b = t"
+      style: primary
+      start: 0
+      end: 38
+    - source: t = a; a = b; b = t
+      style: secondary
+      start: 19
+      end: 38

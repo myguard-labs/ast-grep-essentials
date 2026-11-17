@@ -1,5 +1,23 @@
 id: c-multi-statement-macro-no-do-while
 valid:
   - '#define INIT_PAIR(q) do { (q)->prev = (q); (q)->next = (q); } while (0)'
+  - |-
+    #define MAX(a, b) ((a) > (b) ? (a) : (b))
+  - |-
+    #define SWAP(a, b) ((a) ^= (b), (b) ^= (a), (a) ^= (b))
+  - |-
+    #define RESET(p) do { (p)->a = 0; \
+        (p)->b = 0; } while (0)
+  - |-
+    #define CLEAR(p)   do { (p)->a = 0; (p)->b = 0; } while (0)
 invalid:
   - '#define INIT_PAIR(q) (q)->prev = (q); (q)->next = (q)'
+  - |-
+    #define SWAP(a, b) t = a; a = b; b = t
+  - |-
+    #define RESET(p) (p)->a = 0; \
+        (p)->b = 0
+  - |-
+    #define DO_BOTH(a) do_one(a); do_two(a)
+  - |-
+    #define GUARD(x) if (x) bar(); baz();

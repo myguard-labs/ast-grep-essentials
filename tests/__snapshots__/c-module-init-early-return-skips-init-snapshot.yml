@@ -1,5 +1,59 @@
 id: c-module-init-early-return-skips-init
 snapshots:
+  "PHP_MINIT_FUNCTION(fdf)\n{\n#ifdef WIN32\n    prepare();\n    return SUCCESS;\n#endif\n    err = FDFInitialize();\n    return SUCCESS;\n}":
+    labels:
+    - source: |-
+        #ifdef WIN32
+            prepare();
+            return SUCCESS;
+        #endif
+      style: primary
+      start: 26
+      end: 80
+    - source: return SUCCESS;
+      style: secondary
+      start: 58
+      end: 73
+    - source: err = FDFInitialize();
+      style: secondary
+      start: 85
+      end: 107
+  "PHP_MINIT_FUNCTION(fdf)\n{\n#ifdef WIN32\n    return SUCCESS;\n#else\n    prepare();\n#endif\n    REGISTER_INI_ENTRIES();\n    return SUCCESS;\n}":
+    labels:
+    - source: |-
+        #ifdef WIN32
+            return SUCCESS;
+        #else
+            prepare();
+        #endif
+      style: primary
+      start: 26
+      end: 86
+    - source: return SUCCESS;
+      style: secondary
+      start: 43
+      end: 58
+    - source: REGISTER_INI_ENTRIES();
+      style: secondary
+      start: 91
+      end: 114
+  "PHP_MINIT_FUNCTION(fdf)\n{\n#ifndef HAVE_FDF\n    return SUCCESS;\n#endif\n    err = FDFInitialize();\n    return SUCCESS;\n}":
+    labels:
+    - source: |-
+        #ifndef HAVE_FDF
+            return SUCCESS;
+        #endif
+      style: primary
+      start: 26
+      end: 69
+    - source: return SUCCESS;
+      style: secondary
+      start: 47
+      end: 62
+    - source: err = FDFInitialize();
+      style: secondary
+      start: 74
+      end: 96
   "PHP_MINIT_FUNCTION(fdf) { #ifdef WIN32 return SUCCESS; #endif err = FDFInitialize(); if (err == FDFErcOK) return SUCCESS; return FAILURE; }":
     labels:
     - source: "#ifdef WIN32 return SUCCESS; #endif"
