@@ -10,8 +10,12 @@ note: >-
   inside the body, or reachability.
 rule:
   all:
-    - pattern: 'if (!$P) { $$$BODY }'
+    - any:
+        - pattern: 'if (!$P) { $$$BODY }'
+        - pattern: 'if ($P == NULL) { $$$BODY }'
+        - pattern: 'if (NULL == $P) { $$$BODY }'
     - has:
+        field: consequence
         pattern: '*$P'
         stopBy: end
 metadata:
@@ -28,4 +32,3 @@ metadata:
   owasp: 'A10:2025'
   todo_cases:
     - 'void f(int *p) { if (!p) *p = 0; }'
-    - 'void f(int *p) { if (p == NULL) { *p = 0; } }'

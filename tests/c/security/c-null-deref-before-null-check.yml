@@ -9,6 +9,16 @@ valid:
     void f(struct s *key) { if (key) { n = key->len; } if (key && key->len) { g(); } }
   - |-
     void f(struct s *key) { n = 0; if (key && key->len) { n = key->len; } }
+  - |-
+    void f(struct s *key) { if (!key) { return; } n = key->len; if (key && key->ok) { g(); } }
+  - |-
+    void f(struct s *key) { if (!key) { return; } n = 0; n = key->len; if (key && key->ok) { g(); } }
+  - |-
+    void f(struct s *key) { n = key ? key->len : 0; if (key && key->ok) { g(); } }
+  - |-
+    void f(struct s *key) { n = (key != NULL) ? key->len : 0; if (key && key->ok) { g(); } }
+  - |-
+    void f(struct k *key) { if (!key) return; n = key->len; if (key && key->ok) g(); key = next(key); m = key->len; }
 
 invalid:
   - |-
@@ -22,3 +32,7 @@ invalid:
     void f(struct s *p) { g(p->v); if (p && p->w) { h(); } }
   - |-
     void f(struct s *p) { p->hits++; if (p && p->ok) { h(); } }
+  - |-
+    void f(struct k *key) { if (!key) return; key = NULL; n = key->len; if (key && key->ok) g(); }
+  - |-
+    void f(struct k *key) { if (!key) { return; } key = next(key); n = key->len; if (key && key->ok) g(); }

@@ -10,6 +10,16 @@ snapshots:
       style: secondary
       start: 0
       end: 31
+  "void f(char *name, size_t n) { c = strndup(name, n); if (NULL == name) { return; } }":
+    labels:
+    - source: if (NULL == name) { return; }
+      style: primary
+      start: 53
+      end: 82
+    - source: c = strndup(name, n);
+      style: secondary
+      start: 31
+      end: 52
   "void f(char *name, size_t n) { c = strndup(name, n); if (name == NULL) { return; } }":
     labels:
     - source: if (name == NULL) { return; }
@@ -20,6 +30,36 @@ snapshots:
       style: secondary
       start: 31
       end: 52
+  "void f(char *s) { d = my_dup(s); if (!s) { return; } }":
+    labels:
+    - source: if (!s) { return; }
+      style: primary
+      start: 33
+      end: 52
+    - source: d = my_dup(s);
+      style: secondary
+      start: 18
+      end: 32
+  "void f(char *src) { d = xstrdup(src); if (src == NULL) { return; } }":
+    labels:
+    - source: if (src == NULL) { return; }
+      style: primary
+      start: 38
+      end: 66
+    - source: d = xstrdup(src);
+      style: secondary
+      start: 20
+      end: 37
+  "void f(size_t n, char *tag) { p = xalloc_tag(n, tag); if (tag == NULL) { return; } }":
+    labels:
+    - source: if (tag == NULL) { return; }
+      style: primary
+      start: 54
+      end: 82
+    - source: p = xalloc_tag(n, tag);
+      style: secondary
+      start: 30
+      end: 53
   "void f(void *ctx, void *src, size_t n) { d = pool_alloc(ctx, src, n); if (src == NULL) { return; } }":
     labels:
     - source: if (src == NULL) { return; }

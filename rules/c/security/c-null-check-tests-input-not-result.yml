@@ -10,9 +10,20 @@ note: >-
   Syntactic only; allocator is recognised by name (alloc/dup) and no aliasing
   or type information is resolved.
 rule:
-  pattern: 'if ($X == NULL) $S'
-  follows:
-    pattern: '$L = $F($$$A, $X, $$$B);'
+  all:
+    - any:
+        - pattern: 'if ($X == NULL) $S'
+        - pattern: 'if (NULL == $X) $S'
+        - pattern: 'if (!$X) $S'
+    - follows:
+        any:
+          - pattern: '$L = $F($$$A, $X, $$$B);'
+          - pattern: '$L = $F($X, $$$B);'
+          - pattern: '$L = $F($$$A, $X);'
+          - pattern: '$L = $F($X);'
+    - not:
+        follows:
+          pattern: '$X = $G($$$C);'
 constraints:
   F:
     regex: '(alloc|dup)'
@@ -28,8 +39,3 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/476.html|https://cwe.mitre.org/data/definitions/690.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
-  todo_cases:
-    - 'void f(char *src) { d = xstrdup(src); if (src == NULL) { return; } }'
-    - 'void f(size_t n, size_t size) { p = calloc(n, size); if (size == NULL) return; }'
-    - 'void f(char *s) { d = my_dup(s); if (s == NULL) { return; } }'
-    - 'void f(char *name, size_t n) { c = strndup(name, n); if (NULL == name) { return; } }'

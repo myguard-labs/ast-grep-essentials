@@ -13,11 +13,38 @@ rule:
   all:
     - pattern: '$P->$F = $V;'
     - follows:
+        stopBy:
+          not:
+            kind: comment
         kind: if_statement
         has:
           field: condition
           stopBy: end
           pattern: '$P != NULL'
+        not:
+          all:
+            - has:
+                field: condition
+                any:
+                  - pattern: '($P != NULL)'
+                  - pattern: '($P != NULL && $R)'
+            - has:
+                field: alternative
+                kind: else_clause
+                has:
+                  any:
+                    - kind: return_statement
+                    - kind: goto_statement
+                    - kind: break_statement
+                    - kind: continue_statement
+                    - all:
+                        - kind: compound_statement
+                        - has:
+                            any:
+                              - kind: return_statement
+                              - kind: goto_statement
+                              - kind: break_statement
+                              - kind: continue_statement
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
@@ -31,5 +58,4 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
   todo_cases:
-    - 'void f(struct s *ctx) { if (ctx != NULL) { run(); } /* store */ ctx->b = 1; }'
     - 'void f(struct s *ctx) { if (ctx != NULL) { ctx->a = 1; } g(); ctx->b = 2; }'
