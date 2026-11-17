@@ -1,5 +1,12 @@
 id: php-tempnam-hardcoded-tmp
 valid:
   - '$tmp = tempnam(get_temp_dir(), ''wpupdate'');'
+  - '<?php $t = tempnam( sys_get_temp_dir(), ''x'' );'
+  - '<?php $t = tempnam( $dir, ''x'' );'
+  - '<?php $t = wp_tempnam( ''x'' );'
 invalid:
   - '$tmp = tempnam(''/tmp'', ''wpupdate'');'
+  - '<?php $t = tempnam( ''/tmp'', '''' );'
+  - '<?php $t = tempnam( ''/tmp'', $prefix );'
+  - '<?php $t = @tempnam( ''/tmp'', ''x'' );'
+  - '<?php $t = tempnam( ''/tmp'', ''a'' ) ?: die();'

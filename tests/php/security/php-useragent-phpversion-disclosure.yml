@@ -1,5 +1,12 @@
 id: php-useragent-phpversion-disclosure
 valid:
   - '$request = "User-Agent: WordPress PHP/" . $version;'
+  - '<?php $h = ''User-Agent: WordPress'';'
+  - '<?php $h = "Accept: */*" . phpversion();'
+  - '<?php $h = "User-Agent: MyGuard/" . $plugin_version;'
 invalid:
   - '$request = "User-Agent: WordPress PHP/" . phpversion();'
+  - '<?php $headers[] = "User-Agent: WordPress PHP/" . phpversion();'
+  - '<?php curl_setopt( $ch, CURLOPT_HTTPHEADER, [ "User-Agent: WordPress PHP/" . phpversion() ] );'
+  - '<?php return "User-Agent: WordPress PHP/" . phpversion();'
+  - '<?php $h = "User-Agent: WordPress PHP/" . phpversion() . "\r\n";'

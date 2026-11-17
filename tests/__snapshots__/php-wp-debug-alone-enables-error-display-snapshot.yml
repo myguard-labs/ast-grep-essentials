@@ -1,6 +1,34 @@
 id: php-wp-debug-alone-enables-error-display
 snapshots:
-  <?php function f() { if ( WP_DEBUG ) { $this->show_errors(); } }:
+  "<?php function f( $x ) { if ( WP_DEBUG ) { if ( $x ) { $wpdb->show_errors(); } } }":
+    labels:
+    - source: $wpdb->show_errors()
+      style: primary
+      start: 55
+      end: 75
+    - source: ( WP_DEBUG )
+      style: secondary
+      start: 28
+      end: 40
+    - source: if ( WP_DEBUG ) { if ( $x ) { $wpdb->show_errors(); } }
+      style: secondary
+      start: 25
+      end: 80
+  "<?php function f() { if ( WP_DEBUG ) { $this->db->show_errors(); } }":
+    labels:
+    - source: $this->db->show_errors()
+      style: primary
+      start: 39
+      end: 63
+    - source: ( WP_DEBUG )
+      style: secondary
+      start: 24
+      end: 36
+    - source: if ( WP_DEBUG ) { $this->db->show_errors(); }
+      style: secondary
+      start: 21
+      end: 66
+  "<?php function f() { if ( WP_DEBUG ) { $this->show_errors(); } }":
     labels:
     - source: $this->show_errors()
       style: primary
@@ -14,3 +42,31 @@ snapshots:
       style: secondary
       start: 21
       end: 62
+  "<?php function f() { if ( WP_DEBUG ): $wpdb->show_errors(); endif; }":
+    labels:
+    - source: $wpdb->show_errors()
+      style: primary
+      start: 38
+      end: 58
+    - source: ( WP_DEBUG )
+      style: secondary
+      start: 24
+      end: 36
+    - source: "if ( WP_DEBUG ): $wpdb->show_errors(); endif;"
+      style: secondary
+      start: 21
+      end: 66
+  "<?php function f() { if (WP_DEBUG) $wpdb->show_errors(); }":
+    labels:
+    - source: $wpdb->show_errors()
+      style: primary
+      start: 35
+      end: 55
+    - source: (WP_DEBUG)
+      style: secondary
+      start: 24
+      end: 34
+    - source: if (WP_DEBUG) $wpdb->show_errors();
+      style: secondary
+      start: 21
+      end: 56

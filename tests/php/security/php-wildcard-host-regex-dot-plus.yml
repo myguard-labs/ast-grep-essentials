@@ -3,7 +3,13 @@ valid:
   - >-
     <?php $wildcard_regex[] = str_replace( '\*', '[\w.]+?', preg_quote( $host,
     '/' ) ); ?>
+  - '<?php $r = str_replace( ''\*'', ''[^./]+'', preg_quote( $host, ''/'' ) );'
+  - '<?php $r = str_replace( ''\*'', ''[a-z0-9-]+'', preg_quote( $host, ''/'' ) );'
 invalid:
   - >-
     <?php $wildcard_regex[] = str_replace( '\*', '.+', preg_quote( $host, '/' )
     ); ?>
+  - '<?php $r = str_replace( ''\*'', ''.+'', preg_quote( $host ) );'
+  - '<?php $r = str_replace( ''*'', ''.+'', preg_quote( $host, ''#'' ) );'
+  - '<?php $re = ''#^'' . str_replace( ''\*'', ''.+'', preg_quote( $pattern, ''#'' ) ) . ''$#'';'
+  - '<?php $r = str_replace( [ ''\*'' ], ''.+'', preg_quote( $host, ''/'' ) );'
