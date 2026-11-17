@@ -17,6 +17,9 @@ rule:
         kind: binary_expression
         inside:
           kind: test_command
+          not:
+            has:
+              regex: '^\[\[$'
 metadata:
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
@@ -28,3 +31,4 @@ metadata:
   todo_cases:
     - 'Observed miss: ''if [ ${mode} = on ]; then :; fi'' (braced expansion operand, kind expansion) is not reported.'
     - 'Observed miss: ''test $a = yes && echo ok'' (test builtin command, not test_command) is not reported.'
+    - 'Observed miss: ''if [[ $a == $b ]]; then :; fi'' is not reported; the unquoted right-hand side of == inside [[ ]] is matched as a glob pattern (ShellCheck SC2053), not word-split.'
