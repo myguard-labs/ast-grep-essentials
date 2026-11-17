@@ -1,5 +1,25 @@
 id: wp-bare-php-self-global
 valid:
   - 'preg_match( ''#/wp-admin/?(.*?)$#i'', $_SERVER[''PHP_SELF''], $self_matches );'
+  - |-
+    <?php
+    echo $php_self;
+  - |-
+    <?php
+    echo $this->PHP_SELF;
+  - |-
+    <?php
+    $url = esc_url($_SERVER['PHP_SELF']);
 invalid:
   - 'preg_match( ''#/wp-admin/?(.*?)$#i'', $PHP_SELF, $self_matches );'
+  - |-
+    <?php
+    $u = $PHP_SELF . '?a=1';
+  - |-
+    <?php
+    if (isset($PHP_SELF)) {
+      echo 'set';
+    }
+  - |-
+    <?php
+    echo "<form action='{$PHP_SELF}'>";

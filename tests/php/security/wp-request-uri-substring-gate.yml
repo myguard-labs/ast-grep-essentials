@@ -1,5 +1,25 @@
 id: wp-request-uri-substring-gate
 valid:
   - 'return strstr($page_title, ''wp-admin/'');'
+  - |-
+    <?php
+    return strpos($url, 'wp-admin/');
+  - |-
+    <?php
+    return strstr(admin_url(), 'wp-admin/');
+  - |-
+    <?php
+    return defined('WP_ADMIN') && WP_ADMIN;
 invalid:
   - 'return strstr($_SERVER[''REQUEST_URI''], ''wp-admin/'');'
+  - |-
+    <?php
+    function f() {
+      return strstr($_SERVER['PHP_SELF'], 'wp-login');
+    }
+  - |-
+    <?php
+    return strstr( $_SERVER[ "REQUEST_URI" ], '/wp-admin/' );
+  - |-
+    <?php
+    return strstr($_SERVER['REQUEST_URI'], 'wp-admin/', true);

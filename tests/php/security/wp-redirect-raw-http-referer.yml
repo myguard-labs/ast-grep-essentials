@@ -1,5 +1,27 @@
 id: wp-redirect-raw-http-referer
 valid:
   - "<?php\nfunction back() {\n\twp_redirect( wp_get_referer() );\n}"
+  - |-
+    <?php
+    wp_safe_redirect($_SERVER['HTTP_REFERER']);
+  - |-
+    <?php
+    wp_redirect(wp_validate_redirect($_SERVER['HTTP_REFERER'], home_url()));
+  - |-
+    <?php
+    wp_redirect(home_url('/'), 302);
 invalid:
   - "<?php\nfunction back() {\n\twp_redirect( $_SERVER['HTTP_REFERER'] );\n}"
+  - |-
+    <?php
+    wp_redirect($_SERVER["HTTP_REFERER"]);
+  - |-
+    <?php
+    wp_redirect($_SERVER['HTTP_REFERER'], 301);
+  - |-
+    <?php
+    if ($back) {
+      wp_redirect(
+        $_SERVER['HTTP_REFERER']
+      );
+    }

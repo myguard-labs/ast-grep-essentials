@@ -3,7 +3,27 @@ valid:
   - >-
     <?php $u = get_option('siteurl') . '/wp-login.php?redirect_to=' .
     urlencode(get_permalink());
+  - |-
+    <?php
+    $u = $b . '/wp-login.php?redirect_to=' . rawurlencode(get_permalink());
+  - |-
+    <?php
+    $u = wp_login_url(get_permalink());
+  - |-
+    <?php
+    $u = add_query_arg('redirect_to', urlencode(get_permalink()), wp_login_url());
 invalid:
   - >-
     <?php $u = get_option('siteurl') . '/wp-login.php?redirect_to=' .
     get_permalink();
+  - |-
+    <?php
+    $u = site_url() . '/wp-login.php?redirect_to=' . get_permalink() . '&reauth=1';
+  - |-
+    <?php
+    echo home_url() . '/wp-login.php?redirect_to=' . get_permalink();
+  - |-
+    <?php
+    function login_link() {
+      return site_url() . '/wp-login.php?redirect_to=' . get_permalink();
+    }

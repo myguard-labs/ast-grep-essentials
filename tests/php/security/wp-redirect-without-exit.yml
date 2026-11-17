@@ -1,5 +1,47 @@
 id: wp-redirect-without-exit
 valid:
   - 'function f($u) { wp_redirect($u); exit; }'
+  - |-
+    <?php
+    function f($u) {
+      wp_redirect($u);
+      die;
+    }
+  - |-
+    <?php
+    function f($u) {
+      wp_redirect($u);
+      exit();
+    }
+  - |-
+    <?php
+    function f($u) {
+      if ($u) {
+        wp_redirect($u);
+        exit;
+      }
+    }
 invalid:
   - 'function f($u) { wp_redirect($u); echo ''x''; }'
+  - |-
+    <?php
+    function f($u) {
+      wp_redirect($u);
+      do_work();
+    }
+  - |-
+    <?php
+    class A {
+      function g($u) {
+        wp_redirect($u, 301);
+        update_option('a', 'b');
+      }
+    }
+  - |-
+    <?php
+    function f($u) {
+      if ($u) {
+        wp_redirect($u);
+      }
+      echo 'x';
+    }
