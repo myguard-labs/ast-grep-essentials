@@ -1,5 +1,11 @@
 id: php-preg-replace-anchored-negated-class
 valid:
   - '$sub = preg_replace( ''/[^a-z0-9-]+/i'', '''', $sub );'
+  - '<?php $s = preg_replace(''/[^a-z0-9]/i'', '''', $s);'
+  - '<?php $s = preg_replace(''/[^\w.-]+/i'', '''', $name);'
+  - '<?php $ok = preg_match(''/^[a-z0-9-]+$/i'', $s);'
 invalid:
   - '$sub = preg_replace( ''/^[^a-z0-9-]+$/i'', '''', $sub );'
+  - '<?php $s = preg_replace(''/^[^\w.-]+$/i'', '''', $name);'
+  - '<?php $s = preg_replace(''/^[^a-z]+$/i'', '''', trim($in));'
+  - '<?php function clean($v) { return preg_replace(''/^[^0-9]+$/i'', '''', $v); }'

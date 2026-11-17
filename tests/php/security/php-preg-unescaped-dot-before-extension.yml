@@ -3,7 +3,13 @@ valid:
   - |-
     <?php
     preg_match('#([^/]+\.php)#', $PHP_SELF, $self_matches);
+  - '<?php preg_match(''#^/admin\.php$#'', $uri);'
+  - '<?php preg_match(''#^/admin[.]php$#'', $uri);'
+  - '<?php preg_match(''/\\.php$/'', $f);'
 invalid:
   - |-
     <?php
     preg_match('#([^/]+.php)#', $PHP_SELF, $self_matches);
+  - '<?php if (preg_match(''/index.php/'', $u)) { exit; }'
+  - '<?php preg_match(''#^/x\.php|/y.php$#'', $f);'
+  - '<?php preg_match(''#/a.php#i'', $u);'

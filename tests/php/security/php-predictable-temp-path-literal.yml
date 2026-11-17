@@ -1,5 +1,11 @@
 id: php-predictable-temp-path-literal
 valid:
   - '$tmp_file = $tmp . uniqid(''/phpt.'');'
+  - '<?php $f = "$tmp/" . uniqid(''_f'');'
+  - '<?php $f = tempnam($dir, ''_f'');'
+  - '<?php $f = "$dir/_" . bin2hex(random_bytes(8));'
 invalid:
   - '$tmp_file = "$tmp/_FILE";'
+  - '<?php $f = "$dir/_lock";'
+  - '<?php $f = "$base/_cache_1";'
+  - '<?php $this->f = "$tmp/_FILE";'

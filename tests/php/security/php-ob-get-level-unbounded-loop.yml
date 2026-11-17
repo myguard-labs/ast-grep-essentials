@@ -1,5 +1,11 @@
 id: php-ob-get-level-unbounded-loop
 valid:
   - 'if (ob_get_level()) { ob_end_clean(); }'
+  - '<?php for ($i = ob_get_level(); $i > 0; $i--) { ob_end_clean(); }'
+  - '<?php while ($i < 3) { ob_end_clean(); $i++; }'
+  - '<?php $n = ob_get_level(); ob_end_clean();'
 invalid:
   - 'while (ob_get_level()) { ob_end_clean(); }'
+  - '<?php while (ob_get_level()) { ob_end_clean(); $n++; }'
+  - '<?php while (ob_get_level()) { if ($x) { ob_end_clean(); } }'
+  - '<?php function f() { while (ob_get_level()) { ob_end_clean(); } }'
