@@ -7,7 +7,22 @@ valid:
   # def parts(self, settings):
   #     return [TextPart(type='text', content=self.model_response())]
 - astgrep_fixture = "def parts(self, settings):\n    return [TextPart(type='text', content=self.model_response())]"
+- |-
+  def parts(self, settings):
+      return [TextPart(type='text', content='[redacted]')]
+- |-
+  def parts(self, settings):
+      return [TextPart(type='text')]
 invalid:
 - |-
   def parts(self, settings):
       return [TextPart(type='text', content=self.model_response())]
+- |-
+  def render(self, cfg):
+      return [TextPart(kind='text', content=self.model_response())]
+- |-
+  def parts(self, cfg):
+      return [TextPart(type='text', content=self.model_response())]
+- |-
+  def build_parts(self, state):
+      return [TextPart(role='text', content=self.model_response())]

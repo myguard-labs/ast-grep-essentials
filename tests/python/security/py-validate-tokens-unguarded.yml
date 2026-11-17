@@ -10,7 +10,30 @@ valid:
   # def f(grammar, tokens):
   #     grammar.validate_tokens(tokens)
 - astgrep_fixture = "def f(grammar, tokens):\n    grammar.validate_tokens(tokens)\n"
+- |-
+  def f(grammar, tokens):
+      try:
+          if tokens:
+              grammar.validate_tokens(tokens)
+      except Exception:
+          return None
+- |-
+  def f(grammar, tokens):
+      grammar.validate(tokens)
 invalid:
 - |
   def f(grammar, tokens):
       grammar.validate_tokens(tokens)
+- |-
+  def f(self, tokens):
+      self.grammar.validate_tokens(tokens)
+- |-
+  async def f(grammar, tokens):
+      await grammar.validate_tokens(tokens=tokens)
+- |-
+  def f(grammar, tokens):
+      try:
+          def inner():
+              grammar.validate_tokens(tokens)
+      except ValueError:
+          return None

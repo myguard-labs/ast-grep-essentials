@@ -1,15 +1,7 @@
 id: py-lstat-before-read-bytes
 snapshots:
-  ? |
-    from pathlib import Path
-    import stat
-
-    def read_regular(path: Path) -> bytes:
-        metadata = path.lstat()
-        if not stat.S_ISREG(metadata.st_mode):
-            raise ValueError("Expected a regular file")
-        return path.read_bytes()
-  : labels:
+  "from pathlib import Path\nimport stat\n\ndef read_regular(path: Path) -> bytes:\n    metadata = path.lstat()\n    if not stat.S_ISREG(metadata.st_mode):\n        raise ValueError(\"Expected a regular file\")\n    return path.read_bytes()\n":
+    labels:
     - source: |-
         def read_regular(path: Path) -> bytes:
             metadata = path.lstat()
@@ -19,3 +11,26 @@ snapshots:
       style: primary
       start: 38
       end: 228
+  "from pathlib import Path\nimport stat as st\n\ndef load(target: Path) -> bytes:\n    info = target.lstat()\n    if not st.S_ISREG(info.st_mode):\n        raise ValueError(\"not a regular file\")\n    return target.read_bytes()":
+    labels:
+    - source: |-
+        def load(target: Path) -> bytes:
+            info = target.lstat()
+            if not st.S_ISREG(info.st_mode):
+                raise ValueError("not a regular file")
+            return target.read_bytes()
+      style: primary
+      start: 44
+      end: 217
+  "import logging\nfrom pathlib import Path\nimport stat\n\ndef load(self, path: Path, limit: int = 0) -> bytes:\n    meta = path.lstat()\n    if not stat.S_ISREG(meta.st_mode):\n        logging.warning(\"rejecting %s\", path)\n        raise ValueError(\"Expected a regular file\")\n    return path.read_bytes()":
+    labels:
+    - source: |-
+        def load(self, path: Path, limit: int = 0) -> bytes:
+            meta = path.lstat()
+            if not stat.S_ISREG(meta.st_mode):
+                logging.warning("rejecting %s", path)
+                raise ValueError("Expected a regular file")
+            return path.read_bytes()
+      style: primary
+      start: 53
+      end: 295

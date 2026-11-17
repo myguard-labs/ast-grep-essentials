@@ -3,5 +3,17 @@ valid:
 - 'await self._files.delete_one({''_id'': {''$eq'': file_id}})'
 - '# await self._files.delete_one({''_id'': file_id})'
 - 'astgrep_fixture = "await self._files.delete_one({''_id'': file_id})"'
+- |-
+  await self._files.delete_one({'_id': ObjectId(file_id)})
+- |-
+  await self._files.find_one({'_id': str(file_id)})
+- |-
+  await self._files.delete_many({'_id': 'fixed-singleton'})
 invalid:
 - 'await self._files.delete_one({''_id'': file_id})'
+- |-
+  await self._files.find_one({'_id': doc_id})
+- |-
+  await self._chunks.delete_many({"files_id": fid})
+- |-
+  await coll.update_one({'_id': oid}, {'$set': {'seen': True}})

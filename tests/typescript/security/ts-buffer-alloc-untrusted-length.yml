@@ -3,5 +3,14 @@ valid:
 - const buf = Buffer.alloc(16);
 - // const buf = Buffer.alloc(element.len);
 - 'const astgrepFixture: string = "const buf = Buffer.alloc(element.len);";'
+- const buf = Buffer.alloc(Math.min(element.len, MAX_LEN));
+- const buf = Buffer.alloc(element.length);
+- |-
+  const size = element.len;
+  if (size > MAX_LEN) { throw new Error('too long'); }
+  const buf = Buffer.alloc(size);
 invalid:
 - const buf = Buffer.alloc(element.len);
+- const buf = Buffer.alloc(header.len);
+- return Buffer.alloc(this.node.len);
+- const buf = Buffer.alloc(a.b.len);

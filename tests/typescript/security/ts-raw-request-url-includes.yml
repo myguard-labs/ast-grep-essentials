@@ -3,5 +3,18 @@ valid:
 - const isInternal = parsePath(req.url).pathname.includes('/_next');
 - // const isInternal = req.url.includes('/_next');
 - 'const astgrepFixture: string = "const isInternal = req.url.includes(''/_next'');";'
+- |-
+  const isInternal = new URL(req.url, base).pathname.includes('/_next');
+- |-
+  const isInternal = req.nextUrl.pathname.startsWith('/_next');
 invalid:
 - const isInternal = req.url.includes('/_next');
+- |-
+  const internal = req.url.includes('/_next');
+- |-
+  export const isNext = req.url.includes('/_next');
+- |-
+  function check(req) {
+    const hit = req.url.includes('/_next');
+    return hit;
+  }
