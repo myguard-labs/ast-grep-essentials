@@ -25,6 +25,9 @@ rule:
             pattern: 'wp_clear_scheduled_hook($$$CLEAR)'
             stopBy: end
 metadata:
+  todo_cases:
+    - "Observed miss: `function f($id) { wp_schedule_single_event( time() + 60, 'h' ); wp_clear_scheduled_hook( 'h' ); }` (clear called after the schedule, which removes the event just queued) is not reported (probed: no match; call order is not checked)."
+    - "Observed miss: `namespace Foo; function f($id) { \\wp_schedule_single_event( time() + 60, 'h' ); }` (leading-backslash call) is not reported (probed: no match)."
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

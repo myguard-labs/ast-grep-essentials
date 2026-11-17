@@ -14,6 +14,9 @@ note: >-
 rule:
   pattern: 'wp_schedule_single_event(''$HOOK'', $$$ARGS)'
 metadata:
+  todo_cases:
+    - "Observed miss: `wp_schedule_single_event( \"my_hook\", time() )` (double-quoted hook) and `\\wp_schedule_single_event( 'my_hook', time() )` are not reported (probed: no match)."
+    - "Observed false positive: `wp_schedule_single_event( '1700000000', 'my_hook' )` (numeric timestamp passed as a string, hook in the second argument) is reported although the argument order is correct (probed: match on 0.51.3 and 0.45.2)."
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

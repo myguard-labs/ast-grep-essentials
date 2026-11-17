@@ -1,12 +1,48 @@
 id: wp-schedule-single-event-without-clear
 snapshots:
-  function f($id) { wp_schedule_single_event(time() + 60, 'publish_future_post', array($id)); }:
+  "<?php function a($id) { wp_clear_scheduled_hook( 'h' ); } function b($id) { wp_schedule_single_event( time() + 60, 'h', array( $id ) ); }":
+    labels:
+    - source: wp_schedule_single_event( time() + 60, 'h', array( $id ) )
+      style: primary
+      start: 76
+      end: 134
+    - source: function b($id) { wp_schedule_single_event( time() + 60, 'h', array( $id ) ); }
+      style: secondary
+      start: 58
+      end: 137
+  "<?php function f($id) { $ok = wp_schedule_single_event( time() + 60, 'h', array( $id ) ); return $ok; }":
+    labels:
+    - source: wp_schedule_single_event( time() + 60, 'h', array( $id ) )
+      style: primary
+      start: 30
+      end: 88
+    - source: >-
+        function f($id) { $ok = wp_schedule_single_event( time() + 60, 'h', array( $id
+        ) ); return $ok; }
+      style: secondary
+      start: 6
+      end: 103
+  "<?php function f($ids) { foreach ( $ids as $id ) { wp_schedule_single_event( time() + 60, 'h', array( $id ) ); } }":
+    labels:
+    - source: wp_schedule_single_event( time() + 60, 'h', array( $id ) )
+      style: primary
+      start: 51
+      end: 109
+    - source: >-
+        function f($ids) { foreach ( $ids as $id ) { wp_schedule_single_event( time() +
+        60, 'h', array( $id ) ); } }
+      style: secondary
+      start: 6
+      end: 114
+  "function f($id) { wp_schedule_single_event(time() + 60, 'publish_future_post', array($id)); }":
     labels:
     - source: wp_schedule_single_event(time() + 60, 'publish_future_post', array($id))
       style: primary
       start: 18
       end: 90
-    - source: function f($id) { wp_schedule_single_event(time() + 60, 'publish_future_post', array($id)); }
+    - source: >-
+        function f($id) { wp_schedule_single_event(time() + 60, 'publish_future_post',
+        array($id)); }
       style: secondary
       start: 0
       end: 93

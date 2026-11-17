@@ -1,6 +1,24 @@
 id: wp-rfc3339-direct-response-field
 snapshots:
-  function f( $data, $template ) { $data['modified'] = mysql_to_rfc3339( $template->modified ); return $data; }:
+  "<?php function f( $d, $field, $v ) { $d[ $field ] = mysql_to_rfc3339( $v ); return $d; }":
+    labels:
+    - source: $d[ $field ] = mysql_to_rfc3339( $v )
+      style: primary
+      start: 37
+      end: 74
+  "<?php function f( $d, $t ) { $d['modified']['gmt'] = mysql_to_rfc3339( $t->modified_gmt ); return $d; }":
+    labels:
+    - source: $d['modified']['gmt'] = mysql_to_rfc3339( $t->modified_gmt )
+      style: primary
+      start: 29
+      end: 89
+  "<?php function f( $r, $t ) { $r->data['date'] = mysql_to_rfc3339( $t->post_date ); return $r; }":
+    labels:
+    - source: $r->data['date'] = mysql_to_rfc3339( $t->post_date )
+      style: primary
+      start: 29
+      end: 81
+  "function f( $data, $template ) { $data['modified'] = mysql_to_rfc3339( $template->modified ); return $data; }":
     labels:
     - source: $data['modified'] = mysql_to_rfc3339( $template->modified )
       style: primary

@@ -1,8 +1,26 @@
 id: wp-schedule-event-once-recurrence
 snapshots:
-  ? "<?php\nfunction queue_job() {\n\twp_schedule_event( time(), 'once', 'my_hook' );\n}"
-  : labels:
+  "<?php\nfunction queue_job() {\n\twp_schedule_event( time(), 'once', 'my_hook' );\n}":
+    labels:
     - source: wp_schedule_event( time(), 'once', 'my_hook' )
       style: primary
       start: 30
       end: 76
+  "<?php $ok = wp_schedule_event( $ts, 'once', $hook );":
+    labels:
+    - source: wp_schedule_event( $ts, 'once', $hook )
+      style: primary
+      start: 12
+      end: 51
+  "<?php class A { function f() { return wp_schedule_event( time(), 'once', $this->hook ); } }":
+    labels:
+    - source: wp_schedule_event( time(), 'once', $this->hook )
+      style: primary
+      start: 38
+      end: 86
+  "<?php if ( ! wp_next_scheduled( 'my_hook' ) ) { wp_schedule_event( time() + 60, 'once', 'my_hook' ); }":
+    labels:
+    - source: wp_schedule_event( time() + 60, 'once', 'my_hook' )
+      style: primary
+      start: 48
+      end: 99

@@ -1,5 +1,11 @@
 id: wp-schedule-event-once-recurrence
 valid:
   - "<?php\nfunction queue_job() {\n\twp_schedule_event( time(), 'hourly', 'my_hook' );\n}"
+  - "<?php wp_schedule_event( time(), 'daily', 'my_hook' );"
+  - "<?php wp_schedule_event( time(), $recurrence, 'my_hook' );"
+  - "<?php wp_schedule_single_event( time() + 60, 'my_hook' );"
 invalid:
   - "<?php\nfunction queue_job() {\n\twp_schedule_event( time(), 'once', 'my_hook' );\n}"
+  - "<?php if ( ! wp_next_scheduled( 'my_hook' ) ) { wp_schedule_event( time() + 60, 'once', 'my_hook' ); }"
+  - "<?php $ok = wp_schedule_event( $ts, 'once', $hook );"
+  - "<?php class A { function f() { return wp_schedule_event( time(), 'once', $this->hook ); } }"
