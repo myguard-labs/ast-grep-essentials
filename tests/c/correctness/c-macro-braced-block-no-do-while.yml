@@ -1,5 +1,11 @@
 id: c-macro-braced-block-no-do-while
 valid:
   - '#define CLR(p) do { (p)->a = 0; (p)->b = 0; } while (0)'
+  - "#define INIT_PAIR(a, b) { (a), (b) }"
+  - "#define CALL_R(p) ({ int r_ = f(p); r_; })"
+  - "#define CLR2(p) do { (p)->a = 0; } while (0)"
 invalid:
   - '#define CLR(p) { (p)->a = 0; (p)->b = 0; }'
+  - "#define SWAP(a, b) { \\\n\tint t_ = (a); \\\n\t(a) = (b); \\\n\t(b) = t_; \\\n}"
+  - "#define GUARD(c, f) { if (c) f(); }"
+  - "#define RESET(p) {(p)->x = 0; (p)->y = 0;}"

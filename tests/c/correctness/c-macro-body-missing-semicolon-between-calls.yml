@@ -1,5 +1,11 @@
 id: c-macro-body-missing-semicolon-between-calls
 valid:
   - "#define DECL(x) \\\n\tFOO_FUNC(x); \\\n\tBAR_FUNC(x)"
+  - "#define DECL3(x) \\\n\tFOO_FUNC(x); \\\n\tBAR_FUNC(x); \\\n\tBAZ_FUNC(x)"
+  - "#define ARGS(x) \\\n\tFOO_FUNC(x), \\\n\tBAR_FUNC(x)"
+  - "#define ONE_CALL(x) FOO_FUNC(x)"
 invalid:
   - "#define DECL(x) \\\n\tFOO_FUNC(x) \\\n\tBAR_FUNC(x)"
+  - "#define DECL3(x) \\\n\tFOO_FUNC(x); \\\n\tBAR_FUNC(x) \\\n\tBAZ_FUNC(x)"
+  - "#define DECL4(x) \\\n    FOO_FUNC(x) \\\n    BAR_FUNC(x)"
+  - "#define DECL5(x, y) \\\n\tFOO_FUNC(inner(x), y) \\\n\tBAR_FUNC(y);"
