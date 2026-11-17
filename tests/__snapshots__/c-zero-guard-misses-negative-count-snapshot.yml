@@ -1,8 +1,26 @@
 id: c-zero-guard-misses-negative-count
 snapshots:
-  'size_t s = (n == 0 ? 0 : n - 1) * sizeof(x);':
+  "size_t f(int cnt) { return (cnt == 0 ? 0 : cnt - 1); }":
     labels:
-    - source: '(n == 0 ? 0 : n - 1)'
+    - source: "(cnt == 0 ? 0 : cnt - 1)"
+      style: primary
+      start: 27
+      end: 51
+  "size_t f(struct s *s) { return (s->n == 0 ? 1 : s->n - 1); }":
+    labels:
+    - source: "(s->n == 0 ? 1 : s->n - 1)"
+      style: primary
+      start: 31
+      end: 57
+  "size_t s = (n == 0 ? 0 : n - 1) * sizeof(x);":
+    labels:
+    - source: "(n == 0 ? 0 : n - 1)"
       style: primary
       start: 11
       end: 31
+  "void *f(int n) { return malloc((n == 0 ? 0 : n - 1) * sizeof(int)); }":
+    labels:
+    - source: "(n == 0 ? 0 : n - 1)"
+      style: primary
+      start: 31
+      end: 51

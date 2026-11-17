@@ -3,7 +3,12 @@ valid:
   - >-
     int f(unsigned int a, unsigned int b) { if ((int) (a - b) <= 0) { return 1;
     } return 0; }
+  - "int f(unsigned int a, unsigned int b) { return a <= b; }"
+  - "int f(unsigned int a, unsigned int b) { return (unsigned int)(a - b) == 0; }"
 invalid:
   - >-
     unsigned int f(unsigned int a, unsigned int b) { if ((unsigned int) (a - b)
     <= 0) { return 1; } return 0; }
+  - "int f(struct s *s) { return (unsigned int)(s->a - s->b) <= 0; }"
+  - "int f(unsigned int x) { return (unsigned int)(x - 1) <= 0; }"
+  - "void f(unsigned int a, unsigned int b) { while ((unsigned int)(a - b) <= 0) { a++; } }"

@@ -3,7 +3,13 @@ valid:
   - >-
     typedef struct { unsigned short key_len; unsigned char data[1]; } node_t;
     static char *ev(node_t *n) { return (char *) (n->data + n->key_len); }
+  - "void f(node_t *n) { time_t t; memcpy(&t, n->data + n->key_len, sizeof(time_t)); }"
+  - "u_char *f(node_t *n) { return (u_char *)(n->data + n->key_len); }"
+  - "time_t *f(node_t *n) { return (time_t *) ngx_align_ptr(n->data + n->key_len, sizeof(time_t)); }"
 invalid:
   - >-
     typedef struct { unsigned short key_len; unsigned char data[1]; } node_t;
     static time_t *ev(node_t *n) { return (time_t *) (n->data + n->key_len); }
+  - "time_t *f(node_t *node, int len) { return (time_t *)(node->data + len); }"
+  - "void f(node_t *e, int off) { time_t *t; t = (time_t *)(e->data + off); }"
+  - "void f(node_t *n) { time_t *t = (time_t *)(n->data + n->key_len); use(t); }"

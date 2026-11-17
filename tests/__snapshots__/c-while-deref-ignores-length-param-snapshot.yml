@@ -1,6 +1,36 @@
 id: c-while-deref-ignores-length-param
 snapshots:
-  int handle(const char *buf, size_t len) { const char *p = buf; while (*p) { p++; } return 0; }:
+  "int h(const char *buf, size_t len) { const char *cur = buf; int cnt = 0; while (*cur) { if (*cur == ',') cnt++; cur++; } return cnt; }":
+    labels:
+    - source: while (*cur) { if (*cur == ',') cnt++; cur++; }
+      style: primary
+      start: 73
+      end: 120
+    - source: (*cur)
+      style: secondary
+      start: 79
+      end: 85
+  "int h(const char *buf, size_t len) { const char *p = buf; while (*p) p++; return 0; }":
+    labels:
+    - source: while (*p) p++;
+      style: primary
+      start: 58
+      end: 73
+    - source: (*p)
+      style: secondary
+      start: 64
+      end: 68
+  "int h(const char *buf, size_t len) { const char *s = buf; size_t n = 0; while (*s) { s++; n++; } return n; }":
+    labels:
+    - source: while (*s) { s++; n++; }
+      style: primary
+      start: 72
+      end: 96
+    - source: (*s)
+      style: secondary
+      start: 78
+      end: 82
+  "int handle(const char *buf, size_t len) { const char *p = buf; while (*p) { p++; } return 0; }":
     labels:
     - source: while (*p) { p++; }
       style: primary

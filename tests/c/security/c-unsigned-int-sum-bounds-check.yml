@@ -3,7 +3,12 @@ valid:
   - >-
     int in_range(unsigned int from, unsigned int len, unsigned int n) { return
     (size_t)from + (size_t)len > n; }
+  - "int f(unsigned int from, unsigned int len, unsigned int n) { return (uint64_t)from + (uint64_t)len > n; }"
+  - "int f(unsigned int from, unsigned int len, unsigned int n) { return from > n || len > n - from; }"
 invalid:
   - >-
     int in_range(unsigned int from, unsigned int len, unsigned int n) { return
     (unsigned int)from + (unsigned int)len > n; }
+  - "int f(unsigned int a, unsigned int b, unsigned int lim) { return (unsigned int)a + (unsigned int)b > lim; }"
+  - "int f(struct s *s, unsigned int off, unsigned int len) { return (unsigned int)off + (unsigned int)len > s->size; }"
+  - "int f(struct s *s, unsigned int off, unsigned int len) { return (unsigned int)off + (unsigned int)len > (unsigned int)s->size; }"

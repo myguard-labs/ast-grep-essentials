@@ -1,6 +1,24 @@
 id: c-unmangle-property-result-ignored
 snapshots:
-  zend_unmangle_property_name(k, &c, &p); xmlNodeSetName(n, p);:
+  "void f(void) { for (;;) { zend_unmangle_property_name(ZSTR_VAL(k), &c, &p); break; } }":
+    labels:
+    - source: zend_unmangle_property_name(ZSTR_VAL(k), &c, &p);
+      style: primary
+      start: 26
+      end: 75
+  "void f(void) { if (n) { zend_unmangle_property_name(k, &c, &p); } use(p); }":
+    labels:
+    - source: zend_unmangle_property_name(k, &c, &p);
+      style: primary
+      start: 24
+      end: 63
+  "void f(void) { zend_unmangle_property_name(k, NULL, &p); use(p); }":
+    labels:
+    - source: zend_unmangle_property_name(k, NULL, &p);
+      style: primary
+      start: 15
+      end: 56
+  "zend_unmangle_property_name(k, &c, &p); xmlNodeSetName(n, p);":
     labels:
     - source: zend_unmangle_property_name(k, &c, &p);
       style: primary

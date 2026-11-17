@@ -1,5 +1,11 @@
 id: c-void-pointer-arithmetic-cast
 valid:
   - 'p = (char *)buf + n;'
+  - "void f(void *buf, int n) { char *p; p = (unsigned char *)buf + n; }"
+  - "void f(void *buf, int n) { void *p; p = (void *)((char *)buf + n); }"
+  - "void f(void *buf, int n) { char *p; p = (char *)buf - n; }"
 invalid:
   - 'p = (void *)buf + n;'
+  - "void *f(void *base, int off) { return (void *)base + off * 2; }"
+  - "void *f(struct s *s) { return (void *)s->data + s->len; }"
+  - "void f(void *buf, int n) { use((void *)buf + n); }"

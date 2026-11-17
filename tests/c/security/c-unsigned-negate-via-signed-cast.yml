@@ -1,5 +1,11 @@
 id: c-unsigned-negate-via-signed-cast
 valid:
   - 'void f(unsigned long idx) { idx = -idx; }'
+  - "unsigned long f(unsigned long x) { return (unsigned long)(-x); }"
+  - "unsigned long f(unsigned long x) { return 0UL - x; }"
+  - "unsigned long f(unsigned long x) { return ~x + 1UL; }"
 invalid:
   - 'void f(unsigned long idx) { idx = (unsigned long)(-(long)idx); }'
+  - "unsigned long f(struct s *s) { return (unsigned long)(-(long)s->off); }"
+  - "void f(unsigned long n) { g((unsigned long)(-(long)n)); }"
+  - "unsigned long f(unsigned long a, unsigned long b) { return (unsigned long)(-(long)(a + b)); }"

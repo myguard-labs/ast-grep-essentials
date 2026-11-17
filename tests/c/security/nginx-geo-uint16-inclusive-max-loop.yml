@@ -1,5 +1,11 @@
 id: nginx-geo-uint16-inclusive-max-loop
 valid:
   - 'void f(void) { u_short h; for (h = 0; h < 0xffff; h++) { use(h); } }'
+  - "void f(void) { u_short h; for (h = 0; h <= 0xfffe; h++) { use(h); } }"
+  - "void f(void) { uint32_t h; for (h = 0; h < 0x10000; h++) { use(h); } }"
+  - "void f(void) { u_short h; for (h = 0; h != 0xffff; h++) { use(h); } }"
 invalid:
   - 'void f(void) { u_short h; for (h = 0; h <= 0xffff; h++) { use(h); } }'
+  - "void f(void) { unsigned short h; for (h = 0; h <= 0xffff; h++) { a[h] = 0; } }"
+  - "void f(void) { uint16_t h; for (h = 0; h <= 0xffff; h++) use(h); }"
+  - "void f(void) { uint16_t i; for (i = 0; i <= 0xffff; i++) { use(i); } }"
