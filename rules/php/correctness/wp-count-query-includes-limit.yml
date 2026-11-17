@@ -7,11 +7,46 @@ message: >-
   This COUNT query passed to get_var interpolates a LIMIT clause variable, so
   the total may reflect only one page of rows.
 note: >-
-  Syntactic match only. It flags a single-quoted SQL string containing
-  COUNT(*) and the literal text query_limit; it does not resolve runtime
-  values or confirm the variable holds a LIMIT fragment.
+  Syntactic match only. It flags $wpdb->get_var() called with a
+  double-quoted or heredoc string that contains COUNT( and interpolates a
+  variable or property whose name contains limit ($limit, {$limit},
+  $this->query_limit, {$this->query_limit}); it does not resolve runtime
+  values or confirm the variable holds a LIMIT fragment. Single-quoted
+  literals are not interpolated by PHP and are not reported.
 rule:
-  pattern: '$wpdb->get_var(''SELECT COUNT(*) FROM $wpdb->users $this->query_limit'')'
+  kind: member_call_expression
+  all:
+    - has:
+        field: object
+        regex: '^\$wpdb$'
+    - has:
+        field: name
+        regex: '^get_var$'
+    - has:
+        field: arguments
+        has:
+          kind: argument
+          has:
+            any:
+              - kind: encapsed_string
+                all:
+                  - regex: '(?i)count\s*\('
+                  - has:
+                      any:
+                        - kind: variable_name
+                        - kind: member_access_expression
+                      regex: '(?i)limit'
+              - kind: heredoc
+                has:
+                  field: value
+                  kind: heredoc_body
+                  all:
+                    - regex: '(?i)count\s*\('
+                    - has:
+                        any:
+                          - kind: variable_name
+                          - kind: member_access_expression
+                        regex: '(?i)limit'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -20,5 +55,5 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   todo_cases:
-    - 'FN: the pattern is a single-quoted literal, which PHP does not interpolate; the interpolating forms $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->users $this->query_limit" ) and the braced {$this->query_limit} form are not matched.'
+    - 'FN: concatenation forms get_var( "SELECT COUNT(*) FROM t " . $limit ) are a real defect of the same kind but are not matched; a limit name reached through a subscript ($opts[limit]) is also not matched; the same interpolated COUNT string passed to get_results, get_row or get_col is not matched.'
   license: MyGuard Internal Use License 1.0
