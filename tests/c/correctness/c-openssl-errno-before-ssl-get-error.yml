@@ -4,8 +4,36 @@ valid:
     n = SSL_read(ssl, buf, want);
     err = SSL_get_error(ssl, (int) n);
     if (errno == EINTR) { return -1; }
+  - |-
+    n = SSL_read(ssl, buf, want);
+    err = SSL_get_error(ssl, (int) n);
+    if (err == SSL_ERROR_SYSCALL && errno == EINTR) { return -1; }
+  - |-
+    n = SSL_read(ssl, buf, want);
+    err = SSL_get_error(ssl, (int) n);
+    if (err == SSL_ERROR_SYSCALL) { if (errno == EINTR) { return -1; } }
+  - |-
+    n = SSL_read(ssl, buf, want);
+    err = SSL_get_error(ssl, (int) n);
+    if (err == SSL_ERROR_WANT_READ) { return 0; }
 invalid:
   - |-
     n = SSL_read(ssl, buf, want);
     if (errno == EINTR) { return -1; }
+    err = SSL_get_error(ssl, (int) n);
+  - |-
+    for (;;) {
+        n = SSL_read(ssl, buf, want);
+        if (errno == EINTR) { continue; }
+        err = SSL_get_error(ssl, (int) n);
+    }
+  - |-
+    n = SSL_read(ssl, buf, want);
+    if (errno == EINTR) { retry++; }
+    log_io(n);
+    err = SSL_get_error(ssl, (int) n);
+  - |-
+    n = SSL_read(ssl, buf, want);
+    if (errno == EINTR) { return -1; }
+    if (n > 0) { total += n; }
     err = SSL_get_error(ssl, (int) n);

@@ -1,5 +1,11 @@
 id: c-num-args-guard-skips-argc
 valid:
   - 'int argc; if (x) { } else if (!ZEND_NUM_ARGS() || !argc) { init(); }'
+  - 'void f(int argc, int x) { if (x) { go(); } else if (!ZEND_NUM_ARGS() && !argc) { init(); } }'
+  - 'void f(int argc) { if (!ZEND_NUM_ARGS()) { init(); } }'
+  - 'void f(int argc, int x) { if (x) { go(); } else if (!argc) { init(); } }'
 invalid:
   - 'int argc; if (x) { } else if (!ZEND_NUM_ARGS()) { init(); }'
+  - 'void f(int argc, int x) { if (x) { go(); } else if (!ZEND_NUM_ARGS()) return; }'
+  - 'void f(int argc, int x, int y) { if (x) { a(); } else if (y) { b(); } else if (!ZEND_NUM_ARGS()) { init(); } }'
+  - 'void f(int argc, int x) { if (x) { go(); } else if (!ZEND_NUM_ARGS()) { init(); } }'

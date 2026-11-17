@@ -1,5 +1,25 @@
 id: c-openssl-ec-call-unguarded
 snapshots:
+  "#ifndef OPENSSL_NO_RSA\nint f(EVP_PKEY *k) { return EC_KEY_can_sign(EVP_PKEY_get0_EC_KEY(k)); }\n#endif":
+    labels:
+    - source: EC_KEY_can_sign(EVP_PKEY_get0_EC_KEY(k))
+      style: primary
+      start: 51
+      end: 91
+    - source: EC_KEY_can_sign
+      style: secondary
+      start: 51
+      end: 66
+  "EC_KEY *f(EVP_PKEY *k) { return EVP_PKEY_get0_EC_KEY(k); }":
+    labels:
+    - source: EVP_PKEY_get0_EC_KEY(k)
+      style: primary
+      start: 32
+      end: 55
+    - source: EVP_PKEY_get0_EC_KEY
+      style: secondary
+      start: 32
+      end: 52
   "int f(EVP_PKEY *k) { return EC_KEY_can_sign(EVP_PKEY_get0_EC_KEY(k)); }":
     labels:
     - source: EC_KEY_can_sign(EVP_PKEY_get0_EC_KEY(k))
@@ -10,3 +30,23 @@ snapshots:
       style: secondary
       start: 28
       end: 43
+  "int f(const EC_GROUP *g) { return EC_GROUP_get_degree(g); }":
+    labels:
+    - source: EC_GROUP_get_degree(g)
+      style: primary
+      start: 34
+      end: 56
+    - source: EC_GROUP_get_degree
+      style: secondary
+      start: 34
+      end: 53
+  "void g(EC_KEY *e) { EC_KEY_free(e); }":
+    labels:
+    - source: EC_KEY_free(e)
+      style: primary
+      start: 20
+      end: 34
+    - source: EC_KEY_free
+      style: secondary
+      start: 20
+      end: 31

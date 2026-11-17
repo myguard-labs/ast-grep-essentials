@@ -5,8 +5,34 @@ valid:
     cipher = EVP_CIPHER_fetch(libctx, name, propq);
     if (cipher == NULL)
         cipher = EVP_get_cipherbynid(nid);
+  - |-
+    ERR_set_mark();
+    cipher = EVP_CIPHER_fetch(libctx, name, propq);
+    if (cipher == NULL)
+        cipher = EVP_get_cipherbynid(nid);
+  - |-
+    cipher = lookup_cipher(name);
+    if (cipher == NULL)
+        cipher = EVP_get_cipherbynid(nid);
+  - |-
+    md = EVP_MD_fetch(libctx, name, propq);
+    if (md == NULL)
+        md = default_md(nid);
 invalid:
   - |-
     cipher = EVP_CIPHER_fetch(libctx, name, propq);
     if (cipher == NULL)
         cipher = EVP_get_cipherbynid(nid);
+  - |-
+    md = EVP_MD_fetch(libctx, name, propq);
+    if (md == NULL)
+        md = EVP_get_digestbyname(name);
+  - |-
+    cipher = EVP_CIPHER_fetch(libctx, name, propq);
+    if (cipher == NULL)
+        cipher = EVP_get_cipherbyname(name);
+  - |-
+    ERR_clear_error();
+    md = EVP_MD_fetch(libctx, name, propq);
+    if (md == NULL)
+        md = EVP_get_digestbynid(nid);

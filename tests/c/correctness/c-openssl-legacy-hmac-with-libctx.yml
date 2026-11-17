@@ -5,9 +5,29 @@ valid:
     HMAC_CTX; HMAC_CTX *HMAC_CTX_new(void); int HMAC_Init_ex(HMAC_CTX *c, const
     void *k, int l, const void *md, void *e); int f(void *libctx) { HMAC_CTX *h
     = HMAC_CTX_new(); return HMAC_Init_ex(h, 0, 0, 0, 0); }
+  - |-
+    typedef struct ossl_lib_ctx_st OSSL_LIB_CTX; typedef struct hmac_ctx_st HMAC_CTX; HMAC_CTX *HMAC_CTX_new(void); int HMAC_Init_ex(HMAC_CTX *c, const void *k, int l, const void *md, void *e); int HMAC_Update(HMAC_CTX *c, const unsigned char *d, unsigned long n); int HMAC_Final(HMAC_CTX *c, unsigned char *m, unsigned int *l);
+    int f(OSSL_LIB_CTX *libctx, const unsigned char *d, unsigned long n) { return EVP_Q_mac(libctx, "HMAC", 0, "SHA256", 0, 0, 0, d, n, 0, 0, 0) != 0; }
+  - |-
+    typedef struct ossl_lib_ctx_st OSSL_LIB_CTX; typedef struct hmac_ctx_st HMAC_CTX; HMAC_CTX *HMAC_CTX_new(void); int HMAC_Init_ex(HMAC_CTX *c, const void *k, int l, const void *md, void *e); int HMAC_Update(HMAC_CTX *c, const unsigned char *d, unsigned long n); int HMAC_Final(HMAC_CTX *c, unsigned char *m, unsigned int *l);
+    typedef struct ossl_param_st OSSL_PARAM;
+    int f(OSSL_PARAM *p, HMAC_CTX *h, const unsigned char *d, unsigned long n) { return HMAC_Update(h, d, n); }
+  - |-
+    typedef struct ossl_lib_ctx_st OSSL_LIB_CTX; typedef struct hmac_ctx_st HMAC_CTX; HMAC_CTX *HMAC_CTX_new(void); int HMAC_Init_ex(HMAC_CTX *c, const void *k, int l, const void *md, void *e); int HMAC_Update(HMAC_CTX *c, const unsigned char *d, unsigned long n); int HMAC_Final(HMAC_CTX *c, unsigned char *m, unsigned int *l);
+    int my_HMAC_Update(HMAC_CTX *c, const unsigned char *d, unsigned long n);
+    int f(OSSL_LIB_CTX *libctx, HMAC_CTX *h, const unsigned char *d, unsigned long n) { return my_HMAC_Update(h, d, n); }
 invalid:
   - >-
     typedef struct ossl_lib_ctx_st OSSL_LIB_CTX; typedef struct hmac_ctx_st
     HMAC_CTX; HMAC_CTX *HMAC_CTX_new(void); int HMAC_Init_ex(HMAC_CTX *c, const
     void *k, int l, const void *md, void *e); int f(OSSL_LIB_CTX *libctx) {
     HMAC_CTX *h = HMAC_CTX_new(); return HMAC_Init_ex(h, 0, 0, 0, 0); }
+  - |-
+    typedef struct ossl_lib_ctx_st OSSL_LIB_CTX; typedef struct hmac_ctx_st HMAC_CTX; HMAC_CTX *HMAC_CTX_new(void); int HMAC_Init_ex(HMAC_CTX *c, const void *k, int l, const void *md, void *e); int HMAC_Update(HMAC_CTX *c, const unsigned char *d, unsigned long n); int HMAC_Final(HMAC_CTX *c, unsigned char *m, unsigned int *l);
+    int f(OSSL_LIB_CTX *libctx, HMAC_CTX *h, const unsigned char *d, unsigned long n) { return HMAC_Update(h, d, n); }
+  - |-
+    typedef struct ossl_lib_ctx_st OSSL_LIB_CTX; typedef struct hmac_ctx_st HMAC_CTX; HMAC_CTX *HMAC_CTX_new(void); int HMAC_Init_ex(HMAC_CTX *c, const void *k, int l, const void *md, void *e); int HMAC_Update(HMAC_CTX *c, const unsigned char *d, unsigned long n); int HMAC_Final(HMAC_CTX *c, unsigned char *m, unsigned int *l);
+    int f(HMAC_CTX *h, unsigned char *m, unsigned int *l, OSSL_LIB_CTX *libctx) { return HMAC_Final(h, m, l); }
+  - |-
+    typedef struct ossl_lib_ctx_st OSSL_LIB_CTX; typedef struct hmac_ctx_st HMAC_CTX; HMAC_CTX *HMAC_CTX_new(void); int HMAC_Init_ex(HMAC_CTX *c, const void *k, int l, const void *md, void *e); int HMAC_Update(HMAC_CTX *c, const unsigned char *d, unsigned long n); int HMAC_Final(HMAC_CTX *c, unsigned char *m, unsigned int *l);
+    int f(OSSL_LIB_CTX *libctx, int fresh) { HMAC_CTX *h = 0; if (fresh) { h = HMAC_CTX_new(); } return h != 0; }

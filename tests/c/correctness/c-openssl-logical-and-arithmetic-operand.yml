@@ -1,5 +1,12 @@
 id: c-openssl-logical-and-arithmetic-operand
 valid:
   - 'int ok(double v) { return v >= 0 && v + 65536.0 < 1e19; }'
+  - 'int ok(int x, int y, int z) { return x && y + z > 0; }'
+  - 'int ok(int x, int y, int z) { return x && (y + z) != 0; }'
+  - 'int ok(int x, int y, int z) { return x + y > 0 && z; }'
 invalid:
   - 'int ok(double v) { return v >= 0 && v + 65536.0; }'
+  - 'int ok(int a, int b, int c) { return a && b + c; }'
+  - 'int ok(int ok, int n) { return ok && n + 1; }'
+  - 'int ok(int a, int b, int c, int d) { return a && b && c + d; }'
+  - 'int ok(int x, double v) { return x > 0 && v + 0.5; }'
