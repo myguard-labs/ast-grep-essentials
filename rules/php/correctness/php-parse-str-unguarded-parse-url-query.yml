@@ -10,6 +10,22 @@ note: >-
   Single-file syntactic match on a literal parse_url()-assigned variable
   indexed by 'query'; it does not resolve types, aliases, or reachability and
   cannot prove the guard is absent on every path.
+utils:
+  leaves-block:
+    any:
+      - kind: return_statement
+      - kind: exit_statement
+      - kind: continue_statement
+      - kind: break_statement
+      - kind: expression_statement
+        has:
+          kind: throw_expression
+      - kind: expression_statement
+        has:
+          kind: function_call_expression
+          has:
+            field: function
+            regex: '^(?i:die|exit)$'
 rule:
   all:
     - pattern: 'parse_str($PARSED[''query''], $OUT)'
@@ -18,8 +34,30 @@ rule:
           kind: if_statement
           stopBy: end
           has:
-            pattern: 'empty($PARSED[''query''])'
+            any:
+              - pattern: 'empty($PARSED[''query''])'
+              - pattern: 'isset($PARSED[''query''])'
             stopBy: end
+    - not:
+        inside:
+          kind: expression_statement
+          follows:
+            kind: if_statement
+            stopBy: end
+            all:
+              - has:
+                  field: condition
+                  has:
+                    any:
+                      - pattern: 'empty($PARSED[''query''])'
+                      - pattern: '! isset($PARSED[''query''])'
+              - has:
+                  field: body
+                  any:
+                    - matches: leaves-block
+                    - kind: compound_statement
+                      has:
+                        matches: leaves-block
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -29,6 +67,4 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'Observed false positive: an isset() guard on the query element is reported (if ( isset( $p[''query''] ) ) { parse_str($p[''query''], $q); }) although the message says a set check counts.'
-    - 'Observed false positive: an early-return empty() guard before the call is reported (if ( empty( $p[''query''] ) ) { return array(); } parse_str($p[''query''], $q);).'
     - 'Observed miss: a double-quoted index is not reported (parse_str($p["query"], $q);).'
