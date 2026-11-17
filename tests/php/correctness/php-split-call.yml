@@ -1,5 +1,17 @@
 id: php-split-call
 valid:
   - '<?php $parts = explode('' '', $line);'
+  - |-
+    <?php $p = preg_split('/,/', $s);
+  - |-
+    <?php $p = str_split($s);
+  - |-
+    <?php $p = $obj->split(',');
 invalid:
   - '<?php $parts = split('' '', $line);'
+  - |-
+    <?php $p = split(',', $s);
+  - |-
+    <?php foreach (split(',', $s) as $x) {}
+  - |-
+    <?php list($a, $b) = split('=', $s);

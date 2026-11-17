@@ -1,5 +1,17 @@
 id: php-split-deprecated-call
 valid:
   - '<?php $parts = explode('' '', $argv);'
+  - |-
+    <?php $p = preg_split('/,/', $s);
+  - |-
+    <?php $p = mb_split(',', $s);
+  - |-
+    <?php $p = Foo::split(',');
 invalid:
   - '<?php $parts = split('' '', $argv);'
+  - |-
+    <?php $p = split("\n", $x, 2);
+  - |-
+    <?php echo count(split(',', $s));
+  - |-
+    <?php foreach (split(',', $s) as $x) {}

@@ -3,7 +3,19 @@ valid:
   - >-
     function f($option_name, $oldvalue, $newvalue) {
     do_action("update_option_{$option_name}", $oldvalue, $newvalue); }
+  - |-
+    <?php $s = 'literal {braces}';
+  - |-
+    <?php $s = "hook_{$a}_{$b}";
+  - |-
+    <?php $s = 'a' . "{$b}";
 invalid:
   - >-
     function f($option_name, $oldvalue, $newvalue) {
     do_action('update_option_{$option_name}', $oldvalue, $newvalue); }
+  - |-
+    <?php add_action('save_{$type}', 'cb');
+  - |-
+    <?php $s = '{$a}_{$b}';
+  - |-
+    <?php $k = '{$prefix}_key';
