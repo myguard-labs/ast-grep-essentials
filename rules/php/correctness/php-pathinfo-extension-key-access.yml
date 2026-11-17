@@ -12,7 +12,28 @@ note: >-
   to a pathinfo call. It does not resolve types, aliases, or values assigned
   to variables first.
 rule:
-  pattern: 'pathinfo($$$ARGS)[''extension'']'
+  all:
+    - pattern: 'pathinfo($$$ARGS)[''extension'']'
+    - not:
+        inside:
+          kind: binary_expression
+          field: left
+          has:
+            field: operator
+            regex: '^\?\?$'
+          stopBy:
+            not:
+              kind: parenthesized_expression
+    - not:
+        inside:
+          kind: argument
+          inside:
+            kind: arguments
+            inside:
+              kind: function_call_expression
+              has:
+                field: function
+                regex: '(?i)^\\?(isset|empty)$'
 metadata:
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
@@ -22,6 +43,5 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'Observed false positive: a null-coalescing default is reported although it guards the missing key ($ext = pathinfo($f)[''extension''] ?? '''';).'
-    - 'Observed false positive: an isset() wrapper is reported although it guards the missing key ($ok = isset(pathinfo($f)[''extension'']);).'
+    - 'Observed false positive: an error-suppressed read is reported although @ silences the warning ($ext = @pathinfo($f)[''extension''];).'
     - 'Observed miss: a double-quoted key is not reported ($ext = pathinfo($f)["extension"];).'
