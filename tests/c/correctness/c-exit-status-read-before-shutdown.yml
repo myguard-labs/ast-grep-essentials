@@ -3,7 +3,47 @@ valid:
   - |-
     php_request_shutdown((void *) 0);
     exit_status = EG(exit_status);
+  - |-
+    void f(void) {
+        int exit_status;
+        php_request_shutdown((void *) 0);
+        exit_status = EG(exit_status);
+        use(exit_status);
+    }
+  - |-
+    void f(void) {
+        int code;
+        code = EG(exit_status);
+        use(code);
+    }
+  - |-
+    void f(void) {
+        int code;
+        code = EG(error_reporting);
+        php_request_shutdown((void *) 0);
+    }
 invalid:
   - |-
     exit_status = EG(exit_status);
     php_request_shutdown((void *) 0);
+  - |-
+    void f(void) {
+        int exit_status;
+        exit_status = EG(exit_status);
+        cleanup();
+        php_request_shutdown((void *) 0);
+        return;
+    }
+  - |-
+    void f(struct st *s) {
+        s->status = EG(exit_status);
+        php_request_shutdown(NULL);
+    }
+  - |-
+    void f(void) {
+        int rc;
+        rc = EG(exit_status);
+        log_it(rc);
+        php_request_shutdown((void *) 0);
+        exit(rc);
+    }

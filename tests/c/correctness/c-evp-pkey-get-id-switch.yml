@@ -5,9 +5,61 @@ valid:
         case EVP_PKEY_RSA:
             break;
     }
+  - |-
+    int f(EVP_PKEY *pkey) {
+        switch (EVP_PKEY_get_base_id(pkey)) {
+        case EVP_PKEY_EC:
+            return 1;
+        default:
+            return 0;
+        }
+    }
+  - |-
+    int f(X509 *x) {
+        switch (EVP_PKEY_get_base_id(X509_get0_pubkey(x))) {
+        case EVP_PKEY_RSA:
+        case EVP_PKEY_RSA_PSS:
+            return 1;
+        }
+        return 0;
+    }
+  - |-
+    int f(int nid) {
+        switch (nid) {
+        case EVP_PKEY_RSA:
+            return 1;
+        }
+        return 0;
+    }
 invalid:
   - |-
     switch (EVP_PKEY_get_id(pkey)) {
         case EVP_PKEY_RSA:
             break;
+    }
+  - |-
+    int f(EVP_PKEY *pkey) {
+        switch (EVP_PKEY_get_id(pkey)) {
+        case EVP_PKEY_EC:
+            return 1;
+        default:
+            return 0;
+        }
+    }
+  - |-
+    int f(X509 *x) {
+        switch (EVP_PKEY_get_id(X509_get0_pubkey(x))) {
+        case EVP_PKEY_RSA:
+        case EVP_PKEY_RSA_PSS:
+            return 1;
+        }
+        return 0;
+    }
+  - |-
+    int f(SSL *s) {
+        switch (EVP_PKEY_get_id(s->cert->pkeys[0].privatekey)) {
+        case EVP_PKEY_ED25519:
+            break;
+        }
+        return 0;
     }

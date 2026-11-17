@@ -1,5 +1,70 @@
 id: c-error-break-only-in-ifdef-arm
 snapshots:
+  "int w(char *p, int n) {\n    while (n > 0) {\n        int r = read_it(p, n);\n        if (r < 0) {\n            log_err();\n#ifdef HAVE_STOP\n            break;\n#else\n            retry();\n#endif\n        }\n        p += r; n -= r;\n    }\n    return 0;\n}":
+    labels:
+    - source: break;
+      style: primary
+      start: 148
+      end: 154
+    - source: |-
+        #else
+                    retry();
+      style: secondary
+      start: 155
+      end: 181
+    - source: |-
+        #ifdef HAVE_STOP
+                    break;
+        #else
+                    retry();
+        #endif
+      style: secondary
+      start: 119
+      end: 188
+    - source: |-
+        if (r < 0) {
+                    log_err();
+        #ifdef HAVE_STOP
+                    break;
+        #else
+                    retry();
+        #endif
+                }
+      style: secondary
+      start: 83
+      end: 198
+  "int w(char *p, int n) {\n    while (n > 0) {\n        int r = write_it(p, n);\n        if (!r) {\n#ifndef WIN32_NO_CONSOLE\n            break;\n#else\n            handle_abort_win();\n#endif\n        }\n        p += r; n -= r;\n    }\n    return 0;\n}":
+    labels:
+    - source: break;
+      style: primary
+      start: 131
+      end: 137
+    - source: |-
+        #else
+                    handle_abort_win();
+      style: secondary
+      start: 138
+      end: 175
+    - source: |-
+        #ifndef WIN32_NO_CONSOLE
+                    break;
+        #else
+                    handle_abort_win();
+        #endif
+      style: secondary
+      start: 94
+      end: 182
+    - source: |-
+        if (!r) {
+        #ifndef WIN32_NO_CONSOLE
+                    break;
+        #else
+                    handle_abort_win();
+        #endif
+                }
+      style: secondary
+      start: 84
+      end: 192
   "int w(char *p, int n) { while (n > 0) { int r = write_it(p, n); if (!r) {\n#ifdef WIN32_NO_CONSOLE\nbreak;\n#else\nhandle_abort();\n#endif\n} p += r; n -= r; } return 0; }":
     labels:
     - source: break;

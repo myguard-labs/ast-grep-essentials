@@ -1,5 +1,55 @@
 id: c-exclusive-check-before-accumulate
 snapshots:
+  "int f(ngx_conf_t *cf, ngx_http_core_loc_conf_t *clcf) {\n    ngx_uint_t mask = parse(cf);\n    if ((mask & NONE) && (mask & ~NONE)) {\n        return NGX_CONF_ERROR;\n    }\n    mask |= clcf->presets;\n    return 0;\n}":
+    labels:
+    - source: |-
+        if ((mask & NONE) && (mask & ~NONE)) {
+                return NGX_CONF_ERROR;
+            }
+      style: primary
+      start: 93
+      end: 168
+    - source: mask & NONE
+      style: secondary
+      start: 98
+      end: 109
+    - source: mask |= clcf->presets;
+      style: secondary
+      start: 173
+      end: 195
+  "int f(ngx_uint_t flags, ngx_uint_t extra) {\n    if (flags & NONE)\n        return 1;\n    log_it();\n    flags |= extra;\n    return flags;\n}":
+    labels:
+    - source: |-
+        if (flags & NONE)
+                return 1;
+      style: primary
+      start: 48
+      end: 83
+    - source: flags & NONE
+      style: secondary
+      start: 52
+      end: 64
+    - source: flags |= extra;
+      style: secondary
+      start: 102
+      end: 117
+  "int f(ngx_uint_t mask, ngx_uint_t extra) {\n    if ((mask & NONE) && (mask & ~NONE)) {\n        return -1;\n    }\n    mask |= extra;\n    return mask;\n}":
+    labels:
+    - source: |-
+        if ((mask & NONE) && (mask & ~NONE)) {
+                return -1;
+            }
+      style: primary
+      start: 47
+      end: 110
+    - source: mask & NONE
+      style: secondary
+      start: 52
+      end: 63
+    - source: mask |= extra;
+      style: secondary
+      start: 115
+      end: 129
   mask = parse(cf); if ((mask & NONE) && (mask & ~NONE)) return NGX_CONF_ERROR; mask |= clcf->presets;:
     labels:
     - source: if ((mask & NONE) && (mask & ~NONE)) return NGX_CONF_ERROR;

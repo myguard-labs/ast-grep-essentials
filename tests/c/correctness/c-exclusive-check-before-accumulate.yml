@@ -3,7 +3,57 @@ valid:
   - >-
     mask = parse(cf); mask |= clcf->presets; if ((mask & NONE) && (mask &
     ~NONE)) return NGX_CONF_ERROR;
+  - |-
+    int f(ngx_conf_t *cf, ngx_http_core_loc_conf_t *clcf) {
+        ngx_uint_t mask = parse(cf);
+        mask |= clcf->presets;
+        if ((mask & NONE) && (mask & ~NONE)) {
+            return NGX_CONF_ERROR;
+        }
+        return 0;
+    }
+  - |-
+    int f(ngx_uint_t flags, ngx_uint_t extra) {
+        ngx_uint_t seen = 0;
+        if (flags & NONE) {
+            return 1;
+        }
+        seen |= extra;
+        return seen;
+    }
+  - |-
+    int f(ngx_uint_t mask, ngx_uint_t more) {
+        if (mask & NONE) {
+            return 1;
+        }
+        return mask | more;
+    }
 invalid:
   - >-
     mask = parse(cf); if ((mask & NONE) && (mask & ~NONE)) return
     NGX_CONF_ERROR; mask |= clcf->presets;
+  - |-
+    int f(ngx_conf_t *cf, ngx_http_core_loc_conf_t *clcf) {
+        ngx_uint_t mask = parse(cf);
+        if ((mask & NONE) && (mask & ~NONE)) {
+            return NGX_CONF_ERROR;
+        }
+        mask |= clcf->presets;
+        return 0;
+    }
+  - |-
+    int f(ngx_uint_t flags, ngx_uint_t extra) {
+        if (flags & NONE)
+            return 1;
+        log_it();
+        flags |= extra;
+        return flags;
+    }
+  - |-
+    int f(ngx_uint_t mask, ngx_uint_t extra) {
+        if ((mask & NONE) && (mask & ~NONE)) {
+            return -1;
+        }
+        mask |= extra;
+        return mask;
+    }
