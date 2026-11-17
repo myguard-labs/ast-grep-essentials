@@ -3,7 +3,13 @@ valid:
   - >-
     if (!ISO_REGEX.test(this.startAt)) { throw new ConfigurationError("Start At
     is not a valid ISO 8601 date."); }
+  - "if (!DateTime.fromISO(s).isValid) { throw new Error('bad'); }"
+  - "if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(s)) { return false; }"
+  - "if (isNaN(n)) { throw new Error('bad'); }"
 invalid:
   - >-
     if (isNaN(new Date(this.startAt).getTime())) { throw new
     ConfigurationError("Start At is not a valid ISO 8601 date."); }
+  - "if (isNaN(new Date(x).getTime())) { return false; }"
+  - "if (isNaN(new Date(a.b).getTime())) { }"
+  - "if (isNaN(new Date(String(v)).getTime())) { throw e; }"
