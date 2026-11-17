@@ -1,5 +1,13 @@
 id: c-deref-postdecrement-pointer
 valid:
   - 'void f(int *n) { (*n)--; }'
+  - 'void f(char *p) { char c = *p; p--; (void)c; }'
+  - 'void f(char *p) { *--p = 0; }'
+  - 'void f(int *n) { if (*n > 0) (*n)--; }'
+  - 'void f(int *n) { *n = *n - 1; }'
 invalid:
   - 'void f(int *n) { *n--; }'
+  - 'void f(int *n) { if (*n) *n--; }'
+  - 'void f(int *n) { while (1) { *n--; } }'
+  - 'void f(int *cnt) { *cnt--; }'
+  - 'void f(struct s *s) { *s->cnt--; }'

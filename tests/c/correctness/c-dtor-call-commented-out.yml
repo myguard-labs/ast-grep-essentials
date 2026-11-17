@@ -4,8 +4,40 @@ valid:
     void f(zval *v) {
       zval_ptr_dtor(&v);
     }
+  - |-
+    void f(zval *v) {
+      // zval_ptr_dtor releases the value in the caller
+      g(v);
+    }
+  - |-
+    void f(zval *v) {
+      const char *s = "zval_ptr_dtor(&v);";
+      g(v, s);
+    }
+  - |-
+    void f(zval *v) {
+      g(v);
+      zval_ptr_dtor(v); // release
+    }
 invalid:
   - |-
     void f(zval *v) {
       //??? zval_ptr_dtor(&v);
+    }
+  - |-
+    void f(zval *v) {
+      //zval_ptr_dtor(&v);
+    }
+  - |-
+    void f(zval *v) {
+      // zval_ptr_dtor (&v);
+    }
+  - |-
+    void f(zval *v) {
+      g(v);
+      // zval_ptr_dtor(v);
+    }
+  - |-
+    void f(zval *v) {
+      g(v); // zval_ptr_dtor(v);
     }

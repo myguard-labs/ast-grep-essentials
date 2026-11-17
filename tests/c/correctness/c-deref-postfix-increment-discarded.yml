@@ -1,5 +1,13 @@
 id: c-deref-postfix-increment-discarded
 valid:
   - 'void f(char *p) { p++; }'
+  - 'void f(char *p) { *p++ = 0; }'
+  - 'void f(char *p) { (*p)++; }'
+  - 'char f(char *p) { return *p++; }'
+  - 'int f(char *p) { if (*p++ == 0) return 1; return 0; }'
 invalid:
   - 'void f(char *p) { *p++; }'
+  - 'void f(char *p, int n) { while (n--) *p++; }'
+  - 'void f(char *p, int n) { for (int i = 0; i < n; i++) { *p++; } }'
+  - 'void f(char *p) { if (p) { *p++; } }'
+  - 'void f(char *p) { *p = 0; *p++; }'

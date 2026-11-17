@@ -1,5 +1,21 @@
 id: c-do-while-macro-trailing-semicolon
 valid:
   - '#define CHECK_ARG(d) do { int __x = (d); (void)__x; } while (0)'
+  - |-
+    #define CHECK(d) do { \
+      int x = (d); \
+      (void)x; \
+    } while (0)
+  - '#define NOP(d) do { (void)(d); } while ( 0 )'
+  - '#define NOP(d) do { (void)(d); } while (0) /* no semicolon */'
+  - '#define LOG(f) do { puts(f); } while (0)'
 invalid:
   - '#define CHECK_ARG(d) do { int __x = (d); (void)__x; } while (0);'
+  - |-
+    #define CHECK(d) do { \
+      int x = (d); \
+      (void)x; \
+    } while (0);
+  - '#define NOP(d) do { (void)(d); } while ( 0 ) ;'
+  - '#define NOP(d) do { (void)(d); } while(0);'
+  - '#define LOG(f) do { puts(f); } while (0);   '

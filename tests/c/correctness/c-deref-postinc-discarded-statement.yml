@@ -1,5 +1,13 @@
 id: c-deref-postinc-discarded-statement
 valid:
   - 'void f(char *key) { char c = *key++; (void)c; }'
+  - 'void f(char *p) { *p++ = 0; }'
+  - 'void f(char *p) { (*p)++; }'
+  - 'char f(char *p) { return *p++; }'
+  - 'void f(char *p) { p++; }'
 invalid:
   - 'void f(char *key) { *key++; }'
+  - 'void f(char *p, int n) { while (n--) *p++; }'
+  - 'void f(char *p, int n) { for (int i = 0; i < n; i++) { *p++; } }'
+  - 'void f(char *p) { if (p) { *p++; } }'
+  - 'void f(char *p) { *p = 0; *p++; }'

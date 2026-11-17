@@ -1,8 +1,32 @@
 id: c-deref-paren-post-increment
 snapshots:
-  void f(char *in, char *out) { *out++ = (*in)++; }:
+  "void f(char *in, char *out) { *out++ = (*in)++; }":
     labels:
-    - source: '*out++ = (*in)++'
+    - source: "*out++ = (*in)++"
       style: primary
       start: 30
       end: 46
+  "void f(char *in, char *out, int n) { for (int i = 0; i < n; i++) { *out++ = (*in)++; } }":
+    labels:
+    - source: "*out++ = (*in)++"
+      style: primary
+      start: 67
+      end: 83
+  "void f(char *in, char *out, int n) { while (n--) *out++ = (*in)++; }":
+    labels:
+    - source: "*out++ = (*in)++"
+      style: primary
+      start: 49
+      end: 65
+  "void f(char *s, char *d) { if (s) { *d++ = (*s)++; } }":
+    labels:
+    - source: "*d++ = (*s)++"
+      style: primary
+      start: 36
+      end: 49
+  "void f(struct b *b, char *out) { *out++ = (*b->p)++; }":
+    labels:
+    - source: "*out++ = (*b->p)++"
+      style: primary
+      start: 33
+      end: 51
