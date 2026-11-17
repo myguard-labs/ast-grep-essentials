@@ -1,41 +1,7 @@
 id: file-stat-before-action-cpp
 snapshots:
-  ? |
-    if (stat(file.c_str(), &buf) == 0){
-      // Open the file for reading
-      fp = fopen(file.c_str(), "r");
-      if (fp == NULL)
-      {
-        char message[2560];
-        sprintf(message, "File '%s' Could Not be Opened", file.c_str());
-        // DISPLAY_MSG_ERROR( this, message, "GetFileContents", "System" );
-        throw message;
-      }
-
-      // Read the file
-      MvString s, ss;
-      while (fgets(data, sizeof(data), fp) != (char *)0)
-      {
-        s = data;
-        s.trimBoth();
-        if (s.compare(0, 5, "GROUP") == 0)
-        {
-          // size_t t = s.find_last_of( ":" );
-          size_t t = s.find(":");
-          if (t != string::npos)
-          {
-            ss = s.substr(t + 1).c_str();
-            ss.trimBoth();
-            ss = ss.substr(1, ss.length() - 3).c_str();
-            group_list.push_back(ss);
-          }
-        }
-      }
-
-      // Close the file
-      fclose(fp);
-    }
-  : labels:
+  "if (stat(file.c_str(), &buf) == 0){\n  // Open the file for reading\n  fp = fopen(file.c_str(), \"r\");\n  if (fp == NULL)\n  {\n    char message[2560];\n    sprintf(message, \"File '%s' Could Not be Opened\", file.c_str());\n    // DISPLAY_MSG_ERROR( this, message, \"GetFileContents\", \"System\" );\n    throw message;\n  }\n\n  // Read the file\n  MvString s, ss;\n  while (fgets(data, sizeof(data), fp) != (char *)0)\n  {\n    s = data;\n    s.trimBoth();\n    if (s.compare(0, 5, \"GROUP\") == 0)\n    {\n      // size_t t = s.find_last_of( \":\" );\n      size_t t = s.find(\":\");\n      if (t != string::npos)\n      {\n        ss = s.substr(t + 1).c_str();\n        ss.trimBoth();\n        ss = ss.substr(1, ss.length() - 3).c_str();\n        group_list.push_back(ss);\n      }\n    }\n  }\n\n  // Close the file\n  fclose(fp);\n}\n":
+    labels:
     - source: fopen
       style: primary
       start: 74
@@ -68,7 +34,7 @@ snapshots:
       style: secondary
       start: 29
       end: 31
-    - source: '0'
+    - source: "0"
       style: secondary
       start: 32
       end: 33
@@ -160,3 +126,235 @@ snapshots:
       style: secondary
       start: 74
       end: 98
+  "void f(const char *p) { struct stat st; if (lstat(p, &st) == 0) { remove(p); } }":
+    labels:
+    - source: remove
+      style: primary
+      start: 66
+      end: 72
+    - source: p
+      style: secondary
+      start: 73
+      end: 74
+    - source: (p)
+      style: secondary
+      start: 72
+      end: 75
+    - source: lstat
+      style: secondary
+      start: 44
+      end: 49
+    - source: p
+      style: secondary
+      start: 50
+      end: 51
+    - source: (p, &st)
+      style: secondary
+      start: 49
+      end: 57
+    - source: lstat(p, &st)
+      style: secondary
+      start: 44
+      end: 57
+    - source: ==
+      style: secondary
+      start: 58
+      end: 60
+    - source: "0"
+      style: secondary
+      start: 61
+      end: 62
+    - source: lstat(p, &st) == 0
+      style: secondary
+      start: 44
+      end: 62
+    - source: (lstat(p, &st) == 0)
+      style: secondary
+      start: 43
+      end: 63
+    - source: if (lstat(p, &st) == 0) { remove(p); }
+      style: secondary
+      start: 40
+      end: 78
+    - source: "{ remove(p); }"
+      style: secondary
+      start: 64
+      end: 78
+    - source: remove(p)
+      style: secondary
+      start: 66
+      end: 75
+  "void f(const char *p) { struct stat st; if (stat(p, &st) == 0) { int fd = open(p, O_RDONLY); } }":
+    labels:
+    - source: open
+      style: primary
+      start: 74
+      end: 78
+    - source: p
+      style: secondary
+      start: 79
+      end: 80
+    - source: (p, O_RDONLY)
+      style: secondary
+      start: 78
+      end: 91
+    - source: stat
+      style: secondary
+      start: 44
+      end: 48
+    - source: p
+      style: secondary
+      start: 49
+      end: 50
+    - source: (p, &st)
+      style: secondary
+      start: 48
+      end: 56
+    - source: stat(p, &st)
+      style: secondary
+      start: 44
+      end: 56
+    - source: ==
+      style: secondary
+      start: 57
+      end: 59
+    - source: "0"
+      style: secondary
+      start: 60
+      end: 61
+    - source: stat(p, &st) == 0
+      style: secondary
+      start: 44
+      end: 61
+    - source: (stat(p, &st) == 0)
+      style: secondary
+      start: 43
+      end: 62
+    - source: if (stat(p, &st) == 0) { int fd = open(p, O_RDONLY); }
+      style: secondary
+      start: 40
+      end: 94
+    - source: "{ int fd = open(p, O_RDONLY); }"
+      style: secondary
+      start: 63
+      end: 94
+    - source: open(p, O_RDONLY)
+      style: secondary
+      start: 74
+      end: 91
+  "void f(const char *p) { struct stat st; if (stat(p, &st) == 0) { rename(p, \"x\"); } }":
+    labels:
+    - source: rename
+      style: primary
+      start: 65
+      end: 71
+    - source: p
+      style: secondary
+      start: 72
+      end: 73
+    - source: (p, "x")
+      style: secondary
+      start: 71
+      end: 79
+    - source: stat
+      style: secondary
+      start: 44
+      end: 48
+    - source: p
+      style: secondary
+      start: 49
+      end: 50
+    - source: (p, &st)
+      style: secondary
+      start: 48
+      end: 56
+    - source: stat(p, &st)
+      style: secondary
+      start: 44
+      end: 56
+    - source: ==
+      style: secondary
+      start: 57
+      end: 59
+    - source: "0"
+      style: secondary
+      start: 60
+      end: 61
+    - source: stat(p, &st) == 0
+      style: secondary
+      start: 44
+      end: 61
+    - source: (stat(p, &st) == 0)
+      style: secondary
+      start: 43
+      end: 62
+    - source: if (stat(p, &st) == 0) { rename(p, "x"); }
+      style: secondary
+      start: 40
+      end: 82
+    - source: "{ rename(p, \"x\"); }"
+      style: secondary
+      start: 63
+      end: 82
+    - source: rename(p, "x")
+      style: secondary
+      start: 65
+      end: 79
+  "void f(const std::string &p) { struct stat st; if (stat(p.c_str(), &st) == 0) { chdir(p.c_str()); } }":
+    labels:
+    - source: chdir
+      style: primary
+      start: 80
+      end: 85
+    - source: p.c_str()
+      style: secondary
+      start: 86
+      end: 95
+    - source: (p.c_str())
+      style: secondary
+      start: 85
+      end: 96
+    - source: stat
+      style: secondary
+      start: 51
+      end: 55
+    - source: p.c_str()
+      style: secondary
+      start: 56
+      end: 65
+    - source: (p.c_str(), &st)
+      style: secondary
+      start: 55
+      end: 71
+    - source: stat(p.c_str(), &st)
+      style: secondary
+      start: 51
+      end: 71
+    - source: ==
+      style: secondary
+      start: 72
+      end: 74
+    - source: "0"
+      style: secondary
+      start: 75
+      end: 76
+    - source: stat(p.c_str(), &st) == 0
+      style: secondary
+      start: 51
+      end: 76
+    - source: (stat(p.c_str(), &st) == 0)
+      style: secondary
+      start: 50
+      end: 77
+    - source: if (stat(p.c_str(), &st) == 0) { chdir(p.c_str()); }
+      style: secondary
+      start: 47
+      end: 99
+    - source: "{ chdir(p.c_str()); }"
+      style: secondary
+      start: 78
+      end: 99
+    - source: chdir(p.c_str())
+      style: secondary
+      start: 80
+      end: 96

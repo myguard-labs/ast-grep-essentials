@@ -1,6 +1,34 @@
 id: php-delete-array-mismatch-cpp
 snapshots:
-  void f(void) { int *p = new int[4]; delete p; }:
+  "void C::g(int n) { int *buf = new int[n]; fill(buf, n); delete buf; }":
+    labels:
+    - source: delete buf
+      style: primary
+      start: 56
+      end: 66
+    - source: int *buf = new int[n];
+      style: secondary
+      start: 19
+      end: 41
+    - source: void C::g(int n) { int *buf = new int[n]; fill(buf, n); delete buf; }
+      style: secondary
+      start: 0
+      end: 69
+  "void f(int n) { int *p = new int[n]; delete p; }":
+    labels:
+    - source: delete p
+      style: primary
+      start: 37
+      end: 45
+    - source: int *p = new int[n];
+      style: secondary
+      start: 16
+      end: 36
+    - source: void f(int n) { int *p = new int[n]; delete p; }
+      style: secondary
+      start: 0
+      end: 48
+  "void f(void) { int *p = new int[4]; delete p; }":
     labels:
     - source: delete p
       style: primary
@@ -14,3 +42,17 @@ snapshots:
       style: secondary
       start: 0
       end: 47
+  "void f(void) { int *p = new int[n]; if (n) { delete p; } }":
+    labels:
+    - source: delete p
+      style: primary
+      start: 45
+      end: 53
+    - source: int *p = new int[n];
+      style: secondary
+      start: 15
+      end: 35
+    - source: void f(void) { int *p = new int[n]; if (n) { delete p; } }
+      style: secondary
+      start: 0
+      end: 58

@@ -2,6 +2,9 @@ id: file-access-before-action-cpp
 valid:
   - |
     void coderabbit_control() { const char *text = "CodeRabbit"; }
+  - 'void f(const char *p) { int fd = open(p, O_RDONLY); struct stat st; if (fd >= 0 && fstat(fd, &st) == 0) { read(fd, buf, 10); } }'
+  - 'void f(const char *p) { FILE *fp = fopen(p, "r"); if (fp) { fclose(fp); } }'
+  - 'void f(const char *p) { int fd = open(p, O_RDWR); if (fd >= 0) { struct stat st; fstat(fd, &st); } }'
 invalid:
   - |
     {
@@ -20,3 +23,7 @@ invalid:
         }
       }
     }
+  - 'void f(const char *p) { if (access(p, R_OK) == 0) { FILE *fp = fopen(p, "r"); } }'
+  - 'void f(const char *p) { if (access(p, R_OK) == 0) { int fd = open(p, O_RDONLY); } }'
+  - 'void f(const char *p) { if (access(p, F_OK) == 0) { unlink(p); } }'
+  - 'void f(const char *p) { if (access(p, W_OK) == 0) { rename(p, "x"); } }'
