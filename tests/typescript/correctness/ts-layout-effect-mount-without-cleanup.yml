@@ -6,6 +6,9 @@ valid:
         return logic.mount()
       }
     }, [openAlert])
+  - "useLayoutEffect(() => {\n  if (x) {\n    const stop = logic.mount()\n    return () => stop()\n  }\n}, [x])"
+  - "useLayoutEffect(() => {\n  if (x) {\n    return logic.mount()\n  }\n  return undefined\n}, [x])"
+  - "useLayoutEffect(() => {\n  if (x) {\n    logic.actions.openEditor(x)\n  }\n}, [x])"
 invalid:
   - |-
     useLayoutEffect(() => {
@@ -14,3 +17,6 @@ invalid:
         logic.actions.openEditor(openAlert)
       }
     }, [openAlert])
+  - "useLayoutEffect(() => {\n  if (x) {\n    prepare()\n    view.mount(el, opts)\n  }\n}, [x])"
+  - "useLayoutEffect(() => {\n  if (x) {\n    this.logic.mount()\n  }\n}, [])"
+  - "useLayoutEffect(() => {\n  if (x) {\n    logic.mount()\n    logic.actions.go()\n    track()\n  }\n}, [x, y])"

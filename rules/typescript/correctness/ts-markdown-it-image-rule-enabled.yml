@@ -19,6 +19,10 @@ rule:
       pattern: 'new MarkdownIt($$$ARGS).disable(''image'')'
       stopBy: end
 metadata:
+  todo_cases:
+    - "false positive (high): .disable(\"image\") with double quotes is reported although it disables the image rule"
+    - "false positive: new MarkdownIt().use(plugin).disable('image') is reported because .disable('image') is not directly after the constructor"
+    - "false positive: .disable(['image', 'link']) array form is reported although it disables the image rule"
   rule_modified_at: '2026-10-17'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-17'

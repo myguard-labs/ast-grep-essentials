@@ -1,6 +1,50 @@
 id: ts-fetch-url-from-request-header
 snapshots:
-  'async function load(req: Request, url: string) { const base = req.headers.get(''host''); return fetch(`https://${base}${url}`); }':
+  "async function load(req: Request) { const origin = req.headers.get('x-forwarded-host'); return fetch(`https://${origin}/health`); }":
+    labels:
+    - source: fetch(`https://${origin}/health`)
+      style: primary
+      start: 95
+      end: 128
+    - source: const origin = req.headers.get('x-forwarded-host');
+      style: secondary
+      start: 36
+      end: 87
+    - source: "{ const origin = req.headers.get('x-forwarded-host'); return fetch(`https://${origin}/health`); }"
+      style: secondary
+      start: 34
+      end: 131
+    - source: origin
+      style: secondary
+      start: 112
+      end: 118
+    - source: ${origin}
+      style: secondary
+      start: 110
+      end: 119
+  "async function load(req: Request) { try { const h = req.headers.get('host'); return await fetch(`https://${h}/${p}`); } catch { return null; } }":
+    labels:
+    - source: fetch(`https://${h}/${p}`)
+      style: primary
+      start: 90
+      end: 116
+    - source: const h = req.headers.get('host');
+      style: secondary
+      start: 42
+      end: 76
+    - source: "{ const h = req.headers.get('host'); return await fetch(`https://${h}/${p}`); }"
+      style: secondary
+      start: 40
+      end: 119
+    - source: h
+      style: secondary
+      start: 107
+      end: 108
+    - source: ${h}
+      style: secondary
+      start: 105
+      end: 109
+  "async function load(req: Request, url: string) { const base = req.headers.get('host'); return fetch(`https://${base}${url}`); }":
     labels:
     - source: fetch(`https://${base}${url}`)
       style: primary
@@ -10,7 +54,7 @@ snapshots:
       style: secondary
       start: 49
       end: 86
-    - source: '{ const base = req.headers.get(''host''); return fetch(`https://${base}${url}`); }'
+    - source: "{ const base = req.headers.get('host'); return fetch(`https://${base}${url}`); }"
       style: secondary
       start: 47
       end: 127
@@ -22,3 +66,25 @@ snapshots:
       style: secondary
       start: 109
       end: 116
+  "const load = async (request: Request) => { const base = request.headers.get('origin'); return await fetch(`${base}/api`); };":
+    labels:
+    - source: fetch(`${base}/api`)
+      style: primary
+      start: 100
+      end: 120
+    - source: const base = request.headers.get('origin');
+      style: secondary
+      start: 43
+      end: 86
+    - source: "{ const base = request.headers.get('origin'); return await fetch(`${base}/api`); }"
+      style: secondary
+      start: 41
+      end: 123
+    - source: base
+      style: secondary
+      start: 109
+      end: 113
+    - source: ${base}
+      style: secondary
+      start: 107
+      end: 114

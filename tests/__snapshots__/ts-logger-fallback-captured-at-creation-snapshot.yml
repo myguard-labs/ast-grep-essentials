@@ -1,11 +1,25 @@
 id: ts-logger-fallback-captured-at-creation
 snapshots:
-  ? |-
-    static create(prefix: string, logger: Logger | null = null) {
-      const target = logger ?? this.globalLogger;
-      return { info: (...object: any[]) => target.log(LogLevel.Info, prefix, ...object) };
-    }
-  : labels:
+  const t = logger?.child() ?? this.globalLogger;:
+    labels:
+    - source: const t = logger?.child() ?? this.globalLogger;
+      style: primary
+      start: 0
+      end: 47
+  const t = opts.logger ?? this.fallback;:
+    labels:
+    - source: const t = opts.logger ?? this.fallback;
+      style: primary
+      start: 0
+      end: 39
+  "function mk() {\n  const t = logger ?? this.globalLogger;\n  return t;\n}":
+    labels:
+    - source: const t = logger ?? this.globalLogger;
+      style: primary
+      start: 18
+      end: 56
+  "static create(prefix: string, logger: Logger | null = null) {\n  const target = logger ?? this.globalLogger;\n  return { info: (...object: any[]) => target.log(LogLevel.Info, prefix, ...object) };\n}":
+    labels:
     - source: const target = logger ?? this.globalLogger;
       style: primary
       start: 64

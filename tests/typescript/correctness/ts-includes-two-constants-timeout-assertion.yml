@@ -1,7 +1,13 @@
 id: ts-includes-two-constants-timeout-assertion
 valid:
   - 'expect(calls.every(({ timeout }) => timeout === PROBE_MS)).toBe(true);'
+  - "expect(calls.every((c) => c.timeout === PROBE_MS)).toBe(true);"
+  - "expect([PROBE_MS, OPERATION_MS].includes(t)).toBe(false);"
+  - "expect(allowed.includes(t)).toBe(true);"
 invalid:
   - >-
     expect(calls.every(({ timeout }) => [PROBE_MS,
     OPERATION_MS].includes(timeout))).toBe(true);
+  - "expect(calls.every((c) => [A, B].includes(c.timeout)), \"msg\").toBe(true);"
+  - "expect([cfg.probeMs, cfg.opMs].includes(t)).toBe(true);"
+  - "await expect([A, B].includes(t)).toBe(true);"
