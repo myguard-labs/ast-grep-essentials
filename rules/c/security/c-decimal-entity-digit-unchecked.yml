@@ -10,7 +10,8 @@ note: >-
   Syntactic only. A preceding sibling if statement suppresses the match
   without checking that it validates digits. An enclosing if consequence
   suppresses it only when its condition range-checks or isdigit()-checks the
-  same accumulated character expression.
+  same accumulated character expression, either as the whole condition or as
+  one && conjunct of it (a || branch does not count).
 rule:
   pattern: '$E = $E * 10 + ($C - ''0'');'
   all:
@@ -25,11 +26,25 @@ rule:
           field: consequence
           has:
             field: condition
-            any:
-              - pattern: '($C >= ''0'' && $C <= ''9'')'
-              - pattern: '(''0'' <= $C && $C <= ''9'')'
-              - pattern: '(isdigit($C))'
-              - pattern: '(isdigit((unsigned char)$C))'
+            has:
+              stopBy:
+                not:
+                  any:
+                    - kind: parenthesized_expression
+                    - all:
+                        - kind: binary_expression
+                        - has:
+                            field: operator
+                            regex: '^&&$'
+              any:
+                - pattern: '$C >= ''0'' && $C <= ''9'''
+                - pattern: '''0'' <= $C && $C <= ''9'''
+                - pattern:
+                    context: 'isdigit($C);'
+                    selector: call_expression
+                - pattern:
+                    context: 'isdigit((unsigned char)$C);'
+                    selector: call_expression
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0

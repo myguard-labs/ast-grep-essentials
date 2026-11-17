@@ -7,8 +7,10 @@ message: >-
   Buffer allocated with emalloc(N) is written at index N, one byte past the
   allocation.
 note: >-
-  Syntactic match on identical size and index text in sibling statements. It
-  does not track reassignment, control flow, or aliasing.
+  Syntactic match on identical size and index text in sibling statements. A
+  later assignment to, or -= / -- of, the size expression between the
+  allocation and the write suppresses the match, even a growing one such as
+  n = n + 1. It does not track other control flow or aliasing.
 rule:
   all:
     - pattern: '$S[$N] = $V;'
