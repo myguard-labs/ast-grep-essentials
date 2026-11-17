@@ -1,6 +1,24 @@
 id: wp-unittest-setup-missing-parent-call
 snapshots:
-  <?php class Tests_Foo extends WP_UnitTestCase { public function setUp() { $this->foo = 1; } }:
+  "<?php class Tests_Foo extends WP_UnitTestCase { protected function setUp() { } }":
+    labels:
+    - source: protected function setUp() { }
+      style: primary
+      start: 48
+      end: 78
+    - source: setUp
+      style: secondary
+      start: 67
+      end: 72
+    - source: extends WP_UnitTestCase
+      style: secondary
+      start: 22
+      end: 45
+    - source: class Tests_Foo extends WP_UnitTestCase { protected function setUp() { } }
+      style: secondary
+      start: 6
+      end: 80
+  "<?php class Tests_Foo extends WP_UnitTestCase { public function setUp() { $this->foo = 1; } }":
     labels:
     - source: public function setUp() { $this->foo = 1; }
       style: primary
@@ -14,7 +32,67 @@ snapshots:
       style: secondary
       start: 22
       end: 45
-    - source: class Tests_Foo extends WP_UnitTestCase { public function setUp() { $this->foo = 1; } }
+    - source: >-
+        class Tests_Foo extends WP_UnitTestCase { public function setUp() { $this->foo
+        = 1; } }
       style: secondary
       start: 6
       end: 93
+  "<?php class Tests_Foo extends WP_UnitTestCase { public function setUp() { parent::tearDown(); $this->foo = 1; } }":
+    labels:
+    - source: public function setUp() { parent::tearDown(); $this->foo = 1; }
+      style: primary
+      start: 48
+      end: 111
+    - source: setUp
+      style: secondary
+      start: 64
+      end: 69
+    - source: extends WP_UnitTestCase
+      style: secondary
+      start: 22
+      end: 45
+    - source: >-
+        class Tests_Foo extends WP_UnitTestCase { public function setUp() {
+        parent::tearDown(); $this->foo = 1; } }
+      style: secondary
+      start: 6
+      end: 113
+  "<?php class Tests_Foo extends WP_UnitTestCase { public function setUp(): void { $this->foo = 1; } }":
+    labels:
+    - source: "public function setUp(): void { $this->foo = 1; }"
+      style: primary
+      start: 48
+      end: 97
+    - source: setUp
+      style: secondary
+      start: 64
+      end: 69
+    - source: extends WP_UnitTestCase
+      style: secondary
+      start: 22
+      end: 45
+    - source: "class Tests_Foo extends WP_UnitTestCase { public function setUp(): void { $this->foo = 1; } }"
+      style: secondary
+      start: 6
+      end: 99
+  "<?php namespace T; class Tests_Foo extends WP_UnitTestCase { public function setUp() { $this->foo = 1; } }":
+    labels:
+    - source: public function setUp() { $this->foo = 1; }
+      style: primary
+      start: 61
+      end: 104
+    - source: setUp
+      style: secondary
+      start: 77
+      end: 82
+    - source: extends WP_UnitTestCase
+      style: secondary
+      start: 35
+      end: 58
+    - source: >-
+        class Tests_Foo extends WP_UnitTestCase { public function setUp() { $this->foo
+        = 1; } }
+      style: secondary
+      start: 19
+      end: 106
