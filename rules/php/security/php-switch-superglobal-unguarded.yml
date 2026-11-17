@@ -19,10 +19,16 @@ rule:
     - not:
         has:
           kind: binary_expression
-          has:
-            kind: subscript_expression
-            precedes:
-              regex: '^\?\?$'
+          all:
+            - has:
+                kind: subscript_expression
+                precedes:
+                  regex: '^\?\?$'
+            - not:
+                has:
+                  field: right
+                  kind: subscript_expression
+                  regex: '^\$_GET\s*\['
 metadata:
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
@@ -35,5 +41,3 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/20.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A05:2025'
-  todo_cases:
-    - "false negative: switch ($_GET[\"b\"] ?? $_GET[\"a\"]) is no longer reported although the right operand is unguarded; the ?? exclusion covers the whole subject."

@@ -8,6 +8,7 @@ valid:
   - "<?php switch ( strtolower( $mode ) ) { case \"a\": break; }"
   - "<?php switch ( $_GET[\"a\"] ?? \"x\" ) { case \"a\": break; }"
   - "<?php switch ( $_GET['a'] ?? 'x' ) { case 'a': break; }"
+  - "<?php switch ( $_GET['b'] ?? $_GET['a'] ?? 'x' ) { case 'a': break; }"
 invalid:
   - 'switch ( $_GET[''action''] ) { case ''upgrade'': break; default: break; }'
   - "<?php switch ( $_GET[\"tab\"] ) { case \"a\": break; default: break; }"
@@ -16,3 +17,5 @@ invalid:
   - "<?php switch ( $_GET[\"tab\"] ) : case \"a\": break; endswitch;"
   - "<?php switch ( $_GET[\"tab\"] . \"x\" ) { case \"a\": break; }"
   - "<?php switch ( $_GET[\"a\"] . \"x\" ?? \"d\" ) { case \"a\": break; }"
+  - "<?php switch ( $_GET[\"b\"] ?? $_GET[\"a\"] ) { default: break; }"
+  - "<?php switch ( $_GET['b'] ?? $_GET['a'] ) { default: break; }"
