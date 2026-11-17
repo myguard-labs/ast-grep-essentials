@@ -1,5 +1,9 @@
 id: c-array-count-divides-by-pointer-size
 valid:
   - 'int f(void) { int a[3]; return sizeof(a) / sizeof(a[0]); }'
+  - 'int f(void) { int a[3]; return sizeof(a) / sizeof(int); }'
+  - 'int f(void) { char *names[3]; return sizeof(names) / sizeof(char *); }'
 invalid:
   - 'int f(void) { int a[3]; return sizeof(a) / sizeof(void *); }'
+  - 'int n = sizeof(arr) / sizeof(void *);'
+  - 'void f(void) { for (i = 0; i < sizeof(a) / sizeof(void *); i++) {} }'

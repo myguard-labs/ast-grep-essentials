@@ -1,5 +1,57 @@
 id: c-assign-in-condition-compare-precedence
 snapshots:
+  "int f(void) { if (a) { return 0; } else if (rc = strcmp(a, b) == 0) { return 1; } return 2; }":
+    labels:
+    - source: rc = strcmp(a, b) == 0
+      style: primary
+      start: 44
+      end: 66
+    - source: "="
+      style: secondary
+      start: 47
+      end: 48
+    - source: ==
+      style: secondary
+      start: 62
+      end: 64
+    - source: strcmp(a, b) == 0
+      style: secondary
+      start: 49
+      end: 66
+    - source: if (rc = strcmp(a, b) == 0) { return 1; }
+      style: secondary
+      start: 40
+      end: 81
+    - source: (rc = strcmp(a, b) == 0)
+      style: secondary
+      start: 43
+      end: 67
+  "int f(void) { int n; if (n = read(fd, b, 4) == -1) { return 1; } return 0; }":
+    labels:
+    - source: n = read(fd, b, 4) == -1
+      style: primary
+      start: 25
+      end: 49
+    - source: "="
+      style: secondary
+      start: 27
+      end: 28
+    - source: ==
+      style: secondary
+      start: 44
+      end: 46
+    - source: read(fd, b, 4) == -1
+      style: secondary
+      start: 29
+      end: 49
+    - source: if (n = read(fd, b, 4) == -1) { return 1; }
+      style: secondary
+      start: 21
+      end: 64
+    - source: (n = read(fd, b, 4) == -1)
+      style: secondary
+      start: 24
+      end: 50
   "int g(void); int f(void) { int res; if (res = g() != 0) { return 1; } return 0; }":
     labels:
     - source: res = g() != 0

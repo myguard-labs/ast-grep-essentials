@@ -1,5 +1,10 @@
 id: c-alloc-sizeof-minus-one-count
 valid:
   - 'size_t sz = sizeof(int) + sizeof(int *) * n;'
+  - 'size_t sz = sizeof(int) * (n + 1);'
+  - 'size_t sz = sizeof(int) * (n > 0 ? n - 1 : 0);'
 invalid:
   - 'size_t sz = sizeof(int) + sizeof(int *) * (n - 1);'
+  - 'void *p = malloc(sizeof(struct foo) * (cnt - 1));'
+  - 'size_t sz = sizeof(*p) * (n - 1);'
+  - 'void *q = calloc(1, sizeof(int *) * (len - 1));'

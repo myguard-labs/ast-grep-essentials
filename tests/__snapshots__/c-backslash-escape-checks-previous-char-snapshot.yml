@@ -1,8 +1,20 @@
 id: c-backslash-escape-checks-previous-char
 snapshots:
-  int f(char *pp, char d) { return *pp == d && pp[-1] != '\\'; }:
+  "int f(buf_t *b) { return b->ptr[-1] != '\\\\'; }":
+    labels:
+    - source: b->ptr[-1] != '\\'
+      style: primary
+      start: 25
+      end: 43
+  "int f(char *pp, char d) { return *pp == d && pp[-1] != '\\\\'; }":
     labels:
     - source: pp[-1] != '\\'
       style: primary
       start: 45
       end: 59
+  "int f(char *s) { while (*s) { if (s[-1] != '\\\\') return 1; s++; } return 0; }":
+    labels:
+    - source: s[-1] != '\\'
+      style: primary
+      start: 34
+      end: 47

@@ -1,12 +1,19 @@
 id: c-backslash-scan-without-dbcs-guard
 snapshots:
-  ? |-
-    void strip(char *p, int i) {
-        if (p[i] == '\\') {
-            p[i] = '\0';
-        }
-    }
-  : labels:
+  "void f(char *p, int n) { for (int i = 0; i < n; i++) { if (p[i] == '\\\\') { p[i] = '/'; } } }":
+    labels:
+    - source: if (p[i] == '\\') { p[i] = '/'; }
+      style: primary
+      start: 55
+      end: 88
+  "void f(char *s, int k) { if (s[k] == '\\\\') { s[k] = '/'; } }":
+    labels:
+    - source: if (s[k] == '\\') { s[k] = '/'; }
+      style: primary
+      start: 25
+      end: 58
+  "void strip(char *p, int i) {\n    if (p[i] == '\\\\') {\n        p[i] = '\\0';\n    }\n}":
+    labels:
     - source: |-
         if (p[i] == '\\') {
                 p[i] = '\0';
