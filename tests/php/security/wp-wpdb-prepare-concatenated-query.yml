@@ -3,7 +3,14 @@ valid:
   - >-
     <?php $wpdb->prepare( 'SELECT ID FROM wp_posts WHERE post_type = %s', $t );
     ?>
+  - '<?php $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = %s", $t ); ?>'
+  - '<?php $wpdb->prepare( ''SELECT 1 WHERE a = %s'', $a . ''x'' ); ?>'
+  - '<?php $wpdb->prepare( ''SELECT %s'', ''a'' ); ?>'
+
 invalid:
   - >-
     <?php $wpdb->prepare( 'SELECT ID FROM ' . $wpdb->posts . ' WHERE post_type
     IN (\'' . $t . '\')' ); ?>
+  - '<?php $wpdb->prepare( ''SELECT * FROM t WHERE id = '' . $id ); ?>'
+  - '<?php $wpdb->prepare( "SELECT * FROM t WHERE n = ''" . $n . "''" ); ?>'
+  - '<?php $wpdb->get_row( $wpdb->prepare( ''SELECT * FROM t WHERE id = '' . $id ) ); ?>'
