@@ -1,5 +1,12 @@
 id: wp-img-alt-attr-unescaped-interpolation
 valid:
   - '$avatar = "<img alt=''" . esc_attr( $alt ) . "'' src=''x'' />";'
+  - '$a = "<img alt='''' src=''x'' />";'
+  - '$a = ''<img alt="'' . esc_attr( $alt ) . ''" src="x" />'';'
+  - '$a = "<img alt=''Logo'' src=''" . esc_url( $src ) . "'' />";'
+
 invalid:
   - '$avatar = "<img alt=''{$alt}'' src=''x'' />";'
+  - '$a = "<img src=''x'' alt=''{$post->post_title}'' />";'
+  - 'echo "<img alt=''{$title}''>";'
+  - '$a = "<img alt=''{$attrs[''alt'']}'' />";'

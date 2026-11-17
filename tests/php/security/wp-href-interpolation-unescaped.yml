@@ -1,5 +1,12 @@
 id: wp-href-interpolation-unescaped
 valid:
   - 'echo "<a href=''" . esc_url( $url ) . "'' rel=''external''>$author</a>";'
+  - 'echo "<a href=''#top''>Top</a>";'
+  - 'echo "<a href=''" . esc_url( home_url( ''/'' ) ) . "''>Home</a>";'
+  - 'echo "<a href=''" . esc_url( $url ) . "''>" . esc_html( $label ) . "</a>";'
+
 invalid:
   - 'echo "<a href=''$url'' rel=''external''>$author</a>";'
+  - 'echo "<a class=''x'' href=''$link'' rel=''nofollow''>y</a>";'
+  - '$h = "<a href=''$this_url''>x</a>";'
+  - 'echo "<a href=''$url''>" . esc_html( $t ) . "</a>";'

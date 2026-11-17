@@ -2,5 +2,11 @@ id: wp-shortcode-attr-addslashes-concat
 valid:
   - '$shcode = ''[caption caption="'' . esc_attr( $caption ) . ''"]'';'
   - '<?php /* $shcode = ''[caption caption="'' . addslashes( $caption ) . ''"]''; */ $x = 1;'
+  - '$s = ''[gallery ids="'' . implode( '','', array_map( ''absint'', $ids ) ) . ''"]'';'
+  - '$s = ''[caption caption="'' . esc_attr( addslashes( $c ) ) . ''"]'';'
+
 invalid:
   - '$shcode = ''[caption caption="'' . addslashes( $caption ) . ''"]'';'
+  - 'echo ''[caption caption="'' . addslashes( $title ) . ''"]'';'
+  - '$codes = [ ''[caption caption="'' . addslashes( $c ) . ''"]'' ];'
+  - '$s = ''[caption caption="'' . addslashes( $a[''x''] ) . ''"]'';'

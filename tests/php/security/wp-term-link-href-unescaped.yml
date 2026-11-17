@@ -1,5 +1,12 @@
 id: wp-term-link-href-unescaped
 valid:
   - '$link = ''<a href="'' . esc_attr( get_term_link( $term ) ) . ''">'';'
+  - '$l = ''<a href="'' . esc_url( get_term_link( $term ) ) . ''">'' . esc_html( $term->name ) . ''</a>'';'
+  - '$u = get_term_link( $term ); $l = ''<a href="'' . esc_url( $u ) . ''">'';'
+  - '$l = ''<a href="#">'' . esc_html( $term->name ) . ''</a>'';'
+
 invalid:
   - '$link = ''<a href="'' . get_term_link( $term ) . ''">'';'
+  - 'echo ''<a href="'' . get_term_link( $term ) . ''">'';'
+  - '$l = ''<a href="'' . get_term_link( $term, ''category'' ) . ''">'' . $name . ''</a>'';'
+  - '$l = ''<a href="'' . get_term_link( (int) $id, $tax ) . ''">'';'
