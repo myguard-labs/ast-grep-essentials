@@ -20,7 +20,23 @@ rule:
             - kind: break_statement
             - kind: return_statement
             - kind: continue_statement
-            - kind: goto_statement
+            - all:
+                - kind: goto_statement
+                - pattern: 'goto $L;'
+                - not:
+                    any:
+                      - precedes:
+                          stopBy: end
+                          kind: labeled_statement
+                          has:
+                            kind: statement_identifier
+                            pattern: $L
+                      - follows:
+                          stopBy: end
+                          kind: labeled_statement
+                          has:
+                            kind: statement_identifier
+                            pattern: $L
             - kind: compound_statement
               has:
                 nthChild:
