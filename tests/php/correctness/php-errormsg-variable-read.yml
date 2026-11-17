@@ -3,7 +3,13 @@ valid:
   - >-
     function f($file) { $fp = @fopen($file, 'r'); if (!is_resource($fp)) {
     return error_get_last(); } return $fp; }
+  - '<?php function f($f){ $fp = @fopen($f,"r"); if (!$fp) { $e = error_get_last(); return $e["message"]; } }'
+  - '<?php $php_errormsg_copy = 1; echo $php_errormsg_copy;'
+  - '<?php $msg = error_get_last()["message"] ?? "";'
 invalid:
   - >-
     function f($file) { $fp = @fopen($file, 'r'); if (!is_resource($fp)) {
     return $php_errormsg; } return $fp; }
+  - '<?php echo $php_errormsg;'
+  - '<?php if (!$fp) { throw new Exception($php_errormsg); }'
+  - '<?php $log[] = "failed: " . $php_errormsg;'
