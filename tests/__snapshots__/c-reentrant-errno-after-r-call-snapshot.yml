@@ -1,6 +1,32 @@
 id: c-reentrant-errno-after-r-call
 snapshots:
-  ret = getpwnam_r(n, &pw, buf, len, &res); if (errno == ERANGE) return;:
+  "#include <dirent.h>\nint f(DIR *d) {\n  struct dirent ent, *res;\n  readdir_r(d, &ent, &res);\n  if (errno == EBADF) {\n    return -1;\n  } else {\n    return 0;\n  }\n}":
+    labels:
+    - source: |-
+        if (errno == EBADF) {
+            return -1;
+          } else {
+            return 0;
+          }
+      style: primary
+      start: 93
+      end: 158
+  "#include <pwd.h>\nint f(const char *n, char *buf, size_t len) {\n  struct passwd pw, *res;\n  getpwnam_r(n, &pw, buf, len, &res);\n  if (errno == ERANGE) {\n    return -1;\n  }\n  return 0;\n}":
+    labels:
+    - source: |-
+        if (errno == ERANGE) {
+            return -1;
+          }
+      style: primary
+      start: 129
+      end: 170
+  "#include <string.h>\nint f(int err, char *buf, size_t len) {\n  strerror_r(err, buf, len);\n  if (errno == EINVAL) return -1;\n  return 0;\n}":
+    labels:
+    - source: if (errno == EINVAL) return -1;
+      style: primary
+      start: 91
+      end: 122
+  "ret = getpwnam_r(n, &pw, buf, len, &res); if (errno == ERANGE) return;":
     labels:
     - source: if (errno == ERANGE) return;
       style: primary

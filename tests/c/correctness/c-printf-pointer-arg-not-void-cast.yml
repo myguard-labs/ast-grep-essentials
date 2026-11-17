@@ -1,5 +1,36 @@
 id: c-printf-pointer-arg-not-void-cast
 valid:
   - 'printf("%p\n", (void *)argp);'
+  - |-
+    #include <stdio.h>
+    void show(const char *name) {
+      printf("%s\n", name);
+    }
+  - |-
+    #include <stdio.h>
+    void show(int *p) {
+      printf("%p\n", (void *)&p[1]);
+    }
+  - |-
+    #include <stdio.h>
+    void show(const char *tag, void *p) {
+      printf("%s %p\n", tag, p);
+    }
 invalid:
   - 'printf("%p\n", argp);'
+  - |-
+    #include <stdio.h>
+    void show(int *p) {
+      printf("%p\n", &p[1]);
+    }
+  - |-
+    #include <stdio.h>
+    struct node { char *data; };
+    void show(struct node *n) {
+      printf("data=%p\n", n->data);
+    }
+  - |-
+    #include <stdio.h>
+    void show(const char *buf) {
+      printf("%p\n", buf + 4);
+    }

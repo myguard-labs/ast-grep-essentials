@@ -1,5 +1,36 @@
 id: c-printf-precision-arg-order
 valid:
   - 'printf("%.*s", len, str);'
+  - |-
+    #include <stdio.h>
+    void show(const char *name, int n) {
+      printf("%.*s", n, name);
+    }
+  - |-
+    #include <stdio.h>
+    #include <string.h>
+    void show(const char *buf, size_t size) {
+      printf("%.*s", (int)size, buf);
+    }
+  - |-
+    #include <stdio.h>
+    void show(const char *name, int len) {
+      printf("%.*s\n", len, name);
+    }
 invalid:
   - 'printf("%.*s", str, len);'
+  - |-
+    #include <stdio.h>
+    void show(const char *name, int length) {
+      printf("%.*s", name, length);
+    }
+  - |-
+    #include <stdio.h>
+    void show(const char *buf, int size) {
+      printf("%.*s", buf, size);
+    }
+  - |-
+    #include <stdio.h>
+    void show(const char *label, int count) {
+      printf("%.*s", label, count);
+    }
