@@ -1,5 +1,23 @@
 id: sh-directory-exists-skips-extraction
 valid:
   - '[ -f nginx-1.27.0/.extracted ] || tar -xzf nginx-1.27.0.tar.gz'
+  - |-
+      rm -rf nginx-1.27.0 && tar -xzf nginx-1.27.0.tar.gz
+  - |-
+      mkdir -p "$dir"
+      [ -f "$dir/.extracted" ] || { tar -xzf "$src" -C "$dir" && touch "$dir/.extracted"; }
+  - |-
+      set -e
+      rm -rf "$dir.tmp"
+      mkdir "$dir.tmp"
+      tar -xzf "$src" -C "$dir.tmp"
+      rm -rf "$dir"
+      mv "$dir.tmp" "$dir"
 invalid:
   - '[ -d nginx-1.27.0 ] || tar -xzf nginx-1.27.0.tar.gz'
+  - |-
+      [ -d "$dir" ] || tar -xzf "$src" -C "$dest"
+  - |-
+      [ -d nginx-1.27.0 ] || tar -xJf nginx-1.27.0.tar.xz --strip-components=1
+  - |-
+      [ -d vendor ] || tar xf vendor.tar

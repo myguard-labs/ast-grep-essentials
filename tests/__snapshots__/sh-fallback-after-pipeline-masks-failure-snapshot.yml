@@ -1,5 +1,23 @@
 id: sh-fallback-after-pipeline-masks-failure
 snapshots:
+  id=$(docker ps -q | head -n1 || echo none):
+    labels:
+    - source: $(docker ps -q | head -n1 || echo none)
+      style: primary
+      start: 3
+      end: 42
+  n=$(cat "$f" | wc -l || echo 0):
+    labels:
+    - source: $(cat "$f" | wc -l || echo 0)
+      style: primary
+      start: 2
+      end: 31
+  v=$(curl -s "$url" | jq -r .version || echo unknown):
+    labels:
+    - source: $(curl -s "$url" | jq -r .version || echo unknown)
+      style: primary
+      start: 2
+      end: 52
   v=$(git describe --tags 2>/dev/null | sed 's/^v//' || echo ""):
     labels:
     - source: $(git describe --tags 2>/dev/null | sed 's/^v//' || echo "")

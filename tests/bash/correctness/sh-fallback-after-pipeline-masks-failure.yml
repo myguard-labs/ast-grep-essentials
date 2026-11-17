@@ -1,5 +1,19 @@
 id: sh-fallback-after-pipeline-masks-failure
 valid:
   - 'v=$(git describe --tags 2>/dev/null || echo "")'
+  - |-
+      set -o pipefail
+      v=$(git describe --tags | sed 's/^v//') || v=""
+  - |-
+      v=$(set -o pipefail; git describe --tags | sed 's/^v//' || echo "")
+  - |-
+      set -euo pipefail
+      out=$(git describe --tags | sed 's/^v//')
 invalid:
   - 'v=$(git describe --tags 2>/dev/null | sed ''s/^v//'' || echo "")'
+  - |-
+      v=$(curl -s "$url" | jq -r .version || echo unknown)
+  - |-
+      n=$(cat "$f" | wc -l || echo 0)
+  - |-
+      id=$(docker ps -q | head -n1 || echo none)

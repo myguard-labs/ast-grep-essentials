@@ -1,8 +1,26 @@
 id: sh-grep-q-pipeline-early-exit
 snapshots:
-  if printf '%s' "$out" | grep -q '^1..'; then :; fi:
+  "if printf '%s' \"$out\" | grep -q '^1..'; then :; fi":
     labels:
     - source: printf '%s' "$out" | grep -q '^1..'
       style: primary
       start: 3
       end: 38
+  "set -o pipefail\nif printf '%s' \"$out\" | grep -q -E 'a|b'; then echo match; fi":
+    labels:
+    - source: printf '%s' "$out" | grep -q -E 'a|b'
+      style: primary
+      start: 19
+      end: 56
+  "set -o pipefail\nprintf '%s\\n' \"$list\" | grep -q -F \"$item\" && echo found":
+    labels:
+    - source: printf '%s\n' "$list" | grep -q -F "$item"
+      style: primary
+      start: 16
+      end: 58
+  "set -o pipefail\nprintf '%s\\n' \"$out\" | grep -q -- \"$pat\"":
+    labels:
+    - source: printf '%s\n' "$out" | grep -q -- "$pat"
+      style: primary
+      start: 16
+      end: 56

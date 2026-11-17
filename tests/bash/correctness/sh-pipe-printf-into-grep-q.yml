@@ -3,7 +3,24 @@ valid:
   - |-
     set -o pipefail
     grep -qvE '^//' <<< "$changed"
+  - |-
+      [[ $changed =~ ^// ]]
+  - |-
+      set -o pipefail
+      n=$(printf '%s\n' "$changed" | wc -l)
+  - |-
+      set -o pipefail
+      if grep -qE -- "$re" <(printf '%s\n' "$changed"); then :; fi
 invalid:
   - |-
     set -o pipefail
     printf "%s" "$changed" | grep -qvE '^//'
+  - |-
+      set -o pipefail
+      printf '%s\n' "$changed" | grep -q -- "$re"
+  - |-
+      set -o pipefail
+      printf %s "$out" | grep -qE 'a|b'
+  - |-
+      set -o pipefail
+      printf '%s\n' "$list" | grep -qxF "$item"

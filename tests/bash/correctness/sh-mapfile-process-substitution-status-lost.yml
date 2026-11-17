@@ -1,5 +1,22 @@
 id: sh-mapfile-process-substitution-status-lost
 valid:
   - 'mapfile -t files < "$list"'
+  - |-
+      set -e
+      out=$(find . -name '*.sh')
+      mapfile -t files <<< "$out"
+  - |-
+      tmp=$(mktemp) || exit 1
+      trap 'rm -f "$tmp"' EXIT
+      find . -name '*.sh' > "$tmp" || exit 1
+      mapfile -t files < "$tmp"
+  - |-
+      readarray -t files < "$list"
 invalid:
   - 'mapfile -t files < <(find . -name ''*.sh'')'
+  - |-
+      mapfile -t files < <(git ls-files)
+  - |-
+      mapfile -d '' -t files < <(find . -print0)
+  - |-
+      mapfile -t lines < <(curl -fsS "$url")
