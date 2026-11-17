@@ -1,5 +1,9 @@
 id: php-error-suppression-operator-call
 valid:
   - 'function f($m) { error_log($m, 0); }'
+  - '<?php if ( ! error_log( $m, 3, ''/tmp/l'' ) ) { return; }'
+  - '<?php @syslog( LOG_ERR, $m );'
 invalid:
   - 'function f($m) { @error_log($m, 0); }'
+  - '<?php @error_log( ''x'', 3, ''/tmp/l'' );'
+  - '<?php $ok = @error_log( $m );'

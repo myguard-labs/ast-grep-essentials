@@ -1,5 +1,9 @@
 id: php-error-suppress-header-call
 valid:
   - 'header( ''Content-type: text/html'' );'
+  - '<?php if ( ! headers_sent() ) { header( ''X-A: 1'' ); }'
+  - '<?php // @header(''X: 1'');'
 invalid:
   - '@header( ''Content-type: text/html'' );'
+  - '<?php if ( ! @header( ''X-A: 1'' ) ) { exit; }'
+  - '<?php @header( $line );'

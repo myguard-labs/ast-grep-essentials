@@ -1,5 +1,9 @@
 id: php-error-suppressed-constant
 valid:
   - 'if ( constant( ''DOING_AUTOSAVE'' ) ) return;'
+  - '<?php $v = defined( ''FOO'' ) ? constant( ''FOO'' ) : null;'
+  - '<?php $v = constant( $name );'
 invalid:
   - 'if ( @constant( ''DOING_AUTOSAVE'' ) ) return;'
+  - '<?php $v = @constant( $name );'
+  - '<?php return @constant( ''A_'' . $suffix );'

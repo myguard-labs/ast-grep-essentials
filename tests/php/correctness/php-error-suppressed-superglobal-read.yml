@@ -1,5 +1,9 @@
 id: php-error-suppressed-superglobal-read
 valid:
   - '<?php $page = (int) $_POST[''_page''];'
+  - '<?php $id = isset( $_REQUEST[''id''] ) ? $_REQUEST[''id''] : 0;'
+  - '<?php $q = $_GET[''q''] ?? '''';'
 invalid:
   - '<?php $page = (int) @$_POST[''_page''];'
+  - '<?php $id = @ $_REQUEST[ ''id'' ];'
+  - '<?php if ( @$_GET[''x''] === ''y'' ) { go(); }'

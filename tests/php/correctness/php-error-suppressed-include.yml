@@ -2,5 +2,8 @@ id: php-error-suppressed-include
 valid:
   - '<?php include_once( ABSPATH . ''wp-cron.php'' ); ?>'
   - '<?php /* @include_once( ABSPATH . ''wp-cron.php'' ); */ $x = 1;'
+  - '<?php if ( is_readable( $f ) ) { include $f; }'
 invalid:
   - '<?php @include_once( ABSPATH . ''wp-cron.php'' ); ?>'
+  - '<?php if ( @include_once( $f ) ) { run(); }'
+  - '<?php @include_once( dirname( __FILE__ ) . ''/x.php'' );'
