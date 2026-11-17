@@ -1,11 +1,11 @@
 id: c-unaligned-wide-load-via-cast
 snapshots:
-  "int f(const struct hdr *h, unsigned short want) { return *((unsigned short *)&h->raw[2]) == want; }":
+  "struct hdr { unsigned char raw[8]; };\nint f(const struct hdr *h, unsigned short want) { return *((unsigned short *)&h->raw[2]) == want; }":
     labels:
     - source: "*((unsigned short *)&h->raw[2])"
       style: primary
-      start: 57
-      end: 88
+      start: 95
+      end: 126
   "unsigned short f(const unsigned char *buf, int i) { return *((unsigned short *)&buf[i + 1]); }":
     labels:
     - source: "*((unsigned short *)&buf[i + 1])"

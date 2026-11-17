@@ -2,16 +2,23 @@ id: c-unaligned-wide-deref-cast
 valid:
   - 'uint8_t v = *((uint8_t *) buf);'
   - |-
+    #include <stdint.h>
+    #include <string.h>
     void f(const unsigned char *buf, uint32_t *out) { uint32_t v; memcpy(&v, buf, sizeof v); *out = v; }
   - |-
+    #include <stdint.h>
     uint32_t f(const unsigned char *p) { return (uint32_t)p[0] | ((uint32_t)p[1] << 8) | ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24); }
   - |-
+    #include <stdint.h>
     uint32_t f(const uint32_t *words, int i) { return words[i]; }
 invalid:
   - 'uint32_t v = *((uint32_t *) buf);'
   - |-
+    #include <stdint.h>
     uint32_t f(const unsigned char *buf, int off) { return *((uint32_t *)(buf + off)); }
   - |-
+    #include <stdint.h>
     int f(const unsigned char *p, uint32_t magic) { if (*((uint32_t *) p) == magic) return 1; return 0; }
   - |-
+    #include <stdint.h>
     uint32_t f(const unsigned char *p, int n) { uint32_t sum = 0; while (n >= 4) { sum += *((uint32_t *) p); p += 4; n -= 4; } return sum; }
