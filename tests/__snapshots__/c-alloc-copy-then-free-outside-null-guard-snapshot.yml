@@ -14,3 +14,45 @@ snapshots:
       style: secondary
       start: 21
       end: 44
+  "void f(void *s, int n) { void *r = malloc(n); if (r != NULL) memcpy(r + 1, s, n - 1); free(s); }":
+    labels:
+    - source: free(s);
+      style: primary
+      start: 86
+      end: 94
+    - source: memcpy(r + 1, s, n - 1)
+      style: secondary
+      start: 61
+      end: 84
+    - source: if (r != NULL) memcpy(r + 1, s, n - 1);
+      style: secondary
+      start: 46
+      end: 85
+  "void f(void *s, int n) { void *r = malloc(n); if (r) { memcpy(r, s, n); } free(s); }":
+    labels:
+    - source: free(s);
+      style: primary
+      start: 74
+      end: 82
+    - source: memcpy(r, s, n)
+      style: secondary
+      start: 55
+      end: 70
+    - source: if (r) { memcpy(r, s, n); }
+      style: secondary
+      start: 46
+      end: 73
+  "void f(void *s, int n) { void *r = malloc(n); if (r) { n++; memcpy(r, s, n); } free(s); }":
+    labels:
+    - source: free(s);
+      style: primary
+      start: 79
+      end: 87
+    - source: memcpy(r, s, n)
+      style: secondary
+      start: 60
+      end: 75
+    - source: if (r) { n++; memcpy(r, s, n); }
+      style: secondary
+      start: 46
+      end: 78

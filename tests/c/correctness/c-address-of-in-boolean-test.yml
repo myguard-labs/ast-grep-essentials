@@ -3,7 +3,13 @@ valid:
   - >-
     struct s { int count; }; int f(struct s *x) { if (!x->count) return 1;
     return 0; }
+  - 'struct s { int count; }; int f(struct s *x) { if (!x && !x->count) return 1; return 0; }'
+  - 'struct s { int count; }; int f(struct s *x) { if (x == NULL || x->count == 0) return 1; return 0; }'
+  - 'struct s { int count; }; int f(struct s *x, int *p) { if (&x->count == p) return 1; return 0; }'
 invalid:
   - >-
     struct s { int count; }; int f(struct s *x) { if (!&x->count) return 1;
     return 0; }
+  - 'struct s { int count; }; int f(struct s *x) { while (!&x->count) { x++; } return 0; }'
+  - 'struct s { int count; }; int f(struct s *x) { return !&x->count; }'
+  - 'struct s { int count; }; int f(struct s *x) { int ok = !&x->count; return ok; }'

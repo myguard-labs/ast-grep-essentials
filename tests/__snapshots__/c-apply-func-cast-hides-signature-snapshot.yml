@@ -1,7 +1,25 @@
 id: c-apply-func-cast-hides-signature
 snapshots:
-  ? "static int unlink_filename(char **f) { return 0; }\nvoid destroy(HashTable *h) {\n\tzend_hash_apply(h, (apply_func_t) unlink_filename);\n}"
-  : labels:
+  "static int cb(char **f) { return 0; }\nvoid f(HashTable *h) {\n\tfor (;;) {\n\t\tzend_hash_apply(h, (apply_func_t) cb);\n\t}\n}":
+    labels:
+    - source: zend_hash_apply(h, (apply_func_t) cb)
+      style: primary
+      start: 75
+      end: 112
+  "static int cb(char **f) { return 0; }\nvoid f(HashTable *h, int on) {\n\tif (on) {\n\t\tzend_hash_apply(h, (apply_func_t) cb);\n\t}\n}":
+    labels:
+    - source: zend_hash_apply(h, (apply_func_t) cb)
+      style: primary
+      start: 82
+      end: 119
+  "static int cb(char **f) { return 0; }\nvoid f(struct s *o) {\n\tzend_hash_apply(&o->ht, (apply_func_t) cb);\n}":
+    labels:
+    - source: zend_hash_apply(&o->ht, (apply_func_t) cb)
+      style: primary
+      start: 61
+      end: 103
+  "static int unlink_filename(char **f) { return 0; }\nvoid destroy(HashTable *h) {\n\tzend_hash_apply(h, (apply_func_t) unlink_filename);\n}":
+    labels:
     - source: zend_hash_apply(h, (apply_func_t) unlink_filename)
       style: primary
       start: 81

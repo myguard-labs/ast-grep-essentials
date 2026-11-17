@@ -1,5 +1,11 @@
 id: c-always-true-inequality-or
 valid:
   - 'int f(int resp) { if (resp != 226 && resp != 250) { return 0; } return 1; }'
+  - 'int f(int resp) { if (resp == 226 || resp == 250) { return 0; } return 1; }'
+  - 'int f(int resp, int code) { if (resp != 226 || code != 250) { return 0; } return 1; }'
+  - 'int f(int resp) { if (resp != 226 || resp == 250) { return 0; } return 1; }'
 invalid:
   - 'int f(int resp) { if (resp != 226 || resp != 250) { return 0; } return 1; }'
+  - 'int f(int c) { if (c != 1 || c != 2 || c != 3) { return 0; } return 1; }'
+  - 'int f(struct s *p) { if (p->code != 1 || p->code != 2) { return 0; } return 1; }'
+  - 'int f(int c) { while (c != 0x10 || c != 0x20) { c++; } return c; }'

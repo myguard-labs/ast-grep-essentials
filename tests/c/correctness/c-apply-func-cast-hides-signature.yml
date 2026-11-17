@@ -1,5 +1,11 @@
 id: c-apply-func-cast-hides-signature
 valid:
   - "static int unlink_filename(zval *el) { return 0; }\nvoid destroy(HashTable *h) {\n\tzend_hash_apply(h, unlink_filename);\n}"
+  - "static int cb(zval *el) { return ZEND_HASH_APPLY_KEEP; }\nvoid f(HashTable *h) {\n\tzend_hash_apply(h, cb);\n}"
+  - "static int cb(zval *el) { return 0; }\nvoid f(HashTable *h, apply_func_t fn) {\n\tzend_hash_apply(h, fn);\n}"
+  - "static int cb(zval *el) { return 0; }\nvoid f(HashTable *h, int on) {\n\tif (on) {\n\t\tzend_hash_apply(h, cb);\n\t}\n}"
 invalid:
   - "static int unlink_filename(char **f) { return 0; }\nvoid destroy(HashTable *h) {\n\tzend_hash_apply(h, (apply_func_t) unlink_filename);\n}"
+  - "static int cb(char **f) { return 0; }\nvoid f(HashTable *h) {\n\tfor (;;) {\n\t\tzend_hash_apply(h, (apply_func_t) cb);\n\t}\n}"
+  - "static int cb(char **f) { return 0; }\nvoid f(struct s *o) {\n\tzend_hash_apply(&o->ht, (apply_func_t) cb);\n}"
+  - "static int cb(char **f) { return 0; }\nvoid f(HashTable *h, int on) {\n\tif (on) {\n\t\tzend_hash_apply(h, (apply_func_t) cb);\n\t}\n}"
