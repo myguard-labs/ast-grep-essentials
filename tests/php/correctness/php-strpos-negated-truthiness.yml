@@ -5,9 +5,13 @@ valid:
     if (false === strpos($xmp, '<x:xmpmeta')) {
         return;
     }
+  - '<?php if (strpos($xmp, ''<x'') === false) { return; }'
+  - '<?php if (!str_contains($xmp, ''<x'')) { return; }'
 invalid:
   - |
     <?php
     if (! strpos($xmp, '<x:xmpmeta')) {
         return;
     }
+  - '<?php $missing = !strpos($s, ''x'');'
+  - '<?php if (!strpos($a, $b) && $c) { $d = 1; }'

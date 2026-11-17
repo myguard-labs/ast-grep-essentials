@@ -3,7 +3,11 @@ valid:
   - >-
     <?php function f($url) { if ( false !== strpos($url, 'attachment_id') ) {
     return true; } return false; }
+  - '<?php function f($u) { if (strpos($u, ''id'') === 0) { return true; } return false; }'
+  - '<?php function f($u) { if (str_contains($u, ''id'')) { return true; } return false; }'
 invalid:
   - >-
     <?php function f($url) { if ( strpos($url, 'attachment_id') ) { return true;
     } return false; }
+  - '<?php function f($u) { if (strpos($u, ''id'')) { return 1; } else { return 0; } }'
+  - '<?php function f($u) { if ($u === '''') { return 0; } elseif (strpos($u, ''id'')) { return 1; } return 2; }'

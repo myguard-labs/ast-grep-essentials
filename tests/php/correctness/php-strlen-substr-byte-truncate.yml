@@ -3,7 +3,11 @@ valid:
   - >-
     $excerpt = (strlen($excerpt) > 255) ? mb_strcut($excerpt, 0, 252, 'UTF-8') .
     '...' : $excerpt;
+  - '<?php $t = (mb_strlen($s) > 100) ? mb_substr($s, 0, 97) . ''...'' : $s;'
+  - '<?php $t = (mb_strwidth($s) > 40) ? mb_strimwidth($s, 0, 40, ''...'') : $s;'
 invalid:
   - >-
     $excerpt = (strlen($excerpt) > 255) ? substr($excerpt, 0, 252) . '...' :
     $excerpt;
+  - '<?php $t = (strlen($s) > 100) ? substr($s, 0, 97) . ''...'' : $s;'
+  - '<?php $t = (strlen($title) >= 60) ? substr($title, 0, 57) . ''&hellip;'' : $title;'
