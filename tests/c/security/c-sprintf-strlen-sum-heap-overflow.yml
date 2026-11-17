@@ -8,6 +8,9 @@ valid:
   - "void g(void){ char *cmd = malloc(strlen(a) + 1); } void f(size_t n){ cmd = malloc(n); sprintf(cmd, \"%s\", a); } void h(size_t n){ sprintf(cmd, \"%s\", a); }"
   - 'void f(char *a) { char *cmd = malloc(sizeof(strlen(a) + 1)); sprintf(cmd, "%s", a); }'
   - 'void f(char *a) { char *cmd = malloc(strlen(a) > 64 ? 64 : 128); sprintf(cmd, "%s", a); }'
+  - 'void f(char *a) { size_t n = strlen(a); char *buf = malloc(n + 1); sprintf(buf, "%s", a); }'
+  - 'void f(char *a) { char *buf = malloc(64); if (strlen(a) < 64) sprintf(buf, "%s", a); }'
+  - 'void f(const char *a, const char *b) { char *buf = malloc(64); char *other = malloc(strlen(a) + strlen(b) + 1); if (strlen(a) + strlen(b) < 64) sprintf(buf, "%s%s", a, b); free(other); }'
 invalid:
   - 'cmd = malloc(strlen(a) + strlen(b) + 4); sprintf(cmd, "%s /c %s", a, b);'
   - 'cmd = malloc(strlen(a) + 1); sprintf(cmd, "%s", a);'
