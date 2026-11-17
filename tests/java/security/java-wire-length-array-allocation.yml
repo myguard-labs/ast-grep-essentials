@@ -3,5 +3,11 @@ valid:
 - byte[] body = new byte[Math.min(in.readInt(), MAX_BLOCK)];
 - // byte[] body = new byte[in.readInt()];
 - class AstgrepFixture { String value = "byte[] body = new byte[in.readInt()];"; }
+- class P { void f(DataInputStream in) { byte[] b = new byte[BLOCK_SIZE]; } }
+- class P { void f(DataInputStream in) { int n = in.readInt(); if (n < 0 || n > MAX) throw new IOException(); byte[] b = new byte[n]; } }
+- class P { void f(DataInputStream in) { byte[] b = new byte[in.readInt() & 0xFFFF]; } }
 invalid:
 - byte[] body = new byte[in.readInt()];
+- class P { void f(ByteBuf buf) { String[] s = new String[buf.readInt()]; } }
+- class P { void f(Ctx ctx) { int[] a = new int[ctx.input().readInt()]; } }
+- class P { void f(DataInputStream in) { byte[][] b = new byte[in.readInt()][16]; } }

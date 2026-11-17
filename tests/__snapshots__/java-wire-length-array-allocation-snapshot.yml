@@ -1,8 +1,26 @@
 id: java-wire-length-array-allocation
 snapshots:
-  byte[] body = new byte[in.readInt()];:
+  "byte[] body = new byte[in.readInt()];":
     labels:
     - source: new byte[in.readInt()]
       style: primary
       start: 14
       end: 36
+  "class P { void f(ByteBuf buf) { String[] s = new String[buf.readInt()]; } }":
+    labels:
+    - source: new String[buf.readInt()]
+      style: primary
+      start: 45
+      end: 70
+  "class P { void f(Ctx ctx) { int[] a = new int[ctx.input().readInt()]; } }":
+    labels:
+    - source: new int[ctx.input().readInt()]
+      style: primary
+      start: 38
+      end: 68
+  "class P { void f(DataInputStream in) { byte[][] b = new byte[in.readInt()][16]; } }":
+    labels:
+    - source: new byte[in.readInt()][16]
+      style: primary
+      start: 52
+      end: 78

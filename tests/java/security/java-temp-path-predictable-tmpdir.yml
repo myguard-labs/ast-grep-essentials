@@ -3,5 +3,10 @@ valid:
 - File lib = new File(System.getProperty("app.lib.dir"), "liblz4-java-" + name);
 - // File lib = new File(System.getProperty("java.io.tmpdir"), "liblz4-java-" + name);
 - class AstgrepFixture { String value = "File lib = new File(System.getProperty(\"java.io.tmpdir\"), \"liblz4-java-\" + name);"; }
+- File f = new File(System.getProperty("user.home"), "cache-" + id);
+- Path p = Files.createTempFile("lib-", ".so");
 invalid:
 - File lib = new File(System.getProperty("java.io.tmpdir"), "liblz4-java-" + name);
+- File f = new File(System.getProperty("java.io.tmpdir"), "cache-" + id + ".tmp");
+- class X { File f(String n) { return new File(System.getProperty("java.io.tmpdir"), "native-" + n); } }
+- extract(new File(System.getProperty("java.io.tmpdir"), "jni-" + System.nanoTime()));
