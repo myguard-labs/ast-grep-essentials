@@ -1,6 +1,11 @@
 id: php-loose-equality-variable-operands
 valid:
   - '<?php function f( $a ) { return $a == ''x''; }'
+  - '<?php function f( $a ) { return $a == 0; }'
+  - '<?php function f( $a ) { return $a == null; }'
+  - '<?php function f( $a ) { return $a == true; }'
+  - '<?php function f( $a ) { return $a == "x"; }'
+  - '<?php function f( $a ) { return $a == FOO; }'
   - |
     <?php function f( $a, $b ) { return $a === $b; }
   - |
@@ -15,3 +20,13 @@ invalid:
     <?php function f( $a, $b ) { return $a == $b ? 1 : 0; }
   - |
     <?php function f( $a, $b ) { while ( $a == $b ) { $a++; } }
+  - |
+    <?php function f( $a, $o ) { return $a == $o->y; }
+  - |
+    <?php function f( $a, $b ) { return $a == $$b; }
+  - |
+    <?php function f( $a, $b, $i ) { return $a == $b[$i]; }
+  - |
+    <?php function f( $a, $o ) { return $a == $o?->y; }
+  - |
+    <?php function f( $a ) { return $a == Foo::$bar; }
