@@ -5,9 +5,33 @@ valid:
     BLOCKED = {ipaddress.ip_address('fd00:ec2::254')}
     def is_blocked(s):
         return ipaddress.IPv6Address(ipaddress.ip_address(s).packed) in BLOCKED
+  - |-
+    import ipaddress
+    def is_private(s):
+        return ipaddress.ip_address(s).is_private
+  - |-
+    def is_blocked(ip):
+        return ip.packed in BLOCKED_PACKED
+  - |-
+    import ipaddress
+    def is_blocked(s):
+        addr = ipaddress.ip_address(s)
+        return ipaddress.IPv6Address(addr.packed) in BLOCKED
 invalid:
   - |-
     import ipaddress
     BLOCKED = {ipaddress.ip_address('fd00:ec2::254')}
     def is_blocked(s):
         return ipaddress.ip_address(s) in BLOCKED
+  - |-
+    import ipaddress
+    if ipaddress.ip_address(host) in BLOCKLIST:
+        raise ValueError(host)
+  - |-
+    import ipaddress
+    ok = ipaddress.ip_address(addr) in {ipaddress.ip_address('169.254.169.254')}
+  - |-
+    import ipaddress
+    class G:
+        def check(self, h):
+            return ipaddress.ip_address(h) in self.blocked

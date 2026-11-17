@@ -1,12 +1,25 @@
 id: py-exists-gated-is-symlink
 snapshots:
-  ? |
-    from pathlib import Path
-
-    def reject_symlink(path: Path) -> None:
-        if path.exists() and path.is_symlink():
-            raise ValueError("Symlinks are not allowed")
-  : labels:
+  "def check(paths):\n    return [p for p in paths if p.exists() and p.is_symlink()]":
+    labels:
+    - source: p.exists() and p.is_symlink()
+      style: primary
+      start: 50
+      end: 79
+  "def check(root, name):\n    if (root / name).exists() and (root / name).is_symlink():\n        raise ValueError(name)":
+    labels:
+    - source: (root / name).exists() and (root / name).is_symlink()
+      style: primary
+      start: 30
+      end: 83
+  "def check(self):\n    return self.path.exists() and self.path.is_symlink()":
+    labels:
+    - source: self.path.exists() and self.path.is_symlink()
+      style: primary
+      start: 28
+      end: 73
+  "from pathlib import Path\n\ndef reject_symlink(path: Path) -> None:\n    if path.exists() and path.is_symlink():\n        raise ValueError(\"Symlinks are not allowed\")\n":
+    labels:
     - source: path.exists() and path.is_symlink()
       style: primary
       start: 73

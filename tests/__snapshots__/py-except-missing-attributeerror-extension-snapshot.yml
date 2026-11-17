@@ -1,11 +1,31 @@
 id: py-except-missing-attributeerror-extension
 snapshots:
-  ? |-
-    try:
-        conn.enable_load_extension(True)
-    except sqlite3.OperationalError:
-        pass
-  : labels:
+  "try:\n    conn.enable_load_extension(True)\nexcept (sqlite3.OperationalError, OSError):\n    pass":
+    labels:
+    - source: |-
+        except (sqlite3.OperationalError, OSError):
+            pass
+      style: primary
+      start: 42
+      end: 94
+    - source: conn.enable_load_extension(True)
+      style: secondary
+      start: 9
+      end: 41
+    - source: conn.enable_load_extension(True)
+      style: secondary
+      start: 9
+      end: 41
+    - source: |-
+        try:
+            conn.enable_load_extension(True)
+        except (sqlite3.OperationalError, OSError):
+            pass
+      style: secondary
+      start: 0
+      end: 94
+  "try:\n    conn.enable_load_extension(True)\nexcept sqlite3.OperationalError:\n    pass":
+    labels:
     - source: |-
         except sqlite3.OperationalError:
             pass
@@ -28,3 +48,52 @@ snapshots:
       style: secondary
       start: 0
       end: 83
+  "try:\n    db.enable_load_extension(True)\nexcept sqlite3.Error:\n    pass":
+    labels:
+    - source: |-
+        except sqlite3.Error:
+            pass
+      style: primary
+      start: 40
+      end: 70
+    - source: db.enable_load_extension(True)
+      style: secondary
+      start: 9
+      end: 39
+    - source: db.enable_load_extension(True)
+      style: secondary
+      start: 9
+      end: 39
+    - source: |-
+        try:
+            db.enable_load_extension(True)
+        except sqlite3.Error:
+            pass
+      style: secondary
+      start: 0
+      end: 70
+  "try:\n    with closing(conn) as c:\n        c.enable_load_extension(True)\nexcept sqlite3.OperationalError as exc:\n    raise SystemExit(exc)":
+    labels:
+    - source: |-
+        except sqlite3.OperationalError as exc:
+            raise SystemExit(exc)
+      style: primary
+      start: 72
+      end: 137
+    - source: c.enable_load_extension(True)
+      style: secondary
+      start: 42
+      end: 71
+    - source: c.enable_load_extension(True)
+      style: secondary
+      start: 42
+      end: 71
+    - source: |-
+        try:
+            with closing(conn) as c:
+                c.enable_load_extension(True)
+        except sqlite3.OperationalError as exc:
+            raise SystemExit(exc)
+      style: secondary
+      start: 0
+      end: 137

@@ -5,9 +5,40 @@ valid:
         conn.enable_load_extension(True)
     except (sqlite3.OperationalError, AttributeError):
         pass
+  - |-
+    try:
+        conn.enable_load_extension(True)
+    except AttributeError as exc:
+        log.warning("no extension support: %s", exc)
+  - |-
+    try:
+        conn.enable_load_extension(True)
+    except:
+        pass
+  - |-
+    try:
+        conn.execute("select 1")
+    except sqlite3.OperationalError:
+        pass
 invalid:
   - |-
     try:
         conn.enable_load_extension(True)
     except sqlite3.OperationalError:
         pass
+  - |-
+    try:
+        db.enable_load_extension(True)
+    except sqlite3.Error:
+        pass
+  - |-
+    try:
+        conn.enable_load_extension(True)
+    except (sqlite3.OperationalError, OSError):
+        pass
+  - |-
+    try:
+        with closing(conn) as c:
+            c.enable_load_extension(True)
+    except sqlite3.OperationalError as exc:
+        raise SystemExit(exc)

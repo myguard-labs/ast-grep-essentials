@@ -5,7 +5,36 @@ valid:
 
     def setup():
         load_dotenv()
+  - |-
+    from dotenv import load_dotenv
+
+    if __name__ == "__main__":
+        load_dotenv(".env")
+        main()
+  - |-
+    from dotenv import dotenv_values
+
+    config = dotenv_values(".env")
+  - |-
+    from dotenv import load_dotenv
+
+
+    class Settings:
+        def __init__(self, path):
+            load_dotenv(dotenv_path=path)
 invalid:
   - |-
     from dotenv import load_dotenv
     load_dotenv()
+  - |-
+    from dotenv import load_dotenv
+
+    load_dotenv(".env.local")
+  - |-
+    from dotenv import load_dotenv
+
+    load_dotenv(dotenv_path=".env", override=True)
+  - |-
+    from dotenv import find_dotenv, load_dotenv
+
+    load_dotenv(find_dotenv(), verbose=True)

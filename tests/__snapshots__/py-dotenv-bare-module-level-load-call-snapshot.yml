@@ -1,10 +1,26 @@
 id: py-dotenv-bare-module-level-load-call
 snapshots:
-  ? |
-    from dotenv import load_dotenv
+  "from dotenv import load_dotenv\n\nDEBUG = False\nload_dotenv( )\nPORT = 8080":
+    labels:
+    - source: load_dotenv( )
+      style: primary
+      start: 46
+      end: 60
+    - source: |-
+        from dotenv import load_dotenv
 
-    load_dotenv()
-  : labels:
+        DEBUG = False
+        load_dotenv( )
+        PORT = 8080
+      style: secondary
+      start: 0
+      end: 72
+    - source: load_dotenv( )
+      style: secondary
+      start: 46
+      end: 60
+  "from dotenv import load_dotenv\n\nload_dotenv()\n":
+    labels:
     - source: load_dotenv()
       style: primary
       start: 32
@@ -20,3 +36,45 @@ snapshots:
       style: secondary
       start: 32
       end: 45
+  "import os\nfrom dotenv import load_dotenv\n\nTOKEN = os.getenv(\"TOKEN\")\nload_dotenv()\n\n\ndef main():\n    pass":
+    labels:
+    - source: load_dotenv()
+      style: primary
+      start: 69
+      end: 82
+    - source: |-
+        import os
+        from dotenv import load_dotenv
+
+        TOKEN = os.getenv("TOKEN")
+        load_dotenv()
+
+
+        def main():
+            pass
+      style: secondary
+      start: 0
+      end: 105
+    - source: load_dotenv()
+      style: secondary
+      start: 69
+      end: 82
+  "import os\nfrom dotenv import load_dotenv\n\nload_dotenv()  # read .env\nTOKEN = os.getenv(\"TOKEN\")":
+    labels:
+    - source: load_dotenv()
+      style: primary
+      start: 42
+      end: 55
+    - source: |-
+        import os
+        from dotenv import load_dotenv
+
+        load_dotenv()  # read .env
+        TOKEN = os.getenv("TOKEN")
+      style: secondary
+      start: 0
+      end: 95
+    - source: load_dotenv()
+      style: secondary
+      start: 42
+      end: 55

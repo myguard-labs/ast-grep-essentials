@@ -4,7 +4,35 @@ valid:
     def _class_scope(env):
         env.httpd_error_log.add_ignored_lognos(["AH10045"])
         env.httpd_error_log.remove_ignored_lognos(["AH10045"])
+  - |-
+    def _class_scope(env):
+        env.httpd_error_log.add_ignored_lognos(["AH10045"])
+        try:
+            run()
+        finally:
+            env.httpd_error_log.remove_ignored_lognos(["AH10045"])
+  - |-
+    def _fixture(env):
+        env.log.add_ignored_lognos(PATTERNS)
+        yield
+        env.log.remove_ignored_lognos(PATTERNS)
+  - |-
+    def _helper(env):
+        return env.log.lognos
 invalid:
   - |
     def _class_scope(env):
         env.httpd_error_log.add_ignored_lognos(["AH10045"])
+  - |-
+    def _fixture(env):
+        env.log.add_ignored_lognos(PATTERNS)
+        yield
+  - |-
+    class TestX:
+        def test_it(self, env):
+            with env.guard():
+                env.log.add_ignored_lognos(lognos=["AH01"])
+  - |-
+    async def _setup(env):
+        await prepare(env)
+        env.log.add_ignored_lognos(["AH10045"])
