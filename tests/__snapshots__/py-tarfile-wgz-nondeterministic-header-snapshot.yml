@@ -1,11 +1,26 @@
 id: py-tarfile-wgz-nondeterministic-header
 snapshots:
-  ? |-
-    import tarfile
-    buf = open('out.tgz', 'wb')
-    archive = tarfile.open(fileobj=buf, mode='w:gz')
-  : labels:
+  "import tarfile\narchive = tarfile.open(name=out_path, mode='w:gz')":
+    labels:
+    - source: tarfile.open(name=out_path, mode='w:gz')
+      style: primary
+      start: 25
+      end: 65
+  "import tarfile\narchive = tarfile.open(self.path, mode='w:gz')":
+    labels:
+    - source: tarfile.open(self.path, mode='w:gz')
+      style: primary
+      start: 25
+      end: 61
+  "import tarfile\nbuf = open('out.tgz', 'wb')\narchive = tarfile.open(fileobj=buf, mode='w:gz')":
+    labels:
     - source: tarfile.open(fileobj=buf, mode='w:gz')
       style: primary
       start: 53
       end: 91
+  "import tarfile\nwith tarfile.open('out.tgz', mode='w:gz') as archive:\n    archive.add('src')":
+    labels:
+    - source: tarfile.open('out.tgz', mode='w:gz')
+      style: primary
+      start: 20
+      end: 56

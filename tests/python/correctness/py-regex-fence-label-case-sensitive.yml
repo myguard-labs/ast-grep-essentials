@@ -3,7 +3,28 @@ valid:
   - |-
     import re
     re.search(r'^```(?:yaml|yml)', text, re.IGNORECASE)
+  - |-
+    import re
+    re.search(r'^```(?:yaml|yml)', text, flags=re.I)
+  - |-
+    import re
+    re.compile(r'(?i)^```(?:yaml|yml)\b')
+  - |-
+    import re
+    re.match(r'^```(?:json|toml)', text)
+  - |-
+    import re
+    FENCE = re.compile(r'^```(yaml|yml)$', re.MULTILINE | re.IGNORECASE)
 invalid:
   - |-
     import re
     re.search(r'^```(?:yaml|yml)', text)
+  - |-
+    import re
+    re.match(r'^```(?:yaml|yml)', text)
+  - |-
+    import re
+    FENCE = re.compile(r'^```(yaml|yml)$', re.MULTILINE)
+  - |-
+    import re
+    body = re.sub(r'```(yaml|yml)\n', '```\n', text)

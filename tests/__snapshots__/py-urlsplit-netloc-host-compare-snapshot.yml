@@ -1,10 +1,25 @@
 id: py-urlsplit-netloc-host-compare
 snapshots:
-  ? |-
-    from urllib.parse import urlsplit
-    if urlsplit(entered).netloc == urlsplit(site_url).netloc:
-        reject()
-  : labels:
+  "from urllib.parse import urlsplit\nassert urlsplit(self.base).netloc == urlsplit(request.url).netloc":
+    labels:
+    - source: urlsplit(self.base).netloc == urlsplit(request.url).netloc
+      style: primary
+      start: 41
+      end: 99
+  "from urllib.parse import urlsplit\ndef same_site(entered, site_url):\n    return urlsplit(entered).netloc == urlsplit(site_url).netloc":
+    labels:
+    - source: urlsplit(entered).netloc == urlsplit(site_url).netloc
+      style: primary
+      start: 79
+      end: 132
+  "from urllib.parse import urlsplit\nif redirect and urlsplit(target).netloc == urlsplit(origin).netloc and ok:\n    follow()":
+    labels:
+    - source: urlsplit(target).netloc == urlsplit(origin).netloc
+      style: primary
+      start: 50
+      end: 100
+  "from urllib.parse import urlsplit\nif urlsplit(entered).netloc == urlsplit(site_url).netloc:\n    reject()":
+    labels:
     - source: urlsplit(entered).netloc == urlsplit(site_url).netloc
       style: primary
       start: 37

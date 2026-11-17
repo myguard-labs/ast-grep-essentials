@@ -2,6 +2,18 @@ id: py-yaml-bool-true-key-subscript
 valid:
   - |
     changed['on']['pull_request'] = {}
+  - |-
+    triggers = workflow.get('on', workflow.get(True))
+  - |-
+    triggers = workflow["on"]["push"]["branches"]
+  - |-
+    triggers = workflow[KEY_ON]
 invalid:
   - |
     changed[True]['pull_request'] = {}
+  - |-
+    triggers = workflow[True]['push']['branches']
+  - |-
+    self.doc[True] = {'push': {}}
+  - |-
+    branches = cfg[True].get('push', {})

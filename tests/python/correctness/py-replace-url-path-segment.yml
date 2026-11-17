@@ -1,5 +1,17 @@
 id: py-replace-url-path-segment
 valid:
   - 'path = url.removeprefix(''/api/v1/repos'')'
+  - |-
+    path = url.replace('/api/v1/repos', '/v2/repos')
+  - |-
+    path = url.removeprefix("/api/v1/repos")
+  - |-
+    path = url[len('/api/v1'):] if url.startswith('/api/v1') else url
 invalid:
   - 'path = url.replace(''/api/v1/repos'', '''')'
+  - |-
+    path = url.replace("/api/v1/repos", "")
+  - |-
+    path = self.base_url.replace(r'/static/', '')
+  - |-
+    path = request.path.replace('/admin/', '').replace('/api/', '')

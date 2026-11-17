@@ -4,8 +4,29 @@ valid:
     import tarfile
     buf = open('out.tar', 'wb')
     archive = tarfile.open(fileobj=buf, mode='w')
+  - |-
+    import gzip
+    import tarfile
+    gz = gzip.GzipFile(filename='', mode='wb', fileobj=open('out.tgz', 'wb'), mtime=0)
+    archive = tarfile.open(fileobj=gz, mode='w')
+  - |-
+    import tarfile
+    archive = tarfile.open('in.tgz', mode='r:gz')
+  - |-
+    import tarfile
+    archive = tarfile.open('out.tar.xz', mode='w:xz')
 invalid:
   - |-
     import tarfile
     buf = open('out.tgz', 'wb')
     archive = tarfile.open(fileobj=buf, mode='w:gz')
+  - |-
+    import tarfile
+    with tarfile.open('out.tgz', mode='w:gz') as archive:
+        archive.add('src')
+  - |-
+    import tarfile
+    archive = tarfile.open(name=out_path, mode='w:gz')
+  - |-
+    import tarfile
+    archive = tarfile.open(self.path, mode='w:gz')

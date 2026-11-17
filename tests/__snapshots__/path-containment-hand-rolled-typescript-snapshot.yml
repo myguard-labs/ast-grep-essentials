@@ -1,12 +1,64 @@
 id: path-containment-hand-rolled-typescript
 snapshots:
-  ? |-
-    import { join, relative } from 'path';
-    export function within(base: string, p: string): boolean {
-      const rel = relative(base, join(base, p));
-      return !(rel === '..' || rel.startsWith('../'));
-    }
-  : labels:
+  "import { join, relative } from 'path';\nclass Guard {\n  allowed(base: string, p: string): boolean {\n    const rel = relative(base, join(base, p));\n    const escapes = rel === '..' || rel.startsWith('../') ? true : false;\n    return !escapes;\n  }\n}":
+    labels:
+    - source: rel === '..' || rel.startsWith('../')
+      style: primary
+      start: 166
+      end: 203
+    - source: relative(base, join(base, p))
+      style: secondary
+      start: 115
+      end: 144
+    - source: |-
+        {
+            const rel = relative(base, join(base, p));
+            const escapes = rel === '..' || rel.startsWith('../') ? true : false;
+            return !escapes;
+          }
+      style: secondary
+      start: 97
+      end: 244
+  "import { join, relative } from 'path';\nexport const within = (base: string, p: string): boolean => {\n  const rel = relative(base, join(base, p));\n  return !(rel === '..' || rel.startsWith('../'));\n};":
+    labels:
+    - source: rel === '..' || rel.startsWith('../')
+      style: primary
+      start: 157
+      end: 194
+    - source: relative(base, join(base, p))
+      style: secondary
+      start: 115
+      end: 144
+    - source: |-
+        {
+          const rel = relative(base, join(base, p));
+          return !(rel === '..' || rel.startsWith('../'));
+        }
+      style: secondary
+      start: 99
+      end: 198
+  "import { join, relative } from 'path';\nexport function check(base: string, p: string): void {\n  const rel = relative(base, join(base, p));\n  if (rel === '..' || rel.startsWith('../')) {\n    throw new Error('escape');\n  }\n}":
+    labels:
+    - source: rel === '..' || rel.startsWith('../')
+      style: primary
+      start: 145
+      end: 182
+    - source: relative(base, join(base, p))
+      style: secondary
+      start: 108
+      end: 137
+    - source: |-
+        {
+          const rel = relative(base, join(base, p));
+          if (rel === '..' || rel.startsWith('../')) {
+            throw new Error('escape');
+          }
+        }
+      style: secondary
+      start: 92
+      end: 222
+  "import { join, relative } from 'path';\nexport function within(base: string, p: string): boolean {\n  const rel = relative(base, join(base, p));\n  return !(rel === '..' || rel.startsWith('../'));\n}":
+    labels:
     - source: rel === '..' || rel.startsWith('../')
       style: primary
       start: 154

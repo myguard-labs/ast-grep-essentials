@@ -5,9 +5,42 @@ valid:
 
     def lookup(name, ext_map):
         return os.path.splitext(name)[1].lower()
+  - |-
+    import os
+
+    def lookup(name, ext_map):
+        return ext_map.get(os.path.basename(name).lower())
+  - |-
+    import os
+
+    def lookup(name, ext_map):
+        base = os.path.basename(name)
+        return ext_map.get(base.lower()) or ext_map.get(os.path.splitext(base)[1].lower(), None)
+  - |-
+    from pathlib import PurePath
+
+    def lookup(name, ext_map):
+        return ext_map.get(''.join(PurePath(name).suffixes).lower())
 invalid:
   - |-
     import os
 
     def lookup(name, ext_map):
         return ext_map.get(os.path.splitext(name)[1].lower())
+  - |-
+    import os
+
+    class Detector:
+        def lookup(self, path):
+            return self.types.get(os.path.splitext(path)[1].lower())
+  - |-
+    import os
+
+    def kind_of(f, EXT):
+        kind = EXT.get(os.path.splitext(f.name)[1].lower())
+        return kind or 'unknown'
+  - |-
+    import os
+
+    def lookup(p, ext_map):
+        return ext_map.get(os.path.splitext(os.path.basename(p))[1].lower())
