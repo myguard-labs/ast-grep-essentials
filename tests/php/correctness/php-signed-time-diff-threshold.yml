@@ -1,5 +1,12 @@
 id: php-signed-time-diff-threshold
 valid:
   - '<?php if ( ( abs( time() - $post_time ) ) < 86400 ) { echo ''recent''; }'
+  - "<?php if ( abs( time() - $t ) < 86400 ) { echo 1; }"
+  - "<?php if ( ( time() - $t ) > 3600 ) { echo 1; }"
+  - "<?php if ( ( time() - $t ) >= 60 ) { echo 1; }"
 invalid:
   - '<?php if ( ( time() - $post_time ) < 86400 ) { echo ''recent''; }'
+  - "<?php if ( ( time() - $t ) < $ttl ) { echo 1; }"
+  - "<?php return ( time() - $last ) < 300;"
+  - "<?php $ok = ( time() - $a['ts'] ) < HOUR_IN_SECONDS;"
+  - "<?php $ok = ( time() - strtotime( $d ) ) < 300;"

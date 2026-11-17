@@ -1,8 +1,26 @@
 id: php-shutdown-registers-destructor
 snapshots:
-  ? <?php class C { function __construct() { register_shutdown_function( array( $this, '__destruct' ) ); } function __destruct() {} }
-  : labels:
+  "<?php class C { function __construct() { register_shutdown_function( array( $this, '__destruct' ) ); } function __destruct() {} }":
+    labels:
     - source: register_shutdown_function( array( $this, '__destruct' ) )
       style: primary
       start: 41
       end: 99
+  "<?php class C { function __construct() { register_shutdown_function(array(&$this, '__destruct')); } }":
+    labels:
+    - source: register_shutdown_function(array(&$this, '__destruct'))
+      style: primary
+      start: 41
+      end: 96
+  "<?php register_shutdown_function(array($obj, '__destruct'));":
+    labels:
+    - source: register_shutdown_function(array($obj, '__destruct'))
+      style: primary
+      start: 6
+      end: 59
+  "<?php register_shutdown_function(array('Foo', '__destruct'));":
+    labels:
+    - source: register_shutdown_function(array('Foo', '__destruct'))
+      style: primary
+      start: 6
+      end: 60

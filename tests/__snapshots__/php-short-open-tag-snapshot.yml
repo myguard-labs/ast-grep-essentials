@@ -1,8 +1,37 @@
 id: php-short-open-tag
 snapshots:
-  <? if ($x) { ?>:
+  "<?\techo 1;":
+    labels:
+    - source: "<?\techo 1;"
+      style: primary
+      start: 0
+      end: 10
+  "<?\necho 1;":
+    labels:
+    - source: |-
+        <?
+        echo 1;
+      style: primary
+      start: 0
+      end: 10
+  <? echo $x; ?>:
+    labels:
+    - source: <? echo $x; ?>
+      style: primary
+      start: 0
+      end: 14
+  "<? if ($x) { ?>":
     labels:
     - source: <? if ($x) { ?>
       style: primary
       start: 0
       end: 15
+  "<? if ($x) { ?>\n<p>hi</p>\n<? } ?>":
+    labels:
+    - source: |-
+        <? if ($x) { ?>
+        <p>hi</p>
+        <? } ?>
+      style: primary
+      start: 0
+      end: 33

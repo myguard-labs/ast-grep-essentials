@@ -1,7 +1,13 @@
 id: php-server-self-path-check
 valid:
   - '<?php if (defined(''WP_INSTALLING'')) { $cookiehash = 1; }'
+  - "<?php if (strpos($_SERVER['SCRIPT_NAME'], 'install.php') === false) { $a = 1; }"
+  - "<?php if (str_contains($_SERVER['SCRIPT_NAME'], 'install.php')) { $a = 1; }"
 invalid:
   - >-
     <?php if (strpos($_SERVER['PHP_SELF'], 'install.php') === false) {
     $cookiehash = 1; }
+  - "<?php if (strpos($_SERVER[\"PHP_SELF\"], \"install.php\") === false) { $a = 1; }"
+  - "<?php if (!strpos($_SERVER['PHP_SELF'], 'admin')) { $a = 1; }"
+  - "<?php if ($x && strpos($_SERVER['PHP_SELF'], 'admin') !== false) { $a = 1; }"
+  - "<?php if (strpos( $_SERVER[ 'PHP_SELF' ], 'wp-admin') === 0) { $a = 1; }"

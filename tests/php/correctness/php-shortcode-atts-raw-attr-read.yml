@@ -1,5 +1,12 @@
 id: php-shortcode-atts-raw-attr-read
 valid:
   - "<?php\nfunction gallery_sc( $attr ) {\n\textract( shortcode_atts( array( 'link' => '' ), $attr ) );\n\tif ( 'file' === $link ) {\n\t\treturn 1;\n\t}\n\tif ( 'x' === $attr['size'] ) {\n\t\treturn 2;\n\t}\n}"
+  - "<?php function sc($attr){ extract(shortcode_atts(array('link'=>''),$attr)); return 'file' === $link; }"
+  - "<?php function sc($attr){ extract(shortcode_atts(array('link'=>''),$attr)); return 'link' === $attr['file']; }"
+  - "<?php function sc($atts){ $a = shortcode_atts(array('link'=>''),$atts); return 'file' === $a['link']; }"
 invalid:
   - "<?php\nfunction gallery_sc( $attr ) {\n\textract( shortcode_atts( array( 'link' => '' ), $attr ) );\n\tif ( 'file' === $attr['link'] ) {\n\t\treturn 1;\n\t}\n}"
+  - "<?php function sc($attr){ extract(shortcode_atts(array('link'=>''),$attr)); return 'file' === $attr['link']; }"
+  - "<?php function sc($attr){ extract(shortcode_atts(array('link'=>''),$attr)); $l = ('file' === $attr['link']) ? 1 : 2; return $l; }"
+  - "<?php function sc($attr){ extract(shortcode_atts(array('link'=>''),$attr)); if ($x) { return 1; } elseif ('file' === $attr['link']) { return 2; } }"
+  - "<?php function sc($attr){ extract(shortcode_atts(array('link'=>''),$attr)); if ( 'file' === $attr[ 'link' ] && $x ) { return 2; } }"
