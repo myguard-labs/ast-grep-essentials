@@ -3,7 +3,13 @@ valid:
   - |-
     import runGroups from 'run-groups'
     await runGroups(2, groups)
+  - 'import * as ns from ''run-groups''; ns.default(2, groups);'
+  - 'import runGroups from ''run-groups''; const other = { default() {} }; other.default(2);'
+  - 'import { default as run } from ''run-groups''; run(2, groups);'
 invalid:
   - |-
     import runGroups from 'run-groups'
     await runGroups.default(2, groups)
+  - 'import runGroups from ''run-groups''; runGroups.default();'
+  - 'import runGroups from ''run-groups''; export function go() { return runGroups.default(...args); }'
+  - 'import runGroups from ''run-groups''; const go = () => runGroups.default(2);'

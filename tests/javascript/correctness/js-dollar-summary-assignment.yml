@@ -5,9 +5,16 @@ valid:
       $.export("$summary", `Done for ${this.date}`);
       return {};
     }
+  - '$.export(''$summary'', ''Done'');'
+  - 'this.summary = ''Done'';'
+  - 'step.summary = ''Done'';'
+  - 'const summary = `Done`; $.export(''$summary'', summary);'
 invalid:
   - |-
     async run({ $ }) {
       $.summary = `Done for ${this.date}`;
       return {};
     }
+  - '$.summary = ''Done'';'
+  - 'if (n) { $.summary = `Imported ${n} rows`; }'
+  - 'const f = () => { $.summary = String(n) ?? ''none''; };'

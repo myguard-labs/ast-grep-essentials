@@ -1,5 +1,13 @@
 id: js-dynamic-import-floating-promise
 valid:
   - 'function start() { import(''./pnpm.mjs'').catch(fail) }'
+  - 'async function load() { const m = await import(''./x.mjs''); return m; }'
+  - 'function load() { return import(''./x.mjs''); }'
+  - 'function load() { import(''./x.mjs'').then(run, fail); }'
+  - 'const p = import(''./x.mjs''); p.catch(fail);'
 invalid:
   - 'function start() { import(''./pnpm.mjs'') }'
+  - 'import(''./a.mjs'');'
+  - 'import(name);'
+  - 'const f = () => { import(''./x.js''); };'
+  - 'import(`./locale/${l}.js`);'
