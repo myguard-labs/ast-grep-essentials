@@ -17,6 +17,12 @@ rule:
         kind: variable_name
         pattern: '$A'
         stopBy: end
+    - has:
+        field: right
+        any:
+          - kind: variable_name
+          - kind: member_access_expression
+          - kind: dynamic_variable_name
     - not:
         has:
           kind: string
@@ -31,4 +37,3 @@ metadata:
   license: MyGuard Internal Use License 1.0
   todo_cases:
     - "FN: array-access operands, `$a[0] == $b[0]` and `$_GET['t'] == $stored`, are not reported although the note names array accesses."
-    - 'FP (low): `$a == 0` and `$a == null` are reported although the right operand is not a variable.'
