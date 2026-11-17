@@ -1,5 +1,11 @@
 id: c-double-pointer-param-indexed-as-char
 valid:
   - 'void f(char **out, unsigned int n) { (*out)[n] = ''\0''; }'
+  - "void f(char *out, unsigned int n) { out[n] = '\\0'; }"
+  - "void f(char **argv) { argv[0] = NULL; }"
+  - "void f(char **out, unsigned int i, unsigned int n) { out[i][n] = '\\0'; }"
 invalid:
   - 'void f(char **out, unsigned int n) { out[n] = ''\0''; }'
+  - "void f(char **s) { s[0] = 'x'; }"
+  - "static int g(int n, char **buf) { log_it(n); buf[n] = 'a'; return 0; }"
+  - "void f(char ** out, int n) { int i; for (i = 0; i < n; i++) { out[i] = '\\0'; } }"

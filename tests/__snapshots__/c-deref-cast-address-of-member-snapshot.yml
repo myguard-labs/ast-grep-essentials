@@ -1,5 +1,41 @@
 id: c-deref-cast-address-of-member
 snapshots:
+  "uint16_t f(struct s v) { uint16_t x = *(uint16_t *)&v.flags; return x; }":
+    labels:
+    - source: "*(uint16_t *)&v.flags"
+      style: primary
+      start: 38
+      end: 59
+    - source: v.flags
+      style: secondary
+      start: 52
+      end: 59
+    - source: "&v.flags"
+      style: secondary
+      start: 51
+      end: 59
+    - source: (uint16_t *)&v.flags
+      style: secondary
+      start: 39
+      end: 59
+  "uint32_t f(struct hdr *h) { return *(const uint32_t *)&h->len; }":
+    labels:
+    - source: "*(const uint32_t *)&h->len"
+      style: primary
+      start: 35
+      end: 61
+    - source: h->len
+      style: secondary
+      start: 55
+      end: 61
+    - source: "&h->len"
+      style: secondary
+      start: 54
+      end: 61
+    - source: (const uint32_t *)&h->len
+      style: secondary
+      start: 36
+      end: 61
   "void f(struct s *p) { *(uint32_t *)&p->type |= 1; }":
     labels:
     - source: "*(uint32_t *)&p->type"
@@ -18,3 +54,21 @@ snapshots:
       style: secondary
       start: 23
       end: 43
+  "void f(struct s *p) { *(uint64_t *)&p->a.b = 0; }":
+    labels:
+    - source: "*(uint64_t *)&p->a.b"
+      style: primary
+      start: 22
+      end: 42
+    - source: p->a.b
+      style: secondary
+      start: 36
+      end: 42
+    - source: "&p->a.b"
+      style: secondary
+      start: 35
+      end: 42
+    - source: (uint64_t *)&p->a.b
+      style: secondary
+      start: 23
+      end: 42

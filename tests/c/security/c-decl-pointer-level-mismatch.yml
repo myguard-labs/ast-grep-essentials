@@ -1,5 +1,11 @@
 id: c-decl-pointer-level-mismatch
 valid:
   - 'zval *zv = *(zval **)value;'
+  - "zval *zv = (zval *)value;"
+  - "zval **zv = (zval **)value;"
+  - "zval *zv = ((zval **)value)[0];"
 invalid:
   - 'zval *zv = (zval **)value;'
+  - "void f(void *value) { zval *zv = (zval **)value; }"
+  - "zval *zv = (zval **)zend_hash_find(ht, key);"
+  - "void f(void *a) { if (a) { zval *zv = (zval **)&a; } }"

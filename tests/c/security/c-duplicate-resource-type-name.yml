@@ -3,7 +3,13 @@ valid:
   - |-
     le_a = zend_register_list_destructors_ex(dtor_a, NULL, "curl", module_number);
     le_b = zend_register_list_destructors_ex(dtor_b, NULL, "curl_multi", module_number);
+  - "le_a = zend_register_list_destructors_ex(dtor_a, NULL, \"curl\", module_number);"
+  - "le_a = zend_register_list_destructors_ex(dtor_a, NULL, \"curl\", module_number);\nle_b = zend_register_list_destructors_ex(dtor_b, NULL, \"Curl\", module_number);\nle_c = zend_register_list_destructors_ex(dtor_c, NULL, \"curl_share\", module_number);"
+  - "le_a = zend_register_list_destructors_ex(dtor_a, NULL, \"curl\", module_number);\nle_b = zend_register_persistent_resource(\"curl\", dtor_b);"
 invalid:
   - |-
     le_a = zend_register_list_destructors_ex(dtor_a, NULL, "curl", module_number);
     le_b = zend_register_list_destructors_ex(dtor_b, NULL, "curl", module_number);
+  - "le_a = zend_register_list_destructors_ex(dtor_a, NULL, \"curl\", module_number);\nle_b = zend_register_list_destructors_ex(dtor_b, NULL, \"curl_multi\", module_number);\nle_c = zend_register_list_destructors_ex(dtor_c, NULL, \"curl\", module_number);"
+  - "int minit(int module_number) { le_a = zend_register_list_destructors_ex(dtor_a, NULL, \"res\", module_number); init_x(); le_b = zend_register_list_destructors_ex(dtor_b, dtor_p, \"res\", module_number); return 0; }"
+  - "le_a = zend_register_list_destructors_ex(NULL, dtor_a, \"stream\", 1);\nle_b = zend_register_list_destructors_ex(NULL, dtor_b, \"stream\", 2);"

@@ -1,5 +1,11 @@
 id: c-deref-cast-address-of-member
 valid:
   - 'void f(struct s *p) { p->type |= 1; }'
+  - "uint32_t f(struct s *p) { uint32_t v = p->type; return v; }"
+  - "void f(struct s *p, uint32_t *out) { memcpy(out, &p->type, sizeof(*out)); }"
+  - "uint32_t f(struct s *p) { return *(&p->type); }"
 invalid:
   - 'void f(struct s *p) { *(uint32_t *)&p->type |= 1; }'
+  - "uint16_t f(struct s v) { uint16_t x = *(uint16_t *)&v.flags; return x; }"
+  - "void f(struct s *p) { *(uint64_t *)&p->a.b = 0; }"
+  - "uint32_t f(struct hdr *h) { return *(const uint32_t *)&h->len; }"

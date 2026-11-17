@@ -3,7 +3,13 @@ valid:
   - >-
     int f(int t) { int n = 0; switch (t) { default: n = 0; break; case 1: n = 1;
     break; } return n; }
+  - "int f(int t) { int n = 0; switch (t) { case 1: n = 1; break; default: n = 0; } return n; }"
+  - "int f(int t) { int n = 0; switch (t) { default: case 1: n = 1; break; } return n; }"
+  - "int f(int t) { switch (t) { default: return 0; case 1: return 1; } }"
 invalid:
   - >-
     int f(int t) { int n = 0; switch (t) { default: n = 0; case 1: n = 1; break;
     } return n; }
+  - "int f(int t) { int n = 0; switch (t) { default: log_it(t); case 2: n = 2; break; case 3: n = 3; break; } return n; }"
+  - "int f(int t) { int n = 0; switch (t) { case 1: n = 1; break; default: n = 0; n++; case 2: n = 2; break; } return n; }"
+  - "int f(int t, int x) { int n = 0; switch (t) { default: n = 0; if (x) break; case 1: n = 1; break; } return n; }"

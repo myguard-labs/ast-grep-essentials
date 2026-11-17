@@ -1,5 +1,11 @@
 id: c-declared-pointer-deref-unassigned
 valid:
   - "int f(void) {\n\tstruct ms *ms;\n\tms = get_ms();\n\tms->mode = 1;\n\treturn 0;\n}"
+  - "int f(void) {\n\tstruct ms *ms = get_ms();\n\tms->mode = 1;\n\treturn 0;\n}"
+  - "int f(void) {\n\tstruct ms *ms;\n\tms = &local_ms;\n\tlog_it(1);\n\tms->mode = 1;\n\treturn 0;\n}"
+  - "int f(struct ms *ms) {\n\tms->mode = 1;\n\treturn 0;\n}"
 invalid:
   - "int f(void) {\n\tstruct ms *ms;\n\tms->mode = 1;\n\treturn 0;\n}"
+  - "int f(void) {\n\tstruct node *n;\n\tlog_it(1);\n\tn->val = 2;\n\treturn 0;\n}"
+  - "int f(void) {\n\tstruct node *n;\n\tn->val = 2;\n\tn = alloc_node();\n\treturn 0;\n}"
+  - "void f(void) {\n\tchar *buf;\n\tbuf->len = 0;\n}"

@@ -3,5 +3,12 @@ valid:
   - >-
     void f(int *e, int d) { while (d) { if (*e > 0x19999999) break; *e = *e * 16
     + d; } }
+  - "void f(int *x, int d, int b) { while (d) { if (*x > 0x7ffffff) return; *x = *x * b + d; d--; } }"
+  - "void f(unsigned *x, unsigned d) { while (d) { d--; if (*x > 0xfffffffu / 10) goto out; *x = *x * 10 + d; } out: return; }"
+  - "void f(int *x, int d) { while (d) { *x = d; d--; } }"
 invalid:
   - 'void f(int *e, int d) { while (d) { *e = *e * 16 + d; } }'
+  - "void f(int *x, int d, int base) { while (d) { *x = *x * base + d; d--; } }"
+  - "void f(struct st *st, int d) { while (d) { st->acc = st->acc * 10 + d; d /= 10; } }"
+  - "void f(int x, int d) { while (d) x = x * 10 + d; }"
+  - "void f(int x, int d) { while (d) { x = x * 10 + d; if (x > 100) break; } }"

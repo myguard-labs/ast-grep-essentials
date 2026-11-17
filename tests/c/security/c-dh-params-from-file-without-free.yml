@@ -3,5 +3,11 @@ valid:
   - >-
     DH *dh = ssl_dh_GetParamFromFile(f); SSL_CTX_set_tmp_dh(ctx, dh);
     DH_free(dh);
+  - "void f(SSL_CTX *ctx, const char *file) { DH *dh = ssl_dh_GetParamFromFile(file); log_it(1); SSL_CTX_set_tmp_dh(ctx, dh); log_it(2); DH_free(dh); }"
+  - "void f(SSL_CTX *ctx, const char *a, const char *b) { DH *x = ssl_dh_GetParamFromFile(a); SSL_CTX_set_tmp_dh(ctx, x); DH_free(x); DH *y = ssl_dh_GetParamFromFile(b); SSL_CTX_set_tmp_dh(ctx, y); DH_free(y); }"
+  - "void f(SSL_CTX *ctx, const char *file) { DH *dh = ssl_dh_GetParamFromFile(file); if (!dh) return; SSL_CTX_set_tmp_dh(ctx, dh); DH_free(dh); }"
 invalid:
   - 'DH *dh = ssl_dh_GetParamFromFile(f); SSL_CTX_set_tmp_dh(ctx, dh);'
+  - "void f(SSL_CTX *ctx, const char *file) { DH *dhp = ssl_dh_GetParamFromFile(file); if (!dhp) return; SSL_CTX_set_tmp_dh(ctx, dhp); log_it(1); }"
+  - "void f(SSL_CTX *ctx, const char *a, const char *b) { DH *x = ssl_dh_GetParamFromFile(a); DH *y = ssl_dh_GetParamFromFile(b); SSL_CTX_set_tmp_dh(ctx, x); DH_free(x); SSL_CTX_set_tmp_dh(ctx, y); }"
+  - "void f(SSL_CTX *ctx, const char *file, int opts) { DH *dh = ssl_dh_GetParamFromFile(file, opts); SSL_CTX_set_tmp_dh(ctx, dh); }"

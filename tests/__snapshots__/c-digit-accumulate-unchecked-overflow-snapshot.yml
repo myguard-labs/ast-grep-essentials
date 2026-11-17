@@ -1,5 +1,47 @@
 id: c-digit-accumulate-unchecked-overflow
 snapshots:
+  "static int f(const char *p) { int n = 0; while (*p) { int d = *p++ - '0'; n = n * 10 + d; } return n; }":
+    labels:
+    - source: n = n * 10 + d;
+      style: primary
+      start: 74
+      end: 89
+    - source: n * 10
+      style: secondary
+      start: 78
+      end: 84
+    - source: while (*p) { int d = *p++ - '0'; n = n * 10 + d; }
+      style: secondary
+      start: 41
+      end: 91
+  "static int f(const char *p) { int n = 0; while (*p) { n = n * 10 + *p++ - '0'; if (n > 99999) break; } return n; }":
+    labels:
+    - source: n = n * 10 + *p++ - '0';
+      style: primary
+      start: 54
+      end: 78
+    - source: n * 10
+      style: secondary
+      start: 58
+      end: 64
+    - source: while (*p) { n = n * 10 + *p++ - '0'; if (n > 99999) break; }
+      style: secondary
+      start: 41
+      end: 102
+  "static int f(const char *p, int c) { int n = 0; while (c) n = n * 10 + c; return n; }":
+    labels:
+    - source: n = n * 10 + c;
+      style: primary
+      start: 58
+      end: 73
+    - source: n * 10
+      style: secondary
+      start: 62
+      end: 68
+    - source: while (c) n = n * 10 + c;
+      style: secondary
+      start: 48
+      end: 73
   "static long parse(const char *p) { long n = 0; while (*p >= '0' && *p <= '9') { n = n * 10 + *p++ - '0'; } return n; }":
     labels:
     - source: n = n * 10 + *p++ - '0';

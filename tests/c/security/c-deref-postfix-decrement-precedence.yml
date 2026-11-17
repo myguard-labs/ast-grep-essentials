@@ -1,5 +1,11 @@
 id: c-deref-postfix-decrement-precedence
 valid:
   - 'void f(char *path_for_open) { (*path_for_open)--; }'
+  - "int f(int *p) { int v = (*p)--; return v; }"
+  - "void f(int *p) { --*p; }"
+  - "void f(int *p) { *p = *p - 1; }"
 invalid:
   - 'void f(char *path_for_open) { *path_for_open--; }'
+  - "int f(int *p) { int v = *p--; return v; }"
+  - "int f(int *p) { if (*p-- == 0) return 1; return 0; }"
+  - "int f(int *cnt) { return *cnt--; }"
