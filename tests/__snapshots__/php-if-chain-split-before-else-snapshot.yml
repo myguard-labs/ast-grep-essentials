@@ -1,5 +1,47 @@
 id: php-if-chain-split-before-else
 snapshots:
+  <?php if ( $a ) f(); if ( $b ) g(); else if ( $c ) h();:
+    labels:
+    - source: if ( $b ) g(); else if ( $c ) h();
+      style: primary
+      start: 21
+      end: 55
+    - source: else if ( $c ) h();
+      style: secondary
+      start: 36
+      end: 55
+    - source: if ( $a ) f();
+      style: secondary
+      start: 6
+      end: 20
+  "<?php if ( $a ) { f(); } if ( $b ) { g(); } else { h(); }":
+    labels:
+    - source: if ( $b ) { g(); } else { h(); }
+      style: primary
+      start: 25
+      end: 57
+    - source: else { h(); }
+      style: secondary
+      start: 44
+      end: 57
+    - source: if ( $a ) { f(); }
+      style: secondary
+      start: 6
+      end: 24
+  "<?php if ( $a ) { if ( $b ) { x(); } if ( $c ) { y(); } else { z(); } }":
+    labels:
+    - source: if ( $c ) { y(); } else { z(); }
+      style: primary
+      start: 37
+      end: 69
+    - source: else { z(); }
+      style: secondary
+      start: 56
+      end: 69
+    - source: if ( $b ) { x(); }
+      style: secondary
+      start: 18
+      end: 36
   <?php if ( 'a' == $t ) f(); if ( 'b' == $t ) g(); else h();:
     labels:
     - source: if ( 'b' == $t ) g(); else h();

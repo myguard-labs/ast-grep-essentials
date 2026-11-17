@@ -1,5 +1,11 @@
 id: php-http-build-query-default-separator
 valid:
   - '$q = http_build_query( $data, null, ''&'' );'
+  - '<?php $q = http_build_query( $data, "", "&" );'
+  - '<?php $q = http_build_query( $data, "", "&amp;", PHP_QUERY_RFC3986 );'
+  - '<?php $q = $client->http_build_query( $data );'
 invalid:
   - '$q = http_build_query( $data );'
+  - '<?php $q = http_build_query( [ "a" => 1 ] );'
+  - '<?php $q = "?" . http_build_query( $_GET );'
+  - '<?php $q = http_build_query( data: $data );'
