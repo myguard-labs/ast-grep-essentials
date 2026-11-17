@@ -8,19 +8,23 @@ message: >-
   odd-length input may not be rejected.
 note: >-
   Syntactic heuristic only; it looks for a preceding sibling if statement
-  mentioning % 2 and does not verify that it checks the same string or guards
-  the allocation.
+  containing strlen(X) % 2 or strlen(X) & 1 on the same string X as the
+  allocation, and does not verify that the if actually rejects the input.
 rule:
   all:
     - kind: expression_statement
     - has:
-        pattern: 'strlen($$$A) / 2'
+        pattern: 'strlen($S) / 2'
         stopBy: end
     - not:
         follows:
           kind: if_statement
-          regex: '%\s*2\b|(^|[^&])&\s*1\b'
           stopBy: end
+          has:
+            stopBy: end
+            any:
+              - pattern: 'strlen($S) % 2'
+              - pattern: 'strlen($S) & 1'
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
@@ -34,5 +38,4 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/131.html|https://cwe.mitre.org/data/definitions/20.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FN: if (strlen(a) % 2) return NULL; str = zend_string_alloc(strlen(b) / 2, 0); (parity check on a different string suppresses the match)'
     - 'FN: if (strlen(a) & 0x1) return NULL; str = zend_string_alloc(strlen(a) / 2, 0); (& 0x1 and & 1U parity masks are not recognized as a parity guard)'
