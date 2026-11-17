@@ -7,8 +7,8 @@ message: Result of PKCS7_get_signed_attribute is dereferenced without a NULL che
 note: >-
   Syntactic only; matches an if condition using -> on the assigned variable
   unless the condition guards it (`V && ...`, `V != NULL && ...`, `!V || ...`,
-  `V == NULL || ...`) or an earlier if tests `!V` / `V == NULL` and returns or
-  jumps unconditionally, with no reassignment of the variable between that guard and the dereference. It does not track aliasing or other guards.
+  `V == NULL || ...`) or an earlier if tests `!V` / `V == NULL` and returns
+  unconditionally (a goto does not count), with no reassignment of the variable between that guard and the dereference. It does not track aliasing or other guards.
 rule:
   kind: if_statement
   all:
@@ -46,11 +46,8 @@ rule:
                 field: consequence
                 any:
                   - kind: return_statement
-                  - kind: goto_statement
                   - has:
                       kind: return_statement
-                  - has:
-                      kind: goto_statement
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
