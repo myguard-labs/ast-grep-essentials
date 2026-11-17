@@ -1,5 +1,11 @@
 id: php-ie-conditional-endif-malformed
 valid:
   - '<?php echo ''<![endif]-->''; ?>'
+  - '<?php echo "<![endif]-->";'
+  - '<?php echo "<!--[if IE]><p>old</p><![endif]-->";'
+  - '<?php echo "<!--[if lt IE 9]><script src=''h5.js''></script><![endif]-->";'
 invalid:
   - '<?php echo ''<!endif-->''; ?>'
+  - '<?php echo "<!endif-->";'
+  - '<?php echo "<!endif-->" . $suffix;'
+  - "<?php $html = <<<EOT\n<!endif-->\nEOT;\n"
