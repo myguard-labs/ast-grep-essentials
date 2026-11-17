@@ -5,6 +5,11 @@ valid:
     const html = md.render(src);
   - "const md = new MarkdownIt('commonmark', { html: false }).disable('image');"
   - "const md = new MarkdownIt({ linkify: true }).disable('image').use(plugin);"
+  - 'const md = new MarkdownIt().disable("image");'
+  - "const md = new MarkdownIt().disable(['image', 'link']);"
+  - "const md = new MarkdownIt().disable(['link', \"image\"]);"
+  - "const md = new MarkdownIt().use(plugin).disable('image');"
+  - "const md = new MarkdownIt().set({ breaks: true }).enable('table').disable('image');"
 invalid:
   - |-
     const md = new MarkdownIt({ linkify: true });
@@ -12,3 +17,7 @@ invalid:
   - "const md = new MarkdownIt('commonmark');"
   - "const md = new MarkdownIt().disable('link');"
   - "const md = new MarkdownIt().use(plugin);"
+  - "const md = new MarkdownIt().disable(['link']);"
+  - "const md = new MarkdownIt().enable('image');"
+  - "const a = new MarkdownIt(); const b = new MarkdownIt().disable('image');"
+  - "const md = wrap(new MarkdownIt()).disable('image');"

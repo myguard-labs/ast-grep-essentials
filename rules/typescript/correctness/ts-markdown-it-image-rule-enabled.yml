@@ -9,20 +9,40 @@ message: >-
   loads.
 note: >-
   Matches only the literal syntax of a new MarkdownIt(...) call with no
-  chained .disable('image') directly after it. It does not resolve imports,
+  chained .disable('image') (single- or double-quoted, or an array containing it) on the constructor result, directly or through a chain of member/call links. It does not resolve imports,
   aliases, later instance configuration, or whether rendered HTML reaches the
   DOM.
 rule:
   pattern: 'new MarkdownIt($$$ARGS)'
   not:
     inside:
-      pattern: 'new MarkdownIt($$$ARGS).disable(''image'')'
-      stopBy: end
+      all:
+        - kind: call_expression
+        - has:
+            field: function
+            kind: member_expression
+            has:
+              field: property
+              regex: '^disable$'
+        - has:
+            field: arguments
+            has:
+              any:
+                - kind: string
+                  regex: '^(''image''|"image")$'
+                - kind: array
+                  has:
+                    kind: string
+                    regex: '^(''image''|"image")$'
+      stopBy:
+        not:
+          any:
+            - kind: member_expression
+            - kind: call_expression
 metadata:
   todo_cases:
-    - "false positive (high): .disable(\"image\") with double quotes is reported although it disables the image rule"
-    - "false positive: new MarkdownIt().use(plugin).disable('image') is reported because .disable('image') is not directly after the constructor"
-    - "false positive: .disable(['image', 'link']) array form is reported although it disables the image rule"
+    - "false positive: separate-statement form const md = new MarkdownIt(); md.disable('image'); is reported because the instance is not resolved across statements"
+    - "false negative: template-literal .disable(`image`) is not recognised and still reports"
   rule_modified_at: '2026-10-17'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-17'
