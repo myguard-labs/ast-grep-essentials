@@ -3,7 +3,11 @@ valid:
   - >-
     <?php function f() { global $wp_filter; $p = has_filter('the_content', 'x');
     return $p; }
+  - '<?php function f() { global $wp_filter; return isset( $wp_filter[''init''] ); }'
+  - '<?php function f() { return has_filter( ''init'' ) ? 1 : 0; }'
 invalid:
   - >-
     <?php function f() { global $wp_filter; $p =
     $wp_filter['the_content']->current_priority(); return $p; }
+  - '<?php function f( $hook ) { global $wp_filter; return $wp_filter[$hook]->has_filters(); }'
+  - '<?php function f() { global $wp_filter; $wp_filter[''init'']->remove_filter( ''init'', ''x'', 10 ); }'

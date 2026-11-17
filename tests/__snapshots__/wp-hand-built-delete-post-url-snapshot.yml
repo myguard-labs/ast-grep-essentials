@@ -1,8 +1,34 @@
 id: wp-hand-built-delete-post-url
 snapshots:
-  ? $u = wp_nonce_url( add_query_arg( array( 'action' => 'delete', 'post' => $id ), admin_url( 'post.php' ) ), 'delete-post_' . $id );
-  : labels:
-    - source: wp_nonce_url( add_query_arg( array( 'action' => 'delete', 'post' => $id ), admin_url( 'post.php' ) ), 'delete-post_' . $id )
+  "$u = wp_nonce_url( add_query_arg( array( 'action' => 'delete', 'post' => $id ), admin_url( 'post.php' ) ), 'delete-post_' . $id );":
+    labels:
+    - source: >-
+        wp_nonce_url( add_query_arg( array( 'action' => 'delete', 'post' => $id ),
+        admin_url( 'post.php' ) ), 'delete-post_' . $id )
       style: primary
       start: 5
       end: 129
+  "<?php $u = wp_nonce_url( add_query_arg( 'action', 'delete', add_query_arg( 'post', $id, $base ) ), 'delete-post_' . $id );":
+    labels:
+    - source: >-
+        wp_nonce_url( add_query_arg( 'action', 'delete', add_query_arg( 'post', $id,
+        $base ) ), 'delete-post_' . $id )
+      style: primary
+      start: 11
+      end: 121
+  "<?php $u = wp_nonce_url( add_query_arg( 'post', $id, admin_url( 'post.php' ) ), 'delete-post_' . $id );":
+    labels:
+    - source: >-
+        wp_nonce_url( add_query_arg( 'post', $id, admin_url( 'post.php' ) ),
+        'delete-post_' . $id )
+      style: primary
+      start: 11
+      end: 102
+  "<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'action' => 'delete', 'post' => $id ), admin_url( 'post.php' ) ), \"delete-post_$id\" ) );":
+    labels:
+    - source: >-
+        wp_nonce_url( add_query_arg( array( 'action' => 'delete', 'post' => $id ),
+        admin_url( 'post.php' ) ), "delete-post_$id" )
+      style: primary
+      start: 20
+      end: 141
