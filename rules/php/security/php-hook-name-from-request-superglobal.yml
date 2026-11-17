@@ -12,7 +12,10 @@ note: >-
   subscript on the right. Does not resolve runtime values, aliasing, or
   whether the hook is registered.
 rule:
-  pattern: 'do_action($PREFIX . $_GET[$KEY])'
+  pattern: 'do_action($PREFIX . $OBJ[$KEY])'
+constraints:
+  OBJ:
+    regex: '^\$(_GET|_POST|_REQUEST|_COOKIE|_SERVER)(\W|$)'
 metadata:
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
@@ -29,4 +32,3 @@ metadata:
     - 'do_action( ''pfx_'' . $_GET[''a''], $arg1 ) with extra hook arguments is not flagged'
     - 'do_action( $_GET[''a''] ) without a literal prefix is not flagged'
     - 'do_action( ''x_'' . $_GET[''a''] . ''_end'' ) is not flagged (superglobal not the right-most operand)'
-    - 'do_action( ''x_'' . $map[''a''] ) is flagged for any variable subscript, not only request superglobals (false positive: $_GET in the pattern is a metavariable)'
