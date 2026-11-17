@@ -17,6 +17,13 @@ rule:
     - inside:
         kind: echo_statement
         stopBy: end
+    - not:
+        inside:
+          kind: function_call_expression
+          has:
+            field: function
+            regex: '^\\?(esc_url|esc_attr|esc_html|esc_js|esc_textarea|htmlspecialchars|htmlentities|urlencode|rawurlencode|intval|absint)$'
+          stopBy: end
 metadata:
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
@@ -31,4 +38,3 @@ metadata:
   owasp: 'A05:2025'
   todo_cases:
     - 'FN (short echo tag): <?= $_SERVER[''PHP_SELF''] ?> is not an echo_statement and is not matched.'
-    - 'FP (escaped before echo): <?php echo esc_url( $_SERVER[''PHP_SELF''] ); ?> and echo htmlspecialchars( $_SERVER[''PHP_SELF''] ); are still matched.'
