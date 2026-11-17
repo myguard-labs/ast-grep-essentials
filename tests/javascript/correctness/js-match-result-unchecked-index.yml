@@ -1,5 +1,11 @@
 id: js-match-result-unchecked-index
 valid:
   - 'var v = ua.match(/x(\d*)/)?.[1];'
+  - 'var m = ua.match( /x/ ); if ( m ) { v = m[1]; }'
+  - 'var v = ( ua.match( /x(\d*)/ ) || [] )[1];'
+  - 'var v = ua.match( /x(\d*)/ )?.[1] ?? 0;'
 invalid:
   - 'var v = ua.match(/x(\d*)/)[1];'
+  - 'var v = ua.match( /x/ )[0];'
+  - 'var v = a.b.match( re )[idx];'
+  - 'return s.match( /(\d+)/ )[1] | 0;'
