@@ -1,5 +1,12 @@
 id: php-negated-is-callable-guard-calls-target
 valid:
   - "<?php\nif ( is_callable( 'exif_imagetype' ) ) {\n\t$mime = image_type_to_mime_type( exif_imagetype( $file ) );\n}\n"
+  - "<?php\nif ( is_callable( 'gd_info' ) ) {\n\t$i = gd_info();\n}\n"
+  - "<?php\nif ( ! is_callable( 'gd_info' ) ) $i = array();\n"
+  - "<?php\nif ( ! is_callable( $handler ) ) {\n\t$r = null;\n}\n"
 invalid:
   - "<?php\nif ( ! is_callable( 'exif_imagetype' ) ) {\n\t$mime = image_type_to_mime_type( exif_imagetype( $file ) );\n}\n"
+  - "<?php\nif ( ! is_callable( 'exif_imagetype' ) ) {\n\t$mime = exif_imagetype( $file );\n\techo 1;\n}\n"
+  - "<?php\nif ( ! is_callable( 'exif_imagetype' ) ) {\n\treturn exif_imagetype( $file );\n}\n"
+  - "<?php\nif ( ! is_callable( 'gd_info' ) ) { $i = gd_info(); }\n"
+  - "<?php\nif ( !is_callable('exif_imagetype') ) {\n\t$mime = exif_imagetype( $file );\n}\n"

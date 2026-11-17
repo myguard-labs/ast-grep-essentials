@@ -1,8 +1,45 @@
 id: php-negated-is-callable-guard-calls-target
 snapshots:
-  ? "<?php\nif ( ! is_callable( 'exif_imagetype' ) ) {\n\t$mime = image_type_to_mime_type( exif_imagetype( $file ) );\n}\n"
-  : labels:
-    - source: "if ( ! is_callable( 'exif_imagetype' ) ) {\n\t$mime = image_type_to_mime_type( exif_imagetype( $file ) );\n}"
+  "<?php\nif ( ! is_callable( 'exif_imagetype' ) ) {\n\t$mime = exif_imagetype( $file );\n\techo 1;\n}\n":
+    labels:
+    - source: |-
+        if ( ! is_callable( 'exif_imagetype' ) ) {
+        	$mime = exif_imagetype( $file );
+        	echo 1;
+        }
+      style: primary
+      start: 6
+      end: 93
+  "<?php\nif ( ! is_callable( 'exif_imagetype' ) ) {\n\t$mime = image_type_to_mime_type( exif_imagetype( $file ) );\n}\n":
+    labels:
+    - source: |-
+        if ( ! is_callable( 'exif_imagetype' ) ) {
+        	$mime = image_type_to_mime_type( exif_imagetype( $file ) );
+        }
       style: primary
       start: 6
       end: 111
+  "<?php\nif ( ! is_callable( 'exif_imagetype' ) ) {\n\treturn exif_imagetype( $file );\n}\n":
+    labels:
+    - source: |-
+        if ( ! is_callable( 'exif_imagetype' ) ) {
+        	return exif_imagetype( $file );
+        }
+      style: primary
+      start: 6
+      end: 83
+  "<?php\nif ( ! is_callable( 'gd_info' ) ) { $i = gd_info(); }\n":
+    labels:
+    - source: if ( ! is_callable( 'gd_info' ) ) { $i = gd_info(); }
+      style: primary
+      start: 6
+      end: 59
+  "<?php\nif ( !is_callable('exif_imagetype') ) {\n\t$mime = exif_imagetype( $file );\n}\n":
+    labels:
+    - source: |-
+        if ( !is_callable('exif_imagetype') ) {
+        	$mime = exif_imagetype( $file );
+        }
+      style: primary
+      start: 6
+      end: 81
