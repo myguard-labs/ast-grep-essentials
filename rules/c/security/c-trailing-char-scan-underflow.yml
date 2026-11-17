@@ -10,22 +10,65 @@ message: >-
 note: >-
   Single-file syntactic check only. It cannot verify runtime values, whether
   the index is actually unsigned or nonzero on entry, or whether a bound is
-  enforced elsewhere (in the loop body or an earlier check). Only a literal
-  lower-bound test of the form N > 0 inside the same parenthesized condition
-  is recognized; other forms such as N >= 1 or N != 0 are not, and a matching
-  parenthesized expression in the loop body would also be reported.
+  enforced elsewhere. A bound test counts only when it names the same index
+  as the decrement (N > 0, N >= 1, N != 0 or a bare N) on the left of an &&
+  that precedes the decrement, or when the enclosing while condition tests
+  that index and the decrement sits in a braced loop body.
 rule:
   kind: parenthesized_expression
-  has:
-    pattern: '$BUF[--$N]'
-    stopBy: end
-  not:
-    has:
-      pattern: '$N > 0'
-      stopBy: end
-  inside:
-    kind: while_statement
-    stopBy: end
+  all:
+    - has:
+        pattern: '$BUF[--$N]'
+        stopBy: end
+    - inside:
+        kind: while_statement
+        stopBy: end
+    - not:
+        has:
+          stopBy: end
+          kind: binary_expression
+          all:
+            - has:
+                field: operator
+                regex: '^&&$'
+            - has:
+                field: left
+                any:
+                  - pattern: '$N'
+                  - pattern: '$N > 0'
+                  - pattern: '$N >= 1'
+                  - pattern: '$N != 0'
+                  - has:
+                      stopBy: end
+                      any:
+                        - pattern: '$N > 0'
+                        - pattern: '$N >= 1'
+                        - pattern: '$N != 0'
+            - has:
+                field: right
+                any:
+                  - pattern: '$X[--$N]'
+                  - has:
+                      pattern: '$X[--$N]'
+                      stopBy: end
+    - not:
+        inside:
+          kind: compound_statement
+          stopBy: end
+          inside:
+            kind: while_statement
+            field: body
+            has:
+              field: condition
+              any:
+                - has:
+                    pattern: '$N'
+                - has:
+                    stopBy: end
+                    any:
+                      - pattern: '$N > 0'
+                      - pattern: '$N >= 1'
+                      - pattern: '$N != 0'
 metadata:
   rule_modified_at: '2026-10-10'
   ast_grep_tested_version: 0.45.3
@@ -38,8 +81,9 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/127.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FP: recognised lower bounds only N > 0; safe forms while (n && s[--n] == '' ''), while (n >= 1 && s[--n] == '' '') and while (n != 0 && s[--n] == '' '') are reported'
-    - 'FP: safe loop while (n > 0) { if (s[--n] != '' '') break; } is reported because the if condition in the body matches'
-    - 'FN: any ''> 0'' test suppresses the report, even on another variable, e.g. while (i > 0 && s[--n] == '' '')'
+    - 'FP: a bare N in a longer && chain is not recognised, e.g. while (a && n && s[--n] == '' '') is reported'
+    - 'FP: unbraced loop body is not recognised as guarded, e.g. while (n > 0) if (s[--n] != '' '') break;'
+    - 'FN: a bound test inside an || is accepted as a guard, e.g. while (n > 0 || a) { if (s[--n] == '' '') break; }'
+    - 'FN: one bound test guards every decrement after it, so an inner loop on the same index in a guarded body, e.g. while (n > 0) { while (s[--n] == '' '') { } }, and a second decrement, e.g. while (n > 0 && s[--n] == '' '' && s[--n] == ''x''), are not reported; a bound test nested under || or ! inside the left operand, e.g. (n > 0 || a) && s[--n], is accepted'
     - 'FN: while (--n > 0 && s[n] == '' '') { } wraps a size_t n of 0 to SIZE_MAX before the bound test and then reads s[n]; it is not reported because the decrement sits in the bound test, not in the index'
     - 'FN: do { } while (s[--n] == '' ''); and for (; s[--n] == '' '';) are missed (rule requires a while_statement)'
