@@ -1,5 +1,74 @@
 id: c-openssl-meth-get-callback-unchecked
 snapshots:
+  "static int (*pinit)(EVP_PKEY_CTX *);\nstatic int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) {\n    EVP_PKEY_meth_get_paramgen(base, &pinit, NULL);\n    if (pinit != NULL) { return 1; } else { return pinit(ctx); }\n}":
+    labels:
+    - source: pinit(ctx)
+      style: primary
+      start: 197
+      end: 207
+    - source: pinit
+      style: secondary
+      start: 197
+      end: 202
+    - source: EVP_PKEY_meth_get_paramgen
+      style: secondary
+      start: 98
+      end: 124
+    - source: "&pinit"
+      style: secondary
+      start: 131
+      end: 137
+    - source: "&pinit"
+      style: secondary
+      start: 131
+      end: 137
+    - source: EVP_PKEY_meth_get_paramgen(base, &pinit, NULL)
+      style: secondary
+      start: 98
+      end: 144
+    - source: |-
+        static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) {
+            EVP_PKEY_meth_get_paramgen(base, &pinit, NULL);
+            if (pinit != NULL) { return 1; } else { return pinit(ctx); }
+        }
+      style: secondary
+      start: 37
+      end: 212
+  "static int (*pinit)(EVP_PKEY_CTX *);\nstatic int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) {\n    EVP_PKEY_meth_get_paramgen(base, &pinit, NULL);\n    if (pinit == NULL) { return pinit(ctx); }\n    return 1;\n}":
+    labels:
+    - source: pinit(ctx)
+      style: primary
+      start: 178
+      end: 188
+    - source: pinit
+      style: secondary
+      start: 178
+      end: 183
+    - source: EVP_PKEY_meth_get_paramgen
+      style: secondary
+      start: 98
+      end: 124
+    - source: "&pinit"
+      style: secondary
+      start: 131
+      end: 137
+    - source: "&pinit"
+      style: secondary
+      start: 131
+      end: 137
+    - source: EVP_PKEY_meth_get_paramgen(base, &pinit, NULL)
+      style: secondary
+      start: 98
+      end: 144
+    - source: |-
+        static int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) {
+            EVP_PKEY_meth_get_paramgen(base, &pinit, NULL);
+            if (pinit == NULL) { return pinit(ctx); }
+            return 1;
+        }
+      style: secondary
+      start: 37
+      end: 207
   "static int (*pinit)(EVP_PKEY_CTX *);\nstatic int f(EVP_PKEY_CTX *ctx, EVP_PKEY_METHOD *base) {\n    if (pinit == NULL)\n        EVP_PKEY_meth_get_paramgen(base, &pinit, NULL);\n    return pinit(ctx);\n}":
     labels:
     - source: pinit(ctx)
