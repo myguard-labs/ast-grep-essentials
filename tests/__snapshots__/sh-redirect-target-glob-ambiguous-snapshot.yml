@@ -1,8 +1,8 @@
 id: sh-redirect-target-glob-ambiguous
 snapshots:
-  'echo "[docker : production]" >> $dir/application.ini*':
+  "echo \"[docker : production]\" >> $dir/application.ini*":
     labels:
-    - source: '>> $dir/application.ini*'
+    - source: ">> $dir/application.ini*"
       style: primary
       start: 29
       end: 53
@@ -10,3 +10,33 @@ snapshots:
       style: secondary
       start: 32
       end: 53
+  echo x 2> /tmp/err*.txt:
+    labels:
+    - source: 2> /tmp/err*.txt
+      style: primary
+      start: 7
+      end: 23
+    - source: /tmp/err*.txt
+      style: secondary
+      start: 10
+      end: 23
+  echo x > "$dir"/out*.log:
+    labels:
+    - source: "> \"$dir\"/out*.log"
+      style: primary
+      start: 7
+      end: 24
+    - source: "\"$dir\"/out*.log"
+      style: secondary
+      start: 9
+      end: 24
+  echo x >> /var/log/app-*.log:
+    labels:
+    - source: ">> /var/log/app-*.log"
+      style: primary
+      start: 7
+      end: 28
+    - source: /var/log/app-*.log
+      style: secondary
+      start: 10
+      end: 28

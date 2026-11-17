@@ -5,8 +5,39 @@ valid:
       local commit
       commit=$(git ls-remote "$url" "$ref" | cut -f1)
     }
+  - |-
+    f() {
+      local out
+      out=$(git rev-parse HEAD) || return 1
+      echo "$out"
+    }
+  - |-
+    f() {
+      local dir=${1:-.}
+      echo "$dir"
+    }
+  - |-
+    f() {
+      local n=$((1 + 2))
+      echo "$n"
+    }
 invalid:
   - |-
     fetch_commit() {
       local commit=$(git ls-remote "$url" "$ref" | cut -f1)
+    }
+  - |-
+    f() {
+      local a=1 b=$(date +%s)
+      echo "$a" "$b"
+    }
+  - |-
+    f() {
+      local out=`date +%s`
+      echo "$out"
+    }
+  - |-
+    f() {
+      local out=$(git rev-parse HEAD) || return 1
+      echo "$out"
     }

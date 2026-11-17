@@ -28,3 +28,9 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  todo_cases:
+    - 'files="$(grep -rl pattern .github/)": double-quoted command substitution is not flagged'
+    - 'files=$(git ls-files | grep -v vendor): grep as last pipeline stage exits 1 on no match but is not flagged'
+    - 'files=$(grep -rl pattern .github/) || files="": flagged although a || fallback follows the assignment (false positive)'
+    - 'if files=$(grep -rl pattern .github/); then ...: flagged although the status is tested by the if (false positive)'
+    - 'f=`grep -rl pattern .github/`: backtick substitution is not flagged'

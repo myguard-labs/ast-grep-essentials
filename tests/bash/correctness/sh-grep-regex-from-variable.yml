@@ -1,5 +1,17 @@
 id: sh-grep-regex-from-variable
 valid:
   - 'grep -qF "id=${label}" "$f"'
+  - |-
+    grep -qFx "$pat" "$f"
+  - |-
+    grep -qF -- "$pat" /etc/hosts
+  - |-
+    grep -qE "^[a-z]+$" /etc/hosts
 invalid:
   - 'grep -qE "id=${label}" "$f"'
+  - |-
+    grep -qE -- "$pat" "$f"
+  - |-
+    if grep -qE "^${prefix}-[0-9]+$" "$f"; then echo hit; fi
+  - |-
+    grep -qE "$a|$b" /etc/hosts

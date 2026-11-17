@@ -3,7 +3,30 @@ valid:
   - |-
     #!/usr/bin/env bash
     echo ok
+  - |-
+    #!/usr/bin/env -S bash -e
+    echo ok
+  - |-
+    #!/bin/sh
+    echo ok
+  - |-
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo ok
 invalid:
   - |-
     #!/bin/bash
     echo ok
+  - |-
+    #!/bin/bash
+
+    set -eu
+    echo ok
+  - |-
+    #!/bin/bash
+    # second
+    echo ok
+  - |-
+    #!/bin/bash
+    f() { echo ok; }
+    f

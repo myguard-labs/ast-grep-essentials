@@ -1,5 +1,19 @@
 id: sh-ls-glob-output-parsed
 valid:
   - 'for f in "$PATCHES_DIR"/*.patch; do :; done'
+  - |-
+    shopt -s nullglob
+    patches=("$PATCHES_DIR"/*.patch)
+    echo "${#patches[@]}"
+  - |-
+    while IFS= read -r -d '' f; do echo "$f"; done < <(find "$d" -name '*.log' -print0)
+  - |-
+    for f in /var/log/*.log; do [ -e "$f" ] || continue; echo "$f"; done
 invalid:
   - 'mapfile -t patches < <(ls "$PATCHES_DIR"/*.patch)'
+  - |-
+    while read -r f; do echo "$f"; done < <(ls -1 /var/log/*.log)
+  - |-
+    mapfile -t p < <(ls -1 "$d"/*.patch | sort)
+  - |-
+    mapfile -t p < <(ls -d /var/log/*/)
