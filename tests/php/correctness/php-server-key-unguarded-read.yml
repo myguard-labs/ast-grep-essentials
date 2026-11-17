@@ -5,7 +5,15 @@ valid:
     strlen($_SERVER['SCRIPT_FILENAME']) : 0;
   - "$n = isset($_SERVER['REQUEST_URI']) ? strlen(trim($_SERVER['REQUEST_URI'])) : 0;"
   - "$n = isset($_SERVER['A'], $_SERVER['B']) ? strlen($_SERVER['A']) + strlen($_SERVER['B']) : 0;"
+  - "$n = strlen( $_SERVER['REQUEST_URI'] ?? '' );"
+  - "$n = strlen( $_SERVER[\"HTTP_HOST\"] ?? \"\" );"
+  - "$n = strlen( ($_SERVER['HTTP_HOST']) ?? '' );"
 invalid:
   - '$n = strlen($_SERVER[''SCRIPT_FILENAME'']);'
   - "$n = strlen($_SERVER[\"REQUEST_URI\"]);"
   - "$n = strlen(trim($_SERVER['QUERY_STRING']));"
+  - "$n = strlen($d ?? $_SERVER['A']);"
+  - "$n = strlen($_SERVER['A']) ?? 0;"
+  - "$n = strlen($_SERVER['A'] ?: '');"
+  - "$n = strlen($_SERVER[$k ?? 'A']);"
+  - "$n = strlen($_SERVER['A'] ?? $_SERVER['B']);"

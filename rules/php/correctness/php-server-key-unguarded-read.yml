@@ -23,6 +23,16 @@ rule:
           stopBy: end
           kind: conditional_expression
           regex: 'isset\(\s*\$_SERVER'
+    - not:
+        inside:
+          kind: binary_expression
+          field: left
+          has:
+            field: operator
+            regex: '^\?\?$'
+          stopBy:
+            not:
+              kind: parenthesized_expression
 metadata:
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
@@ -32,5 +42,4 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - "`strlen($_SERVER['REQUEST_URI'] ?? '')` is reported although the null-coalescing default makes the read safe (false positive)."
     - "`isset($_SERVER['A']) ? 1 : strlen($_SERVER['B'])` is not reported: the ternary guard text-match accepts an isset of any key, even in the unguarded branch, so the unguarded read is a false negative."
