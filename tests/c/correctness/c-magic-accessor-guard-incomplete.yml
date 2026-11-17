@@ -3,5 +3,12 @@ valid:
   - >-
     int f(ce) { return !ce->constructor && !ce->__get && !ce->__set &&
     !ce->__isset; }
+  - 'int f(ce) { return !ce->__isset && !ce->__get && !ce->__set; }'
+  - 'int f(ce) { if (!ce->__get && !ce->__set && !ce->__isset && !ce->__unset) { return 1; } return 0; }'
+  - 'int f(ce) { return (!ce->__get && !ce->__set) && !ce->__isset; }'
+  - 'int f(ce) { return ce->__get == NULL && ce->__set == NULL && ce->__isset == NULL; }'
 invalid:
   - 'int f(ce) { return !ce->constructor && !ce->__get && !ce->__set; }'
+  - 'int f(ce) { return !ce->__set && !ce->__get; }'
+  - 'int f(ce) { if (!ce->__get && !ce->__set) { return 1; } return 0; }'
+  - 'int f(ce) { return ce->flags ? !ce->__get && !ce->__set : 0; }'
