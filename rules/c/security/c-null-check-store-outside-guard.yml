@@ -29,9 +29,14 @@ rule:
                   has:
                     stopBy: end
                     kind: assignment_expression
-                    has:
-                      field: left
-                      pattern: '$P'
+                    all:
+                      - has:
+                          field: left
+                          pattern: '$P'
+                      - not:
+                          any:
+                            - pattern: '$P = $P'
+                            - pattern: '$P = &$Z'
             - has:
                 field: condition
                 any:

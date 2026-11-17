@@ -1,5 +1,49 @@
 id: c-null-deref-before-null-check
 snapshots:
+  "int f(struct k *key) { int n; if (!key) goto resume; resume: ; n = key->len; if (key && key->ok) g(); return n; }":
+    labels:
+    - source: n = key->len;
+      style: primary
+      start: 63
+      end: 76
+    - source: key->len
+      style: secondary
+      start: 67
+      end: 75
+    - source: key && key->ok
+      style: secondary
+      start: 81
+      end: 95
+    - source: key && key->ok
+      style: secondary
+      start: 81
+      end: 95
+    - source: if (key && key->ok) g();
+      style: secondary
+      start: 77
+      end: 101
+  "int f(struct k *key) { int n; if (!key) { goto resume; } resume: ; n = key->len; if (key && key->ok) g(); return n; }":
+    labels:
+    - source: n = key->len;
+      style: primary
+      start: 67
+      end: 80
+    - source: key->len
+      style: secondary
+      start: 71
+      end: 79
+    - source: key && key->ok
+      style: secondary
+      start: 85
+      end: 99
+    - source: key && key->ok
+      style: secondary
+      start: 85
+      end: 99
+    - source: if (key && key->ok) g();
+      style: secondary
+      start: 81
+      end: 105
   "void f(struct k *key) { if (!key) return; key = NULL; n = key->len; if (key && key->ok) g(); }":
     labels:
     - source: n = key->len;
