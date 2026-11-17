@@ -26,3 +26,4 @@ invalid:
   - 'int f(PKCS7_SIGNER_INFO *si) { ASN1_TYPE *so; so = PKCS7_get_signed_attribute(si, 1); if (!so) goto cleanup; cleanup: log_error(); if (so->type == 16) return 1; return 0; }'
   - 'int f(PKCS7_SIGNER_INFO *si) { ASN1_TYPE *so; so = PKCS7_get_signed_attribute(si, 1); if (!so) return 0; if (so->type != 6) return 0; so = PKCS7_get_signed_attribute(si, 2); if (so->type == 4) return 1; return 0; }'
   - 'int f(PKCS7_SIGNER_INFO *si) { ASN1_TYPE *so; so = PKCS7_get_signed_attribute(si, 1); if (!so) goto err; if (so->type == 16) return 1; other: return 0; }'
+  - 'int f(PKCS7_SIGNER_INFO *si, int x) { ASN1_TYPE *so; so = PKCS7_get_signed_attribute(si, 1); if (!so) { if (x) goto err; } if (so->type == 16) return 1; err: return 0; }'

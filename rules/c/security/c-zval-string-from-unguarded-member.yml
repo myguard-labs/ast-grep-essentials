@@ -39,19 +39,13 @@ rule:
                         - kind: return_statement
                         - has:
                             kind: return_statement
-            - not:
-                follows:
-                  stopBy: end
-                  pattern: 'MyG($FIELD) = $B;'
-                  follows:
-                    stopBy: end
-                    kind: if_statement
-                    has:
-                      field: condition
-                      has:
-                        any:
-                          - pattern: '!MyG($FIELD)'
-                          - pattern: 'MyG($FIELD) == NULL'
+                  - not:
+                      precedes:
+                        stopBy: end
+                        pattern: 'MyG($FIELD) = $B;'
+                        precedes:
+                          stopBy: end
+                          pattern: 'ZVAL_STRING($RET, MyG($FIELD), $FLAG);'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
