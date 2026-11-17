@@ -10,6 +10,10 @@ snapshots:
       style: secondary
       start: 32
       end: 33
+    - source: <=
+      style: secondary
+      start: 29
+      end: 31
     - source: (pad_length - input_len) <= 0
       style: secondary
       start: 4
@@ -36,6 +40,10 @@ snapshots:
       style: secondary
       start: 53
       end: 54
+    - source: <=
+      style: secondary
+      start: 50
+      end: 52
     - source: (a - b) <= 0
       style: secondary
       start: 42
@@ -62,6 +70,10 @@ snapshots:
       style: secondary
       start: 37
       end: 38
+    - source: ">"
+      style: secondary
+      start: 35
+      end: 36
     - source: (a - b) > 0
       style: secondary
       start: 27
@@ -88,6 +100,10 @@ snapshots:
       style: secondary
       start: 41
       end: 42
+    - source: <
+      style: secondary
+      start: 39
+      end: 40
     - source: (a - b) < 0
       style: secondary
       start: 31
@@ -104,6 +120,66 @@ snapshots:
       style: secondary
       start: 32
       end: 37
+  "void f(int a, int b, int c, int d) { if ((a - b) != 0 || (c - d) <= 0) { } }":
+    labels:
+    - source: (c - d)
+      style: primary
+      start: 57
+      end: 64
+    - source: "0"
+      style: secondary
+      start: 68
+      end: 69
+    - source: <=
+      style: secondary
+      start: 65
+      end: 67
+    - source: (c - d) <= 0
+      style: secondary
+      start: 57
+      end: 69
+    - source: c
+      style: secondary
+      start: 58
+      end: 59
+    - source: d
+      style: secondary
+      start: 62
+      end: 63
+    - source: c - d
+      style: secondary
+      start: 58
+      end: 63
+  "void f(int a, int b, int c, int d) { if ((a - b) == 0 && (c - d) > 0) { } }":
+    labels:
+    - source: (c - d)
+      style: primary
+      start: 57
+      end: 64
+    - source: "0"
+      style: secondary
+      start: 67
+      end: 68
+    - source: ">"
+      style: secondary
+      start: 65
+      end: 66
+    - source: (c - d) > 0
+      style: secondary
+      start: 57
+      end: 68
+    - source: c
+      style: secondary
+      start: 58
+      end: 59
+    - source: d
+      style: secondary
+      start: 62
+      end: 63
+    - source: c - d
+      style: secondary
+      start: 58
+      end: 63
   "void f(unsigned a, unsigned b) { if ((a - b) >= 0) { } }":
     labels:
     - source: (a - b)
@@ -114,6 +190,10 @@ snapshots:
       style: secondary
       start: 48
       end: 49
+    - source: ">="
+      style: secondary
+      start: 45
+      end: 47
     - source: (a - b) >= 0
       style: secondary
       start: 37
