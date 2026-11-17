@@ -32,12 +32,13 @@ rule:
         precedes:
           pattern: 'die;'
           stopBy: end
+    - not:
+        precedes:
+          pattern: 'die($$$DARGS);'
 metadata:
   todo_cases:
-    - 'False positive: wp_redirect($u); die(); is reported although the block ends with die()'
-    - 'False positive: wp_redirect($u); die(''x''); is reported although the block ends with die'
-    - 'False positive: wp_redirect($u) or die(); is reported although the same statement exits'
     - 'False positive: add_action(''init'', function() { wp_redirect(home_url()); }); reports the enclosing statement as well as the inner one'
+    - 'False positive: wp_redirect($u) and die(); and wp_redirect($u) && exit; are reported although die/exit runs whenever the redirect is sent'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

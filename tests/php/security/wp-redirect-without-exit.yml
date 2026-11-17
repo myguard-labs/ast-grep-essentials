@@ -21,6 +21,18 @@ valid:
         exit;
       }
     }
+  - |-
+    <?php
+    function f($u) {
+      wp_redirect($u);
+      die();
+    }
+  - |-
+    <?php
+    function f($u) {
+      wp_redirect($u);
+      die('x');
+    }
 invalid:
   - 'function f($u) { wp_redirect($u); echo ''x''; }'
   - |-
@@ -44,4 +56,31 @@ invalid:
         wp_redirect($u);
       }
       echo 'x';
+    }
+  - |-
+    <?php
+    function f($u) {
+      wp_redirect($u) or log_it();
+    }
+  - |-
+    <?php
+    function f($u) {
+      wp_redirect($u);
+      echo 1;
+      die();
+    }
+  - |-
+    <?php
+    function f($u) {
+      wp_redirect($u) or die();
+    }
+  - |-
+    <?php
+    function f($u) {
+      wp_redirect($u) or exit('x');
+    }
+  - |-
+    <?php
+    function f($u) {
+      wp_redirect($u) || die;
     }
