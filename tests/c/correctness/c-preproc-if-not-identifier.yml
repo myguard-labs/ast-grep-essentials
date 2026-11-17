@@ -4,8 +4,36 @@ valid:
     #ifndef __ASSEMBLER__
     int v;
     #endif
+  - |-
+    #if !defined(__ASSEMBLER__)
+    int v;
+    #endif
+  - |-
+    #if defined(A) && !defined(B)
+    int v;
+    #endif
+  - |-
+    #if FOO
+    int v;
+    #else
+    int w;
+    #endif
 invalid:
   - |
     #if !__ASSEMBLER__
     int v;
+    #endif
+  - |-
+    #if !HAVE_FORK
+    int v;
+    #endif
+  - |-
+    #if ! FOO
+    int v;
+    #endif
+  - |-
+    #if !FOO
+    int v;
+    #else
+    int w;
     #endif

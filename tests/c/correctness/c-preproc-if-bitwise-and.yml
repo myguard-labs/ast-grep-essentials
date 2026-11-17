@@ -4,8 +4,33 @@ valid:
     #if HAVE_A && HAVE_B
     int x;
     #endif
+  - |-
+    #if HAVE_A || HAVE_B
+    int x;
+    #endif
+  - |-
+    #if defined(HAVE_A) && defined(HAVE_B)
+    int x;
+    #endif
+  - |-
+    #if HAVE_A
+    int x;
+    #endif
 invalid:
   - |-
     #if HAVE_A & HAVE_B
+    int x;
+    #endif
+  - |-
+    #if HAVE_A&HAVE_B
+    int x;
+    #endif
+  - |-
+    #if HAVE_A & HAVE_B & HAVE_C
+    int x;
+    #endif
+  - |-
+    #if 0
+    #elif HAVE_A & HAVE_B
     int x;
     #endif

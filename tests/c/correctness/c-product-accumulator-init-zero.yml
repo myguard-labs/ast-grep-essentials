@@ -3,7 +3,59 @@ valid:
   - >-
     long f(long *a, int n) { long p = 1; int i; for (i = 0; i < n; i++) { p *=
     a[i]; } return p; }
+  - |-
+    long f(long *a, int n) {
+      long s = 0;
+      long p = 1;
+      int i;
+      for (i = 0; i < n; i++) {
+        s += a[i];
+        p *= a[i];
+      }
+      return s + p;
+    }
+  - |-
+    double f(double *a, int n) {
+      double prod = 1.0;
+      int i;
+      for (i = 0; i < n; i++) {
+        prod *= a[i];
+      }
+      return prod;
+    }
+  - |-
+    long f(long *a, int n) {
+      long sum = 0;
+      int i;
+      for (i = 0; i < n; i++) {
+        sum += a[i];
+      }
+      return sum;
+    }
 invalid:
   - >-
     long f(long *a, int n) { long p = 0; int i; for (i = 0; i < n; i++) { p *=
     a[i]; } return p; }
+  - |-
+    int f(int *a, int n) {
+      int prod = 0;
+      while (n-- > 0) {
+        prod *= *a++;
+      }
+      return prod;
+    }
+  - |-
+    unsigned long f(unsigned long x) {
+      unsigned long r = 0;
+      r *= 10;
+      return r + x;
+    }
+  - |-
+    double f(double *a, int n) {
+      double scale = 0;
+      int i;
+      for (i = 0; i < n; i++) {
+        scale *= a[i];
+      }
+      return scale;
+    }

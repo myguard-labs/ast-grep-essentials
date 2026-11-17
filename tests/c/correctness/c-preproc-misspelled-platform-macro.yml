@@ -3,7 +3,32 @@ valid:
   - |-
     #if defined(__APPLE__)
     #endif
+  - |-
+    #ifdef __APPLE__
+    int v;
+    #endif
+  - |-
+    #if defined(__APPLE__) && defined(__MACH__)
+    int v;
+    #endif
+  - |-
+    #if defined(__linux__)
+    int v;
+    #endif
 invalid:
   - |-
     #if defined(__MacOSX__)
+    #endif
+  - |-
+    #if defined __MacOSX__
+    int v;
+    #endif
+  - |-
+    #if defined(__MacOSX__) || defined(__linux__)
+    int v;
+    #endif
+  - |-
+    #if defined(__linux__)
+    #elif defined(__MacOSX__)
+    int v;
     #endif
