@@ -1,5 +1,12 @@
 id: wp-url-query-unencoded-interpolation
 valid:
   - '$url = "https://api.example.com/check/?version=" . urlencode( $version );'
+  - '<?php $url = ''https://api.example.com/check/?version=$version'';'
+  - '<?php $url = "https://api.example.com/?" . http_build_query( array( ''version'' => $version ) );'
+  - '<?php $url = "https://api.example.com/check/?version=fixed&php=7";'
+  - '<?php $url = "https://api.example.com/check/?id=" . intval( $id );'
 invalid:
   - '$url = "https://api.example.com/check/?version=$version&php=$php";'
+  - '<?php $url = "https://api.example.com/check/?q=$_GET[q]";'
+  - '<?php $url = "https://api.example.com/check/?q=$request->term";'
+  - '<?php $url = "https://api.example.com/check/?q=$args[term]";'
