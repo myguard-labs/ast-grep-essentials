@@ -3,5 +3,17 @@ valid:
   - >-
     get_logger().info(f"Applying repo settings:
     {sorted(new_settings.as_dict().keys())}")
+  - |-
+    logger.info("Applying settings: %s", sorted(cfg.as_dict().keys()))
+  - |-
+    logger.info(f"Applying {len(cfg.as_dict())} settings")
+  - |-
+    logger.debug(f"Loaded config for {cfg.name}")
 invalid:
   - 'get_logger().info(f"Applying repo settings:\n{new_settings.as_dict()}")'
+  - |-
+    logger.debug(f'settings: {cfg.as_dict()}')
+  - |-
+    log.error(f"bad config: {get_settings().as_dict()}")
+  - |-
+    logger.log(logging.INFO, f"config {cfg.as_dict()} loaded")

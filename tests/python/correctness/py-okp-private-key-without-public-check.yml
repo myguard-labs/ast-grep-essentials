@@ -17,3 +17,19 @@ invalid:
   def load(jwk):
       d = base64url_decode(jwk['d'])
       return Ed25519PrivateKey.from_private_bytes(d)
+- |-
+  class Loader:
+      def load(self, jwk):
+          d = base64url_decode(jwk["d"])
+          return X25519PrivateKey.from_private_bytes(d)
+- |-
+  async def load(jwk):
+      d = base64url_decode(jwk["d"])
+      return Ed448PrivateKey.from_private_bytes(data=d)
+- |-
+  def load(jwk):
+      d = base64url_decode(jwk["d"])
+      key = X448PrivateKey.from_private_bytes(bytes(d))
+      if key is None:
+          raise InvalidKeyError("bad")
+      return key

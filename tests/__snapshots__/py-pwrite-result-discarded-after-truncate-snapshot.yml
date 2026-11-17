@@ -1,12 +1,7 @@
 id: py-pwrite-result-discarded-after-truncate
 snapshots:
-  ? |
-    import os
-
-    def replace_token(fd, token):
-        os.ftruncate(fd, 0)
-        os.pwrite(fd, token, 0)
-  : labels:
+  "import os\n\ndef replace_token(fd, token):\n    os.ftruncate(fd, 0)\n    os.pwrite(fd, token, 0)\n":
+    labels:
     - source: os.pwrite(fd, token, 0)
       style: primary
       start: 69
@@ -15,3 +10,33 @@ snapshots:
       style: secondary
       start: 45
       end: 64
+  "import os\nclass Store:\n    def replace(self, data):\n        os.ftruncate(self._fd, 0)\n        os.pwrite(self._fd, data, 0)":
+    labels:
+    - source: os.pwrite(self._fd, data, 0)
+      style: primary
+      start: 94
+      end: 122
+    - source: os.ftruncate(self._fd, 0)
+      style: secondary
+      start: 60
+      end: 85
+  "import os\ndef replace(fd, data):\n    with lock:\n        os.ftruncate(fd, 0)\n        os.pwrite(fd, data, 0)":
+    labels:
+    - source: os.pwrite(fd, data, 0)
+      style: primary
+      start: 84
+      end: 106
+    - source: os.ftruncate(fd, 0)
+      style: secondary
+      start: 56
+      end: 75
+  "import os\ndef replace(fd, data, offset):\n    os.ftruncate(fd, offset + len(data))\n    os.pwrite(fd, data, offset)":
+    labels:
+    - source: os.pwrite(fd, data, offset)
+      style: primary
+      start: 86
+      end: 113
+    - source: os.ftruncate(fd, offset + len(data))
+      style: secondary
+      start: 45
+      end: 81

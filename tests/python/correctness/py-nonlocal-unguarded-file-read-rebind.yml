@@ -9,6 +9,32 @@ valid:
             if saved is None:
                 saved = Path('pkg.json').read_bytes()
         record()
+  - |-
+    from pathlib import Path
+    def outer():
+        saved = None
+        def record():
+            nonlocal saved
+            if not saved:
+                saved = Path("pkg.json").read_bytes()
+        record()
+  - |-
+    from pathlib import Path
+    def outer():
+        count = 0
+        def record():
+            nonlocal count
+            payload = Path("pkg.json").read_bytes()
+            count += len(payload)
+        record()
+  - |-
+    from pathlib import Path
+    def outer(cached):
+        saved = None
+        def record():
+            nonlocal saved
+            saved = cached
+        record()
 invalid:
   - |-
     from pathlib import Path
@@ -17,4 +43,32 @@ invalid:
         def record():
             nonlocal saved
             saved = Path('pkg.json').read_bytes()
+        record()
+  - |-
+    from pathlib import Path
+    async def outer():
+        data = None
+        async def load():
+            nonlocal data
+            data = Path(name).read_bytes()
+        await load()
+  - |-
+    from pathlib import Path
+    def outer():
+        saved = None
+        def record():
+            nonlocal saved
+            try:
+                saved = Path("pkg.json").read_bytes()
+            except OSError:
+                pass
+        record()
+  - |-
+    from pathlib import Path
+    def outer(paths):
+        blob = b""
+        def record():
+            nonlocal blob
+            with lock:
+                blob = Path(f"{root}/pkg.json").read_bytes()
         record()

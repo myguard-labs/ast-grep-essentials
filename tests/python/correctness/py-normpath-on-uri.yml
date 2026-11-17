@@ -4,8 +4,33 @@ valid:
     import posixpath
     def resolve(uri):
         return posixpath.normpath(uri)
+  - |-
+    import posixpath
+    def resolve(url):
+        return posixpath.normpath(url)
+  - |-
+    import os
+    def resolve(file_path):
+        return os.path.normpath(file_path)
+  - |-
+    import os
+    def resolve(local_dir):
+        return os.path.normpath(local_dir)
 invalid:
   - |
     import os
     def resolve(uri):
         return os.path.normpath(uri)
+  - |-
+    import os
+    def resolve(url):
+        return os.path.normpath(url)
+  - |-
+    import os
+    def resolve(uri):
+        return os.path.normpath(uri).lstrip("/")
+  - |-
+    import os
+    def resolve(uri):
+        cleaned = [os.path.normpath(uri), "x"]
+        return cleaned

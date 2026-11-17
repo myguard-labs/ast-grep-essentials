@@ -5,6 +5,36 @@ valid:
         from langchain_core.runnables import Runnable
     except ImportError:
         Runnable = None
+  - |-
+    def build():
+        try:
+            from langchain_core.runnables import Runnable
+        except ImportError:
+            raise RuntimeError("install the langchain extra")
+        return Runnable
+  - |-
+    try:
+        from langchain_core.runnables import Runnable, RunnableLambda
+    except (ImportError, ModuleNotFoundError):
+        Runnable = RunnableLambda = None
+    else:
+        READY = True
+  - |-
+    try:
+        from langchain_core.runnables import (
+            Runnable,
+            RunnableLambda,
+        )
+    except ImportError:
+        Runnable = None
 invalid:
   - |
     from langchain_core.runnables import Runnable
+  - |-
+    from langchain_core.runnables import Runnable, RunnableLambda
+  - |-
+    from langchain_core.runnables import Runnable as R
+  - |-
+    def build():
+        from langchain_core.runnables import Runnable
+        return Runnable

@@ -1,5 +1,18 @@
 id: py-lancedb-deprecated-table-names
 valid:
   - 'names = db.list_tables().tables'
+  - |-
+    names = [t for t in db.list_tables().tables if t.startswith('ev_')]
+  - |-
+    table = db.open_table('events')
+  - |-
+    names = lancedb.connect(uri).list_tables().tables
 invalid:
   - 'names = db.table_names()'
+  - |-
+    names = list(conn.table_names())
+  - |-
+    for name in self.db.table_names():
+        print(name)
+  - |-
+    exists = 'events' in lancedb.connect(uri).table_names()

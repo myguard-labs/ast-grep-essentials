@@ -1,5 +1,17 @@
 id: py-ml-model-no-explicit-device
 valid:
   - 'model = CrossEncoder("example/model", device="cpu")'
+  - |-
+    model = SentenceTransformer(name, cache_folder=path, device="cpu")
+  - |-
+    ranker = CrossEncoder(name, max_length=512, device=pick_device())
+  - |-
+    model = SentenceTransformer("example/model", device="cuda:0")
 invalid:
   - 'model = CrossEncoder("example/model")'
+  - |-
+    model = SentenceTransformer("example/model")
+  - |-
+    ranker = CrossEncoder(name, max_length=512)
+  - |-
+    model = SentenceTransformer(name, trust_remote_code=True)

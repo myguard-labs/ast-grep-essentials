@@ -5,7 +5,29 @@ valid:
 
     def run():
         assert torch.cuda.is_available(), "requires a CUDA device"
+  - |-
+    class Suite:
+        def test_gpu(self):
+            assert torch.cuda.is_available()
+  - |-
+    import sys
+    assert sys.version_info >= (3, 9)
+  - |-
+    def main():
+        def check():
+            assert torch.cuda.is_available() and torch.cuda.device_count() > 1
+        check()
 invalid:
   - |
     import torch
     assert torch.cuda.is_available(), "requires a CUDA device"
+  - |-
+    import torch
+    assert torch.cuda.is_available()
+  - |-
+    import torch
+    assert torch.cuda.is_available() and torch.cuda.device_count() > 1, "need two GPUs"
+  - |-
+    import torch
+    class Config:
+        assert torch.cuda.is_available()
