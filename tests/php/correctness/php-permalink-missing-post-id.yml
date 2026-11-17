@@ -3,7 +3,14 @@ valid:
   - >-
     <?php function f($post_id = '') { $url = trailingslashit(
     get_permalink($post_id) ) . 'feed'; }
+  - '<?php function f($post_id) { return get_permalink($post_id); }'
+  - '<?php function f($post_id) { return get_permalink(get_the_ID()); }'
+  - '<?php function f($post) { return get_permalink($post->ID); }'
+
 invalid:
   - >-
     <?php function f($post_id = '') { $url = trailingslashit( get_permalink() )
     . 'feed'; }
+  - '<?php function f($post_id) { return get_permalink(); }'
+  - '<?php function f($post_id) { echo esc_url( get_permalink() ); }'
+  - '<?php function f($post_id) { $a = array(''url'' => get_permalink()); }'

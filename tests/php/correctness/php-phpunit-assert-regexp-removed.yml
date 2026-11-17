@@ -3,7 +3,13 @@ valid:
   - >-
     <?php class T extends TestCase { function test_x() {
     $this->assertMatchesRegularExpression('~^a$~', 'a'); } }
+  - '<?php class T extends TestCase { function t() { $this->assertDoesNotMatchRegularExpression(''~a~'', $s); } }'
+  - '<?php class T extends TestCase { function t() { self::assertMatchesRegularExpression(''~a~'', $s); } }'
+
 invalid:
   - >-
     <?php class T extends TestCase { function test_x() {
     $this->assertRegExp('~^a$~', 'a'); } }
+  - '<?php class T extends TestCase { function t() { $this->assertRegExp(''~^a$~'', $s, ''msg''); } }'
+  - '<?php class T extends TestCase { function t() { $this->assertRegExp(pattern: ''~a~'', string: $s); } }'
+  - '<?php class T extends TestCase { function t() { if (true) { $this->assertRegExp(''~a~'', $s); } } }'

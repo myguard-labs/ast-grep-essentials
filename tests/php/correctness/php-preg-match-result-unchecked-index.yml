@@ -1,5 +1,14 @@
 id: php-preg-match-result-unchecked-index
 valid:
   - 'if ( preg_match(''#([0-9]+)#'', $s, $m) ) { return $m[1]; }'
+  - '<?php $ok = preg_match(''#([0-9]+)#'', $s, $m); if (!$ok) { return null; } return $m[1];'
+  - '<?php return preg_match(''#([0-9]+)#'', $s, $m) ? $m[1] : null;'
+  - '<?php if ( preg_match(''#a#'', $s, $m) === 1 ) { return $m[0]; }'
+  - '<?php while ( preg_match(''#a#'', $s, $m) ) { $s = substr($s, 1); }'
+
 invalid:
   - 'preg_match(''#([0-9]+)#'', $s, $m); return $m[1];'
+  - '<?php function f($s) { preg_match(''/(a+)/'', $s, $m); echo $m[1]; }'
+  - '<?php preg_match( ''#a#'', $s, $m ); $x = $m[0];'
+  - '<?php class A { function f($s) { preg_match(''#a#'', $s, $matches); return $matches[1]; } }'
+  - '<?php foreach ($l as $s) { preg_match(''#a#'', $s, $m); $o[] = $m[1]; }'
