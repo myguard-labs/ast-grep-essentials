@@ -25,6 +25,30 @@ snapshots:
       style: secondary
       start: 0
       end: 189
+  "int f(int n) {\n    char *p = malloc(8);\n    if (n) return 0;\n    p[0] = 0;\nout:\n    free(p);\n    return 0;\n}":
+    labels:
+    - source: return 0;
+      style: primary
+      start: 51
+      end: 60
+    - source: |-
+        out:
+            free(p);
+      style: secondary
+      start: 75
+      end: 92
+    - source: |-
+        int f(int n) {
+            char *p = malloc(8);
+            if (n) return 0;
+            p[0] = 0;
+        out:
+            free(p);
+            return 0;
+        }
+      style: secondary
+      start: 0
+      end: 108
   "int read_first(const char *p) {\n    int rc = -1;\n    FILE *f = fopen(p, \"r\");\n    if (f && fgetc(f) < 0) return 0;\n    if (f) rc = 1;\nout:\n    if (f) fclose(f);\n    return rc;\n}":
     labels:
     - source: return 0;

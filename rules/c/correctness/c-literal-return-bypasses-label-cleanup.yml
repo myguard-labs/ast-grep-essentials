@@ -8,7 +8,9 @@ message: >-
   cleanup; consider goto.
 note: >-
   Purely syntactic. It does not check that the label does cleanup or that
-  resources are live at the return.
+  resources are live at the return. A return that follows a labelled
+  statement in the same block, or in a block nested after it, is skipped
+  because it runs after the label.
 rule:
   kind: return_statement
   regex: '^return\s+(0|NULL)\s*;$'
@@ -23,6 +25,16 @@ rule:
         inside:
           kind: labeled_statement
           stopBy: end
+    - not:
+        follows:
+          kind: labeled_statement
+          stopBy: end
+    - not:
+        inside:
+          stopBy: end
+          follows:
+            kind: labeled_statement
+            stopBy: end
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
@@ -31,5 +43,3 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - '`int f(char *p) { if (!p) goto out; out: free(p); return 0; }` reports the `return 0;` that follows the labelled cleanup statement (false positive: only the first statement is the label body).'
