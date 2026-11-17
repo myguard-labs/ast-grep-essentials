@@ -12,8 +12,49 @@ note: >-
   builtin.
 rule:
   pattern: 'printf($ARG)'
-  not:
-    kind: string
+constraints:
+  ARG:
+    kind: argument
+    not:
+      has:
+        any:
+          - kind: string
+          - kind: name
+          - kind: encapsed_string
+            not:
+              has:
+                not:
+                  any:
+                    - kind: string_content
+                    - kind: escape_sequence
+                    - regex: '^"$'
+          - kind: function_call_expression
+            all:
+              - has:
+                  field: function
+                  regex: '^__$'
+              - has:
+                  field: arguments
+                  has:
+                    kind: argument
+                    nthChild: 1
+                    has:
+                      any:
+                        - kind: string
+                        - kind: encapsed_string
+                          not:
+                            has:
+                              not:
+                                any:
+                                  - kind: string_content
+                                  - kind: escape_sequence
+                                  - regex: '^"$'
+              - not:
+                  has:
+                    field: arguments
+                    has:
+                      kind: argument
+                      nthChild: 2
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -26,5 +67,5 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/134.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'Matched a literal or constant format: `printf("Hello")`, `printf(PHP_EOL)`, `printf(__(''Hello''))`.'
+    - 'A translated literal `__(''Hello'')` is treated as a constant format and skipped; this matches any function named `__`, not only the WordPress translation helper.'
     - 'Not matched: variable format with arguments `printf($fmt, $a)` and leading-backslash `\printf($fmt)`.'
