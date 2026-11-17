@@ -26,25 +26,45 @@ rule:
           field: consequence
           has:
             field: condition
-            has:
-              stopBy:
-                not:
+            any:
+              - has:
+                  stopBy:
+                    not:
+                      any:
+                        - kind: parenthesized_expression
+                        - all:
+                            - kind: binary_expression
+                            - has:
+                                field: operator
+                                regex: '^&&$'
                   any:
-                    - kind: parenthesized_expression
-                    - all:
-                        - kind: binary_expression
-                        - has:
-                            field: operator
-                            regex: '^&&$'
-              any:
-                - pattern: '$C >= ''0'' && $C <= ''9'''
-                - pattern: '''0'' <= $C && $C <= ''9'''
-                - pattern:
-                    context: 'isdigit($C);'
-                    selector: call_expression
-                - pattern:
-                    context: 'isdigit((unsigned char)$C);'
-                    selector: call_expression
+                    - pattern: '$C >= ''0'' && $C <= ''9'''
+                    - pattern: '''0'' <= $C && $C <= ''9'''
+                    - pattern:
+                        context: 'isdigit($C);'
+                        selector: call_expression
+                    - pattern:
+                        context: 'isdigit((unsigned char)$C);'
+                        selector: call_expression
+              - all:
+                  - has:
+                      stopBy: &chain
+                        not:
+                          any:
+                            - kind: parenthesized_expression
+                            - all:
+                                - kind: binary_expression
+                                - has:
+                                    field: operator
+                                    regex: '^&&$'
+                      any:
+                        - pattern: '$C >= ''0'''
+                        - pattern: '''0'' <= $C'
+                  - has:
+                      stopBy: *chain
+                      any:
+                        - pattern: '$C <= ''9'''
+                        - pattern: '''9'' >= $C'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0

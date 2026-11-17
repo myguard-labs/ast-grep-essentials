@@ -25,6 +25,34 @@ rule:
             any:
               - pattern: 'strlen($S) % 2'
               - pattern: 'strlen($S) & 1'
+    - not:
+        follows:
+          kind: if_statement
+          stopBy: end
+          all:
+            - has:
+                stopBy: end
+                any:
+                  - pattern: '$N % 2'
+                  - pattern: '$N & 1'
+            - follows:
+                stopBy: end
+                any:
+                  - kind: declaration
+                    has:
+                      kind: init_declarator
+                      all:
+                        - has:
+                            field: declarator
+                            pattern: $N
+                        - has:
+                            field: value
+                            pattern:
+                              context: 'strlen($S);'
+                              selector: call_expression
+                  - kind: expression_statement
+                    has:
+                      pattern: '$N = strlen($S)'
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
