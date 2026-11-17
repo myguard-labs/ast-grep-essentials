@@ -1,5 +1,34 @@
 id: c-literal-return-bypasses-label-cleanup
 valid:
   - 'static int f(int x) { if (x) { goto err; } err: return 0; }'
+  - 'int plain(int x) { if (x) return 0; return 1; }'
+  - 'void *plain(int x) { static int g; if (x) { return NULL; } return &g; }'
+  - |-
+    int f(int x) {
+        int rc = 0;
+        if (x) { rc = -1; goto out; }
+    out:
+        return rc;
+    }
 invalid:
   - 'static int f(int x) { if (x) { return 0; } err: return 0; }'
+  - |-
+    char *dup_upper(const char *s, int bad) {
+        char *b = malloc(strlen(s) + 1);
+        char *tmp = malloc(8);
+        if (bad) { return NULL; }
+        strcpy(b, s);
+    out:
+        free(tmp);
+        return b;
+    }
+  - |-
+    int read_first(const char *p) {
+        int rc = -1;
+        FILE *f = fopen(p, "r");
+        if (f && fgetc(f) < 0) return 0;
+        if (f) rc = 1;
+    out:
+        if (f) fclose(f);
+        return rc;
+    }

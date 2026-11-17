@@ -9,6 +9,20 @@ valid:
      b = &(*b)->next;
      }
     }
+  - |-
+    void rm(node **pp) {
+        node *dead = *pp;
+        *pp = dead->next;
+        free(dead);
+    }
+  - |-
+    int count(node *head) {
+        int c = 0;
+        for (node *n = head; n; n = n->next) {
+            c++;
+        }
+        return c;
+    }
 invalid:
   - |-
     void scan(bucket **b, int key) {
@@ -18,4 +32,20 @@ invalid:
      }
      *b = (*b)->next;
      }
+    }
+  - |-
+    void drop_all(node **pp) {
+        while (*pp) {
+            *pp = (*pp)->next;
+        }
+    }
+  - |-
+    void prune(entry **slot) {
+        while (*slot) {
+            if ((*slot)->dead) {
+                *slot = (*slot)->next;
+            } else {
+                slot = &(*slot)->next;
+            }
+        }
     }
