@@ -1,5 +1,40 @@
 id: c-empty-char-literal
 valid:
   - 'int c = '' '';'
+  - |-
+    int f(void) {
+        return '\'';
+    }
+  - |-
+    int f(int c) {
+        return c == 'a';
+    }
+  - |-
+    const char *f(void) {
+        return "''";
+    }
+  - |-
+    int f(void) {
+        return '\\';
+    }
 invalid:
   - 'int c = '''';'
+  - |-
+    int f(int c) {
+        return c == '';
+    }
+  - |-
+    int f(void) {
+        char c = '';
+        return c;
+    }
+  - |-
+    int f(int c) {
+        if (c == '') { return 1; }
+        return 0;
+    }
+  - |-
+    int f(void) {
+        char s[2] = { '', 'a' };
+        return s[0];
+    }

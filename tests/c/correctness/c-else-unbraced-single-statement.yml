@@ -3,5 +3,39 @@ valid:
   - >-
     void f(int a, int *x, int *y) { if (a) { *x = 1; } else { *x = 2; } *y = 3;
     }
+  - |-
+    void f(int a, int *x) {
+        if (a) { *x = 1; } else if (a > 5) { *x = 2; }
+    }
+  - |-
+    void f(int a, int *x) {
+        if (a) { *x = 1; } else { *x = 2; }
+    }
+  - |-
+    void f(int a, int *x) {
+        if (a) *x = 1;
+        *x = 2;
+    }
+  - |-
+    void f(int a, int *x) {
+        if (a) { *x = 1; } else { *x = 2; log(x); }
+    }
 invalid:
   - 'void f(int a, int *x, int *y) { if (a) { *x = 1; } else *x = 2; *y = 3; }'
+  - |-
+    void f(int a, char *p) {
+        if (a) { use(p); } else free(p);
+    }
+  - |-
+    void f(int a, int *x) {
+        if (a) *x = 1;
+        else *x = 2;
+    }
+  - |-
+    void f(int a, int b, int *x) {
+        if (a) { *x = 1; } else if (b) { *x = 2; } else *x = 3;
+    }
+  - |-
+    void f(int a, int *x) {
+        if (a) { *x = 1; } else (*x)++;
+    }

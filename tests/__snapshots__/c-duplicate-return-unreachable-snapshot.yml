@@ -1,6 +1,36 @@
 id: c-duplicate-return-unreachable
 snapshots:
-  int f(void) { return 1; return 1; }:
+  "int f(int a) {\n    if (a) {\n        return 1;\n        return 2;\n    }\n    return 3;\n}":
+    labels:
+    - source: return 2;
+      style: primary
+      start: 54
+      end: 63
+    - source: return 1;
+      style: secondary
+      start: 36
+      end: 45
+  "int f(int a) {\n    return a;\n    return a + 1;\n}":
+    labels:
+    - source: return a + 1;
+      style: primary
+      start: 33
+      end: 46
+    - source: return a;
+      style: secondary
+      start: 19
+      end: 28
+  "int f(int a) {\n    while (a) {\n        return 1;\n        return 0;\n    }\n    return 2;\n}":
+    labels:
+    - source: return 0;
+      style: primary
+      start: 57
+      end: 66
+    - source: return 1;
+      style: secondary
+      start: 39
+      end: 48
+  "int f(void) { return 1; return 1; }":
     labels:
     - source: return 1;
       style: primary
@@ -10,3 +40,13 @@ snapshots:
       style: secondary
       start: 14
       end: 23
+  "void f(void) {\n    return;\n    return;\n}":
+    labels:
+    - source: return;
+      style: primary
+      start: 31
+      end: 38
+    - source: return;
+      style: secondary
+      start: 19
+      end: 26

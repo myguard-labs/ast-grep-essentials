@@ -1,8 +1,32 @@
 id: c-ecalloc-into-persistent-field
 snapshots:
-  stmt->param_bind = mnd_ecalloc(stmt->param_count, sizeof(MYSQLND_PARAM_BIND)); if (stmt->persistent) { }:
+  "stmt->param_bind = mnd_ecalloc(stmt->param_count, sizeof(MYSQLND_PARAM_BIND)); if (stmt->persistent) { }":
     labels:
     - source: stmt->param_bind = mnd_ecalloc(stmt->param_count, sizeof(MYSQLND_PARAM_BIND))
       style: primary
       start: 0
       end: 77
+  "void f(struct conn *c, int n) {\n    c->data->buf = mnd_ecalloc(n, sizeof(char));\n}":
+    labels:
+    - source: c->data->buf = mnd_ecalloc(n, sizeof(char))
+      style: primary
+      start: 36
+      end: 79
+  "void f(struct s **pp, int n) {\n    (*pp)->tab = mnd_ecalloc(n, 8);\n}":
+    labels:
+    - source: (*pp)->tab = mnd_ecalloc(n, 8)
+      style: primary
+      start: 35
+      end: 65
+  "void f(struct s *p) {\n    p->cfg = mnd_ecalloc(1, sizeof(*p->cfg));\n}":
+    labels:
+    - source: p->cfg = mnd_ecalloc(1, sizeof(*p->cfg))
+      style: primary
+      start: 26
+      end: 66
+  "void f(struct s *p, int n) {\n    p->buf = mnd_ecalloc(n, 1);\n}":
+    labels:
+    - source: p->buf = mnd_ecalloc(n, 1)
+      style: primary
+      start: 33
+      end: 59
