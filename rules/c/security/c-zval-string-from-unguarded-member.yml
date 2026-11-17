@@ -9,7 +9,7 @@ message: >-
 note: >-
   Syntactic single-file match on a ZVAL_STRING call whose second argument is a
   MyG(...) global call. A call is accepted when an earlier sibling statement
-  is `if (!MyG(x))` or `if (MyG(x) == NULL)` and returns unconditionally. It
+  is `if (!MyG(x))` or `if (MyG(x) == NULL)` and returns unconditionally with no `MyG(x) = ...;` between that guard and the call (sibling statements only; a nested reassignment is missed). It
   does not check enclosing if-tests for the same expression by type or
   dataflow, and cannot prove the value is actually NULL at runtime.
 rule:
@@ -22,22 +22,30 @@ rule:
     - not:
         inside:
           stopBy: end
-          follows:
-            stopBy: end
-            kind: if_statement
-            all:
-              - has:
-                  field: condition
-                  has:
-                    any:
-                      - pattern: '!MyG($FIELD)'
-                      - pattern: 'MyG($FIELD) == NULL'
-              - has:
-                  field: consequence
-                  any:
-                    - kind: return_statement
-                    - has:
-                        kind: return_statement
+          all:
+            - follows:
+                stopBy: end
+                kind: if_statement
+                all:
+                  - has:
+                      field: condition
+                      has:
+                        any:
+                          - pattern: '!MyG($FIELD)'
+                          - pattern: 'MyG($FIELD) == NULL'
+                  - has:
+                      field: consequence
+                      any:
+                        - kind: return_statement
+                        - has:
+                            kind: return_statement
+                  - not:
+                      precedes:
+                        stopBy: end
+                        pattern: 'MyG($FIELD) = $B;'
+                        precedes:
+                          stopBy: end
+                          pattern: 'ZVAL_STRING($RET, MyG($FIELD), $FLAG);'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -51,5 +59,5 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
   todo_cases:
+    - 'FN: if (!MyG(error_msg)) return; if (y) { MyG(error_msg) = NULL; } ZVAL_STRING(retval, MyG(error_msg), 1); (nested reassignment between guard and call is not seen)'
     - 'FN: ZVAL_STRING(retval, (MyG(error_msg)), 1); (parenthesised source)'
-    - 'FN: MyG(x) reassigned between the early-return guard and the ZVAL_STRING call is still treated as guarded'

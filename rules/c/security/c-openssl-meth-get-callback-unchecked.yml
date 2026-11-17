@@ -10,7 +10,7 @@ note: >-
   Syntactic only. Matches a call through an identifier whose address is passed
   to an EVP_PKEY_meth_get_* call in the same function when the call is not
   inside a conditional expression or in the consequence of an if statement
-  whose condition is the same identifier, `!= NULL`, `!= 0` or `&& ...` on it.
+  whose condition is the same identifier, `!= NULL`, `!= 0` or `&& ...` / `... &&` on it.
   It does not track dataflow or other guard forms.
 rule:
   all:
@@ -56,6 +56,7 @@ rule:
                   - pattern: 'NULL != $F'
                   - pattern: '$F != 0'
                   - pattern: '$F && $X'
+                  - pattern: '$X && $F'
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
