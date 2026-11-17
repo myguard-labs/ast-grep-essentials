@@ -4,7 +4,13 @@ valid:
     rv = ap_get_brigade(f->next, bb, mode, block, n); if
     (APR_STATUS_IS_EAGAIN(rv)) { return rv; } if (rv != APR_SUCCESS) { return
     rv; }
+  - 'apr_status_t f(void) { rv = ap_get_brigade(f->next, bb, mode, block, n); if (rv != APR_SUCCESS && !APR_STATUS_IS_EAGAIN(rv)) { return rv; } return APR_SUCCESS; }'
+  - 'apr_status_t f(void) { rv = apr_brigade_flatten(bb, buf, &len); if (rv != APR_SUCCESS) { return rv; } return APR_SUCCESS; }'
+  - 'apr_status_t f(void) { rv = ap_get_brigade(f->next, bb, mode, block, n); if (rv != APR_SUCCESS) { if (APR_STATUS_IS_EAGAIN(rv)) { return APR_SUCCESS; } return rv; } return APR_SUCCESS; }'
 invalid:
   - >-
     rv = ap_get_brigade(f->next, bb, mode, block, n); if (rv != APR_SUCCESS) {
     return rv; }
+  - 'apr_status_t f(void) { apr_status_t rv; rv = ap_get_brigade(f->next, bb, AP_MODE_READBYTES, APR_NONBLOCK_READ, len); if (rv != APR_SUCCESS) { return rv; } return APR_SUCCESS; }'
+  - 'apr_status_t f(void) { rv = ap_get_brigade(f->next, bb, AP_MODE_GETLINE, APR_NONBLOCK_READ, 0); if (rv != APR_SUCCESS) { return rv; } use(bb); return APR_SUCCESS; }'
+  - 'static int h(ap_filter_t *f) { int x = 1; rv = ap_get_brigade(f, bb, m, b, n); if (rv != APR_SUCCESS) { return rv; } }'

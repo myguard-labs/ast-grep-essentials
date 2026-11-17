@@ -3,5 +3,11 @@ valid:
   - >-
     static time_t get_req_time(struct req *r) { return
     apr_time_sec(r->request_time); }
+  - 'static time_t g(struct req *r) { return apr_time_sec(c->r->request_time); }'
+  - 'static time_t g(struct req *r) { return (time_t) (r->request_time / APR_USEC_PER_SEC); }'
+  - 'static time_t g(struct req *r) { return apr_time_sec(r->request_time) + 1; }'
 invalid:
   - 'static time_t get_req_time(struct req *r) { return r->request_time; }'
+  - 'static time_t g(struct req *r) { return c->r->request_time; }'
+  - 'static time_t g(request_rec *rr) { if (rr) { return rr->request_time; } return 0; }'
+  - 'time_t g(request_rec *r) { return r->request_time; }'
