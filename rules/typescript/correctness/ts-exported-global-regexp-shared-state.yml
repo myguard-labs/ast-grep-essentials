@@ -19,6 +19,12 @@ rule:
         stopBy: end
         regex: g
 metadata:
+  todo_cases:
+    - "export const re = new RegExp(src, \"g\") (double-quoted flags) is not reported because the flags pattern only matches single-quoted strings"
+    - "export const re: RegExp = new RegExp(src, 'g') (type annotation) is not reported"
+    - "export const re = /x/g (regex literal with g flag, same shared lastIndex state) is not reported"
+    - "export let re = new RegExp(src, 'g') is not reported (rule matches const only)"
+    - "false positive: export const re = new RegExp('log', 'i') is reported because any string argument containing the letter g satisfies the flags check"
   rule_modified_at: '2026-10-17'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-17'

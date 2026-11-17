@@ -3,7 +3,12 @@ valid:
   - >-
     async function load(req: Request, url: string) { const base =
     'files.example.com'; return fetch(`https://${base}${url}`); }
+  - "async function load(req: Request) { const host = req.headers.get('host'); console.log(host); return fetch(`https://api.example.com/${path}`); }"
+  - "async function a(req: Request) { const host = req.headers.get('host'); return host; } async function b(p: string) { return fetch(`https://api.example.com/${p}`); }"
 invalid:
   - >-
     async function load(req: Request, url: string) { const base =
     req.headers.get('host'); return fetch(`https://${base}${url}`); }
+  - "async function load(req: Request) { const origin = req.headers.get('x-forwarded-host'); return fetch(`https://${origin}/health`); }"
+  - "const load = async (request: Request) => { const base = request.headers.get('origin'); return await fetch(`${base}/api`); };"
+  - "async function load(req: Request) { try { const h = req.headers.get('host'); return await fetch(`https://${h}/${p}`); } catch { return null; } }"

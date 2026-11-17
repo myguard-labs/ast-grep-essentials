@@ -1,13 +1,7 @@
 id: ts-layout-effect-mount-without-cleanup
 snapshots:
-  ? |-
-    useLayoutEffect(() => {
-      if (openAlert) {
-        logic.mount()
-        logic.actions.openEditor(openAlert)
-      }
-    }, [openAlert])
-  : labels:
+  "useLayoutEffect(() => {\n  if (openAlert) {\n    logic.mount()\n    logic.actions.openEditor(openAlert)\n  }\n}, [openAlert])":
+    labels:
     - source: |-
         useLayoutEffect(() => {
           if (openAlert) {
@@ -18,3 +12,39 @@ snapshots:
       style: primary
       start: 0
       end: 120
+  "useLayoutEffect(() => {\n  if (x) {\n    logic.mount()\n    logic.actions.go()\n    track()\n  }\n}, [x, y])":
+    labels:
+    - source: |-
+        useLayoutEffect(() => {
+          if (x) {
+            logic.mount()
+            logic.actions.go()
+            track()
+          }
+        }, [x, y])
+      style: primary
+      start: 0
+      end: 102
+  "useLayoutEffect(() => {\n  if (x) {\n    prepare()\n    view.mount(el, opts)\n  }\n}, [x])":
+    labels:
+    - source: |-
+        useLayoutEffect(() => {
+          if (x) {
+            prepare()
+            view.mount(el, opts)
+          }
+        }, [x])
+      style: primary
+      start: 0
+      end: 85
+  "useLayoutEffect(() => {\n  if (x) {\n    this.logic.mount()\n  }\n}, [])":
+    labels:
+    - source: |-
+        useLayoutEffect(() => {
+          if (x) {
+            this.logic.mount()
+          }
+        }, [])
+      style: primary
+      start: 0
+      end: 68

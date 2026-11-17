@@ -3,7 +3,12 @@ valid:
   - >-
     const pages = gh(["api", "--paginate", "--slurp",
     `repos/o/r/actions/workflows/e2e.yaml/runs?per_page=100`]);
+  - "const r = gh([\"api\", \"repos/o/r/issues\"]);"
+  - "const r = gh([\"api\", \"repos/o/r/issues?per_page=100\", \"--paginate\"]);"
 invalid:
   - >-
     const pages = gh(["api",
     `repos/o/r/actions/workflows/e2e.yaml/runs?per_page=100`]);
+  - "const r = gh([\"api\", \"-X\", \"GET\", \"repos/o/r/issues?per_page=50\"]);"
+  - "const r = gh([\"api\", \"repos/o/r/pulls\", \"-f\", \"per_page=100\"]);"
+  - "const r = gh([\"api\", \"repos/o/r/issues?per_page=100\", \"--jq\", \".[].number\"]);"
