@@ -1,5 +1,17 @@
 id: php-mixed-and-or-without-grouping
 valid:
   - '$ok = ($a && $b) || $c;'
+  - |-
+    <?php $ok = $a && ( $b || $c );
+  - |-
+    <?php $ok = $a || $b || $c;
+  - |-
+    <?php $ok = $a && $b && $c;
 invalid:
   - '$ok = $a && $b || $c;'
+  - |-
+    <?php if ( $a && $b || $c ) { $x = 1; }
+  - |-
+    <?php $ok = $a && $b || $c && $d;
+  - |-
+    <?php return $x > 1 && $y < 2 || $z;

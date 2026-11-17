@@ -3,7 +3,19 @@ valid:
   - >-
     if ( ini_get( 'mbstring.func_overload' ) & 2 ) { $previous =
     mb_internal_encoding(); }
+  - |-
+    <?php if ( ( ini_get( 'mbstring.func_overload' ) & 2 ) != 0 ) { $a = 1; }
+  - |-
+    <?php if ( ini_get( 'mbstring.internal_encoding' ) ) { $a = 1; }
+  - |-
+    <?php if ( (int) ini_get( 'mbstring.func_overload' ) & MB_OVERLOAD_STRING ) { $a = 1; }
 invalid:
   - >-
     if ( ini_get( 'mbstring.func_overload' ) ) { $previous =
     mb_internal_encoding(); }
+  - |-
+    <?php if ( ini_get( 'mbstring.func_overload' ) ) $a = 1;
+  - |-
+    <?php if ( ini_get( 'mbstring.func_overload' ) ) { mb_internal_encoding( 'UTF-8' ); } else { $a = 0; }
+  - |-
+    <?php if (ini_get('mbstring.func_overload')) { return false; }
