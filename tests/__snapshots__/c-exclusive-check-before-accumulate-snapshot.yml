@@ -33,23 +33,23 @@ snapshots:
       style: secondary
       start: 102
       end: 117
-  "int f(ngx_uint_t mask, ngx_uint_t a, ngx_uint_t b) {\n    if (mask & a) {\n        return 1;\n    }\n    if (b) {\n        mask |= b;\n    }\n    mask |= a;\n    return mask;\n}":
+  "int f(ngx_uint_t mask, ngx_uint_t extra) {\n    if ((mask & NONE) && (mask & ~NONE)) {\n        return -1;\n    }\n    mask |= extra;\n    return mask;\n}":
     labels:
     - source: |-
-        if (mask & a) {
-                return 1;
+        if ((mask & NONE) && (mask & ~NONE)) {
+                return -1;
             }
       style: primary
-      start: 57
-      end: 96
-    - source: mask & a
+      start: 47
+      end: 110
+    - source: mask & NONE
       style: secondary
-      start: 61
-      end: 69
-    - source: mask |= a;
+      start: 52
+      end: 63
+    - source: mask |= extra;
       style: secondary
-      start: 139
-      end: 149
+      start: 115
+      end: 129
   mask = parse(cf); if ((mask & NONE) && (mask & ~NONE)) return NGX_CONF_ERROR; mask |= clcf->presets;:
     labels:
     - source: if ((mask & NONE) && (mask & ~NONE)) return NGX_CONF_ERROR;

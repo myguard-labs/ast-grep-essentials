@@ -50,13 +50,10 @@ invalid:
         return flags;
     }
   - |-
-    int f(ngx_uint_t mask, ngx_uint_t a, ngx_uint_t b) {
-        if (mask & a) {
-            return 1;
+    int f(ngx_uint_t mask, ngx_uint_t extra) {
+        if ((mask & NONE) && (mask & ~NONE)) {
+            return -1;
         }
-        if (b) {
-            mask |= b;
-        }
-        mask |= a;
+        mask |= extra;
         return mask;
     }
