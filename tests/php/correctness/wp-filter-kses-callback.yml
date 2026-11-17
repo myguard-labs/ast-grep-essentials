@@ -1,5 +1,11 @@
 id: wp-filter-kses-callback
 valid:
   - 'add_filter( $filter, ''wp_kses_data'' );'
+  - '<?php add_filter( ''pre_comment_content'', ''wp_kses_post'' );'
+  - '<?php remove_filter( ''pre_comment_content'', ''wp_filter_kses'' );'
+  - '<?php add_filter( ''title_save_pre'', ''my_wp_filter_kses_wrapper'' );'
 invalid:
   - 'add_filter( $filter, ''wp_filter_kses'' );'
+  - '<?php add_filter( ''pre_comment_content'', ''wp_filter_kses'' );'
+  - '<?php function f() { add_filter(''title_save_pre'',''wp_filter_kses''); }'
+  - '<?php if ( ! is_admin() ) { add_filter( ''the_content'', ''wp_filter_kses'' ); }'

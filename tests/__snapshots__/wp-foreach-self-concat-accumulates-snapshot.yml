@@ -1,7 +1,37 @@
 id: wp-foreach-self-concat-accumulates
 snapshots:
-  ? function f($results, $r0) { $after = $r0; foreach ($results as $r) { $after = '&nbsp;(' . $r->posts . ')' . $after; } return $after; }
-  : labels:
+  <?php foreach ( $items as $i ) $s = 'x' . $s;:
+    labels:
+    - source: foreach ( $items as $i ) $s = 'x' . $s;
+      style: primary
+      start: 6
+      end: 45
+    - source: $s = 'x' . $s
+      style: secondary
+      start: 31
+      end: 44
+  "<?php foreach ( $items as $i ) { $html = '<li>' . $i . '</li>' . $html; }":
+    labels:
+    - source: foreach ( $items as $i ) { $html = '<li>' . $i . '</li>' . $html; }
+      style: primary
+      start: 6
+      end: 73
+    - source: $html = '<li>' . $i . '</li>' . $html
+      style: secondary
+      start: 33
+      end: 70
+  "<?php foreach ( $items as $k => $v ) { if ( $v ) { $s = $k . ',' . $s; } }":
+    labels:
+    - source: foreach ( $items as $k => $v ) { if ( $v ) { $s = $k . ',' . $s; } }
+      style: primary
+      start: 6
+      end: 74
+    - source: $s = $k . ',' . $s
+      style: secondary
+      start: 51
+      end: 69
+  "function f($results, $r0) { $after = $r0; foreach ($results as $r) { $after = '&nbsp;(' . $r->posts . ')' . $after; } return $after; }":
+    labels:
     - source: foreach ($results as $r) { $after = '&nbsp;(' . $r->posts . ')' . $after; }
       style: primary
       start: 42

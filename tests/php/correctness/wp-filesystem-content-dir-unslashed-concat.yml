@@ -3,7 +3,13 @@ valid:
   - |
     <?php
     $versions_file = trailingslashit( $wp_filesystem->wp_content_dir() ) . 'upgrade/version-current.php';
+  - '<?php $p = trailingslashit( $wp_filesystem->wp_content_dir() ) . $name;'
+  - '<?php $p = path_join( $wp_filesystem->wp_content_dir(), ''upgrade'' );'
+  - '<?php $dir = $wp_filesystem->wp_content_dir(); $p = trailingslashit( $dir ) . ''x'';'
 invalid:
   - |
     <?php
     $versions_file = $wp_filesystem->wp_content_dir() . 'upgrade/version-current.php';
+  - '<?php $p = $wp_filesystem->wp_content_dir() . $name;'
+  - '<?php if ( $wp_filesystem->exists( $wp_filesystem->wp_content_dir() . ''upgrade'' ) ) { echo 1; }'
+  - '<?php $p = $wp_filesystem->wp_content_dir() . "upgrade/" . $n;'
