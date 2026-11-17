@@ -3,5 +3,11 @@ valid:
 - 'const chunk = { fileSize: Token.UINT64_LE.get(buf, off) };'
 - '// const chunk = { fileSize: Token.INT64_LE.get(buf, off) };'
 - 'const astgrepFixture: string = "const chunk = { fileSize: Token.INT64_LE.get(buf, off) };";'
+- "const chunk = { version: Token.UINT32_LE.get(buf, off) };"
+- "const chunk = { metadataPointer: Token.UINT64_LE.get(buf, off) };"
+- "const chunk = { fileSize: Token.INT32_LE.get(buf, off) };"
 invalid:
 - 'const chunk = { fileSize: Token.INT64_LE.get(buf, off) };'
+- "const header = { metadataPointer: Token.INT64_LE.get(buf, 8) };"
+- "const chunk = { length: Token.INT64_LE.get(buf, off + 4) };"
+- "const hdr = {\n  fileSize: Token.INT64_LE.get(buf, 0),\n};"

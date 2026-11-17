@@ -3,7 +3,13 @@ valid:
   - |-
     const isValid = await req.payload.count({ collection: 'tenants' });
     return isValid.totalDocs > 0 ? tenant : null;
+  - "const { totalDocs } = await req.payload.count({ collection: 'tenants' });\nreturn totalDocs ? tenant : null;"
+  - "const res = await req.payload.count({ collection: 'tenants' });\nreturn res.totalDocs ? tenant : null;"
+  - "const res = await req.payload.count({ collection: 'tenants' });\nconst ready = flag ? tenant : null;"
 invalid:
   - |-
     const isValid = await req.payload.count({ collection: 'tenants' });
     return isValid ? tenant : null;
+  - "const found = await payload.count({ collection: 'users' });\nconst user = found ? first : null;"
+  - "const found = await this.payload.count({ collection: 'users' });\nlog(found);\nreturn found ? first : null;"
+  - "async function f(req) {\n  const found = await req.payload.count({ collection: 'users', where });\n  if (cond) { return found ? 1 : 2; }\n}"

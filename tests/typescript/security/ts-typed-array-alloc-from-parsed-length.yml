@@ -3,5 +3,11 @@ valid:
 - const buf = new Uint8Array(64)
 - // const buf = new Uint8Array(header.len)
 - 'const astgrepFixture: string = "const buf = new Uint8Array(header.len)";'
+- "const buf = new Uint8Array(Math.min(header.len, MAX_CHUNK));"
+- "const buf = new Uint8Array(header.length);"
 invalid:
 - const buf = new Uint8Array(header.len)
+- "function readElement(element) { return new Uint8Array(element.len); }"
+- "const payload = new Uint8Array(this.header.len);"
+- "const buf = new Uint8Array( rec.len );"
+- "const buf = new Uint8Array(parseHeader(data).len);"

@@ -4,7 +4,14 @@ valid:
     async run({ $ }) { if (this.percentile === undefined &&
     this.funnelAggregation === undefined) { throw new ConfigurationError('need
     one'); } }
+  - "if (this.a === undefined && this.b === undefined) { throw new ConfigurationError('need one'); }"
+  - "if (!this.a || !this.b) { throw new ConfigurationError('need both'); }"
+  - "if (!this.a) { throw new ConfigurationError('need a'); }"
+  - "if (this.a == null && this.b == null) { throw new ConfigurationError('need one'); }"
 invalid:
   - >-
     async run({ $ }) { if (!this.percentile && !this.funnelAggregation) { throw
     new ConfigurationError('need one'); } }
+  - "if (!a && !b) { throw new Error('need one'); }"
+  - "if (!this.a && !this.b) { throw new ConfigurationError('need one'); } else { run(); }"
+  - "if (!opts.min && !opts.max) { return; }"
