@@ -1,6 +1,16 @@
 id: php-constant-call-without-defined-guard
 snapshots:
-  <?php if ( constant( $name ) ) { echo 1; }:
+  "<?php if ( $x && constant( $name ) ) { echo 1; }":
+    labels:
+    - source: constant( $name )
+      style: primary
+      start: 17
+      end: 34
+    - source: if ( $x && constant( $name ) ) { echo 1; }
+      style: secondary
+      start: 6
+      end: 48
+  "<?php if ( constant( $name ) ) { echo 1; }":
     labels:
     - source: constant( $name )
       style: primary
@@ -10,3 +20,23 @@ snapshots:
       style: secondary
       start: 6
       end: 42
+  "<?php if ( constant( $name ) === 'x' ) { echo 1; }":
+    labels:
+    - source: constant( $name )
+      style: primary
+      start: 11
+      end: 28
+    - source: if ( constant( $name ) === 'x' ) { echo 1; }
+      style: secondary
+      start: 6
+      end: 50
+  "<?php if ( defined( $a ) && constant( $b ) ) { echo 1; }":
+    labels:
+    - source: constant( $b )
+      style: primary
+      start: 28
+      end: 42
+    - source: if ( defined( $a ) && constant( $b ) ) { echo 1; }
+      style: secondary
+      start: 6
+      end: 56

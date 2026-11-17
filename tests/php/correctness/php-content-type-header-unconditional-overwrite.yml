@@ -3,5 +3,11 @@ valid:
   - >-
     if ( ! isset( $r['headers']['Content-Type'] ) )
     $r['headers']['Content-Type'] = 'text/plain';
+  - '<?php if ( isset( $r[''headers''][''Content-Type''] ) ) { echo 1; } else { $r[''headers''][''Content-Type''] = ''x''; }'
+  - '<?php if ( ! isset( $r[''headers''][''Content-Type''] ) && $json ) { $r[''headers''][''Content-Type''] = ''application/json''; }'
+  - '<?php if ( ! isset( $r[''headers''][''Content-Type''] ) ) { $r[''headers''][''Content-Type''] = ''a''; $r[''headers''][''Content-Length''] = 1; }'
 invalid:
   - '$r[''headers''][''Content-Type''] = ''text/plain'';'
+  - '<?php $r[''headers''][''Content-Type''] = $type;'
+  - '<?php $args[''headers''][''Content-Type''] = ''application/json'';'
+  - '<?php if ( $debug ) { $r[''headers''][''Content-Type''] = ''text/plain''; }'

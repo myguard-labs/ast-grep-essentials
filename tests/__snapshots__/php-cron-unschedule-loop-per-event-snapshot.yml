@@ -1,12 +1,46 @@
 id: php-cron-unschedule-loop-per-event
 snapshots:
-  ? <?php foreach ( $cron_array['wp_batch_split_terms'] as $timestamp_hook => $cron_data ) { foreach ( $cron_data as $key => $args ) { wp_unschedule_event( 'wp_batch_split_terms', $timestamp_hook, $args['args'] ); } }
-  : labels:
+  "<?php foreach ( $cron_array['wp_batch_split_terms'] as $timestamp_hook => $cron_data ) { foreach ( $cron_data as $key => $args ) { wp_unschedule_event( 'wp_batch_split_terms', $timestamp_hook, $args['args'] ); } }":
+    labels:
     - source: wp_unschedule_event( 'wp_batch_split_terms', $timestamp_hook, $args['args'] )
       style: primary
       start: 131
       end: 208
-    - source: foreach ( $cron_data as $key => $args ) { wp_unschedule_event( 'wp_batch_split_terms', $timestamp_hook, $args['args'] ); }
+    - source: >-
+        foreach ( $cron_data as $key => $args ) { wp_unschedule_event(
+        'wp_batch_split_terms', $timestamp_hook, $args['args'] ); }
       style: secondary
       start: 89
       end: 211
+  "<?php foreach ( $events as $ts => $ev ) { if ( $ev ) { wp_unschedule_event( $ts, 'h' ); } }":
+    labels:
+    - source: wp_unschedule_event( $ts, 'h' )
+      style: primary
+      start: 55
+      end: 86
+    - source: >-
+        foreach ( $events as $ts => $ev ) { if ( $ev ) { wp_unschedule_event( $ts, 'h'
+        ); } }
+      style: secondary
+      start: 6
+      end: 91
+  "<?php foreach ( $events as $ts => $ev ) { wp_unschedule_event( $ts, 'h' ); }":
+    labels:
+    - source: wp_unschedule_event( $ts, 'h' )
+      style: primary
+      start: 42
+      end: 73
+    - source: foreach ( $events as $ts => $ev ) { wp_unschedule_event( $ts, 'h' ); }
+      style: secondary
+      start: 6
+      end: 76
+  "<?php function f() { foreach ( $events as $ts => $ev ) { wp_unschedule_event( $ts, 'h' ); } }":
+    labels:
+    - source: wp_unschedule_event( $ts, 'h' )
+      style: primary
+      start: 57
+      end: 88
+    - source: foreach ( $events as $ts => $ev ) { wp_unschedule_event( $ts, 'h' ); }
+      style: secondary
+      start: 21
+      end: 91

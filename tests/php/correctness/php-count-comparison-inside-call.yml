@@ -1,5 +1,11 @@
 id: php-count-comparison-inside-call
 valid:
   - '<?php if ( count($wp_theme_directories) <= 1 ) return ''/themes''; ?>'
+  - '<?php $n = count($a, COUNT_RECURSIVE) <= 3;'
+  - '<?php $n = count(array_filter($a)) <= 1;'
+  - '<?php $n = count($a) < 1 || count($b) <= 1;'
 invalid:
   - '<?php if ( count($wp_theme_directories <= 1) ) return ''/themes''; ?>'
+  - '<?php $n = count($o->items <= 2);'
+  - '<?php $n = count($a[''k''] <= 1);'
+  - '<?php $n = count($a + 1 <= 3);'
