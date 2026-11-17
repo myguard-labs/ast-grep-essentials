@@ -1,5 +1,10 @@
 id: c-pow2-bittrick-missing-zero-guard
 valid:
   - 'int f(unsigned n) { return n != 0 && n == (n & -n); }'
+  - 'int f(unsigned n) { return (n & (n - 1)) == 0 && n != 0; }'
+  - 'int f(unsigned long n) { return n != 0 && n == (n & -n); }'
 invalid:
   - 'int f(unsigned n) { return n == (n & -n); }'
+  - 'int f(unsigned long n) { return n == (n & -n); }'
+  - 'int f(unsigned n) { if (n == (n & -n)) return 1; return 0; }'
+  - 'int f(unsigned n, int on) { return on && n == (n & -n); }'

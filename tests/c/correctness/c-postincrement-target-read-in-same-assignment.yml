@@ -1,5 +1,10 @@
 id: c-postincrement-target-read-in-same-assignment
 valid:
   - 'void f(char *s, const char *t) { *s = t[*s & 0x3f]; s++; }'
+  - 'void f(char *d, const char *s) { *d++ = *s++; }'
+  - 'void f(char *d, const char *s) { *d = *s; d++; s++; }'
+  - 'void f(char *d, int len) { *d++ = (char) len; }'
 invalid:
   - 'void f(char *s, const char *t) { *s++ = t[*s & 0x3f]; }'
+  - 'void f(char *s) { *s++ = *s + 1; }'
+  - 'void f(char *s) { *s++ = (char) (*s | 0x20); }'

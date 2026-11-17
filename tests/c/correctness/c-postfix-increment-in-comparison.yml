@@ -1,5 +1,11 @@
 id: c-postfix-increment-in-comparison
 valid:
   - 'static void f(int i, int n) { if (++i > n) return; }'
+  - 'static void f(int i, int n) { if (i > n) i++; }'
+  - 'static void f(const int *a, int i, int n) { if (a[i++] > n) return; }'
+  - 'static void f(int i, int n) { if (--i >= n) return; }'
 invalid:
   - 'static void f(int i, int n) { if (i++ > n) return; }'
+  - 'static void f(int i, int n) { if (i-- > n) return; }'
+  - 'static void f(int i, int n) { if (n <= i++) return; }'
+  - 'static void f(int i, int n) { if (i++ >= n) return; }'
