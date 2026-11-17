@@ -16,13 +16,30 @@ rule:
   follows:
     stopBy: end
     kind: declaration
-    has:
-      kind: init_declarator
-      has:
-        kind: call_expression
-        has:
-          field: function
-          regex: '^(pemalloc|emalloc|malloc)$'
+    all:
+      - has:
+          kind: init_declarator
+          all:
+            - has:
+                kind: call_expression
+                has:
+                  field: function
+                  regex: '^(pemalloc|emalloc|malloc)$'
+            - has:
+                field: declarator
+                any:
+                  - kind: identifier
+                    pattern: $V
+                  - has:
+                      kind: identifier
+                      pattern: $V
+      - not:
+          precedes:
+            stopBy: end
+            any:
+              - pattern: 'free($V);'
+              - pattern: 'efree($V);'
+              - pattern: 'pefree($V, $$$F);'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0

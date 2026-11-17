@@ -18,9 +18,17 @@ rule:
         inside:
           pattern: 'if ($P[$I] == ''\\'' && !IsDBCSLeadByte($P[$I - 1])) { $$$BODY2 }'
           stopBy: end
+    - not:
+        follows:
+          stopBy: end
+          kind: if_statement
+          has:
+            stopBy: end
+            pattern:
+              context: 'IsDBCSLeadByte($P[$I - 1]);'
+              selector: call_expression
 metadata:
   todo_cases:
-    - "false positive: a guard in an earlier separate statement (if (i > 0 && IsDBCSLeadByte(p[i - 1])) return;) before the backslash test is flagged"
     - "an if with a wrong guard (p[i] == '\\\\' && !IsDBCSLeadByte(p[i])) or any && condition is not flagged"
   rule_modified_at: '2026-10-14'
   ast_grep_tested_version: 0.50.0
