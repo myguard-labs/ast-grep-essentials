@@ -15,6 +15,10 @@ rule:
   pattern: |
     if ((v = zend_hash_find_ind($$$ARGS)) != NULL) { ZVAL_COPY($$$COPYARGS, v); }
 metadata:
+  todo_cases:
+    - 'A body with a second statement after ZVAL_COPY(&data, v) is not reported: the pattern needs ZVAL_COPY as the only statement.'
+    - 'A condition without the != NULL comparison, if ((v = zend_hash_find_ind(ht, key))), is not reported.'
+    - 'A pointer variable not literally named v (for example val) is not reported: the pattern binds the literal name v.'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

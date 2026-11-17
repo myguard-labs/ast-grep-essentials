@@ -1,11 +1,25 @@
 id: c-hash-find-user-string-key-not-symtable
 snapshots:
-  ? |-
-    zval **tmp;
-    if (zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset)+1, (void **)&tmp) == SUCCESS) {
-        use(tmp);
-    }
-  : labels:
+  "void f(HashTable *ht, zval *offset) {\n    zval **tmp;\n    if (zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset) + 1, (void **) &tmp) == FAILURE) {\n        return;\n    }\n}":
+    labels:
+    - source: zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset) + 1, (void **) &tmp)
+      style: primary
+      start: 62
+      end: 140
+  "void f(HashTable *ht, zval *offset) {\n    zval **tmp;\n    if (zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset) + 1, (void **) &tmp) == SUCCESS) {\n        use(tmp);\n    }\n}":
+    labels:
+    - source: zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset) + 1, (void **) &tmp)
+      style: primary
+      start: 62
+      end: 140
+  "void f(HashTable *ht, zval *offset) {\n    zval *tmp = zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset) + 1);\n    use(tmp);\n}":
+    labels:
+    - source: zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset) + 1)
+      style: primary
+      start: 54
+      end: 116
+  "zval **tmp;\nif (zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset)+1, (void **)&tmp) == SUCCESS) {\n    use(tmp);\n}":
+    labels:
     - source: zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset)+1, (void **)&tmp)
       style: primary
       start: 16

@@ -3,5 +3,35 @@ valid:
   - >-
     void f(long len) { long t = ((len + 7) / sizeof(long)) * sizeof(long);
     (void)t; }
+  - |-
+    void f(long len) {
+        long t = (len / 4) * 8;
+        (void)t;
+    }
+  - |-
+    void f(long len, long n) {
+        long t = (len / n) * n;
+        (void)t;
+    }
+  - |-
+    void f(long len) {
+        long t = (len / ALIGN) * ALIGN;
+        (void)t;
+    }
 invalid:
   - 'void f(long len) { long t = ((len + 7) / 4) * 4; (void)t; }'
+  - |-
+    void f(long len) {
+        long t = (len / 16) * 16;
+        (void)t;
+    }
+  - |-
+    void f(long len) {
+        long t = (len / 0x10) * 0x10;
+        (void)t;
+    }
+  - |-
+    void f(long len) {
+        long t = (len / 4UL) * 4UL;
+        (void)t;
+    }

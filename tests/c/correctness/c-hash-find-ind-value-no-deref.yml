@@ -3,7 +3,39 @@ valid:
   - >-
     zval *v; if ((v = zend_hash_find_ind(ht, key)) != NULL) { ZVAL_DEREF(v);
     ZVAL_COPY(&data, v); }
+  - |-
+    void f(HashTable *ht, zend_string *key) {
+        zval *v;
+        zval data;
+        if ((v = zend_hash_find_ind(ht, key)) != NULL) {
+            ZVAL_DEREF(v);
+            ZVAL_COPY(&data, v);
+        }
+    }
+  - |-
+    void f(HashTable *ht, zend_string *key) {
+        zval *v;
+        zval data;
+        if ((v = zend_hash_find_ind(ht, key)) != NULL) { ZVAL_COPY_DEREF(&data, v); }
+    }
 invalid:
   - >-
     zval *v; if ((v = zend_hash_find_ind(ht, key)) != NULL) { ZVAL_COPY(&data,
     v); }
+  - |-
+    void f(HashTable *ht, zend_string *key, zval *out) {
+        zval *v;
+        if ((v = zend_hash_find_ind(ht, key)) != NULL) { ZVAL_COPY(out, v); }
+    }
+  - |-
+    void f(HashTable *ht, zend_string *key, zval *arr, int i) {
+        zval *v;
+        if ((v = zend_hash_find_ind(ht, key)) != NULL) { ZVAL_COPY(&arr[i], v); }
+    }
+  - |-
+    void f(HashTable *ht, zend_string **keys, int n, zval *out) {
+        zval *v;
+        for (int i = 0; i < n; i++) {
+            if ((v = zend_hash_find_ind(ht, keys[i])) != NULL) { ZVAL_COPY(out, v); }
+        }
+    }

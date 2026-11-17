@@ -3,7 +3,44 @@ valid:
   - >-
     zend_hash_init(p->x, 0, NULL, dtor, 1); ZEND_HASH_FOREACH_STR_KEY_PTR(a->x,
     key, tmp) { }
+  - |-
+    void f(struct P *p, struct P *a) {
+        zend_hash_init(p->x, 0, NULL, dtor, 1);
+        ZEND_HASH_FOREACH_STR_KEY_PTR(a->x, key, tmp) {
+            use(tmp);
+        } ZEND_HASH_FOREACH_END();
+    }
+  - |-
+    void f(HashTable *ht, HashTable *src) {
+        zend_hash_init(ht, 0, NULL, dtor, 0);
+        ZEND_HASH_FOREACH_STR_KEY_PTR(src, key, tmp) {
+            zend_hash_add_ptr(ht, key, tmp);
+        } ZEND_HASH_FOREACH_END();
+    }
 invalid:
   - >-
     zend_hash_init(p->x, 0, NULL, dtor, 1); ZEND_HASH_FOREACH_STR_KEY_PTR(p->x,
     key, tmp) { }
+  - |-
+    void f(HashTable *ht) {
+        zend_hash_init(ht, 0, NULL, dtor, 0);
+        ZEND_HASH_FOREACH_STR_KEY_PTR(ht, key, tmp) {
+            use(tmp);
+        } ZEND_HASH_FOREACH_END();
+    }
+  - |-
+    void f(HashTable *ht) {
+        zend_hash_init(ht, 0, NULL, dtor, 0);
+        prepare();
+        log_it();
+        ZEND_HASH_FOREACH_STR_KEY_PTR(ht, key, tmp) {
+            use(tmp);
+        } ZEND_HASH_FOREACH_END();
+    }
+  - |-
+    void f(HashTable *ht) {
+        zend_hash_init(&ht->inner, 0, NULL, dtor, 0);
+        ZEND_HASH_FOREACH_STR_KEY_PTR(&ht->inner, key, tmp) {
+            use(tmp);
+        } ZEND_HASH_FOREACH_END();
+    }

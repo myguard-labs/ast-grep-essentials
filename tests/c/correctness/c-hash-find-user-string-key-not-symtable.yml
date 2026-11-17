@@ -5,9 +5,45 @@ valid:
     if (zend_symtable_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset)+1, (void **)&tmp) == SUCCESS) {
         use(tmp);
     }
+  - |-
+    void f(HashTable *ht, zval *offset) {
+        zval **tmp;
+        if (zend_hash_find(ht, "fixed", sizeof("fixed"), (void **) &tmp) == SUCCESS) {
+            use(tmp);
+        }
+    }
+  - |-
+    void f(HashTable *ht, zval *offset) {
+        zval *tmp = zend_symtable_str_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset));
+        use(tmp);
+    }
+  - |-
+    void f(HashTable *ht, zval *offset) {
+        zval *tmp = zend_hash_index_find(ht, Z_LVAL_P(offset));
+        use(tmp);
+    }
 invalid:
   - |-
     zval **tmp;
     if (zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset)+1, (void **)&tmp) == SUCCESS) {
         use(tmp);
+    }
+  - |-
+    void f(HashTable *ht, zval *offset) {
+        zval *tmp = zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset) + 1);
+        use(tmp);
+    }
+  - |-
+    void f(HashTable *ht, zval *offset) {
+        zval **tmp;
+        if (zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset) + 1, (void **) &tmp) == SUCCESS) {
+            use(tmp);
+        }
+    }
+  - |-
+    void f(HashTable *ht, zval *offset) {
+        zval **tmp;
+        if (zend_hash_find(ht, Z_STRVAL_P(offset), Z_STRLEN_P(offset) + 1, (void **) &tmp) == FAILURE) {
+            return;
+        }
     }

@@ -1,5 +1,65 @@
 id: c-guard-flag-never-assigned
 snapshots:
+  "int f(int a) {\n    int need = 0;\n    int out = 0;\n    for (;;) { if (need) { out = a; break; } break; }\n    return out;\n}":
+    labels:
+    - source: if (need) { out = a; break; }
+      style: primary
+      start: 65
+      end: 94
+    - source: int need = 0;
+      style: secondary
+      start: 19
+      end: 32
+    - source: |-
+        int f(int a) {
+            int need = 0;
+            int out = 0;
+            for (;;) { if (need) { out = a; break; } break; }
+            return out;
+        }
+      style: secondary
+      start: 0
+      end: 121
+  "int f(int a) {\n    int need = 0;\n    int out = 0;\n    if (need) out = a;\n    return out;\n}":
+    labels:
+    - source: if (need) out = a;
+      style: primary
+      start: 54
+      end: 72
+    - source: int need = 0;
+      style: secondary
+      start: 19
+      end: 32
+    - source: |-
+        int f(int a) {
+            int need = 0;
+            int out = 0;
+            if (need) out = a;
+            return out;
+        }
+      style: secondary
+      start: 0
+      end: 90
+  "int f(int a) {\n    int need = 0;\n    int out = 0;\n    if (need) { out = a; } else { out = 1; }\n    return out;\n}":
+    labels:
+    - source: if (need) { out = a; } else { out = 1; }
+      style: primary
+      start: 54
+      end: 94
+    - source: int need = 0;
+      style: secondary
+      start: 19
+      end: 32
+    - source: |-
+        int f(int a) {
+            int need = 0;
+            int out = 0;
+            if (need) { out = a; } else { out = 1; }
+            return out;
+        }
+      style: secondary
+      start: 0
+      end: 112
   "int f(int a) { int need = 0; int out = 0; if (need) { out = a; } return out; }":
     labels:
     - source: if (need) { out = a; }

@@ -17,6 +17,8 @@ rule:
         stopBy: end
         regex: '^\s*ZEND_HASH_FOREACH_VAL\('
 metadata:
+  todo_cases:
+    - 'The same loop inside a function body (void f(HashTable *ht) { ZEND_HASH_FOREACH_VAL(ht, v) { if (Z_TYPE_P(v) == IS_STRING) { use(v); } } ZEND_HASH_FOREACH_END(); }) is not reported: the inside regex needs a node whose text starts with the macro.'
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-19'

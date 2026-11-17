@@ -3,7 +3,38 @@ valid:
   - |-
     static int cb(zval *e, void *arg) { return 0; }
     void f(HashTable *h) { zend_hash_apply_with_argument(h, cb, NULL); }
+  - |-
+    static int cb(zval *e, void *arg) { return 0; }
+    void f(HashTable *h) {
+        zend_hash_apply_with_argument(h, cb, &state);
+    }
+  - |-
+    static int cb(zval *e, void *arg) { return 0; }
+    void f(HashTable *h) {
+        apply_func_arg_t fn = cb;
+        zend_hash_apply_with_argument(h, fn, NULL);
+    }
+  - |-
+    static int cb(zval *e) { return 0; }
+    void f(HashTable *h) {
+        zend_hash_apply(h, cb);
+    }
 invalid:
   - |-
     static int cb(module_t *m, void *arg) { return 0; }
     void f(HashTable *h) { zend_hash_apply_with_argument(h, (apply_func_arg_t) cb, NULL); }
+  - |-
+    static int cb(zval *e, void *arg) { return 0; }
+    void f(HashTable *h) {
+        zend_hash_apply_with_argument(h, (apply_func_arg_t) cb, &state);
+    }
+  - |-
+    static int cb(zval *e, void *arg) { return 0; }
+    void f(HashTable *h, int flag) {
+        zend_hash_apply_with_argument(h, (apply_func_arg_t) cb, NULL, flag);
+    }
+  - |-
+    static int cb(module_t *m, void *arg) { return 0; }
+    void f(zval *zv) {
+        zend_hash_apply_with_argument(Z_ARRVAL_P(zv), (apply_func_arg_t) cb, ctx);
+    }
