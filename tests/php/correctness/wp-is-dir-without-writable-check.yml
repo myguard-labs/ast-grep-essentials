@@ -3,5 +3,10 @@ valid:
   - >-
     <?php $t = ini_get('upload_tmp_dir'); if (is_dir($t) && is_writable($t))
     return $t;
+  - '<?php if ( is_dir( $d ) ) { if ( is_writable( $d ) ) { touch( $d . ''/x'' ); } }'
+  - '<?php if ( is_dir( $d ) and is_writable( $d ) ) { file_put_contents( $d . ''/x'', $data ); }'
 invalid:
   - '<?php $t = ini_get(''upload_tmp_dir''); if (is_dir($t)) return $t;'
+  - '<?php if ( is_dir( $d ) ) { file_put_contents( $d . ''/x'', $data ); }'
+  - '<?php if ( is_dir( $d ) ) { copy( $src, $d . ''/x'' ); } else { wp_mkdir_p( $d ); }'
+  - '<?php if ( is_dir( $opts[''dir''] ) ) return $opts[''dir''];'
