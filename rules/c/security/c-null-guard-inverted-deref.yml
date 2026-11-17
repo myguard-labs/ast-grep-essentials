@@ -7,13 +7,16 @@ message: Pointer is dereferenced inside a branch where it was just tested to be 
 note: >-
   Syntactic only; matches the same identifier in the condition and a
   dereference in the body, without checking reassignment or early exits. Only
-  the *p form is matched.
+  the *p form is matched in the consequence only; the else branch is the
+  non-NULL path and is not searched.
 rule:
   all:
     - pattern: 'if (!$P) $BODY'
     - has:
-        stopBy: end
-        pattern: '*$P'
+        field: consequence
+        has:
+          stopBy: end
+          pattern: '*$P'
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
@@ -29,4 +32,3 @@ metadata:
   todo_cases:
     - 'FN: void f(int *p) { if (!(p)) { *p = 1; } }'
     - 'FN: void f(struct s *p) { if (!p) { p->x = 1; } }'
-    - 'FP: void f(int *p) { if (!p) { return 0; } else { *p = 1; } } (deref is in the else branch)'

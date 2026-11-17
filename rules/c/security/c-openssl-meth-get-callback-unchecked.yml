@@ -9,8 +9,9 @@ message: >-
 note: >-
   Syntactic only. Matches a call through an identifier whose address is passed
   to an EVP_PKEY_meth_get_* call in the same function when the call is not
-  inside a conditional expression. It does not track dataflow or recognise
-  NULL guards written as if statements.
+  inside a conditional expression or in the consequence of an if statement
+  whose condition is the same identifier, `!= NULL`, `!= 0` or `&& ...` on it.
+  It does not track dataflow or other guard forms.
 rule:
   all:
     - kind: call_expression
@@ -36,6 +37,25 @@ rule:
         inside:
           kind: conditional_expression
           stopBy: end
+    - not:
+        inside:
+          stopBy: end
+          any:
+            - kind: compound_statement
+            - kind: return_statement
+            - kind: expression_statement
+          inside:
+            kind: if_statement
+            field: consequence
+            has:
+              field: condition
+              has:
+                any:
+                  - pattern: '$F'
+                  - pattern: '$F != NULL'
+                  - pattern: 'NULL != $F'
+                  - pattern: '$F != 0'
+                  - pattern: '$F && $X'
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
@@ -49,4 +69,4 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/476.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FP: if (pinit != NULL) return pinit(ctx); after EVP_PKEY_meth_get_paramgen(base, &pinit, NULL) is flagged although guarded by an if statement'
+    - 'FN: callback refilled by EVP_PKEY_meth_get_* inside the guard, if (pinit) { EVP_PKEY_meth_get_paramgen(base, &pinit, NULL); pinit(ctx); }'
