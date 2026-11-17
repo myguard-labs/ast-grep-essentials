@@ -1,5 +1,17 @@
 id: php-string-curly-brace-offset
 valid:
   - 'function f($opt) { return $opt[1][0] == ''0''; }'
+  - |-
+    function f($opt) { return $opt[1] == '{0}'; }
+  - |-
+    function f($opt) { return "{$opt[1]}" == '0'; }
+  - |-
+    function f($opt) { return substr($opt[1], 0, 1) == '0'; }
 invalid:
   - 'function f($opt) { return $opt[1]{0} == ''0''; }'
+  - |-
+    function f($opt) { return $opt[2]{1} == 'y'; }
+  - |-
+    function f($opt) { return $opt['k']{0} == '0'; }
+  - |-
+    function f($opt) { return $opt[$i]{$j} === 'x'; }

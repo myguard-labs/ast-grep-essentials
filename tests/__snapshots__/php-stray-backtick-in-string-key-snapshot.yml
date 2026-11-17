@@ -1,8 +1,26 @@
 id: php-stray-backtick-in-string-key
 snapshots:
-  <?php $post = array( 'post_parent' => $id, '`menu_order' => $position ); ?>:
+  $a = '``x';:
     labels:
-    - source: '''`menu_order'''
+    - source: "'``x'"
+      style: primary
+      start: 5
+      end: 10
+  "$a = ['`x' => 1];":
+    labels:
+    - source: "'`x'"
+      style: primary
+      start: 6
+      end: 10
+  "$a = ['x' => '`y'];":
+    labels:
+    - source: "'`y'"
+      style: primary
+      start: 13
+      end: 17
+  "<?php $post = array( 'post_parent' => $id, '`menu_order' => $position ); ?>":
+    labels:
+    - source: "'`menu_order'"
       style: primary
       start: 43
       end: 56

@@ -1,5 +1,17 @@
 id: php-stray-backtick-in-string-key
 valid:
   - '<?php $post = array( ''post_parent'' => $id, ''menu_order'' => $position ); ?>'
+  - |-
+    $a = ['x`' => 1];
+  - |-
+    $a = 'a`b';
+  - |-
+    $out = `ls`;
 invalid:
   - '<?php $post = array( ''post_parent'' => $id, ''`menu_order'' => $position ); ?>'
+  - |-
+    $a = ['`x' => 1];
+  - |-
+    $a = ['x' => '`y'];
+  - |-
+    $a = '``x';
