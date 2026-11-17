@@ -1,5 +1,25 @@
 id: c-header-global-definition-without-static
 valid:
   - 'static long phpdbg_pagesize;'
+  - |-
+    extern long phpdbg_pagesize;
+  - |-
+    void f(void) {
+      long local;
+      local = 1;
+      use(local);
+    }
+  - |-
+    typedef long my_off_t;
 invalid:
   - 'long phpdbg_pagesize;'
+  - |-
+    #include <stdio.h>
+    int other(void);
+    long total_calls;
+  - |-
+    static long a;
+    long b;
+  - |-
+    long counter;
+    void bump(void) { counter++; }

@@ -5,8 +5,31 @@ valid:
     # include "TSRM.h"
     # define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)
     #endif
+  - |-
+    #include <TSRM.h>
+    #define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)
+  - |-
+    #include "TSRM/TSRM.h"
+    #define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)
+  - |-
+    #define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)
+    #include "TSRM.h"
+  - |-
+    #define ZLIBG(v) (zlib_globals.v)
 invalid:
   - |-
     #ifdef ZTS
     # define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)
+    #endif
+  - |-
+    #include <stdlib.h>
+    #define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)
+  - |-
+    #define ZLIBG(v) TSRMG (zlib_globals_id, zend_zlib_globals *, v)
+  - |-
+    #include "ext_globals.h"
+    #ifdef ZTS
+    # define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)
+    #else
+    # define ZLIBG(v) (zlib_globals.v)
     #endif

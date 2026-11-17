@@ -5,9 +5,21 @@ valid:
       continue;
     }
     use(key);
+  - |-
+    void f(HashTable *ht) { if (zend_hash_get_current_key_ex(ht, &key, NULL, &num, 0, &pos) == HASH_KEY_IS_LONG) { use(num); } }
+  - |-
+    void f(HashTable *ht) { if (zend_hash_get_current_key_ex(ht, &key, NULL, &num, 0, &pos) == HASH_KEY_NON_EXISTENT) { return; } }
+  - |-
+    void f(HashTable *ht) { if (zend_hash_get_current_data_ex(ht, (void **) &data, &pos) == FAILURE) { return; } }
 invalid:
   - |-
     if (zend_hash_get_current_key_ex(ht, &key, NULL, NULL, 0, &pos) == FAILURE) {
       continue;
     }
     use(key);
+  - |-
+    void f(HashTable *ht) { while (zend_hash_get_current_key_ex(ht, &key, NULL, &num, 0, &pos) == FAILURE) { advance(); } }
+  - |-
+    int f(HashTable *ht) { return zend_hash_get_current_key_ex(ht, &key, NULL, &num, 0, &pos) == FAILURE; }
+  - |-
+    void f(HashTable *ht) { if ((zend_hash_get_current_key_ex(ht, &key, NULL, &num, 0, &pos) == FAILURE) && ready) { skip(); } }

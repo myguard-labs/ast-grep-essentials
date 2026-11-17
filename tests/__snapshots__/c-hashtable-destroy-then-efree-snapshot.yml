@@ -1,5 +1,35 @@
 id: c-hashtable-destroy-then-efree
 snapshots:
+  "void f(HashTable **h) {\n  zend_hash_destroy(*h);\n  efree(*h);\n}":
+    labels:
+    - source: efree(*h);
+      style: primary
+      start: 51
+      end: 61
+    - source: zend_hash_destroy(*h);
+      style: secondary
+      start: 26
+      end: 48
+  "void f(HashTable *h, int own) {\n  if (own) {\n    zend_hash_destroy(h);\n    efree(h);\n  }\n}":
+    labels:
+    - source: efree(h);
+      style: primary
+      start: 75
+      end: 84
+    - source: zend_hash_destroy(h);
+      style: secondary
+      start: 49
+      end: 70
+  "void f(obj_t *obj) {\n  zend_hash_destroy(obj->props);\n  efree(obj->props);\n}":
+    labels:
+    - source: efree(obj->props);
+      style: primary
+      start: 56
+      end: 74
+    - source: zend_hash_destroy(obj->props);
+      style: secondary
+      start: 23
+      end: 53
   "zend_hash_destroy(h);\nefree(h);":
     labels:
     - source: efree(h);

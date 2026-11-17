@@ -1,5 +1,17 @@
 id: c-header-fold-tab-only-continuation
 valid:
   - 'if ((len > 0) && ((*field == ''\t'') || *field == '' '')) { }'
+  - |-
+    if ((len > 0) && ((*field == '\t') || (*field == ' '))) { }
+  - |-
+    if ((len > 0) && ((*field == ' ') || (*field == '\t'))) { }
+  - |-
+    void f(char *field, int len) { if ((len > 0) && ((*field == '\t') || (*field == ' '))) { fold = 1; } }
 invalid:
   - 'if ((len > 0) && (*field == ''\t'')) { }'
+  - |-
+    if ((len > 0) && (*field == '\t')) { } else { fold = 0; }
+  - |-
+    void f(char *field, int len) { if ((len > 0) && (*field == '\t')) { } }
+  - |-
+    void f(char *field, int len) { while (more()) { if ((len > 0) && (*field == '\t')) { } field++; } }

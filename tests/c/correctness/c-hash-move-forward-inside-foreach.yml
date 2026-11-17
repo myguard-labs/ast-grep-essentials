@@ -1,7 +1,19 @@
 id: c-hash-move-forward-inside-foreach
 valid:
   - 'ZEND_HASH_FOREACH_KEY_PTR(h, idx, k, p) { use(p); } ZEND_HASH_FOREACH_END();'
+  - |-
+    void f(HashTable *h) { zval *v; ZEND_HASH_FOREACH_VAL(h, v) { use(v); } ZEND_HASH_FOREACH_END(); }
+  - |-
+    void f(HashTable *h) { zend_hash_internal_pointer_reset(h); while (zend_hash_has_more_elements(h) == SUCCESS) { use(h); zend_hash_move_forward(h); } }
+  - |-
+    void f(HashTable *h) { HashPosition pos; for (zend_hash_internal_pointer_reset_ex(h, &pos); zend_hash_has_more_elements_ex(h, &pos) == SUCCESS; zend_hash_move_forward_ex(h, &pos)) { use(h); } }
 invalid:
   - >-
     ZEND_HASH_FOREACH_KEY_PTR(h, idx, k, p) { zend_hash_move_forward(h); }
     ZEND_HASH_FOREACH_END();
+  - |-
+    void f(HashTable *h) { zval *v; ZEND_HASH_FOREACH_VAL(h, v) { use(v); zend_hash_move_forward(h); } ZEND_HASH_FOREACH_END(); }
+  - |-
+    void f(HashTable *h) { zend_string *k; zval *v; ZEND_HASH_FOREACH_STR_KEY_VAL(h, k, v) { zend_hash_move_forward(h); use(k, v); } ZEND_HASH_FOREACH_END(); }
+  - |-
+    void f(HashTable *h) { zval *v; ZEND_HASH_FOREACH_VAL(h, v) { if (v) { zend_hash_move_forward(h); } } ZEND_HASH_FOREACH_END(); }
