@@ -3,7 +3,11 @@ valid:
   - >-
     <?php if ( is_multisite() && $current_site->domain == $current_blog->domain
     ) { $x = 1; } ?>
+  - '<?php if ( is_main_site() ) { $x = 1; }'
+  - '<?php if ( $current_site->id == $current_blog->site_id ) { $x = 1; }'
 invalid:
   - >-
     <?php if ( is_multisite() && $current_site->domain.$current_site->path ==
     $current_blog->domain.$current_blog->path ) { $x = 1; } ?>
+  - '<?php function f(){ return $current_site->domain.$current_site->path == $current_blog->domain.$current_blog->path; }'
+  - '<?php $main = ($current_site->domain . $current_site->path == $current_blog->domain . $current_blog->path) ? 1 : 0;'

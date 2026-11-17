@@ -4,8 +4,12 @@ valid:
     <?php
     $charset = 'bogus';
     mb_internal_encoding( $charset );
+  - '<?php if ( ! mb_internal_encoding( $c ) ) { $x = 1; }'
+  - '<?php $ok = mb_internal_encoding( ''UTF-8'' ); if ( false === $ok ) { $x = 1; }'
 invalid:
   - |
     <?php
     $charset = 'bogus';
     @mb_internal_encoding( $charset );
+  - '<?php if ( @mb_internal_encoding( $c ) ) { $x = 1; }'
+  - '<?php $ok = @mb_internal_encoding();'

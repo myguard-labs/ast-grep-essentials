@@ -1,5 +1,9 @@
 id: wp-md5-email-without-lowercase
 valid:
   - '<?php $out .= md5( strtolower( $email ) );'
+  - '<?php $h = md5( strtolower( trim( $email ) ) );'
+  - '<?php $h = md5( mb_strtolower( $email ) );'
 invalid:
   - '<?php $out .= md5( $email );'
+  - '<?php $url = ''https://gravatar.com/avatar/'' . md5( $email ) . ''?s=64'';'
+  - '<?php function h($email){ return md5($email); }'
