@@ -17,3 +17,55 @@ snapshots:
       style: secondary
       start: 0
       end: 31
+  "ce = zend_lookup_class(name);\nif (!ce) {\n cleanup();\n zend_error_noreturn(E_ERROR, \"gone\");\n}":
+    labels:
+    - source: |-
+        if (!ce) {
+         cleanup();
+         zend_error_noreturn(E_ERROR, "gone");
+        }
+      style: primary
+      start: 30
+      end: 93
+    - source: zend_error_noreturn(E_ERROR, "gone")
+      style: secondary
+      start: 54
+      end: 90
+    - source: ce = zend_lookup_class(name);
+      style: secondary
+      start: 0
+      end: 29
+  "ce = zend_lookup_class_ex(name, NULL, 0);\nif (!ce) {\n zend_error_noreturn(E_ERROR, \"class %s not found\", ZSTR_VAL(name));\n}":
+    labels:
+    - source: |-
+        if (!ce) {
+         zend_error_noreturn(E_ERROR, "class %s not found", ZSTR_VAL(name));
+        }
+      style: primary
+      start: 42
+      end: 123
+    - source: zend_error_noreturn(E_ERROR, "class %s not found", ZSTR_VAL(name))
+      style: secondary
+      start: 54
+      end: 120
+    - source: ce = zend_lookup_class_ex(name, NULL, 0);
+      style: secondary
+      start: 0
+      end: 41
+  "fn = zend_hash_find_ptr(ht, name);\nif (!fn) {\n zend_error_noreturn(E_ERROR, \"no %s\", ZSTR_VAL(name));\n}":
+    labels:
+    - source: |-
+        if (!fn) {
+         zend_error_noreturn(E_ERROR, "no %s", ZSTR_VAL(name));
+        }
+      style: primary
+      start: 35
+      end: 103
+    - source: zend_error_noreturn(E_ERROR, "no %s", ZSTR_VAL(name))
+      style: secondary
+      start: 47
+      end: 100
+    - source: fn = zend_hash_find_ptr(ht, name);
+      style: secondary
+      start: 0
+      end: 34

@@ -3,7 +3,32 @@ valid:
   - >-
     errcode = php_oci_fetch_errmsg(err_p, &errbuf); if (errbuf) {
     php_error_docref(NULL, E_WARNING, "%s", errbuf); efree(errbuf); }
+  - |-
+    php_error_docref(NULL, E_NOTICE, "%s", msg);
+    efree(msg);
+  - |-
+    if (errbuf) {
+     php_error_docref(NULL, E_WARNING, "%s", errbuf);
+     efree(errbuf);
+    }
+  - |-
+    switch (rc) {
+     case 1:
+      php_error_docref(NULL, E_WARNING, "%s", buf);
+      efree(buf);
+      break;
+    }
 invalid:
   - >-
     php_error_docref(NULL, E_WARNING, "OCI_NO_DATA"); errcode =
     php_oci_fetch_errmsg(err_p, &errbuf); if (errbuf) { efree(errbuf); }
+  - 'efree(errbuf);'
+  - |-
+    php_error_docref(NULL, E_WARNING, "%s", other);
+    efree(errbuf);
+  - |-
+    if (rc) {
+     php_error_docref(NULL, E_WARNING, "%s", errbuf);
+    } else {
+     efree(errbuf);
+    }
