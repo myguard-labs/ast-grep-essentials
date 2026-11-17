@@ -11,6 +11,25 @@ valid:
             if written <= 0:
                 raise OSError('positional write made no progress')
             offset += written
+  - |-
+    import os
+    def replace(fd, data):
+        os.ftruncate(fd, 0)
+        written = os.pwrite(fd, data, 0)
+        return written
+  - |-
+    import os
+    def replace(fd, data):
+        os.ftruncate(fd, 0)
+        if os.pwrite(fd, data, 0) != len(data):
+            raise OSError("short write")
+  - |-
+    import os
+    def replace(fd, data):
+        total = 0
+        os.ftruncate(fd, 0)
+        total += os.pwrite(fd, data, 0)
+        return total
 invalid:
   - |
     import os
@@ -18,3 +37,20 @@ invalid:
     def replace_token(fd, token):
         os.ftruncate(fd, 0)
         os.pwrite(fd, token, 0)
+  - |-
+    import os
+    class Store:
+        def replace(self, data):
+            os.ftruncate(self._fd, 0)
+            os.pwrite(self._fd, data, 0)
+  - |-
+    import os
+    def replace(fd, data, offset):
+        os.ftruncate(fd, offset + len(data))
+        os.pwrite(fd, data, offset)
+  - |-
+    import os
+    def replace(fd, data):
+        with lock:
+            os.ftruncate(fd, 0)
+            os.pwrite(fd, data, 0)

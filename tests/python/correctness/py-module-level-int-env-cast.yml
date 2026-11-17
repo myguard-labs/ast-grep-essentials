@@ -4,7 +4,29 @@ valid:
     import os
     def threshold():
         return int(os.environ.get("THRESHOLD", "65536"))
+  - |-
+    import os
+    NAME = os.environ.get("NAME", "x")
+  - |-
+    import os
+    THRESHOLD = _parse_int(os.environ.get("THRESHOLD"), 65536)
+  - |-
+    import os
+    class Cfg:
+        def limit(self):
+            limit = int(os.environ.get("LIMIT", "10"))
+            return limit
 invalid:
   - |-
     import os
     THRESHOLD = int(os.environ.get("THRESHOLD", "65536"))
+  - |-
+    import os
+    PORT = int(os.environ.get("PORT"))
+  - |-
+    import os
+    TIMEOUT = int(os.environ.get("TIMEOUT", 30))
+  - |-
+    import os
+    if DEBUG:
+        LEVEL = int(os.environ.get("LEVEL", "1"))

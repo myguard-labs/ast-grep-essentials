@@ -1,14 +1,27 @@
 id: py-nonlocal-unguarded-file-read-rebind
 snapshots:
-  ? |-
-    from pathlib import Path
-    def outer():
-        saved = None
-        def record():
-            nonlocal saved
-            saved = Path('pkg.json').read_bytes()
-        record()
-  : labels:
+  "from pathlib import Path\nasync def outer():\n    data = None\n    async def load():\n        nonlocal data\n        data = Path(name).read_bytes()\n    await load()":
+    labels:
+    - source: |-
+        async def outer():
+            data = None
+            async def load():
+                nonlocal data
+                data = Path(name).read_bytes()
+            await load()
+      style: primary
+      start: 25
+      end: 159
+    - source: nonlocal data
+      style: secondary
+      start: 90
+      end: 103
+    - source: data = Path(name).read_bytes()
+      style: secondary
+      start: 112
+      end: 142
+  "from pathlib import Path\ndef outer():\n    saved = None\n    def record():\n        nonlocal saved\n        saved = Path('pkg.json').read_bytes()\n    record()":
+    labels:
     - source: |-
         def outer():
             saved = None
@@ -27,3 +40,47 @@ snapshots:
       style: secondary
       start: 104
       end: 141
+  "from pathlib import Path\ndef outer():\n    saved = None\n    def record():\n        nonlocal saved\n        try:\n            saved = Path(\"pkg.json\").read_bytes()\n        except OSError:\n            pass\n    record()":
+    labels:
+    - source: |-
+        def outer():
+            saved = None
+            def record():
+                nonlocal saved
+                try:
+                    saved = Path("pkg.json").read_bytes()
+                except OSError:
+                    pass
+            record()
+      style: primary
+      start: 25
+      end: 212
+    - source: nonlocal saved
+      style: secondary
+      start: 81
+      end: 95
+    - source: saved = Path("pkg.json").read_bytes()
+      style: secondary
+      start: 121
+      end: 158
+  "from pathlib import Path\ndef outer(paths):\n    blob = b\"\"\n    def record():\n        nonlocal blob\n        with lock:\n            blob = Path(f\"{root}/pkg.json\").read_bytes()\n    record()":
+    labels:
+    - source: |-
+        def outer(paths):
+            blob = b""
+            def record():
+                nonlocal blob
+                with lock:
+                    blob = Path(f"{root}/pkg.json").read_bytes()
+            record()
+      style: primary
+      start: 25
+      end: 186
+    - source: nonlocal blob
+      style: secondary
+      start: 84
+      end: 97
+    - source: blob = Path(f"{root}/pkg.json").read_bytes()
+      style: secondary
+      start: 129
+      end: 173

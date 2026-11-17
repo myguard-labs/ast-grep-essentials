@@ -1,5 +1,20 @@
 id: py-re-search-chained-attribute-access
 valid:
   - 'm = re.search(r''needle'', text)'
+  - |-
+    m = re.search(r"needle", text)
+    if m:
+        pos = m.start()
+  - |-
+    if (m := re.search(r"needle", text)) is not None:
+        pos = m.start()
+  - |-
+    pos = re.compile(r"needle").search(text)
 invalid:
   - 'pos = re.search(r''needle'', text).start()'
+  - |-
+    pos = re.search(r"needle", text, re.I).start(1)
+  - |-
+    tail = text[re.search(pattern, text).start():]
+  - |-
+    pos = re.search(pattern=p, string=text).start()

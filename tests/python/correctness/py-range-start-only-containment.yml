@@ -3,7 +3,25 @@ valid:
   - |-
     def hit(line_start, line_end, start1, size1):
         return start1 <= line_end and line_start <= start1 + size1 - 1
+  - |-
+    def in_window(start, lo, hi):
+        return lo <= start <= hi
+  - |-
+    def hit(start, end, lo, hi):
+        return start <= hi and lo <= end
+  - |-
+    def clamp(value, end, lo, hi):
+        return lo <= value <= hi
 invalid:
   - |-
     def hit(line_start, line_end, start1, size1):
         return start1 <= line_start <= start1 + size1 - 1
+  - |-
+    async def hit(range_start, range_end, lo, hi):
+        return lo <= range_start <= hi
+  - |-
+    def hit(self, lo, hi, start, end):
+        return lo <= start <= hi
+  - |-
+    def hit(start_pos, end_pos, lo, hi):
+        return 0 <= start_pos <= hi

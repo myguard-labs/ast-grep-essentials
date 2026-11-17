@@ -1,10 +1,49 @@
 id: py-okp-private-key-without-public-check
 snapshots:
-  ? |-
-    def load(jwk):
-        d = base64url_decode(jwk['d'])
-        return Ed25519PrivateKey.from_private_bytes(d)
-  : labels:
+  "async def load(jwk):\n    d = base64url_decode(jwk[\"d\"])\n    return Ed448PrivateKey.from_private_bytes(data=d)":
+    labels:
+    - source: Ed448PrivateKey.from_private_bytes(data=d)
+      style: primary
+      start: 67
+      end: 109
+    - source: |-
+        async def load(jwk):
+            d = base64url_decode(jwk["d"])
+            return Ed448PrivateKey.from_private_bytes(data=d)
+      style: secondary
+      start: 0
+      end: 109
+  "class Loader:\n    def load(self, jwk):\n        d = base64url_decode(jwk[\"d\"])\n        return X25519PrivateKey.from_private_bytes(d)":
+    labels:
+    - source: X25519PrivateKey.from_private_bytes(d)
+      style: primary
+      start: 93
+      end: 131
+    - source: |-
+        def load(self, jwk):
+                d = base64url_decode(jwk["d"])
+                return X25519PrivateKey.from_private_bytes(d)
+      style: secondary
+      start: 18
+      end: 131
+  "def load(jwk):\n    d = base64url_decode(jwk[\"d\"])\n    key = X448PrivateKey.from_private_bytes(bytes(d))\n    if key is None:\n        raise InvalidKeyError(\"bad\")\n    return key":
+    labels:
+    - source: X448PrivateKey.from_private_bytes(bytes(d))
+      style: primary
+      start: 60
+      end: 103
+    - source: |-
+        def load(jwk):
+            d = base64url_decode(jwk["d"])
+            key = X448PrivateKey.from_private_bytes(bytes(d))
+            if key is None:
+                raise InvalidKeyError("bad")
+            return key
+      style: secondary
+      start: 0
+      end: 175
+  "def load(jwk):\n    d = base64url_decode(jwk['d'])\n    return Ed25519PrivateKey.from_private_bytes(d)":
+    labels:
     - source: Ed25519PrivateKey.from_private_bytes(d)
       style: primary
       start: 61

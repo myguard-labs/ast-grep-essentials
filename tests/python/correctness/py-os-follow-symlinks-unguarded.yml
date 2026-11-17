@@ -6,9 +6,39 @@ valid:
     def restore(src, dst):
         if os.link in os.supports_follow_symlinks:
             os.link(src, dst, follow_symlinks=False)
+  - |-
+    import os
+    def restore(src, dst):
+        if os.link in os.supports_follow_symlinks:
+            os.link(src, dst, follow_symlinks=False)
+        else:
+            os.link(src, dst)
+  - |-
+    import os
+    def restore(pairs):
+        for src, dst in pairs:
+            if os.link in os.supports_follow_symlinks:
+                os.link(src, dst, follow_symlinks=False)
+  - |-
+    import os
+    def restore(src, dst):
+        os.link(src, dst)
 invalid:
   - |
     import os
 
     def restore(src, dst):
         os.link(src, dst, follow_symlinks=False)
+  - |-
+    import os
+    def restore(src, dst, flag):
+        os.link(src, dst, follow_symlinks=flag)
+  - |-
+    import os
+    def restore(src, dst):
+        if os.name == "posix":
+            os.link(src, dst, follow_symlinks=True)
+  - |-
+    import os
+    def restore(src_dir, dst):
+        os.link(src_dir + "/a", dst, follow_symlinks=False)

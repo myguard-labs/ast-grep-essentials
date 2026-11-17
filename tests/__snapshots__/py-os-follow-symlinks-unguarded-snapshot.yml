@@ -1,12 +1,26 @@
 id: py-os-follow-symlinks-unguarded
 snapshots:
-  ? |
-    import os
-
-    def restore(src, dst):
-        os.link(src, dst, follow_symlinks=False)
-  : labels:
+  "import os\n\ndef restore(src, dst):\n    os.link(src, dst, follow_symlinks=False)\n":
+    labels:
     - source: os.link(src, dst, follow_symlinks=False)
       style: primary
       start: 38
       end: 78
+  "import os\ndef restore(src, dst):\n    if os.name == \"posix\":\n        os.link(src, dst, follow_symlinks=True)":
+    labels:
+    - source: os.link(src, dst, follow_symlinks=True)
+      style: primary
+      start: 68
+      end: 107
+  "import os\ndef restore(src, dst, flag):\n    os.link(src, dst, follow_symlinks=flag)":
+    labels:
+    - source: os.link(src, dst, follow_symlinks=flag)
+      style: primary
+      start: 43
+      end: 82
+  "import os\ndef restore(src_dir, dst):\n    os.link(src_dir + \"/a\", dst, follow_symlinks=False)":
+    labels:
+    - source: os.link(src_dir + "/a", dst, follow_symlinks=False)
+      style: primary
+      start: 41
+      end: 92

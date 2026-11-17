@@ -3,7 +3,23 @@ valid:
   - |-
     if ("-nap", "-nap-v5") not in image:
         pass
+  - |-
+    ok = "-nap" in image or "-nap-v5" in image
+  - |-
+    if image in ("-nap", "-nap-v5"):
+        pass
+  - |-
+    if any(tag in image for tag in ("-nap", "-nap-v5")):
+        pass
 invalid:
   - |-
     if ("-nap" or "-nap-v5") not in image:
+        pass
+  - |-
+    ok = ('-nap' or '-nap-v5') in image
+  - |-
+    if ("-nap" or "-nap-v5") in image:
+        pass
+  - |-
+    if ( "a" or 'b' ) not in names:
         pass
