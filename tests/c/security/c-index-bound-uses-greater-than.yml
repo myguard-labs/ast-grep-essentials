@@ -7,7 +7,9 @@ valid:
      return t[i];
     }
   - 'int f(const int *t, int i) { if (i < N) return t[i]; return -1; }'
+  - 'int f(const int *t, int i) { if (i > N - 1) return -1; return t[i]; }'
   - 'int f(const int *t, int i) { if (i < 0 || i >= N) return -1; return t[i]; }'
+  - 'int f(const int *t, int i) { if (i > (N - 1)) return -1; return t[i]; }'
 
 invalid:
   - |-
@@ -19,3 +21,6 @@ invalid:
   - 'void f(const int *t, int i) { if (i > N) return; use(t[i]); }'
   - 'int f(const int *t, int i) { if (i > N) return -1; else return t[i]; }'
   - 'int f(const int *t, int i, int n) { if (i > n) return NULL; return t[i]; }'
+  - 'int f(const int *t, int i) { if (i > N - 11) return -1; return t[i]; }'
+  - 'int f(const int *t, int i) { if (i > N << k - 1) return -1; return t[i]; }'
+  - 'int f(const int *t, int i) { if (i > (N - 11)) return -1; return t[i]; }'
