@@ -1,6 +1,6 @@
 id: php-assign-overwrites-array-with-element
 snapshots:
-  $excerpt = trim($excerpt[1]);:
+  "$excerpt = trim($excerpt[1]);":
     labels:
     - source: $excerpt = trim($excerpt[1])
       style: primary
@@ -13,4 +13,53 @@ snapshots:
     - source: trim($excerpt[1])
       style: secondary
       start: 11
+      end: 28
+  "<?php\nfunction f($m) {\n\tif ($m) {\n\t\t$m = trim( $m[1] );\n\t}\n\treturn $m;\n}":
+    labels:
+    - source: $m = trim( $m[1] )
+      style: primary
+      start: 36
+      end: 54
+    - source: $m
+      style: secondary
+      start: 36
+      end: 38
+    - source: trim( $m[1] )
+      style: secondary
+      start: 41
+      end: 54
+  "<?php $excerpt =\n\ttrim(\n\t\t$excerpt[1]\n\t);":
+    labels:
+    - source: |-
+        $excerpt =
+        	trim(
+        		$excerpt[1]
+        	)
+      style: primary
+      start: 6
+      end: 40
+    - source: $excerpt
+      style: secondary
+      start: 6
+      end: 14
+    - source: |-
+        trim(
+        		$excerpt[1]
+        	)
+      style: secondary
+      start: 18
+      end: 40
+  "<?php $text = trim($text[1]);":
+    labels:
+    - source: $text = trim($text[1])
+      style: primary
+      start: 6
+      end: 28
+    - source: $text
+      style: secondary
+      start: 6
+      end: 11
+    - source: trim($text[1])
+      style: secondary
+      start: 14
       end: 28

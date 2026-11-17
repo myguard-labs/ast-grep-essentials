@@ -1,12 +1,49 @@
 id: php-assign-ref-element-in-foreach
 snapshots:
-  <?php foreach ( $children as $key => $child ) { $kids[$child->ID] =& $children[$key]; }:
+  "<?php foreach ( $a as $k ) :\n $out[$k] =& $in[$k];\nendforeach;":
+    labels:
+    - source: $out[$k] =& $in[$k]
+      style: primary
+      start: 30
+      end: 49
+    - source: |-
+        foreach ( $a as $k ) :
+         $out[$k] =& $in[$k];
+        endforeach;
+      style: secondary
+      start: 6
+      end: 62
+  "<?php foreach ( $children as $key => $child ) { $kids[$child->ID] =& $children[$key]; }":
     labels:
     - source: $kids[$child->ID] =& $children[$key]
       style: primary
       start: 48
       end: 84
-    - source: foreach ( $children as $key => $child ) { $kids[$child->ID] =& $children[$key]; }
+    - source: >-
+        foreach ( $children as $key => $child ) { $kids[$child->ID] =& $children[$key];
+        }
       style: secondary
       start: 6
       end: 87
+  "<?php foreach ( $children as $key => $child ) { if ($child) { $kids[$child->ID] =& $children[$key]; } }":
+    labels:
+    - source: $kids[$child->ID] =& $children[$key]
+      style: primary
+      start: 62
+      end: 98
+    - source: >-
+        foreach ( $children as $key => $child ) { if ($child) { $kids[$child->ID] =&
+        $children[$key]; } }
+      style: secondary
+      start: 6
+      end: 103
+  "<?php foreach ( $items as $i => $item ) { $refs[$i] =& $items[$i]; }":
+    labels:
+    - source: $refs[$i] =& $items[$i]
+      style: primary
+      start: 42
+      end: 65
+    - source: foreach ( $items as $i => $item ) { $refs[$i] =& $items[$i]; }
+      style: secondary
+      start: 6
+      end: 68

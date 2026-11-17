@@ -3,7 +3,12 @@ valid:
   - |-
     <?php
     $this->assertEqualSets( array( 'with_front', 'paged' ), $actual );
+  - "<?php\n$this->assertEqualSets( $expected, $actual );"
+  - "<?php\n$this->assertEquals( array( 'with_front' => true, 'paged' => true ), $actual );"
+  - "<?php\n$this->assertEqualSets( array( $a, $b, 'c' ), $actual, 'msg' );"
 invalid:
   - |-
     <?php
     $this->assertEqualSets( array( 'with_front' => true, 'paged' => true ), $actual );
+  - "<?php\n$this->assertEqualSets( array( 'a' => 1, 'b', 'c' ), $actual );"
+  - "<?php\n$this->assertEqualSets(\n\tarray(\n\t\t'a' => 1,\n\t),\n\t$actual\n);"

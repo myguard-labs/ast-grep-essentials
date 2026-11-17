@@ -1,8 +1,40 @@
 id: php-assign-subscript-in-condition
 snapshots:
-  ? "<?php\nif ( $plugins['folder'] = get_plugins( $dir ) ) {\n\techo 'x';\n}\n"
-  : labels:
-    - source: "if ( $plugins['folder'] = get_plugins( $dir ) ) {\n\techo 'x';\n}"
+  "<?php\nif ( $a['x']['y'] = foo() ) {\n\techo 'x';\n}\n":
+    labels:
+    - source: |-
+        if ( $a['x']['y'] = foo() ) {
+        	echo 'x';
+        }
+      style: primary
+      start: 6
+      end: 48
+  "<?php\nif ( $cache[ $key ] = compute( $key ) ) {\n\techo 'x';\n} else {\n\techo 'y';\n}\n":
+    labels:
+    - source: |-
+        if ( $cache[ $key ] = compute( $key ) ) {
+        	echo 'x';
+        } else {
+        	echo 'y';
+        }
+      style: primary
+      start: 6
+      end: 80
+  "<?php\nif ( $plugins['folder'] = get_plugins( $dir ) ) {\n\techo 'x';\n}\n":
+    labels:
+    - source: |-
+        if ( $plugins['folder'] = get_plugins( $dir ) ) {
+        	echo 'x';
+        }
       style: primary
       start: 6
       end: 68
+  "<?php\nif ( $this->cache[ $key ] = foo() ) {\n\techo 'x';\n}\n":
+    labels:
+    - source: |-
+        if ( $this->cache[ $key ] = foo() ) {
+        	echo 'x';
+        }
+      style: primary
+      start: 6
+      end: 56

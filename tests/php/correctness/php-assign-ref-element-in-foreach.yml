@@ -3,7 +3,13 @@ valid:
   - >-
     <?php foreach ( $children as $key => $child ) { $kids[$child->ID] =
     $children[$key]; }
+  - "<?php $kids[$id] =& $children[$key];"
+  - "<?php foreach ( $children as $key => $child ) { $kids[$key] = $children[$key]; }"
+  - "<?php foreach ( $a as $k => $c ) { $copy = $b[$k]; $out[$k] = $copy; }"
 invalid:
   - >-
     <?php foreach ( $children as $key => $child ) { $kids[$child->ID] =&
     $children[$key]; }
+  - "<?php foreach ( $children as $key => $child ) { if ($child) { $kids[$child->ID] =& $children[$key]; } }"
+  - "<?php foreach ( $items as $i => $item ) { $refs[$i] =& $items[$i]; }"
+  - "<?php foreach ( $a as $k ) :\n $out[$k] =& $in[$k];\nendforeach;"

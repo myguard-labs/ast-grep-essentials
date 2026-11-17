@@ -3,7 +3,13 @@ valid:
   - >-
     <?php function f($whitelist_options, $page, $key) { return array_search(
     $key, $whitelist_options[ $page ] ?? [] ); }
+  - "<?php $pos = array_search( $key, $haystack );"
+  - "<?php $pos = array_search( $key, array_keys( $opts ) );"
+  - "<?php $pos = array_search( $key, $opts[ $page ] ?? array(), true );"
 invalid:
   - >-
     <?php function f($whitelist_options, $page, $key) { return array_search(
     $key, $whitelist_options[ $page ] ); }
+  - "<?php $pos = array_search( 'x', $this->data[ $page ] );"
+  - "<?php $pos = array_search( $key, $opts[ $a ][ $b ] );"
+  - "<?php if ( false !== array_search( $key, $_POST['ids'] ) ) { $x = 1; }"

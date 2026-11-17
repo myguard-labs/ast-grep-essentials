@@ -1,5 +1,11 @@
 id: php-assign-overwrites-array-with-element
 valid:
   - '$post_excerpt = trim($excerpt[1]);'
+  - "<?php $excerpt = trim($excerpt);"
+  - "<?php $excerpt = trim($matches[1]);"
+  - "<?php $title = trim($excerpt[1]);"
 invalid:
   - '$excerpt = trim($excerpt[1]);'
+  - "<?php $text = trim($text[1]);"
+  - "<?php\nfunction f($m) {\n\tif ($m) {\n\t\t$m = trim( $m[1] );\n\t}\n\treturn $m;\n}"
+  - "<?php $excerpt =\n\ttrim(\n\t\t$excerpt[1]\n\t);"

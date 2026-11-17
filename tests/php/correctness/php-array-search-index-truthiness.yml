@@ -1,5 +1,11 @@
 id: php-array-search-index-truthiness
 valid:
   - "<?php\nif ( false !== array_search( $needle, $haystack ) ) {\n\t$x = 1;\n}"
+  - "<?php\n$idx = array_search( $needle, $haystack );\nif ( $idx !== false ) {\n\t$x = 1;\n}"
+  - "<?php\nif ( in_array( $needle, $haystack, true ) ) {\n\t$x = 1;\n}"
+  - "<?php\nif ( array_search( $needle, $haystack, true ) === false ) {\n\t$x = 1;\n}"
 invalid:
   - "<?php\nif ( array_search( $needle, $haystack ) ) {\n\t$x = 1;\n}"
+  - "<?php\nif ( array_search( $needle, $haystack, true ) ) {\n\t$x = 1;\n}"
+  - "<?php\nif ( array_search( 'admin', $roles ) ) {\n\t$x = 1;\n} else {\n\t$x = 2;\n}"
+  - "<?php\nif ( array_search( \"a\", array_keys( $map ) ) ) {\n\t$x = 1;\n}"
