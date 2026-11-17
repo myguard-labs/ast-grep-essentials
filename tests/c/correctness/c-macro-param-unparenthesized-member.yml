@@ -1,5 +1,11 @@
 id: c-macro-param-unparenthesized-member
 valid:
   - '#define INIT_PARAM(v, t) do { (v)->type = (t); } while (0)'
+  - '#define GET_LEN(s) ((s)->len)'
+  - '#define TOTAL(s) ((s)->len + (s)->pad)'
+  - '#define GET_LEN_DOT(s) ((s).len)'
 invalid:
   - '#define INIT_PARAM(v, t) do { v->type = t; } while (0)'
+  - '#define GET_LEN(s) (s->len)'
+  - '#define SET_LEN(s, n) s->len = (n)'
+  - '#define TOTAL(s) ((s)->len + s->pad)'

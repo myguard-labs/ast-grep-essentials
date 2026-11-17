@@ -3,7 +3,13 @@ valid:
   - >-
     HashTable *properties = Z_OBJ_HT_P(obj)->get_properties(Z_OBJ_P(obj));
     ZEND_HASH_FOREACH_STR_KEY(properties, prop_name) { }
+  - 'void f(zval *obj) { HashTable *properties = Z_OBJ_HT_P(obj)->get_properties(Z_OBJ_P(obj)); zend_string *key; ZEND_HASH_FOREACH_STR_KEY(properties, key) { use(key); } ZEND_HASH_FOREACH_END(); }'
+  - 'void f(zend_class_entry *ce) { zend_string *key; ZEND_HASH_MAP_FOREACH_STR_KEY(&ce->function_table, key) { use(key); } ZEND_HASH_FOREACH_END(); }'
+  - 'void f(zval *obj) { HashTable *properties = Z_OBJ_HT_P(obj)->get_properties(Z_OBJ_P(obj)); zend_string *key; zend_ulong h; ZEND_HASH_FOREACH_KEY(properties, h, key) { use(key); } ZEND_HASH_FOREACH_END(); }'
 invalid:
   - >-
     HashTable *properties = Z_OBJ_HT_P(obj)->get_properties(Z_OBJ_P(obj));
     ZEND_HASH_MAP_FOREACH_STR_KEY(properties, prop_name) { }
+  - 'void f(zval *obj) { HashTable *properties = Z_OBJ_HT_P(obj)->get_properties(Z_OBJ_P(obj)); zend_string *key; ZEND_HASH_MAP_FOREACH_STR_KEY(properties, key) { use(key); } ZEND_HASH_FOREACH_END(); }'
+  - 'void f(zval *obj) { HashTable *properties = Z_OBJ_HT_P(obj)->get_properties(Z_OBJ_P(obj)); zend_string *name; ZEND_HASH_MAP_FOREACH_STR_KEY(properties, name) { count++; } ZEND_HASH_FOREACH_END(); }'
+  - 'int g(zend_object *obj) { HashTable *properties = obj->handlers->get_properties(obj); zend_string *k; int n = 0; ZEND_HASH_MAP_FOREACH_STR_KEY(properties, k) { if (ZSTR_VAL(k)[0] == ''x'') n++; } ZEND_HASH_FOREACH_END(); return n; }'

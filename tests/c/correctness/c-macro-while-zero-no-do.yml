@@ -1,5 +1,11 @@
 id: c-macro-while-zero-no-do
 valid:
   - '#define PUT2(d, c) do { put_byte(d, c); put_byte(d, (c) >> 8); } while (0)'
+  - '#define DRAIN(q) while (!queue_empty(q)) { queue_pop(q); }'
+  - '#define PUT1(d, c) do{ put_byte(d, c); }while(0)'
+  - '#define LOOP(n) while ((n) > 0) { work(); (n)--; }'
 invalid:
   - '#define PUT2(d, c) while (0) { put_byte(d, c); put_byte(d, (c) >> 8); }'
+  - '#define SKIP(x) while (0) { (x)++; }'
+  - '#define SKIP(x) while(0){ (x)++; }'
+  - '#define SKIP(x) while ( 0 ) { (x)++; (x)--; }'
