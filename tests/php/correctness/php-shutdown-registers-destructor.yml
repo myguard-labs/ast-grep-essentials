@@ -3,7 +3,13 @@ valid:
   - >-
     <?php class C { function __construct() { register_shutdown_function( array(
     $this, 'flush' ) ); } function __destruct() {} }
+  - "<?php register_shutdown_function('cleanup');"
+  - "<?php register_shutdown_function(array('Logger', 'close'));"
+  - "<?php register_shutdown_function(function () { flush_all(); });"
 invalid:
   - >-
     <?php class C { function __construct() { register_shutdown_function( array(
     $this, '__destruct' ) ); } function __destruct() {} }
+  - "<?php register_shutdown_function(array($obj, '__destruct'));"
+  - "<?php register_shutdown_function(array('Foo', '__destruct'));"
+  - "<?php class C { function __construct() { register_shutdown_function(array(&$this, '__destruct')); } }"

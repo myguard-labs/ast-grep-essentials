@@ -1,5 +1,12 @@
 id: php-silenced-parse-url
 valid:
   - 'function f( $u ) { $a = parse_url( $u ); return $a; }'
+  - "<?php $h = parse_url( $u, PHP_URL_HOST );"
+  - "<?php $v = @file_get_contents( $u );"
+  - "<?php if ( false === parse_url( $u ) ) { return; }"
 invalid:
   - 'function f( $u ) { $a = @parse_url( $u ); return $a; }'
+  - "<?php $h = @parse_url( $u, PHP_URL_HOST );"
+  - "<?php return @parse_url( $u );"
+  - "<?php if ( @parse_url( $u ) === false ) { return; }"
+  - "<?php $h = (@parse_url( $u ));"
