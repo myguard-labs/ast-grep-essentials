@@ -3,7 +3,19 @@ valid:
   - >-
     void f(long o, long l, long n) { if (((unsigned long) o + (unsigned long) l)
     > (unsigned long) n) { } }
+  - |-
+    int f(struct r *r, unsigned long lim) { return ((unsigned long) r->off + (unsigned long) r->len) > (unsigned long) lim; }
+  - |-
+    int f(long o, long l, char *buf) { return ((unsigned long) o + (unsigned long) l) > sizeof(buf); }
+  - |-
+    int f(long o, long l, unsigned long n) { return ((unsigned long) o + (unsigned long) l) > n; }
 invalid:
   - >-
     void f(long o, long l, long n) { if (((unsigned long) o + (unsigned long) l)
     > (unsigned) n) { } }
+  - |-
+    int f(long o, long l, long n) { return ((unsigned long) o + (unsigned long) l) > (unsigned int) n; }
+  - |-
+    int f(long o, long l, long n) { return ((unsigned long) o + (unsigned long) l) > (unsigned short) n; }
+  - |-
+    int f(long o, long l, long n) { return ((unsigned long) o + (unsigned long) l) > (unsigned char) n; }

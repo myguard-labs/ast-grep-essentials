@@ -1,5 +1,17 @@
 id: c-narrow-cast-inside-widening-cast
 valid:
   - 'long f(void *d) { return (long) *(long long *) d; }'
+  - |-
+    long f(void *d) { return (long) *(int *) d; }
+  - |-
+    long f(long *p) { return (long) (*p); }
+  - |-
+    long f(long *p) { return (long) ((long) *p); }
 invalid:
   - 'long f(void *d) { return (long) ((int) *(long long *) d); }'
+  - |-
+    long f(long *p) { return (long) ((int) *p); }
+  - |-
+    long f(struct s *s) { return (long) ((int) *s->q); }
+  - |-
+    long f(long **pp) { long v; v = (long) ((int) *pp[0]); return v; }

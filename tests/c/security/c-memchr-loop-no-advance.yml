@@ -5,9 +5,21 @@ valid:
     while ((p = memchr(p, '\\', end - p)) != NULL) {
         *p++ = '/';
     }
+  - |-
+    void f(char *p, char *end) { while ((p = memchr(p, 92, end - p)) != NULL) { *p = 47; p++; } }
+  - |-
+    void f(char *p, char *end, int *cnt) { while ((p = memchr(p, 92, end - p)) != NULL) { (*cnt)++; p++; } }
+  - |-
+    void f(char *p, char *q, char *end) { while ((q = memchr(p, 92, end - p)) != NULL) { *q = 47; p = q + 1; } }
 invalid:
   - |-
     char *p = s;
     while ((p = memchr(p, '\\', end - p)) != NULL) {
         *p = '/';
     }
+  - |-
+    void f(char *p, char *end) { while ((p = memchr(p, 92, end - p)) != 0) { *p = 92; } }
+  - |-
+    void f(char *p, char *end) { while (p = memchr(p, 0, end - p)) { *p = 0; } }
+  - |-
+    void f(char *p, char *end, int *n) { while ((p = memchr(p, 47, end - p)) != NULL) { (*n)++; *p = 47; } }

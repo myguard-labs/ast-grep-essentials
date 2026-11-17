@@ -1,8 +1,50 @@
 id: c-missing-break-before-next-case
 snapshots:
-  'void f(int x, int y) { switch (x) { case 1: y = 1; case 2: y = 2; break; } }':
+  "void f(int t, int *x) { switch (t) { case 1: *x = 1; default: *x = 2; } }":
     labels:
-    - source: 'case 1: y = 1;'
+    - source: "case 1: *x = 1;"
+      style: primary
+      start: 37
+      end: 52
+    - source: "*x = 1;"
+      style: secondary
+      start: 45
+      end: 52
+    - source: "default: *x = 2;"
+      style: secondary
+      start: 53
+      end: 69
+  "void f(int t, int *x) { switch (t) { case 1: g(x); case 2: break; } }":
+    labels:
+    - source: "case 1: g(x);"
+      style: primary
+      start: 37
+      end: 50
+    - source: g(x);
+      style: secondary
+      start: 45
+      end: 50
+    - source: "case 2: break;"
+      style: secondary
+      start: 51
+      end: 65
+  "void f(int t, int *x) { switch (t) { case 1: if (t) *x = 1; case 2: break; } }":
+    labels:
+    - source: "case 1: if (t) *x = 1;"
+      style: primary
+      start: 37
+      end: 59
+    - source: "*x = 1;"
+      style: secondary
+      start: 52
+      end: 59
+    - source: "case 2: break;"
+      style: secondary
+      start: 60
+      end: 74
+  "void f(int x, int y) { switch (x) { case 1: y = 1; case 2: y = 2; break; } }":
+    labels:
+    - source: "case 1: y = 1;"
       style: primary
       start: 36
       end: 50
@@ -10,7 +52,7 @@ snapshots:
       style: secondary
       start: 44
       end: 50
-    - source: 'case 2: y = 2; break;'
+    - source: "case 2: y = 2; break;"
       style: secondary
       start: 51
       end: 72

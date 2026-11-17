@@ -1,5 +1,17 @@
 id: c-mysql-status-return-bool
 valid:
   - 'RETURN_BOOL(!mysql_rollback(mysql->mysql));'
+  - |-
+    void f(void) { RETURN_BOOL(mysql_rollback(m) == 0); }
+  - |-
+    void f(void) { RETURN_BOOL(mysql_more_results(m)); }
+  - |-
+    void f(void) { RETURN_BOOL(!mysql_rollback(Z_MYSQL_P(zv)->mysql)); }
 invalid:
   - 'RETURN_BOOL(mysql_rollback(mysql->mysql));'
+  - |-
+    void f(void) { RETURN_BOOL(mysql_rollback(conn)); }
+  - |-
+    void f(void) { RETURN_BOOL(mysql_rollback(Z_MYSQL_P(zv)->mysql)); }
+  - |-
+    void f(void) { if (x) { RETURN_BOOL(mysql_rollback(mysql->mysql)); } }

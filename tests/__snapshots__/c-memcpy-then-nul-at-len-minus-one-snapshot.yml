@@ -1,10 +1,26 @@
 id: c-memcpy-then-nul-at-len-minus-one
 snapshots:
-  ? |-
-    memcpy(buf, src, n);
-    buf[n - 1] = '\0';
-  : labels:
+  "memcpy(buf, src, n);\nbuf[n - 1] = '\\0';":
+    labels:
     - source: buf[n - 1] = '\0';
       style: primary
       start: 21
       end: 39
+  "void f(char *buf, char *src, int n) { memcpy(buf, src, n); if (n > 0) { buf[n - 1] = '\\0'; } }":
+    labels:
+    - source: buf[n - 1] = '\0';
+      style: primary
+      start: 72
+      end: 90
+  "void f(char *out, char *src, int off, int len) { memcpy(&out[off], src, len); out[off + len - 1] = '\\0'; }":
+    labels:
+    - source: out[off + len - 1] = '\0';
+      style: primary
+      start: 78
+      end: 104
+  "void f(struct s *p, char *src, int len) { memcpy(p->name, src, len); p->name[len - 1] = '\\0'; }":
+    labels:
+    - source: p->name[len - 1] = '\0';
+      style: primary
+      start: 69
+      end: 93

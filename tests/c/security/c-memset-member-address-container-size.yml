@@ -3,7 +3,19 @@ valid:
   - >-
     struct s { int a; struct z zo; }; void f(struct s *p) { memset(&p->zo, 0,
     sizeof(p->zo)); }
+  - |-
+    struct s { int a; struct z zo; }; void f(struct s *p) { memset(&p->zo, 0, sizeof p->zo); }
+  - |-
+    struct s { int a; struct z zo; }; void f(struct s *p) { memset(p, 0, sizeof(struct s)); }
+  - |-
+    struct s { int a; zt zo; }; void f(struct s *p) { memset(&p->zo, 0, sizeof(zt)); }
 invalid:
   - >-
     struct s { int a; struct z zo; }; void f(struct s *p) { memset(&p->zo, 0,
     sizeof(struct s)); }
+  - |-
+    struct s { int a; struct z zo; }; void f(struct s *p) { memset(&p->zo, 0, sizeof(struct big)); }
+  - |-
+    struct s { int a; struct z zo; }; void f(struct s *q) { memset(&q->hdr, 0, sizeof(struct s)); }
+  - |-
+    void f(struct s *ctx) { memset(&ctx->state->zo, 0, sizeof(struct s)); }

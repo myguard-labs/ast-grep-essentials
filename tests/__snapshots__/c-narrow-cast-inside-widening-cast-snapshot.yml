@@ -1,6 +1,24 @@
 id: c-narrow-cast-inside-widening-cast
 snapshots:
-  long f(void *d) { return (long) ((int) *(long long *) d); }:
+  "long f(long **pp) { long v; v = (long) ((int) *pp[0]); return v; }":
+    labels:
+    - source: (long) ((int) *pp[0])
+      style: primary
+      start: 32
+      end: 53
+  "long f(long *p) { return (long) ((int) *p); }":
+    labels:
+    - source: (long) ((int) *p)
+      style: primary
+      start: 25
+      end: 42
+  "long f(struct s *s) { return (long) ((int) *s->q); }":
+    labels:
+    - source: (long) ((int) *s->q)
+      style: primary
+      start: 29
+      end: 49
+  "long f(void *d) { return (long) ((int) *(long long *) d); }":
     labels:
     - source: (long) ((int) *(long long *) d)
       style: primary
