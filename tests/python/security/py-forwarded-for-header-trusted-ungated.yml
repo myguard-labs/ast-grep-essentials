@@ -14,6 +14,10 @@ valid:
   #         return fwd.split(',')[0].strip()
   #     return request.client.host
 - astgrep_fixture = "def client_ip(request, settings):\n    fwd = request.headers.get('X-Forwarded-For')\n    if fwd:\n        return fwd.split(',')[0].strip()\n    return request.client.host"
+- "def client_ip(request, settings):\n    if request.client.host in settings.trusted_proxies:\n        fwd = request.headers.get('X-Forwarded-For')\n        if fwd:\n            return fwd.split(',')[0].strip()\n    return request.client.host"
+- "def client_ip(request, settings):\n    return request.client.host"
+- "def client_ip(request, settings):\n    fwd = request.headers.get('X-Forwarded-For')\n    if fwd and settings.trust_proxy:\n        return fwd.split(',')[0].strip()\n    return request.client.host"
+- "def client_ip(request, settings):\n    fwd = request.headers.get('Accept-Language')\n    if fwd:\n        return fwd.split(',')[0].strip()\n    return request.client.host"
 invalid:
 - |-
   def client_ip(request, settings):
@@ -21,3 +25,6 @@ invalid:
       if fwd:
           return fwd.split(',')[0].strip()
       return request.client.host
+- "def get_ip(req, cfg):\n    fwd = request.headers.get('X-Forwarded-For')\n    if fwd:\n        return fwd.split(',')[0].strip()\n    return request.client.host"
+- "def resolve(self, ctx):\n    fwd = request.headers.get('X-Forwarded-For')\n    if fwd:\n        return fwd.split(',')[0].strip()\n    return request.client.host"
+- "class Resolver:\n    def client_ip(self, request):\n        fwd = request.headers.get('X-Forwarded-For')\n        if fwd:\n            return fwd.split(',')[0].strip()\n        return request.client.host"

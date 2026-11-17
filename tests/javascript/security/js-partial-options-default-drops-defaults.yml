@@ -11,9 +11,15 @@ valid:
   //   return options
   // }
 - 'const astgrepFixture = "function msgpack(options) {\n  options = options || { preferMap: false, protoAction: ''error'' }\n  return options\n}";'
+- "function msgpack(options) {\n  options = { preferMap: false, protoAction: 'error', ...options }\n  return options\n}"
+- "function msgpack(options) {\n  options = options || {}\n  return options\n}"
+- "function msgpack(options) {\n  options = Object.assign({}, DEFAULTS, options)\n  return options\n}"
 invalid:
 - |-
   function msgpack(options) {
     options = options || { preferMap: false, protoAction: 'error' }
     return options
   }
+- "function parse(options) {\n  options = options || { preferMap: false, protoAction: 'error' }\n  return options\n}"
+- "function decode(options) {\n  options = options || { a: false, b: 'error' }\n  return options\n}"
+- "function init(options) {\n  options = options || { strict: false, protoAction: 'error' };\n  return options;\n}"

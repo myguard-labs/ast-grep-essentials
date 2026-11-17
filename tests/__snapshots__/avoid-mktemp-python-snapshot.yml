@@ -1,9 +1,7 @@
 id: avoid-mktemp-python
 snapshots:
-  ? |
-    from tempfile import mktemp
-    ff = mktemp()
-  : labels:
+  "from tempfile import mktemp\nff = mktemp()\n":
+    labels:
     - source: mktemp()
       style: primary
       start: 33
@@ -40,3 +38,85 @@ snapshots:
       style: secondary
       start: 28
       end: 41
+  "from tempfile import mktemp\npath = mktemp(prefix='job-')":
+    labels:
+    - source: mktemp(prefix='job-')
+      style: primary
+      start: 35
+      end: 56
+    - source: mktemp
+      style: secondary
+      start: 35
+      end: 41
+    - source: (prefix='job-')
+      style: secondary
+      start: 41
+      end: 56
+    - source: tempfile
+      style: secondary
+      start: 5
+      end: 13
+    - source: tempfile
+      style: secondary
+      start: 5
+      end: 13
+    - source: mktemp
+      style: secondary
+      start: 21
+      end: 27
+    - source: mktemp
+      style: secondary
+      start: 21
+      end: 27
+    - source: from tempfile import mktemp
+      style: secondary
+      start: 0
+      end: 27
+    - source: path = mktemp(prefix='job-')
+      style: secondary
+      start: 28
+      end: 56
+  "import tempfile\nname = tempfile.mktemp()":
+    labels:
+    - source: tempfile.mktemp()
+      style: primary
+      start: 23
+      end: 40
+    - source: tempfile
+      style: secondary
+      start: 23
+      end: 31
+    - source: mktemp
+      style: secondary
+      start: 32
+      end: 38
+    - source: tempfile.mktemp
+      style: secondary
+      start: 23
+      end: 38
+    - source: ()
+      style: secondary
+      start: 38
+      end: 40
+  "import tempfile\npath = tempfile.mktemp(suffix='.txt', dir='/tmp')":
+    labels:
+    - source: tempfile.mktemp(suffix='.txt', dir='/tmp')
+      style: primary
+      start: 23
+      end: 65
+    - source: tempfile
+      style: secondary
+      start: 23
+      end: 31
+    - source: mktemp
+      style: secondary
+      start: 32
+      end: 38
+    - source: tempfile.mktemp
+      style: secondary
+      start: 23
+      end: 38
+    - source: (suffix='.txt', dir='/tmp')
+      style: secondary
+      start: 38
+      end: 65

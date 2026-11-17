@@ -1,14 +1,44 @@
 id: js-unbounded-polling-loop
 snapshots:
-  ? |-
-    async pollResult($, id) {
-      while (true) {
-        const result = await this.getResult($, id);
-        if (result.status === "completed") return result.outputs;
-        await new Promise((r) => setTimeout(r, 3000));
-      }
-    }
-  : labels:
+  "async function poll(id) {\n  while (true) {\n    const r = await fetchStatus(id);\n    if (r.done) return r;\n  }\n}":
+    labels:
+    - source: |-
+        while (true) {
+            const r = await fetchStatus(id);
+            if (r.done) return r;
+          }
+      style: primary
+      start: 28
+      end: 109
+    - source: (true)
+      style: secondary
+      start: 34
+      end: 40
+    - source: await fetchStatus(id)
+      style: secondary
+      start: 57
+      end: 78
+  "async function poll(id) {\n  while (true) {\n    if (cache.has(id)) {\n      await flush(id);\n    }\n  }\n}":
+    labels:
+    - source: |-
+        while (true) {
+            if (cache.has(id)) {
+              await flush(id);
+            }
+          }
+      style: primary
+      start: 28
+      end: 100
+    - source: (true)
+      style: secondary
+      start: 34
+      end: 40
+    - source: await flush(id)
+      style: secondary
+      start: 74
+      end: 89
+  "async pollResult($, id) {\n  while (true) {\n    const result = await this.getResult($, id);\n    if (result.status === \"completed\") return result.outputs;\n    await new Promise((r) => setTimeout(r, 3000));\n  }\n}":
+    labels:
     - source: |-
         while (true) {
             const result = await this.getResult($, id);
@@ -26,3 +56,21 @@ snapshots:
       style: secondary
       start: 62
       end: 89
+  "const poll = async (id) => {\n  while ( true ) {\n    await sleep(500);\n    if (await isReady(id)) break;\n  }\n};":
+    labels:
+    - source: |-
+        while ( true ) {
+            await sleep(500);
+            if (await isReady(id)) break;
+          }
+      style: primary
+      start: 31
+      end: 107
+    - source: ( true )
+      style: secondary
+      start: 37
+      end: 45
+    - source: await sleep(500)
+      style: secondary
+      start: 52
+      end: 68

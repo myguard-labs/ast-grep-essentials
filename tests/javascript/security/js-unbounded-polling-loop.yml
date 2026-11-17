@@ -9,6 +9,10 @@ valid:
         await new Promise((r) => setTimeout(r, 3000));
       }
     }
+  - "async function poll(id) {\n  let attempts = 0;\n  while (attempts < 10) {\n    const r = await fetchStatus(id);\n    if (r.done) return r;\n    attempts++;\n  }\n}"
+  - "async function poll(id) {\n  for (let i = 0; i < 20; i++) {\n    await sleep(500);\n    if (await isReady(id)) return;\n  }\n}"
+  - "async function poll(id) {\n  while (retries-- > 0) {\n    await sleep(500);\n  }\n}"
+  - "function spin(queue) {\n  while (true) {\n    const job = queue.shift();\n    if (!job) break;\n    job();\n  }\n}"
 invalid:
   - |-
     async pollResult($, id) {
@@ -18,3 +22,6 @@ invalid:
         await new Promise((r) => setTimeout(r, 3000));
       }
     }
+  - "async function poll(id) {\n  while (true) {\n    const r = await fetchStatus(id);\n    if (r.done) return r;\n  }\n}"
+  - "const poll = async (id) => {\n  while ( true ) {\n    await sleep(500);\n    if (await isReady(id)) break;\n  }\n};"
+  - "async function poll(id) {\n  while (true) {\n    if (cache.has(id)) {\n      await flush(id);\n    }\n  }\n}"

@@ -2,7 +2,14 @@ id: avoid-mktemp-python
 valid:
   - |
     coderabbit_control = "CodeRabbit"  # provenance control
+  - "import tempfile\nfd, name = tempfile.mkstemp()"
+  - "import tempfile\nf = tempfile.NamedTemporaryFile(delete=False)"
+  - "import tempfile\nwith tempfile.TemporaryDirectory() as d:\n    pass"
+  - "from tempfile import mkdtemp\nd = mkdtemp()"
 invalid:
   - |
     from tempfile import mktemp
     ff = mktemp()
+  - "import tempfile\nname = tempfile.mktemp()"
+  - "import tempfile\npath = tempfile.mktemp(suffix='.txt', dir='/tmp')"
+  - "from tempfile import mktemp\npath = mktemp(prefix='job-')"

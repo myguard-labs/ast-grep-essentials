@@ -1,12 +1,18 @@
 id: py-forwarded-for-header-trusted-ungated
 snapshots:
-  ? |-
-    def client_ip(request, settings):
-        fwd = request.headers.get('X-Forwarded-For')
-        if fwd:
-            return fwd.split(',')[0].strip()
-        return request.client.host
-  : labels:
+  "class Resolver:\n    def client_ip(self, request):\n        fwd = request.headers.get('X-Forwarded-For')\n        if fwd:\n            return fwd.split(',')[0].strip()\n        return request.client.host":
+    labels:
+    - source: |-
+        def client_ip(self, request):
+                fwd = request.headers.get('X-Forwarded-For')
+                if fwd:
+                    return fwd.split(',')[0].strip()
+                return request.client.host
+      style: primary
+      start: 20
+      end: 198
+  "def client_ip(request, settings):\n    fwd = request.headers.get('X-Forwarded-For')\n    if fwd:\n        return fwd.split(',')[0].strip()\n    return request.client.host":
+    labels:
     - source: |-
         def client_ip(request, settings):
             fwd = request.headers.get('X-Forwarded-For')
@@ -16,3 +22,25 @@ snapshots:
       style: primary
       start: 0
       end: 166
+  "def get_ip(req, cfg):\n    fwd = request.headers.get('X-Forwarded-For')\n    if fwd:\n        return fwd.split(',')[0].strip()\n    return request.client.host":
+    labels:
+    - source: |-
+        def get_ip(req, cfg):
+            fwd = request.headers.get('X-Forwarded-For')
+            if fwd:
+                return fwd.split(',')[0].strip()
+            return request.client.host
+      style: primary
+      start: 0
+      end: 154
+  "def resolve(self, ctx):\n    fwd = request.headers.get('X-Forwarded-For')\n    if fwd:\n        return fwd.split(',')[0].strip()\n    return request.client.host":
+    labels:
+    - source: |-
+        def resolve(self, ctx):
+            fwd = request.headers.get('X-Forwarded-For')
+            if fwd:
+                return fwd.split(',')[0].strip()
+            return request.client.host
+      style: primary
+      start: 0
+      end: 156
