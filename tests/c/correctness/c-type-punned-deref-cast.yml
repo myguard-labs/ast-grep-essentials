@@ -1,5 +1,30 @@
 id: c-type-punned-deref-cast
 valid:
   - 'void g(int *buf, int fd) { *buf = fd; }'
+  - |-
+    #include <stdint.h>
+    #include <stddef.h>
+    #include <string.h>
+    float to_float(uint32_t u) { float x; memcpy(&x, &u, sizeof x); return x; }
+  - |-
+    #include <stdint.h>
+    #include <stddef.h>
+    #include <string.h>
+    float to_float(uint32_t u) {
+      union { uint32_t u; float f; } c;
+      c.u = u;
+      return c.f;
+    }
+  - |-
+    int next(int *p) { return *(p + 1); }
 invalid:
   - 'void g(char *buf, int fd) { *(int *) buf = fd; }'
+  - |-
+    float to_float(unsigned u) { return *(float *) &u; }
+  - |-
+    #include <stdint.h>
+    #include <stddef.h>
+    #include <string.h>
+    uint64_t load(char *buf) { return *(uint64_t *) buf; }
+  - |-
+    void store(char *p) { *(short *) p = 1; }

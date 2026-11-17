@@ -3,7 +3,50 @@ valid:
   - >-
     void php_implode(int a, void *b, void *c); void f(int a, void *b, void *c) {
     php_implode(a, b, c TSRMLS_CC); }
+  - |-
+    void fn(void *a, void *b, void *c);
+    void two(void *a, void *b);
+    void one(void *a);
+    int ck(void *a, void *b);
+    struct o { void (*cb)(void *, void *); };
+    void g(void *a, void *b TSRMLS_DC);
+    void f(void *a, void *b) { two(a, b TSRMLS_CC); }
+  - |-
+    void fn(void *a, void *b, void *c);
+    void two(void *a, void *b);
+    void one(void *a);
+    int ck(void *a, void *b);
+    struct o { void (*cb)(void *, void *); };
+    void f(struct o *p, void *a) { p->cb(a, a TSRMLS_CC); }
+  - |-
+    void fn(void *a, void *b, void *c);
+    void two(void *a, void *b);
+    void one(void *a);
+    int ck(void *a, void *b);
+    struct o { void (*cb)(void *, void *); };
+    void f(void *a, void *b) { if (ck(a, b TSRMLS_CC)) { one(a TSRMLS_CC); } }
 invalid:
   - >-
     void php_implode(int a, void *b, void *c); void f(int a, void *b, void *c) {
     php_implode(a, b, c TSRMLS_DC); }
+  - |-
+    void fn(void *a, void *b, void *c);
+    void two(void *a, void *b);
+    void one(void *a);
+    int ck(void *a, void *b);
+    struct o { void (*cb)(void *, void *); };
+    void f(void *a, void *b) { two(a, b TSRMLS_DC); }
+  - |-
+    void fn(void *a, void *b, void *c);
+    void two(void *a, void *b);
+    void one(void *a);
+    int ck(void *a, void *b);
+    struct o { void (*cb)(void *, void *); };
+    void f(struct o *p, void *a) { p->cb(a, a TSRMLS_DC); }
+  - |-
+    void fn(void *a, void *b, void *c);
+    void two(void *a, void *b);
+    void one(void *a);
+    int ck(void *a, void *b);
+    struct o { void (*cb)(void *, void *); };
+    void f(void *a, void *b) { if (ck(a, b TSRMLS_DC)) { one(a TSRMLS_CC); } }

@@ -1,8 +1,26 @@
 id: c-unaligned-cast-deref-wide-int
 snapshots:
+  "#include <stdint.h>\n#include <stddef.h>\n#include <string.h>\nuint32_t g(uint32_t);\nuint32_t load(const uint8_t *buf) { return g(*(uint32_t *)(buf + 2)); }":
+    labels:
+    - source: "*(uint32_t *)(buf + 2)"
+      style: primary
+      start: 127
+      end: 149
+  "#include <stdint.h>\n#include <stddef.h>\n#include <string.h>\nuint32_t load(uint8_t *buf) { return *(uint32_t *)(&buf[1]); }":
+    labels:
+    - source: "*(uint32_t *)(&buf[1])"
+      style: primary
+      start: 97
+      end: 119
+  "#include <stdint.h>\n#include <stddef.h>\n#include <string.h>\nvoid store(uint8_t *buf, uint32_t v) { *(uint32_t *)(buf + 4) = v; }":
+    labels:
+    - source: "*(uint32_t *)(buf + 4)"
+      style: primary
+      start: 99
+      end: 121
   uint32_t v = *(uint32_t *)(buf + off);:
     labels:
-    - source: '*(uint32_t *)(buf + off)'
+    - source: "*(uint32_t *)(buf + off)"
       style: primary
       start: 13
       end: 37

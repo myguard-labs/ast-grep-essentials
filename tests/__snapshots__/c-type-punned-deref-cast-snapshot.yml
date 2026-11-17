@@ -1,8 +1,26 @@
 id: c-type-punned-deref-cast
 snapshots:
-  void g(char *buf, int fd) { *(int *) buf = fd; }:
+  "#include <stdint.h>\n#include <stddef.h>\n#include <string.h>\nuint64_t load(char *buf) { return *(uint64_t *) buf; }":
     labels:
-    - source: '*(int *) buf'
+    - source: "*(uint64_t *) buf"
+      style: primary
+      start: 94
+      end: 111
+  "float to_float(unsigned u) { return *(float *) &u; }":
+    labels:
+    - source: "*(float *) &u"
+      style: primary
+      start: 36
+      end: 49
+  "void g(char *buf, int fd) { *(int *) buf = fd; }":
+    labels:
+    - source: "*(int *) buf"
       style: primary
       start: 28
       end: 40
+  "void store(char *p) { *(short *) p = 1; }":
+    labels:
+    - source: "*(short *) p"
+      style: primary
+      start: 22
+      end: 34

@@ -1,5 +1,24 @@
 id: c-uchar-cast-of-float-accumulator
 valid:
   - 'r += (int)(w * (double)v);'
+  - |-
+    long total(double w, double v) { long r = 0; r += (long)(w * v); return r; }
+  - |-
+    double total(double w, double v) { double r = 0; r += w * v; return r; }
+  - |-
+    unsigned char total(const double *w, const double *v, int n) {
+      double acc = 0;
+      for (int i = 0; i < n; i++) acc += w[i] * v[i];
+      if (acc < 0.0) acc = 0.0;
+      if (acc > 255.0) acc = 255.0;
+      return (unsigned char) acc;
+    }
 invalid:
   - 'r += (unsigned char)(w * (double)v);'
+  - |-
+    int total(int w, int v) { int r = 0; r += (unsigned char)(w * v); return r; }
+  - |-
+    struct px { int r; };
+    void blend(struct px *p, double a, double b) { p->r += (unsigned char)(a * b); }
+  - |-
+    void blend(int *acc, const double *k, double s, int i) { acc[i] += (unsigned char)(k[i] * s); }
