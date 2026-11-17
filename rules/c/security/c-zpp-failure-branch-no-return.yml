@@ -19,6 +19,23 @@ rule:
         has:
           kind: return_statement
           stopBy: end
+    - not:
+        has:
+          field: consequence
+          kind: compound_statement
+          has:
+            any:
+              - kind: goto_statement
+              - kind: expression_statement
+                has:
+                  kind: identifier
+                  regex: ^(RETURN_[A-Z_]+|ZEND_WRONG_PARAM_COUNT)$
+              - kind: expression_statement
+                has:
+                  kind: call_expression
+                  has:
+                    field: function
+                    regex: ^(RETURN_[A-Z_]+|ZEND_WRONG_PARAM_COUNT)$
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -31,7 +48,8 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/457.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FP: terminating branches that are not a literal return (`RETURN_NULL();`, `goto out;`, `abort();`) are reported'
+    - 'FP: terminating branches that are not a literal return or a direct `RETURN_*`/`ZEND_WRONG_PARAM_COUNT` statement or `goto` (`abort();`, `zend_error_noreturn(...)`) are reported'
     - 'FP: `if (zpp(...) == FAILURE) { warn(); } else { use(r, s); }` is reported although the use only runs on success'
     - 'FN: unbraced consequence (`if (zpp(...) == FAILURE) warn(); use(r, s);`) and reversed comparison (`FAILURE == zpp(...)`) are not matched'
+    - 'FN: a direct `RETURN_VALUE_USED(x);` statement (not a terminator) is treated as one by the name regex'
     - 'FN: a conditional return inside the branch (`{ if (x) { return; } }`) suppresses the report'

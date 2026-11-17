@@ -6,6 +6,14 @@ snapshots:
       style: primary
       start: 0
       end: 79
+  "if (zend_parse_parameters(argc, \"rs\", &r, &s) == FAILURE) { if (RETURN_VALUE_USED(x)) { warn(); } } use(r, s);":
+    labels:
+    - source: >-
+        if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { if
+        (RETURN_VALUE_USED(x)) { warn(); } }
+      style: primary
+      start: 0
+      end: 99
   "if (zend_parse_parameters(argc, \"rs\", &r, &s) == FAILURE) { log_err(); r = NULL; } use(r, s);":
     labels:
     - source: >-
@@ -14,6 +22,20 @@ snapshots:
       style: primary
       start: 0
       end: 82
+  "if (zend_parse_parameters(argc, \"rs\", &r, &s) == FAILURE) { php_error_docref(NULL, E_WARNING, \"bad\"); } use(r, s);":
+    labels:
+    - source: >-
+        if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) {
+        php_error_docref(NULL, E_WARNING, "bad"); }
+      style: primary
+      start: 0
+      end: 103
+  "if (zend_parse_parameters(argc, \"rs\", &r, &s) == FAILURE) { warn(); } RETURN_NULL(); use(r, s);":
+    labels:
+    - source: if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { warn(); }
+      style: primary
+      start: 0
+      end: 69
   "if (zend_parse_parameters(argc, \"rs\", &r, &s) == FAILURE) { warn_bad_args(); } use(r, s);":
     labels:
     - source: if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { warn_bad_args(); }
