@@ -19,11 +19,17 @@ rule:
       kind: return_statement
     not:
       has:
-        stopBy: end
+        field: consequence
         any:
           - pattern: 'efree($P);'
           - pattern: 'free($P);'
           - pattern: 'pefree($P, $$$F);'
+          - kind: compound_statement
+            has:
+              any:
+                - pattern: 'efree($P);'
+                - pattern: 'free($P);'
+                - pattern: 'pefree($P, $$$F);'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0

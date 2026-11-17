@@ -22,11 +22,27 @@ rule:
         follows:
           stopBy: end
           kind: if_statement
-          has:
-            stopBy: end
-            pattern:
-              context: 'IsDBCSLeadByte($P[$I - 1]);'
-              selector: call_expression
+          all:
+            - has:
+                field: condition
+                stopBy: end
+                pattern:
+                  context: 'IsDBCSLeadByte($P[$I - 1]);'
+                  selector: call_expression
+            - has:
+                field: consequence
+                any:
+                  - kind: return_statement
+                  - kind: continue_statement
+                  - kind: break_statement
+                  - kind: goto_statement
+                  - kind: compound_statement
+                    has:
+                      any:
+                        - kind: return_statement
+                        - kind: continue_statement
+                        - kind: break_statement
+                        - kind: goto_statement
 metadata:
   todo_cases:
     - "an if with a wrong guard (p[i] == '\\\\' && !IsDBCSLeadByte(p[i])) or any && condition is not flagged"

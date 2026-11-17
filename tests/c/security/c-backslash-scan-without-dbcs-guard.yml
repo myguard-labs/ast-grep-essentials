@@ -13,6 +13,16 @@ valid:
         if (i > 0 && IsDBCSLeadByte(p[i - 1])) return;
         if (p[i] == '\\') { p[i] = '/'; }
     }
+  - |-
+    void f(char *p, int i) {
+        if (IsDBCSLeadByte(p[i - 1])) { log_event(); continue; }
+        if (p[i] == '\\') { p[i] = '/'; }
+    }
+  - |-
+    void f(char *p, int i) {
+        if (IsDBCSLeadByte(p[i - 1])) goto skip;
+        if (p[i] == '\\') { p[i] = '/'; }
+    }
 invalid:
   - |-
     void strip(char *p, int i) {
@@ -25,5 +35,15 @@ invalid:
   - |-
     void f(char *p, int i) {
         if (IsDBCSLeadByte(q[i - 1])) return;
+        if (p[i] == '\\') { p[i] = '/'; }
+    }
+  - |-
+    void f(char *p, int i) {
+        if (IsDBCSLeadByte(p[i - 1])) log_event();
+        if (p[i] == '\\') { p[i] = '/'; }
+    }
+  - |-
+    void f(char *p, int i) {
+        if (IsDBCSLeadByte(p[i - 1])) { log_event(); }
         if (p[i] == '\\') { p[i] = '/'; }
     }
