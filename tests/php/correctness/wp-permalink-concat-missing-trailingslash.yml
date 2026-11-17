@@ -1,5 +1,13 @@
 id: wp-permalink-concat-missing-trailingslash
 valid:
   - '$u = trailingslashit( get_permalink() ) . $i;'
+  - '<?php $u = trailingslashit( get_permalink() ) . ''feed/'';'
+  - '<?php $u = untrailingslashit( get_permalink() ) . ''/'' . $i;'
+  - '<?php $u = esc_url( get_permalink() );'
+  - '<?php $u = add_query_arg( ''a'', ''b'', get_permalink() );'
 invalid:
   - '$u = get_permalink() . $i;'
+  - '<?php $u = get_permalink() . ''feed/'';'
+  - '<?php echo get_permalink() . $a . $b;'
+  - '<?php $links[] = get_permalink() . $slug;'
+  - '<?php return get_permalink() . $suffix;'

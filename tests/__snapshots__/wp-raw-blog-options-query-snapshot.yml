@@ -1,8 +1,10 @@
 id: wp-raw-blog-options-query
 snapshots:
-  $v = $wpdb->get_var( "SELECT option_value FROM {$prefix}options WHERE option_name = 'siteurl'" );:
+  "$v = $wpdb->get_var( \"SELECT option_value FROM {$prefix}options WHERE option_name = 'siteurl'\" );":
     labels:
-    - source: $wpdb->get_var( "SELECT option_value FROM {$prefix}options WHERE option_name = 'siteurl'" )
+    - source: >-
+        $wpdb->get_var( "SELECT option_value FROM {$prefix}options WHERE option_name =
+        'siteurl'" )
       style: primary
       start: 5
       end: 96
@@ -10,3 +12,53 @@ snapshots:
       style: secondary
       start: 19
       end: 96
+  <?php $v = $wpdb->get_var( "SELECT option_value FROM $wpdb->options WHERE option_name = 'home'" );:
+    labels:
+    - source: >-
+        $wpdb->get_var( "SELECT option_value FROM $wpdb->options WHERE option_name =
+        'home'" )
+      style: primary
+      start: 11
+      end: 97
+    - source: ( "SELECT option_value FROM $wpdb->options WHERE option_name = 'home'" )
+      style: secondary
+      start: 25
+      end: 97
+  <?php $v = $wpdb->get_var( "SELECT option_value FROM wp_2_options WHERE option_name = 'home'" );:
+    labels:
+    - source: >-
+        $wpdb->get_var( "SELECT option_value FROM wp_2_options WHERE option_name =
+        'home'" )
+      style: primary
+      start: 11
+      end: 95
+    - source: ( "SELECT option_value FROM wp_2_options WHERE option_name = 'home'" )
+      style: secondary
+      start: 25
+      end: 95
+  "<?php $v = $wpdb->get_var( \"SELECT option_value FROM {$wpdb->options} WHERE option_name = 'home'\" );":
+    labels:
+    - source: >-
+        $wpdb->get_var( "SELECT option_value FROM {$wpdb->options} WHERE option_name =
+        'home'" )
+      style: primary
+      start: 11
+      end: 99
+    - source: ( "SELECT option_value FROM {$wpdb->options} WHERE option_name = 'home'" )
+      style: secondary
+      start: 25
+      end: 99
+  "<?php $v = $wpdb->get_var( $wpdb->prepare( \"SELECT option_value FROM {$wpdb->options} WHERE option_name = %s\", 'x' ) );":
+    labels:
+    - source: >-
+        $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options}
+        WHERE option_name = %s", 'x' ) )
+      style: primary
+      start: 11
+      end: 118
+    - source: >-
+        ( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name
+        = %s", 'x' ) )
+      style: secondary
+      start: 25
+      end: 118

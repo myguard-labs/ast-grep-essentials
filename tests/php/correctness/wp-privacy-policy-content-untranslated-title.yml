@@ -3,5 +3,12 @@ valid:
   - >-
     wp_add_privacy_policy_content( __( 'Twenty Twenty-One', 'twentytwentyone' ),
     $content );
+  - '<?php wp_add_privacy_policy_content( _x( ''My Plugin'', ''ctx'', ''td'' ), $c );'
+  - '<?php wp_add_privacy_policy_content( esc_html__( ''My Plugin'', ''td'' ), $c );'
+  - '<?php wp_add_privacy_policy_content( __( ''My Plugin'', ''td'' ), ''<p>text</p>'' );'
 invalid:
   - 'wp_add_privacy_policy_content( ''Twenty Twenty-One'', $content );'
+  - '<?php wp_add_privacy_policy_content( ''My Plugin'', wp_kses_post( $c ) );'
+  - '<?php add_action( ''admin_init'', function () { wp_add_privacy_policy_content( ''My Plugin'', $c ); } );'
+  - '<?php wp_add_privacy_policy_content( ''My Plugin'', ''<p>text</p>'' );'
+  - '<?php function reg() { wp_add_privacy_policy_content( ''My Plugin'', $c ); }'
