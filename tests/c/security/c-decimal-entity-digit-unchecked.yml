@@ -7,6 +7,7 @@ valid:
   - 'static int f(const char *buf, int n) { int ent = 0; for (int pos = 0; pos < n; pos++) { if (!isdigit((unsigned char)buf[pos])) return -1; ent = ent * 10 + (buf[pos] - ''0''); } return ent; }'
   - 'static int f(const char *buf, int n) { int ent = 0; for (int pos = 0; pos < n; pos++) { if (buf[pos] < ''0'' || buf[pos] > ''9'') { return -1; } ent = ent * 10 + (buf[pos] - ''0''); } return ent; }'
   - 'static int f(const char *buf, int n) { int ent = 0; for (int pos = 0; pos < n; pos++) { if (buf[pos] < ''0'' || buf[pos] > ''9'') break; ent = ent * 10 + (buf[pos] - ''0''); } return ent; }'
+  - 'static int f(const char *buf, int n) { int ent = 0; if (buf[0] >= ''0'' && buf[0] <= ''9'') { ent = ent * 10 + (buf[0] - ''0''); } return ent; }'
 invalid:
   - >-
     static int f(const char *buf, int n) { int ent = 0; for (int pos = 0; pos <
@@ -14,3 +15,4 @@ invalid:
   - 'static int f(const char *buf, int n) { int ent = 0; for (int pos = 0; pos < n; pos++) { ent = ent * 10 + (buf[pos] - ''0''); } return ent; }'
   - 'static int f(const char *buf, int n) { int ent = 0; while (n--) { ent = ent * 10 + (*buf++ - ''0''); } return ent; }'
   - 'static int f(const char *buf, int n) { int ent = 0; ent = ent * 10 + (buf[0] - ''0''); return ent; }'
+  - 'static int f(const char *buf, int n) { int ent = 0; if (n > 0) { ent = ent * 10 + (buf[0] - ''0''); } return ent; }'
