@@ -46,9 +46,11 @@ rule:
                         - pattern: '$N != 0'
             - has:
                 field: right
-                has:
-                  pattern: '$X[--$N]'
-                  stopBy: end
+                any:
+                  - pattern: '$X[--$N]'
+                  - has:
+                      pattern: '$X[--$N]'
+                      stopBy: end
     - not:
         inside:
           kind: compound_statement
