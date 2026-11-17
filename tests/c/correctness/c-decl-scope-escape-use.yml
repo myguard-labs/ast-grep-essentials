@@ -1,5 +1,11 @@
 id: c-decl-scope-escape-use
 valid:
   - 'void f(int a) { int is_unc = 0; if (a) { } if (!is_unc) { } }'
+  - 'void f(int a) { if (a) { int t = 0; } }'
+  - 'void f(int a) { int t = 0; if (a) { t = 1; } if (t) { } }'
+  - 'void f(int a, int t) { if (a) { int u = 0; } if (t) { } }'
 invalid:
   - 'void f(int a) { if (a) { int is_unc = 0; } if (!is_unc) { } }'
+  - 'void f(int a) { if (a) { size_t n = 0; } if (a > 3) { n++; } }'
+  - 'void f(int a) { if (a) { int t = 0; } else { } if (t) { } }'
+  - 'void f(int a) { if (a) { int t = 0; } if (a) { if (t) { } } }'
