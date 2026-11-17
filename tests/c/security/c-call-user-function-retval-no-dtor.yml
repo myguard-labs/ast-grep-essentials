@@ -5,9 +5,16 @@ valid:
     (call_user_function(CG(function_table), NULL, func, &retval, 1, params
     TSRMLS_CC) == SUCCESS && Z_TYPE(retval) == IS_STRING) {
     use(Z_STRVAL(retval)); zval_dtor(&retval); } }
+  - 'static void f(zval *func) { zval retval; if (call_user_function(NULL, NULL, func, &retval, 0, NULL) == SUCCESS) { use(&retval); zval_dtor(&retval); } }'
+  - 'static void f(zval *func) { zval retval; if (call_user_function(NULL, NULL, func, &retval, 0, NULL) != SUCCESS) { return; } zval_dtor(&retval); }'
+  - 'static void f(zval *func) { zval retval; zval_dtor(&retval); }'
 invalid:
   - >-
     static void f(zval *func, zval **params) { zval retval; if
     (call_user_function(CG(function_table), NULL, func, &retval, 1, params
     TSRMLS_CC) == SUCCESS && Z_TYPE(retval) == IS_STRING) {
     use(Z_STRVAL(retval)); } }
+  - 'static void f(zval *func) { zval retval; call_user_function(NULL, NULL, func, &retval, 0, NULL); }'
+  - 'static void f(zval *func) { zval retval, other; call_user_function(NULL, NULL, func, &retval, 0, NULL); zval_dtor(&other); }'
+  - 'static int f(zval *func) { zval retval; int r = call_user_function(NULL, NULL, func, &retval, 0, NULL); return r; }'
+  - 'static void f(zval *func) { zval retval; if (call_user_function(NULL, NULL, func, &retval, 0, NULL) == SUCCESS) { use(&retval); } }'

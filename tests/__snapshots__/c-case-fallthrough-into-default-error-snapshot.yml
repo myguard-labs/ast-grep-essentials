@@ -14,3 +14,45 @@ snapshots:
       style: secondary
       start: 42
       end: 60
+  "void f(int t) { switch (t) { case 1: a(); b(); c(); default: goto err; } err: return; }":
+    labels:
+    - source: "case 1: a(); b(); c();"
+      style: primary
+      start: 29
+      end: 51
+    - source: goto err;
+      style: secondary
+      start: 61
+      end: 70
+    - source: "default: goto err;"
+      style: secondary
+      start: 52
+      end: 70
+  "void f(int t) { switch (t) { case 1: a(); break; case 2: b(); default: goto fail; } fail: return; }":
+    labels:
+    - source: "case 2: b();"
+      style: primary
+      start: 49
+      end: 61
+    - source: goto fail;
+      style: secondary
+      start: 71
+      end: 81
+    - source: "default: goto fail;"
+      style: secondary
+      start: 62
+      end: 81
+  "void f(int t) { switch (t) { case 1: a(); default: goto err; } err: return; }":
+    labels:
+    - source: "case 1: a();"
+      style: primary
+      start: 29
+      end: 41
+    - source: goto err;
+      style: secondary
+      start: 51
+      end: 60
+    - source: "default: goto err;"
+      style: secondary
+      start: 42
+      end: 60

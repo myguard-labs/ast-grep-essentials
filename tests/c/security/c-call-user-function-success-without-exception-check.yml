@@ -3,7 +3,14 @@ valid:
   - >-
     int res = call_user_function_ex(a, b, c, d, 0, 0, 1, NULL); if (res ==
     SUCCESS && !EG(exception)) { use(d); }
+  - 'if (!EG(exception) && res == SUCCESS) { use(d); }'
+  - 'if (res == FAILURE) { cleanup(); }'
+  - 'if (res != SUCCESS || EG(exception)) { return; }'
 invalid:
   - >-
     int res = call_user_function_ex(a, b, c, d, 0, 0, 1, NULL); if (res ==
     SUCCESS) { use(d); }
+  - 'if (call_user_function_ex(a, b, c, d, 0, 0, 1, NULL) == SUCCESS) { use(d); }'
+  - 'if (zend_call_function(&fci, &fcc) == SUCCESS) { use(d); }'
+  - 'if (res == SUCCESS) { }'
+  - 'if (res == SUCCESS) { use(d); } else { fail(); }'

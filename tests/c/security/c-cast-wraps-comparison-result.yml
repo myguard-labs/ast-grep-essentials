@@ -3,7 +3,14 @@ valid:
   - >-
     long f(char *limit, char *ret, size_t col) { return (long)(limit - ret - 6 -
     col) < 0; }
+  - 'long f(char *a, char *b) { return (long)(a - b) < 0; }'
+  - 'long f(char *a, char *b, long c) { return ((long)(a - b)) < c; }'
+  - 'long f(long a, long b) { return (long)(a < b); }'
 invalid:
   - >-
     long f(char *limit, char *ret, size_t col) { return (long)(limit - ret - 6 -
     col < 0); }
+  - 'long f(long x, long y) { return (long)(x - y < 0); }'
+  - 'long f(char *p, char *q) { return (long)(p - q < 8); }'
+  - 'long f(long a, long b, long c, long d) { return (long)(a - b - c < d); }'
+  - 'long f(long a, long b, long c) { long r = (long)(a - b < c); return r; }'

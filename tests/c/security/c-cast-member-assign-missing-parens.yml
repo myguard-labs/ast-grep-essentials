@@ -3,7 +3,14 @@ valid:
   - >-
     struct t *f(struct s *sxe, void *d) { ((struct t *)sxe)->document = d;
     return 0; }
+  - 'void f(struct s *a, void *d) { ((struct t *)a)->doc = d; }'
+  - 'void f(struct s *a, void *d) { a->doc = (struct t *)d; }'
+  - 'void f(struct s *a, void *d) { ((struct t *)a->next)->doc = d; }'
 invalid:
   - >-
     struct t *f(struct s *sxe, void *d) { (struct t *)sxe->document = d; return
     0; }
+  - 'void f(struct s *a) { (char *)a->buf = p; }'
+  - 'void f(struct s *a) { (int)a->count = 5; }'
+  - 'void f(struct s *a) { (struct t *)a->b->c = NULL; }'
+  - 'void f(struct s *a) { if (a) { (struct t *)a->doc = 0; } }'

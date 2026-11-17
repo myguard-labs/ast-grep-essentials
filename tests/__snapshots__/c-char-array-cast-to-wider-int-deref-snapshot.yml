@@ -1,8 +1,36 @@
 id: c-char-array-cast-to-wider-int-deref
 snapshots:
-  void f(void) { char b[4]; int n = *(int *) b; (void) n; }:
+  "void f(void) { char b[4]; *(int *) b = 1; }":
     labels:
-    - source: '*(int *) b'
+    - source: "*(int *) b"
+      style: primary
+      start: 26
+      end: 36
+    - source: char b[4];
+      style: secondary
+      start: 15
+      end: 25
+    - source: "{ char b[4]; *(int *) b = 1; }"
+      style: secondary
+      start: 13
+      end: 43
+  "void f(void) { char b[4]; if (*(int *) b == 0) { g(); } }":
+    labels:
+    - source: "*(int *) b"
+      style: primary
+      start: 30
+      end: 40
+    - source: char b[4];
+      style: secondary
+      start: 15
+      end: 25
+    - source: "{ char b[4]; if (*(int *) b == 0) { g(); } }"
+      style: secondary
+      start: 13
+      end: 57
+  "void f(void) { char b[4]; int n = *(int *) b; (void) n; }":
+    labels:
+    - source: "*(int *) b"
       style: primary
       start: 34
       end: 44
@@ -10,7 +38,35 @@ snapshots:
       style: secondary
       start: 15
       end: 25
-    - source: '{ char b[4]; int n = *(int *) b; (void) n; }'
+    - source: "{ char b[4]; int n = *(int *) b; (void) n; }"
       style: secondary
       start: 13
       end: 57
+  "void f(void) { char b[sizeof(int)]; int n = *(int *) b; (void) n; }":
+    labels:
+    - source: "*(int *) b"
+      style: primary
+      start: 44
+      end: 54
+    - source: char b[sizeof(int)];
+      style: secondary
+      start: 15
+      end: 35
+    - source: "{ char b[sizeof(int)]; int n = *(int *) b; (void) n; }"
+      style: secondary
+      start: 13
+      end: 67
+  "void f(void) { char buf[8]; int x; x = *(int *) buf; (void) x; }":
+    labels:
+    - source: "*(int *) buf"
+      style: primary
+      start: 39
+      end: 51
+    - source: char buf[8];
+      style: secondary
+      start: 15
+      end: 27
+    - source: "{ char buf[8]; int x; x = *(int *) buf; (void) x; }"
+      style: secondary
+      start: 13
+      end: 64

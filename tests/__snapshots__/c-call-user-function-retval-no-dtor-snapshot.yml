@@ -1,5 +1,53 @@
 id: c-call-user-function-retval-no-dtor
 snapshots:
+  "static int f(zval *func) { zval retval; int r = call_user_function(NULL, NULL, func, &retval, 0, NULL); return r; }":
+    labels:
+    - source: >-
+        static int f(zval *func) { zval retval; int r = call_user_function(NULL, NULL,
+        func, &retval, 0, NULL); return r; }
+      style: primary
+      start: 0
+      end: 115
+    - source: call_user_function(NULL, NULL, func, &retval, 0, NULL)
+      style: secondary
+      start: 48
+      end: 102
+  "static void f(zval *func) { zval retval, other; call_user_function(NULL, NULL, func, &retval, 0, NULL); zval_dtor(&other); }":
+    labels:
+    - source: >-
+        static void f(zval *func) { zval retval, other; call_user_function(NULL, NULL,
+        func, &retval, 0, NULL); zval_dtor(&other); }
+      style: primary
+      start: 0
+      end: 124
+    - source: call_user_function(NULL, NULL, func, &retval, 0, NULL)
+      style: secondary
+      start: 48
+      end: 102
+  "static void f(zval *func) { zval retval; call_user_function(NULL, NULL, func, &retval, 0, NULL); }":
+    labels:
+    - source: >-
+        static void f(zval *func) { zval retval; call_user_function(NULL, NULL, func,
+        &retval, 0, NULL); }
+      style: primary
+      start: 0
+      end: 98
+    - source: call_user_function(NULL, NULL, func, &retval, 0, NULL)
+      style: secondary
+      start: 41
+      end: 95
+  "static void f(zval *func) { zval retval; if (call_user_function(NULL, NULL, func, &retval, 0, NULL) == SUCCESS) { use(&retval); } }":
+    labels:
+    - source: >-
+        static void f(zval *func) { zval retval; if (call_user_function(NULL, NULL,
+        func, &retval, 0, NULL) == SUCCESS) { use(&retval); } }
+      style: primary
+      start: 0
+      end: 131
+    - source: call_user_function(NULL, NULL, func, &retval, 0, NULL)
+      style: secondary
+      start: 45
+      end: 99
   "static void f(zval *func, zval **params) { zval retval; if (call_user_function(CG(function_table), NULL, func, &retval, 1, params TSRMLS_CC) == SUCCESS && Z_TYPE(retval) == IS_STRING) { use(Z_STRVAL(retval)); } }":
     labels:
     - source: >-

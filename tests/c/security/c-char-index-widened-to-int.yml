@@ -1,5 +1,12 @@
 id: c-char-index-widened-to-int
 valid:
   - 'void f(const char *s) { int low = (unsigned char) s[0]; (void) low; }'
+  - 'void f(const char *s) { int low = (unsigned char) s[1]; (void) low; }'
+  - 'void f(const char *s) { int low = s[0] & 0xff; (void) low; }'
+  - 'void f(const char *s) { int low = (uint8_t) s[0]; (void) low; }'
+  - 'void f(const char *s) { int low = (unsigned char) *s; (void) low; }'
 invalid:
   - 'void f(const char *s) { int low = s[0]; (void) low; }'
+  - 'void f(const char *s, int i) { int c = s[i]; (void) c; }'
+  - 'void f(struct b *s, int i) { int c = s->buf[i]; (void) c; }'
+  - 'void f(const char *s, int len) { int c = s[len - 1]; (void) c; }'

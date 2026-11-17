@@ -1,8 +1,32 @@
 id: c-cast-away-const-parameter
 snapshots:
-  static int *first(const int *p) { return (int *)p; }:
+  "static int *first(const int *p) { return (int *)p; }":
     labels:
     - source: (int *)p
       style: primary
       start: 41
       end: 49
+  "static void g(const int *p) { *(int *)p = 0; }":
+    labels:
+    - source: (int *)p
+      style: primary
+      start: 31
+      end: 39
+  "static void g(const int *p) { int *w = ( int * ) p; *w = 1; }":
+    labels:
+    - source: ( int * ) p
+      style: primary
+      start: 39
+      end: 50
+  "static void g(const int *p) { int *w = (int *)p; *w = 1; }":
+    labels:
+    - source: (int *)p
+      style: primary
+      start: 39
+      end: 47
+  "static void g(const int *p) { memset((int *)p, 0, 4); }":
+    labels:
+    - source: (int *)p
+      style: primary
+      start: 37
+      end: 45

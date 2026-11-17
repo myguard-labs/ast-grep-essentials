@@ -1,5 +1,12 @@
 id: c-cast-away-const-parameter
 valid:
   - 'static const int *first(const int *p) { return (const int *)p; }'
+  - 'static int *g(int *q) { return (int *)q; }'
+  - 'static int g(const int *p) { return *(const int *)p; }'
+  - 'static int g(const int *p) { int v = *p; return v; }'
 invalid:
   - 'static int *first(const int *p) { return (int *)p; }'
+  - 'static void g(const int *p) { *(int *)p = 0; }'
+  - 'static void g(const int *p) { int *w = (int *)p; *w = 1; }'
+  - 'static void g(const int *p) { memset((int *)p, 0, 4); }'
+  - 'static void g(const int *p) { int *w = ( int * ) p; *w = 1; }'
