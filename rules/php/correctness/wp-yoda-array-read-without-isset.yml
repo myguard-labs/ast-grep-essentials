@@ -9,16 +9,48 @@ message: >-
 note: >-
   Syntactic single-file match only. It flags a literal-on-left == comparison
   with a subscript read inside an if condition and cannot prove the key is
-  absent or present at runtime, nor resolve aliases or types.
+  absent or present at runtime, nor resolve aliases or types. A same-array,
+  same-key isset( $C[$K] ) or ! empty( $C[$K] ) guard in the same condition, or
+  in an enclosing if whose body holds the read, silences the report.
 rule:
-  pattern: '''publish'' == $C[$K]'
-  inside:
-    kind: if_statement
-    stopBy: end
-    not:
-      has:
-        pattern: 'isset( $C[$K] )'
+  all:
+    - pattern: '''publish'' == $C[$K]'
+    - inside:
+        kind: if_statement
         stopBy: end
+        not:
+          has:
+            any:
+              - pattern: 'isset( $C[$K] )'
+              - pattern: '! empty( $C[$K] )'
+            stopBy: end
+    - not:
+        inside:
+          kind: if_statement
+          stopBy: end
+          all:
+            - has:
+                field: condition
+                has:
+                  stopBy: end
+                  any:
+                    - pattern: 'isset( $C[$K] )'
+                    - pattern: '! empty( $C[$K] )'
+                  not:
+                    inside:
+                      stopBy: end
+                      any:
+                        - kind: unary_op_expression
+                          regex: '^!\s*\(?\s*isset'
+                        - kind: binary_expression
+                          has:
+                            field: operator
+                            regex: '^(\|\||or)$'
+            - has:
+                field: body
+                has:
+                  stopBy: end
+                  pattern: '''publish'' == $C[$K]'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -28,8 +60,7 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - "FP: `if ( array_key_exists( 'post_status', $c ) && 'publish' == $c['post_status'] )` is reported although the key is checked (only an isset( $c[$K] ) guard is recognised)"
-    - "FP: `if ( ! empty( $c['post_status'] ) && 'publish' == $c['post_status'] )` is reported although the key is checked"
-    - "FP: `if ( isset( $c['post_status'] ) ) { if ( 'publish' == $c['post_status'] ) { ... } }` is reported: the inner if has no isset and the stopBy end walk matches it"
+    - "FP: `if ( array_key_exists( 'post_status', $c ) && 'publish' == $c['post_status'] )` (also as an enclosing if guard) is reported although the key is checked: the argument metavariables bind `argument` nodes and cannot be unified with the subscript operands on 0.45.2 and 0.51.3"
+    - "Known limitation: an early-return guard (`if ( ! isset( $c['post_status'] ) ) { return; } if ( 'publish' == $c['post_status'] ) { ... }`) is reported; only a guard in the same condition or an enclosing if is recognised"
     - "FN: `$ok = 'publish' == $c['post_status'];` outside an if condition and `if ( 'publish' === $c['post_status'] )` (identical comparison) are not reported"
     - "FN: `if ( $c['post_status'] == 'publish' )` (literal on the right) is not reported"

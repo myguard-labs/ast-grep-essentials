@@ -5,6 +5,10 @@ valid:
     $c['post_status'] ) { return 'publish_posts'; } }
   - "function f( $c ) { if ( 'publish' == ( $c['post_status'] ?? '' ) ) { return 1; } }"
   - "function f( $c, $k ) { if ( isset( $c[ $k ] ) && 'publish' == $c[ $k ] ) { return 1; } }"
+  - "function f( $c ) { if ( ! empty( $c['post_status'] ) && 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c ) { if ( isset( $c['post_status'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
+  - "function f( $c ) { if ( ! empty( $c['post_status'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
+  - "function f( $c, $x ) { if ( isset( $c['post_status'] ) && ( $x || $c ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
 invalid:
   - >-
     function f( $c ) { if ( 'publish' == $c['post_status'] ) { return
@@ -13,3 +17,10 @@ invalid:
   - "function f( $c ) { if ( $c && 'publish' == $c['post_status'] ) { return 1; } }"
   - "function f( $c ) { if ( isset( $c['ID'] ) && 'publish' == $c['post_status'] ) { return 1; } }"
   - "function f( $c, $d ) { if ( isset( $d['post_status'] ) && 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c ) { if ( empty( $c['post_status'] ) && 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c ) { if ( ! empty( $c['ID'] ) && 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c ) { if ( isset( $c['post_status'] ) ) { return 0; } else { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
+  - "function f( $c ) { if ( ! isset( $c['post_status'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
+  - "function f( $c ) { if ( isset( $c['ID'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
+  - "function f( $c, $d ) { if ( isset( $d['post_status'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
+  - "function f( $c, $x ) { if ( isset( $c['post_status'] ) || $x ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
