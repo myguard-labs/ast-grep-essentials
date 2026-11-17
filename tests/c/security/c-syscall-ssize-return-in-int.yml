@@ -1,5 +1,12 @@
 id: c-syscall-ssize-return-in-int
 valid:
   - 'ssize_t n; n = sendfile(fd, file_fd, &offset, size);'
+  - 'void f(void) { int fd; ssize_t n; n = sendfile(o, i, &off, sz); }'
+  - 'void f(void) { long n; n = sendfile(o, i, &off, sz); }'
+  - 'void f(void) { int n; ssize_t m; m = sendfile(o, i, NULL, sz); n = 0; }'
 invalid:
   - 'int n; n = sendfile(fd, file_fd, &offset, size);'
+  - 'void f(void) { int sent; sent = sendfile(o, i, NULL, sz); }'
+  - 'void f(void) { int n; while (1) { n = sendfile(o, i, NULL, sz); if (n <= 0) break; } }'
+  - 'void f(void) { int n; if ((n = sendfile(o, i, NULL, sz)) < 0) { return; } }'
+  - 'void f(void) { int a; int n; n = sendfile(o, i, NULL, sz); }'

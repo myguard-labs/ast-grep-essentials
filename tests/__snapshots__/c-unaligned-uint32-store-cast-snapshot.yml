@@ -1,8 +1,32 @@
 id: c-unaligned-uint32-store-cast
 snapshots:
-  void put(unsigned char *buf, uint32_t v) { *(uint32_t *)(buf) = v; }:
+  "void f(unsigned char *b, int i) { *(uint32_t *)(&b[i]) = 0; }":
     labels:
-    - source: '*(uint32_t *)(buf) = v'
+    - source: "*(uint32_t *)(&b[i]) = 0"
+      style: primary
+      start: 34
+      end: 58
+  "void f(unsigned char *b, uint32_t v) { *(uint32_t *)(b + 4) = v; }":
+    labels:
+    - source: "*(uint32_t *)(b + 4) = v"
+      style: primary
+      start: 39
+      end: 63
+  "void f(unsigned char *b, uint32_t v) { *(uint32_t *)(b) = htonl(v); }":
+    labels:
+    - source: "*(uint32_t *)(b) = htonl(v)"
+      style: primary
+      start: 39
+      end: 66
+  "void f(unsigned char *b, uint32_t v) { if (v) { *(uint32_t *)(b) = v; } }":
+    labels:
+    - source: "*(uint32_t *)(b) = v"
+      style: primary
+      start: 48
+      end: 68
+  "void put(unsigned char *buf, uint32_t v) { *(uint32_t *)(buf) = v; }":
+    labels:
+    - source: "*(uint32_t *)(buf) = v"
       style: primary
       start: 43
       end: 65

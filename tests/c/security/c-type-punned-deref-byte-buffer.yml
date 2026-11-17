@@ -3,7 +3,14 @@ valid:
   - >-
     static void f(unsigned char *out, const unsigned char *in) { memcpy(out, in,
     sizeof(size_t)); }
+  - 'void f(unsigned char *b) { size_t x; memcpy(&x, b, sizeof x); }'
+  - 'void f(size_t *sp) { size_t x = *sp; }'
+  - 'void f(const unsigned char *b) { size_t x = (size_t)b[0] | ((size_t)b[1] << 8); }'
 invalid:
   - >-
     static void f(unsigned char *out, const unsigned char *in) { *(size_t
     *)(out) = *(const size_t *)(in); }
+  - 'void f(unsigned char *b, size_t o) { size_t x; x = *(size_t *)(b + o); }'
+  - 'void f(unsigned char *b, size_t v) { *(size_t *)(b + 8) = v; }'
+  - 'size_t f(unsigned char *b) { return *(size_t *)(b); }'
+  - 'void f(unsigned char *b) { if (*(size_t *)(b) == 0) { } }'

@@ -1,5 +1,12 @@
 id: c-strlen-zend-string-val
 valid:
   - 'if (ZSTR_LEN(name) != 0) { }'
+  - 'void f(zend_string *s) { size_t n = ZSTR_LEN(s); }'
+  - 'void f(zend_string *a, zend_string *b) { if (memcmp(ZSTR_VAL(a), ZSTR_VAL(b), ZSTR_LEN(a)) == 0) { } }'
+  - 'void f(const char *buf) { size_t n = strlen(buf); }'
 invalid:
   - 'if (ZSTR_LEN(name) != strlen(ZSTR_VAL(name))) { }'
+  - 'void f(zend_string *s) { size_t n = strlen(ZSTR_VAL(s)); }'
+  - 'size_t f(zend_string *s) { return strlen(ZSTR_VAL(s)); }'
+  - 'void f(struct a *p) { if (strlen(ZSTR_VAL(p->name)) > 8) { return; } }'
+  - 'void f(zend_string *s) { n = strlen(ZSTR_VAL(s)); }'

@@ -1,9 +1,7 @@
 id: c-success-flag-set-after-unchecked-call
 snapshots:
-  ? |-
-    buf = make_bytes(n);
-    ZEND_TRY_ASSIGN_REF_TRUE(zs);
-  : labels:
+  "buf = make_bytes(n);\nZEND_TRY_ASSIGN_REF_TRUE(zs);":
+    labels:
     - source: ZEND_TRY_ASSIGN_REF_TRUE(zs);
       style: primary
       start: 21
@@ -12,3 +10,43 @@ snapshots:
       style: secondary
       start: 0
       end: 20
+  "void f(void) { if (a) { rv = do_work(a); ZEND_TRY_ASSIGN_REF_TRUE(zs); } }":
+    labels:
+    - source: ZEND_TRY_ASSIGN_REF_TRUE(zs);
+      style: primary
+      start: 41
+      end: 70
+    - source: rv = do_work(a);
+      style: secondary
+      start: 24
+      end: 40
+  "void f(void) { rv = do_work(a, b); ZEND_TRY_ASSIGN_REF_TRUE(zs); }":
+    labels:
+    - source: ZEND_TRY_ASSIGN_REF_TRUE(zs);
+      style: primary
+      start: 35
+      end: 64
+    - source: rv = do_work(a, b);
+      style: secondary
+      start: 15
+      end: 34
+  "void f(void) { rv = obj->fn(a); ZEND_TRY_ASSIGN_REF_TRUE(zs); }":
+    labels:
+    - source: ZEND_TRY_ASSIGN_REF_TRUE(zs);
+      style: primary
+      start: 32
+      end: 61
+    - source: rv = obj->fn(a);
+      style: secondary
+      start: 15
+      end: 31
+  "void f(void) { st->buf = make_bytes(n); ZEND_TRY_ASSIGN_REF_TRUE(zs); }":
+    labels:
+    - source: ZEND_TRY_ASSIGN_REF_TRUE(zs);
+      style: primary
+      start: 40
+      end: 69
+    - source: st->buf = make_bytes(n);
+      style: secondary
+      start: 15
+      end: 39

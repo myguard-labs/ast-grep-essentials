@@ -1,5 +1,11 @@
 id: c-strlen-end-pointer-as-last-char
 valid:
   - 'char *last; last = value + strlen(value) - 1;'
+  - 'void f(const char *value, size_t len) { const char *last; if (len > 0) { last = value + len - 1; } }'
+  - 'void f(const char *value) { const char *p; size_t n = strlen(value); if (n) { p = value + n - 1; } }'
+  - 'void f(const char *value, size_t n) { const char *p; p = value + n; }'
 invalid:
   - 'char *last; last = value + strlen(value);'
+  - 'void f(const char *value) { const char *end; end = value + strlen(value); }'
+  - 'void f(struct s *q, const char *value) { q->end = value + strlen(value); }'
+  - 'void f(const char **pp, const char *value) { *pp = value + strlen(value); }'

@@ -3,7 +3,14 @@ valid:
   - |-
     char *cwd = strrchr(entry, '/');
     size_t len = cwd - entry;
+  - 'size_t f(const char *entry, char *cwd) { return (cwd + 1) - entry; }'
+  - 'void f(const char *entry) { char *cwd = strrchr(entry, ''/''); if (cwd) { size_t len = cwd - entry; } }'
+  - 'void f(const char *entry) { char *cwd = strrchr(entry, ''/''); if (cwd) { size_t rest = strlen(cwd + 1); } }'
 invalid:
   - |-
     char *cwd = strrchr(entry, '/');
     size_t len = cwd - (entry + 1);
+  - 'void f(const char *entry) { char *p = strrchr(entry, ''/''); long n = p - (entry + 1); }'
+  - 'long f(const char *entry) { char *p = strrchr(entry, ''/''); return p - (entry + 1); }'
+  - 'void f(const char *entry) { char *p = strrchr(entry, ''/''); if (p - (entry + 1) > 0) { } }'
+  - 'void f(struct s *q) { char *p = strrchr(q->path, ''/''); long n = p - (q->path + 1); }'

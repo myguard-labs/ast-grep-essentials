@@ -1,5 +1,12 @@
 id: c-ternary-arithmetic-condition
 valid:
   - 'p += sizeof(q) + (n ? (n + 2) : 1);'
+  - 'void f(void) { n = (a + b) ? x : y; }'
+  - 'void f(void) { n = c ? a + b : y; }'
+  - 'void f(void) { n = a == b ? x : y; }'
 invalid:
   - 'p += sizeof(q) + n ? (n + 2) : 1;'
+  - 'void f(void) { r = a + b ? x : y; }'
+  - 'int f(int len) { return len + 1 ? x : y; }'
+  - 'void f(void) { g(a + b ? 1 : 2); }'
+  - 'void f(void) { if (a + b ? x : y) { } }'

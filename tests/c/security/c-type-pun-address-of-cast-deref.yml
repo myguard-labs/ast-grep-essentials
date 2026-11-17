@@ -1,5 +1,12 @@
 id: c-type-pun-address-of-cast-deref
 valid:
   - 'static void f(void) { long v; void *p = &v; *(void **)p = 0; }'
+  - 'void f(float fl) { unsigned u; memcpy(&u, &fl, sizeof u); }'
+  - 'void f(float fl) { union { float f; unsigned u; } c; c.f = fl; unsigned u = c.u; }'
+  - 'void f(int x) { int *ip = &x; int y = *ip; }'
 invalid:
   - 'static void f(void) { long v; *(void **)(&v) = 0; }'
+  - 'void f(float fl) { unsigned u = *(unsigned *)(&fl); }'
+  - 'void f(double d) { unsigned long u = *(unsigned long *)(&d); }'
+  - 'void f(float *a) { unsigned u = *(unsigned *)(&a[1]); }'
+  - 'void f(float fl) { unsigned u; u = *(uint32_t *)(&fl); }'

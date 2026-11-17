@@ -1,8 +1,26 @@
 id: c-ternary-after-plus-unparenthesized
 snapshots:
-  'n = base + (*s == ''/'') ? 1 : 0;':
+  "int f(int len, char *s) { return len + (*s == '/') ? 1 : 0; }":
     labels:
-    - source: 'base + (*s == ''/'') ? 1 : 0'
+    - source: "len + (*s == '/') ? 1 : 0"
+      style: primary
+      start: 33
+      end: 58
+    - source: +
+      style: secondary
+      start: 37
+      end: 38
+    - source: (*s == '/')
+      style: secondary
+      start: 39
+      end: 50
+    - source: len + (*s == '/')
+      style: secondary
+      start: 33
+      end: 50
+  "n = base + (*s == '/') ? 1 : 0;":
+    labels:
+    - source: "base + (*s == '/') ? 1 : 0"
       style: primary
       start: 4
       end: 30
@@ -18,3 +36,57 @@ snapshots:
       style: secondary
       start: 4
       end: 22
+  "void f(void) { g(base + (x & 1) ? 1 : 0); }":
+    labels:
+    - source: "base + (x & 1) ? 1 : 0"
+      style: primary
+      start: 17
+      end: 39
+    - source: +
+      style: secondary
+      start: 22
+      end: 23
+    - source: (x & 1)
+      style: secondary
+      start: 24
+      end: 31
+    - source: base + (x & 1)
+      style: secondary
+      start: 17
+      end: 31
+  "void f(void) { n = a + (b + c) ? 1 : 0; }":
+    labels:
+    - source: "a + (b + c) ? 1 : 0"
+      style: primary
+      start: 19
+      end: 38
+    - source: +
+      style: secondary
+      start: 21
+      end: 22
+    - source: (b + c)
+      style: secondary
+      start: 23
+      end: 30
+    - source: a + (b + c)
+      style: secondary
+      start: 19
+      end: 30
+  "void f(void) { n = a + b + (x) ? 1 : 0; }":
+    labels:
+    - source: "a + b + (x) ? 1 : 0"
+      style: primary
+      start: 19
+      end: 38
+    - source: +
+      style: secondary
+      start: 25
+      end: 26
+    - source: (x)
+      style: secondary
+      start: 27
+      end: 30
+    - source: a + b + (x)
+      style: secondary
+      start: 19
+      end: 30

@@ -3,7 +3,13 @@ valid:
   - >-
     int f(const char *in, size_t inlen) { while (inlen > 0 && in[--inlen] ==
     '=') { } return 0; }
+  - 'int f(const char *s, size_t n) { while (n > 0 && s[n - 1] == '' '') { n--; } return 0; }'
+  - 'int f(struct b *p) { while (p->n > 0 && p->d[--p->n] == 0) { } return 0; }'
 invalid:
   - >-
     int f(const char *in, size_t inlen) { while (in[--inlen] == '=') { } return
     0; }
+  - 'int f(const char *s, size_t n) { while (n < 10 && s[--n] == '' '') { } return 0; }'
+  - 'int f(const char *s, size_t n) { while (s[--n] == ''\n'' || s[n] == ''\r'') { } return 0; }'
+  - 'int f(struct b *p) { while (p->d[--p->n] == 0) { } return 0; }'
+  - 'int f(const char *s, size_t n) { int c; while ((c = s[--n]) == '' '') { } return c; }'

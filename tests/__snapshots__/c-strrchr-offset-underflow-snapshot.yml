@@ -1,10 +1,32 @@
 id: c-strrchr-offset-underflow
 snapshots:
-  ? |-
-    char *cwd = strrchr(entry, '/');
-    size_t len = cwd - (entry + 1);
-  : labels:
+  "char *cwd = strrchr(entry, '/');\nsize_t len = cwd - (entry + 1);":
+    labels:
     - source: cwd - (entry + 1)
       style: primary
       start: 46
       end: 63
+  "long f(const char *entry) { char *p = strrchr(entry, '/'); return p - (entry + 1); }":
+    labels:
+    - source: p - (entry + 1)
+      style: primary
+      start: 66
+      end: 81
+  "void f(const char *entry) { char *p = strrchr(entry, '/'); if (p - (entry + 1) > 0) { } }":
+    labels:
+    - source: p - (entry + 1)
+      style: primary
+      start: 63
+      end: 78
+  "void f(const char *entry) { char *p = strrchr(entry, '/'); long n = p - (entry + 1); }":
+    labels:
+    - source: p - (entry + 1)
+      style: primary
+      start: 68
+      end: 83
+  "void f(struct s *q) { char *p = strrchr(q->path, '/'); long n = p - (q->path + 1); }":
+    labels:
+    - source: p - (q->path + 1)
+      style: primary
+      start: 64
+      end: 81

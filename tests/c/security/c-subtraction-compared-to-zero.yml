@@ -1,5 +1,12 @@
 id: c-subtraction-compared-to-zero
 valid:
   - 'if ((pad_length + input_len) <= 0) { return; }'
+  - 'void f(int a, int b) { if (a > b) { } }'
+  - 'void f(unsigned flags, unsigned mask) { if ((flags & mask) > 0) { } }'
+  - 'void f(unsigned a, unsigned b) { if ((a % b) > 0) { } }'
 invalid:
   - 'if ((pad_length - input_len) <= 0) { return; }'
+  - 'void f(int a, int b) { if ((a - b) > 0) { } }'
+  - 'void f(unsigned a, unsigned b) { if ((a - b) >= 0) { } }'
+  - 'void f(int a, int b) { int r = (a - b) < 0; }'
+  - 'void f(int a, int b) { if ((a + b) > 0 && (a - b) <= 0) { } }'

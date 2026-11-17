@@ -37,3 +37,9 @@ metadata:
   cwe: 'CWE-127'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/127.html'
   taxonomy_cited_keys: 'cwe'
+  todo_cases:
+    - 'FP: recognised lower bounds only N > 0; safe forms while (n && s[--n] == '' ''), while (n >= 1 && s[--n] == '' '') and while (n != 0 && s[--n] == '' '') are reported'
+    - 'FP: safe loop while (n > 0) { if (s[--n] != '' '') break; } is reported because the if condition in the body matches'
+    - 'FN: any ''> 0'' test suppresses the report, even on another variable, e.g. while (i > 0 && s[--n] == '' '')'
+    - 'FN: while (--n > 0 && s[n] == '' '') { } wraps a size_t n of 0 to SIZE_MAX before the bound test and then reads s[n]; it is not reported because the decrement sits in the bound test, not in the index'
+    - 'FN: do { } while (s[--n] == '' ''); and for (; s[--n] == '' '';) are missed (rule requires a while_statement)'

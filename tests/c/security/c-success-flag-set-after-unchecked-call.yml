@@ -5,7 +5,14 @@ valid:
     if (buf) {
         ZEND_TRY_ASSIGN_REF_TRUE(zs);
     }
+  - 'void f(void) { ZEND_TRY_ASSIGN_REF_TRUE(zs); }'
+  - 'void f(void) { rv = do_work(a, b); if (rv == FAILURE) { return; } ZEND_TRY_ASSIGN_REF_TRUE(zs); }'
+  - 'void f(void) { rv = do_work(a); if (rv) { ZEND_TRY_ASSIGN_REF_TRUE(zs); } }'
 invalid:
   - |-
     buf = make_bytes(n);
     ZEND_TRY_ASSIGN_REF_TRUE(zs);
+  - 'void f(void) { rv = do_work(a, b); ZEND_TRY_ASSIGN_REF_TRUE(zs); }'
+  - 'void f(void) { st->buf = make_bytes(n); ZEND_TRY_ASSIGN_REF_TRUE(zs); }'
+  - 'void f(void) { rv = obj->fn(a); ZEND_TRY_ASSIGN_REF_TRUE(zs); }'
+  - 'void f(void) { if (a) { rv = do_work(a); ZEND_TRY_ASSIGN_REF_TRUE(zs); } }'

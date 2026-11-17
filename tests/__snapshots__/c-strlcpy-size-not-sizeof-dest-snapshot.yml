@@ -1,8 +1,32 @@
 id: c-strlcpy-size-not-sizeof-dest
 snapshots:
-  struct s { char d[8]; }; void f(struct s *x, const char *t) { strlcpy(x->d, t, 16); }:
+  "struct s { char d[8]; }; void f(struct s *x, const char *t) { strlcpy(x->d, t, 16); }":
     labels:
     - source: strlcpy(x->d, t, 16)
       style: primary
       start: 62
       end: 82
+  "struct s { char name[8]; }; void f(struct s *p, const char *src) { strlcpy(p->name, src, 64); }":
+    labels:
+    - source: strlcpy(p->name, src, 64)
+      style: primary
+      start: 67
+      end: 92
+  "void f(char *dst, const char *src) { if (strlcpy(dst, src, 16) >= 16) { return; } }":
+    labels:
+    - source: strlcpy(dst, src, 16)
+      style: primary
+      start: 41
+      end: 62
+  "void f(char *dst, const char *src) { strlcpy(dst, src, strlen(src) + 1); }":
+    labels:
+    - source: strlcpy(dst, src, strlen(src) + 1)
+      style: primary
+      start: 37
+      end: 71
+  "void f(char *dst, const char *src, size_t n) { strlcpy(dst, src, n); }":
+    labels:
+    - source: strlcpy(dst, src, n)
+      style: primary
+      start: 47
+      end: 67
