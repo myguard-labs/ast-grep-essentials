@@ -3,7 +3,13 @@ valid:
   - |-
     <?php
     $offset = date( 'Y' ) / 3600;
+  - '<?php $offset = (int) get_option( ''gmt_offset'' ) * HOUR_IN_SECONDS;'
+  - '<?php $week = date( ''z'' ) / 7;'
+  - '<?php $offset = wp_timezone()->getOffset( new DateTime() ) / 3600;'
 invalid:
   - |-
     <?php
     $offset = date( 'Z' ) / 3600;
+  - '<?php $h = date( ''Z'' ) / HOUR_IN_SECONDS;'
+  - '<?php $x = ( date( ''Z'' ) / 60 ) + 1;'
+  - '<?php function f() { return date( ''Z'' ) / 3600; }'

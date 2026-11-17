@@ -3,7 +3,13 @@ valid:
   - >-
     function f( $tz ) { $prev = date_default_timezone_get();
     date_default_timezone_set( $tz ); date_default_timezone_set( $prev ); }
+  - '<?php function f( $cb ) { $prev = date_default_timezone_get(); date_default_timezone_set( ''Asia/Tokyo'' ); $cb(); date_default_timezone_set( $prev ); }'
+  - '<?php function f( $cb ) { $prev = date_default_timezone_get(); date_default_timezone_set( ''Asia/Tokyo'' ); try { $cb(); } finally { date_default_timezone_set( $prev ); } }'
+  - '<?php date_default_timezone_set( ''UTC'' );'
 invalid:
   - >-
     function f( $tz ) { date_default_timezone_set( $tz );
     date_default_timezone_set( 'UTC' ); }
+  - '<?php function f( $cb ) { date_default_timezone_set( ''Asia/Tokyo'' ); $cb(); date_default_timezone_set( ''UTC'' ); }'
+  - '<?php function f( $cb ) { date_default_timezone_set( ''Asia/Tokyo'' ); try { $cb(); } finally { date_default_timezone_set( ''UTC'' ); } }'
+  - '<?php function outer() { function inner() { date_default_timezone_set( ''Europe/Paris'' ); date_default_timezone_set( ''UTC'' ); } }'

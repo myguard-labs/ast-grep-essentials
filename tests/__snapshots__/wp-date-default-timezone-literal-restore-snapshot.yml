@@ -1,12 +1,50 @@
 id: wp-date-default-timezone-literal-restore
 snapshots:
-  function f( $tz ) { date_default_timezone_set( $tz ); date_default_timezone_set( 'UTC' ); }:
+  "<?php function f( $cb ) { date_default_timezone_set( 'Asia/Tokyo' ); $cb(); date_default_timezone_set( 'UTC' ); }":
+    labels:
+    - source: date_default_timezone_set( 'UTC' )
+      style: primary
+      start: 76
+      end: 110
+    - source: >-
+        function f( $cb ) { date_default_timezone_set( 'Asia/Tokyo' ); $cb();
+        date_default_timezone_set( 'UTC' ); }
+      style: secondary
+      start: 6
+      end: 113
+  "<?php function f( $cb ) { date_default_timezone_set( 'Asia/Tokyo' ); try { $cb(); } finally { date_default_timezone_set( 'UTC' ); } }":
+    labels:
+    - source: date_default_timezone_set( 'UTC' )
+      style: primary
+      start: 94
+      end: 128
+    - source: >-
+        function f( $cb ) { date_default_timezone_set( 'Asia/Tokyo' ); try { $cb(); }
+        finally { date_default_timezone_set( 'UTC' ); } }
+      style: secondary
+      start: 6
+      end: 133
+  "<?php function outer() { function inner() { date_default_timezone_set( 'Europe/Paris' ); date_default_timezone_set( 'UTC' ); } }":
+    labels:
+    - source: date_default_timezone_set( 'UTC' )
+      style: primary
+      start: 89
+      end: 123
+    - source: >-
+        function inner() { date_default_timezone_set( 'Europe/Paris' );
+        date_default_timezone_set( 'UTC' ); }
+      style: secondary
+      start: 25
+      end: 126
+  "function f( $tz ) { date_default_timezone_set( $tz ); date_default_timezone_set( 'UTC' ); }":
     labels:
     - source: date_default_timezone_set( 'UTC' )
       style: primary
       start: 54
       end: 88
-    - source: function f( $tz ) { date_default_timezone_set( $tz ); date_default_timezone_set( 'UTC' ); }
+    - source: >-
+        function f( $tz ) { date_default_timezone_set( $tz );
+        date_default_timezone_set( 'UTC' ); }
       style: secondary
       start: 0
       end: 91

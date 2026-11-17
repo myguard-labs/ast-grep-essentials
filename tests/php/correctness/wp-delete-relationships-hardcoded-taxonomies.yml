@@ -3,7 +3,13 @@ valid:
   - >-
     <?php wp_delete_object_term_relationships( $id, get_object_taxonomies(
     'post' ) );
+  - '<?php wp_delete_object_term_relationships( $id, $taxonomies );'
+  - '<?php wp_delete_object_term_relationships( $id, get_taxonomies() );'
+  - '<?php wp_delete_object_term_relationships( $id, get_object_taxonomies( get_post_type( $id ) ) );'
 invalid:
   - >-
     <?php wp_delete_object_term_relationships( $id, array( 'category',
     'post_tag' ) );
+  - '<?php wp_delete_object_term_relationships( $post->ID, array( ''category'' ) );'
+  - '<?php wp_delete_object_term_relationships( $id, array( ''category'', ''post_tag'', ''genre'' ) );'
+  - '<?php function f( $id ) { wp_delete_object_term_relationships( $id, array( ''post_format'' ) ); }'

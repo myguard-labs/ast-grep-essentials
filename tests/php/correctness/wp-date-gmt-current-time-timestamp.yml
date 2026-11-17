@@ -1,5 +1,11 @@
 id: wp-date-gmt-current-time-timestamp
 valid:
   - '$t = date( ''g:i:s a'', current_time( ''timestamp'' ) );'
+  - '<?php $t = date_i18n( ''g:i:s a'', current_time( ''timestamp'', true ) );'
+  - '<?php $t = gmdate( ''g:i:s a'', current_time( ''timestamp'', true ) );'
+  - '<?php $t = date( ''g:i:s a'', current_time( ''timestamp'', false ) );'
 invalid:
   - '$t = date( ''g:i:s a'', current_time( ''timestamp'', true ) );'
+  - '<?php echo date( ''Y-m-d'', current_time( ''timestamp'', true ) );'
+  - '<?php $s = date( get_option( ''date_format'' ), current_time( ''timestamp'', true ) );'
+  - '<?php function f() { return date( ''c'', current_time( ''timestamp'', true ) ); }'

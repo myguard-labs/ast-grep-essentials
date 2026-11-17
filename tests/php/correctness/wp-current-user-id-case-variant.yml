@@ -1,5 +1,10 @@
 id: wp-current-user-id-case-variant
 valid:
   - '$user_id = get_current_user_id();'
+  - '$uid = wp_get_current_user()->ID;'
+  - 'if ( get_current_user_id() === (int) $post->post_author ) { $ok = true; }'
 invalid:
   - '$user_id = get_current_user_ID();'
+  - 'update_user_meta( get_current_user_ID(), ''k'', 1 );'
+  - 'function me() { return get_current_user_ID(); }'
+  - 'if ( get_current_user_ID() === (int) $post->post_author ) { $ok = true; }'
