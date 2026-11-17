@@ -1,5 +1,30 @@
 id: c-inline-asm-percent-equals-local-label
 valid:
   - 'void f(void) { __asm__ volatile("0:\n\tjmp 0b\n"); }'
+  - |-
+    void f(int in, int out) {
+        __asm__ volatile("movl %1, %0" : "=r"(out) : "r"(in));
+    }
+  - |-
+    void f(void) {
+        puts("rate 100%=done");
+    }
+  - |-
+    void f(int *p) {
+        __asm__ volatile("1: decl %0\n\tjnz 1b" : "+m"(*p));
+    }
 invalid:
   - 'void f(void) { __asm__ volatile(".LL0%=:\n\tjmp .LL0%=\n"); }'
+  - |-
+    void f(int *p) {
+        __asm__ __volatile__(".Lx%=: decl %0\n\tjnz .Lx%=" : "+m"(*p));
+    }
+  - |-
+    void f(void) {
+        asm("jmp 1f\n"
+            "1%=:\n");
+    }
+  - |-
+    void f(int in) {
+        asm volatile("cmp %0, %0\n\tje .Lskip%=\n\tnop\n.Lskip%=:" : : "r"(in) : "cc");
+    }

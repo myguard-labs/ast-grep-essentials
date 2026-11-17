@@ -3,7 +3,28 @@ valid:
   - |-
     apr_ssize_t len;
     rc = b->read(b, &buf, &len);
+  - |-
+    size_t len;
+    rc = b->read(b, &buf, &len);
+  - |-
+    apr_size_t nbytes;
+    int len;
+    rc = b->read(b, &buf, &nbytes);
+  - |-
+    apr_size_t len;
+    if (b->read(b, &buf, &len) != 0) { return; }
 invalid:
   - |-
     int len;
     rc = b->read(b, &buf, &len);
+  - |-
+    int len;
+    int rc = 0;
+    rc = bkt->read(bkt, &data, &len);
+  - |-
+    int len;
+    memset(&buf, 0, 4);
+    rc = e->bucket->read(e->bucket, &buf, &len);
+  - |-
+    int len;
+    b->read(b, &buf, &len);

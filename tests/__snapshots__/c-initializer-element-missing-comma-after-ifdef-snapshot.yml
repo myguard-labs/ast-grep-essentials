@@ -1,5 +1,45 @@
 id: c-initializer-element-missing-comma-after-ifdef
 snapshots:
+  "static int *t[] = {\n    &x[0]\n#ifdef Y\n    &y[0],\n#endif\n    &z[0]\n};":
+    labels:
+    - source: |-
+        static int *t[] = {
+            &x[0]
+        #ifdef Y
+            &y[0],
+        #endif
+            &z[0]
+        };
+      style: primary
+      start: 0
+      end: 69
+  "static int t[] = {\n    sizeof(int)\n#if X\n    sizeof(long),\n#endif\n};":
+    labels:
+    - source: |-
+        static int t[] = {
+            sizeof(int)
+        #if X
+            sizeof(long),
+        #endif
+        };
+      style: primary
+      start: 0
+      end: 68
+  "static void *t[] = {\n    first_ptr,\n#ifdef A\n    a_ptr\n#else\n    b_ptr\n#endif\n    c_ptr\n};":
+    labels:
+    - source: |-
+        static void *t[] = {
+            first_ptr,
+        #ifdef A
+            a_ptr
+        #else
+            b_ptr
+        #endif
+            c_ptr
+        };
+      style: primary
+      start: 0
+      end: 90
   "static void *table[] = {\n    a_ptr\n#if HAVE_DOM\n    b_ptr\n#endif\n};":
     labels:
     - source: |-

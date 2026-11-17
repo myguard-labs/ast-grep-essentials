@@ -1,5 +1,11 @@
 id: c-int-cast-before-float-scale
 valid:
   - 'return (int)(((double)a / b) * (h - l + 1) + l);'
+  - 'return (int)(((double)a / b) * (h - l + 1)) + l;'
+  - 'return l + (int)((double)a / b * (h - l + 1));'
+  - 'return (int)floor(((double)a / b) * (h - l + 1)) + l;'
 invalid:
   - 'return (int)((double)a / b) * (h - l + 1) + l;'
+  - 'return (int)((double)r / RAND_MAX) * (hi - lo + 1) + lo;'
+  - 'return (int)((double)x / (y + 1)) * (max - min + 1) + base;'
+  - 'return (int)((double)a.n / b->d) * (h - l + 1) + 0;'

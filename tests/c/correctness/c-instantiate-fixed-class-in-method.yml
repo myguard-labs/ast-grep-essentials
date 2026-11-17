@@ -3,7 +3,13 @@ valid:
   - >-
     SPL_METHOD(Foo, bar) { spl_instantiate_arg_ex2(Z_OBJCE_P(getThis()), &ret,
     0, &zpath, &zflags); }
+  - 'SPL_METHOD(Foo, bar) { spl_instantiate_arg_ex2(Z_OBJCE_P(ZEND_THIS), &ret, 0, &zpath, &zflags); }'
+  - 'SPL_METHOD(Foo, bar) { zend_class_entry *ce = Z_OBJCE_P(ZEND_THIS); spl_instantiate_arg_ex2(ce, &ret, 0, &zpath, &zflags); }'
+  - 'SPL_METHOD(Foo, bar) { spl_instantiate_arg_ex2(Z_OBJCE(EX(This)), &ret, 0, &zpath, &zflags); }'
 invalid:
   - >-
     SPL_METHOD(Foo, bar) { spl_instantiate_arg_ex2(spl_ce_Foo, &ret, 0, &zpath,
     &zflags); }
+  - 'SPL_METHOD(Foo, bar) { spl_instantiate_arg_ex2(spl_ce_RecursiveIteratorIterator, &ret, 0, &zpath, &zflags); }'
+  - 'SPL_METHOD(Foo, bar) { if (ok) { spl_instantiate_arg_ex2(spl_ce_SplFileInfo, return_value, &zpath); } }'
+  - 'SPL_METHOD(Foo, bar) { spl_instantiate_arg_ex2(spl_ce_DirectoryIterator, &ret); }'

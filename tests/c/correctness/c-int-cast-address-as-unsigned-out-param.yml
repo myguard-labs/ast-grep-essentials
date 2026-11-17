@@ -1,5 +1,11 @@
 id: c-int-cast-address-as-unsigned-out-param
 valid:
   - 'unsigned int i; EVP_DigestFinal_ex(&ctx, q, &i);'
+  - 'unsigned int i; unsigned int *p = &i; EVP_DigestFinal_ex(&ctx, q, p);'
+  - 'unsigned int i; fwrite((unsigned char *)&i, 1, sizeof(i), fp);'
+  - 'long n; int r = (unsigned int)n; f(&n);'
 invalid:
   - 'int i; EVP_DigestFinal_ex(&ctx, q, (unsigned int *)&i);'
+  - 'long len; EVP_DigestFinal_ex(&ctx, q, (unsigned int *)&len);'
+  - 'struct st { long size; } s; f(&ctx, (unsigned int *)&s.size);'
+  - 'unsigned short port; f(&ctx, (unsigned int *)&port);'
