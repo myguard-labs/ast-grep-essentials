@@ -1,5 +1,13 @@
 id: js-double-escaped-ansi-literal-typescript
 valid:
   - 'const seq = ''\x1b[0K'''
+  - 'const seq = ''\u001b[0m'';'
+  - 'const seq = "\x1b[1m";'
+  - 'const nl = ''\\n'';'
+  - 'const seq = ''\x1b[31m'' + text + ''\x1b[0m'';'
 invalid:
   - 'const seq = ''\\e[0K'''
+  - 'const seq = "\\e[31m";'
+  - 'const seq = ''\\\\e[0m'';'
+  - 'const s: string = ''prefix \\e[1m'';'
+  - 'const seq = ''\\e[31m'' + text;'

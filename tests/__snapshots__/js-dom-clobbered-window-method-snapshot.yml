@@ -1,10 +1,17 @@
 id: js-dom-clobbered-window-method
 snapshots:
-  ? |-
-    if (window.Widget !== void 0) {
-      window.Widget.show()
-    }
-  : labels:
+  if (window.Widget !== void 0) window.Widget.show();:
+    labels:
+    - source: window.Widget.show()
+      style: primary
+      start: 30
+      end: 50
+    - source: if (window.Widget !== void 0) window.Widget.show();
+      style: secondary
+      start: 0
+      end: 51
+  "if (window.Widget !== void 0) {\n  window.Widget.show()\n}":
+    labels:
     - source: window.Widget.show()
       style: primary
       start: 34
@@ -16,3 +23,33 @@ snapshots:
       style: secondary
       start: 0
       end: 56
+  "if (window.Widget !== void 0) { if (ready) { window.Widget.show(); } }":
+    labels:
+    - source: window.Widget.show()
+      style: primary
+      start: 45
+      end: 65
+    - source: if (window.Widget !== void 0) { if (ready) { window.Widget.show(); } }
+      style: secondary
+      start: 0
+      end: 70
+  "if (window.Widget !== void 0) { setTimeout(function () { window.Widget.init({ a: 1 }); }, 0); }":
+    labels:
+    - source: "window.Widget.init({ a: 1 })"
+      style: primary
+      start: 57
+      end: 85
+    - source: "if (window.Widget !== void 0) { setTimeout(function () { window.Widget.init({ a: 1 }); }, 0); }"
+      style: secondary
+      start: 0
+      end: 95
+  "if (window.Widget !== void 0) { window.Widget.show(1, 2); }":
+    labels:
+    - source: window.Widget.show(1, 2)
+      style: primary
+      start: 32
+      end: 56
+    - source: if (window.Widget !== void 0) { window.Widget.show(1, 2); }
+      style: secondary
+      start: 0
+      end: 59

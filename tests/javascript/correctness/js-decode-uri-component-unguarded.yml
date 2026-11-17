@@ -1,5 +1,11 @@
 id: js-decode-uri-component-unguarded
 valid:
   - 'try { const p = decodeURIComponent(path); } catch (e) { }'
+  - 'function f(s) { try { return decodeURIComponent(s); } catch (e) { return s; } }'
+  - 'var p = decodeURIComponent(''a%20b'');'
+  - 'try { items.map(function (i) { return decodeURIComponent(i); }); } catch (e) { }'
 invalid:
   - 'const p = decodeURIComponent(path);'
+  - 'var p = decodeURIComponent(req.query.q);'
+  - 'function f(s) { return decodeURIComponent(s); }'
+  - 'var parse = (s) => decodeURIComponent(s);'

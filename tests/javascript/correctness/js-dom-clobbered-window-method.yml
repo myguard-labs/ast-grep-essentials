@@ -4,8 +4,15 @@ valid:
     if (typeof window.Widget?.show === 'function') {
       window.Widget.show()
     }
+  - 'if (window.Widget !== void 0 && typeof window.Widget.show === ''function'') { window.Widget.show(); }'
+  - 'if (window.Widget instanceof Object && typeof window.Widget.show === ''function'') { window.Widget.show(); }'
+  - 'window.Widget?.show?.();'
 invalid:
   - |-
     if (window.Widget !== void 0) {
       window.Widget.show()
     }
+  - 'if (window.Widget !== void 0) { window.Widget.show(1, 2); }'
+  - 'if (window.Widget !== void 0) window.Widget.show();'
+  - 'if (window.Widget !== void 0) { setTimeout(function () { window.Widget.init({ a: 1 }); }, 0); }'
+  - 'if (window.Widget !== void 0) { if (ready) { window.Widget.show(); } }'
