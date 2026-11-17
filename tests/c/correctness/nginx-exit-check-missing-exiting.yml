@@ -1,5 +1,12 @@
 id: nginx-exit-check-missing-exiting
 valid:
   - 'for (;;) { if (ngx_terminate || ngx_quit || ngx_exiting) { break; } }'
+  - 'void w(void) { for (;;) { if (ngx_exiting || ngx_terminate || ngx_quit) { break; } } }'
+  - 'void w(void) { if (ngx_terminate || ngx_quit || ngx_exiting || ngx_reconfigure) { return; } }'
+  - 'void w(void) { if (ngx_terminate || (ngx_quit || ngx_exiting)) { return; } }'
+
 invalid:
   - 'for (;;) { if (ngx_terminate || ngx_quit) { break; } }'
+  - 'void w(void) { if (ngx_terminate || ngx_quit || ngx_reopen) { return; } }'
+  - 'void w(void) { if ((ngx_terminate || ngx_quit)) { return; } }'
+  - 'void w(void) { int done = ngx_terminate || ngx_quit; if (done) { return; } }'

@@ -3,7 +3,14 @@ valid:
   - >-
     void cp(ngx_buf_t *dst, ngx_buf_t *src) { dst->flush = src->flush;
     dst->last_buf = src->last_buf; dst->last_in_chain = src->last_in_chain; }
+  - 'void cp(ngx_buf_t *dst, ngx_buf_t *src) { dst->last_in_chain = src->last_in_chain; dst->last_buf = src->last_buf; }'
+  - 'void cp(ngx_buf_t *dst, ngx_buf_t *src) { if (src->last_buf) { dst->last_buf = src->last_buf; } dst->last_in_chain = src->last_in_chain; }'
+  - 'void cp(ngx_buf_t *dst, ngx_buf_t *src) { dst->last_buf = src->last_buf; dst->last_in_chain = src->last_in_chain; dst->flush = src->flush; }'
+
 invalid:
   - >-
     void cp(ngx_buf_t *dst, ngx_buf_t *src) { dst->flush = src->flush;
     dst->last_buf = src->last_buf; }
+  - 'void cp(ngx_buf_t *dst, ngx_buf_t *src) { if (src->last_buf) { dst->last_buf = src->last_buf; } }'
+  - 'void cp(ngx_buf_t *d, ngx_buf_t *s, ngx_buf_t *o) { d->last_buf = s->last_buf; d->last_in_chain = o->last_in_chain; }'
+  - 'void cp(ngx_buf_t *dst, ngx_buf_t *src) { dst->last_buf = src->last_buf; dst->sync = src->sync; }'

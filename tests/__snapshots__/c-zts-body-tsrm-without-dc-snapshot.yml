@@ -1,6 +1,6 @@
 id: c-zts-body-tsrm-without-dc
 snapshots:
-  int f(char *s) { return php_error(E_WARNING, "x" TSRMLS_CC); }:
+  "int f(char *s) { return php_error(E_WARNING, \"x\" TSRMLS_CC); }":
     labels:
     - source: int f(char *s) { return php_error(E_WARNING, "x" TSRMLS_CC); }
       style: primary
@@ -10,3 +10,33 @@ snapshots:
       style: secondary
       start: 49
       end: 58
+  "int f(int a, char *s) { if (a) { return g(s TSRMLS_CC); } return 0; }":
+    labels:
+    - source: int f(int a, char *s) { if (a) { return g(s TSRMLS_CC); } return 0; }
+      style: primary
+      start: 0
+      end: 69
+    - source: TSRMLS_CC
+      style: secondary
+      start: 44
+      end: 53
+  "int f(void) { return g(1 TSRMLS_CC) + h(2 TSRMLS_CC); }":
+    labels:
+    - source: int f(void) { return g(1 TSRMLS_CC) + h(2 TSRMLS_CC); }
+      style: primary
+      start: 0
+      end: 55
+    - source: TSRMLS_CC
+      style: secondary
+      start: 25
+      end: 34
+  "void f(void) { zval *z; MAKE_STD_ZVAL(z); add_next_index_long(z, 1 TSRMLS_CC); }":
+    labels:
+    - source: void f(void) { zval *z; MAKE_STD_ZVAL(z); add_next_index_long(z, 1 TSRMLS_CC); }
+      style: primary
+      start: 0
+      end: 80
+    - source: TSRMLS_CC
+      style: secondary
+      start: 67
+      end: 76

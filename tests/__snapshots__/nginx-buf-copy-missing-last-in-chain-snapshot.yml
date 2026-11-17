@@ -1,12 +1,42 @@
 id: nginx-buf-copy-missing-last-in-chain
 snapshots:
-  void cp(ngx_buf_t *dst, ngx_buf_t *src) { dst->flush = src->flush; dst->last_buf = src->last_buf; }:
+  "void cp(ngx_buf_t *d, ngx_buf_t *s, ngx_buf_t *o) { d->last_buf = s->last_buf; d->last_in_chain = o->last_in_chain; }":
+    labels:
+    - source: d->last_buf = s->last_buf
+      style: primary
+      start: 52
+      end: 77
+    - source: "{ d->last_buf = s->last_buf; d->last_in_chain = o->last_in_chain; }"
+      style: secondary
+      start: 50
+      end: 117
+  "void cp(ngx_buf_t *dst, ngx_buf_t *src) { dst->flush = src->flush; dst->last_buf = src->last_buf; }":
     labels:
     - source: dst->last_buf = src->last_buf
       style: primary
       start: 67
       end: 96
-    - source: '{ dst->flush = src->flush; dst->last_buf = src->last_buf; }'
+    - source: "{ dst->flush = src->flush; dst->last_buf = src->last_buf; }"
       style: secondary
       start: 40
       end: 99
+  "void cp(ngx_buf_t *dst, ngx_buf_t *src) { dst->last_buf = src->last_buf; dst->sync = src->sync; }":
+    labels:
+    - source: dst->last_buf = src->last_buf
+      style: primary
+      start: 42
+      end: 71
+    - source: "{ dst->last_buf = src->last_buf; dst->sync = src->sync; }"
+      style: secondary
+      start: 40
+      end: 97
+  "void cp(ngx_buf_t *dst, ngx_buf_t *src) { if (src->last_buf) { dst->last_buf = src->last_buf; } }":
+    labels:
+    - source: dst->last_buf = src->last_buf
+      style: primary
+      start: 63
+      end: 92
+    - source: "{ dst->last_buf = src->last_buf; }"
+      style: secondary
+      start: 61
+      end: 95

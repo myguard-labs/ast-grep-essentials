@@ -1,5 +1,12 @@
 id: nginx-ngx-str-literal-without-u-char-cast
 valid:
   - 'static ngx_str_t s = { 3, (u_char *) "GET " };'
+  - 'static ngx_str_t s = { sizeof("GET ") - 1, (u_char *) "GET " };'
+  - 'static ngx_str_t s = ngx_string("GET ");'
+  - 'void f(void) { ngx_str_t s = { 5, (u_char *) "GET /" }; (void) s; }'
+
 invalid:
   - 'static ngx_str_t s = { 3, "GET " };'
+  - 'static ngx_str_t s = { sizeof("GET ") - 1, "GET " };'
+  - 'static ngx_str_t s = { .len = 4, .data = "GET " };'
+  - 'void f(void) { ngx_str_t s = { 5, "GET /" }; (void) s; }'

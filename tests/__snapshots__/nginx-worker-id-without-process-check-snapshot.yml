@@ -1,6 +1,28 @@
 id: nginx-worker-id-without-process-check
 snapshots:
-  static ngx_int_t worker_id(void) { return (ngx_int_t) ngx_worker; }:
+  "static ngx_int_t a(void) { return (ngx_int_t) ngx_worker; } static ngx_int_t b(void) { return ngx_process; }":
+    labels:
+    - source: (ngx_int_t) ngx_worker
+      style: primary
+      start: 34
+      end: 56
+    - source: static ngx_int_t a(void) { return (ngx_int_t) ngx_worker; }
+      style: secondary
+      start: 0
+      end: 59
+  "static ngx_int_t worker_id(void) { ngx_int_t id = (ngx_int_t) ngx_worker; return id; }":
+    labels:
+    - source: (ngx_int_t) ngx_worker
+      style: primary
+      start: 50
+      end: 72
+    - source: >-
+        static ngx_int_t worker_id(void) { ngx_int_t id = (ngx_int_t) ngx_worker;
+        return id; }
+      style: secondary
+      start: 0
+      end: 86
+  "static ngx_int_t worker_id(void) { return (ngx_int_t) ngx_worker; }":
     labels:
     - source: (ngx_int_t) ngx_worker
       style: primary
@@ -10,3 +32,15 @@ snapshots:
       style: secondary
       start: 0
       end: 67
+  "static void log_id(ngx_log_t *log) { ngx_log_error(NGX_LOG_INFO, log, 0, \"w=%i\", (ngx_int_t) ngx_worker); }":
+    labels:
+    - source: (ngx_int_t) ngx_worker
+      style: primary
+      start: 81
+      end: 103
+    - source: >-
+        static void log_id(ngx_log_t *log) { ngx_log_error(NGX_LOG_INFO, log, 0,
+        "w=%i", (ngx_int_t) ngx_worker); }
+      style: secondary
+      start: 0
+      end: 107

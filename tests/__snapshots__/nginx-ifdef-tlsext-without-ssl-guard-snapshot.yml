@@ -1,10 +1,35 @@
 id: nginx-ifdef-tlsext-without-ssl-guard
 snapshots:
-  ? |-
-    #ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME
-    int ngx_http_ssl_servername(void);
-    #endif
-  : labels:
+  "#ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME\n#define NGX_HTTP_SSL_SNI 1\n#endif":
+    labels:
+    - source: |-
+        #ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME
+        #define NGX_HTTP_SSL_SNI 1
+        #endif
+      style: primary
+      start: 0
+      end: 69
+    - source: SSL_CTRL_SET_TLSEXT_HOSTNAME
+      style: secondary
+      start: 7
+      end: 35
+  "#ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME\nint ngx_http_ssl_servername(void);\n#else\nint ngx_http_ssl_noserver(void);\n#endif":
+    labels:
+    - source: |-
+        #ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME
+        int ngx_http_ssl_servername(void);
+        #else
+        int ngx_http_ssl_noserver(void);
+        #endif
+      style: primary
+      start: 0
+      end: 116
+    - source: SSL_CTRL_SET_TLSEXT_HOSTNAME
+      style: secondary
+      start: 7
+      end: 35
+  "#ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME\nint ngx_http_ssl_servername(void);\n#endif":
+    labels:
     - source: |-
         #ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME
         int ngx_http_ssl_servername(void);
@@ -12,6 +37,19 @@ snapshots:
       style: primary
       start: 0
       end: 77
+    - source: SSL_CTRL_SET_TLSEXT_HOSTNAME
+      style: secondary
+      start: 7
+      end: 35
+  "#ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME\nstatic int ngx_ssl_servername_cb(void *s, int *ad, void *arg) { return 0; }\n#endif":
+    labels:
+    - source: |-
+        #ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME
+        static int ngx_ssl_servername_cb(void *s, int *ad, void *arg) { return 0; }
+        #endif
+      style: primary
+      start: 0
+      end: 118
     - source: SSL_CTRL_SET_TLSEXT_HOSTNAME
       style: secondary
       start: 7
