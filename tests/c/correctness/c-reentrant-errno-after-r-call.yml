@@ -12,6 +12,7 @@ valid:
       return 0;
     }
   - |-
+    #include <errno.h>
     #include <string.h>
     int f(int err, char *buf, size_t len) {
       int rc = strerror_r(err, buf, len);
@@ -31,6 +32,7 @@ valid:
 invalid:
   - 'ret = getpwnam_r(n, &pw, buf, len, &res); if (errno == ERANGE) return;'
   - |-
+    #include <errno.h>
     #include <pwd.h>
     int f(const char *n, char *buf, size_t len) {
       struct passwd pw, *res;
@@ -41,6 +43,7 @@ invalid:
       return 0;
     }
   - |-
+    #include <errno.h>
     #include <string.h>
     int f(int err, char *buf, size_t len) {
       strerror_r(err, buf, len);
@@ -48,6 +51,7 @@ invalid:
       return 0;
     }
   - |-
+    #include <errno.h>
     #include <dirent.h>
     int f(DIR *d) {
       struct dirent ent, *res;
