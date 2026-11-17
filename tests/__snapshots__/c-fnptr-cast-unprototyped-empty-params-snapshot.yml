@@ -1,11 +1,49 @@
 id: c-fnptr-cast-unprototyped-empty-params
 snapshots:
-  ? |-
-    void use(void) {
-      int (*fp)(void) = (int (*)())alloc_fn;
-      (void)fp;
-    }
-  : labels:
+  "void use(void *lib) {\n    long (*fn)(const char *) = (long (*)())dlsym(lib, \"f\");\n    (void)fn;\n}":
+    labels:
+    - source: (long (*)())dlsym(lib, "f")
+      style: primary
+      start: 53
+      end: 80
+    - source: ()
+      style: secondary
+      start: 62
+      end: 64
+    - source: (*)()
+      style: secondary
+      start: 59
+      end: 64
+  "void use(void) {\n    register_cb((void *(*)())make_node);\n}":
+    labels:
+    - source: (void *(*)())make_node
+      style: primary
+      start: 33
+      end: 55
+    - source: ()
+      style: secondary
+      start: 43
+      end: 45
+    - source: (*)()
+      style: secondary
+      start: 40
+      end: 45
+  "void use(void) {\n    void (*cb)(void *);\n    cb = (void (*)())handler;\n    (void)cb;\n}":
+    labels:
+    - source: (void (*)())handler
+      style: primary
+      start: 50
+      end: 69
+    - source: ()
+      style: secondary
+      start: 59
+      end: 61
+    - source: (*)()
+      style: secondary
+      start: 56
+      end: 61
+  "void use(void) {\n  int (*fp)(void) = (int (*)())alloc_fn;\n  (void)fp;\n}":
+    labels:
     - source: (int (*)())alloc_fn
       style: primary
       start: 37

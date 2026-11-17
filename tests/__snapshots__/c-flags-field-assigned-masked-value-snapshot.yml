@@ -1,8 +1,26 @@
 id: c-flags-field-assigned-masked-value
 snapshots:
-  void f(int status) { OG(flags) = status & 0xf; }:
+  "void f(int status) {\n    OG(flags) = status & ~FLAG_X;\n}":
+    labels:
+    - source: OG(flags) = status & ~FLAG_X
+      style: primary
+      start: 25
+      end: 53
+  "void f(int status) {\n    if (status) {\n        OG(flags) = status & 0xf;\n    }\n}":
+    labels:
+    - source: OG(flags) = status & 0xf
+      style: primary
+      start: 47
+      end: 71
+  "void f(int status) { OG(flags) = status & 0xf; }":
     labels:
     - source: OG(flags) = status & 0xf
       style: primary
       start: 21
       end: 45
+  "void f(int status, int mask) {\n    OG(flags) = status & mask;\n}":
+    labels:
+    - source: OG(flags) = status & mask
+      style: primary
+      start: 35
+      end: 60

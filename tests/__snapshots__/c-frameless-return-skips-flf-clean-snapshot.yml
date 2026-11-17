@@ -1,5 +1,62 @@
 id: c-frameless-return-skips-flf-clean
 snapshots:
+  "ZEND_FRAMELESS_FUNCTION(f, 1)\n{\n    if (bad) {\n        RETURN_STR(s);\n    }\n    RETVAL_NULL();\nflf_clean:\n    zend_string_release(arg);\n}":
+    labels:
+    - source: RETURN_STR(s);
+      style: primary
+      start: 55
+      end: 69
+    - source: |-
+        ZEND_FRAMELESS_FUNCTION(f, 1)
+        {
+            if (bad) {
+                RETURN_STR(s);
+            }
+            RETVAL_NULL();
+        flf_clean:
+            zend_string_release(arg);
+        }
+      style: secondary
+      start: 0
+      end: 137
+  "ZEND_FRAMELESS_FUNCTION(f, 1)\n{\n    if (bad) {\n        RETURN_TRUE;\n    }\n    RETVAL_FALSE;\nflf_clean:\n    ;\n}":
+    labels:
+    - source: RETURN_TRUE;
+      style: primary
+      start: 55
+      end: 67
+    - source: |-
+        ZEND_FRAMELESS_FUNCTION(f, 1)
+        {
+            if (bad) {
+                RETURN_TRUE;
+            }
+            RETVAL_FALSE;
+        flf_clean:
+            ;
+        }
+      style: secondary
+      start: 0
+      end: 110
+  "ZEND_FRAMELESS_FUNCTION(f, 1)\n{\n    while (n--) {\n        RETURN_LONG(n);\n    }\n    RETVAL_NULL();\nflf_clean:\n    ;\n}":
+    labels:
+    - source: RETURN_LONG(n);
+      style: primary
+      start: 58
+      end: 73
+    - source: |-
+        ZEND_FRAMELESS_FUNCTION(f, 1)
+        {
+            while (n--) {
+                RETURN_LONG(n);
+            }
+            RETVAL_NULL();
+        flf_clean:
+            ;
+        }
+      style: secondary
+      start: 0
+      end: 117
   "ZEND_FRAMELESS_FUNCTION(f, 1) { if (bad) { RETURN_FALSE; } flf_clean: ; }":
     labels:
     - source: RETURN_FALSE;

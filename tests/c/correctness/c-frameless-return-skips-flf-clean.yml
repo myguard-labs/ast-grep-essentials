@@ -3,5 +3,56 @@ valid:
   - >-
     ZEND_FRAMELESS_FUNCTION(f, 1) { if (bad) { RETVAL_FALSE; goto flf_clean; }
     flf_clean: ; }
+  - |-
+    ZEND_FRAMELESS_FUNCTION(f, 1)
+    {
+        RETURN_FALSE;
+    }
+  - |-
+    ZEND_FRAMELESS_FUNCTION(f, 1)
+    {
+        if (bad) {
+            RETVAL_NULL();
+            goto flf_clean;
+        }
+        RETVAL_TRUE;
+    flf_clean:
+        ;
+    }
+  - |-
+    void g(void)
+    {
+        RETURN_TRUE;
+    }
 invalid:
   - 'ZEND_FRAMELESS_FUNCTION(f, 1) { if (bad) { RETURN_FALSE; } flf_clean: ; }'
+  - |-
+    ZEND_FRAMELESS_FUNCTION(f, 1)
+    {
+        if (bad) {
+            RETURN_TRUE;
+        }
+        RETVAL_FALSE;
+    flf_clean:
+        ;
+    }
+  - |-
+    ZEND_FRAMELESS_FUNCTION(f, 1)
+    {
+        while (n--) {
+            RETURN_LONG(n);
+        }
+        RETVAL_NULL();
+    flf_clean:
+        ;
+    }
+  - |-
+    ZEND_FRAMELESS_FUNCTION(f, 1)
+    {
+        if (bad) {
+            RETURN_STR(s);
+        }
+        RETVAL_NULL();
+    flf_clean:
+        zend_string_release(arg);
+    }

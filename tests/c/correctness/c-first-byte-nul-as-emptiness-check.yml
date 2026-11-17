@@ -1,5 +1,39 @@
 id: c-first-byte-nul-as-emptiness-check
 valid:
   - 'int f(zend_string *str) { return str->val[0] != ''a''; }'
+  - |-
+    int f(zend_string *str) {
+        return str->len > 0;
+    }
+  - |-
+    int f(zend_string *str) {
+        return str->val[1] != '\0';
+    }
+  - |-
+    size_t f(zend_string *str) {
+        size_t i = 0;
+        while (str->val[i] != '\0') {
+            i++;
+        }
+        return i;
+    }
 invalid:
   - 'int f(zend_string *str) { return str->val[0] != ''\0''; }'
+  - |-
+    int f(zend_string *str) {
+        if (str->val[0] != '\0') {
+            return 1;
+        }
+        return 0;
+    }
+  - |-
+    int f(struct req *r) {
+        return r->name->val[0] != '\0';
+    }
+  - |-
+    int f(zend_string *p) {
+        while (p->val[0] != '\0') {
+            p = next(p);
+        }
+        return 0;
+    }
