@@ -3,7 +3,13 @@ valid:
   - >-
     if (current_user_can('edit_post', $id)) { echo $a; } if
     (current_user_can('edit_post', $other)) { echo $b; }
+  - 'if (current_user_can(''edit_post'', $id)) { echo $a; } echo 1; if (current_user_can(''edit_post'', $id)) { echo $b; }'
+  - 'if (current_user_can(''delete_post'', $id)) { echo $a; } if (current_user_can(''delete_post'', $id)) { echo $b; }'
+  - 'if (current_user_can(''edit_post'', $id)) { echo $a; }'
 invalid:
   - >-
     if (current_user_can('edit_post', $id)) { echo $a; } if
     (current_user_can('edit_post', $id)) { echo $b; }
+  - 'if (current_user_can(''edit_post'', $id)) { echo $a; } if (current_user_can(''edit_post'', $id)) { echo $b; } if (current_user_can(''edit_post'', $id)) { echo $c; }'
+  - 'function f($id) { if (current_user_can(''edit_post'', $id)) { save($id); log_it(); } if (current_user_can(''edit_post'', $id)) { notify($id); } }'
+  - '<?php if (current_user_can(''edit_post'', $id)) { a(); } if (current_user_can(''edit_post'', $id)) { b(); }'
