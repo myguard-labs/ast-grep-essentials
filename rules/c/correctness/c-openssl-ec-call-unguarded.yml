@@ -23,6 +23,10 @@ rule:
             field: name
             regex: OPENSSL_NO_EC
 metadata:
+  todo_cases:
+    - 'FP: an EC call inside `#if !defined(OPENSSL_NO_EC)` is reported (guard is preproc_if, not preproc_ifdef): `#if !defined(OPENSSL_NO_EC) int f(EVP_PKEY *k) { return EC_KEY_can_sign(k); } #endif`'
+    - 'FN: an EC call inside `#ifdef OPENSSL_NO_EC` (compiled only when EC is absent) is not reported because any OPENSSL_NO_EC name suppresses it, whether ifdef or ifndef side'
+    - 'FP: the unanchored regex EC_ matches non-EC callees: `int f(int k) { return SEC_alloc(k); }` is reported'
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'

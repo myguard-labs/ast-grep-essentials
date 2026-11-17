@@ -3,7 +3,14 @@ valid:
   - >-
     void f(struct timeval *t) { if (t->tv_usec >= 1000000) { t->tv_usec -=
     1000000; } }
+  - 'void f(int *m, int *h) { if (*m >= 60) { *m -= 60; (*h)++; } }'
+  - 'void f(int x) { if (x > 59) { x -= 60; } }'
+  - 'void f(int ns) { if (ns >= 256) ns -= 256; }'
 invalid:
   - >-
     void f(struct timeval *t) { if (t->tv_usec > 1000000) { t->tv_usec -=
     1000000; } }
+  - 'void f(int sec, int min) { if (sec > 60) { sec -= 60; min++; } }'
+  - 'void f(long ns) { if (ns > 1000000000) ns -= 1000000000; }'
+  - 'void f(struct ts *t) { if (t->ns > 1000000000L) { t->ns -= 1000000000L; t->sec++; } }'
+  - 'void f(int *r, int i) { if (r[i] > 10) { r[i] -= 10; r[i + 1]++; } }'
