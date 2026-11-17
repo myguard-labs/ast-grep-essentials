@@ -5,9 +5,37 @@ valid:
     ob_start();
     $data = ob_get_contents();
     ob_end_clean();
+  - |
+    <?php
+    ob_start();
+    ob_start();
+    $a = ob_get_clean();
+    echo $a;
+    ob_end_clean();
+  - |
+    <?php
+    ob_start();
+    ob_end_clean();
+    ob_start();
+    $d = ob_get_clean();
 invalid:
   - |
     <?php
     ob_start();
     $data = ob_get_clean();
     ob_end_clean();
+  - |
+    <?php
+    function f() {
+        ob_start();
+        $html = trim( ob_get_clean() );
+        ob_end_clean();
+        return $html;
+    }
+  - |
+    <?php
+    ob_start();
+    if ( $x ) {
+        $d = ob_get_clean();
+        ob_end_clean();
+    }

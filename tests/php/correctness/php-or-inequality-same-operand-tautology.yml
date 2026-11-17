@@ -3,7 +3,25 @@ valid:
   - >-
     function f( $scheme ) { if ( $scheme != 'http' && $scheme != 'https' ) {
     return false; } return true; }
+  - |
+    <?php
+    if ( $scheme == 'http' || $scheme == 'https' ) { $ok = 1; }
+  - |
+    <?php
+    if ( $scheme !== 'http' && $scheme !== 'https' ) { $ok = 0; }
+  - |
+    <?php
+    if ( $scheme != 'http' || $other != 'https' ) { $ok = 0; }
 invalid:
   - >-
     function f( $scheme ) { if ( $scheme != 'http' || $scheme != 'https' ) {
     return false; } return true; }
+  - |
+    <?php
+    if ( $scheme != 'https' || $scheme != 'http' ) { $ok = 0; }
+  - |
+    <?php
+    if ( $parts['scheme'] != 'http' || $parts['scheme'] != 'https' ) { $ok = 0; }
+  - |
+    <?php
+    return $url_scheme != 'http' || $url_scheme != 'https';
