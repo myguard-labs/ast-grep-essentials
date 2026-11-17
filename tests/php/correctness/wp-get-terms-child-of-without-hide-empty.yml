@@ -3,7 +3,13 @@ valid:
   - >-
     $kids = get_terms( 'category', array( 'child_of' => $id, 'fields' => 'ids',
     'hide_empty' => 0 ) );
+  - '$k = get_terms( ''category'', array( ''hide_empty'' => false, ''child_of'' => $id ) );'
+  - '$k = get_terms( ''category'', array( ''parent'' => 0 ) );'
+  - '$k = get_terms( ''category'', [ ''child_of'' => 3, ''hide_empty'' => true ] );'
 invalid:
   - >-
     $kids = get_terms( 'category', array( 'child_of' => $id, 'fields' => 'ids' )
     );
+  - '$k = get_terms( ''category'', array( ''child_of'' => $id ) );'
+  - '$k = get_terms( ''category'', [ ''child_of'' => 3 ] );'
+  - '$k = get_terms( $tax, array( ''orderby'' => ''name'', ''child_of'' => $p ) );'
