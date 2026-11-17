@@ -3,7 +3,14 @@ valid:
   - >-
     static unsigned f(unsigned n, unsigned char *p) { return ((n & 0x3f) << 8) +
     *p; }
+  - 'static unsigned f(unsigned n) { return n & (0x3f << 8); }'
+  - 'static unsigned f(unsigned n, unsigned m) { return (n << 8) & m; }'
+  - 'static unsigned f(unsigned n) { return (n & 0xf) << 4; }'
+
 invalid:
   - >-
     static unsigned f(unsigned n, unsigned char *p) { return (n & 0x3f << 8) +
     *p; }
+  - 'static unsigned f(unsigned v) { return v & 0xf << 4; }'
+  - 'static unsigned f(unsigned a, unsigned b, unsigned c) { unsigned r = a & b << c; return r; }'
+  - 'static unsigned f(unsigned *p) { return (p[0] & 0xff << 8) | p[1]; }'

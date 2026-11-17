@@ -1,5 +1,12 @@
 id: c-bitwise-and-on-logical-negation
 valid:
   - 'int f(int a, int b) { if (!(a) && !(b)) { return 1; } return 0; }'
+  - 'int f(int a, int b) { return !a && !b; }'
+  - 'int f(int a, int b) { return !(a & b); }'
+  - 'int f(int a, int b) { return ~a & ~b; }'
+
 invalid:
   - 'int f(int a, int b) { if (!(a) & !(b)) { return 1; } return 0; }'
+  - 'int f(int a, int b) { return !a & !b; }'
+  - 'int f(struct s *p, struct s *q) { int r = !p->a & !q->b; return r; }'
+  - 'int f(int a, int b) { return !check(a) & !check(b); }'

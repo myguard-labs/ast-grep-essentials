@@ -1,6 +1,26 @@
 id: c-bitand-bitor-no-parens
 snapshots:
-  int f(int opts) { return !(opts & 1 | 2); }:
+  "int f(int a, int b) { return a & 1 | b; }":
+    labels:
+    - source: a & 1 | b
+      style: primary
+      start: 29
+      end: 38
+    - source: a & 1
+      style: secondary
+      start: 29
+      end: 34
+  "int f(int a, int b, int c, int d) { return a & b | c & d; }":
+    labels:
+    - source: a & b | c & d
+      style: primary
+      start: 43
+      end: 56
+    - source: a & b
+      style: secondary
+      start: 43
+      end: 48
+  "int f(int opts) { return !(opts & 1 | 2); }":
     labels:
     - source: opts & 1 | 2
       style: primary
@@ -10,3 +30,13 @@ snapshots:
       style: secondary
       start: 27
       end: 35
+  "unsigned f(unsigned flags) { unsigned v = flags & 0xf | 0x80; return v; }":
+    labels:
+    - source: flags & 0xf | 0x80
+      style: primary
+      start: 42
+      end: 60
+    - source: flags & 0xf
+      style: secondary
+      start: 42
+      end: 53

@@ -1,5 +1,12 @@
 id: c-bitand-unparenthesized-comparison
 valid:
   - 'int f(int a, int b) { return (a & b) != 0; }'
+  - 'int f(int a, int b) { return (a & b) == 0; }'
+  - 'int f(int a, int b) { return a & (b != 0); }'
+  - 'int f(int a, int b) { return a && b != 0; }'
+
 invalid:
   - 'int f(int a, int b) { return a & b != 0; }'
+  - 'int f(int a, int b, int c) { return a & b == c; }'
+  - 'int f(unsigned flags, unsigned m) { if (flags & m != 0) { return 1; } return 0; }'
+  - 'int f(int *p, int m) { return p[0] & m == 0; }'

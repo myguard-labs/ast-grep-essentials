@@ -3,7 +3,14 @@ valid:
   - >-
     static const special_forms_t special_forms[] = { {"alpha", 1}, {NULL, 0}, };
     for (pp = special_forms; pp && pp->name; pp++) { use(pp->name); }
+  - 'static const special_forms_t forms[] = { {"alpha", 1}, {"beta", 2}, {NULL, 0} };'
+  - 'static const char *names[] = { "alpha", "beta", NULL };'
+  - 'static const entry_t tbl[] = { {"a", NULL}, {"b", NULL}, {NULL, NULL} };'
+
 invalid:
   - >-
     static const special_forms_t special_forms[] = { {"alpha", 1}, NULL, }; for
     (pp = special_forms; pp; pp++) { use(pp->name); }
+  - 'static const special_forms_t forms[] = { {"alpha", 1}, {"beta", 2}, NULL };'
+  - 'static const entry_t tbl[] = { {1, 2}, {3, 4}, NULL, };'
+  - 'static const struct opt opts[] = { { "v", 0, 1 }, { "q", 0, 2 }, NULL };'

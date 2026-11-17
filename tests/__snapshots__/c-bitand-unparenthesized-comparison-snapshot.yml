@@ -1,16 +1,34 @@
 id: c-bitand-unparenthesized-comparison
 snapshots:
-  int f(int a, int b) { return a & b != 0; }:
+  "int f(int *p, int m) { return p[0] & m == 0; }":
+    labels:
+    - source: p[0] & m == 0
+      style: primary
+      start: 30
+      end: 43
+    - source: "&"
+      style: secondary
+      start: 35
+      end: 36
+    - source: ==
+      style: secondary
+      start: 39
+      end: 41
+    - source: m == 0
+      style: secondary
+      start: 37
+      end: 43
+  "int f(int a, int b) { return a & b != 0; }":
     labels:
     - source: a & b != 0
       style: primary
       start: 29
       end: 39
-    - source: '&'
+    - source: "&"
       style: secondary
       start: 31
       end: 32
-    - source: '!='
+    - source: "!="
       style: secondary
       start: 35
       end: 37
@@ -18,3 +36,39 @@ snapshots:
       style: secondary
       start: 33
       end: 39
+  "int f(int a, int b, int c) { return a & b == c; }":
+    labels:
+    - source: a & b == c
+      style: primary
+      start: 36
+      end: 46
+    - source: "&"
+      style: secondary
+      start: 38
+      end: 39
+    - source: ==
+      style: secondary
+      start: 42
+      end: 44
+    - source: b == c
+      style: secondary
+      start: 40
+      end: 46
+  "int f(unsigned flags, unsigned m) { if (flags & m != 0) { return 1; } return 0; }":
+    labels:
+    - source: flags & m != 0
+      style: primary
+      start: 40
+      end: 54
+    - source: "&"
+      style: secondary
+      start: 46
+      end: 47
+    - source: "!="
+      style: secondary
+      start: 50
+      end: 52
+    - source: m != 0
+      style: secondary
+      start: 48
+      end: 54
