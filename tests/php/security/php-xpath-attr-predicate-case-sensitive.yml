@@ -9,3 +9,17 @@ valid:
   $astgrep_fixture = '$xpath->query(\'//use[@href or @xlink:href]\', $node);';
 invalid:
 - $xpath->query('//use[@href or @xlink:href]', $node);
+- |-
+  <?php
+  $xpath->query('//use[@href or @xlink:href]', $doc->documentElement);
+- |-
+  <?php
+  function f($doc) {
+    $xpath = new DOMXPath($doc);
+    $xpath->query('//use[@href or @xlink:href]', $doc);
+  }
+- |-
+  <?php
+  if ($svg) {
+    $xpath->query('//use[@href or @xlink:href]', $nodes[0]);
+  }

@@ -1,5 +1,25 @@
 id: wp-like-unescaped-underscore
 valid:
   - '<?php $q = "SELECT meta_key FROM t WHERE meta_key NOT LIKE ''\\_%''"; ?>'
+  - |-
+    <?php
+    $q = "SELECT meta_key FROM t WHERE meta_key LIKE 'abc%'";
+  - |-
+    <?php
+    $q = $wpdb->esc_like('_') . '%';
+  - |-
+    <?php
+    $q = "SELECT meta_key FROM t WHERE meta_key = '_x'";
 invalid:
   - '<?php $q = "SELECT meta_key FROM t WHERE meta_key NOT LIKE ''_%''"; ?>'
+  - |-
+    <?php
+    $q = "SELECT meta_key FROM t WHERE meta_key LIKE   '_x'";
+  - |-
+    <?php
+    $q = "SELECT meta_key FROM t WHERE meta_key LIKE '_$prefix%'";
+  - |-
+    <?php
+    $q = <<<SQL
+    SELECT meta_key FROM t WHERE meta_key LIKE '_x%'
+    SQL;

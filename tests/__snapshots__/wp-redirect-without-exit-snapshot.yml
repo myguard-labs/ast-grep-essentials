@@ -1,6 +1,36 @@
 id: wp-redirect-without-exit
 snapshots:
-  function f($u) { wp_redirect($u); echo 'x'; }:
+  "<?php\nclass A {\n  function g($u) {\n    wp_redirect($u, 301);\n    update_option('a', 'b');\n  }\n}":
+    labels:
+    - source: wp_redirect($u, 301);
+      style: primary
+      start: 39
+      end: 60
+    - source: wp_redirect($u, 301)
+      style: secondary
+      start: 39
+      end: 59
+  "<?php\nfunction f($u) {\n  if ($u) {\n    wp_redirect($u);\n  }\n  echo 'x';\n}":
+    labels:
+    - source: wp_redirect($u);
+      style: primary
+      start: 39
+      end: 55
+    - source: wp_redirect($u)
+      style: secondary
+      start: 39
+      end: 54
+  "<?php\nfunction f($u) {\n  wp_redirect($u);\n  do_work();\n}":
+    labels:
+    - source: wp_redirect($u);
+      style: primary
+      start: 25
+      end: 41
+    - source: wp_redirect($u)
+      style: secondary
+      start: 25
+      end: 40
+  "function f($u) { wp_redirect($u); echo 'x'; }":
     labels:
     - source: wp_redirect($u);
       style: primary
