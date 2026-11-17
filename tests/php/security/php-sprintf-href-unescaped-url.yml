@@ -1,5 +1,10 @@
 id: php-sprintf-href-unescaped-url
 valid:
   - '$html = sprintf( ''<a href=%s>x</a>'', esc_url( get_permalink( $id ) ) );'
+  - '$html = sprintf( ''<a href=%s>x</a>'', esc_url( get_permalink() ) );'
+  - '$html = sprintf( ''<p>%s</p>'', esc_html( get_the_title() ) );'
+  - '$u = get_permalink( $id ); $html = sprintf( ''<a href=%s>x</a>'', esc_url( $u ) );'
 invalid:
   - '$html = sprintf( ''<a href=%s>x</a>'', get_permalink( $id ) );'
+  - 'echo sprintf( ''<a class="b" href=%s>y</a>'', get_permalink() );'
+  - 'return sprintf( ''<li><a href=%s>x</a></li>'', get_permalink( $p->ID ) );'

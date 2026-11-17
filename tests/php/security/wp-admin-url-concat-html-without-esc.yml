@@ -1,5 +1,11 @@
 id: wp-admin-url-concat-html-without-esc
 valid:
   - '$link = "<a href=''" . esc_url( admin_url( ''edit.php'' ) ) . "''>";'
+  - '$u = esc_url( admin_url( ''a.php'' ) . ''?page=x'' );'
+  - '$u = admin_url( ''a.php'' );'
+  - '$l = ''<a href="'' . esc_url( admin_url( ''post.php?post='' . (int) $id ) ) . ''">go</a>'';'
 invalid:
   - '$link = "<a href=''" . admin_url( ''edit.php'' ) . "''>";'
+  - 'echo "<a href=''" . admin_url( ''x.php'' ) . "''>go</a>";'
+  - '$a = ''<a href="'' . admin_url() . ''">go</a>'';'
+  - '$a = admin_url( ''a.php'' ) . ''?x=1'';'

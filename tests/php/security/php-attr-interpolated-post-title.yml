@@ -1,5 +1,11 @@
 id: php-attr-interpolated-post-title
 valid:
   - '$link = "<a title=''" . esc_attr($post->post_title) . "''>x</a>";'
+  - '$link = "<a title=''" . esc_attr( $p->post_title ) . "''>x</a>";'
+  - '$t = esc_attr( $post->post_title ); $link = "<a title=''{$t}''>x</a>";'
+  - '$link = ''<a title="{$post->post_title}">x</a>'';'
 invalid:
   - '$link = "<a title=''{$post->post_title}''>x</a>";'
+  - 'echo "<a title=''{$post->post_title}''>x</a>";'
+  - 'function f( $post ) { return "<a title=''{$post->post_title}''>x</a>"; }'
+  - '$html .= "<a title=''{$post->post_title}''>x</a>";'

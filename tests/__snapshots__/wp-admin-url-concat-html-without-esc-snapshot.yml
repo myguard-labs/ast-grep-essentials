@@ -1,16 +1,58 @@
 id: wp-admin-url-concat-html-without-esc
 snapshots:
+  $a = '<a href="' . admin_url() . '">go</a>';:
+    labels:
+    - source: admin_url()
+      style: primary
+      start: 19
+      end: 30
+    - source: "'<a href=\"'"
+      style: secondary
+      start: 5
+      end: 16
+    - source: "'<a href=\"' . admin_url()"
+      style: secondary
+      start: 5
+      end: 30
+  $a = admin_url( 'a.php' ) . '?x=1';:
+    labels:
+    - source: admin_url( 'a.php' )
+      style: primary
+      start: 5
+      end: 25
+    - source: "'a.php'"
+      style: secondary
+      start: 16
+      end: 23
+    - source: admin_url( 'a.php' ) . '?x=1'
+      style: secondary
+      start: 5
+      end: 34
   $link = "<a href='" . admin_url( 'edit.php' ) . "'>";:
     labels:
     - source: admin_url( 'edit.php' )
       style: primary
       start: 22
       end: 45
-    - source: '''edit.php'''
+    - source: "'edit.php'"
       style: secondary
       start: 33
       end: 43
-    - source: '"<a href=''" . admin_url( ''edit.php'' )'
+    - source: "\"<a href='\" . admin_url( 'edit.php' )"
       style: secondary
       start: 8
       end: 45
+  echo "<a href='" . admin_url( 'x.php' ) . "'>go</a>";:
+    labels:
+    - source: admin_url( 'x.php' )
+      style: primary
+      start: 19
+      end: 39
+    - source: "'x.php'"
+      style: secondary
+      start: 30
+      end: 37
+    - source: "\"<a href='\" . admin_url( 'x.php' )"
+      style: secondary
+      start: 5
+      end: 39

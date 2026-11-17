@@ -1,5 +1,11 @@
 id: php-server-php-self-echoed
 valid:
   - '<?php $self = $_SERVER[''PHP_SELF'']; ?>'
+  - '<?php echo esc_url( $_SERVER[''REQUEST_URI''] ); ?>'
+  - '<?php echo (int) $_SERVER[''SERVER_PORT'']; ?>'
+  - '<?php if ( $_SERVER[''PHP_SELF''] === ''/index.php'' ) { $x = 1; } ?>'
 invalid:
   - '<form action="<?php echo $_SERVER[''PHP_SELF'']; ?>">'
+  - '<?php echo $_SERVER["PHP_SELF"]; ?>'
+  - '<?php echo "<form action=''" . $_SERVER[''PHP_SELF''] . "''>"; ?>'
+  - '<?php echo $_SERVER[ ''PHP_SELF'' ]; ?>'

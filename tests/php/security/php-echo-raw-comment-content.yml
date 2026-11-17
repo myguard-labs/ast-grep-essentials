@@ -1,5 +1,11 @@
 id: php-echo-raw-comment-content
 valid:
   - '<?php echo esc_textarea( $comment->comment_content ); ?>'
+  - '<?php echo esc_html( $comment->comment_content ); ?>'
+  - '<?php echo wp_kses_post( $comment->comment_content ); ?>'
+  - '<?php $body = $comment->comment_content; ?>'
 invalid:
   - '<?php echo $comment->comment_content; ?>'
+  - '<?php echo $this->comment_content; ?>'
+  - '<?php foreach ( $comments as $c ) { echo $c->comment_content; } ?>'
+  - '<?php if ( $c ) { echo $c->comment_content; } ?>'
