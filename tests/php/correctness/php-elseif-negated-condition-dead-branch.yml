@@ -1,5 +1,9 @@
 id: php-elseif-negated-condition-dead-branch
 valid:
   - '<?php if ( $menu ) { $a = 1; } elseif ( ! $other ) { $a = 2; }'
+  - '<?php if ($a) { f(); } elseif (!$b) { g(); }'
+  - '<?php if ($a) { f(); } else { g(); }'
 invalid:
   - '<?php if ( $menu ) { $a = 1; } elseif ( ! $menu ) { $a = 2; }'
+  - '<?php if ($a) { f(); } elseif (!$a) { g(); } else { h(); }'
+  - '<?php if ($this->menu) { f(); } elseif (!$this->menu) { g(); }'

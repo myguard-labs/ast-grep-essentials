@@ -3,5 +3,9 @@ valid:
   - >-
     if (preg_match('/plural-forms: (.*)\n/i', $header, $regs)) { $expr =
     $regs[1]; }
+  - '<?php if (mb_eregi("^a", $line)) { $x = 1; }'
+  - '<?php if ($db->eregi("^a", $line)) { $x = 1; }'
 invalid:
   - 'if (eregi("plural-forms: (.*)\n", $header, $regs)) { $expr = $regs[1]; }'
+  - '<?php if (!eregi("^a", $line)) { $x = 1; }'
+  - '<?php $ok = eregi("^a", $line, $m);'

@@ -1,5 +1,9 @@
 id: php-empty-guard-skips-zero
 valid:
   - 'if ( ! is_null( $r[''body''] ) ) { $x = $r[''body'']; }'
+  - '<?php if ( $r[''body''] === '''' ) { $x = 1; }'
+  - '<?php if ( isset( $r[''body''] ) && $r[''body''] !== '''' ) { $x = $r[''body'']; }'
 invalid:
   - 'if ( ! empty( $r[''body''] ) ) { $x = $r[''body'']; }'
+  - '<?php $x = empty( $r[$k] ) ? 1 : 2;'
+  - '<?php $x = empty( $r[''a''][''b''] );'

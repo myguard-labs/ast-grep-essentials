@@ -14,6 +14,11 @@ rule:
   pattern: |
     if ($VAR) { $$$BODY1 } elseif (! $VAR) { $$$BODY2 }
 metadata:
+  todo_cases:
+    - '<?php if (!$a) { f(); } elseif ($a) { g(); } observed 0 matches: reversed polarity (negated if, plain elseif) is not flagged'
+    - '<?php if ($a) { f(); } else if (!$a) { g(); } observed 0 matches: two-word else if is not flagged'
+    - '<?php if ($a) { f(); } elseif ($b) { g(); } elseif (!$a) { h(); } observed 0 matches: negation in a later elseif of a chain is not flagged'
+    - '<?php if ($a) f(); elseif (!$a) g(); observed 0 matches: brace-less bodies are not flagged'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
