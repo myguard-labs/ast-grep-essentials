@@ -1,5 +1,13 @@
 id: php-get-page-in-foreach
 valid:
   - '$page = get_page( $page_id );'
+  - 'foreach ( $ids as $id ) { $x = $id; } $page = get_page( $first );'
+  - '$page = get_page( $id ); foreach ( $items as $item ) { echo $item; }'
+  - 'foreach ( $ids as $id ) { get_posts( array( ''include'' => $id ) ); }'
+  - 'foreach ( $ids as $id ) { echo get_page_by_path( $id ); }'
 invalid:
   - 'foreach ( $all_page_ids as $page_id ) { $page = get_page( $page_id ); }'
+  - 'foreach ( $ids as $id => $slug ) { $page = get_page( $id ); }'
+  - 'foreach ( $ids as $id ) { if ( $id ) { $page = get_page( $id ); } }'
+  - 'foreach ( $ids as $id ) : $page = get_page( $id ); endforeach;'
+  - 'foreach ( $groups as $g ) { foreach ( $g as $id ) { $page = get_page( $id ); } }'
