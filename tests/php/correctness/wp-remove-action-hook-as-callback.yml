@@ -1,5 +1,11 @@
 id: wp-remove-action-hook-as-callback
 valid:
   - 'remove_action($hook, $callback, 10, 1);'
+  - '<?php remove_action(''init'', ''my_init'');'
+  - '<?php remove_action($hook, array($this, ''run''), 10);'
+  - '<?php remove_action($hook, $callback);'
 invalid:
   - 'remove_action($hook, $hook, 10, 1);'
+  - '<?php remove_action($hook, $hook, 10);'
+  - '<?php remove_action( $tag, $tag, 20 );'
+  - '<?php function f() { remove_action($tag, $tag, 5); }'

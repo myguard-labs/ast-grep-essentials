@@ -1,5 +1,11 @@
 id: wp-redirect-concat-query-string
 valid:
   - 'wp_redirect( add_query_arg( ''added'', ''true'', wp_get_referer() ) );'
+  - '<?php wp_redirect( $url . ''#added'' );'
+  - '<?php wp_redirect( $url, 301 );'
+  - '<?php wp_redirect( add_query_arg( ''added'', ''true'', $url ), 301 );'
 invalid:
   - 'wp_redirect( wp_get_referer() . ''?added=true'' );'
+  - '<?php wp_redirect( $url . ''?added=true'' );'
+  - '<?php wp_redirect( admin_url( ''edit.php'' ) . ''?added=true'' ); exit;'
+  - '<?php if ( $ok ) { wp_redirect( home_url( ''/'' ) . ''?added=true'' ); }'

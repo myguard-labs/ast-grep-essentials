@@ -1,5 +1,11 @@
 id: wp-raw-post-content-emptiness-check
 valid:
   - '<?php if (strlen($content) > 0) { echo 1; }'
+  - '<?php if (strlen(apply_filters(''the_content'', $post->post_content)) > 0) { echo 1; }'
+  - '<?php if (strlen(get_the_title($post)) > 0) { echo 1; }'
+  - '<?php $has = strlen(wp_strip_all_tags(apply_filters(''the_content'', $post->post_content))) > 0;'
 invalid:
   - '<?php if (strlen($post->post_content) > 0) { echo 1; }'
+  - '<?php if ( strlen( $post->post_content ) > 0 && $x ) { echo 1; }'
+  - '<?php $has = strlen($post->post_content) > 0;'
+  - '<?php return strlen($post->post_content) > 0 ? ''a'' : ''b'';'
