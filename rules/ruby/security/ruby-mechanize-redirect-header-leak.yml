@@ -27,7 +27,7 @@ rule:
         stopBy: end
         has:
           field: condition
-          regex: '(?i)redirect|\b(code|status)\b(\.to_s)?\.start_with\?\(\s*[''"]3|\b(code|status)\b(\.to_i)?\s*(===?|!=|>=?|<=?)\s*[''"]?3[0-9][0-9]\b|[''"]?\b3[0-9][0-9]\b[''"]?\s*(===?|!=|>=?|<=?)\s*[\w.]*\b(code|status)\b|\b3[0-9][0-9]\b[^\])]*[\])]\.(include|cover)\?\(\s*[\w.]*\b(code|status)\b|\binclude\?\(\s*3[0-9][0-9]\b|\b(code|status)\b[\w.]*\.between\?\(\s*3[0-9][0-9]\b'
+          regex: '(?i)redirect|\b(?:code|status|status_code|http_status|statuscode)\b(?:\.to_s)?\.start_with\?\(?\s*[''\"]3|\b(?:code|status|status_code|http_status|statuscode)\b[''"]?(?:\([^()]*\)|[\])])?(?:\.to_[is])?\s*(?:===?|!=|<=>|>=?|<=?)\s*[''"]?3[0-9][0-9]\b|[''"]?\b3[0-9][0-9]\b[''"]?\s*(?:===?|!=|<=>|>=?|<=?)\s*[@\w.]*\b(?:code|status|status_code|http_status|statuscode)\b|\b3[0-9][0-9]\b[^\])]*[\])]\s*===\s*[@\w.\[:''"]*\b(?:code|status|status_code|http_status|statuscode)\b|\b3[0-9][0-9]\b[^\])]*[\])]\.(?:include|cover|member)\?\(?\s*[@\w.\[:''"]*\b(?:code|status|status_code|http_status|statuscode)\b|\b3[0-9][0-9]\b\.\.\.?[0-9]+\.(?:include|cover)\?\(?\s*[@\w.\[:''"]*\b(?:code|status|status_code|http_status|statuscode)\b|\binclude\?\(?\s*3[0-9][0-9]\b|\b(?:code|status|status_code|http_status|statuscode)\b[''"]?(?:\([^()]*\)|[\])])?(?:\.to_[is])?\.(?:between|in)\?\(?\s*[\[(]*3[0-9][0-9]\b'
 metadata:
   cwe: 'CWE-200'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/200.html'
@@ -35,4 +35,5 @@ metadata:
   owasp: 'A01:2025'
   todo_cases:
     - 'A non-status include?(3xx) condition (retry_codes.include?(300)) is still matched.'
+    - 'Unusual spacing inside the status operand (include?(response . code)) is not matched.'
     - 'Receiver-qualified recursion (self.follow_redirect(uri, headers)) is not matched.'
