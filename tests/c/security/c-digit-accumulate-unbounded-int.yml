@@ -4,7 +4,13 @@ valid:
     static int rd(const unsigned char *p) { int min = 0; while (*p >= '0' && *p
     <= '9') { if (min > 6553) break; min = min * 10 + *p++ - '0'; } return min;
     }
+  - "int f(const char *p) { int v = 0; while (*p >= '0' && *p <= '9') p++; return v; }"
+  - "int f(const char *p, int lim) { int v = 0; while (*p >= '0' && *p <= '9') { if (v > lim) return -1; v = v * 10 + *p++ - '0'; } return v; }"
+  - "int f(const char *p) { int v = 0; while (*p >= '0' && *p <= '9') { if (__builtin_mul_overflow(v, 10, &v)) return -1; v += *p++ - '0'; } return v; }"
 invalid:
   - >-
     static int rd(const unsigned char *p) { int min = 0; while (*p >= '0' && *p
     <= '9') min = min * 10 + *p++ - '0'; return min; }
+  - "int f(const char *s) { int val = 0; while (isdigit(*s)) val = val * 10 + *s++ - '0'; return val; }"
+  - "int f(const char *p, const char *end) { int acc = 0; while (p < end) acc = acc * 10 + *p++ - 48; return acc; }"
+  - "void f(struct st *st, const char *p) { while (*p) st->v = st->v * 10 + *p++ - '0'; }"

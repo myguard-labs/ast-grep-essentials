@@ -1,5 +1,11 @@
 id: c-deref-postdecrement-discarded
 valid:
   - 'void f(int *p) { (*p)--; }'
+  - "int f(int *p) { int v = *p--; return v; }"
+  - "void f(int *p) { --*p; }"
+  - "void f(int *p) { *p = 0; p--; }"
 invalid:
   - 'void f(int *p) { *p--; }'
+  - "void f(int *count) { *count--; }"
+  - "void f(int *p, int n) { while (n) { *p--; n--; } }"
+  - "void f(int *p, int x) { if (x) *p--; }"

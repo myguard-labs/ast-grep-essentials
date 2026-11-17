@@ -1,5 +1,11 @@
 id: c-deref-cast-of-byte-buffer
 valid:
   - 'float f(const char *sqldata) { return *(char *)sqldata; }'
+  - "unsigned char f(const char *data) { return *(unsigned char *)data; }"
+  - "uint8_t f(const uint8_t *bytes) { return *(uint8_t *)bytes; }"
+  - "char f(const char *buf) { return *buf; }"
 invalid:
   - 'float f(const char *sqldata) { return *(float *)sqldata; }'
+  - "uint32_t f(const char *buf) { return *(uint32_t *)buf; }"
+  - "double f(const char *data) { return *(const double *)data; }"
+  - "unsigned short f(const char *bytes) { return *(unsigned short *) bytes; }"
