@@ -3,5 +3,11 @@ valid:
 - class A { void f(String uri, Exception e) { throw new IllegalArgumentException("Error while setting AMQP URI", e); } }
 - '// class A { void f(String uri, Exception e) { throw new IllegalArgumentException("Error while setting AMQP URI: " + uri, e); } }'
 - 'class AstgrepFixture { String value = "class A { void f(String uri, Exception e) { throw new IllegalArgumentException(\"Error while setting AMQP URI: \" + uri, e); } }"; }'
+- 'class A { void f(String uri) { throw new IllegalStateException("bad uri"); } }'
+- 'class A { void f(String uri) { throw new IllegalStateException(); } }'
+- 'class A { void f(String uri) { throw new IllegalStateException("bad " + "uri"); } }'
 invalid:
 - 'class A { void f(String uri, Exception e) { throw new IllegalArgumentException("Error while setting AMQP URI: " + uri, e); } }'
+- 'class A { void f(String uri) { throw new IllegalStateException("bad uri " + uri); } }'
+- 'class A { void f(String uri) { throw new IllegalStateException("bad uri " + uri.trim()); } }'
+- 'class A { void f(String uri) { throw new IllegalStateException(uri + " is bad"); } }'

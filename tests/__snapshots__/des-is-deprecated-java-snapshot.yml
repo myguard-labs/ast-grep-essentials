@@ -1,9 +1,26 @@
 id: des-is-deprecated-java
 snapshots:
-  ? |
-    Cipher.getInstance("DES/ECB/PKCS5Padding");
-  : labels:
+  "Cipher.getInstance(\"DES/ECB/PKCS5Padding\");\n":
+    labels:
     - source: Cipher.getInstance("DES/ECB/PKCS5Padding")
       style: primary
       start: 0
       end: 42
+  "class A { void f() throws Exception { Cipher c = Cipher.getInstance(\"DES\"); } }\n":
+    labels:
+    - source: Cipher.getInstance("DES")
+      style: primary
+      start: 49
+      end: 74
+  "class A { void f() throws Exception { Cipher c = Cipher.getInstance(\"DES/CBC/PKCS5Padding\"); } }\n":
+    labels:
+    - source: Cipher.getInstance("DES/CBC/PKCS5Padding")
+      style: primary
+      start: 49
+      end: 91
+  "class A { void f() throws Exception { Cipher c = javax.crypto.Cipher.getInstance(\"DES/ECB/NoPadding\"); } }\n":
+    labels:
+    - source: javax.crypto.Cipher.getInstance("DES/ECB/NoPadding")
+      style: primary
+      start: 49
+      end: 101

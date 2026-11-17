@@ -3,7 +3,19 @@ valid:
   - >-
     AuthScheme scheme = isDigestChallenge(headerLine) ? AuthScheme.DIGEST :
     AuthScheme.BASIC;
+  - |
+    class A { void f() { AuthScheme s = challenge.getScheme(); } }
+  - |
+    class A { void f() { AuthScheme s = "Digest".equalsIgnoreCase(challenge.getSchemeName()) ? AuthScheme.DIGEST : AuthScheme.BASIC; } }
+  - |
+    class A { void f() { AuthScheme s = challenge.scheme() == AuthScheme.DIGEST ? AuthScheme.DIGEST : AuthScheme.BASIC; } }
 invalid:
   - >-
     AuthScheme scheme = isNonEmpty(nonce) ? AuthScheme.DIGEST :
     AuthScheme.BASIC;
+  - |
+    class A { AuthScheme f(String nonce) { return isNonEmpty(nonce) ? AuthScheme.DIGEST : AuthScheme.BASIC; } }
+  - |
+    class A { void f() { AuthScheme s = StringUtils.isNonEmpty(challenge.getNonce()) ? AuthScheme.DIGEST : AuthScheme.BASIC; } }
+  - |
+    class A { void f() { AuthScheme s = isNonEmpty(serverNonce) ? AuthScheme.DIGEST : AuthScheme.BASIC; } }
