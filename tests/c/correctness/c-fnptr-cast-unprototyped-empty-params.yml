@@ -5,9 +5,40 @@ valid:
       int (*fp)(void) = (int (*)(void))alloc_fn;
       (void)fp;
     }
+  - |-
+    void use(void) {
+        int (*fp)(int) = (int (*)(int))alloc_fn;
+        (void)fp;
+    }
+  - |-
+    void use(void) {
+        void (*cb)(void *, int);
+        cb = (void (*)(void *, int))handler;
+        cb(NULL, 0);
+    }
+  - |-
+    void use(void *lib) {
+        long (*fn)(const char *) = (long (*)(const char *))dlsym(lib, "f");
+        (void)fn;
+    }
 invalid:
   - |-
     void use(void) {
       int (*fp)(void) = (int (*)())alloc_fn;
       (void)fp;
+    }
+  - |-
+    void use(void) {
+        void (*cb)(void *);
+        cb = (void (*)())handler;
+        (void)cb;
+    }
+  - |-
+    void use(void *lib) {
+        long (*fn)(const char *) = (long (*)())dlsym(lib, "f");
+        (void)fn;
+    }
+  - |-
+    void use(void) {
+        register_cb((void *(*)())make_node);
     }

@@ -7,10 +7,68 @@ valid:
             break;
         }
     }
+  - |-
+    void f(apr_bucket_brigade *b) {
+        apr_bucket *e;
+        APR_BRIGADE_FOREACH(e, b) {
+            if (APR_BUCKET_IS_FLUSH(e)) {
+                rv = ap_pass_brigade(f->next, b);
+            }
+        }
+    }
+  - |-
+    void f(apr_bucket_brigade *b) {
+        apr_bucket *e;
+        APR_BRIGADE_FOREACH(e, b) {
+            if (APR_BUCKET_IS_EOS(e)) {
+                break;
+            }
+        }
+    }
+  - |-
+    void f(apr_bucket_brigade *b) {
+        apr_bucket *e;
+        APR_BRIGADE_FOREACH(e, b) {
+            if (APR_BUCKET_IS_FLUSH(e)) {
+                if (done) {
+                    tail = apr_brigade_split(b, APR_BUCKET_NEXT(e));
+                    break;
+                }
+            }
+        }
+    }
 invalid:
   - |-
     APR_BRIGADE_FOREACH(e, b) {
         if (APR_BUCKET_IS_FLUSH(e)) {
             break;
+        }
+    }
+  - |-
+    void f(apr_bucket_brigade *b) {
+        apr_bucket *e;
+        for (e = APR_BRIGADE_FIRST(b); e != APR_BRIGADE_SENTINEL(b); e = APR_BUCKET_NEXT(e)) {
+            if (APR_BUCKET_IS_FLUSH(e)) {
+                flush_output(ctx);
+                break;
+            }
+        }
+    }
+  - |-
+    void f(apr_bucket_brigade *b) {
+        apr_bucket *e;
+        APR_BRIGADE_FOREACH(e, b) {
+            if (APR_BUCKET_IS_FLUSH(e)) {
+                if (ctx->pending) {
+                    break;
+                }
+            }
+        }
+    }
+  - |-
+    void f(apr_bucket_brigade *b) {
+        apr_bucket *e;
+        APR_BRIGADE_FOREACH(e, b) {
+            if (APR_BUCKET_IS_FLUSH(e)) break;
         }
     }

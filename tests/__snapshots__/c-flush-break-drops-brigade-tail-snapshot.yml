@@ -13,3 +13,42 @@ snapshots:
       style: secondary
       start: 70
       end: 76
+  "void f(apr_bucket_brigade *b) {\n    apr_bucket *e;\n    APR_BRIGADE_FOREACH(e, b) {\n        if (APR_BUCKET_IS_FLUSH(e)) break;\n    }\n}":
+    labels:
+    - source: if (APR_BUCKET_IS_FLUSH(e)) break;
+      style: primary
+      start: 91
+      end: 125
+    - source: break;
+      style: secondary
+      start: 119
+      end: 125
+  "void f(apr_bucket_brigade *b) {\n    apr_bucket *e;\n    APR_BRIGADE_FOREACH(e, b) {\n        if (APR_BUCKET_IS_FLUSH(e)) {\n            if (ctx->pending) {\n                break;\n            }\n        }\n    }\n}":
+    labels:
+    - source: |-
+        if (APR_BUCKET_IS_FLUSH(e)) {
+                    if (ctx->pending) {
+                        break;
+                    }
+                }
+      style: primary
+      start: 91
+      end: 199
+    - source: break;
+      style: secondary
+      start: 169
+      end: 175
+  "void f(apr_bucket_brigade *b) {\n    apr_bucket *e;\n    for (e = APR_BRIGADE_FIRST(b); e != APR_BRIGADE_SENTINEL(b); e = APR_BUCKET_NEXT(e)) {\n        if (APR_BUCKET_IS_FLUSH(e)) {\n            flush_output(ctx);\n            break;\n        }\n    }\n}":
+    labels:
+    - source: |-
+        if (APR_BUCKET_IS_FLUSH(e)) {
+                    flush_output(ctx);
+                    break;
+                }
+      style: primary
+      start: 150
+      end: 239
+    - source: break;
+      style: secondary
+      start: 223
+      end: 229

@@ -1,5 +1,39 @@
 id: c-flag-and-of-distinct-flags
 valid:
   - "#define NEWFILE 1\n#define NOFILE 2\nif (mask & (NEWFILE | NOFILE)) {\n\treturn 1;\n}"
+  - |-
+    int f(struct req *r) {
+        if (r->flags & FLAG_NEW) {
+            return 1;
+        }
+        return 0;
+    }
+  - |-
+    int f(struct req *r) {
+        if ((r->flags & FLAG_NEW) == FLAG_NEW) {
+            return 1;
+        }
+        return 0;
+    }
+  - |-
+    int f(int mask) {
+        return mask & (FLAG_NEW | FLAG_OLD);
+    }
 invalid:
   - "#define NEWFILE 1\n#define NOFILE 2\nif (mask & (NEWFILE & NOFILE)) {\n\treturn 1;\n}"
+  - |-
+    int f(void) {
+        if (FLAG_NEW & FLAG_OLD) {
+            return 1;
+        }
+        return 0;
+    }
+  - |-
+    int f(void) {
+        int both = (OPT_READ & OPT_WRITE);
+        return both;
+    }
+  - |-
+    int f(void) {
+        return (O_RDONLY & O_WRONLY) != 0;
+    }

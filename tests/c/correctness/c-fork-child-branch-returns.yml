@@ -1,5 +1,55 @@
 id: c-fork-child-branch-returns
 valid:
   - 'pid = fork(); if (pid == 0) { child_main(slot); exit(0); }'
+  - |-
+    int f(void) {
+        pid_t pid = fork();
+        if (pid == 0) {
+            execv("/bin/true", argv);
+            _exit(127);
+        }
+        return pid;
+    }
+  - |-
+    int f(void) {
+        pid_t pid = fork();
+        if (pid < 0) {
+            return -1;
+        }
+        if (pid == 0) {
+            child_main();
+            exit(0);
+        }
+        return 0;
+    }
+  - |-
+    int f(void) {
+        pid_t pid = fork();
+        if (pid > 0) {
+            return pid;
+        }
+        return 0;
+    }
 invalid:
   - 'pid = fork(); if (pid == 0) { child_main(slot); return 0; }'
+  - |-
+    int f(void) {
+        pid_t pid = fork();
+        if ( pid == 0 ) {
+            child_main();
+            return 0;
+        }
+        return pid;
+    }
+  - |-
+    int f(void) {
+        pid_t pid = fork();
+        if (pid == 0) {
+            if (setup() < 0) {
+                return 1;
+            }
+            child_main();
+            exit(0);
+        }
+        return pid;
+    }

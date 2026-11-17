@@ -1,6 +1,24 @@
 id: c-first-byte-nul-as-emptiness-check
 snapshots:
-  int f(zend_string *str) { return str->val[0] != '\0'; }:
+  "int f(struct req *r) {\n    return r->name->val[0] != '\\0';\n}":
+    labels:
+    - source: r->name->val[0] != '\0'
+      style: primary
+      start: 34
+      end: 57
+  "int f(zend_string *p) {\n    while (p->val[0] != '\\0') {\n        p = next(p);\n    }\n    return 0;\n}":
+    labels:
+    - source: p->val[0] != '\0'
+      style: primary
+      start: 35
+      end: 52
+  "int f(zend_string *str) {\n    if (str->val[0] != '\\0') {\n        return 1;\n    }\n    return 0;\n}":
+    labels:
+    - source: str->val[0] != '\0'
+      style: primary
+      start: 34
+      end: 53
+  "int f(zend_string *str) { return str->val[0] != '\\0'; }":
     labels:
     - source: str->val[0] != '\0'
       style: primary

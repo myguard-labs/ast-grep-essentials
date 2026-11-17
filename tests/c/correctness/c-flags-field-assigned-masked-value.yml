@@ -1,5 +1,31 @@
 id: c-flags-field-assigned-masked-value
 valid:
   - 'void f(int status) { OG(flags) |= status & 0xf; }'
+  - |-
+    void f(int status) {
+        OG(flags) = (OG(flags) & ~0xf) | (status & 0xf);
+    }
+  - |-
+    void f(int status) {
+        OG(flags) &= ~status;
+    }
+  - |-
+    void f(int status) {
+        OG(flags) = status;
+    }
 invalid:
   - 'void f(int status) { OG(flags) = status & 0xf; }'
+  - |-
+    void f(int status, int mask) {
+        OG(flags) = status & mask;
+    }
+  - |-
+    void f(int status) {
+        OG(flags) = status & ~FLAG_X;
+    }
+  - |-
+    void f(int status) {
+        if (status) {
+            OG(flags) = status & 0xf;
+        }
+    }
