@@ -1,5 +1,19 @@
 id: php-escape-wraps-echoing-tag-function
 valid:
   - '<?php echo esc_url( get_header_image() ); ?>'
+  - |-
+    <?php echo esc_url( get_header_image() );
+  - |-
+    <?php header_image();
+  - |-
+    <?php echo esc_url( get_custom_header()->url );
+  - |-
+    <?php echo esc_url( $header->image() );
 invalid:
   - '<?php echo esc_url( header_image() ); ?>'
+  - |-
+    <?php $u = esc_url( header_image() );
+  - |-
+    <?php printf( '<img src="%s">', esc_url( header_image() ) );
+  - |-
+    <?php echo esc_url( header_image( ) );

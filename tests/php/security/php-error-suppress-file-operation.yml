@@ -1,5 +1,19 @@
 id: php-error-suppress-file-operation
 valid:
   - '<?php if ( rename( $src, $dst ) ) { return true; } ?>'
+  - |-
+    <?php if ( ! rename( $tmp, $dest ) ) { throw new RuntimeException( 'rename failed' ); }
+  - |-
+    <?php $ok = rename( $a, $b );
+  - |-
+    <?php $this->rename( $a, $b );
+  - |-
+    <?php rename( $a, $b ) or die( 'rename failed' );
 invalid:
   - '<?php if ( @rename( $src, $dst ) ) { return true; } ?>'
+  - |-
+    <?php @rename( $a, $b );
+  - |-
+    <?php $ok = @rename( $tmp, $dest );
+  - |-
+    <?php if ( ! @rename( $tmp, $dest ) ) { return false; }

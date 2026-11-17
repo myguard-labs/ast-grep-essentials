@@ -1,5 +1,19 @@
 id: php-error-log-var-export-debug
 valid:
   - '<?php $dump = var_export( $comment_type, true );'
+  - |-
+    <?php error_log( 'failed: ' . $e->getMessage() );
+  - |-
+    <?php my_log( var_export( $x, true ) );
+  - |-
+    <?php $m = var_export( $x, true ); error_log( 'dumped' );
+  - |-
+    <?php error_log( $message );
 invalid:
   - '<?php error_log( var_export( $comment_type, true ) );'
+  - |-
+    <?php error_log( var_export( $_POST ) );
+  - |-
+    <?php error_log( var_export( $_POST, true ) );
+  - |-
+    <?php if ( WP_DEBUG ) { error_log( var_export( $x, true ) ); }

@@ -1,5 +1,21 @@
 id: php-escape-result-discarded
 valid:
   - '<?php echo esc_url( $header_image ); ?>'
+  - |-
+    <?php $u = esc_url( $x );
+  - |-
+    <?php return esc_url( $x );
+  - |-
+    <?php print esc_url( $x );
+  - |-
+    <?php printf( '%s', esc_url( $x ) );
 invalid:
   - '<?php esc_url( $header_image ); ?>'
+  - |-
+    <?php function f( $u ) { esc_url( $u ); }
+  - |-
+    <?php esc_url( $a, array( 'https' ) );
+  - |-
+    <?php esc_url( home_url( '/' ) );
+  - |-
+    <?php if ( $x ) { esc_url( $u ); }
