@@ -12,9 +12,29 @@ valid:
      http_basic_authenticate_with :name => "dhh", :password => ads{'not_a_string'}, :except => :index
      puts "do more stuff"
      end
+  - |
+    class A < ApplicationController
+      http_basic_authenticate_with :name => "dhh", :password => ENV["P"]
+    end
+  - |
+    class A < ApplicationController
+      http_basic_authenticate_with :name => "dhh", :password => Rails.application.credentials.admin_pass
+    end
 invalid:
   - |
      class DangerousController < ApplicationController
      http_basic_authenticate_with :name => "dhh", :password => "secret", :except => :index
      puts "do more stuff"
      end
+  - |
+    class A < ApplicationController
+      http_basic_authenticate_with(:name => "dhh", :password => "secret")
+    end
+  - |
+    class A < ApplicationController
+      http_basic_authenticate_with :name => "dhh", :password => "secret", :only => [:edit, :update]
+    end
+  - |
+    class A < ApplicationController
+      http_basic_authenticate_with :password => "secret", :name => "dhh"
+    end

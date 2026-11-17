@@ -3,7 +3,27 @@ valid:
   - >-
     try FileManager.default.setAttributes([.posixPermissions: 0o600],
     ofItemAtPath: url.path)
+  - |
+    do {
+        try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
+    } catch {
+        log.error("chmod failed: \(error)")
+    }
+  - |
+    try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+  - |
+    try! FileManager.default.setAttributes(attrs, ofItemAtPath: p)
 invalid:
   - >-
     try? FileManager.default.setAttributes([.posixPermissions: 0o600],
     ofItemAtPath: url.path)
+  - |
+    _ = try? FileManager.default.setAttributes(attrs, ofItemAtPath: p)
+  - |
+    func lock(_ p: String) {
+        try? FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: p)
+    }
+  - |
+    for p in paths {
+        try? FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: p)
+    }
