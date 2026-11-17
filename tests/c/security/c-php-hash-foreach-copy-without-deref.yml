@@ -6,9 +6,20 @@ valid:
         ZVAL_COPY_VALUE(&args[i], param);
         i++;
     } ZEND_HASH_FOREACH_END();
+  - 'ZVAL_DEREF(zv); i++; ZVAL_COPY_VALUE(&args[i], zv);'
+  - 'ZVAL_DEREF(entry); ZVAL_COPY_VALUE(return_value, entry);'
+  - |-
+    ZEND_HASH_FOREACH_VAL(ht, zv) {
+        ZVAL_DEREF(zv);
+        if (Z_TYPE_P(zv) == IS_ARRAY) { n++; }
+        ZVAL_COPY_VALUE(&arr[n], zv);
+    } ZEND_HASH_FOREACH_END();
 invalid:
   - |-
     ZEND_HASH_FOREACH_VAL(ht, param) {
         ZVAL_COPY_VALUE(&args[i], param);
         i++;
     } ZEND_HASH_FOREACH_END();
+  - 'ZVAL_DEREF(other); ZVAL_COPY_VALUE(&args[i], param);'
+  - 'ZVAL_COPY_VALUE(return_value, entry);'
+  - 'ZVAL_COPY_VALUE(&tmp, zv); ZVAL_DEREF(zv);'

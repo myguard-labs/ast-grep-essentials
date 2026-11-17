@@ -1,5 +1,25 @@
 id: c-php-array-init-then-return-leak
 snapshots:
+  "PHP_FUNCTION(f) { array_init(return_value); if (zend_parse_parameters(ZEND_NUM_ARGS(), \"l\", &n) == FAILURE) { RETURN_FALSE; } }":
+    labels:
+    - source: >-
+        if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &n) == FAILURE) { RETURN_FALSE;
+        }
+      style: primary
+      start: 44
+      end: 125
+    - source: array_init(return_value);
+      style: secondary
+      start: 18
+      end: 43
+    - source: RETURN_FALSE;
+      style: secondary
+      start: 110
+      end: 123
+    - source: "{ RETURN_FALSE; }"
+      style: secondary
+      start: 108
+      end: 125
   "array_init(return_value); if (n == 0) { RETURN_FALSE; }":
     labels:
     - source: if (n == 0) { RETURN_FALSE; }
@@ -18,3 +38,21 @@ snapshots:
       style: secondary
       start: 38
       end: 55
+  "array_init(return_value); n = count(ht); if (!ht) { RETURN_FALSE; }":
+    labels:
+    - source: if (!ht) { RETURN_FALSE; }
+      style: primary
+      start: 41
+      end: 67
+    - source: array_init(return_value);
+      style: secondary
+      start: 0
+      end: 25
+    - source: RETURN_FALSE;
+      style: secondary
+      start: 52
+      end: 65
+    - source: "{ RETURN_FALSE; }"
+      style: secondary
+      start: 50
+      end: 67

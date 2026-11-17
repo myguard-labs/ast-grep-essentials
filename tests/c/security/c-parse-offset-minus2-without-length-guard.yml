@@ -1,5 +1,11 @@
 id: c-parse-offset-minus2-without-length-guard
 valid:
   - 'if (total >= 2 && buf[total - 2] == ''\r'')'
+  - 'if (total >= 2 && buf[total - 2] == ''\r'' && buf[total - 1] == ''\n'')'
+  - 'if (total >= 2 && (buf[total - 2] == ''\r'' || buf[total - 2] == ''\n'')) { done = 1; }'
+  - 'if (total >= 2 && buf[total - 2] == 0) { total -= 2; }'
 invalid:
   - 'if (buf[total - 2] == ''\r'')'
+  - 'if (buf[total - 2] == ''\n'' && buf[total - 1] == ''\r'')'
+  - 'if (total > 0 && buf[total - 2] == ''\r'') { done = 1; }'
+  - 'if (!buf[total - 2]) { return -1; }'

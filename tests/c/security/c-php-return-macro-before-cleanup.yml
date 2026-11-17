@@ -3,7 +3,13 @@ valid:
   - >-
     static PHP_METHOD(UConverter, convert) { RETVAL_STRINGL(dest, dest_len);
     efree(dest); }
+  - 'static PHP_METHOD(C, m) { efree(dest); RETURN_STRINGL(dest2, len); }'
+  - 'static PHP_METHOD(C, m) { RETURN_LONG(n); }'
+  - 'static PHP_METHOD(C, m) { RETVAL_LONG(n); efree(p); return; }'
 invalid:
   - >-
     static PHP_METHOD(UConverter, convert) { RETURN_STRINGL(dest, dest_len);
     efree(dest); }
+  - 'static PHP_METHOD(C, m) { RETURN_STR(s); efree(buf); }'
+  - 'static PHP_METHOD(C, m) { RETURN_LONG(n); log_it(); efree(p); }'
+  - 'static PHP_METHOD(C, m) { if (ok) { RETURN_STRING(s); efree(p); } }'

@@ -3,5 +3,12 @@ valid:
   - |-
     efree(ctx->err);
     ctx->err = estrdup(msg);
+  - 'efree(ctx->buf); ctx->buf = estrndup(s, n);'
+  - 'efree(ctx->err); ctx->len = 0; ctx->err = emalloc(n);'
+  - 'ctx->len = strlen(msg);'
 invalid:
   - 'ctx->err = estrdup(msg);'
+  - 'ctx->buf = emalloc(n);'
+  - 'efree(ctx->other); ctx->buf = estrndup(s, n);'
+  - 'ctx->buf = malloc(n);'
+  - 'efree(ctx->err); ctx->name = estrdup(nm);'

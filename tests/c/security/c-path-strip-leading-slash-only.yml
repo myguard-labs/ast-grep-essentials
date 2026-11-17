@@ -3,7 +3,13 @@ valid:
   - >-
     static const char *strip(const char *path) { if (IS_ABSOLUTE_PATH(path, n))
     { return path + 1; } return path; }
+  - 'static const char *strip(const char *path) { if (IS_SLASH(path[0])) { return NULL; } return path; }'
+  - 'static const char *strip(const char *path) { if (IS_SLASH(path[0])) { while (IS_SLASH(*path)) { path++; } return path; } return path; }'
+  - 'static const char *strip(const char *path) { if (IS_SLASH(path[0])) { path = skip_all_slashes(path); return path; } return path; }'
 invalid:
   - >-
     static const char *strip(const char *path) { if (IS_SLASH(path[0])) { return
     path + 1; } return path; }
+  - 'if (IS_SLASH(fname[0])) { return fname + 1; }'
+  - 'static const char *rel(const char *p) { if (p) { if (IS_SLASH(p[0])) { return p + 1; } } return p; }'
+  - 'const char *f(const char *name) { int x = 0; if (IS_SLASH(name[0])) { return name + 1; } else { x = 1; } return name; }'
