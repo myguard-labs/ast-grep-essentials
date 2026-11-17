@@ -1,12 +1,85 @@
 id: ruby-mechanize-redirect-header-leak
 snapshots:
-  ? |-
-    def follow_redirect(uri, headers)
-      if response.is_a?(Net::HTTPRedirection)
-        follow_redirect(URI(response['location']), headers)
-      end
-    end
-  : labels:
+  "def fetch_page(uri, limit, headers)\n  if response.is_a?(Net::HTTPRedirection)\n    fetch_page(URI(response['location']), limit - 1, headers)\n  end\nend":
+    labels:
+    - source: fetch_page(URI(response['location']), limit - 1, headers)
+      style: primary
+      start: 82
+      end: 139
+    - source: fetch_page
+      style: secondary
+      start: 4
+      end: 14
+    - source: |-
+        def fetch_page(uri, limit, headers)
+          if response.is_a?(Net::HTTPRedirection)
+            fetch_page(URI(response['location']), limit - 1, headers)
+          end
+        end
+      style: secondary
+      start: 0
+      end: 149
+    - source: (uri, limit, headers)
+      style: secondary
+      start: 14
+      end: 35
+    - source: |-
+        def fetch_page(uri, limit, headers)
+          if response.is_a?(Net::HTTPRedirection)
+            fetch_page(URI(response['location']), limit - 1, headers)
+          end
+        end
+      style: secondary
+      start: 0
+      end: 149
+    - source: |-
+        if response.is_a?(Net::HTTPRedirection)
+            fetch_page(URI(response['location']), limit - 1, headers)
+          end
+      style: secondary
+      start: 38
+      end: 145
+  "def follow(uri, headers = {})\n  if response.redirect?\n    follow(response.location, headers)\n  end\nend":
+    labels:
+    - source: follow(response.location, headers)
+      style: primary
+      start: 58
+      end: 92
+    - source: follow
+      style: secondary
+      start: 4
+      end: 10
+    - source: |-
+        def follow(uri, headers = {})
+          if response.redirect?
+            follow(response.location, headers)
+          end
+        end
+      style: secondary
+      start: 0
+      end: 102
+    - source: (uri, headers = {})
+      style: secondary
+      start: 10
+      end: 29
+    - source: |-
+        def follow(uri, headers = {})
+          if response.redirect?
+            follow(response.location, headers)
+          end
+        end
+      style: secondary
+      start: 0
+      end: 102
+    - source: |-
+        if response.redirect?
+            follow(response.location, headers)
+          end
+      style: secondary
+      start: 32
+      end: 98
+  "def follow_redirect(uri, headers)\n  if response.is_a?(Net::HTTPRedirection)\n    follow_redirect(URI(response['location']), headers)\n  end\nend":
+    labels:
     - source: follow_redirect(URI(response['location']), headers)
       style: primary
       start: 80
