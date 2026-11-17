@@ -1,16 +1,115 @@
 id: go-single-backslash-escape-check
 snapshots:
-  ? "for i := 1; i < len(s); i++ {\n\tif s[i] == '\"' && s[i-1] == '\\\\' {\n\t\tcontinue\n\t}\n}"
-  : labels:
+  "for i := 1; i < len(b); i++ {\n\tif (b[i-1] == '\\\\') {\n\t\tcontinue\n\t}\n}":
+    labels:
+    - source: b[i-1] == '\\'
+      style: primary
+      start: 35
+      end: 49
+    - source: |-
+        for i := 1; i < len(b); i++ {
+        	if (b[i-1] == '\\') {
+        		continue
+        	}
+        }
+      style: secondary
+      start: 0
+      end: 68
+    - source: |-
+        if (b[i-1] == '\\') {
+        		continue
+        	}
+      style: secondary
+      start: 31
+      end: 66
+  "for i := 1; i < len(p.buf); i++ {\n\tif p.buf[i-1] == '\\\\' && p.buf[i] == '\"' {\n\t\tcontinue\n\t}\n}":
+    labels:
+    - source: p.buf[i-1] == '\\'
+      style: primary
+      start: 38
+      end: 56
+    - source: |-
+        for i := 1; i < len(p.buf); i++ {
+        	if p.buf[i-1] == '\\' && p.buf[i] == '"' {
+        		continue
+        	}
+        }
+      style: secondary
+      start: 0
+      end: 93
+    - source: |-
+        if p.buf[i-1] == '\\' && p.buf[i] == '"' {
+        		continue
+        	}
+      style: secondary
+      start: 35
+      end: 91
+  "for i := 1; i < len(s); i++ {\n\tif s[i] == '\"' && s[i-1] == '\\\\' {\n\t\tcontinue\n\t}\n}":
+    labels:
     - source: s[i-1] == '\\'
       style: primary
       start: 49
       end: 63
-    - source: "for i := 1; i < len(s); i++ {\n\tif s[i] == '\"' && s[i-1] == '\\\\' {\n\t\tcontinue\n\t}\n}"
+    - source: |-
+        for i := 1; i < len(s); i++ {
+        	if s[i] == '"' && s[i-1] == '\\' {
+        		continue
+        	}
+        }
       style: secondary
       start: 0
       end: 81
-    - source: "if s[i] == '\"' && s[i-1] == '\\\\' {\n\t\tcontinue\n\t}"
+    - source: |-
+        if s[i] == '"' && s[i-1] == '\\' {
+        		continue
+        	}
       style: secondary
       start: 31
+      end: 79
+  "for i := range s {\n\tif i > 0 && s[i-1] == '\\\\' {\n\t\tcontinue\n\t}\n}":
+    labels:
+    - source: s[i-1] == '\\'
+      style: primary
+      start: 32
+      end: 46
+    - source: |-
+        for i := range s {
+        	if i > 0 && s[i-1] == '\\' {
+        		continue
+        	}
+        }
+      style: secondary
+      start: 0
+      end: 64
+    - source: |-
+        if i > 0 && s[i-1] == '\\' {
+        		continue
+        	}
+      style: secondary
+      start: 20
+      end: 62
+  "for i < len(s) {\n\tif s[i] == '\"' {\n\t\tbreak\n\t} else if s[i-1] == '\\\\' {\n\t\ti++\n\t}\n\ti++\n}":
+    labels:
+    - source: s[i-1] == '\\'
+      style: primary
+      start: 54
+      end: 68
+    - source: |-
+        for i < len(s) {
+        	if s[i] == '"' {
+        		break
+        	} else if s[i-1] == '\\' {
+        		i++
+        	}
+        	i++
+        }
+      style: secondary
+      start: 0
+      end: 86
+    - source: |-
+        if s[i-1] == '\\' {
+        		i++
+        	}
+      style: secondary
+      start: 51
       end: 79

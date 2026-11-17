@@ -1,8 +1,100 @@
 id: go-tls-insecure-skip-verify-dynamic
 snapshots:
-  ? "package p\n\nimport \"crypto/tls\"\n\nfunc newTLS(cfg Config) *tls.Config {\n\treturn &tls.Config{InsecureSkipVerify: cfg.Skip}\n}"
-  : labels:
-    - source: 'InsecureSkipVerify: cfg.Skip'
+  "package p\n\nimport \"crypto/tls\"\n\nfunc n(insecure bool) *tls.Config {\n\treturn &tls.Config{\n\t\tMinVersion: tls.VersionTLS12,\n\t\tInsecureSkipVerify: insecure,\n\t}\n}":
+    labels:
+    - source: "InsecureSkipVerify: insecure"
+      style: primary
+      start: 123
+      end: 151
+    - source: InsecureSkipVerify
+      style: secondary
+      start: 123
+      end: 141
+    - source: insecure
+      style: secondary
+      start: 143
+      end: 151
+    - source: tls.Config
+      style: secondary
+      start: 77
+      end: 87
+    - source: |-
+        tls.Config{
+        		MinVersion: tls.VersionTLS12,
+        		InsecureSkipVerify: insecure,
+        	}
+      style: secondary
+      start: 77
+      end: 155
+  "package p\n\nimport \"crypto/tls\"\n\nfunc n(o Opts) *tls.Config {\n\treturn &tls.Config{InsecureSkipVerify: o.TLS.Skip}\n}":
+    labels:
+    - source: "InsecureSkipVerify: o.TLS.Skip"
+      style: primary
+      start: 81
+      end: 111
+    - source: InsecureSkipVerify
+      style: secondary
+      start: 81
+      end: 99
+    - source: o.TLS.Skip
+      style: secondary
+      start: 101
+      end: 111
+    - source: tls.Config
+      style: secondary
+      start: 70
+      end: 80
+    - source: "tls.Config{InsecureSkipVerify: o.TLS.Skip}"
+      style: secondary
+      start: 70
+      end: 112
+  "package p\n\nimport \"crypto/tls\"\n\nfunc n(skip bool) *http.Transport {\n\treturn &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: skip}}\n}":
+    labels:
+    - source: "InsecureSkipVerify: skip"
+      style: primary
+      start: 121
+      end: 145
+    - source: InsecureSkipVerify
+      style: secondary
+      start: 121
+      end: 139
+    - source: skip
+      style: secondary
+      start: 141
+      end: 145
+    - source: tls.Config
+      style: secondary
+      start: 110
+      end: 120
+    - source: "tls.Config{InsecureSkipVerify: skip}"
+      style: secondary
+      start: 110
+      end: 146
+  "package p\n\nimport \"crypto/tls\"\n\nfunc n(skip bool) *tls.Config {\n\treturn &tls.Config{InsecureSkipVerify: skip}\n}":
+    labels:
+    - source: "InsecureSkipVerify: skip"
+      style: primary
+      start: 84
+      end: 108
+    - source: InsecureSkipVerify
+      style: secondary
+      start: 84
+      end: 102
+    - source: skip
+      style: secondary
+      start: 104
+      end: 108
+    - source: tls.Config
+      style: secondary
+      start: 73
+      end: 83
+    - source: "tls.Config{InsecureSkipVerify: skip}"
+      style: secondary
+      start: 73
+      end: 109
+  "package p\n\nimport \"crypto/tls\"\n\nfunc newTLS(cfg Config) *tls.Config {\n\treturn &tls.Config{InsecureSkipVerify: cfg.Skip}\n}":
+    labels:
+    - source: "InsecureSkipVerify: cfg.Skip"
       style: primary
       start: 90
       end: 118
@@ -18,7 +110,7 @@ snapshots:
       style: secondary
       start: 79
       end: 89
-    - source: 'tls.Config{InsecureSkipVerify: cfg.Skip}'
+    - source: "tls.Config{InsecureSkipVerify: cfg.Skip}"
       style: secondary
       start: 79
       end: 119

@@ -1,7 +1,31 @@
 id: go-strings-split-index-one-unchecked
 snapshots:
-  ? "package p\n\nimport \"strings\"\n\nfunc rel(file string) string {\n\treturn strings.Split(file, \"/agent/\")[1]\n}\n"
-  : labels:
+  "func f(a string) {\n\tuse(strings.Split(a, \",\")[1])\n}":
+    labels:
+    - source: strings.Split(a, ",")[1]
+      style: primary
+      start: 24
+      end: 48
+  "func f(h string) bool {\n\tif strings.Split(h, \" \")[1] == \"x\" {\n\t\treturn true\n\t}\n\treturn false\n}":
+    labels:
+    - source: strings.Split(h, " ")[1]
+      style: primary
+      start: 28
+      end: 52
+  "func f(line string) string {\n\treturn strings.Split(strings.TrimSpace(line), \"=\")[1]\n}":
+    labels:
+    - source: strings.Split(strings.TrimSpace(line), "=")[1]
+      style: primary
+      start: 37
+      end: 83
+  "func f(line string) string {\n\tv := strings.Split(line, \"=\")[1]\n\treturn v\n}":
+    labels:
+    - source: strings.Split(line, "=")[1]
+      style: primary
+      start: 35
+      end: 62
+  "package p\n\nimport \"strings\"\n\nfunc rel(file string) string {\n\treturn strings.Split(file, \"/agent/\")[1]\n}\n":
+    labels:
     - source: strings.Split(file, "/agent/")[1]
       style: primary
       start: 68

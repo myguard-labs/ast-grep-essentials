@@ -1,6 +1,24 @@
 id: go-make-len-from-field
 snapshots:
-  func read(entry Entry) []byte { return make([]byte, entry.Size) }:
+  "func r(c *Conn) []byte { return make([]byte, c.hdr.Size) }":
+    labels:
+    - source: make([]byte, c.hdr.Size)
+      style: primary
+      start: 32
+      end: 56
+  "func r(h Header) []byte { return make([]byte, h.Length) }":
+    labels:
+    - source: make([]byte, h.Length)
+      style: primary
+      start: 33
+      end: 55
+  "func r(rd io.Reader, e *Entry) ([]byte, error) { buf := make([]byte, e.Size); _, err := io.ReadFull(rd, buf); return buf, err }":
+    labels:
+    - source: make([]byte, e.Size)
+      style: primary
+      start: 56
+      end: 76
+  "func read(entry Entry) []byte { return make([]byte, entry.Size) }":
     labels:
     - source: make([]byte, entry.Size)
       style: primary

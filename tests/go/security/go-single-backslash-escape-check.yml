@@ -1,5 +1,13 @@
 id: go-single-backslash-escape-check
 valid:
   - "for i := 1; i < len(s); i++ {\n\tif s[i] == '\"' && s[i-1] == 'x' {\n\t\tcontinue\n\t}\n}"
+  - "for i := 1; i < len(s); i++ {\n\tn := 0\n\tfor j := i - 1; j >= 0 && s[j] == '\\\\'; j-- {\n\t\tn++\n\t}\n\tif n%2 == 0 && s[i] == '\"' {\n\t\tbreak\n\t}\n}"
+  - "for i := 0; i < len(s)-1; i++ {\n\tif s[i] == '\\\\' {\n\t\ti++\n\t\tcontinue\n\t}\n}"
+  - "for i := 1; i < len(s); i++ {\n\tif s[i-1] == '/' {\n\t\tcontinue\n\t}\n}"
+
 invalid:
   - "for i := 1; i < len(s); i++ {\n\tif s[i] == '\"' && s[i-1] == '\\\\' {\n\t\tcontinue\n\t}\n}"
+  - "for i := range s {\n\tif i > 0 && s[i-1] == '\\\\' {\n\t\tcontinue\n\t}\n}"
+  - "for i < len(s) {\n\tif s[i] == '\"' {\n\t\tbreak\n\t} else if s[i-1] == '\\\\' {\n\t\ti++\n\t}\n\ti++\n}"
+  - "for i := 1; i < len(b); i++ {\n\tif (b[i-1] == '\\\\') {\n\t\tcontinue\n\t}\n}"
+  - "for i := 1; i < len(p.buf); i++ {\n\tif p.buf[i-1] == '\\\\' && p.buf[i] == '\"' {\n\t\tcontinue\n\t}\n}"
