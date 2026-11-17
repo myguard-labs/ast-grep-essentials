@@ -25,11 +25,19 @@ rule:
         regex: '[0-9]\.[0-9]*|\.[0-9]+'
         stopBy: end
     - not:
-        has:
-          kind: cast_expression
-          has:
-            field: type
-            regex: '^(unsigned |signed )?(int|long|short|char|long long)$|^u?int(8|16|32|64)_t$|^size_t$|^ssize_t$'
+        any:
+          - has:
+              kind: cast_expression
+              has:
+                field: type
+                regex: '^(unsigned |signed )?(int|long|short|char|long long)$|^u?int(8|16|32|64)_t$|^size_t$|^ssize_t$'
+          - has:
+              kind: parenthesized_expression
+              has:
+                kind: cast_expression
+                has:
+                  field: type
+                  regex: '^(unsigned |signed )?(int|long|short|char|long long)$|^u?int(8|16|32|64)_t$|^size_t$|^ssize_t$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
