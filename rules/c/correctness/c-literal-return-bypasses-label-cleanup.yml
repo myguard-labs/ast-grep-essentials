@@ -9,9 +9,9 @@ message: >-
 note: >-
   Purely syntactic. It does not check that the label does cleanup or that
   resources are live at the return. A return is reported only while a
-  labelled statement still comes after it (as a later sibling of the return
-  or of one of its enclosing blocks); a return after the last label is
-  skipped because it cannot bypass any label.
+  labelled statement still comes after it (as, or inside, a later sibling of
+  the return or of one of its enclosing blocks); a return after the last
+  label is skipped because it cannot bypass any label.
 rule:
   kind: return_statement
   regex: '^return\s+(0|NULL)\s*;$'
@@ -28,13 +28,21 @@ rule:
           stopBy: end
     - any:
         - precedes:
-            kind: labeled_statement
             stopBy: end
+            any:
+              - kind: labeled_statement
+              - has:
+                  kind: labeled_statement
+                  stopBy: end
         - inside:
             stopBy: end
             precedes:
-              kind: labeled_statement
               stopBy: end
+              any:
+                - kind: labeled_statement
+                - has:
+                    kind: labeled_statement
+                    stopBy: end
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
