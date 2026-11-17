@@ -20,6 +20,13 @@ valid:
       EVP_MD_CTX_free(md);
       return ok;
     }
+  - |-
+    EVP_MD_CTX *mk(void) {
+      EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+      EVP_DigestInit_ex(ctx, EVP_sha256(), NULL);
+      return ctx;
+    }
+
 invalid:
   - >-
     EVP_MD_CTX *md = EVP_MD_CTX_new(); EVP_DigestInit_ex(md, EVP_sha256(),
@@ -39,4 +46,10 @@ invalid:
       EVP_MD_CTX_free(old);
       EVP_MD_CTX *c = EVP_MD_CTX_new();
       use(c);
+    }
+  - |-
+    EVP_MD_CTX *mk(void) {
+      EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+      EVP_MD_CTX *o = get();
+      return o;
     }
