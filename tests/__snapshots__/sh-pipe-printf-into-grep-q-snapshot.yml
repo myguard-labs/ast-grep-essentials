@@ -1,10 +1,26 @@
 id: sh-pipe-printf-into-grep-q
 snapshots:
-  ? |-
-    set -o pipefail
-    printf "%s" "$changed" | grep -qvE '^//'
-  : labels:
+  "set -o pipefail\nprintf \"%s\" \"$changed\" | grep -qvE '^//'":
+    labels:
     - source: printf "%s" "$changed" | grep -qvE '^//'
       style: primary
       start: 16
       end: 56
+  "set -o pipefail\nprintf %s \"$out\" | grep -qE 'a|b'":
+    labels:
+    - source: printf %s "$out" | grep -qE 'a|b'
+      style: primary
+      start: 16
+      end: 49
+  "set -o pipefail\nprintf '%s\\n' \"$changed\" | grep -q -- \"$re\"":
+    labels:
+    - source: printf '%s\n' "$changed" | grep -q -- "$re"
+      style: primary
+      start: 16
+      end: 59
+  "set -o pipefail\nprintf '%s\\n' \"$list\" | grep -qxF \"$item\"":
+    labels:
+    - source: printf '%s\n' "$list" | grep -qxF "$item"
+      style: primary
+      start: 16
+      end: 57

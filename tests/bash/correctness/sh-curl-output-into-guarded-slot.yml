@@ -1,5 +1,21 @@
 id: sh-curl-output-into-guarded-slot
 valid:
   - '[ -f "$file" ] || curl -fsSL -o "$file.part" "$url"'
+  - |-
+      [ -f "$file" ] || { curl -fsSL -o "$file.part" "$url" && mv "$file.part" "$file"; }
+  - |-
+      tmp=$(mktemp "$file.XXXXXX") || exit 1
+      trap 'rm -f "$tmp"' EXIT
+      [ -f "$file" ] || { curl -fsSL -o "$tmp" "$url" && mv "$tmp" "$file"; }
+  - |-
+      if [ ! -f "$file" ]; then
+        curl -fsSL -o "$file.part" "$url" && mv -f "$file.part" "$file" || { rm -f "$file.part"; exit 1; }
+      fi
 invalid:
   - '[ -f "$file" ] || curl -fsSL -o "$file" "$url"'
+  - |-
+      [ -f "$file" ] || curl -fsSL -o "$file" --connect-timeout 10 "$url"
+  - |-
+      [ -f "$file" ] || curl -fsSL --retry 3 -o "$file" "$url"
+  - |-
+      [ -f "$file" ] || curl -o "$file" -fsSL "$url"

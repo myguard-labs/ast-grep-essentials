@@ -1,8 +1,26 @@
 id: sh-curl-output-into-guarded-slot
 snapshots:
-  '[ -f "$file" ] || curl -fsSL -o "$file" "$url"':
+  "[ -f \"$file\" ] || curl -fsSL --retry 3 -o \"$file\" \"$url\"":
     labels:
-    - source: '[ -f "$file" ] || curl -fsSL -o "$file" "$url"'
+    - source: "[ -f \"$file\" ] || curl -fsSL --retry 3 -o \"$file\" \"$url\""
+      style: primary
+      start: 0
+      end: 56
+  "[ -f \"$file\" ] || curl -fsSL -o \"$file\" \"$url\"":
+    labels:
+    - source: "[ -f \"$file\" ] || curl -fsSL -o \"$file\" \"$url\""
+      style: primary
+      start: 0
+      end: 46
+  "[ -f \"$file\" ] || curl -fsSL -o \"$file\" --connect-timeout 10 \"$url\"":
+    labels:
+    - source: "[ -f \"$file\" ] || curl -fsSL -o \"$file\" --connect-timeout 10 \"$url\""
+      style: primary
+      start: 0
+      end: 67
+  "[ -f \"$file\" ] || curl -o \"$file\" -fsSL \"$url\"":
+    labels:
+    - source: "[ -f \"$file\" ] || curl -o \"$file\" -fsSL \"$url\""
       style: primary
       start: 0
       end: 46

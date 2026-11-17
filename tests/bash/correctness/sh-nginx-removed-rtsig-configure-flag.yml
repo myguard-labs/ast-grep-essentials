@@ -1,5 +1,22 @@
 id: sh-nginx-removed-rtsig-configure-flag
 valid:
   - './configure --with-poll_module --with-select_module --with-debug'
+  - |-
+      ./configure --with-http_ssl_module --with-http_v2_module --with-threads
+  - |-
+      # --with-rtsig_module was removed in nginx 1.9.0
+      ./configure --with-poll_module
+  - |-
+      ARGS=(--with-poll_module --with-select_module)
+      ./configure "${ARGS[@]}"
 invalid:
   - './configure --with-poll_module --with-rtsig_module --with-debug'
+  - |-
+      ./configure --with-rtsig_module
+  - |-
+      ARGS=(--with-rtsig_module --with-debug)
+      ./configure "${ARGS[@]}"
+  - |-
+      ./configure --with-http_ssl_module \
+        --with-rtsig_module \
+        --with-debug
