@@ -6,21 +6,76 @@ snapshots:
       style: primary
       start: 72
       end: 82
+    - source: OSSL_LIB_CTX
+      style: secondary
+      start: 34
+      end: 46
+    - source: |-
+        X509 *f(OSSL_LIB_CTX *libctx)
+        {
+            X509 *x = X509_new();
+            (void)libctx;
+            return x;
+        }
+      style: secondary
+      start: 26
+      end: 117
   "#include <openssl/x509.h>\nX509 *f(OSSL_LIB_CTX *libctx, int want)\n{\n    X509 *x = NULL;\n    if (want && libctx != NULL) {\n        x = X509_new();\n    }\n    return x;\n}":
     labels:
     - source: X509_new()
       style: primary
       start: 134
       end: 144
+    - source: OSSL_LIB_CTX
+      style: secondary
+      start: 34
+      end: 46
+    - source: |-
+        X509 *f(OSSL_LIB_CTX *libctx, int want)
+        {
+            X509 *x = NULL;
+            if (want && libctx != NULL) {
+                x = X509_new();
+            }
+            return x;
+        }
+      style: secondary
+      start: 26
+      end: 167
   "#include <openssl/x509.h>\nstruct c { OSSL_LIB_CTX *libctx; };\nint f(struct c *k)\n{\n    X509 *x;\n    if (k->libctx == NULL) return 0;\n    x = X509_new();\n    if (x == NULL) return 0;\n    X509_free(x);\n    return 1;\n}":
     labels:
     - source: X509_new()
       style: primary
       start: 141
       end: 151
+    - source: libctx
+      style: secondary
+      start: 107
+      end: 113
+    - source: |-
+        int f(struct c *k)
+        {
+            X509 *x;
+            if (k->libctx == NULL) return 0;
+            x = X509_new();
+            if (x == NULL) return 0;
+            X509_free(x);
+            return 1;
+        }
+      style: secondary
+      start: 62
+      end: 215
   "struct c { void *libctx; }; void *f(struct c *k) { (void)k->libctx; return X509_new(); }":
     labels:
     - source: X509_new()
       style: primary
       start: 75
       end: 85
+    - source: libctx
+      style: secondary
+      start: 60
+      end: 66
+    - source: void *f(struct c *k) { (void)k->libctx; return X509_new(); }
+      style: secondary
+      start: 28
+      end: 88

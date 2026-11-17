@@ -24,6 +24,33 @@ valid:
     {
         return X509_REQ_new_ex(libctx, propq);
     }
+  - |-
+    #include <openssl/x509.h>
+    X509 *f(void)
+    {
+        return X509_new();
+    }
+  - |-
+    #include <openssl/x509.h>
+    X509 *f(void)
+    {
+        return X509_new();
+    }
+    X509 *g(OSSL_LIB_CTX *libctx, const char *propq)
+    {
+        return X509_new_ex(libctx, propq);
+    }
+  - |-
+    #include <openssl/x509.h>
+    X509 *g(void *libctx)
+    {
+        (void)libctx;
+        return NULL;
+    }
+    static X509 *f(void)
+    {
+        return X509_new();
+    }
 invalid:
   - >-
     struct c { void *libctx; }; void *f(struct c *k) { (void)k->libctx; return
