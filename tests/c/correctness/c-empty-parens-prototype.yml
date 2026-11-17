@@ -1,5 +1,13 @@
 id: c-empty-parens-prototype
 valid:
   - 'int f(void);'
+  - 'int f(int a);'
+  - 'int f(int a, ...);'
+  - 'int f(void) { return 0; }'
 invalid:
   - 'int f();'
+  - |-
+    int f();
+    int main(void) { return f(); }
+  - 'void g(void) { int f(); }'
+  - 'int f(); /* legacy */'
