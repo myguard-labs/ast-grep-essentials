@@ -5,10 +5,10 @@ valid:
         if (min < 214748364)
             min = 10 * min + ch;
     }
-  - "void f(int v, int d) { if (v <= 214748364) { v = 10 * v + d; } }"
-  - "void f(int v, int d) { if (v > 214748364) { return; } else { v = 10 * v + d; } }"
+  - "void f(int v, int d) { if (v <= (2147483647 - d) / 10) { v = 10 * v + d; } }"
+  - "void f(int v, int d) { if (v > (2147483647 - d) / 10) { return; } else { v = 10 * v + d; } }"
   - "void f(int a, int v, int d) { if (a) { if (v < 100) { v = 10 * v + d; } } }"
-  - "void f(int v, int d) { v = (v > 214748364) ? 214748364 : 10 * v + d; }"
+  - "void f(int v, int d) { v = (v > (2147483647 - d) / 10) ? 2147483647 : 10 * v + d; }"
 invalid:
   - |-
     void f(int min, int ch) {
