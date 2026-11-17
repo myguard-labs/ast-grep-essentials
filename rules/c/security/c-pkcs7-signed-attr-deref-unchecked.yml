@@ -8,7 +8,7 @@ note: >-
   Syntactic only; matches an if condition using -> on the assigned variable
   unless the condition guards it (`V && ...`, `V != NULL && ...`, `!V || ...`,
   `V == NULL || ...`) or an earlier if tests `!V` / `V == NULL` and returns or
-  jumps unconditionally. It does not track aliasing or other guards.
+  jumps unconditionally, with no reassignment of the variable between that guard and the dereference. It does not track aliasing or other guards.
 rule:
   kind: if_statement
   all:
@@ -32,7 +32,8 @@ rule:
               - pattern: '$V == NULL || $X'
     - not:
         follows:
-          stopBy: end
+          stopBy:
+            pattern: '$V = $B;'
           kind: if_statement
           all:
             - has:
