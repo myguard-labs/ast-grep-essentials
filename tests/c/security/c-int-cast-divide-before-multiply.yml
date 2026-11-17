@@ -1,5 +1,12 @@
 id: c-int-cast-divide-before-multiply
 valid:
   - 'int r = (double) x / n * k;'
+  - 'void f(void) { int r = (int) x * k / n; }'
+  - 'void f(void) { int r = (int) (x * k) / n; }'
+  - 'void f(void) { int r = (int) x / n; }'
+
 invalid:
   - 'int r = (int) x / n * k;'
+  - 'void f(void) { int r = (int)x/n*k; }'
+  - 'void f(void) { int r = (int) x / 100 * 3; }'
+  - 'void f(struct s *s) { int r = (int) s->w / n * k; }'

@@ -3,7 +3,13 @@ valid:
   - >-
     int f(zval **arg, zend_class_entry *ce) { return
     instanceof_function(Z_OBJCE_PP(arg), ce TSRMLS_CC); }
+  - 'int f(zval *zv, zend_class_entry *ce) { return instanceof_function(Z_OBJCE_P(zv), ce); }'
+  - 'int f(zval **arg, zend_class_entry **pce) { return instanceof_function(Z_OBJCE_PP(arg), *pce); }'
+
 invalid:
   - >-
     int f(zval **arg, zend_class_entry *ce) { return instanceof_function(*arg,
     ce TSRMLS_CC); }
+  - 'int f(zval **arg, zend_class_entry *ce) { if (instanceof_function(*arg, ce)) return 1; return 0; }'
+  - 'int f(zval **arg, zend_class_entry *ce) { return !instanceof_function(*arg, ce); }'
+  - 'int f(zval **arg, zend_class_entry *ce) { int r = instanceof_function(*arg, ce TSRMLS_CC); return r; }'

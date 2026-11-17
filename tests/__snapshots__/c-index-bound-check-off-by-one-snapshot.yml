@@ -1,8 +1,26 @@
 id: c-index-bound-check-off-by-one
 snapshots:
+  "int f(int t) { int ok = (t < 0 || t > MAX_SLOTS); return ok; }":
+    labels:
+    - source: t < 0 || t > MAX_SLOTS
+      style: primary
+      start: 25
+      end: 47
   "static int locks[NUM_LOCKS]; void f(int t) { if (t < 0 || t > NUM_LOCKS) return; locks[t] = 0; }":
     labels:
     - source: t < 0 || t > NUM_LOCKS
       style: primary
       start: 49
       end: 71
+  "void f(int t) { if (t < 0 || t > NUM_LOCKS || bad(t)) return; locks[t] = 0; }":
+    labels:
+    - source: t < 0 || t > NUM_LOCKS
+      style: primary
+      start: 20
+      end: 42
+  "void f(int t) { if (t < 0 || t > NUM_LOCKS) { err(); return; } locks[t] = 0; }":
+    labels:
+    - source: t < 0 || t > NUM_LOCKS
+      style: primary
+      start: 20
+      end: 42

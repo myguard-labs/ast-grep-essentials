@@ -4,7 +4,13 @@ valid:
     int parse(const char *p) { int exp = 0; while (*p >= '0' && *p <= '9') { if
     (exp < (INT_MAX - 9) / 10) { exp = exp * 10 + (*p - '0'); } p++; } return
     exp; }
+  - 'int parse(const char *p) { int v = 0; while (*p >= 48 && *p <= 57) { if (v <= (INT_MAX - 9) / 10) { v = v * 10 + (*p - 48); } p++; } return v; }'
+  - 'int parse(const char *p) { int v = 0, n = 0; while (*p) { if (n < 3) { v = v * 10 + (*p - 48); n++; } p++; } return v; }'
+
 invalid:
   - >-
     int parse(const char *p) { int exp = 0; while (*p >= '0' && *p <= '9') { exp
     = exp * 10 + (*p - '0'); p++; } return exp; }
+  - 'int parse(const char *p) { int v = 0; while (*p) { v = v * 10 + (*p++ - 48); } return v; }'
+  - 'long parse(const char *p) { long v = 0; while (*p) { v = v * 10 + (*p - 48); p++; } return v; }'
+  - 'int parse(const char *p) { int v = 0; while (*p) { v = v * 10 + (*p - 48); if (v < 0) break; p++; } return v; }'

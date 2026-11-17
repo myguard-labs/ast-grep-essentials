@@ -1,5 +1,12 @@
 id: c-int-cast-of-length
 valid:
   - 'int f(size_t name_len) { size_t n = (size_t) name_len; return n; }'
+  - 'int f(size_t name_len) { long long n = (long long)name_len; return (int)(n > 0); }'
+  - 'int f(size_t name_len) { return (int)sizeof(name_len); }'
+  - 'int f(size_t name_len) { uint64_t n = (uint64_t)name_len; return n != 0; }'
+
 invalid:
   - 'int f(size_t name_len) { int n = (int) name_len; return n; }'
+  - 'int f(size_t body_len) { return (int) body_len; }'
+  - 'int f(size_t body_len) { if ((int)body_len < 0) return 1; return 0; }'
+  - 'int f(size_t body_len) { int a[1] = { (int)body_len }; return a[0]; }'

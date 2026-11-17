@@ -1,5 +1,14 @@
 id: c-int-cast-of-masked-size-field
 valid:
   - '#define PREV(b) BLOCK_AT(b, -(ssize_t)((b)->info._prev & ~MASK))'
+  - '#define SZ(b) ((size_t)((b)->size & ~7))'
+  - '#define SZ(b) ((int)((b)->size & 7))'
+  - '#define SZ(b) ((int)(~(b)->size & 7))'
+
 invalid:
   - '#define PREV(b) BLOCK_AT(b, -(int)((b)->info._prev & ~MASK))'
+  - '#define SZ(b) ((int)((b)->size & ~7))'
+  - '#define SZ(b) ((int) ((b)->size&~7))'
+  - |-
+    #define SZ(b) \
+      ((int)((b)->size & ~7))

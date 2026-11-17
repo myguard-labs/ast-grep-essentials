@@ -3,7 +3,12 @@ valid:
   - >-
     void f(long *out, unsigned long u) { long v = (long)u; v = -v; v--; *out =
     v; }
+  - 'void f(int v, int w) { v++; w = -w; }'
+  - 'void f(int v) { v = -v; v++; }'
+
 invalid:
   - >-
     void f(long *out, unsigned long u) { long v = (long)u; v++; v = -v; *out =
     v; }
+  - 'void f(struct s *p) { p->n++; p->n = -p->n; }'
+  - 'void f(int a[], int i) { a[i]++; a[i] = -a[i]; }'

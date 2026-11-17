@@ -1,5 +1,11 @@
 id: c-int-literal-shift-variable-count
 valid:
   - 'void f(unsigned long *b, int n) { b[0] |= 1UL << n; }'
+  - 'void f(unsigned long long *b, int n) { *b |= 1ULL << n; }'
+  - 'void f(uint64_t *b, int n) { *b |= (uint64_t)1 << n; }'
+
 invalid:
   - 'void f(unsigned long *b, int n) { b[0] |= 1 << n; }'
+  - 'void f(unsigned *b, int n) { *b |= 1 << n; }'
+  - 'void f(struct s *s, int n) { s->mask |= 1 << n; }'
+  - 'void f(unsigned *b, int n) { *b |= 1 << (n + 1); }'

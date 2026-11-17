@@ -1,5 +1,12 @@
 id: c-int-cast-binds-to-product-in-float-sum
 valid:
   - 'ncR = (int)(red * (pct / 100.0) + dst * ((100 - pct) / 100.0));'
+  - 'void f(void) { n = (int)(a * b) + c; }'
+  - 'void f(void) { n = (int)(a * b + c); }'
+  - 'void f(void) { n = (double)a * b + c; }'
+
 invalid:
   - 'ncR = (int)red * (pct / 100.0) + dst * ((100 - pct) / 100.0);'
+  - 'void f(void) { n = (int) a * b + c; }'
+  - 'void f(struct s *s) { n = (int)s->x * f + c; }'
+  - 'void f(void) { n = (int)a * b + c * d; }'

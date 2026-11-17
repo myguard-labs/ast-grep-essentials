@@ -3,7 +3,15 @@ valid:
   - >-
     double f(ngx_http_request_t *r) { return r->start_sec + r->start_msec /
     1000.0; }
+  - 'double f(int a) { return a * 0.5; }'
+  - 'int f(int a) { return a * 5 / 10; }'
+  - 'int f(int a) { return a ? 1 : 0; }'
+
 invalid:
   - >-
     int f(ngx_http_request_t *r) { return r->start_sec + r->start_msec / 1000.0;
     }
+  - 'int f(int a) { return a / 1000.0; }'
+  - 'int f(int a) { return a + .5; }'
+  - 'int f(int a) { if (a) { return a * 0.5; } return 0; }'
+  - 'static int f(int a) { return a * 0.5; }'
