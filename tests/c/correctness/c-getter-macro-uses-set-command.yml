@@ -1,5 +1,11 @@
 id: c-getter-macro-uses-set-command
 valid:
   - '#define BIO_get_conn_ip(b,ip) BIO_ptr_ctrl(b,BIO_C_GET_CONNECT,2)'
+  - '#define BIO_get_mode(b) BIO_ctrl(b,BIO_C_GET_MODE,0,NULL)'
+  - '#define BIO_set_conn_ip(b,ip) BIO_ptr_ctrl(b,BIO_C_SET_CONNECT,2)'
+  - '#define BIO_get_fd(b,c) BIO_ctrl(b,BIO_C_GET_FD,0,(char *)(c))'
 invalid:
   - '#define BIO_get_conn_ip(b,ip) BIO_ptr_ctrl(b,BIO_C_SET_CONNECT,2)'
+  - '#define BIO_get_conn_ip(b) BIO_ptr_ctrl(b,BIO_C_SET_CONNECT,2)'
+  - '#define SSL_get_opt(s,o) SSL_ctrl(s,SSL_CTRL_SET_OPTIONS,(o),NULL)'
+  - '#define BIO_get_bufsize(b,n) BIO_ctrl(b,BIO_C_SET_BUFF_SIZE,(n),NULL)'

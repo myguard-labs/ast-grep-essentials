@@ -10,6 +10,35 @@ valid:
             (void)y;
         }
     }
+  - |-
+    void f(int x) {
+        int y;
+        if (x) goto out;
+        y = 1;
+        (void)y;
+    out:
+        return;
+    }
+  - |-
+    void f(int x) {
+        int y;
+        {
+            y = 1;
+        out:
+            (void)y;
+        }
+        if (x) goto out;
+    }
+  - |-
+    void f(int x) {
+        if (x) goto out;
+        {
+            int y = 1;
+            (void)y;
+        }
+    out:
+        return;
+    }
 invalid:
   - |-
     void f(int x) {
@@ -18,5 +47,34 @@ invalid:
             int y = 1;
         out:
             (void)y;
+        }
+    }
+  - |-
+    void f(int x) {
+        if (x) goto out;
+        {
+            int y = 1, z = 2;
+        out:
+            (void)y;
+        }
+    }
+  - |-
+    void f(int x) {
+        if (x) goto out;
+        {
+            const char *s = "a";
+            (void)s;
+        out:
+            return;
+        }
+    }
+  - |-
+    void f(int x) {
+        if (x) goto done;
+        {
+            int y = 1;
+            (void)y;
+        done:
+            ;
         }
     }

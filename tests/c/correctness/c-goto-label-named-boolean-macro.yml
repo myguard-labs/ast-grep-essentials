@@ -1,5 +1,11 @@
 id: c-goto-label-named-boolean-macro
 valid:
   - 'int f(int x) { if (x) goto false_value; return 0; false_value: return 1; }'
+  - 'int f(int x) { if (x) goto fail; return 0; fail: return 1; }'
+  - 'int f(int x) { return x ? true : false; }'
+  - 'int f(int x) { int is_false = !x; if (is_false) goto out; return 0; out: return 1; }'
 invalid:
   - 'int f(int x) { if (x) goto false; return 0; false: return 1; }'
+  - 'int f(int x) { if (x) goto true; return 0; true: return 1; }'
+  - 'int f(int x) { while (x) { if (x > 3) goto false; x--; } return 0; false: return 1; }'
+  - 'int f(int x) { switch (x) { case 1: goto true; default: break; } return 0; true: return 1; }'

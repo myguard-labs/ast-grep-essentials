@@ -1,11 +1,27 @@
 id: c-gmp-global-memory-functions
 snapshots:
-  ? |-
-    static void *my_alloc(size_t n) { return emalloc(n); }
-    static void my_free(void *p, size_t n) { efree(p); }
-    static void *my_realloc(void *p, size_t o, size_t n) { return erealloc(p, n); }
-    static void startup(void) { mp_set_memory_functions(my_alloc, my_realloc, my_free); }
-  : labels:
+  "PHP_MINIT_FUNCTION(gmp) { mp_set_memory_functions(gmp_emalloc, gmp_erealloc, gmp_efree); return SUCCESS; }":
+    labels:
+    - source: mp_set_memory_functions(gmp_emalloc, gmp_erealloc, gmp_efree)
+      style: primary
+      start: 26
+      end: 87
+    - source: mp_set_memory_functions
+      style: secondary
+      start: 26
+      end: 49
+  "static int init(void) { if (!installed) { mp_set_memory_functions(my_alloc, my_realloc, my_free); installed = 1; } return 0; }":
+    labels:
+    - source: mp_set_memory_functions(my_alloc, my_realloc, my_free)
+      style: primary
+      start: 42
+      end: 96
+    - source: mp_set_memory_functions
+      style: secondary
+      start: 42
+      end: 65
+  "static void *my_alloc(size_t n) { return emalloc(n); }\nstatic void my_free(void *p, size_t n) { efree(p); }\nstatic void *my_realloc(void *p, size_t o, size_t n) { return erealloc(p, n); }\nstatic void startup(void) { mp_set_memory_functions(my_alloc, my_realloc, my_free); }":
+    labels:
     - source: mp_set_memory_functions(my_alloc, my_realloc, my_free)
       style: primary
       start: 216
@@ -14,3 +30,13 @@ snapshots:
       style: secondary
       start: 216
       end: 239
+  "static void startup(void) { mp_set_memory_functions(php_gmp_alloc, php_gmp_realloc, php_gmp_free); }":
+    labels:
+    - source: mp_set_memory_functions(php_gmp_alloc, php_gmp_realloc, php_gmp_free)
+      style: primary
+      start: 28
+      end: 97
+    - source: mp_set_memory_functions
+      style: secondary
+      start: 28
+      end: 51

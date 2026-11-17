@@ -1,9 +1,17 @@
 id: c-gmp-global-memory-functions
 valid:
   - 'static void startup(void) { mp_get_memory_functions(&a, &r, &f); }'
+  - 'static void startup(void) { void *(*a)(size_t); void *(*r)(void *, size_t, size_t); void (*f)(void *, size_t); mp_get_memory_functions(&a, &r, &f); }'
+  - |-
+    static void *my_alloc(size_t n) { return malloc(n); }
+    static void startup(void) { void *p = my_alloc(8); free(p); }
+  - 'static void startup(void) { mpz_t z; mpz_init(z); mpz_set_ui(z, 5); mpz_clear(z); }'
 invalid:
   - |-
     static void *my_alloc(size_t n) { return emalloc(n); }
     static void my_free(void *p, size_t n) { efree(p); }
     static void *my_realloc(void *p, size_t o, size_t n) { return erealloc(p, n); }
     static void startup(void) { mp_set_memory_functions(my_alloc, my_realloc, my_free); }
+  - 'static int init(void) { if (!installed) { mp_set_memory_functions(my_alloc, my_realloc, my_free); installed = 1; } return 0; }'
+  - 'static void startup(void) { mp_set_memory_functions(php_gmp_alloc, php_gmp_realloc, php_gmp_free); }'
+  - 'PHP_MINIT_FUNCTION(gmp) { mp_set_memory_functions(gmp_emalloc, gmp_erealloc, gmp_efree); return SUCCESS; }'

@@ -1,5 +1,37 @@
 id: c-global-fd-unlock-without-sentinel-check
 snapshots:
+  "int lock_file;\nstatic void unlock_all(void) {\n    struct flock fl;\n    while (1) {\n        fcntl(lock_file, F_SETLKW, &fl);\n        break;\n    }\n}":
+    labels:
+    - source: fcntl(lock_file, F_SETLKW, &fl)
+      style: primary
+      start: 91
+      end: 122
+    - source: |-
+        static void unlock_all(void) {
+            struct flock fl;
+            while (1) {
+                fcntl(lock_file, F_SETLKW, &fl);
+                break;
+            }
+        }
+      style: secondary
+      start: 15
+      end: 146
+  "static int lock_fd;\nstatic int other_fd;\nstatic void unlock_all(void) {\n    struct flock fl;\n    if (other_fd == -1) return;\n    fcntl(lock_fd, F_SETLK, &fl);\n}":
+    labels:
+    - source: fcntl(lock_fd, F_SETLK, &fl)
+      style: primary
+      start: 129
+      end: 157
+    - source: |-
+        static void unlock_all(void) {
+            struct flock fl;
+            if (other_fd == -1) return;
+            fcntl(lock_fd, F_SETLK, &fl);
+        }
+      style: secondary
+      start: 41
+      end: 160
   "static int lock_file;\nstatic void unlock_all(void) {\n    struct flock fl;\n    fcntl(lock_file, F_SETLK, &fl);\n}":
     labels:
     - source: fcntl(lock_file, F_SETLK, &fl)
@@ -14,3 +46,19 @@ snapshots:
       style: secondary
       start: 22
       end: 111
+  "static int lock_file;\nstatic void unlock_all(void) {\n    struct flock fl;\n    fl.l_type = F_UNLCK;\n    fcntl(lock_file, F_SETLK, &fl);\n    close(lock_file);\n}":
+    labels:
+    - source: fcntl(lock_file, F_SETLK, &fl)
+      style: primary
+      start: 103
+      end: 133
+    - source: |-
+        static void unlock_all(void) {
+            struct flock fl;
+            fl.l_type = F_UNLCK;
+            fcntl(lock_file, F_SETLK, &fl);
+            close(lock_file);
+        }
+      style: secondary
+      start: 22
+      end: 158
