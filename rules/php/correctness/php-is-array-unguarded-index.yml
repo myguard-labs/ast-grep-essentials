@@ -16,7 +16,12 @@ rule:
   pattern: 'is_array($ARR[0])'
   not:
     inside:
-      pattern: 'isset($ARR[0]) && $$$_'
+      any:
+        - pattern: 'isset($ARR[0]) && $$$_'
+        - pattern: '! isset($ARR[0]) || $$$_'
+        - pattern: '( ! isset($ARR[0]) ) || $$$_'
+        - pattern: '! isset($ARR[0]) or $$$_'
+        - pattern: '( ! isset($ARR[0]) ) or $$$_'
       stopBy: end
 metadata:
   rule_modified_at: '2026-10-15'
@@ -27,6 +32,6 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - "Observed FP: a negated isset guard (if ( ! isset( $args[0] ) || ! is_array( $args[0] ) ) { return; }) is reported although is_array() only runs when the index exists."
     - "Observed FP: isset() followed by another operand before is_array() (isset( $this->args[0] ) && $flag && is_array( $this->args[0] )) is reported."
     - "Observed FP: an array_key_exists( 0, $args ) && is_array( $args[0] ) guard is reported although the index is checked."
+    - "Observed FP: a longer || chain (! isset( $a[0] ) || $x || ! is_array( $a[0] )) is reported because the left-associative parse puts the isset operand outside the matched pattern."

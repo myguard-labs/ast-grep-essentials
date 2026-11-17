@@ -7,6 +7,11 @@ valid:
   - "<?php if ( isset( $this->cfg['k'] ) && is_array( $this->cfg['k'] ) ) { $x = 1; }"
   - "<?php return isset( $data[ $i ] ) && is_array( $data[ $i ] ) && count( $data[ $i ] ) > 1;"
   - "<?php $r = isset( $data['a']['b'] ) && is_array( $data['a']['b'] ) ? 1 : 0;"
+  - "<?php if ( ! isset( $data['k'] ) || ! is_array( $data['k'] ) ) { return; }"
+  - "<?php if ( ! isset( $data[ $i ] ) || ! is_array( $data[ $i ] ) ) { return; }"
+  - "<?php if ( !isset($data['k']) || !is_array($data['k']) ) { return; }"
+  - "<?php if ( ! isset( $data['k'] ) or ! is_array( $data['k'] ) ) { return; }"
+  - "<?php if ( ( ! isset( $data['k'] ) ) || ( ! is_array( $data['k'] ) ) ) { return; }"
 invalid:
   - >-
     function walk( $args ) { if ( is_array( $args[0] ) ) { return true; } return
@@ -16,3 +21,4 @@ invalid:
   - "<?php if ( isset( $data['a'] ) && is_array( $data['b'] ) ) { $x = 1; }"
   - "<?php $r = ! is_array( $data[3] ) ? 0 : 1;"
   - "<?php if ( is_array( $this->cfg['k'] ) ) { $x = 1; }"
+  - "<?php if ( ! isset( $data['a'] ) || ! is_array( $data['b'] ) ) { return; }"
