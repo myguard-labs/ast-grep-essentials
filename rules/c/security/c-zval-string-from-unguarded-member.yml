@@ -8,9 +8,10 @@ message: >-
   visible guard; a NULL value will crash.
 note: >-
   Syntactic single-file match on a ZVAL_STRING call whose second argument is a
-  MyG(...) global call. It does not check enclosing if-tests for the same
-  expression by type or dataflow, and cannot prove the value is actually NULL
-  at runtime.
+  MyG(...) global call. A call is accepted when an earlier sibling statement
+  is `if (!MyG(x))` or `if (MyG(x) == NULL)` and returns unconditionally. It
+  does not check enclosing if-tests for the same expression by type or
+  dataflow, and cannot prove the value is actually NULL at runtime.
 rule:
   all:
     - pattern: 'ZVAL_STRING($RET, MyG($FIELD), $FLAG)'
@@ -18,6 +19,25 @@ rule:
         inside:
           kind: if_statement
           stopBy: end
+    - not:
+        inside:
+          stopBy: end
+          follows:
+            stopBy: end
+            kind: if_statement
+            all:
+              - has:
+                  field: condition
+                  has:
+                    any:
+                      - pattern: '!MyG($FIELD)'
+                      - pattern: 'MyG($FIELD) == NULL'
+              - has:
+                  field: consequence
+                  any:
+                    - kind: return_statement
+                    - has:
+                        kind: return_statement
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -31,5 +51,4 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
   todo_cases:
-    - 'FP: if (!MyG(error_msg)) { return; } ZVAL_STRING(retval, MyG(error_msg), 1); is flagged although an early-return guard precedes it'
     - 'FN: ZVAL_STRING(retval, (MyG(error_msg)), 1); (parenthesised source)'
