@@ -1,8 +1,93 @@
 id: c-zend-try-without-zend-catch
 snapshots:
-  ? "void f(void) {\n\tzend_try {\n\t\trun_user_code();\n\t} zend_end_try();\n}"
-  : labels:
-    - source: "{\n\tzend_try {\n\t\trun_user_code();\n\t} zend_end_try();\n}"
+  "void f(int n) {\n\twhile (n--) {\n\t\tzend_try {\n\t\t\trun_user_code();\n\t\t} zend_end_try();\n\t}\n}":
+    labels:
+    - source: |-
+        {
+        	while (n--) {
+        		zend_try {
+        			run_user_code();
+        		} zend_end_try();
+        	}
+        }
+      style: primary
+      start: 14
+      end: 88
+    - source: zend_end_try()
+      style: secondary
+      start: 68
+      end: 82
+    - source: |-
+        void f(int n) {
+        	while (n--) {
+        		zend_try {
+        			run_user_code();
+        		} zend_end_try();
+        	}
+        }
+      style: secondary
+      start: 0
+      end: 88
+  "void f(int x) {\n\tif (x) {\n\t\tzend_try {\n\t\t\trun_user_code();\n\t\t} zend_end_try();\n\t}\n}":
+    labels:
+    - source: |-
+        {
+        	if (x) {
+        		zend_try {
+        			run_user_code();
+        		} zend_end_try();
+        	}
+        }
+      style: primary
+      start: 14
+      end: 83
+    - source: zend_end_try()
+      style: secondary
+      start: 63
+      end: 77
+    - source: |-
+        void f(int x) {
+        	if (x) {
+        		zend_try {
+        			run_user_code();
+        		} zend_end_try();
+        	}
+        }
+      style: secondary
+      start: 0
+      end: 83
+  "void f(void) {\n\tzend_first_try {\n\t\trun_user_code();\n\t} zend_end_try();\n}":
+    labels:
+    - source: |-
+        {
+        	zend_first_try {
+        		run_user_code();
+        	} zend_end_try();
+        }
+      style: primary
+      start: 13
+      end: 72
+    - source: zend_end_try()
+      style: secondary
+      start: 55
+      end: 69
+    - source: |-
+        void f(void) {
+        	zend_first_try {
+        		run_user_code();
+        	} zend_end_try();
+        }
+      style: secondary
+      start: 0
+      end: 72
+  "void f(void) {\n\tzend_try {\n\t\trun_user_code();\n\t} zend_end_try();\n}":
+    labels:
+    - source: |-
+        {
+        	zend_try {
+        		run_user_code();
+        	} zend_end_try();
+        }
       style: primary
       start: 13
       end: 66
@@ -10,7 +95,12 @@ snapshots:
       style: secondary
       start: 49
       end: 63
-    - source: "void f(void) {\n\tzend_try {\n\t\trun_user_code();\n\t} zend_end_try();\n}"
+    - source: |-
+        void f(void) {
+        	zend_try {
+        		run_user_code();
+        	} zend_end_try();
+        }
       style: secondary
       start: 0
       end: 66

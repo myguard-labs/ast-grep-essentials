@@ -1,6 +1,42 @@
 id: c-void-return-followed-by-dead-code
 snapshots:
-  void f(int *p) { return; *p = 1; }:
+  "void f(int *p) { *p = 0; return; *p = 1; }":
+    labels:
+    - source: return;
+      style: primary
+      start: 25
+      end: 32
+    - source: return;
+      style: secondary
+      start: 25
+      end: 32
+    - source: "*p = 1;"
+      style: secondary
+      start: 33
+      end: 40
+    - source: "{ *p = 0; return; *p = 1; }"
+      style: secondary
+      start: 15
+      end: 42
+  "void f(int *p) { if (!p) { return; *p = 0; } }":
+    labels:
+    - source: return;
+      style: primary
+      start: 27
+      end: 34
+    - source: return;
+      style: secondary
+      start: 27
+      end: 34
+    - source: "*p = 0;"
+      style: secondary
+      start: 35
+      end: 42
+    - source: "{ return; *p = 0; }"
+      style: secondary
+      start: 25
+      end: 44
+  "void f(int *p) { return; *p = 1; }":
     labels:
     - source: return;
       style: primary
@@ -10,11 +46,29 @@ snapshots:
       style: secondary
       start: 17
       end: 24
-    - source: '*p = 1;'
+    - source: "*p = 1;"
       style: secondary
       start: 25
       end: 32
-    - source: '{ return; *p = 1; }'
+    - source: "{ return; *p = 1; }"
       style: secondary
       start: 15
       end: 34
+  "void f(int *p) { return; free(p); }":
+    labels:
+    - source: return;
+      style: primary
+      start: 17
+      end: 24
+    - source: return;
+      style: secondary
+      start: 17
+      end: 24
+    - source: free(p);
+      style: secondary
+      start: 25
+      end: 33
+    - source: "{ return; free(p); }"
+      style: secondary
+      start: 15
+      end: 35

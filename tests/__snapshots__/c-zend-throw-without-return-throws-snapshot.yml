@@ -1,6 +1,24 @@
 id: c-zend-throw-without-return-throws
 snapshots:
-  PHP_METHOD(Foo, bar) { if (!ok) { zend_throw_error(NULL, "x"); } RETURN_NULL(); }:
+  "PHP_FUNCTION(f) {\n  if (ok) {\n    RETURN_TRUE;\n  } else {\n    zend_throw_error(NULL, \"x\");\n  }\n  do_more();\n  RETURN_NULL();\n}":
+    labels:
+    - source: zend_throw_error(NULL, "x");
+      style: primary
+      start: 62
+      end: 90
+  "PHP_FUNCTION(f) { zend_throw_error(NULL, \"x\"); do_more(); RETURN_NULL(); }":
+    labels:
+    - source: zend_throw_error(NULL, "x");
+      style: primary
+      start: 18
+      end: 46
+  "PHP_FUNCTION(f) { zend_throw_error(NULL, \"x\"); }":
+    labels:
+    - source: zend_throw_error(NULL, "x");
+      style: primary
+      start: 18
+      end: 46
+  "PHP_METHOD(Foo, bar) { if (!ok) { zend_throw_error(NULL, \"x\"); } RETURN_NULL(); }":
     labels:
     - source: zend_throw_error(NULL, "x");
       style: primary

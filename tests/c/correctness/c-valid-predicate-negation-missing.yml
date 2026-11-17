@@ -3,7 +3,19 @@ valid:
   - >-
     int timelib_valid_date(int y, int m, int d); int f(int y, int m, int d) { if
     (!timelib_valid_date(y, m, d)) { return 0; } return 1; }
+  - |-
+    int is_valid(int x); int f(int x) { if (is_valid(x) == 0) { return -1; } return 0; }
+  - |-
+    int is_valid_fd(int fd); int f(int fd) { if (!is_valid_fd(fd)) { return -1; } return 0; }
+  - |-
+    int is_valid(int x); void process(int x); int f(int x) { if (is_valid(x)) { process(x); } return 0; }
 invalid:
   - >-
     int timelib_valid_date(int y, int m, int d); int f(int y, int m, int d) { if
     (timelib_valid_date(y, m, d)) { return 0; } return 1; }
+  - |-
+    int is_valid(int x); int f(int x) { if (is_valid(x)) { return -1; } return 0; }
+  - |-
+    int validate_header(const char *h); int f(const char *h) { if (validate_header(h)) { return 0; } return 1; }
+  - |-
+    int is_valid_path(const char *p); void log_it(const char *p); int f(const char *p) { if (is_valid_path(p)) { log_it(p); return -1; } return 0; }

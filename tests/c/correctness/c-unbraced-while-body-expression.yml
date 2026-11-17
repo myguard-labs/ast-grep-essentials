@@ -1,5 +1,36 @@
 id: c-unbraced-while-body-expression
 valid:
   - 'void f(char *loc) { while (*loc == '' '') { loc++; } }'
+  - |-
+    void f(int *n) { while (*n > 0) { (*n)--; } }
+  - |-
+    void f(char *s, char *d) {
+      while (*s) {
+        *d++ = *s++;
+      }
+    }
+  - |-
+    void f(char *s) {
+      while (*s) {
+        if (*s == 'x') {
+          break;
+        }
+        s++;
+      }
+    }
 invalid:
   - 'void f(char *loc) { while (*loc == '' '') loc++; }'
+  - |-
+    void f(int *n) { while (*n > 0) (*n)--; }
+  - |-
+    void f(char *s, char *d) {
+      while (*s)
+        *d++ = *s++;
+    }
+  - |-
+    int f(int *b, int len) {
+      int sum = 0, i = 0;
+      while (i < len)
+        sum += b[i++];
+      return sum;
+    }

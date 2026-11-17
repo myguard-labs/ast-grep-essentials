@@ -3,7 +3,42 @@ valid:
   - >-
     PHP_METHOD(Foo, bar) { if (!ok) { zend_throw_error(NULL, "x");
     RETURN_THROWS(); } RETURN_NULL(); }
+  - |-
+    PHP_FUNCTION(f) { zend_throw_error(NULL, "x"); RETURN_THROWS(); }
+  - |-
+    PHP_FUNCTION(f) {
+      if (bad) {
+        zend_throw_error(NULL, "x");
+        RETURN_THROWS();
+      } else {
+        RETURN_TRUE;
+      }
+    }
+  - |-
+    PHP_METHOD(Foo, bar) {
+      while (n--) {
+        if (bad(n)) {
+          zend_throw_error(NULL, "x");
+          RETURN_THROWS();
+        }
+      }
+      RETURN_NULL();
+    }
 invalid:
   - >-
     PHP_METHOD(Foo, bar) { if (!ok) { zend_throw_error(NULL, "x"); }
     RETURN_NULL(); }
+  - |-
+    PHP_FUNCTION(f) { zend_throw_error(NULL, "x"); }
+  - |-
+    PHP_FUNCTION(f) { zend_throw_error(NULL, "x"); do_more(); RETURN_NULL(); }
+  - |-
+    PHP_FUNCTION(f) {
+      if (ok) {
+        RETURN_TRUE;
+      } else {
+        zend_throw_error(NULL, "x");
+      }
+      do_more();
+      RETURN_NULL();
+    }
