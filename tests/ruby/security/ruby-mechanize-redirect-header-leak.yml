@@ -26,6 +26,36 @@ valid:
       fetch(default_uri, headers)
     end
   end
+- |-
+  def fetch(uri, attempts, headers)
+    if attempts < 300
+      fetch(uri, attempts + 1, headers)
+    end
+  end
+- |-
+  def fetch(uri, timeout, headers)
+    if timeout == 300
+      fetch(uri, timeout, headers)
+    end
+  end
+- |-
+  def fetch(uri, decoded, headers)
+    if decoded.size > 300
+      fetch(uri, decoded, headers)
+    end
+  end
+- |-
+  def fetch(uri, status_count, headers)
+    if status_count < 350
+      fetch(uri, status_count, headers)
+    end
+  end
+- |-
+  def fetch(uri, version, headers)
+    if version.start_with?('3')
+      fetch(uri, version, headers)
+    end
+  end
 invalid:
 - |-
   def follow_redirect(uri, headers)
@@ -43,5 +73,17 @@ invalid:
   def follow(uri, headers = {})
     if response.redirect?
       follow(response.location, headers)
+    end
+  end
+- |-
+  def follow(uri, headers)
+    if response.code.start_with?('3')
+      follow(response['location'], headers)
+    end
+  end
+- |-
+  def follow(uri, headers)
+    if [301, 302].include?(code)
+      follow(response['location'], headers)
     end
   end

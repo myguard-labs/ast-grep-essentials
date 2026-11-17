@@ -27,11 +27,12 @@ rule:
         stopBy: end
         has:
           field: condition
-          regex: '(?i)redirect'
+          regex: '(?i)redirect|\b(code|status)\b(\.to_s)?\.start_with\?\(\s*[''"]3|(\b(code|status)\b|include\?).*\b3[0-9][0-9]\b|\b3[0-9][0-9]\b.*(\b(code|status)\b|include\?)'
 metadata:
   cwe: 'CWE-200'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/200.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A01:2025'
   todo_cases:
+    - 'A non-status include?(3xx) condition (retry_codes.include?(300)) is still matched.'
     - 'Receiver-qualified recursion (self.follow_redirect(uri, headers)) is not matched.'
