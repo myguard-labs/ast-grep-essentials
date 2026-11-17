@@ -3,8 +3,14 @@ valid:
   - >-
     <?php function make_draft( $t ) { return wp_insert_post( array( 'post_title'
     => $t ) ); }
+  - '<?php function f( $t ) { foreach ( $ids as $d ) { wp_delete_post( $d ); } return wp_insert_post( array( ''post_title'' => $t ) ); }'
+  - '<?php function f( $t ) { foreach ( $ids as $d ) { wp_delete_post( $d, false ); } return wp_insert_post( array( ''post_title'' => $t ) ); }'
+  - '<?php function f() { foreach ( $ids as $d ) { wp_delete_post( $d, true ); } } function g( $t ) { return wp_insert_post( array( ''post_title'' => $t ) ); }'
 invalid:
   - >-
     <?php function make_draft( $t ) { $old = $wpdb->get_col( 'SELECT ID FROM p'
     ); foreach ( (array) $old as $d ) wp_delete_post( $d, true ); return
     wp_insert_post( array( 'post_title' => $t ) ); }
+  - '<?php function f( $t ) { foreach ( $ids as $d ) wp_delete_post( $d, true ); return wp_insert_post( array( ''post_title'' => $t ) ); }'
+  - '<?php function f( $t ) { foreach ( $ids as $k => $d ) { if ( $d ) { wp_delete_post( $d, true ); } } return wp_insert_post( array( ''post_title'' => $t ) ); }'
+  - '<?php function f( $t ) { $id = wp_insert_post( array( ''post_title'' => $t ) ); foreach ( $old as $d ) { wp_delete_post( $d, true ); } return $id; }'

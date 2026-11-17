@@ -1,5 +1,11 @@
 id: wp-call-arg-assignment
 valid:
   - '<?php $r->add_role($role, $name, $caps);'
+  - '<?php $r->add_role($role, $name, $caps == '''');'
+  - '<?php $caps = ''''; $r->add_role($role, $name, $caps);'
+  - '<?php $r->add_role($role, $name, array(''a'' => $caps));'
 invalid:
   - '<?php $r->add_role($role, $name, $caps = '''');'
+  - '<?php $r->add_role($role, $caps = array(), $name);'
+  - '<?php $r->add_role($role, $name, $a = $b = 1);'
+  - '<?php $r->add_role($role, $name, $arr[''k''] = 1);'
