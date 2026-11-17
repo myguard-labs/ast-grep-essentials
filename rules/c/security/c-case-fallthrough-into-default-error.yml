@@ -16,7 +16,21 @@ rule:
     - regex: '^case'
     - not:
         has:
-          kind: break_statement
+          any:
+            - kind: break_statement
+            - kind: return_statement
+            - kind: continue_statement
+            - kind: goto_statement
+            - kind: compound_statement
+              has:
+                nthChild:
+                  position: 1
+                  reverse: true
+                any:
+                  - kind: break_statement
+                  - kind: return_statement
+                  - kind: continue_statement
+                  - kind: goto_statement
     - precedes:
         kind: case_statement
         regex: '^default'
@@ -35,7 +49,5 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
   todo_cases:
-    - 'FP: case 1: return; default: goto err; (case ends with return, flagged for lacking break)'
-    - 'FP: case 1: { a(); break; } default: goto err; (break inside a compound statement)'
     - 'FP: case 1: default: goto err; (stacked labels, not shown as invalid; also flagged)'
     - 'FN: case 1: a(); default: if (x) goto err; (goto nested in default if)'

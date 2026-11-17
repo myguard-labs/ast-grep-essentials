@@ -11,7 +11,22 @@ note: >-
   is a direct subscript of an identifier with no cast; it does not verify that
   the pointer is char-typed or that the value is used in a way that matters.
 rule:
-  pattern: 'int $VAR = $ARR[$IDX];'
+  all:
+    - pattern: 'int $VAR = $ARR[$IDX];'
+    - not:
+        inside:
+          stopBy: end
+          kind: function_definition
+          has:
+            stopBy: end
+            any:
+              - kind: parameter_declaration
+              - kind: declaration
+            regex: 'unsigned char|uint8_t'
+            has:
+              stopBy: end
+              kind: identifier
+              pattern: $ARR
 metadata:
   rule_modified_at: '2026-10-14'
   ast_grep_tested_version: 0.50.0
@@ -28,4 +43,3 @@ metadata:
     - 'FN: int a = s[0], b = s[1]; (multiple declarators)'
     - 'FN: long c = s[0]; (long instead of int)'
     - 'FN: int low = *s; (dereference widens a plain char the same way as s[0])'
-    - 'FP: const unsigned char *s; int c = s[0]; (unsigned element, flagged because types are not resolved)'

@@ -8,7 +8,8 @@ message: >-
   zval_dtor.
 note: >-
   Syntactic check only. It matches the literal local name retval and does not
-  track aliases, other destructors such as zval_ptr_dtor, or control flow.
+  track aliases or control flow; zval_dtor or zval_ptr_dtor of &retval
+  anywhere in the function counts as destruction.
 rule:
   kind: function_definition
   all:
@@ -19,6 +20,10 @@ rule:
         has:
           stopBy: end
           pattern: 'zval_dtor(&retval)'
+    - not:
+        has:
+          stopBy: end
+          pattern: 'zval_ptr_dtor(&retval)'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
@@ -30,5 +35,3 @@ metadata:
   cwe: 'CWE-401'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/401.html'
   taxonomy_cited_keys: 'cwe'
-  todo_cases:
-    - 'FP: zval_ptr_dtor(&retval) after call_user_function(..., &retval, ...) is flagged although it destroys the zval'

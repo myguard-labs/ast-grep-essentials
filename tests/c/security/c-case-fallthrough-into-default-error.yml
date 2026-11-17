@@ -6,6 +6,9 @@ valid:
   - 'void f(int t) { switch (t) { case 1: a(); case 2: b(); break; default: goto err; } err: return; }'
   - 'void f(int t) { switch (t) { case 1: a(); break; case 2: b(); break; default: goto err; } err: return; }'
   - 'void f(int t) { switch (t) { case 1: a(); break; default: return; } }'
+  - 'void f(int t) { switch (t) { case 1: return; default: goto err; } err: return; }'
+  - 'void f(int t) { switch (t) { case 1: { a(); break; } default: goto err; } err: return; }'
+  - 'void f(int t) { for (;;) { switch (t) { case 1: a(); continue; default: goto err; } } err: return; }'
 invalid:
   - |-
     switch (t) { case 1: if (!f()) goto err;

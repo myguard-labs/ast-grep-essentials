@@ -19,6 +19,18 @@ rule:
     - has:
         field: value
         kind: initializer_list
+    - not:
+        has:
+          field: declarator
+          kind: pointer_declarator
+          has:
+            field: declarator
+            kind: array_declarator
+    - not:
+        has:
+          field: value
+          kind: initializer_list
+          regex: '^\{\s*(0|NULL)\s*\}$'
 metadata:
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
@@ -30,6 +42,3 @@ metadata:
   cwe: 'CWE-587'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/587.html'
   taxonomy_cited_keys: 'cwe'
-  todo_cases:
-    - 'FP: static const char *names[] = { "a", "b" }; (array of pointers is flagged)'
-    - 'FP: int *p = { 0 }; (a single-element braced null pointer initializer is well-formed C but is reported)'
