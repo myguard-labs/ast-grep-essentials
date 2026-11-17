@@ -1,5 +1,31 @@
 id: c-if-not-bare-feature-macro
 snapshots:
+  "#  if !_WIN32\nint x;\n#  endif":
+    labels:
+    - source: |-
+        #  if !_WIN32
+        int x;
+        #  endif
+      style: primary
+      start: 0
+      end: 29
+    - source: "!_WIN32"
+      style: secondary
+      start: 6
+      end: 13
+  "#if ! HAVE_X\nint x;\n#endif":
+    labels:
+    - source: |-
+        #if ! HAVE_X
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 26
+    - source: "! HAVE_X"
+      style: secondary
+      start: 4
+      end: 12
   "#if !HAVE_FOPENCOOKIE\nint x;\n#endif":
     labels:
     - source: |-
@@ -13,3 +39,31 @@ snapshots:
       style: secondary
       start: 4
       end: 21
+  "#if !HAVE_X\nint x;\n#else\nint y;\n#endif":
+    labels:
+    - source: |-
+        #if !HAVE_X
+        int x;
+        #else
+        int y;
+        #endif
+      style: primary
+      start: 0
+      end: 38
+    - source: "!HAVE_X"
+      style: secondary
+      start: 4
+      end: 11
+  "void f(void) {\n#if !HAVE_X\n  g();\n#endif\n}":
+    labels:
+    - source: |-
+        #if !HAVE_X
+          g();
+        #endif
+      style: primary
+      start: 15
+      end: 40
+    - source: "!HAVE_X"
+      style: secondary
+      start: 19
+      end: 26

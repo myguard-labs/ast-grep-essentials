@@ -4,8 +4,39 @@ valid:
     #ifndef FOO_LEN
     #define FOO_LEN 16385
     #endif
+  - |-
+      #ifdef HAVE_X
+      #define USE_X 1
+      #endif
+  - |-
+      #ifdef LEN
+      #define LEN_MAX 16
+      #endif
+  - |-
+      #ifdef LEN
+      #undef LEN
+      #define LEN 32
+      #endif
 invalid:
   - |-
     #ifdef FOO_LEN
     #define FOO_LEN 16385
     #endif
+  - |-
+      #ifdef NAME
+      #define NAME "str"
+      #endif
+  - |-
+      #ifdef LEN
+      #define LEN (1 << 4)
+      #endif
+  - |-
+      #  ifdef LEN
+      #  define LEN 7
+      #  endif
+  - |-
+      void f(void) {
+      #ifdef LEN
+      #define LEN 7
+      #endif
+      }

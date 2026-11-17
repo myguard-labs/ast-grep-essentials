@@ -4,8 +4,41 @@ valid:
     #ifdef PHP_DEBUG
     int x;
     #endif
+  - |-
+      #ifndef FOO_H
+      #define FOO_H
+      int x;
+      #endif
+  - |-
+      #ifdef FOO /* why */
+      int x;
+      #endif
+  - |-
+      #ifdef FOO // why
+      int x;
+      #endif
+  - |-
+      #if defined(FOO) && defined(BAR)
+      int x;
+      #endif
 invalid:
   - |-
     #ifdef PHP_DEBUG || defined(MYSQLND_THREADED)
     int x;
     #endif
+  - |-
+      #ifndef FOO && BAR
+      int x;
+      #endif
+  - |-
+      #ifdef FOO&&BAR
+      int x;
+      #endif
+  - |-
+      #ifdef FOO == 1
+      int x;
+      #endif
+  - |-
+      #ifdef FOO defined(BAR)
+      int x;
+      #endif
