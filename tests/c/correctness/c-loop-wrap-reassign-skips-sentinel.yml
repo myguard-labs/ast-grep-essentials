@@ -3,7 +3,23 @@ valid:
   - >-
     struct n *p = last->next; while (p != last) { if (!p) { p = head; continue;
     } use(p->fd); p = p->next; }
+  - |-
+    struct n *p = last->next; while (p != last) { if (!p) { p = head; continue; } if (p->skip) { p = p->next; continue; } use(p->fd); p = p->next; }
+  - |-
+    struct n *p = head; while (p != last) { if (p->weight > max) { best = p; } use(p->fd); p = p->next; }
+  - |-
+    struct n *p = head; while (p != last) { if (budget == 0) { q = head; } count++; p = p->next; }
+  - |-
+    struct n *p = last->next; while (p != last) { if (!p) { if (head) { p = head; continue; } break; } use(p->fd); p = p->next; }
 invalid:
   - >-
     struct n *p = last->next; while (p != last) { if (!p) { p = head; }
     use(p->fd); p = p->next; }
+  - |-
+    struct n *p = last->next; while (p != last) { if (p == NULL) p = list->first; total += p->len; p = p->next; }
+  - |-
+    struct n *p = head; while (p != last) { if (!p->next) { p = head; } use(p->fd); p = p->next; }
+  - |-
+    struct n *cur = head; while (cur != end) { if (!cur) { { cur = start; } } emit(cur->name); cur = cur->next; }
+  - |-
+    struct n *p = head; while (p != last) { if (p->flag) { p = alt; } else { n++; } use(p->fd); p = p->next; }

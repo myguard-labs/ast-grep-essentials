@@ -1,5 +1,97 @@
 id: c-loop-body-uses-head-not-cursor
 snapshots:
+  "struct n { struct n *next; int v; }; int check(struct n *); void f(struct n *head) { struct n *cur; int ok = 0; for (cur = head; cur; cur = cur->next) { if (check(head)) { ok++; } } }":
+    labels:
+    - source: for (cur = head; cur; cur = cur->next) { if (check(head)) { ok++; } }
+      style: primary
+      start: 112
+      end: 181
+    - source: cur = head
+      style: secondary
+      start: 117
+      end: 127
+    - source: cur = cur->next
+      style: secondary
+      start: 134
+      end: 149
+    - source: head
+      style: secondary
+      start: 163
+      end: 167
+    - source: head
+      style: secondary
+      start: 163
+      end: 167
+    - source: check(head)
+      style: secondary
+      start: 157
+      end: 168
+    - source: check(head)
+      style: secondary
+      start: 157
+      end: 168
+  "struct n { struct n *next; int v; }; void g(struct n *); int n; void f(struct n *head) { struct n *cur; for (cur = head; cur; cur = cur->next) { if (cur->v) { g(head); } else { n++; } } }":
+    labels:
+    - source: >-
+        for (cur = head; cur; cur = cur->next) { if (cur->v) { g(head); } else { n++; }
+        }
+      style: primary
+      start: 104
+      end: 185
+    - source: cur = head
+      style: secondary
+      start: 109
+      end: 119
+    - source: cur = cur->next
+      style: secondary
+      start: 126
+      end: 141
+    - source: head
+      style: secondary
+      start: 161
+      end: 165
+    - source: head
+      style: secondary
+      start: 161
+      end: 165
+    - source: g(head)
+      style: secondary
+      start: 159
+      end: 166
+    - source: g(head)
+      style: secondary
+      start: 159
+      end: 166
+  "struct n { struct n *next; }; void g(int, struct n *); void f(struct n *head) { struct n *cur; for (cur = head; cur; cur = cur->next) { g(1, head); } }":
+    labels:
+    - source: for (cur = head; cur; cur = cur->next) { g(1, head); }
+      style: primary
+      start: 95
+      end: 149
+    - source: cur = head
+      style: secondary
+      start: 100
+      end: 110
+    - source: cur = cur->next
+      style: secondary
+      start: 117
+      end: 132
+    - source: head
+      style: secondary
+      start: 141
+      end: 145
+    - source: head
+      style: secondary
+      start: 141
+      end: 145
+    - source: g(1, head)
+      style: secondary
+      start: 136
+      end: 146
+    - source: g(1, head)
+      style: secondary
+      start: 136
+      end: 146
   "struct n { struct n *next; }; void g(struct n *); void f(struct n *head) { struct n *cur; for (cur = head; cur; cur = cur->next) { g(head); } }":
     labels:
     - source: for (cur = head; cur; cur = cur->next) { g(head); }
@@ -27,6 +119,36 @@ snapshots:
       start: 131
       end: 138
     - source: g(head)
+      style: secondary
+      start: 131
+      end: 138
+  "struct n { struct n *next; }; void g(struct n *); void f(struct n *list) { struct n *it; for (it = list; it != 0; it = it->next) { g(list); } }":
+    labels:
+    - source: for (it = list; it != 0; it = it->next) { g(list); }
+      style: primary
+      start: 89
+      end: 141
+    - source: it = list
+      style: secondary
+      start: 94
+      end: 103
+    - source: it = it->next
+      style: secondary
+      start: 114
+      end: 127
+    - source: list
+      style: secondary
+      start: 133
+      end: 137
+    - source: list
+      style: secondary
+      start: 133
+      end: 137
+    - source: g(list)
+      style: secondary
+      start: 131
+      end: 138
+    - source: g(list)
       style: secondary
       start: 131
       end: 138

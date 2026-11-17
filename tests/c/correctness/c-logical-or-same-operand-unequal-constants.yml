@@ -1,5 +1,26 @@
 id: c-logical-or-same-operand-unequal-constants
 valid:
   - 'int f(int n) { return n != 4 && n != 16; }'
+  - |-
+    int f(int n) { return n == 4 || n == 16; }
+  - |-
+    int f(int n) { return n < 4 || n > 16; }
+  - |-
+    int f(int n, int max) { return n != 4 || n != max; }
+  - |-
+    int f(int n, int flag) { return n != 4 || flag; }
 invalid:
   - 'int f(int n) { return n != 4 || n != 16; }'
+  - |-
+    int f(int x) { return x != 0x10 || x != 0x20; }
+  - |-
+    int f(int mode) {
+        if (mode != 1 || mode != 2) {
+            return -1;
+        }
+        return 0;
+    }
+  - |-
+    int f(int n) { return n != 0 || n != 1 || n != 2; }
+  - |-
+    int f(unsigned len) { return len != 8u || len != 16u; }

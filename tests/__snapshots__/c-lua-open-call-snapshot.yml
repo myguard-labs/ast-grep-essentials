@@ -1,9 +1,47 @@
 id: c-lua-open-call
 snapshots:
-  ? |-
-    #include <lua.h>
-    void f(void) { lua_State *L = lua_open(); (void)L; }
-  : labels:
+  "#include <lua.h>\nint f(void) { lua_State *L; if ((L = lua_open()) == NULL) return -1; return 0; }":
+    labels:
+    - source: lua_open()
+      style: primary
+      start: 54
+      end: 64
+    - source: lua_open
+      style: secondary
+      start: 54
+      end: 62
+  "#include <lua.h>\nlua_State *L;\nvoid f(void) { L = lua_open(); }":
+    labels:
+    - source: lua_open()
+      style: primary
+      start: 50
+      end: 60
+    - source: lua_open
+      style: secondary
+      start: 50
+      end: 58
+  "#include <lua.h>\nlua_State *f(void) { return lua_open(); }":
+    labels:
+    - source: lua_open()
+      style: primary
+      start: 45
+      end: 55
+    - source: lua_open
+      style: secondary
+      start: 45
+      end: 53
+  "#include <lua.h>\nvoid f(void) { lua_State *L = lua_open (); (void)L; }":
+    labels:
+    - source: lua_open ()
+      style: primary
+      start: 47
+      end: 58
+    - source: lua_open
+      style: secondary
+      start: 47
+      end: 55
+  "#include <lua.h>\nvoid f(void) { lua_State *L = lua_open(); (void)L; }":
+    labels:
     - source: lua_open()
       style: primary
       start: 47
