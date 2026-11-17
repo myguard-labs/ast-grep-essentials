@@ -1,5 +1,11 @@
 id: js-jquery-unquoted-attribute-selector-concat
 valid:
   - 'var p = jQuery(''#newcat_parent''); p.find(''option[value="'' + val + ''"]'');'
+  - 'p.find( ''option[value="'' + val + ''"]'' );'
+  - 'p.find( "option[value=''" + val + "'']" );'
+  - 'p.find( ''option'' ).filter( function () { return this.value === val; } );'
 invalid:
   - 'var p = jQuery(''#newcat_parent''); p.find(''option[value='' + val + '']'');'
+  - '$( ''#a'' ).find( ''option[value='' + id + '']'' );'
+  - 'this.find( ''option[value='' + a.b + '']'' );'
+  - 'p.find( ''option[value='' + ( n + 1 ) + '']'' );'

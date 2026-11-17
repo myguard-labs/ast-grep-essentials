@@ -1,5 +1,11 @@
 id: js-json-parse-outside-try
 valid:
   - 'async run({ $ }) { try { const v = JSON.parse(this.values); } catch (e) {} }'
+  - 'const parse = ( s ) => { try { return JSON.parse( s ); } catch { return null; } };'
+  - 'function f( s ) { try { return JSON.parse( s, reviver ); } catch ( e ) { return null; } }'
+  - 'var s = JSON.stringify( obj );'
 invalid:
   - 'async run({ $ }) { const v = JSON.parse(this.values); }'
+  - 'const v = JSON.parse( s );'
+  - 'var o = JSON.parse( s, reviver );'
+  - 'function f( body ) { return JSON.parse( body ).items; }'
