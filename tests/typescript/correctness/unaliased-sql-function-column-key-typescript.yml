@@ -3,7 +3,11 @@ valid:
   - |-
     const r = await this.query("SELECT version() as version")
     const v = r[0]["version"]
+  - 'const v = rows[0]["max_id"];'
+  - 'const v = row[columnName];'
 invalid:
   - |-
     const r = await this.query("SELECT version()")
     const v = r[0]["version()"]
+  - 'const v = rows[0][''max(id)''];'
+  - 'const v = r?.["now()"];'
