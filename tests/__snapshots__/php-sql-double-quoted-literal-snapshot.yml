@@ -1,12 +1,42 @@
 id: php-sql-double-quoted-literal
 snapshots:
-  function f() { $where = ''; $where .= ' AND (post_type = "page")'; return $where; }:
+  "function f($db) { return $db->query('DELETE FROM t WHERE kind = \"tmp\"'); }":
     labels:
-    - source: ''' AND (post_type = "page")'''
+    - source: "'DELETE FROM t WHERE kind = \"tmp\"'"
+      style: primary
+      start: 36
+      end: 70
+    - source: DELETE FROM t WHERE kind = "tmp"
+      style: secondary
+      start: 37
+      end: 69
+  "function f() { $sql = 'SELECT * FROM t WHERE name = \"bob\"'; return $sql; }":
+    labels:
+    - source: "'SELECT * FROM t WHERE name = \"bob\"'"
+      style: primary
+      start: 22
+      end: 58
+    - source: SELECT * FROM t WHERE name = "bob"
+      style: secondary
+      start: 23
+      end: 57
+  "function f() { $sql = 'UPDATE t SET status = \"draft\" WHERE id = 1'; return $sql; }":
+    labels:
+    - source: "'UPDATE t SET status = \"draft\" WHERE id = 1'"
+      style: primary
+      start: 22
+      end: 66
+    - source: UPDATE t SET status = "draft" WHERE id = 1
+      style: secondary
+      start: 23
+      end: 65
+  "function f() { $where = ''; $where .= ' AND (post_type = \"page\")'; return $where; }":
+    labels:
+    - source: "' AND (post_type = \"page\")'"
       style: primary
       start: 38
       end: 65
-    - source: ' AND (post_type = "page")'
+    - source: " AND (post_type = \"page\")"
       style: secondary
       start: 39
       end: 64

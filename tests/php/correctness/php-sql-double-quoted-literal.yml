@@ -3,7 +3,19 @@ valid:
   - >-
     function f() { $where = ''; $where .= " AND (post_type = 'page')"; return
     $where; }
+  - |-
+    function f() { $sql = 'SELECT * FROM t WHERE name = %s'; return $sql; }
+  - |-
+    function f() { $sql = "SELECT * FROM t WHERE name = 'bob'"; return $sql; }
+  - |-
+    function f() { $sql = 'SELECT * FROM t WHERE name = \'bob\''; return $sql; }
 invalid:
   - >-
     function f() { $where = ''; $where .= ' AND (post_type = "page")'; return
     $where; }
+  - |-
+    function f() { $sql = 'SELECT * FROM t WHERE name = "bob"'; return $sql; }
+  - |-
+    function f() { $sql = 'UPDATE t SET status = "draft" WHERE id = 1'; return $sql; }
+  - |-
+    function f($db) { return $db->query('DELETE FROM t WHERE kind = "tmp"'); }

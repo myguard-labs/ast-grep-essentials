@@ -3,7 +3,19 @@ valid:
   - >-
     class Bcrypt { private $_cost = 9; public function setCost($c) {
     $this->_cost = $c; } }
+  - |-
+    class A { private static $cost = 9; public static function setCost($c) { self::$cost = $c; } }
+  - |-
+    class A { private static $cost = 9; public function getCost() { $c = self::$cost; return $c; } }
+  - |-
+    class A { private static $inst; public static function boot() { static::$inst = new static(); } }
 invalid:
   - >-
     class Bcrypt { private static $_cost = 9; public function setCost($c) {
     self::$_cost = $c; } }
+  - |-
+    class A { protected static $reg; public function set($r) { static::$reg = $r; } }
+  - |-
+    class A { private static $last; private function note() { self::$last = $this->id; } }
+  - |-
+    class A { private static $n = 0; final public function bump() { self::$n = self::$n + 1; } }

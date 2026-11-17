@@ -1,11 +1,27 @@
 id: php-srand-microtime-seed
 snapshots:
-  ? |-
-    <?php
-    function f() {
-        srand((float) microtime() * 1000000);
-    }
-  : labels:
+  "<?php\nfunction f() {\n    mt_srand((double) microtime() * 100000);\n}":
+    labels:
+    - source: mt_srand((double) microtime() * 100000)
+      style: primary
+      start: 25
+      end: 64
+    - source: microtime()
+      style: secondary
+      start: 43
+      end: 54
+  "<?php\nfunction f() {\n    mt_srand(microtime(true) * 1000);\n}":
+    labels:
+    - source: mt_srand(microtime(true) * 1000)
+      style: primary
+      start: 25
+      end: 57
+    - source: microtime(true)
+      style: secondary
+      start: 34
+      end: 49
+  "<?php\nfunction f() {\n    srand((float) microtime() * 1000000);\n}":
+    labels:
     - source: srand((float) microtime() * 1000000)
       style: primary
       start: 25
@@ -14,3 +30,13 @@ snapshots:
       style: secondary
       start: 39
       end: 50
+  "<?php\nfunction f() {\n    srand((int) microtime(true));\n}":
+    labels:
+    - source: srand((int) microtime(true))
+      style: primary
+      start: 25
+      end: 53
+    - source: microtime(true)
+      style: secondary
+      start: 37
+      end: 52
