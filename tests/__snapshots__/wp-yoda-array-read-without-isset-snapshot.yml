@@ -1,5 +1,64 @@
 id: wp-yoda-array-read-without-isset
 snapshots:
+  "<?php\nif ( 'publish' == $c['post_status'] ) {\n    if ( ! empty( $c['post_status'] ) ) {\n        return 1;\n    }\n}":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 11
+      end: 41
+    - source: |-
+        if ( 'publish' == $c['post_status'] ) {
+            if ( ! empty( $c['post_status'] ) ) {
+                return 1;
+            }
+        }
+      style: secondary
+      start: 6
+      end: 113
+  "function f( $c ) { if ( ! empty( $c['ID'] ) && 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 47
+      end: 77
+    - source: if ( ! empty( $c['ID'] ) && 'publish' == $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 19
+      end: 93
+  "function f( $c ) { if ( ! empty( $c['post_status'] ) & ( 'publish' == $c['post_status'] ) ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 57
+      end: 87
+    - source: >-
+        if ( ! empty( $c['post_status'] ) & ( 'publish' == $c['post_status'] ) ) {
+        return 1; }
+      style: secondary
+      start: 19
+      end: 105
+  "function f( $c ) { if ( ! empty( $c['post_status'] ) ) { return 0; } elseif ( 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 78
+      end: 108
+    - source: >-
+        if ( ! empty( $c['post_status'] ) ) { return 0; } elseif ( 'publish' ==
+        $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 19
+      end: 124
+  "function f( $c ) { if ( ! isset( $c['post_status'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 62
+      end: 92
+    - source: if ( 'publish' == $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 57
+      end: 108
   "function f( $c ) { if ( $c && 'publish' == $c['post_status'] ) { return 1; } }":
     labels:
     - source: "'publish' == $c['post_status']"
@@ -20,6 +79,42 @@ snapshots:
       style: secondary
       start: 19
       end: 84
+  "function f( $c ) { if ( empty( $c['post_status'] ) && 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 54
+      end: 84
+    - source: >-
+        if ( empty( $c['post_status'] ) && 'publish' == $c['post_status'] ) { return 1;
+        }
+      style: secondary
+      start: 19
+      end: 100
+  "function f( $c ) { if ( false === isset( $c['post_status'] ) && 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 64
+      end: 94
+    - source: >-
+        if ( false === isset( $c['post_status'] ) && 'publish' == $c['post_status'] ) {
+        return 1; }
+      style: secondary
+      start: 19
+      end: 110
+  "function f( $c ) { if ( foo( ! empty( $c['post_status'] ) ) && 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 63
+      end: 93
+    - source: >-
+        if ( foo( ! empty( $c['post_status'] ) ) && 'publish' == $c['post_status'] ) {
+        return 1; }
+      style: secondary
+      start: 19
+      end: 109
   "function f( $c ) { if ( isset( $c['ID'] ) && 'publish' == $c['post_status'] ) { return 1; } }":
     labels:
     - source: "'publish' == $c['post_status']"
@@ -30,6 +125,46 @@ snapshots:
       style: secondary
       start: 19
       end: 91
+  "function f( $c ) { if ( isset( $c['ID'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 51
+      end: 81
+    - source: if ( 'publish' == $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 46
+      end: 97
+  "function f( $c ) { if ( isset( $c['post_status'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } else { if ( 'publish' == $c['post_status'] ) { return 2; } } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 121
+      end: 151
+    - source: if ( 'publish' == $c['post_status'] ) { return 2; }
+      style: secondary
+      start: 116
+      end: 167
+  "function f( $c ) { if ( isset( $c['post_status'] ) ) { return 0; } else { if ( 'publish' == $c['post_status'] ) { return 1; } } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 79
+      end: 109
+    - source: if ( 'publish' == $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 74
+      end: 125
+  "function f( $c ) { if ( isset( $c['post_status'] ) == false ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 69
+      end: 99
+    - source: if ( 'publish' == $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 64
+      end: 115
   "function f( $c, $d ) { if ( isset( $d['post_status'] ) && 'publish' == $c['post_status'] ) { return 1; } }":
     labels:
     - source: "'publish' == $c['post_status']"
@@ -42,6 +177,16 @@ snapshots:
       style: secondary
       start: 23
       end: 104
+  "function f( $c, $d ) { if ( isset( $d['post_status'] ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 64
+      end: 94
+    - source: if ( 'publish' == $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 59
+      end: 110
   "function f( $c, $k ) { if ( 'publish' == $c[ $k ] ) { return 1; } }":
     labels:
     - source: "'publish' == $c[ $k ]"
@@ -52,3 +197,149 @@ snapshots:
       style: secondary
       start: 23
       end: 65
+  "function f( $c, $x ) { if ( ! ( ! empty( $c['post_status'] ) ) && 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 66
+      end: 96
+    - source: >-
+        if ( ! ( ! empty( $c['post_status'] ) ) && 'publish' == $c['post_status'] ) {
+        return 1; }
+      style: secondary
+      start: 23
+      end: 112
+  "function f( $c, $x ) { if ( ! ( ! empty( $c['post_status'] ) ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 72
+      end: 102
+    - source: if ( 'publish' == $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 67
+      end: 118
+  "function f( $c, $x ) { if ( ! ( isset( $c['post_status'] ) ) ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 70
+      end: 100
+    - source: if ( 'publish' == $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 65
+      end: 116
+  "function f( $c, $x ) { if ( ! empty( $c['post_status'] ) || 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 60
+      end: 90
+    - source: >-
+        if ( ! empty( $c['post_status'] ) || 'publish' == $c['post_status'] ) { return
+        1; }
+      style: secondary
+      start: 23
+      end: 106
+  "function f( $c, $x ) { if ( ! isset( $c['post_status'] ) && 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 60
+      end: 90
+    - source: >-
+        if ( ! isset( $c['post_status'] ) && 'publish' == $c['post_status'] ) { return
+        1; }
+      style: secondary
+      start: 23
+      end: 106
+  "function f( $c, $x ) { if ( $x && 'publish' == $c['post_status'] && isset( $c['post_status'] ) ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 34
+      end: 64
+    - source: >-
+        if ( $x && 'publish' == $c['post_status'] && isset( $c['post_status'] ) ) {
+        return 1; }
+      style: secondary
+      start: 23
+      end: 110
+  "function f( $c, $x ) { if ( 'publish' == $c['post_status'] && ! empty( $c['post_status'] ) ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 28
+      end: 58
+    - source: >-
+        if ( 'publish' == $c['post_status'] && ! empty( $c['post_status'] ) ) { return
+        1; }
+      style: secondary
+      start: 23
+      end: 106
+  "function f( $c, $x ) { if ( isset( $c['post_status'] ) || $x ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 70
+      end: 100
+    - source: if ( 'publish' == $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 65
+      end: 116
+  "function f( $c, $x ) { if ( isset( $c['post_status'] ) || 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 58
+      end: 88
+    - source: >-
+        if ( isset( $c['post_status'] ) || 'publish' == $c['post_status'] ) { return 1;
+        }
+      style: secondary
+      start: 23
+      end: 104
+  "function f( $c, $y ) { if ( ! empty( $c['post_status'] ) xor $y ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 73
+      end: 103
+    - source: if ( 'publish' == $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 68
+      end: 119
+  "function f( $c, $y ) { if ( ( ! ( ! empty( $c['post_status'] ) ) || $y ) && 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 76
+      end: 106
+    - source: >-
+        if ( ( ! ( ! empty( $c['post_status'] ) ) || $y ) && 'publish' ==
+        $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 23
+      end: 122
+  "function f( $c, $y ) { if ( ( ! isset( $c['post_status'] ) && $y ) || 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 70
+      end: 100
+    - source: >-
+        if ( ( ! isset( $c['post_status'] ) && $y ) || 'publish' == $c['post_status'] )
+        { return 1; }
+      style: secondary
+      start: 23
+      end: 116
+  "function f( $c, $y ) { if ( ( $y ? ! empty( $c['post_status'] ) : true ) && 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 76
+      end: 106
+    - source: "if ( ( $y ? ! empty( $c['post_status'] ) : true ) && 'publish' == $c['post_status'] ) { return 1; }"
+      style: secondary
+      start: 23
+      end: 122
