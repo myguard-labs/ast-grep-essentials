@@ -3,5 +3,11 @@ valid:
 - while (!inf.finished()) { int n = inf.inflate(buf); if (out.size() > max) throw new IOException(); out.write(buf, 0, n); }
 - // while (!inf.finished()) { int n = inf.inflate(buf); out.write(buf, 0, n); }
 - class AstgrepFixture { String value = "while (!inf.finished()) { int n = inf.inflate(buf); out.write(buf, 0, n); }"; }
+- while (!inf.finished() && out.size() < MAX) { int n = inf.inflate(buf); out.write(buf, 0, n); }
+- while (!inf.finished() && remaining > 0) { int n = inf.inflate(buf, 0, (int) Math.min(buf.length, remaining)); out.write(buf, 0, n); remaining -= n; }
+- while (!inf.finished()) { int n = inf.inflate(buf); total += n; if (total > MAX) throw new IOException(); out.write(buf, 0, n); }
 invalid:
 - while (!inf.finished()) { int n = inf.inflate(buf); out.write(buf, 0, n); }
+- while (!inf.finished()) { int len = inf.inflate(chunk); out.write(chunk, 0, len); }
+- class D { byte[] f() throws Exception { while (!inf.finished()) { int count = inf.inflate(buffer); out.write(buffer, 0, count); } return out.toByteArray(); } }
+- void f() { try { while (!inf.finished()) { int n = inf.inflate(buf); out.write(buf, 0, n); } } catch (DataFormatException e) { throw new IOException(e); } }

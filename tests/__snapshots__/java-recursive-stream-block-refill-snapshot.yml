@@ -1,6 +1,30 @@
 id: java-recursive-stream-block-refill
 snapshots:
-  void refill() throws IOException { if (readBlock() == 0) { refill(); } }:
+  "int next() throws IOException { if (readBlock(buf) < 0) return next(); return 1; }":
+    labels:
+    - source: >-
+        int next() throws IOException { if (readBlock(buf) < 0) return next(); return
+        1; }
+      style: primary
+      start: 0
+      end: 82
+    - source: next
+      style: secondary
+      start: 4
+      end: 8
+    - source: readBlock(buf)
+      style: secondary
+      start: 36
+      end: 50
+    - source: next()
+      style: secondary
+      start: 63
+      end: 69
+    - source: if (readBlock(buf) < 0) return next();
+      style: secondary
+      start: 32
+      end: 70
+  "void refill() throws IOException { if (readBlock() == 0) { refill(); } }":
     labels:
     - source: void refill() throws IOException { if (readBlock() == 0) { refill(); } }
       style: primary
@@ -22,3 +46,47 @@ snapshots:
       style: secondary
       start: 35
       end: 70
+  "void refill() { if (!(readBlock() > 0)) { log(); refill(); } }":
+    labels:
+    - source: void refill() { if (!(readBlock() > 0)) { log(); refill(); } }
+      style: primary
+      start: 0
+      end: 62
+    - source: refill
+      style: secondary
+      start: 5
+      end: 11
+    - source: readBlock()
+      style: secondary
+      start: 22
+      end: 33
+    - source: refill()
+      style: secondary
+      start: 49
+      end: 57
+    - source: if (!(readBlock() > 0)) { log(); refill(); }
+      style: secondary
+      start: 16
+      end: 60
+  "void skip() { if (readBlock() == 0) { skip(); } }":
+    labels:
+    - source: void skip() { if (readBlock() == 0) { skip(); } }
+      style: primary
+      start: 0
+      end: 49
+    - source: skip
+      style: secondary
+      start: 5
+      end: 9
+    - source: readBlock()
+      style: secondary
+      start: 18
+      end: 29
+    - source: skip()
+      style: secondary
+      start: 38
+      end: 44
+    - source: if (readBlock() == 0) { skip(); }
+      style: secondary
+      start: 14
+      end: 47

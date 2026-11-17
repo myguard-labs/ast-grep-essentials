@@ -3,5 +3,10 @@ valid:
 - void refill() throws IOException { if (readBlock() == 0) { refillNext(); } }
 - // void refill() throws IOException { if (readBlock() == 0) { refill(); } }
 - class AstgrepFixture { String value = "void refill() throws IOException { if (readBlock() == 0) { refill(); } }"; }
+- void refill() throws IOException { while (readBlock() == 0) { } }
+- void refill() throws IOException { int n; do { n = readBlock(); } while (n == 0); }
 invalid:
 - void refill() throws IOException { if (readBlock() == 0) { refill(); } }
+- void skip() { if (readBlock() == 0) { skip(); } }
+- int next() throws IOException { if (readBlock(buf) < 0) return next(); return 1; }
+- void refill() { if (!(readBlock() > 0)) { log(); refill(); } }

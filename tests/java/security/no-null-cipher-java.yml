@@ -4,7 +4,17 @@ valid:
     class CodeRabbitControl { String text = "CodeRabbit"; }
   - |
     Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+  - |
+    Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+  - |
+    Object o = new NullCipherFactory();
 invalid:
   - |
     Cipher doNothingCihper = new NullCipher();
     new javax.crypto.NullCipher();
+  - |
+    class K { private Cipher c = new NullCipher(); }
+  - |
+    Cipher c = new javax.crypto.NullCipher();
+  - |
+    cipher = new NullCipher();

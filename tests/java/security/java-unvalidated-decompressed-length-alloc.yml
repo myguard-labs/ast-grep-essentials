@@ -3,5 +3,11 @@ valid:
 - class T { byte[] f(byte[] src) { int n = LZ4DecompressorWithLength.getDecompressedLength(src); return new byte[n]; } }
 - // class T { byte[] f(byte[] src) { return new byte[LZ4DecompressorWithLength.getDecompressedLength(src)]; } }
 - class AstgrepFixture { String value = "class T { byte[] f(byte[] src) { return new byte[LZ4DecompressorWithLength.getDecompressedLength(src)]; } }"; }
+- class T { void f(byte[] src) { byte[] dst = new byte[Math.min(Lz4.getDecompressedLength(src), MAX)]; } }
+- class T { void f(byte[] src) { byte[] dst = new byte[MAX_OUTPUT]; } }
+- class T { void f(byte[] src) { int n = Lz4.getDecompressedLength(src); if (n < 0 || n > MAX) throw new IOException(); byte[] dst = new byte[n]; } }
 invalid:
 - class T { byte[] f(byte[] src) { return new byte[LZ4DecompressorWithLength.getDecompressedLength(src)]; } }
+- class T { byte[] f(byte[] src) { return new byte[Lz4.getDecompressedLength(src, 0)]; } }
+- class T { int[] f(byte[] src) { return new int[codec.getDecompressedLength(src)]; } }
+- class T { void f(byte[] src) { byte[] dst = new byte[this.decoder.getDecompressedLength(src)]; } }
