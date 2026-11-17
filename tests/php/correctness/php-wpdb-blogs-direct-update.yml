@@ -3,7 +3,7 @@ valid:
   - |-
     <?php
     $wpdb->update( $wpdb->posts, array( 'post_title' => $t ), array( 'ID' => $id ) );
-  - '<?php $wpdb->update( $wpdb->blogmeta, array( ''meta_value'' => $v ), array( ''blog_id'' => $id ) );'
+  - '<?php $p = $wpdb->get_var( $wpdb->prepare( "SELECT public FROM {$wpdb->blogs} WHERE blog_id = %d", $id ) );'
   - '<?php update_blog_details( $id, array( ''public'' => 1 ) );'
   - '<?php $rows = $wpdb->get_results( "SELECT * FROM $wpdb->blogs" );'
 invalid:
