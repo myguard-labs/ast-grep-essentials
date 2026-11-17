@@ -8,12 +8,15 @@ message: >-
   may not match the scheduled event.
 note: >-
   Syntactic check only. Flags any second argument that is not written as an
-  array( ) literal, so a variable that already holds an array will also be
+  array( ) or [ ] literal, so a variable that already holds an array will also be
   flagged. Does not resolve types or values.
 rule:
   pattern: 'wp_clear_scheduled_hook($HOOK, $ARG)'
-  not:
-    pattern: 'wp_clear_scheduled_hook($HOOK, array($$$ITEMS))'
+constraints:
+  ARG:
+    not:
+      has:
+        kind: array_creation_expression
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -23,5 +26,5 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'short array literal [ $a ] and [] as second argument are flagged although they are array literals'
     - 'scalar $post_id as second argument with a third argument wp_clear_scheduled_hook(''h'', $post_id, true) is not matched'
+    - 'a parenthesised array literal ([ $a ]) or a ternary between array literals as second argument is still flagged'
