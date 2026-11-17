@@ -5,9 +5,13 @@ valid:
   - "<?php if ( isset( $this->args[0] ) && is_array( $this->args[0] ) ) { $x = 1; }"
   - "<?php return isset( $args[0] ) && is_array( $args[0] ) && count( $args[0] ) > 1;"
   - "<?php $r = isset( $args[0] ) && is_array( $args[0] ) ? $args[0] : array();"
+  - "<?php if ( ! isset( $args[0] ) || ! is_array( $args[0] ) ) { return; }"
+  - "<?php if ( !isset($args[0]) || !is_array($args[0]) ) { return; }"
+  - "<?php if ( ( ! isset( $args[0] ) ) || ( ! is_array( $args[0] ) ) ) { return; }"
 invalid:
   - "<?php\nif ( is_array($args[0]) ) {\n\t$args = $args[0];\n}\n"
   - "<?php $r = is_array( $args[0] ) ? $args[0] : array();"
   - "<?php if ( ! is_array( $args[0] ) ) { return; }"
   - "<?php if ( isset( $other[0] ) && is_array( $args[0] ) ) { $x = 1; }"
   - "<?php function f( $o ) { return is_array( $o->items[0] ); }"
+  - "<?php if ( ! isset( $other[0] ) || ! is_array( $args[0] ) ) { return; }"
