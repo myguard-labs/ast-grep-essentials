@@ -3,7 +3,58 @@ valid:
   - >-
     PHP_MINIT_FUNCTION(fdf) { err = FDFInitialize(); #ifdef WIN32 return
     SUCCESS; #endif if (err == FDFErcOK) return SUCCESS; return FAILURE; }
+  - |-
+    PHP_MINIT_FUNCTION(fdf)
+    {
+    #ifdef WIN32
+        win_prepare();
+    #endif
+        err = FDFInitialize();
+        return SUCCESS;
+    }
+  - |-
+    PHP_MINIT_FUNCTION(fdf)
+    {
+        err = FDFInitialize();
+        if (err != FDFErcOK) {
+            return FAILURE;
+        }
+    #ifdef WIN32
+        win_register();
+    #endif
+        return SUCCESS;
+    }
 invalid:
   - >-
     PHP_MINIT_FUNCTION(fdf) { #ifdef WIN32 return SUCCESS; #endif err =
     FDFInitialize(); if (err == FDFErcOK) return SUCCESS; return FAILURE; }
+  - |-
+    PHP_MINIT_FUNCTION(fdf)
+    {
+    #ifndef HAVE_FDF
+        return SUCCESS;
+    #endif
+        err = FDFInitialize();
+        return SUCCESS;
+    }
+  - |-
+    PHP_MINIT_FUNCTION(fdf)
+    {
+    #ifdef WIN32
+        prepare();
+        return SUCCESS;
+    #endif
+        err = FDFInitialize();
+        return SUCCESS;
+    }
+  - |-
+    PHP_MINIT_FUNCTION(fdf)
+    {
+    #ifdef WIN32
+        return SUCCESS;
+    #else
+        prepare();
+    #endif
+        REGISTER_INI_ENTRIES();
+        return SUCCESS;
+    }

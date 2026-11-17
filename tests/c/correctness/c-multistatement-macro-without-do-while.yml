@@ -1,5 +1,24 @@
 id: c-multistatement-macro-without-do-while
 valid:
   - '#define ADD_PTR(p) do { p->next = head; head = p; } while (0)'
+  - |-
+    #define CLEAR(p) memset((p), 0, sizeof(*(p)))
+  - |-
+    #define RESET(p) do { (p)->a = 0; \
+        (p)->b = 0; (p)->c = 0; } while (0)
+  - |-
+    #define SWAP(a, b) ((a) ^= (b), (b) ^= (a), (a) ^= (b))
+  - |-
+    #define NOP(p) do { } while (0)
 invalid:
   - '#define ADD_PTR(p) p->next = head; head = p;'
+  - |-
+    #define A(p) a(p); b(p); c(p)
+  - |-
+    #define A(p) { a(p); b(p); }
+  - |-
+    #define F(p) done(p); step(p); end(p)
+  - |-
+    #define RESET(p) (p)->a = 0; \
+        (p)->b = 0; \
+        (p)->c = 0

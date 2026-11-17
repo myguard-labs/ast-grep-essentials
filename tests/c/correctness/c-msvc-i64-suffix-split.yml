@@ -1,5 +1,23 @@
 id: c-msvc-i64-suffix-split
 valid:
   - 'void f(void) { unsigned long long t = 116444736000000000UI64; }'
+  - |-
+    void f(void) { unsigned long long t = 0x10ULL; long long u = 5i64; }
+  - |-
+    void f(void) { int i64 = 3; int y = 1 + i64; }
+  - |-
+    void f(void) {
+        unsigned __int64 t = 255UI64;
+        __int64 s = -1I64;
+    }
 invalid:
   - 'void f(void) { unsigned long long t = 116444736000000000U I64; }'
+  - |-
+    void f(void) { __int64 t = 5 i64; }
+  - |-
+    void f(void) { unsigned __int64 t = 0x10UL I64; }
+  - |-
+    void f(void) {
+        unsigned __int64 t = 255U
+            I64;
+    }

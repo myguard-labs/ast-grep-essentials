@@ -1,5 +1,36 @@
 id: c-nested-block-comment-opener
 valid:
   - 'int a; /* outer inner */'
+  - |-
+    /** doc comment */
+    int x;
+  - |-
+    /*
+     * line one
+     * line two
+     */
+    int x;
+  - |-
+    int x; /* a */ /* b */
+    // line /* not a block comment
 invalid:
   - 'int a; /* outer /* inner */'
+  - |-
+    void f(void) {
+        int x; /* outer /* inner */
+    }
+  - |-
+    /** doc /* inner */
+    int x;
+  - |-
+    /* start /* middle /* end */
+    int x;
+  - |-
+    /*/* x */
+    int x;
+  - |-
+    /*
+     * line one
+     * line two /* inner
+     */
+    int x;
