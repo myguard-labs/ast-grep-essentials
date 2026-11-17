@@ -32,10 +32,19 @@ rule:
               - pattern: '$V == NULL || $X'
     - not:
         follows:
-          stopBy:
-            pattern: '$V = $B;'
+          stopBy: end
           kind: if_statement
           all:
+            - not:
+                precedes:
+                  pattern: '$V = $B;'
+                  stopBy:
+                    kind: if_statement
+                    has:
+                      field: condition
+                      has:
+                        stopBy: end
+                        pattern: '$V->$F'
             - has:
                 field: condition
                 has:
