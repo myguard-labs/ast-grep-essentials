@@ -4,11 +4,13 @@ id: c-null-branch-deref-member-write
 language: c
 severity: warning
 message: >-
-  Member assignment through a pointer inside an if (!p) branch dereferences a
-  pointer that was just shown to be NULL.
+  Member assignment through a pointer inside the branch of an if (!p), if (p
+  == NULL) or if (NULL == p) test dereferences a pointer that was just shown to
+  be NULL.
 note: >-
-  Single-file syntactic match on a literal `if (!p)` test with a `p->field =
-  ...` assignment somewhere in its body. It does not resolve types, aliasing,
+  Single-file syntactic match on a literal `if (!p)`, `if (p == NULL)` or
+  `if (NULL == p)` test with a `p->field = ...` assignment somewhere in its
+  NULL branch (the else branch is not searched). It does not resolve types, aliasing,
   reassignment before the write, or reachability, so it may report paths where
   the pointer is not actually NULL.
 rule:
@@ -24,8 +26,9 @@ rule:
               - pattern: '($P == NULL)'
               - pattern: '(NULL == $P)'
     - has:
-        pattern: '$P->$F = $V'
+        field: consequence
         stopBy: end
+        pattern: '$P->$F = $V'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0

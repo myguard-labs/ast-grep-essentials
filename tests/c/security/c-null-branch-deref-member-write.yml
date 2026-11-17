@@ -11,6 +11,8 @@ valid:
     void f(struct s *p) { struct s local; if (!p) { local.key = 0; } }
   - |-
     void f(struct s *p) { if (p == NULL) { return; } p->key = 0; }
+  - |-
+    void f(struct s *p) { if (p == NULL) { g(); } else { p->key = 0; } }
 
 invalid:
   - 'void f(struct s *p) { if (!p) { p->key = 0; } }'
