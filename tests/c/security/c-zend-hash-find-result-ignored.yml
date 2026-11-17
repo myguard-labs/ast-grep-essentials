@@ -3,5 +3,10 @@ valid:
   - >-
     if (zend_hash_index_find(ht, idx, (void **) &brake) == SUCCESS) { new_break
     = *brake; }
+  - 'void f(void) { if (zend_hash_index_find(ht, idx, (void **) &brake) != SUCCESS) { return; } new_break = *brake; }'
+  - 'void f(void) { int rc = zend_hash_index_find(ht, idx, (void **) &brake); if (rc == SUCCESS) { new_break = *brake; } }'
 invalid:
   - 'zend_hash_index_find(ht, idx, (void **) &brake); new_break = *brake;'
+  - 'void f(void) { zend_hash_index_find(ht, idx, (void **) &brake); log_it(); new_break = *brake; }'
+  - 'void f(void) { if (ht) { zend_hash_index_find(ht, 0, (void **) &p); v = *p; } }'
+  - 'void f(void) { zend_hash_index_find(ht, idx, (void **) &brake); other = 1; new_break = *brake; }'

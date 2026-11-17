@@ -1,5 +1,10 @@
 id: c-zero-length-local-array
 valid:
   - 'static void g(void) { zval **args[1]; (void)args; }'
+  - 'void g(void) { char buf[1]; (void)buf; }'
+  - 'void g(void) { char buf[10]; buf[0] = 1; (void)buf; }'
 invalid:
   - 'static void g(void) { zval **args[0]; (void)args; }'
+  - 'void g(void) { char buf[0]; (void)buf; }'
+  - 'void g(void) { int m[2][0]; (void)m; }'
+  - 'void g(void) { static int tbl[0]; (void)tbl; }'

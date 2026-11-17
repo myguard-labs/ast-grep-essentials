@@ -3,7 +3,13 @@ valid:
   - >-
     if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { warn_bad_args();
     return; } use(r, s);
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) return; use(r, s);'
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) != FAILURE) { use(r, s); }'
+  - 'int f(int argc) { if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { return FAILURE; } use(r, s); return 0; }'
 invalid:
   - >-
     if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { warn_bad_args();
     } use(r, s);
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { } use(r, s);'
+  - 'if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { log_err(); r = NULL; } use(r, s);'
+  - 'if (zend_parse_parameters(argc TSRMLS_CC, "rs", &r, &s) == FAILURE) { warn(); } use(r, s);'
