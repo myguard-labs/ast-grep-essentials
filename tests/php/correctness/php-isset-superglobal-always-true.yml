@@ -1,5 +1,13 @@
 id: php-isset-superglobal-always-true
 valid:
   - "<?php\nif (isset($_POST['submit'])) {\n\t$x = 1;\n}"
+  - "<?php if ( isset( $_POST['a'], $_POST['b'] ) ) { $x = 1; }"
+  - "<?php if ( isset( $_REQUEST['a']['b'] ) ) { $x = 1; }"
+  - "<?php if ( ! empty( $_POST ) ) { $x = 1; }"
+  - "<?php if ( isset( $post ) ) { $x = 1; }"
 invalid:
   - "<?php\nif (isset($_POST)) {\n\t$x = 1;\n}"
+  - "<?php if ( isset( $_GET ) ) { $x = 1; }"
+  - "<?php if ( ! isset( $_REQUEST ) ) { return; }"
+  - "<?php $ok = isset( $_POST ) && $flag;"
+  - "<?php if ( isset ( $_POST ) ) { $x = 1; }"

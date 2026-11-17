@@ -3,5 +3,13 @@ valid:
   - >-
     <?php if ( isset( $_POST['blog'] ) && is_array( $_POST['blog'] ) ) { $n = 1;
     }
+  - "<?php if ( ! empty( $_POST['a'] ) && is_array( $_POST['a'] ) ) { $n = 1; }"
+  - "<?php if ( isset( $_GET['a'] ) && is_array( $_GET['a'] ) ) { $n = 1; }"
+  - "<?php if ( is_array( $_POST ) ) { $n = 1; }"
+  - "<?php if ( ! isset( $_POST['a'] ) || ! is_array( $_POST['a'] ) ) { return; }"
 invalid:
   - '<?php if ( is_array( $_POST[''blog''] ) ) { $n = 1; }'
+  - "<?php if ( is_array( $_GET['a'] ) ) { $n = 1; }"
+  - "<?php if ( is_array( $_POST[\"a\"] ) ) { $n = 1; }"
+  - "<?php if ( ! is_array( $_POST['a'] ) ) { return; }"
+  - "<?php $n = is_array( $_POST['a']['b'] ) ? 1 : 0;"

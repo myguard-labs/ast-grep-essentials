@@ -3,7 +3,15 @@ valid:
   - >-
     class Roles { function is_role($role) { return
     isset($this->role_names[$role]); } }
+  - "<?php class R { function is_role( $r ) { return ! empty( $this->names[ $r ] ); } }"
+  - "<?php class R { function has_role( $r ) { return empty( $this->names[ $r ] ); } }"
+  - "<?php class R { function is_role( $r ) { return array_key_exists( $r, $this->names ); } }"
+  - "<?php class R { function get_role( $r ) { return empty( $this->names['x'] ); } }"
 invalid:
   - >-
     class Roles { function is_role($role) { return
     empty($this->role_names[$role]); } }
+  - "<?php class R { public static function is_role( $r ) { return empty( $r['x'] ); } }"
+  - "<?php class R { protected function is_role( $r ) { $n = 1; return empty( $this->names[ $r ][0] ); } }"
+  - "<?php class R { function is_role( $r ) { if ( $r ) { return empty( $this->names[ $r ] ); } return false; } }"
+  - "<?php class R { private function is_role( $r ) { return empty( $this->names[ $r ] ); } }"

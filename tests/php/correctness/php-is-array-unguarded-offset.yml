@@ -3,7 +3,16 @@ valid:
   - >-
     function walk( $args ) { if ( isset( $args[0] ) && is_array( $args[0] ) ) {
     return true; } return false; }
+  - "<?php if ( is_array( $data ) ) { $x = 1; }"
+  - "<?php if ( isset( $this->cfg['k'] ) && is_array( $this->cfg['k'] ) ) { $x = 1; }"
+  - "<?php return isset( $data[ $i ] ) && is_array( $data[ $i ] ) && count( $data[ $i ] ) > 1;"
+  - "<?php $r = isset( $data['a']['b'] ) && is_array( $data['a']['b'] ) ? 1 : 0;"
 invalid:
   - >-
     function walk( $args ) { if ( is_array( $args[0] ) ) { return true; } return
     false; }
+  - "<?php if ( is_array( $data['k'] ) ) { $x = 1; }"
+  - "<?php if ( is_array( $data[ $i ] ) ) { $x = 1; }"
+  - "<?php if ( isset( $data['a'] ) && is_array( $data['b'] ) ) { $x = 1; }"
+  - "<?php $r = ! is_array( $data[3] ) ? 0 : 1;"
+  - "<?php if ( is_array( $this->cfg['k'] ) ) { $x = 1; }"

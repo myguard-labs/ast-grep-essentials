@@ -1,8 +1,32 @@
 id: php-is-array-unguarded-index
 snapshots:
-  ? "<?php\nif ( is_array($args[0]) ) {\n\t$args = $args[0];\n}\n"
-  : labels:
+  "<?php\nif ( is_array($args[0]) ) {\n\t$args = $args[0];\n}\n":
+    labels:
     - source: is_array($args[0])
       style: primary
       start: 11
       end: 29
+  "<?php $r = is_array( $args[0] ) ? $args[0] : array();":
+    labels:
+    - source: is_array( $args[0] )
+      style: primary
+      start: 11
+      end: 31
+  "<?php function f( $o ) { return is_array( $o->items[0] ); }":
+    labels:
+    - source: is_array( $o->items[0] )
+      style: primary
+      start: 32
+      end: 56
+  "<?php if ( ! is_array( $args[0] ) ) { return; }":
+    labels:
+    - source: is_array( $args[0] )
+      style: primary
+      start: 13
+      end: 33
+  "<?php if ( isset( $other[0] ) && is_array( $args[0] ) ) { $x = 1; }":
+    labels:
+    - source: is_array( $args[0] )
+      style: primary
+      start: 33
+      end: 53
