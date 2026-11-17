@@ -3,5 +3,11 @@ valid:
   - >-
     if (zend_unmangle_property_name(k, &c, &p) == SUCCESS) { xmlNodeSetName(n,
     p); }
+  - "void f(void) { int rc = zend_unmangle_property_name(k, &c, &p); use(rc); }"
+  - "int f(void) { return zend_unmangle_property_name(k, &c, &p); }"
+  - "void f(void) { if (zend_unmangle_property_name(k, &c, &p) != SUCCESS) { return; } use(p); }"
 invalid:
   - 'zend_unmangle_property_name(k, &c, &p); xmlNodeSetName(n, p);'
+  - "void f(void) { zend_unmangle_property_name(k, NULL, &p); use(p); }"
+  - "void f(void) { if (n) { zend_unmangle_property_name(k, &c, &p); } use(p); }"
+  - "void f(void) { for (;;) { zend_unmangle_property_name(ZSTR_VAL(k), &c, &p); break; } }"

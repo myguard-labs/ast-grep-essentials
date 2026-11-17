@@ -1,5 +1,11 @@
 id: c-zend-eval-string-result-ignored
 valid:
   - 'if (zend_eval_string(code, &v, desc TSRMLS_CC) == FAILURE) { return; }'
+  - "void f(void) { int rc = zend_eval_string(code, &v, desc); use(rc); }"
+  - "int f(void) { return zend_eval_string(code, &v, desc); }"
+  - "void f(void) { if (zend_eval_string(code, &v, desc) != SUCCESS) { return; } }"
 invalid:
   - 'zend_eval_string(code, &v, desc TSRMLS_CC);'
+  - "void f(void) { zend_eval_string(code, NULL, \"x\"); }"
+  - "void f(void) { if (n) { zend_eval_string(buf, &retval, \"eval\"); } }"
+  - "void f(void) { for (;;) { zend_eval_string(code, &v, desc); } }"

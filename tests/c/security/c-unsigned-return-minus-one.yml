@@ -1,5 +1,11 @@
 id: c-unsigned-return-minus-one
 valid:
   - "static ssize_t f(void)\n{\n\treturn -1;\n}"
+  - "static int f(void)\n{\n\treturn -1;\n}"
+  - "static size_t f(void)\n{\n\treturn (size_t)-1;\n}"
+  - "static size_t f(void)\n{\n\treturn 0;\n}"
 invalid:
   - "static size_t f(void)\n{\n\treturn -1;\n}"
+  - "size_t find(const char *s, int c)\n{\n\tif (!s) {\n\t\treturn -1;\n\t}\n\treturn 0;\n}"
+  - "static inline size_t g(void)\n{\n\treturn -1;\n}"
+  - "size_t scan(const char *s)\n{\n\tsize_t i;\n\tfor (i = 0; s[i]; i++) {\n\t\tif (s[i] == 'x') return i;\n\t}\n\treturn -1;\n}"

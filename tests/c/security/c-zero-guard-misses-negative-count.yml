@@ -1,5 +1,11 @@
 id: c-zero-guard-misses-negative-count
 valid:
   - 'size_t s = (n <= 0 ? 0 : n - 1) * sizeof(x);'
+  - "size_t f(int n) { return (n < 1 ? 0 : n - 1); }"
+  - "size_t f(int n) { return (n > 0 ? n - 1 : 0); }"
+  - "size_t f(int n) { return (n >= 1 ? n - 1 : 0); }"
 invalid:
   - 'size_t s = (n == 0 ? 0 : n - 1) * sizeof(x);'
+  - "size_t f(int cnt) { return (cnt == 0 ? 0 : cnt - 1); }"
+  - "size_t f(struct s *s) { return (s->n == 0 ? 1 : s->n - 1); }"
+  - "void *f(int n) { return malloc((n == 0 ? 0 : n - 1) * sizeof(int)); }"

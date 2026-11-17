@@ -1,6 +1,48 @@
 id: c-write-through-pointer-to-const
 snapshots:
-  void f(void) { const char *p = "abc"; p[0] = 'x'; }:
+  "void f(const char *s) { const char *p = s; p[1] = 'y'; }":
+    labels:
+    - source: const char *p = s;
+      style: primary
+      start: 24
+      end: 42
+    - source: p[1] = 'y'
+      style: secondary
+      start: 43
+      end: 53
+    - source: "{ const char *p = s; p[1] = 'y'; }"
+      style: secondary
+      start: 22
+      end: 56
+  "void f(const char *s, int i, char c) { const char *p = s; p[i] = c; }":
+    labels:
+    - source: const char *p = s;
+      style: primary
+      start: 39
+      end: 57
+    - source: p[i] = c
+      style: secondary
+      start: 58
+      end: 66
+    - source: "{ const char *p = s; p[i] = c; }"
+      style: secondary
+      start: 37
+      end: 69
+  "void f(const char *s, int n) { const char *p = s; for (int i = 0; i < n; i++) { p[i] = 0; } }":
+    labels:
+    - source: const char *p = s;
+      style: primary
+      start: 31
+      end: 49
+    - source: p[i] = 0
+      style: secondary
+      start: 80
+      end: 88
+    - source: "{ const char *p = s; for (int i = 0; i < n; i++) { p[i] = 0; } }"
+      style: secondary
+      start: 29
+      end: 93
+  "void f(void) { const char *p = \"abc\"; p[0] = 'x'; }":
     labels:
     - source: const char *p = "abc";
       style: primary
@@ -10,7 +52,7 @@ snapshots:
       style: secondary
       start: 38
       end: 48
-    - source: '{ const char *p = "abc"; p[0] = ''x''; }'
+    - source: "{ const char *p = \"abc\"; p[0] = 'x'; }"
       style: secondary
       start: 13
       end: 51

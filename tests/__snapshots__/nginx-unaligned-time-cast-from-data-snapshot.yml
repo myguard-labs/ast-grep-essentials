@@ -1,8 +1,26 @@
 id: nginx-unaligned-time-cast-from-data
 snapshots:
-  ? typedef struct { unsigned short key_len; unsigned char data[1]; } node_t; static time_t *ev(node_t *n) { return (time_t *) (n->data + n->key_len); }
-  : labels:
+  "time_t *f(node_t *node, int len) { return (time_t *)(node->data + len); }":
+    labels:
+    - source: (time_t *)(node->data + len)
+      style: primary
+      start: 42
+      end: 70
+  "typedef struct { unsigned short key_len; unsigned char data[1]; } node_t; static time_t *ev(node_t *n) { return (time_t *) (n->data + n->key_len); }":
+    labels:
     - source: (time_t *) (n->data + n->key_len)
       style: primary
       start: 112
       end: 145
+  "void f(node_t *e, int off) { time_t *t; t = (time_t *)(e->data + off); }":
+    labels:
+    - source: (time_t *)(e->data + off)
+      style: primary
+      start: 44
+      end: 69
+  "void f(node_t *n) { time_t *t = (time_t *)(n->data + n->key_len); use(t); }":
+    labels:
+    - source: (time_t *)(n->data + n->key_len)
+      style: primary
+      start: 32
+      end: 64

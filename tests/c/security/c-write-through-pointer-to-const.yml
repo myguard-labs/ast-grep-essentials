@@ -1,5 +1,11 @@
 id: c-write-through-pointer-to-const
 valid:
   - 'void f(void) { char *p = "abc"; p[0] = ''x''; }'
+  - "void f(const char *s) { const char *p = s; char c = p[0]; use(c); }"
+  - "void f(const char *s, char *q) { const char *p = s; q[0] = 'x'; use(p); }"
+  - "void f(const char *s) { const char *p = s; char buf[4]; buf[0] = p[0]; use(buf); }"
 invalid:
   - 'void f(void) { const char *p = "abc"; p[0] = ''x''; }'
+  - "void f(const char *s) { const char *p = s; p[1] = 'y'; }"
+  - "void f(const char *s, int i, char c) { const char *p = s; p[i] = c; }"
+  - "void f(const char *s, int n) { const char *p = s; for (int i = 0; i < n; i++) { p[i] = 0; } }"
