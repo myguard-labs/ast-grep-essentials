@@ -1,6 +1,26 @@
 id: c-tsrmls-dc-at-call-site
 snapshots:
-  static void f(int a TSRMLS_DC) { g(a, TSRMLS_DC); }:
+  "#include \"php.h\"\nstatic void fail(TSRMLS_D) { zend_throw_exception(NULL, \"bad\", 0, TSRMLS_DC); }":
+    labels:
+    - source: zend_throw_exception(NULL, "bad", 0, TSRMLS_DC)
+      style: primary
+      start: 46
+      end: 93
+  "#include \"php.h\"\nstatic void reg(int module_number TSRMLS_DC) {\n  zend_register_long_constant(\"MY_CONST\", sizeof(\"MY_CONST\"), 1, CONST_CS, module_number, TSRMLS_DC);\n}":
+    labels:
+    - source: >-
+        zend_register_long_constant("MY_CONST", sizeof("MY_CONST"), 1, CONST_CS,
+        module_number, TSRMLS_DC)
+      style: primary
+      start: 66
+      end: 164
+  "#include \"php.h\"\nstatic void setn(zend_class_entry *ce, zval *obj TSRMLS_DC) {\n  zend_update_property_long(ce, obj, \"n\", 1, 5, TSRMLS_DC);\n}":
+    labels:
+    - source: zend_update_property_long(ce, obj, "n", 1, 5, TSRMLS_DC)
+      style: primary
+      start: 81
+      end: 137
+  "static void f(int a TSRMLS_DC) { g(a, TSRMLS_DC); }":
     labels:
     - source: g(a, TSRMLS_DC)
       style: primary

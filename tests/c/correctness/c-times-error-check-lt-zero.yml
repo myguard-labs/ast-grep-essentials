@@ -3,7 +3,56 @@ valid:
   - |-
     #include <sys/times.h>
     long f(struct tms *t) { long ticks; if ((ticks = times(t)) == -1) return -1; return ticks; }
+  - |-
+    #include <stdio.h>
+    #include <sys/times.h>
+    long f(void) {
+      struct tms tb;
+      clock_t start;
+      if ((start = times(&tb)) == (clock_t)-1) { perror("times"); return -1; }
+      return (long)start;
+    }
+  - |-
+    #include <sys/times.h>
+    int f(void) {
+      struct tms tb;
+      clock_t r = times(&tb);
+      if (r == (clock_t) -1) return 0;
+      return 1;
+    }
+  - |-
+    #include <sys/times.h>
+    long f(void) {
+      struct tms tb;
+      clock_t start;
+      if ((start = times(&tb)) != (clock_t)-1) return (long)start;
+      return -1;
+    }
 invalid:
   - |-
     #include <sys/times.h>
     long f(struct tms *t) { long ticks; if ((ticks = times(t)) < 0) return -1; return ticks; }
+  - |-
+    #include <stdio.h>
+    #include <sys/times.h>
+    long f(void) {
+      struct tms tb;
+      clock_t start;
+      if ((start = times(&tb)) < 0) { perror("times"); return -1; }
+      return (long)start;
+    }
+  - |-
+    #include <sys/times.h>
+    long f(void) {
+      struct tms tb;
+      clock_t t;
+      return (t = times(&tb)) < 0 ? -1 : (long)t;
+    }
+  - |-
+    #include <sys/times.h>
+    int f(void) {
+      struct tms tb;
+      unsigned long ticks;
+      while ((ticks = times(&tb)) < 0) { }
+      return (int)ticks;
+    }

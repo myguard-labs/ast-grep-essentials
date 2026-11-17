@@ -1,5 +1,31 @@
 id: c-string-literal-to-nonconst-char-ptr
 valid:
   - 'void f(void) { const char *s = "abc"; (void)s; }'
+  - |-
+    void f(void) {
+      const char *const name = "abc";
+      (void)name;
+    }
+  - |-
+    void f(void) {
+      char buf[] = "abc";
+      buf[0] = 'x';
+    }
+  - |-
+    static const char *const names[] = { "a", "b" };
+    const char *pick(int i) { return names[i & 1]; }
 invalid:
   - 'void f(void) { char *s = "abc"; (void)s; }'
+  - |-
+    char *banner = "ready";
+    const char *get(void) { return banner; }
+  - |-
+    const char *f(void) {
+      char *tag = "abc";
+      return tag;
+    }
+  - |-
+    void f(void) {
+      char *msg = "hello";
+      msg[0] = 'H';
+    }

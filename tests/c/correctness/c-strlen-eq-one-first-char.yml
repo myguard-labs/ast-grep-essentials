@@ -3,7 +3,54 @@ valid:
   - >-
     char *s; size_t n; char sep; void g(void) { if (n >= 1) { sep = s[0]; } else
     if (n == 0) { sep = 0; } }
+  - |-
+    #include <stddef.h>
+    char pick(const char *s, size_t n) {
+      char sep = 0;
+      if (n == 0) { sep = 0; } else if (n >= 1) { sep = s[0]; }
+      return sep;
+    }
+  - |-
+    #include <stddef.h>
+    char pick(const char *s, size_t n) {
+      char sep = 0;
+      if (n > 0) { sep = s[0]; } else if (n == 0) { sep = 0; }
+      return sep;
+    }
+  - |-
+    #include <stddef.h>
+    char pick(const char *s, size_t n) {
+      char sep;
+      if (n == 1) { sep = s[0]; } else if (n > 1) { sep = s[n - 1]; } else { sep = 0; }
+      return sep;
+    }
 invalid:
   - >-
     char *s; size_t n; char sep; void g(void) { if (n == 1) { sep = s[0]; } else
     if (n == 0) { sep = 0; } }
+  - |-
+    #include <stddef.h>
+    int pick(const int *v, size_t len) {
+      int first;
+      if (len == 1) { first = v[0]; } else if (len == 0) { first = -1; }
+      return first;
+    }
+  - |-
+    #include <stddef.h>
+    struct out { unsigned char c; unsigned char seen; };
+    void pick(struct out *o, const unsigned char *in, size_t n) {
+      if (n == 1) { o->c = in[0]; } else if (n == 0) { o->c = 0; o->seen = 0; }
+    }
+  - |-
+    #include <stddef.h>
+    struct pkt { char buf[8]; char first; };
+    void pick(struct pkt *p, size_t n) {
+      if (n == 1)
+      {
+        p->first = p->buf[0];
+      }
+      else if (n == 0)
+      {
+        p->first = 0;
+      }
+    }

@@ -1,9 +1,25 @@
 id: c-strncpy-manual-nul-use-strlcpy
 snapshots:
-  ? |-
-    strncpy(buf->name, src, sizeof(buf->name) - 1);
-    buf->name[sizeof(buf->name) - 1] = '\0';
-  : labels:
+  "#include <string.h>\nstruct item { char label[24]; };\nvoid fill(struct item *items, int count, const char *src) {\n  for (int i = 0; i < count; i++) {\n    strncpy(items[i].label, src, sizeof(items[i].label) - 1);\n    items[i].label[sizeof(items[i].label) - 1] = '\\0';\n  }\n}":
+    labels:
+    - source: strncpy(items[i].label, src, sizeof(items[i].label) - 1)
+      style: primary
+      start: 153
+      end: 209
+  "#include <string.h>\nstruct rec { char name[32]; };\nvoid set(const char *src) {\n  struct rec r;\n  strncpy(r.name, src, sizeof(r.name) - 1);\n  r.name[sizeof(r.name) - 1] = '\\0';\n}":
+    labels:
+    - source: strncpy(r.name, src, sizeof(r.name) - 1)
+      style: primary
+      start: 97
+      end: 137
+  "#include <string.h>\nvoid set(const char *src) {\n  char buf[16];\n  strncpy(buf, src, sizeof(buf) - 1);\n  buf[sizeof(buf) - 1] = '\\0';\n}":
+    labels:
+    - source: strncpy(buf, src, sizeof(buf) - 1)
+      style: primary
+      start: 66
+      end: 100
+  "strncpy(buf->name, src, sizeof(buf->name) - 1);\nbuf->name[sizeof(buf->name) - 1] = '\\0';":
+    labels:
     - source: strncpy(buf->name, src, sizeof(buf->name) - 1)
       style: primary
       start: 0

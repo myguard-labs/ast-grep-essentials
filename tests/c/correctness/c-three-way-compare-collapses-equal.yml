@@ -1,5 +1,32 @@
 id: c-three-way-compare-collapses-equal
 valid:
   - 'static int cmp(long x) { return x > 0 ? 1 : (x < 0 ? -1 : 0); }'
+  - |-
+    static int cmp(int a, int b) { return (a > b) - (a < b); }
+  - |-
+    static int cmp(double a, double b) {
+      if (a < b) return -1;
+      return a > b ? 1 : 0;
+    }
+  - |-
+    static int sign(long x) { return x < 0 ? -1 : (x > 0 ? 1 : 0); }
+    static int cmp_long(long a, long b) { return a < b ? -1 : (a > b); }
 invalid:
   - 'static int cmp(long x) { return x > 0 ? 1 : -1; }'
+  - |-
+    #include <string.h>
+    static int cmp(const void *a, const void *b) {
+      int d = strcmp(*(const char *const *)a, *(const char *const *)b);
+      return d > 0 ? 1 : -1;
+    }
+  - |-
+    struct ent { double w; };
+    static int cmp(const struct ent *a, const struct ent *b) {
+      double d = a->w - b->w;
+      return d > 0 ? 1 : -1;
+    }
+  - |-
+    struct ent { short len; };
+    static int cmp(const struct ent *a, const struct ent *b) {
+      return a->len - b->len > 0 ? 1 : -1;
+    }

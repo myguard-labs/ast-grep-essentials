@@ -1,6 +1,26 @@
 id: c-tsrmls-dc-in-call-args
 snapshots:
-  void f(void) { php_filter_url(value, flags, charset TSRMLS_DC); }:
+  "#include \"php.h\"\nstatic int fail(int code TSRMLS_DC) {\n  zend_throw_exception(NULL, \"bad\", code, TSRMLS_DC);\n  return 0;\n}":
+    labels:
+    - source: zend_throw_exception(NULL, "bad", code, TSRMLS_DC)
+      style: primary
+      start: 57
+      end: 107
+  "#include \"php.h\"\nstatic void note(const char *msg TSRMLS_DC) {\n  php_error_docref(NULL, E_NOTICE, \"%s\", msg, TSRMLS_DC);\n}":
+    labels:
+    - source: php_error_docref(NULL, E_NOTICE, "%s", msg, TSRMLS_DC)
+      style: primary
+      start: 65
+      end: 119
+  "#include \"php.h\"\nstatic void reg(int module_number TSRMLS_DC) {\n  if (module_number) {\n    zend_register_long_constant(\"OTHER\", sizeof(\"OTHER\"), 2, CONST_CS, module_number, TSRMLS_DC);\n  }\n}":
+    labels:
+    - source: >-
+        zend_register_long_constant("OTHER", sizeof("OTHER"), 2, CONST_CS,
+        module_number, TSRMLS_DC)
+      style: primary
+      start: 91
+      end: 183
+  "void f(void) { php_filter_url(value, flags, charset TSRMLS_DC); }":
     labels:
     - source: php_filter_url(value, flags, charset TSRMLS_DC)
       style: primary

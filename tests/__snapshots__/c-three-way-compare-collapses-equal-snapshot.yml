@@ -1,8 +1,26 @@
 id: c-three-way-compare-collapses-equal
 snapshots:
-  'static int cmp(long x) { return x > 0 ? 1 : -1; }':
+  "#include <string.h>\nstatic int cmp(const void *a, const void *b) {\n  int d = strcmp(*(const char *const *)a, *(const char *const *)b);\n  return d > 0 ? 1 : -1;\n}":
     labels:
-    - source: 'x > 0 ? 1 : -1'
+    - source: "d > 0 ? 1 : -1"
+      style: primary
+      start: 144
+      end: 158
+  "static int cmp(long x) { return x > 0 ? 1 : -1; }":
+    labels:
+    - source: "x > 0 ? 1 : -1"
       style: primary
       start: 32
       end: 46
+  "struct ent { double w; };\nstatic int cmp(const struct ent *a, const struct ent *b) {\n  double d = a->w - b->w;\n  return d > 0 ? 1 : -1;\n}":
+    labels:
+    - source: "d > 0 ? 1 : -1"
+      style: primary
+      start: 120
+      end: 134
+  "struct ent { short len; };\nstatic int cmp(const struct ent *a, const struct ent *b) {\n  return a->len - b->len > 0 ? 1 : -1;\n}":
+    labels:
+    - source: "a->len - b->len > 0 ? 1 : -1"
+      style: primary
+      start: 95
+      end: 123

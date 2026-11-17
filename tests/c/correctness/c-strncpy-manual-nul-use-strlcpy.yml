@@ -3,7 +3,53 @@ valid:
   - |-
     strncpy(buf->name, src, sizeof(buf->name));
     buf->name[sizeof(buf->name) - 1] = '\0';
+  - |-
+    #include <stdio.h>
+    struct rec { char name[16]; };
+    void set(struct rec *r, const char *src) {
+      snprintf(r->name, sizeof(r->name), "%s", src);
+    }
+  - |-
+    #include <string.h>
+    void set(const char *src) {
+      char buf[16];
+      strncpy(buf, src, sizeof(buf));
+      buf[sizeof(buf) - 1] = '\0';
+    }
+  - |-
+    #include <string.h>
+    void set(const char *src) {
+      char buf[16];
+      size_t n = strlen(src);
+      if (n >= sizeof(buf)) n = sizeof(buf) - 1;
+      memcpy(buf, src, n);
+      buf[n] = '\0';
+    }
 invalid:
   - |-
     strncpy(buf->name, src, sizeof(buf->name) - 1);
     buf->name[sizeof(buf->name) - 1] = '\0';
+  - |-
+    #include <string.h>
+    void set(const char *src) {
+      char buf[16];
+      strncpy(buf, src, sizeof(buf) - 1);
+      buf[sizeof(buf) - 1] = '\0';
+    }
+  - |-
+    #include <string.h>
+    struct rec { char name[32]; };
+    void set(const char *src) {
+      struct rec r;
+      strncpy(r.name, src, sizeof(r.name) - 1);
+      r.name[sizeof(r.name) - 1] = '\0';
+    }
+  - |-
+    #include <string.h>
+    struct item { char label[24]; };
+    void fill(struct item *items, int count, const char *src) {
+      for (int i = 0; i < count; i++) {
+        strncpy(items[i].label, src, sizeof(items[i].label) - 1);
+        items[i].label[sizeof(items[i].label) - 1] = '\0';
+      }
+    }
