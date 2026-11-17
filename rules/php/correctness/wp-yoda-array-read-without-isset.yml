@@ -11,7 +11,7 @@ note: >-
   with a subscript read inside an if condition and cannot prove the key is
   absent or present at runtime, nor resolve aliases or types. A same-array,
   same-key isset( $C[$K] ) or ! empty( $C[$K] ) guard silences the report only
-  when it protects the read: joined with && or and before the read, or as the
+  when it protects the read: joined only through && or and before the read, or as the
   condition of an enclosing if whose body holds the read. A negated guard
   joined with || or or before the read also protects it. A guard compared
   with a literal (isset( ... ) == false) never counts.
@@ -60,7 +60,8 @@ rule:
                             kind: binary_expression
                             has:
                               field: operator
-                              regex: '^(\|\||or|==|===|!=|!==|<>)$'
+                              not:
+                                regex: '^(&&|and)$'
                   - all:
                       - inside:
                           stopBy: end
