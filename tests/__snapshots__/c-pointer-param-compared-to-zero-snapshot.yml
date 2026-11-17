@@ -1,5 +1,33 @@
 id: c-pointer-param-compared-to-zero
 snapshots:
+  "static int done(int *remaining) {\n  while (remaining == 0) {\n    poll();\n  }\n  return 1;\n}":
+    labels:
+    - source: remaining == 0
+      style: primary
+      start: 43
+      end: 57
+    - source: remaining
+      style: secondary
+      start: 21
+      end: 30
+    - source: "*remaining"
+      style: secondary
+      start: 20
+      end: 30
+    - source: int *remaining
+      style: secondary
+      start: 16
+      end: 30
+    - source: |-
+        static int done(int *remaining) {
+          while (remaining == 0) {
+            poll();
+          }
+          return 1;
+        }
+      style: secondary
+      start: 0
+      end: 90
   "static int f(int *recurrences, int end) {\n if (end == 0 && recurrences == 0) return 1;\n return 0;\n}":
     labels:
     - source: recurrences == 0
@@ -26,3 +54,29 @@ snapshots:
       style: secondary
       start: 0
       end: 99
+  "static void clamp(unsigned *count, unsigned max) {\n  if (count == 0 && max) max--;\n  *count = max;\n}":
+    labels:
+    - source: count == 0
+      style: primary
+      start: 57
+      end: 67
+    - source: count
+      style: secondary
+      start: 28
+      end: 33
+    - source: "*count"
+      style: secondary
+      start: 27
+      end: 33
+    - source: unsigned *count
+      style: secondary
+      start: 18
+      end: 33
+    - source: |-
+        static void clamp(unsigned *count, unsigned max) {
+          if (count == 0 && max) max--;
+          *count = max;
+        }
+      style: secondary
+      start: 0
+      end: 100

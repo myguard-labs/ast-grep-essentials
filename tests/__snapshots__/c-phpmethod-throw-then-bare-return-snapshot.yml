@@ -1,8 +1,48 @@
 id: c-phpmethod-throw-then-bare-return
 snapshots:
-  PHP_METHOD(ArrayObject, exchangeArray) { if (x) { zend_throw_error(NULL, "m"); return; } }:
+  "PHP_METHOD(ArrayObject, count) {\n  if (a) {\n    run();\n  } else {\n    zend_throw_error(NULL, \"m\");\n    return;\n  }\n}":
     labels:
-    - source: '{ if (x) { zend_throw_error(NULL, "m"); return; } }'
+    - source: |-
+        {
+          if (a) {
+            run();
+          } else {
+            zend_throw_error(NULL, "m");
+            return;
+          }
+        }
+      style: primary
+      start: 31
+      end: 116
+    - source: zend_throw_error(NULL, "m");
+      style: secondary
+      start: 70
+      end: 98
+    - source: return;
+      style: secondary
+      start: 103
+      end: 110
+  "PHP_METHOD(ArrayObject, count) {\n  zend_throw_error(zend_ce_type_error, \"bad %d\", n);\n  return;\n}":
+    labels:
+    - source: |-
+        {
+          zend_throw_error(zend_ce_type_error, "bad %d", n);
+          return;
+        }
+      style: primary
+      start: 31
+      end: 97
+    - source: zend_throw_error(zend_ce_type_error, "bad %d", n);
+      style: secondary
+      start: 35
+      end: 85
+    - source: return;
+      style: secondary
+      start: 88
+      end: 95
+  "PHP_METHOD(ArrayObject, exchangeArray) { if (x) { zend_throw_error(NULL, \"m\"); return; } }":
+    labels:
+    - source: "{ if (x) { zend_throw_error(NULL, \"m\"); return; } }"
       style: primary
       start: 39
       end: 90

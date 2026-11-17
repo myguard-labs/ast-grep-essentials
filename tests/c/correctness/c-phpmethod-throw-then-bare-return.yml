@@ -3,7 +3,32 @@ valid:
   - >-
     PHP_METHOD(ArrayObject, exchangeArray) { if (x) { zend_throw_error(NULL,
     "m"); RETURN_THROWS(); } }
+  - |-
+    PHP_METHOD(ArrayObject, count) {
+      if (!x) return;
+      zend_throw_error(NULL, "m");
+      RETURN_THROWS();
+    }
+  - |-
+    PHP_METHOD(ArrayObject, count) {
+      if (n < 0) return;
+      do_work();
+    }
 invalid:
   - >-
     PHP_METHOD(ArrayObject, exchangeArray) { if (x) { zend_throw_error(NULL,
     "m"); return; } }
+  - |-
+    PHP_METHOD(ArrayObject, count) {
+      zend_throw_error(zend_ce_type_error, "bad %d", n);
+      return;
+    }
+  - |-
+    PHP_METHOD(ArrayObject, count) {
+      if (a) {
+        run();
+      } else {
+        zend_throw_error(NULL, "m");
+        return;
+      }
+    }

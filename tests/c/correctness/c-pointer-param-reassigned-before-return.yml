@@ -3,7 +3,30 @@ valid:
   - >-
     static void fetch(zval *result, int bad) { if (bad) { *result = error_zval;
     return; } }
+  - |-
+    static void fetch(zval *result, int bad) {
+      zval *tmp;
+      tmp = &local_zval;
+      *result = *tmp;
+    }
+  - |-
+    static void fetch(struct ctx *c, int bad) {
+      if (bad) {
+        c->value = &error_val;
+        return;
+      }
+    }
 invalid:
   - >-
     static void fetch(zval *result, int bad) { if (bad) { result = &error_zval;
     return; } }
+  - |-
+    static void set(char **out, char *buf) {
+      out = &buf;
+    }
+  - |-
+    static void fetch(zval *result, int bad) {
+      zval err;
+      ZVAL_NULL(&err);
+      result = &err;
+    }
