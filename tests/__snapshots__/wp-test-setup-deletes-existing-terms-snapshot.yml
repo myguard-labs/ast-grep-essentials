@@ -1,7 +1,7 @@
 id: wp-test-setup-deletes-existing-terms
 snapshots:
-  ? '<?php class T extends WC_Unit_Test_Case { public function setUp(): void { parent::setUp(); foreach ( get_terms( array( ''taxonomy'' => ''product_cat'', ''hide_empty'' => false ) ) as $t ) { wp_delete_term( $t->term_id, ''product_cat'' ); } } } ?>'
-  : labels:
+  "<?php class T extends WC_Unit_Test_Case { public function setUp(): void { parent::setUp(); foreach ( get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false ) ) as $t ) { wp_delete_term( $t->term_id, 'product_cat' ); } } } ?>":
+    labels:
     - source: wp_delete_term( $t->term_id, 'product_cat' )
       style: primary
       start: 184
@@ -10,7 +10,51 @@ snapshots:
       style: secondary
       start: 58
       end: 63
-    - source: 'public function setUp(): void { parent::setUp(); foreach ( get_terms( array( ''taxonomy'' => ''product_cat'', ''hide_empty'' => false ) ) as $t ) { wp_delete_term( $t->term_id, ''product_cat'' ); } }'
+    - source: "public function setUp(): void { parent::setUp(); foreach ( get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false ) ) as $t ) { wp_delete_term( $t->term_id, 'product_cat' ); } }"
       style: secondary
       start: 42
       end: 233
+  "<?php class T extends WP_UnitTestCase { protected function setUp(): void { parent::setUp(); foreach ( get_terms( 'category', array( 'hide_empty' => false ) ) as $term ) { wp_delete_term( $term->term_id, 'category' ); } } }":
+    labels:
+    - source: wp_delete_term( $term->term_id, 'category' )
+      style: primary
+      start: 171
+      end: 215
+    - source: setUp
+      style: secondary
+      start: 59
+      end: 64
+    - source: "protected function setUp(): void { parent::setUp(); foreach ( get_terms( 'category', array( 'hide_empty' => false ) ) as $term ) { wp_delete_term( $term->term_id, 'category' ); } }"
+      style: secondary
+      start: 40
+      end: 220
+  "<?php class T extends WP_UnitTestCase { public function setUp() { parent::setUp(); array_map( function ( $t ) { wp_delete_term( $t->term_id, 'category' ); }, get_categories() ); } }":
+    labels:
+    - source: wp_delete_term( $t->term_id, 'category' )
+      style: primary
+      start: 112
+      end: 153
+    - source: setUp
+      style: secondary
+      start: 56
+      end: 61
+    - source: >-
+        public function setUp() { parent::setUp(); array_map( function ( $t ) {
+        wp_delete_term( $t->term_id, 'category' ); }, get_categories() ); }
+      style: secondary
+      start: 40
+      end: 179
+  "<?php class T extends WP_UnitTestCase { public function setUp(): void { foreach ( get_terms( array( 'taxonomy' => 'post_tag', 'hide_empty' => false ) ) as $t ) { wp_delete_term( $t->term_id, 'post_tag' ); } parent::setUp(); } }":
+    labels:
+    - source: wp_delete_term( $t->term_id, 'post_tag' )
+      style: primary
+      start: 162
+      end: 203
+    - source: setUp
+      style: secondary
+      start: 56
+      end: 61
+    - source: "public function setUp(): void { foreach ( get_terms( array( 'taxonomy' => 'post_tag', 'hide_empty' => false ) ) as $t ) { wp_delete_term( $t->term_id, 'post_tag' ); } parent::setUp(); }"
+      style: secondary
+      start: 40
+      end: 225

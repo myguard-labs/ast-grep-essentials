@@ -1,5 +1,11 @@
 id: wp-the-post-outside-have-posts-loop
 valid:
   - '<?php while ( have_posts() ) : the_post(); endwhile; ?>'
+  - '<?php while ( have_posts() ) { the_post(); echo 1; } ?>'
+  - '<?php while ( have_posts() ) : if ( $x ) { the_post(); } endwhile; ?>'
+  - '<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); the_title(); endwhile; endif; ?>'
 invalid:
   - '<?php the_post(); ?>'
+  - '<?php function f() { the_post(); } ?>'
+  - '<?php for ( $i = 0; $i < 3; $i++ ) { the_post(); } ?>'
+  - '<?php do { the_post(); } while ( have_posts() ); ?>'

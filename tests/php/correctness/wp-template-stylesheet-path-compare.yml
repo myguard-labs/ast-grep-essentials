@@ -1,5 +1,11 @@
 id: wp-template-stylesheet-path-compare
 valid:
   - '<?php if ( TEMPLATEPATH != STYLESHEETPATH ) { echo ''parent''; }'
+  - '<?php if ( ! is_child_theme() ) { echo ''parent''; }'
+  - '<?php if ( TEMPLATEPATH == $dir ) { echo ''parent''; }'
+  - '<?php if ( is_child_theme() ) { echo ''child''; }'
 invalid:
   - '<?php if ( TEMPLATEPATH == STYLESHEETPATH ) { echo ''parent''; }'
+  - '<?php if ( TEMPLATEPATH == STYLESHEETPATH ) echo ''parent'';'
+  - '<?php function f() { if ( TEMPLATEPATH == STYLESHEETPATH ) { return true; } else { return false; } }'
+  - '<?php if ( TEMPLATEPATH == STYLESHEETPATH ) : echo ''parent''; endif;'

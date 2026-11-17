@@ -3,5 +3,11 @@ valid:
   - >-
     if ( ( $tax_url = get_term_link( $slug, $taxonomy ) ) && ! is_wp_error(
     $tax_url ) ) { echo $tax_url; }
+  - '<?php $url = get_term_link( $term ); if ( is_wp_error( $url ) ) { return; } echo $url;'
+  - '<?php if ( ! is_wp_error( $url = get_term_link( $term ) ) ) { echo $url; }'
+  - '<?php $link = get_term_link( $t ); if ( ! is_wp_error( $link ) ) { echo $link; }'
 invalid:
   - 'if ( $tax_url = get_term_link( $slug, $taxonomy ) ) { echo $tax_url; }'
+  - '<?php if ( ( $url = get_term_link( $term, ''category'' ) ) ) { echo $url; } else { echo ''''; }'
+  - '<?php if ( $a ) { echo 1; } elseif ( $url = get_term_link( $t ) ) { echo $url; }'
+  - '<?php if ( $url = get_term_link( $term ) ) : echo $url; endif;'
