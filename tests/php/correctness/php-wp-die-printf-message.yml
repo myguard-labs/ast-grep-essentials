@@ -1,5 +1,10 @@
 id: php-wp-die-printf-message
 valid:
   - '<?php wp_die( sprintf( ''could not move to %s.'', $dir ) ); ?>'
+  - '<?php wp_die( ''plain'' );'
+  - '<?php $msg = sprintf( ''x %s'', $a ); wp_die( $msg );'
+  - '<?php wp_die( esc_html( sprintf( ''x %s'', $a ) ) );'
 invalid:
   - '<?php wp_die( printf( ''could not move to %s.'', $dir ) ); ?>'
+  - '<?php wp_die( printf( ''x'' ) );'
+  - '<?php function f() { if ( ! $ok ) { wp_die( printf( ''bad %s'', $x ) ); } }'

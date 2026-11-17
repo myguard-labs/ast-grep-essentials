@@ -3,5 +3,11 @@ valid:
   - >-
     function form( $instance ) { $title = esc_attr( isset( $instance['title'] )
     ? $instance['title'] : '' ); }
+  - '<?php function form( $instance ) { echo ''<p>no fields</p>''; }'
+  - '<?php function form( $instance ) { $t = isset( $instance[''title''] ) ? $instance[''title''] : ''''; $c = isset( $instance[''count''] ) ? $instance[''count''] : 5; }'
+  - '<?php function form( $instance ) { if ( isset( $instance[''title''] ) ) { echo esc_attr( $instance[''title''] ); } }'
 invalid:
   - 'function form( $instance ) { $title = esc_attr( $instance[''title''] ); }'
+  - '<?php function form( $instance ) { echo $instance["title"]; }'
+  - '<?php function form( $instance ) { $t = $instance[''title'']; $c = $instance[''count'']; }'
+  - '<?php function form( $instance ) { printf( ''<input value="%s">'', $instance[''title''] ); }'

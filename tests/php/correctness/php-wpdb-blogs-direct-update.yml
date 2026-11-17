@@ -3,7 +3,12 @@ valid:
   - |-
     <?php
     $wpdb->update( $wpdb->posts, array( 'post_title' => $t ), array( 'ID' => $id ) );
+  - '<?php $wpdb->update( $wpdb->blogmeta, array( ''meta_value'' => $v ), array( ''blog_id'' => $id ) );'
+  - '<?php update_blog_details( $id, array( ''public'' => 1 ) );'
+  - '<?php $rows = $wpdb->get_results( "SELECT * FROM $wpdb->blogs" );'
 invalid:
   - |-
     <?php
     $wpdb->update( $wpdb->blogs, array( 'last_updated' => $t ), array( 'blog_id' => $id ) );
+  - '<?php function f( $id ) { global $wpdb; $wpdb->update( $wpdb->blogs, array( ''public'' => 1 ), array( ''blog_id'' => $id ) ); }'
+  - '<?php $wpdb->update( $wpdb->blogs, $data, $where );'

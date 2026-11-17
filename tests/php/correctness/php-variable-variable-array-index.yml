@@ -1,6 +1,11 @@
 id: php-variable-variable-array-index
 valid:
   - '<?php ${$name}[ $plugin_file ] = $plugin_data;'
+  - '<?php $name[ $k ] = 1;'
+  - '<?php $$name = 1;'
+  - '<?php $obj->items[ $k ] = 1;'
 invalid:
   - '<?php $$name[ $plugin_file ] = $plugin_data;'
   - '<?php $$field[ $k ] = 1;'
+  - '<?php echo $$name[0];'
+  - '<?php function f( $field, $i ) { return $$field[ $i ]; }'
