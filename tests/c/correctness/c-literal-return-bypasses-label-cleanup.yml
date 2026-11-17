@@ -79,3 +79,29 @@ invalid:
         free(p);
         return 0;
     }
+  - |-
+    int f(int n) {
+        char *p;
+    retry:
+        p = malloc(8);
+        if (!p) goto retry;
+        if (n) return 0;
+        p[0] = 0;
+    out:
+        free(p);
+        return 1;
+    }
+  - |-
+    int f(int n) {
+        char *a = malloc(8), *b = malloc(8);
+        if (!a) goto err;
+        if (n) goto out;
+        return 1;
+    err:
+        free(b);
+        return 0;
+    out:
+        free(a);
+        free(b);
+        return 1;
+    }

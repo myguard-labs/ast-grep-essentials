@@ -25,6 +25,53 @@ snapshots:
       style: secondary
       start: 0
       end: 189
+    - source: |-
+        out:
+            free(tmp);
+      style: secondary
+      start: 154
+      end: 173
+    - source: |-
+        out:
+            free(tmp);
+      style: secondary
+      start: 154
+      end: 173
+  "int f(int n) {\n    char *a = malloc(8), *b = malloc(8);\n    if (!a) goto err;\n    if (n) goto out;\n    return 1;\nerr:\n    free(b);\n    return 0;\nout:\n    free(a);\n    free(b);\n    return 1;\n}":
+    labels:
+    - source: return 0;
+      style: primary
+      start: 135
+      end: 144
+    - source: |-
+        err:
+            free(b);
+      style: secondary
+      start: 113
+      end: 130
+    - source: |-
+        int f(int n) {
+            char *a = malloc(8), *b = malloc(8);
+            if (!a) goto err;
+            if (n) goto out;
+            return 1;
+        err:
+            free(b);
+            return 0;
+        out:
+            free(a);
+            free(b);
+            return 1;
+        }
+      style: secondary
+      start: 0
+      end: 191
+    - source: |-
+        out:
+            free(a);
+      style: secondary
+      start: 145
+      end: 162
   "int f(int n) {\n    char *p = malloc(8);\n    if (n) return 0;\n    p[0] = 0;\nout:\n    free(p);\n    return 0;\n}":
     labels:
     - source: return 0;
@@ -49,6 +96,57 @@ snapshots:
       style: secondary
       start: 0
       end: 108
+    - source: |-
+        out:
+            free(p);
+      style: secondary
+      start: 75
+      end: 92
+    - source: |-
+        out:
+            free(p);
+      style: secondary
+      start: 75
+      end: 92
+  "int f(int n) {\n    char *p;\nretry:\n    p = malloc(8);\n    if (!p) goto retry;\n    if (n) return 0;\n    p[0] = 0;\nout:\n    free(p);\n    return 1;\n}":
+    labels:
+    - source: return 0;
+      style: primary
+      start: 89
+      end: 98
+    - source: |-
+        retry:
+            p = malloc(8);
+      style: secondary
+      start: 28
+      end: 53
+    - source: |-
+        int f(int n) {
+            char *p;
+        retry:
+            p = malloc(8);
+            if (!p) goto retry;
+            if (n) return 0;
+            p[0] = 0;
+        out:
+            free(p);
+            return 1;
+        }
+      style: secondary
+      start: 0
+      end: 146
+    - source: |-
+        out:
+            free(p);
+      style: secondary
+      start: 113
+      end: 130
+    - source: |-
+        out:
+            free(p);
+      style: secondary
+      start: 113
+      end: 130
   "int read_first(const char *p) {\n    int rc = -1;\n    FILE *f = fopen(p, \"r\");\n    if (f && fgetc(f) < 0) return 0;\n    if (f) rc = 1;\nout:\n    if (f) fclose(f);\n    return rc;\n}":
     labels:
     - source: return 0;
@@ -74,6 +172,18 @@ snapshots:
       style: secondary
       start: 0
       end: 177
+    - source: |-
+        out:
+            if (f) fclose(f);
+      style: secondary
+      start: 134
+      end: 160
+    - source: |-
+        out:
+            if (f) fclose(f);
+      style: secondary
+      start: 134
+      end: 160
   "static int f(int x) { if (x) { return 0; } err: return 0; }":
     labels:
     - source: return 0;
@@ -88,3 +198,11 @@ snapshots:
       style: secondary
       start: 0
       end: 59
+    - source: "err: return 0;"
+      style: secondary
+      start: 43
+      end: 57
+    - source: "err: return 0;"
+      style: secondary
+      start: 43
+      end: 57
