@@ -3,7 +3,11 @@ valid:
   - >-
     static bool s_exchange(zend_atomic_bool *obj, bool desired) { bool prev =
     obj->value; obj->value = desired; return prev; }
+  - 'static void s_store(zend_atomic_bool *obj) { obj->value = true; }'
+  - 'static bool s_exchange(zend_atomic_bool *obj, bool desired) { bool prev = obj->value; obj->value = desired ? 1 : 0; return prev; }'
 invalid:
   - >-
     static bool s_exchange(zend_atomic_bool *obj, bool desired) { bool prev =
     obj->value; obj->value = true; return prev; }
+  - 'static bool s_exchange(zend_atomic_bool *obj, bool desired) { bool prev = obj->value; obj->value = false; return prev; }'
+  - 'static bool zend_atomic_bool_exchange_impl(struct w *obj, bool desired) { bool prev = obj->inner.value; obj->inner.value = true; return prev; }'

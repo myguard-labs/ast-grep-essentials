@@ -4,8 +4,12 @@ valid:
     static void probe(uint32_t f, uint32_t *b) {
         __asm__ __volatile__ ("cpuid" : "=r"(*b) : "a"(f));
     }
+  - 'static void probe(uint32_t f, uint32_t *a) { __asm__ __volatile__ ("cpuid" : "=a"(*a) : "0"(f) : "ebx", "ecx", "edx"); }'
+  - 'static void probe(uint32_t f, uint32_t *d) { __asm__ __volatile__ ("cpuid" : "=&d"(*d) : "a"(f) : "ebx", "ecx"); }'
 invalid:
   - |-
     static void probe(uint32_t f, uint32_t *b) {
         __asm__ __volatile__ ("cpuid" : "=b"(*b) : "a"(f));
     }
+  - 'static void probe(uint32_t f, uint32_t *b) { __asm__ __volatile__ ("cpuid" : "+b"(*b) : "a"(f)); }'
+  - 'static void probe(uint32_t f, uint32_t *a, uint32_t *b) { __asm__ __volatile__ ("cpuid" : "=a"(*a), "=&b"(*b) : "0"(f)); }'

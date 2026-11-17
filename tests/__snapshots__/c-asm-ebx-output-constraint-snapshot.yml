@@ -1,5 +1,15 @@
 id: c-asm-ebx-output-constraint
 snapshots:
+  "static void probe(uint32_t f, uint32_t *a, uint32_t *b) { __asm__ __volatile__ (\"cpuid\" : \"=a\"(*a), \"=&b\"(*b) : \"0\"(f)); }":
+    labels:
+    - source: "\"=&b\"(*b)"
+      style: primary
+      start: 100
+      end: 109
+    - source: "\"=&b\""
+      style: secondary
+      start: 100
+      end: 105
   "static void probe(uint32_t f, uint32_t *b) {\n    __asm__ __volatile__ (\"cpuid\" : \"=b\"(*b) : \"a\"(f));\n}":
     labels:
     - source: "\"=b\"(*b)"
@@ -10,3 +20,13 @@ snapshots:
       style: secondary
       start: 81
       end: 85
+  "static void probe(uint32_t f, uint32_t *b) { __asm__ __volatile__ (\"cpuid\" : \"+b\"(*b) : \"a\"(f)); }":
+    labels:
+    - source: "\"+b\"(*b)"
+      style: primary
+      start: 77
+      end: 85
+    - source: "\"+b\""
+      style: secondary
+      start: 77
+      end: 81

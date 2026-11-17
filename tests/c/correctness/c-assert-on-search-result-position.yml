@@ -3,7 +3,11 @@ valid:
   - |-
     p = zend_memrchr(ZSTR_VAL(ret), '.', ZSTR_LEN(ret));
     if (p && p > ZSTR_VAL(ret)) { idx = 0; }
+  - 'void f(char *s, char *p) { if (!(p > ZSTR_VAL(s))) { return; } p[0] = 0; }'
+  - 'void f(char *p, size_t n) { assert(p != NULL); assert(n > 0); }'
 invalid:
   - |-
     p = zend_memrchr(ZSTR_VAL(ret), '.', ZSTR_LEN(ret));
     assert(p > ZSTR_VAL(ret));
+  - 'void f(char *s) { char *p = strrchr(s, ''.''); assert(p > buf_start(s, 0)); }'
+  - 'void f(zend_string *ret) { char *p = zend_memrchr(ZSTR_VAL(ret), ''.'', ZSTR_LEN(ret)); assert(p > ZSTR_VAL(ret)); *p = 0; }'

@@ -1,5 +1,9 @@
 id: c-ascii-letter-range-rejects-digits
 valid:
   - 'void f(char *p) { if (*p < ''0'' || *p > ''9'') *p = ''_''; }'
+  - 'int f(char *p) { if ((*p < ''A'' || *p > ''Z'') && (*p < ''0'' || *p > ''9'')) return 0; return 1; }'
+  - 'int f(char *p) { if (*p < '' '' || *p > ''~'') return 0; return 1; }'
 invalid:
   - 'void f(char *p) { if (*p < ''A'' || *p > ''Z'') *p = ''_''; }'
+  - 'int f(struct s *s) { if (*s->name < ''A'' || *s->name > ''Z'') return 0; return 1; }'
+  - 'int f(char *p) { if (*(p + 1) < ''A'' || *(p + 1) > ''Z'') { return 0; } else { return 1; } }'
