@@ -1,5 +1,11 @@
 id: php-array-keys-unserialize-unchecked
 valid:
   - '$k = array_keys( $s );'
+  - '<?php $k = array_keys( (array) unserialize( $s ) );'
+  - '<?php $u = unserialize($s); $k = is_array($u) ? array_keys($u) : array();'
+  - '<?php $u = unserialize($s); if (!is_array($u)) { return; } $k = array_keys($u);'
 invalid:
   - '$k = array_keys( unserialize( $s ) );'
+  - '<?php foreach ( array_keys( unserialize( $row->data ) ) as $key ) {}'
+  - '<?php $k = array_keys( unserialize( base64_decode( $s ) ) );'
+  - '<?php $k = array_keys( unserialize( get_option(''x'') ) );'

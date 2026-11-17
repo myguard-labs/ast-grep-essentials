@@ -3,7 +3,12 @@ valid:
   - >-
     function register_thing($args = array()) { $defaults = array('id' => 1);
     $thing = wp_parse_args($args, $defaults); return $thing; }
+  - '<?php $t = wp_parse_args($this->args, $defaults);'
+  - '<?php if (!is_array($args)) { parse_str($args, $args); } $t = array_merge($defaults, $args);'
 invalid:
   - >-
     function register_thing($args = array()) { $defaults = array('id' => 1);
     $thing = array_merge($defaults, (array) $args); return $thing; }
+  - '<?php $t = array_merge($defaults, (array)$args);'
+  - '<?php return array_merge( $defaults, (array) $params );'
+  - '<?php $t = array_merge(array(''a'' => 1), (array) $args);'

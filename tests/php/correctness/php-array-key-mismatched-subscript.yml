@@ -1,5 +1,17 @@
 id: php-array-key-mismatched-subscript
 valid:
   - '$x = array(''max_depth'' => $args[''max_depth'']);'
+  - '<?php return array(''post_type'' => $args[''post_type'']);'
+  - '<?php $x = array(''max'' => $args[$k]);'
+  - |-
+    <?php $x = array(
+      'orderby' => $args['orderby'],
+    );
 invalid:
   - '$x = array(''max_depth'' => $args[''depth'']);'
+  - '<?php return array(''number'' => $args[''numberposts'']);'
+  - |-
+    <?php $x = array(
+      'orderby' => $args['order_by'],
+    );
+  - '<?php $x = array(''count'' => $args[''per_page'']);'

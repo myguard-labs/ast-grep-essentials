@@ -3,7 +3,13 @@ valid:
   - |-
     <?php
     $query['post_parent__in'] = array_unique( array_map( 'intval', $block->context['query']['parents'] ) );
+  - '<?php $a = array_map(''intval'', $x);'
+  - '<?php $a = array_filter(array_map(''intval'', $x), function ($v) { return $v >= 0; });'
+  - '<?php $a = array_filter(array_map(''trim'', $x));'
 invalid:
   - |-
     <?php
     $query['post_parent__in'] = array_filter( array_map( 'intval', $block->context['query']['parents'] ) );
+  - '<?php $a = array_values(array_filter(array_map(''intval'', $x)));'
+  - '<?php $a = array_filter(array_map(''intval'', explode('','', $s)));'
+  - '<?php return array_filter( array_map( ''intval'', (array) $ids ) );'
