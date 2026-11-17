@@ -12,6 +12,11 @@ valid:
     int a(void);
     int b(void);
     int f(void) { int rv; rv = a(); log(rv); rv = b(); return rv; }
+  - |-
+    int a(void);
+    int b(int);
+    int f(void) { int rv; rv = a(); rv = b(rv); return rv; }
+
 invalid:
   - |-
     int a(void);
@@ -26,3 +31,7 @@ invalid:
     int a(void);
     int b(void);
     int f(int c) { int rv; if (c) { rv = a(); rv = b(); } return rv; }
+  - |-
+    int a(void);
+    int b(int);
+    int f(int other) { int rv; rv = a(); rv = b(other); return rv; }

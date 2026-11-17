@@ -8,14 +8,25 @@ message: >-
   literal; add an explicit cast to record intent.
 note: >-
   Matches only a literal int declaration whose initialiser contains a decimal
-  floating literal; it does not detect explicit casts, other integer types, or
+  floating literal; it skips an initialiser whose outermost expression is a cast to an integer
+  type; it does not detect other integer types, or
   plain assignments.
 rule:
-  pattern: 'int $N = $E'
-  has:
-    kind: number_literal
-    regex: '^[0-9]*\.[0-9]*'
-    stopBy: end
+  all:
+    - pattern: 'int $N = $E'
+    - has:
+        kind: number_literal
+        regex: '^[0-9]*\.[0-9]*'
+        stopBy: end
+    - not:
+        has:
+          kind: init_declarator
+          has:
+            field: value
+            kind: cast_expression
+            has:
+              field: type
+              regex: '^\s*(const\s+)?((unsigned|signed)\s+)?((long\s+long|long|short)(\s+int)?|char|int|size_t|ssize_t|ptrdiff_t|u?int(8|16|32|64)_t|unsigned|signed)\s*$'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
@@ -28,4 +39,5 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/681.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'int n = (int)(len * 0.01); with an explicit cast is still matched (false positive; note says casts are not detected).'
+    - 'An initialiser cast to an integer type that is nested inside a larger expression, or a cast hidden behind parentheses, is not recognised as the outermost expression (kept as a report).'
+    - 'A multi-declarator `int a = (int)(x * 0.5), b = x * 0.5;` is suppressed as a whole because the cast on a hides the uncast b (kept as a known limitation).'

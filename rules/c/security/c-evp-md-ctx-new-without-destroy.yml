@@ -16,6 +16,10 @@ rule:
         precedes:
           stopBy: end
           regex: 'EVP_MD_CTX_(destroy|free)\s*\('
+    - not:
+        precedes:
+          stopBy: end
+          pattern: 'return $V;'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
@@ -28,5 +32,6 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/772.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'Returning the new context to the caller (ownership transfer) is still matched (false positive).'
+    - 'A return of the allocated variable nested in an if or loop block (not a direct statement after the allocation) is still matched (false positive).'
     - 'EVP_MD_CTX_free(other) of a different context placed after the allocation suppresses the report (false negative).'
+    - 'Reassigning the variable before the return (ctx = EVP_MD_CTX_new(); ctx = get(); return ctx;) suppresses the leak report (false negative).'

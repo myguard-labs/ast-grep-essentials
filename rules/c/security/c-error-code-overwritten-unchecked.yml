@@ -19,6 +19,14 @@ rule:
     kind: compound_statement
     has:
       pattern: '$VAR = $CALL2($$$A2);'
+      not:
+        has:
+          kind: assignment_expression
+          has:
+            field: right
+            has:
+              stopBy: end
+              pattern: $VAR
       follows:
         pattern: '$VAR = $CALL1($$$A1);'
         kind: expression_statement
@@ -36,4 +44,5 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
   todo_cases:
-    - 'rv = a(); rv = b(rv); is still matched although rv is read by the second call (false positive).'
+    - 'The second call reading the variable through an alias or pointer (rv2 = &rv; rv = b(rv2)) is still reported (known limitation).'
+    - 'An assignment inside the second call''s arguments (rv = a(); rv = b(rv = 0);) counts as a read and suppresses the report (false negative).'
