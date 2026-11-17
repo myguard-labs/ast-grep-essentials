@@ -1,5 +1,11 @@
 id: php-loose-equals-zero
 valid:
   - '<?php $n = stream_select($r, $w, $e, 60); if ($n === 0) { return; }'
+  - '<?php if (0 === $n) { return; }'
+  - '<?php function f($n) { return $n !== 0; }'
+  - '<?php if ($n <= 0) { return; }'
 invalid:
   - '<?php $n = stream_select($r, $w, $e, 60); if ($n == 0) { return; }'
+  - '<?php function f($n) { return $n == 0; }'
+  - '<?php if (strpos($s, ''x'') == 0) { return; }'
+  - '<?php while ($i == 0) { $i = next_id(); }'

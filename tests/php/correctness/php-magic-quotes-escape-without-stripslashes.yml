@@ -3,5 +3,11 @@ valid:
   - >-
     function f() { $alt = esc_attr( stripslashes( $_POST['alt'] ) ); return
     $alt; }
+  - '<?php function f() { return esc_html( stripslashes( $_GET[''q''] ) ); }'
+  - '<?php function f($value) { return esc_attr( $value ); }'
+  - '<?php function f() { return esc_attr( stripslashes( $_POST["alt"] ) ); }'
 invalid:
   - 'function f() { $alt = esc_attr( $_POST[''alt''] ); return $alt; }'
+  - '<?php function f() { return esc_html( $_GET[''q''] ); }'
+  - '<?php function f() { return esc_attr( $_POST["alt"] ); }'
+  - '<?php function f() { echo esc_html($_GET[ ''q'' ]); }'

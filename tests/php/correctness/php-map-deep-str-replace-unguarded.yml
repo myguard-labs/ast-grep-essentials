@@ -3,7 +3,13 @@ valid:
   - >-
     <?php $v = map_deep( $v, static function ( $value ) { if ( is_string( $value
     ) ) { return str_replace( "\r\n", "\n", $value ); } return $value; } );
+  - '<?php $v = map_deep($v, ''wp_unslash'');'
+  - '<?php $v = map_deep($v, static function ($value) { if (!is_string($value)) { return $value; } return str_replace(''a'', ''b'', $value); });'
+  - '<?php $v = map_deep($v, fn($value) => is_string($value) ? str_replace(''a'', ''b'', $value) : $value);'
 invalid:
   - >-
     <?php $v = map_deep( $v, static function ( $value ) { return str_replace(
     "\r\n", "\n", $value ); } );
+  - '<?php $v = map_deep($v, fn($value) => str_replace(''a'', ''b'', $value));'
+  - '<?php $v = map_deep($v, function ($value) { $value = str_replace("\r", '''', $value); return trim($value); });'
+  - '<?php $v = map_deep($v, static function ($value) use ($map) { return str_replace(array_keys($map), array_values($map), $value); });'

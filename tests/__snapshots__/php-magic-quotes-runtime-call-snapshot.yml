@@ -1,6 +1,36 @@
 id: php-magic-quotes-runtime-call
 snapshots:
-  function f($fp) { set_magic_quotes_runtime(0); return fread($fp, 10); }:
+  "<?php function f() { return \\set_magic_quotes_runtime(0); }":
+    labels:
+    - source: \set_magic_quotes_runtime(0)
+      style: primary
+      start: 28
+      end: 56
+    - source: \set_magic_quotes_runtime
+      style: secondary
+      start: 28
+      end: 53
+  "<?php function f() { return get_magic_quotes_runtime(); }":
+    labels:
+    - source: get_magic_quotes_runtime()
+      style: primary
+      start: 28
+      end: 54
+    - source: get_magic_quotes_runtime
+      style: secondary
+      start: 28
+      end: 52
+  "<?php if (GET_MAGIC_QUOTES_RUNTIME()) { run(); }":
+    labels:
+    - source: GET_MAGIC_QUOTES_RUNTIME()
+      style: primary
+      start: 10
+      end: 36
+    - source: GET_MAGIC_QUOTES_RUNTIME
+      style: secondary
+      start: 10
+      end: 34
+  "function f($fp) { set_magic_quotes_runtime(0); return fread($fp, 10); }":
     labels:
     - source: set_magic_quotes_runtime(0)
       style: primary

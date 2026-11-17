@@ -1,5 +1,11 @@
 id: php-magic-quotes-runtime-call
 valid:
   - 'function f($fp) { set_time_limit(0); return fread($fp, 10); }'
+  - '<?php function f($obj) { return $obj->get_magic_quotes_runtime(); }'
+  - '<?php function f() { return my_set_magic_quotes_runtime(0); }'
+  - '<?php function f() { return set_time_limit(0); }'
 invalid:
   - 'function f($fp) { set_magic_quotes_runtime(0); return fread($fp, 10); }'
+  - '<?php function f() { return get_magic_quotes_runtime(); }'
+  - '<?php function f() { return \set_magic_quotes_runtime(0); }'
+  - '<?php if (GET_MAGIC_QUOTES_RUNTIME()) { run(); }'
