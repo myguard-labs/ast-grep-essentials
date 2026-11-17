@@ -6,12 +6,24 @@ snapshots:
       style: primary
       start: 0
       end: 44
+  "int f(SSL *s) {\n    if (s == NULL) {\n        ERR_raise(ERR_LIB_SYS, SSL_R_NULL_SSL_CTX);\n        return -1;\n    }\n    return 0;\n}":
+    labels:
+    - source: ERR_raise(ERR_LIB_SYS, SSL_R_NULL_SSL_CTX)
+      style: primary
+      start: 45
+      end: 87
   "int f(int fd) {\n    if (fd < 0) {\n        ERR_raise(ERR_LIB_SYS, errno);\n        return -1;\n    }\n    return 0;\n}":
     labels:
     - source: ERR_raise(ERR_LIB_SYS, errno)
       style: primary
       start: 42
       end: 71
+  "int f(void) {\n    ERR_raise_data(ERR_LIB_SYS, ERR_R_PASSED_NULL_PARAMETER, \"ctx\");\n    return 0;\n}":
+    labels:
+    - source: ERR_raise_data(ERR_LIB_SYS, ERR_R_PASSED_NULL_PARAMETER, "ctx")
+      style: primary
+      start: 18
+      end: 81
   "int f(void) {\n    ERR_raise_data(ERR_LIB_SYS, errno, \"fopen('%s')\", name);\n    return 0;\n}":
     labels:
     - source: ERR_raise_data(ERR_LIB_SYS, errno, "fopen('%s')", name)
