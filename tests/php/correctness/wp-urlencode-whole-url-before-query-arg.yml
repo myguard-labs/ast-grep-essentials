@@ -1,5 +1,9 @@
 id: wp-urlencode-whole-url-before-query-arg
 valid:
   - '$redirect = remove_query_arg( array( ''updated'' ), $url );'
+  - '<?php $u = add_query_arg( ''redirect_to'', urlencode( $url ), $base ); ?>'
+  - '<?php $u = urlencode( remove_query_arg( ''x'', $url ) ); ?>'
 invalid:
   - '$redirect = remove_query_arg( array( ''updated'' ), urlencode( $url ) );'
+  - '<?php $u = remove_query_arg( ''paged'', urlencode( get_permalink() ) ); ?>'
+  - '<?php $u = remove_query_arg( array( ''a'', ''b'' ), urlencode( $_SERVER[''REQUEST_URI''] ) ); ?>'

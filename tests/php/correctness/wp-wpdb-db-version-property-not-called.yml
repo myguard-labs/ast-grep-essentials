@@ -1,5 +1,9 @@
 id: wp-wpdb-db-version-property-not-called
 valid:
   - '$mysql_version = $wpdb->db_version();'
+  - '<?php if ( version_compare( $wpdb->db_version(), ''5.6'', ''<'' ) ) { $old = true; } ?>'
+  - '<?php echo $wpdb->db_version(); ?>'
 invalid:
   - '$mysql_version = $wpdb->db_version;'
+  - '<?php if ( version_compare( $wpdb->db_version, ''5.6'', ''<'' ) ) { $old = true; } ?>'
+  - '<?php echo $wpdb->db_version; ?>'
