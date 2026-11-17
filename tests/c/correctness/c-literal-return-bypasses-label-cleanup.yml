@@ -48,6 +48,21 @@ valid:
         if (n) { return 0; }
         return 1;
     }
+  - |-
+    int g(void) {
+      char *p = malloc(4);
+      if (!p) goto out;
+      use(p);
+    out:
+      free(p);
+      return 0;
+    }
+    int h(int x) {
+      if (x) goto done;
+      return x;
+    done:
+      return 1;
+    }
 invalid:
   - 'static int f(int x) { if (x) { return 0; } err: return 0; }'
   - |-
