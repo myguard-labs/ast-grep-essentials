@@ -1,5 +1,11 @@
 id: wp-stripslashes-get-query-var
 valid:
   - '<?php $s = stripslashes( get_option( ''s'' ) ); ?>'
+  - '<?php $s = sanitize_text_field( get_query_var( ''s'' ) ); ?>'
+  - '<?php $s = stripslashes( $value ); ?>'
+  - '<?php $p = absint( get_query_var( ''paged'' ) ); ?>'
 invalid:
   - '<?php $s = stripslashes( get_query_var( ''s'' ) ); ?>'
+  - '<?php $term = stripslashes( get_query_var( ''term'', '''' ) ); ?>'
+  - '<?php echo esc_html( stripslashes( get_query_var( ''cat'' ) ) ); ?>'
+  - '<?php $v = stripslashes(get_query_var($key)); ?>'

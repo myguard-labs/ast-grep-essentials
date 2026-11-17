@@ -1,5 +1,10 @@
 id: wp-sql-unqualified-id-concat
 valid:
   - '<?php $where = " AND {$wpdb->posts}.ID = " . $q[''p''];'
+  - '<?php $where = '' AND p.ID = '' . $id;'
+  - '<?php $where = '' AND post_id = '' . $id;'
+  - '<?php $where = '' AND '' . $wpdb->posts . ''.ID = '' . $id;'
 invalid:
   - '<?php $where = '' AND ID = '' . $q[''p''];'
+  - '<?php $where .= '' AND ID = '' . $id;'
+  - '<?php $where = '' AND ID = '' . absint( $id );'

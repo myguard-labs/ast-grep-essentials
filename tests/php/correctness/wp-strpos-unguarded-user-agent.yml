@@ -3,7 +3,13 @@ valid:
   - >-
     <?php if (isset($_SERVER['HTTP_USER_AGENT']) &&
     strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) { echo 'old'; }
+  - '<?php if ( ! isset( $_SERVER[''HTTP_USER_AGENT''] ) || strpos( $_SERVER[''HTTP_USER_AGENT''], ''bot'' ) !== false ) { return; }'
+  - '<?php $ua = isset( $_SERVER[''HTTP_USER_AGENT''] ) ? $_SERVER[''HTTP_USER_AGENT''] : ''''; if ( strpos( $ua, ''MSIE'' ) !== false ) { echo ''old''; }'
+  - '<?php if ( isset( $_SERVER["HTTP_USER_AGENT"] ) && false !== strpos( $_SERVER["HTTP_USER_AGENT"], ''MSIE'' ) ) { echo ''old''; }'
 invalid:
   - >-
     <?php if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) { echo
     'old'; }
+  - '<?php if ( strpos( $_SERVER["HTTP_USER_AGENT"], ''MSIE'' ) !== false ) { echo ''old''; }'
+  - '<?php $is_mobile = strpos( $_SERVER[''HTTP_USER_AGENT''], ''Mobile'' ) !== false;'
+  - '<?php if ( isset( $_SERVER[''HTTP_ACCEPT''] ) && strpos( $_SERVER[''HTTP_USER_AGENT''], ''MSIE'' ) !== false ) { echo ''old''; }'

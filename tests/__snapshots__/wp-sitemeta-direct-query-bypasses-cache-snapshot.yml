@@ -1,12 +1,32 @@
 id: wp-sitemeta-direct-query-bypasses-cache
 snapshots:
-  ? function f( $option ) { global $wpdb; return $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s AND site_id = %d", $option, $wpdb->siteid ) ); }
-  : labels:
-    - source: $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s AND site_id = %d", $option, $wpdb->siteid ) )
+  "function f( $option ) { global $wpdb; $row = $wpdb->get_row( $wpdb->prepare( \"SELECT * FROM {$wpdb->sitemeta} WHERE meta_key = %s\", $option ) ); return $row; }":
+    labels:
+    - source: >-
+        $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->sitemeta} WHERE meta_key
+        = %s", $option ) )
+      style: primary
+      start: 45
+      end: 143
+    - source: $wpdb->prepare( "SELECT * FROM {$wpdb->sitemeta} WHERE meta_key = %s", $option )
+      style: secondary
+      start: 61
+      end: 141
+    - source: $wpdb->sitemeta
+      style: secondary
+      start: 93
+      end: 108
+  "function f( $option ) { global $wpdb; return $wpdb->get_row( $wpdb->prepare( \"SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s AND site_id = %d\", $option, $wpdb->siteid ) ); }":
+    labels:
+    - source: >-
+        $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $wpdb->sitemeta WHERE
+        meta_key = %s AND site_id = %d", $option, $wpdb->siteid ) )
       style: primary
       start: 45
       end: 182
-    - source: $wpdb->prepare( "SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s AND site_id = %d", $option, $wpdb->siteid )
+    - source: >-
+        $wpdb->prepare( "SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s AND
+        site_id = %d", $option, $wpdb->siteid )
       style: secondary
       start: 61
       end: 180
@@ -14,3 +34,39 @@ snapshots:
       style: secondary
       start: 101
       end: 116
+  "function f( $option ) { global $wpdb; return $wpdb->get_row( $wpdb->prepare( \"SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s\", $option ), OBJECT, 0 ); }":
+    labels:
+    - source: >-
+        $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $wpdb->sitemeta WHERE
+        meta_key = %s", $option ), OBJECT, 0 )
+      style: primary
+      start: 45
+      end: 161
+    - source: >-
+        $wpdb->prepare( "SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s",
+        $option )
+      style: secondary
+      start: 61
+      end: 148
+    - source: $wpdb->sitemeta
+      style: secondary
+      start: 101
+      end: 116
+  "function f( $option ) { global $wpdb; return $wpdb->get_row( $wpdb->prepare( 'SELECT meta_value FROM ' . $wpdb->sitemeta . ' WHERE meta_key = %s', $option ), ARRAY_A ); }":
+    labels:
+    - source: >-
+        $wpdb->get_row( $wpdb->prepare( 'SELECT meta_value FROM ' . $wpdb->sitemeta . '
+        WHERE meta_key = %s', $option ), ARRAY_A )
+      style: primary
+      start: 45
+      end: 167
+    - source: >-
+        $wpdb->prepare( 'SELECT meta_value FROM ' . $wpdb->sitemeta . ' WHERE meta_key
+        = %s', $option )
+      style: secondary
+      start: 61
+      end: 156
+    - source: $wpdb->sitemeta
+      style: secondary
+      start: 105
+      end: 120
