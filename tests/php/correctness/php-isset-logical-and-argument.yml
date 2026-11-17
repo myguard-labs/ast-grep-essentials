@@ -1,5 +1,13 @@
 id: php-isset-logical-and-argument
 valid:
   - '<?php isset( $a ) && isset( $b );'
+  - "<?php isset( $a, $b );"
+  - "<?php isset( $a['x'] ) && isset( $b['y'] );"
+  - "<?php if ( isset( $a ) && ! empty( $b ) ) { $x = 1; }"
 invalid:
   - '<?php isset( $a && $b );'
+  - "<?php if ( isset( $a['x'] && $b['y'] ) ) { $x = 1; }"
+  - "<?php $ok = isset( $a && $b && $c );"
+  - "<?php isset( $this->a && isset( $b ) );"
+  - "<?php return isset( $_POST['a'] && $_POST['b'] );"
+  - "<?php isset( $a['x'] && 1 );"

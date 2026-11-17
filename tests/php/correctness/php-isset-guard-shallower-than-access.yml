@@ -1,5 +1,13 @@
 id: php-isset-guard-shallower-than-access
 valid:
   - '<?php $n = isset( $w[$t][$p] ) ? count( (array) $w[$t][$p] ) : 0; ?>'
+  - "<?php $n = isset( $w['a'] ) ? $w['a'] : 0;"
+  - "<?php $n = isset( $w['a']['b'] ) ? $w['a']['b'] : null;"
+  - "<?php $n = isset( $w[$t] ) ? $w[$t] : null;"
+  - "<?php $n = isset( $w[$t][$p] ) ? esc_html( $w[$t][$p] ) : '';"
 invalid:
   - '<?php $n = isset( $w[$t] ) ? count( (array) $w[$t][$p] ) : 0; ?>'
+  - "<?php $n = isset( $w['a'] ) ? $w['a']['b'] : '';"
+  - "<?php $n = isset( $w[$t][$p] ) ? $w[$t][$p][$q] : '';"
+  - "<?php $n = isset( $this->opts[$k] ) ? esc_html( $this->opts[$k]['label'] ) : '';"
+  - "<?php $n = ( isset( $w[$t] ) ) ? $w[$t][0] : null;"

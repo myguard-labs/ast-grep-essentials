@@ -3,7 +3,14 @@ valid:
   - >-
     <?php function ajax_x() { if ( ! current_user_can( 'edit_theme_options' ) )
     { wp_die( -1 ); } }
+  - "<?php if ( ! current_user_can( 'manage_options' ) ) { wp_die( __( 'Denied' ), '', array( 'response' => 403 ) ); }"
+  - "<?php if ( current_user_can( 'manage_options' ) ) { update_option( 'a', 1 ); }"
+  - "<?php if ( ! current_user_can( $cap ) ) { wp_die( 'No' ); }"
+  - "<?php if ( current_user_can( 'edit_posts' ) ) { echo 1; } else { wp_die( 'No' ); }"
 invalid:
   - >-
     <?php function ajax_x() { if ( current_user_can( 'edit_theme_options' ) ) {
     wp_die( -1 ); } }
+  - "<?php if ( current_user_can( 'manage_options' ) ) { wp_die( __( 'Denied' ), '', array( 'response' => 403 ) ); }"
+  - "<?php if ( current_user_can( $cap ) ) { wp_die(); }"
+  - "<?php if ( current_user_can( \"delete_users\" ) ) { wp_die( 'You cannot do that' ); }"
