@@ -1,5 +1,10 @@
 id: php-strpos-literal-haystack
 valid:
   - '<?php if ( false !== strpos( $html, "\n" ) ) { $html = ''''; }'
+  - '<?php $p = strpos($haystack, "abc");'
+  - '<?php $p = strpos($haystack, $needle);'
 invalid:
   - '<?php if ( false !== strpos( "\n", $html ) ) { $html = ''''; }'
+  - '<?php $p = strpos("abc", $needle);'
+  - '<?php if (strpos("@", $email) !== false) { $a = 1; }'
+  - '<?php function f($n) { return strpos("0123456789", $n); }'

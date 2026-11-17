@@ -1,6 +1,26 @@
 id: php-strpos-literal-haystack
 snapshots:
-  <?php if ( false !== strpos( "\n", $html ) ) { $html = ''; }:
+  "<?php $p = strpos(\"abc\", $needle);":
+    labels:
+    - source: strpos("abc", $needle)
+      style: primary
+      start: 11
+      end: 33
+    - source: <?php $p = strpos("abc", $needle);
+      style: secondary
+      start: 0
+      end: 34
+  "<?php function f($n) { return strpos(\"0123456789\", $n); }":
+    labels:
+    - source: strpos("0123456789", $n)
+      style: primary
+      start: 30
+      end: 54
+    - source: <?php function f($n) { return strpos("0123456789", $n); }
+      style: secondary
+      start: 0
+      end: 57
+  "<?php if ( false !== strpos( \"\\n\", $html ) ) { $html = ''; }":
     labels:
     - source: strpos( "\n", $html )
       style: primary
@@ -10,3 +30,13 @@ snapshots:
       style: secondary
       start: 0
       end: 60
+  "<?php if (strpos(\"@\", $email) !== false) { $a = 1; }":
+    labels:
+    - source: strpos("@", $email)
+      style: primary
+      start: 10
+      end: 29
+    - source: <?php if (strpos("@", $email) !== false) { $a = 1; }
+      style: secondary
+      start: 0
+      end: 52

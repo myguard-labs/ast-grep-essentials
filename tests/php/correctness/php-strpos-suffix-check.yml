@@ -1,7 +1,11 @@
 id: php-strpos-suffix-check
 valid:
   - '<?php if ( strpos($file, ''php.cgi'') !== false ) { $file = ''index.php''; }'
+  - '<?php if (substr($f, -4) === ''.php'') { $a = 1; }'
+  - '<?php if (str_ends_with($f, ''.php'')) { $a = 1; }'
 invalid:
   - >-
     <?php if ( strpos($file, 'php.cgi') == strlen($file) - 7 ) { $file =
     'index.php'; }
+  - '<?php if (strpos($f, ''.php'') == strlen($f) - 4) { $a = 1; }'
+  - '<?php $ends = strpos($name, $ext) == strlen($name) - strlen($ext);'
