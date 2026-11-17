@@ -1,5 +1,11 @@
 id: php-array-search-unguarded-element
 valid:
   - '<?php $pos = array_search( $key, $opts[ $page ] ?? array() );'
+  - "<?php $pos = array_search( $key, $opts );"
+  - "<?php $pos = array_search( $key, $opts[ $page ] ?? [], true );"
+  - "<?php $pos = array_search( $key, (array) ( $opts[ $page ] ?? null ) );"
 invalid:
   - '<?php $pos = array_search( $key, $opts[ $page ] );'
+  - "<?php $pos = array_search( 'k', $opts['list'] );"
+  - "<?php $pos = array_search( $key, $opts[ $a ][ $b ] );"
+  - "<?php $pos = array_search( $key, $this->items[ $page ] );"

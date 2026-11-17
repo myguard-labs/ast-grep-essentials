@@ -3,7 +3,13 @@ valid:
   - >-
     <?php function f($ok, $r) { if ($ok && ($r == 'XFAILED' || $r == 'FAILED'))
     { return 1; } }
+  - "<?php function f($r) { if ($r == 'A' || $r == 'B') { return 1; } }"
+  - "<?php function f($r) { if ($r === 'A' || $r === 'B') { return 1; } }"
+  - "<?php function f($r) { if (in_array($r, array('A','B'), true)) { return 1; } }"
 invalid:
   - >-
     <?php function f($ok, $r) { if ($ok && ($r = 'XFAILED' || $r == 'FAILED')) {
     return 1; } }
+  - "<?php function f($ok,$r) { if (($r = \"A\" || $r == \"B\") && $ok) { return 1; } }"
+  - "<?php function f($r) { if ($r = 'A' || $r = 'B') { return 1; } }"
+  - "<?php function f($r) { if ($x) { return 2; } elseif ($r = 'A' || $r == 'B') { return 1; } }"

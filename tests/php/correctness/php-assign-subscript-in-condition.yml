@@ -1,5 +1,11 @@
 id: php-assign-subscript-in-condition
 valid:
   - "<?php\nif ( $folder = get_plugins( $dir ) ) {\n\techo 'x';\n}\n"
+  - "<?php\nif ( $plugins['folder'] == get_plugins( $dir ) ) {\n\techo 'x';\n}\n"
+  - "<?php\nif ( isset( $plugins['folder'] ) ) {\n\techo 'x';\n}\n"
+  - "<?php\nif ( $folder === $plugins['folder'] ) {\n\techo 'x';\n}\n"
 invalid:
   - "<?php\nif ( $plugins['folder'] = get_plugins( $dir ) ) {\n\techo 'x';\n}\n"
+  - "<?php\nif ( $cache[ $key ] = compute( $key ) ) {\n\techo 'x';\n} else {\n\techo 'y';\n}\n"
+  - "<?php\nif ( $a['x']['y'] = foo() ) {\n\techo 'x';\n}\n"
+  - "<?php\nif ( $this->cache[ $key ] = foo() ) {\n\techo 'x';\n}\n"

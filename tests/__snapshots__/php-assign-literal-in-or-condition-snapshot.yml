@@ -1,12 +1,12 @@
 id: php-assign-literal-in-or-condition
 snapshots:
-  <?php function f($ok, $r) { if ($ok && ($r = 'XFAILED' || $r == 'FAILED')) { return 1; } }:
+  "<?php function f($ok, $r) { if ($ok && ($r = 'XFAILED' || $r == 'FAILED')) { return 1; } }":
     labels:
     - source: $r = 'XFAILED' || $r == 'FAILED'
       style: primary
       start: 40
       end: 72
-    - source: '''XFAILED'' || $r == ''FAILED'''
+    - source: "'XFAILED' || $r == 'FAILED'"
       style: secondary
       start: 45
       end: 72
@@ -14,3 +14,45 @@ snapshots:
       style: secondary
       start: 28
       end: 88
+  "<?php function f($ok,$r) { if (($r = \"A\" || $r == \"B\") && $ok) { return 1; } }":
+    labels:
+    - source: $r = "A" || $r == "B"
+      style: primary
+      start: 32
+      end: 53
+    - source: "\"A\" || $r == \"B\""
+      style: secondary
+      start: 37
+      end: 53
+    - source: if (($r = "A" || $r == "B") && $ok) { return 1; }
+      style: secondary
+      start: 27
+      end: 76
+  "<?php function f($r) { if ($r = 'A' || $r = 'B') { return 1; } }":
+    labels:
+    - source: $r = 'A' || $r = 'B'
+      style: primary
+      start: 27
+      end: 47
+    - source: "'A' || $r = 'B'"
+      style: secondary
+      start: 32
+      end: 47
+    - source: if ($r = 'A' || $r = 'B') { return 1; }
+      style: secondary
+      start: 23
+      end: 62
+  "<?php function f($r) { if ($x) { return 2; } elseif ($r = 'A' || $r == 'B') { return 1; } }":
+    labels:
+    - source: $r = 'A' || $r == 'B'
+      style: primary
+      start: 53
+      end: 74
+    - source: "'A' || $r == 'B'"
+      style: secondary
+      start: 58
+      end: 74
+    - source: if ($x) { return 2; } elseif ($r = 'A' || $r == 'B') { return 1; }
+      style: secondary
+      start: 23
+      end: 89
