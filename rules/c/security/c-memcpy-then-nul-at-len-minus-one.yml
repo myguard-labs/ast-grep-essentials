@@ -11,7 +11,15 @@ note: >-
   '\0'; it does not verify that the preceding memcpy used the same N, that buf
   is the memcpy destination, or any aliasing, types, or reachability.
 rule:
-  pattern: '$DST[$N - 1] = ''\0'';'
+  all:
+    - pattern: '$DST[$N - 1] = ''\0'';'
+    - not:
+        any:
+          - pattern: '$DST[sizeof($DST) - 1] = ''\0'';'
+          - pattern: '$DST[sizeof $DST - 1] = ''\0'';'
+    - not:
+        follows:
+          pattern: 'memcpy($DST, $_, $N - 1);'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -24,6 +32,4 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/193.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - "FP: 'buf[sizeof(buf) - 1] = '\\0'' (bounded terminator idiom, spelled with the literal '\\0') is reported though it is correct"
-    - "FP: 'memcpy(buf, src, n - 1); buf[n - 1] = '\\0'' (copy n-1 then terminate) is reported although correct"
     - "FN: the plain-0 spelling 'buf[n - 1] = 0' is not reported (only the literal '\\0' terminator matches), nor is 'buf[sizeof(buf) - 1] = 0'"

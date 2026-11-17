@@ -9,6 +9,17 @@ valid:
     void f(char *out, char *src, int off, int len) { memcpy(&out[off], src, len); out[off + len] = '\0'; }
   - |-
     void f(char *buf, char *src, int n, int size) { if (n < size) { memcpy(buf, src, n); buf[n] = '\0'; } }
+  - |-
+    char buf[16];
+    buf[sizeof(buf) - 1] = '\0';
+  - |-
+    char buf[16];
+    buf[sizeof buf - 1] = '\0';
+  - |-
+    memcpy(buf, src, n - 1);
+    buf[n - 1] = '\0';
+  - |-
+    void f(char *buf, char *src, int n) { memcpy(buf, src, n - 1); buf[n - 1] = '\0'; }
 invalid:
   - |-
     memcpy(buf, src, n);
@@ -19,3 +30,20 @@ invalid:
     void f(char *out, char *src, int off, int len) { memcpy(&out[off], src, len); out[off + len - 1] = '\0'; }
   - |-
     void f(char *buf, char *src, int n) { memcpy(buf, src, n); if (n > 0) { buf[n - 1] = '\0'; } }
+  - |-
+    memcpy(other, src, n - 1);
+    buf[n - 1] = '\0';
+  - |-
+    buf[n - 1] = '\0';
+    memcpy(buf, src, n - 1);
+  - |-
+    char buf[16];
+    char other[16];
+    buf[sizeof(other) - 1] = '\0';
+  - |-
+    memcpy(buf, src, m - 1);
+    buf[n - 1] = '\0';
+  - |-
+    memcpy(buf, src, n);
+    f();
+    buf[n - 1] = '\0';
