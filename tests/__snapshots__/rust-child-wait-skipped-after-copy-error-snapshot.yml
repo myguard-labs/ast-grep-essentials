@@ -1,11 +1,35 @@
 id: rust-child-wait-skipped-after-copy-error
 snapshots:
-  ? |-
-    let mut child = cmd.spawn()?;
-    let mut stdin = child.stdin.take().unwrap();
-    std::io::copy(&mut input, &mut stdin)?;
-    let status = child.wait()?;
-  : labels:
+  "async fn run() -> Result<()> {\n    let mut child = Command::new(\"cat\").stdin(Stdio::piped()).spawn()?;\n    let mut stdin = child.stdin.take().unwrap();\n    std::io::copy(&mut data.as_slice(), &mut stdin)?;\n    let status = child.wait()?;\n    Ok(())\n}\n":
+    labels:
+    - source: std::io::copy(&mut data.as_slice(), &mut stdin)?;
+      style: primary
+      start: 156
+      end: 205
+    - source: let mut stdin = child.stdin.take().unwrap();
+      style: secondary
+      start: 107
+      end: 151
+    - source: let status = child.wait()?;
+      style: secondary
+      start: 210
+      end: 237
+  "if enabled {\n    let mut stdin = child.stdin.take().unwrap();\n    std::io::copy(&mut input, &mut stdin)?;\n    let status = child.wait()?;\n}\n":
+    labels:
+    - source: std::io::copy(&mut input, &mut stdin)?;
+      style: primary
+      start: 66
+      end: 105
+    - source: let mut stdin = child.stdin.take().unwrap();
+      style: secondary
+      start: 17
+      end: 61
+    - source: let status = child.wait()?;
+      style: secondary
+      start: 110
+      end: 137
+  "let mut child = cmd.spawn()?;\nlet mut stdin = child.stdin.take().unwrap();\nstd::io::copy(&mut input, &mut stdin)?;\nlet status = child.wait()?;":
+    labels:
     - source: std::io::copy(&mut input, &mut stdin)?;
       style: primary
       start: 75
@@ -18,3 +42,17 @@ snapshots:
       style: secondary
       start: 115
       end: 142
+  "let mut stdin = child.stdin.take().unwrap();\nstd::io::copy(&mut input, &mut stdin)?;\nlet status = child.wait()?;\nlet code = status.code();\n":
+    labels:
+    - source: std::io::copy(&mut input, &mut stdin)?;
+      style: primary
+      start: 45
+      end: 84
+    - source: let mut stdin = child.stdin.take().unwrap();
+      style: secondary
+      start: 0
+      end: 44
+    - source: let status = child.wait()?;
+      style: secondary
+      start: 85
+      end: 112

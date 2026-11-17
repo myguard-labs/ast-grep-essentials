@@ -5,6 +5,18 @@ valid:
   - |
     System.setProperty("javax.net.ssl.trustStorePassword", config);
     System.setProperty("javax.net.ssl.keyStorePassword", config);
+  - |
+    import com.auth0.jwt.algorithms.Algorithm
+    val a = Algorithm.HMAC256(System.getenv("JWT_SECRET"))
+  - |
+    import com.auth0.jwt.algorithms.Algorithm
+    val a = Algorithm.HMAC256(config.jwtSecret)
+  - |
+    import com.auth0.jwt.algorithms.Algorithm
+    val a = Algorithm.RSA256(pub, priv)
+  - |
+    import com.auth0.jwt.algorithms.Algorithm
+    val a = Algorithm.HMAC256(bytes)
 invalid:
   - |
     package com.foobar.org.configuration
@@ -23,3 +35,15 @@ invalid:
         catch (exception: JWTCreationException) {}
       }
     }
+  - |
+    import com.auth0.jwt.algorithms.Algorithm
+    val a = Algorithm.HMAC384("topsecret")
+  - |
+    import com.auth0.jwt.algorithms.*
+    val a = Algorithm.HMAC512("s3cr3t")
+  - |
+    import com.auth0.jwt.algorithms.Algorithm.HMAC256
+    val a = HMAC256("s3cr3t")
+  - |
+    import com.auth0.jwt.algorithms.Algorithm
+    val a = Algorithm.HMAC256(secret = "abc")

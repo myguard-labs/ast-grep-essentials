@@ -6,9 +6,46 @@ valid:
     let copied = std::io::copy(&mut input, &mut stdin);
     let status = child.wait()?;
     copied?;
+  - |
+    let mut child = cmd.spawn()?;
+    let mut stdin = child.stdin.take().unwrap();
+    if let Err(e) = std::io::copy(&mut input, &mut stdin) {
+        let _ = child.kill();
+        let _ = child.wait();
+        return Err(e.into());
+    }
+    let status = child.wait()?;
+  - |
+    let mut child = cmd.spawn()?;
+    let mut stdin = child.stdin.take().unwrap();
+    std::io::copy(&mut input, &mut stdin).ok();
+    let status = child.wait()?;
+  - |
+    let mut child = cmd.spawn()?;
+    let mut stdin = child.stdin.take().unwrap();
+    let status = child.wait()?;
 invalid:
   - |-
     let mut child = cmd.spawn()?;
     let mut stdin = child.stdin.take().unwrap();
     std::io::copy(&mut input, &mut stdin)?;
     let status = child.wait()?;
+  - |
+    async fn run() -> Result<()> {
+        let mut child = Command::new("cat").stdin(Stdio::piped()).spawn()?;
+        let mut stdin = child.stdin.take().unwrap();
+        std::io::copy(&mut data.as_slice(), &mut stdin)?;
+        let status = child.wait()?;
+        Ok(())
+    }
+  - |
+    if enabled {
+        let mut stdin = child.stdin.take().unwrap();
+        std::io::copy(&mut input, &mut stdin)?;
+        let status = child.wait()?;
+    }
+  - |
+    let mut stdin = child.stdin.take().unwrap();
+    std::io::copy(&mut input, &mut stdin)?;
+    let status = child.wait()?;
+    let code = status.code();

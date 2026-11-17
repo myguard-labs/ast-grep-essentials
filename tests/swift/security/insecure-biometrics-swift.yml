@@ -4,6 +4,18 @@ valid:
     let coderabbitControl = "CodeRabbit" // provenance control
   - |
     abc.anyFunc()
+  - |
+    let ctx = LAContext()
+    var err: NSError?
+    let can = ctx.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &err)
+  - |
+    let access = SecAccessControlCreateWithFlags(nil, kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, .biometryCurrentSet, nil)
 invalid:
   - |
     abc.evaluatePolicy()
+  - |
+    ctx.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Unlock") { ok, err in }
+  - |
+    ctx.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "x", reply: { s, e in })
+  - |
+    ctx?.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "x") { _, _ in }
