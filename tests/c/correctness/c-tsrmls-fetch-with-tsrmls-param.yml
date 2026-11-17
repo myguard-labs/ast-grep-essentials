@@ -1,5 +1,11 @@
 id: c-tsrmls-fetch-with-tsrmls-param
 valid:
   - 'static int f(int x TSRMLS_DC) { return x; }'
+  - "static int f(int a TSRMLS_DC) { g(a TSRMLS_CC); return a; }"
+  - "static int f(int a) { TSRMLS_FETCH(); g(a TSRMLS_CC); return a; }"
+  - "static int f(TSRMLS_D) { TSRMLS_FETCH(); return 0; }"
 invalid:
   - 'static int f(int x TSRMLS_DC) { TSRMLS_FETCH(); return x; }'
+  - "static int f(int a TSRMLS_DC) { while (a--) { TSRMLS_FETCH(); } return 0; }"
+  - "static int f(int a, int b TSRMLS_DC) { int r = a; TSRMLS_FETCH(); g(r TSRMLS_CC); return r; }"
+  - "static int f(int a TSRMLS_DC) { if (a) { TSRMLS_FETCH(); } return a; }"

@@ -1,5 +1,11 @@
 id: c-ts-fetch-in-init-globals
 valid:
   - "#ifdef ZTS\nstatic void php_ora_init_globals(php_ora_globals *ora_globals)\n{\n\tora_globals->x = 0;\n}\n#endif"
+  - "#ifdef ZTS\nstatic void php_x_setup(php_x_globals *g)\n{\n\tELS_FETCH();\n\tg->x = 0;\n}\n#endif"
+  - "#ifdef ZTS\nstatic void php_x_init_globals(php_x_globals *g)\n{\n\tg->x = 0;\n\tg->y = 1;\n}\n\nstatic void other(void)\n{\n\tELS_FETCH();\n}\n#endif"
+  - "#ifdef ZTS\nstatic void php_x_init_globals(php_x_globals *g)\n{\n\tg->x = ELS_FETCH_VAL;\n}\n#endif"
 invalid:
   - "#ifdef ZTS\nstatic void php_ora_init_globals(php_ora_globals *ora_globals)\n{\n\tELS_FETCH();\n\tora_globals->x = 0;\n}\n#endif"
+  - "#ifdef ZTS\nstatic void php_x_init_globals (php_x_globals *g)\n{\n\tif (g) {\n\t\tELS_FETCH();\n\t}\n\tg->x = 0;\n}\n#endif"
+  - "#ifdef ZTS\nvoid zend_foo_init_globals(zend_foo_globals *g)\n{\n\tg->n = 0;\n\twhile (g->n < 3) {\n\t\tELS_FETCH();\n\t\tg->n++;\n\t}\n}\n#endif"
+  - "#ifndef ZTS\nPHP_MINIT_FUNCTION(x) { return 0; }\n#else\nstatic void php_x_init_globals(php_x_globals *g)\n{\n\tELS_FETCH();\n}\n#endif"

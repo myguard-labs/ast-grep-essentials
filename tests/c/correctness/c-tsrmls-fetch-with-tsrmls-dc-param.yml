@@ -1,5 +1,11 @@
 id: c-tsrmls-fetch-with-tsrmls-dc-param
 valid:
   - 'static int cmp(zval *z1, zval *z2) { TSRMLS_FETCH(); return 0; }'
+  - "static int f(TSRMLS_D) { TSRMLS_FETCH(); return 0; }"
+  - "static int f(int a) { if (a) { TSRMLS_FETCH(); } return a; }"
+  - "static int f(int a TSRMLS_DC);\nstatic int h(int a) { TSRMLS_FETCH(); return a; }"
 invalid:
   - 'static int cmp(zval *z1, zval *z2 TSRMLS_DC) { TSRMLS_FETCH(); return 0; }'
+  - "static int f(int a, char *s TSRMLS_DC) { TSRMLS_FETCH(); return a; }"
+  - "static int f(int a TSRMLS_DC) { if (a) { TSRMLS_FETCH(); } return a; }"
+  - "PHPAPI int f(int a TSRMLS_DC) { TSRMLS_FETCH(); return 0; }"

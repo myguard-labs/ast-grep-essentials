@@ -1,5 +1,11 @@
 id: c-timeval-usec-unnormalized-assign
 valid:
   - 'tv.tv_usec = usec % 1000000;'
+  - "void f(struct timeval tv, long u) { tv.tv_usec = (u + 5) % 1000000; }"
+  - "void f(struct timeval tv, long u) { tv.tv_sec = u; }"
+  - "void f(struct timespec ts, long n) { ts.tv_nsec = n % 1000000000; }"
 invalid:
   - 'tv.tv_usec = usec;'
+  - "void f(struct timeval tv, long u) { tv.tv_usec = u + 5; }"
+  - "void f(struct timeval tv, long u) { tv.tv_usec = (u * 1000) / 7; }"
+  - "void f(struct timeval *tv, long u) { (*tv).tv_usec = u * 3; }"

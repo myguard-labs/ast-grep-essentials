@@ -16,6 +16,10 @@ rule:
     - not:
         pattern: '$TV.tv_usec = $X % 1000000'
 metadata:
+  todo_cases:
+    - "FN: arrow form `tv->tv_usec = u;` is not matched (only the dot form `tv.tv_usec = u;`)."
+    - "FP: constant assignments `tv.tv_usec = 0;` and `tv.tv_usec = 999999;` match although the message says non-constant."
+    - "FP: `tv.tv_usec = u % 1000000L;` matches because the exclusion pattern is the literal `1000000` without the L suffix."
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

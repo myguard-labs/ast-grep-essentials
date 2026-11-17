@@ -1,5 +1,11 @@
 id: c-tsrmls-macro-without-context-param
 valid:
   - 'int g(int x TSRMLS_DC) { return h(x TSRMLS_CC); }'
+  - "int g(int x) { TSRMLS_FETCH(); return h(x TSRMLS_CC); }"
+  - "int g(int x) { return h(x); }"
+  - "int g(int x) { TSRMLS_FETCH(); if (x) { return h(x TSRMLS_CC); } return 0; }"
 invalid:
   - 'int g(int x) { return h(x TSRMLS_CC); }'
+  - "int g(int x) { if (x) { return h(x TSRMLS_CC); } return 0; }"
+  - "static int g(int x, char *s) { int r = h(x, s TSRMLS_CC); return r; }"
+  - "int g(int x) { while (x) { x = h(x TSRMLS_CC); } return x; }"
