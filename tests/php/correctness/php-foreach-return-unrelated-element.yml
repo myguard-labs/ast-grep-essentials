@@ -3,7 +3,14 @@ valid:
   - >-
     <?php function f($from, $to) { foreach ($to as $toV) { if (g($from[0],
     $toV)) { return [$toV]; } } }
+  - "<?php function f($from, $to) { foreach ($to as $t) { if ($t === $from[0]) { return [$t]; } } }"
+  - "<?php function f($from) { if ($from) { return [$from[0]]; } return []; }"
+  - "<?php function f($to) { foreach ($to as $t) { if ($t->ok) { return [$t->id]; } } }"
 invalid:
   - >-
     <?php function f($from, $to) { foreach ($to as $toV) { if (g($from[0],
     $toV)) { return [$from[0]]; } } }
+  - "<?php function f($from, $to) { foreach ($to as $t) { if ($t === $from[0]) { return [$from[0]]; } } }"
+  - "<?php function f($from, $to) { foreach ($to as $t) { if ($t->ok) { return [$this->items[0]]; } } }"
+  - "<?php function f($from, $to) { foreach ($to as $k => $t) { if ($t) { echo 1; } elseif ($k) { return [$from[0]]; } } }"
+  - "<?php function f($from, $to) { foreach ($to as $t) { if ($t->a) { return [$from[0]]; } else { return [$t]; } } }"

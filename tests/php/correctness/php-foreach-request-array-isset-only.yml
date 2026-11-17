@@ -1,5 +1,13 @@
 id: php-foreach-request-array-isset-only
 valid:
   - "<?php\nif (isset($_POST['c']) && is_array($_POST['c'])) {\n\tforeach ($_POST['c'] as $v) {\n\t\techo $v;\n\t}\n}\n"
+  - "<?php if ( is_array( $_GET['c'] ) && isset( $_GET['c'] ) ) { foreach ( $_GET['c'] as $v ) { echo $v; } }"
+  - "<?php if ( isset( $_REQUEST['c'] ) && is_array( $_REQUEST['c'] ) ) { foreach ( $_REQUEST['c'] as $k => $v ) { echo $k; } }"
+  - "<?php if ( isset( $opts['c'] ) ) { foreach ( $opts['c'] as $v ) { echo $v; } }"
+  - "<?php if ( is_array( $_POST['c'] ) ) { foreach ( $_POST['c'] as $v ) { echo $v; } }"
 invalid:
   - "<?php\nif (isset($_POST['c'])) {\n\tforeach ($_POST['c'] as $v) {\n\t\techo $v;\n\t}\n}\n"
+  - "<?php if ( isset( $_GET['c'] ) ) { foreach ( $_GET['c'] as $v ) { echo $v; } }"
+  - "<?php if ( isset( $_REQUEST['c'] ) && $_REQUEST['c'] !== '' ) { foreach ( $_REQUEST['c'] as $k => $v ) { echo $k; } }"
+  - "<?php if ( isset( $_POST['a'], $_POST['c'] ) ) { foreach ( $_POST['c'] as $v ) { echo $v; } }"
+  - "<?php if ( isset( $_POST['c'] ) ) { if ( check_admin_referer( 'x' ) ) { foreach ( $_POST['c'] as $v ) { echo $v; } } }"

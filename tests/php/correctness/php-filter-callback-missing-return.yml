@@ -3,7 +3,14 @@ valid:
   - >-
     <?php add_filter( 'template_include', static function ( $template ) { $start
     = microtime( true ); return $template; } );
+  - "<?php add_filter( 'the_content', static function ( $c ) { if ( is_admin() ) { return $c; } return $c . '!'; } );"
+  - "<?php add_filter( 'body_class', static function ( $classes ) { foreach ( $classes as $k => $v ) { if ( $v === 'x' ) { unset( $classes[ $k ] ); } } return $classes; } );"
+  - "<?php add_filter( 'the_title', static function ( $t, $id ) { if ( $id > 0 ) { return strtoupper( $t ); } else { return $t; } } );"
 invalid:
   - >-
     <?php add_filter( 'template_include', static function ( $template ) { $start
     = microtime( true ); } );
+  - "<?php add_filter( 'the_content', static function ( $c ) { echo $c; } );"
+  - "<?php add_filter( 'the_content', static function ( $c ) { if ( is_admin() ) { $c .= 'x'; } } );"
+  - "<?php add_filter( 'the_title', static function ( $t, $id ) { log_title( $t, $id ); } );"
+  - "<?php add_filter( 'the_content', static function () { } );"

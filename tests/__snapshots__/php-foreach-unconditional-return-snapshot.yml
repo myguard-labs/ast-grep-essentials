@@ -1,6 +1,62 @@
 id: php-foreach-unconditional-return
 snapshots:
-  function first_item($items) { foreach ($items as $item) { return $item; } }:
+  "<?php function f($items) { foreach ($items as $item) { $x = g($item); return $x; } }":
+    labels:
+    - source: foreach ($items as $item) { $x = g($item); return $x; }
+      style: primary
+      start: 27
+      end: 82
+    - source: return $x;
+      style: secondary
+      start: 70
+      end: 80
+    - source: "{ $x = g($item); return $x; }"
+      style: secondary
+      start: 53
+      end: 82
+  "<?php function f($items) { foreach ($items as $item) { echo $item; return; } }":
+    labels:
+    - source: foreach ($items as $item) { echo $item; return; }
+      style: primary
+      start: 27
+      end: 76
+    - source: return;
+      style: secondary
+      start: 67
+      end: 74
+    - source: "{ echo $item; return; }"
+      style: secondary
+      start: 53
+      end: 76
+  "<?php function f($items) { foreach ($items as $k => $v) { return $k; } }":
+    labels:
+    - source: foreach ($items as $k => $v) { return $k; }
+      style: primary
+      start: 27
+      end: 70
+    - source: return $k;
+      style: secondary
+      start: 58
+      end: 68
+    - source: "{ return $k; }"
+      style: secondary
+      start: 56
+      end: 70
+  "<?php function f($rows) { foreach ($rows as $row) { foreach ($row as $c) { return $c; } } }":
+    labels:
+    - source: foreach ($row as $c) { return $c; }
+      style: primary
+      start: 52
+      end: 87
+    - source: return $c;
+      style: secondary
+      start: 75
+      end: 85
+    - source: "{ return $c; }"
+      style: secondary
+      start: 73
+      end: 87
+  "function first_item($items) { foreach ($items as $item) { return $item; } }":
     labels:
     - source: foreach ($items as $item) { return $item; }
       style: primary
@@ -10,7 +66,7 @@ snapshots:
       style: secondary
       start: 58
       end: 71
-    - source: '{ return $item; }'
+    - source: "{ return $item; }"
       style: secondary
       start: 56
       end: 73

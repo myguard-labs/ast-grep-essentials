@@ -1,6 +1,80 @@
 id: php-foreach-return-unrelated-element
 snapshots:
-  <?php function f($from, $to) { foreach ($to as $toV) { if (g($from[0], $toV)) { return [$from[0]]; } } }:
+  "<?php function f($from, $to) { foreach ($to as $k => $t) { if ($t) { echo 1; } elseif ($k) { return [$from[0]]; } } }":
+    labels:
+    - source: return [$from[0]];
+      style: primary
+      start: 93
+      end: 111
+    - source: $to
+      style: secondary
+      start: 40
+      end: 43
+    - source: >-
+        foreach ($to as $k => $t) { if ($t) { echo 1; } elseif ($k) { return
+        [$from[0]]; } }
+      style: secondary
+      start: 31
+      end: 115
+    - source: if ($t) { echo 1; } elseif ($k) { return [$from[0]]; }
+      style: secondary
+      start: 59
+      end: 113
+  "<?php function f($from, $to) { foreach ($to as $t) { if ($t === $from[0]) { return [$from[0]]; } } }":
+    labels:
+    - source: return [$from[0]];
+      style: primary
+      start: 76
+      end: 94
+    - source: $to
+      style: secondary
+      start: 40
+      end: 43
+    - source: foreach ($to as $t) { if ($t === $from[0]) { return [$from[0]]; } }
+      style: secondary
+      start: 31
+      end: 98
+    - source: if ($t === $from[0]) { return [$from[0]]; }
+      style: secondary
+      start: 53
+      end: 96
+  "<?php function f($from, $to) { foreach ($to as $t) { if ($t->a) { return [$from[0]]; } else { return [$t]; } } }":
+    labels:
+    - source: return [$from[0]];
+      style: primary
+      start: 66
+      end: 84
+    - source: $to
+      style: secondary
+      start: 40
+      end: 43
+    - source: foreach ($to as $t) { if ($t->a) { return [$from[0]]; } else { return [$t]; } }
+      style: secondary
+      start: 31
+      end: 110
+    - source: if ($t->a) { return [$from[0]]; } else { return [$t]; }
+      style: secondary
+      start: 53
+      end: 108
+  "<?php function f($from, $to) { foreach ($to as $t) { if ($t->ok) { return [$this->items[0]]; } } }":
+    labels:
+    - source: return [$this->items[0]];
+      style: primary
+      start: 67
+      end: 92
+    - source: $to
+      style: secondary
+      start: 40
+      end: 43
+    - source: foreach ($to as $t) { if ($t->ok) { return [$this->items[0]]; } }
+      style: secondary
+      start: 31
+      end: 96
+    - source: if ($t->ok) { return [$this->items[0]]; }
+      style: secondary
+      start: 53
+      end: 94
+  "<?php function f($from, $to) { foreach ($to as $toV) { if (g($from[0], $toV)) { return [$from[0]]; } } }":
     labels:
     - source: return [$from[0]];
       style: primary

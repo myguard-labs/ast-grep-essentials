@@ -1,5 +1,12 @@
 id: php-foreach-ref-binding
 valid:
   - 'foreach ( $tables as $table ) { $table = $prefix . $table; }'
+  - "<?php foreach ( $rows as $key => $row ) { echo $key; }"
+  - "<?php foreach ( $this->items as $item ) { $item = trim( $item ); }"
+  - "<?php foreach ( $pairs as [ $a, $b ] ) { echo $a . $b; }"
 invalid:
   - 'foreach ( $tables as &$table ) { $table = $prefix . $table; }'
+  - "<?php foreach ( $rows as $key => &$row ) { $row = trim( $row ); }"
+  - "<?php foreach ( $this->items as &$item ) { $item = trim( $item ); }"
+  - "<?php foreach ( $list as &$v ) { }"
+  - "<?php foreach ( $rows as ['n' => &$n] ) { $n++; }"

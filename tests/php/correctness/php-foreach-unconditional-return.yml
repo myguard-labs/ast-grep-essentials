@@ -3,5 +3,13 @@ valid:
   - >-
     function first_item($items) { foreach ($items as $item) { if ($item) {
     return $item; } } }
+  - "<?php function f($items) { $n = 0; foreach ($items as $item) { $n += $item; } return $n; }"
+  - "<?php function f($items) { foreach ($items as $k => $v) { if ($v) { continue; } else { return $k; } } return null; }"
+  - "<?php function f($items) { foreach ($items as $item) { if ($item->ok) { return $item; } } return null; }"
+  - "<?php function f($items) { foreach ($items as $item) { $cb = function () { return 1; }; $cb(); } }"
 invalid:
   - 'function first_item($items) { foreach ($items as $item) { return $item; } }'
+  - "<?php function f($items) { foreach ($items as $k => $v) { return $k; } }"
+  - "<?php function f($items) { foreach ($items as $item) { $x = g($item); return $x; } }"
+  - "<?php function f($items) { foreach ($items as $item) { echo $item; return; } }"
+  - "<?php function f($rows) { foreach ($rows as $row) { foreach ($row as $c) { return $c; } } }"
