@@ -5,7 +5,7 @@ valid:
     ap_log_rerror(APLOG_MARK, APLOG_ERR, status, r, fmt); }
   - 'void f(void) { apr_status_t rv; if ((rv = g(p)) != APR_SUCCESS) { ap_log_rerror(APLOG_MARK, APLOG_ERR, rv, r, "x"); return; } }'
   - 'void f(void) { apr_status_t rv; if ((rv = g(p)) == APR_SUCCESS) { ap_log_rerror(APLOG_MARK, APLOG_DEBUG, NULL, r, "ok"); } }'
-  - 'void f(void) { apr_status_t rv; if ((rv = g(p)) != APR_SUCCESS) { ap_log_rerror(APLOG_MARK, APLOG_ERR, APR_FROM_OS_ERROR(errno), r, "x"); } }'
+  - 'void f(void) { if ((status = apr_file_open(&fd, path, flags, 0, pool)) != APR_SUCCESS) { ap_log_rerror(APLOG_MARK, APLOG_WARNING, status, r, "e"); } }'
 invalid:
   - >-
     apr_status_t status; if ((status = f(p, u)) != APR_SUCCESS) {
