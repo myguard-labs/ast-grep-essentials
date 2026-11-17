@@ -13,6 +13,19 @@ valid:
   #   end
   # end
 - astgrep_fixture = "def follow_redirect(uri, headers)\n  if response.is_a?(Net::HTTPRedirection)\n    follow_redirect(URI(response['location']), headers)\n  end\nend"
+- |-
+  def follow_redirect(uri, headers)
+    if uri.nil?
+      follow_redirect(default_uri, headers)
+    end
+  end
+- |-
+  def fetch(uri, headers)
+    if uri.nil?
+      handle_redirect(uri)
+      fetch(default_uri, headers)
+    end
+  end
 invalid:
 - |-
   def follow_redirect(uri, headers)
