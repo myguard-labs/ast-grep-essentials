@@ -21,7 +21,7 @@ constraints:
     kind: argument
     has:
       kind: encapsed_string
-      regex: '(?:^|[^\\])(?:\\\\)*\\(?:[^nrtvef\\$"0-7xu]|x[^0-9A-Fa-f]|u[^{])'
+      regex: '(?:^|[^\\])(?:\\\\)*\\(?:[a-dg-mo-qswyzA-Z]|x[^0-9A-Fa-f]|u[^{])'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -32,3 +32,4 @@ metadata:
   license: MyGuard Internal Use License 1.0
   todo_cases:
     - 'FN: namespaced \trim($a, "\s") is not reported.'
+    - 'FP: the regex reads the whole double-quoted mask, so an interpolated expression such as trim($s, "{$map[''\s'']}") is reported although the key is a single-quoted string.'
