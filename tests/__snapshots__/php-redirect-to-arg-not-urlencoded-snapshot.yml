@@ -1,8 +1,26 @@
 id: php-redirect-to-arg-not-urlencoded
 snapshots:
-  $args['redirect_to'] = $redirect;:
+  "$args['redirect_to'] = $redirect;":
     labels:
     - source: $args['redirect_to'] = $redirect
       style: primary
       start: 0
       end: 32
+  "<?php class A { function f( $url ) { $args['redirect_to'] = $url; } }":
+    labels:
+    - source: $args['redirect_to'] = $url
+      style: primary
+      start: 37
+      end: 64
+  "<?php foreach ( $targets as $t ) { $args['redirect_to'] = $t; }":
+    labels:
+    - source: $args['redirect_to'] = $t
+      style: primary
+      start: 35
+      end: 60
+  "<?php function build( $redirect ) { $args = array(); if ( $redirect ) { $args['redirect_to'] = $redirect; } return $args; }":
+    labels:
+    - source: $args['redirect_to'] = $redirect
+      style: primary
+      start: 72
+      end: 104

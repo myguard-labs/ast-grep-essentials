@@ -1,7 +1,12 @@
 id: php-realpath-unchecked-define
 valid:
   - '<?php define(''APPLICATION_PATH'', dirname(__FILE__) . ''/../application'');'
+  - '<?php define(''P'', realpath($x) ?: __DIR__);'
+  - '<?php $p = realpath($x); if ($p === false) { exit(1); } define(''P'', $p);'
 invalid:
   - >-
     <?php define('APPLICATION_PATH', realpath(dirname(__FILE__) .
     '/../application'));
+  - '<?php define(''P'', realpath(__DIR__ . ''/..''));'
+  - '<?php define("ROOT", realpath("."));'
+  - '<?php if (!defined(''P'')) { define(''P'', realpath($dir)); }'

@@ -1,5 +1,10 @@
 id: php-redirect-to-arg-not-urlencoded
 valid:
   - '$args[''redirect_to''] = urlencode( $redirect );'
+  - '$args[''redirect_to''] = rawurlencode( $redirect );'
+  - '$args[''redirect_label''] = $redirect;'
 invalid:
   - '$args[''redirect_to''] = $redirect;'
+  - '<?php function build( $redirect ) { $args = array(); if ( $redirect ) { $args[''redirect_to''] = $redirect; } return $args; }'
+  - '<?php class A { function f( $url ) { $args[''redirect_to''] = $url; } }'
+  - '<?php foreach ( $targets as $t ) { $args[''redirect_to''] = $t; }'

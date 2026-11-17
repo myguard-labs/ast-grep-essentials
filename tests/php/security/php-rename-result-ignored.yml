@@ -1,5 +1,10 @@
 id: php-rename-result-ignored
 valid:
   - '<?php if (!rename($temp_file, $cache_file)) { return false; }'
+  - '<?php return rename($temp_file, $cache_file);'
+  - '<?php if (rename($a, $b) === false) { throw new RuntimeException(''x''); }'
 invalid:
   - '<?php rename($temp_file, $cache_file);'
+  - '<?php @rename($temp_file, $cache_file);'
+  - '<?php function f($a,$b) { rename($a, $b, $ctx); }'
+  - '<?php $x = true; rename($a, $b); echo 1;'
