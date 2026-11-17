@@ -1,5 +1,29 @@
 id: wp-superglobal-bare-identifier-key
 valid:
   - '<?php $v = $_POST[''linkcheck''];'
+  - |-
+    <?php
+    $v = $_GET['page'];
+  - |-
+    <?php
+    $v = $_SERVER['REQUEST_METHOD'];
+  - |-
+    <?php
+    $v = $_COOKIE[ $key ];
+  - |-
+    <?php
+    $v = $_GET[0];
 invalid:
   - '<?php $v = $_POST[linkcheck];'
+  - |-
+    <?php
+    $v = $_GET[page];
+  - |-
+    <?php
+    $v = $_SERVER[HTTP_HOST];
+  - |-
+    <?php
+    if ( isset( $_REQUEST[action] ) ) { run(); }
+  - |-
+    <?php
+    $v = $_COOKIE[foo];

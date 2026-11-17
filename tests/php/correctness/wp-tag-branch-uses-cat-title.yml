@@ -1,5 +1,28 @@
 id: wp-tag-branch-uses-cat-title
 valid:
   - 'if (is_tag()) { single_tag_title(); }'
+  - |-
+    <?php
+    if (is_category()) { single_cat_title(); }
+  - |-
+    <?php
+    if (is_tag()) { single_term_title(); }
+  - |-
+    <?php
+    if (is_tag()) { echo single_tag_title( '', false ); }
+  - |-
+    <?php
+    if (is_tag()) { single_tag_title(); } else { single_cat_title(); }
 invalid:
   - 'if (is_tag()) { single_cat_title(); }'
+  - |-
+    <?php
+    if ( is_tag() ) {
+    	single_cat_title();
+    }
+  - |-
+    <?php
+    function t() { if (is_tag()) { single_cat_title(); } }
+  - |-
+    <?php
+    if (is_home()) { home(); } else if (is_tag()) { single_cat_title(); }
