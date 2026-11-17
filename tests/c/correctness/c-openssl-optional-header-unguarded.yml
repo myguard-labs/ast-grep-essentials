@@ -4,5 +4,40 @@ valid:
     #ifndef OPENSSL_NO_ENGINE
     #include <openssl/engine.h>
     #endif
+  - |-
+    #ifdef USE_OPENSSL
+    #ifndef OPENSSL_NO_ENGINE
+    #include <openssl/engine.h>
+    #endif
+    #endif
+  - |-
+    #ifndef OPENSSL_NO_ENGINE
+    #include <openssl/engine.h>
+    #else
+    #include <openssl/err.h>
+    #endif
+  - |-
+    #include <openssl/ssl.h>
+    #ifndef OPENSSL_NO_ENGINE
+    #include <openssl/engine.h>
+    #endif
+    #include <openssl/err.h>
 invalid:
   - '#include <openssl/engine.h>'
+  - |-
+    #include <openssl/ssl.h>
+    #include <openssl/engine.h>
+    #include <openssl/err.h>
+  - |-
+    #ifdef USE_OPENSSL
+    #include <openssl/engine.h>
+    #endif
+  - |-
+    #ifndef OPENSSL_NO_EC
+    #include <openssl/engine.h>
+    #endif
+  - |-
+    #ifdef USE_OPENSSL
+    #include <openssl/ssl.h>
+    #endif
+    #include <openssl/engine.h>

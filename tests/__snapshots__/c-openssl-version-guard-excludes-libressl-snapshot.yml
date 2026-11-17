@@ -1,5 +1,20 @@
 id: c-openssl-version-guard-excludes-libressl
 snapshots:
+  "#if OPENSSL_VERSION_NUMBER < 0x10100000L\nint x;\n#else\nint y;\n#endif":
+    labels:
+    - source: |-
+        #if OPENSSL_VERSION_NUMBER < 0x10100000L
+        int x;
+        #else
+        int y;
+        #endif
+      style: primary
+      start: 0
+      end: 67
+    - source: OPENSSL_VERSION_NUMBER < 0x10100000L
+      style: secondary
+      start: 4
+      end: 40
   "#if OPENSSL_VERSION_NUMBER >= 0x1010100fL\nint x;\n#endif":
     labels:
     - source: |-
@@ -13,3 +28,29 @@ snapshots:
       style: secondary
       start: 4
       end: 41
+  "#if defined(HAVE_SSL) && OPENSSL_VERSION_NUMBER >= 0x10101000L\nint x;\n#endif":
+    labels:
+    - source: |-
+        #if defined(HAVE_SSL) && OPENSSL_VERSION_NUMBER >= 0x10101000L
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 76
+    - source: defined(HAVE_SSL) && OPENSSL_VERSION_NUMBER >= 0x10101000L
+      style: secondary
+      start: 4
+      end: 62
+  "#if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L\nint x;\n#endif":
+    labels:
+    - source: |-
+        #if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 90
+    - source: defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
+      style: secondary
+      start: 4
+      end: 76

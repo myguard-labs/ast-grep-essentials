@@ -3,7 +3,66 @@ valid:
   - >-
     static int f(bool *is_private, int x) { *is_private = false; if (!x) goto
     cleanup; cleanup: return 0; }
+  - |-
+    static int f(int *count, int x)
+    {
+      *count = 0;
+      if (x < 0) {
+        goto done;
+      }
+    done:
+      return 0;
+    }
+  - |-
+    static int f(int *count, int x)
+    {
+      if (x < 0) {
+        x = 0;
+      }
+      *count = x;
+      return 0;
+    }
+  - |-
+    static int f(int *a, int *b, int x)
+    {
+      *a = 1;
+      *b = 2;
+      if (!x) goto done;
+    done:
+      return 0;
+    }
 invalid:
   - >-
     static int f(bool *is_private, int x) { if (!x) goto cleanup; *is_private =
     false; cleanup: return 0; }
+  - |-
+    static int f(int *count, int x)
+    {
+      if (x < 0) {
+        log_error();
+        goto fail;
+      }
+      *count = x;
+      return 0;
+    fail:
+      return -1;
+    }
+  - |-
+    static int f(char **out, int rc)
+    {
+      if (rc != 0) goto fail;
+      *out = strdup("ok");
+      return 0;
+    fail:
+      return -1;
+    }
+  - |-
+    static int f(int *len, int a, int b)
+    {
+      if (a) goto fail;
+      if (b) goto fail;
+      *len = a + b;
+      return 0;
+    fail:
+      return -1;
+    }

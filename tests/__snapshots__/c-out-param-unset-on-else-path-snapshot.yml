@@ -1,5 +1,19 @@
 id: c-out-param-unset-on-else-path
 snapshots:
+  "int f(char **out, int n) {\n  if (n) *out = malloc(n);\n  return 0;\n}":
+    labels:
+    - source: if (n) *out = malloc(n);
+      style: primary
+      start: 29
+      end: 53
+    - source: "*out = malloc(n)"
+      style: secondary
+      start: 36
+      end: 52
+    - source: "*out = malloc(n)"
+      style: secondary
+      start: 36
+      end: 52
   "int f(char **out, int n) { if (n) { *out = malloc(n); } return 0; }":
     labels:
     - source: if (n) { *out = malloc(n); }
@@ -14,3 +28,37 @@ snapshots:
       style: secondary
       start: 36
       end: 52
+  "int f(char **out, int n, int m) {\n  if (n) {\n    *out = malloc(n);\n  } else if (m) {\n    *out = malloc(m);\n  }\n  return 0;\n}":
+    labels:
+    - source: |-
+        if (m) {
+            *out = malloc(m);
+          }
+      style: primary
+      start: 76
+      end: 110
+    - source: "*out = malloc(m)"
+      style: secondary
+      start: 89
+      end: 105
+    - source: "*out = malloc(m)"
+      style: secondary
+      start: 89
+      end: 105
+  "int f(char **out, int n, int m) {\n  if (n) {\n    if (m) {\n      *out = malloc(m);\n    }\n  } else {\n    return -1;\n  }\n  return 0;\n}":
+    labels:
+    - source: |-
+        if (m) {
+              *out = malloc(m);
+            }
+      style: primary
+      start: 49
+      end: 87
+    - source: "*out = malloc(m)"
+      style: secondary
+      start: 64
+      end: 80
+    - source: "*out = malloc(m)"
+      style: secondary
+      start: 64
+      end: 80
