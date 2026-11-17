@@ -3,7 +3,13 @@ valid:
   - >-
     static void optimize_func_calls(zend_op_array *op_array,
     zend_persistent_script *script TSRMLS_DC) { }
+  - "static void f(int a TSRMLS_DC)\n{\n\tg(a TSRMLS_CC);\n}"
+  - "static void f(TSRMLS_D)\n{\n}"
+  - "static void f(int a, int b)\n{\n\th(a, b);\n}"
 invalid:
   - >-
     static void optimize_func_calls(zend_op_array *op_array,
     zend_persistent_script *script TSRMLS_CC) { }
+  - "static int f(int a, char *b, long c TSRMLS_CC)\n{\n\treturn a;\n}"
+  - "static void *f(zval *z TSRMLS_CC)\n{\n\treturn z;\n}"
+  - "PHPAPI char *php_f(const char *s, size_t n TSRMLS_CC)\n{\n\treturn NULL;\n}"

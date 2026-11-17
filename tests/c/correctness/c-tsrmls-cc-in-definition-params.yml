@@ -4,8 +4,14 @@ valid:
     static void f(int n TSRMLS_DC)
     {
     }
+  - "static void f(TSRMLS_D)\n{\n}"
+  - "static void f(int n, zval *z TSRMLS_DC)\n{\n\tg(n TSRMLS_CC);\n}"
+  - "static void f(int n, zval *z TSRMLS_DC)\n{\n\tg(n);\n}"
 invalid:
   - |-
     static void f(int n TSRMLS_CC)
     {
     }
+  - "static void f(int n, char *s TSRMLS_CC)\n{\n}"
+  - "static int f(int n TSRMLS_CC)\n{\n\treturn n;\n}"
+  - "static void *f(int n, char *s TSRMLS_CC)\n{\n\treturn s;\n}"

@@ -1,6 +1,16 @@
 id: c-tsrmls-macro-without-context-param
 snapshots:
-  int g(int x) { return h(x TSRMLS_CC); }:
+  "int g(int x) { if (x) { return h(x TSRMLS_CC); } return 0; }":
+    labels:
+    - source: int g(int x) { if (x) { return h(x TSRMLS_CC); } return 0; }
+      style: primary
+      start: 0
+      end: 60
+    - source: TSRMLS_CC
+      style: secondary
+      start: 35
+      end: 44
+  "int g(int x) { return h(x TSRMLS_CC); }":
     labels:
     - source: int g(int x) { return h(x TSRMLS_CC); }
       style: primary
@@ -10,3 +20,23 @@ snapshots:
       style: secondary
       start: 26
       end: 35
+  "int g(int x) { while (x) { x = h(x TSRMLS_CC); } return x; }":
+    labels:
+    - source: int g(int x) { while (x) { x = h(x TSRMLS_CC); } return x; }
+      style: primary
+      start: 0
+      end: 60
+    - source: TSRMLS_CC
+      style: secondary
+      start: 35
+      end: 44
+  "static int g(int x, char *s) { int r = h(x, s TSRMLS_CC); return r; }":
+    labels:
+    - source: static int g(int x, char *s) { int r = h(x, s TSRMLS_CC); return r; }
+      style: primary
+      start: 0
+      end: 69
+    - source: TSRMLS_CC
+      style: secondary
+      start: 46
+      end: 55

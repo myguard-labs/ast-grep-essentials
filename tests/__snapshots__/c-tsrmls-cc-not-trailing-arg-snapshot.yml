@@ -1,6 +1,36 @@
 id: c-tsrmls-cc-not-trailing-arg
 snapshots:
-  zend_throw_exception_ex(ce, type TSRMLS_CC, msg);:
+  "void f(void) { g(a, b TSRMLS_CC, c, d); }":
+    labels:
+    - source: g(a, b TSRMLS_CC, c, d)
+      style: primary
+      start: 15
+      end: 38
+    - source: TSRMLS_CC
+      style: secondary
+      start: 22
+      end: 31
+  "void f(void) { if (g(a, b TSRMLS_CC, c)) { return; } }":
+    labels:
+    - source: g(a, b TSRMLS_CC, c)
+      style: primary
+      start: 19
+      end: 39
+    - source: TSRMLS_CC
+      style: secondary
+      start: 26
+      end: 35
+  "void f(void) { int r = g(a, b TSRMLS_CC, c); }":
+    labels:
+    - source: g(a, b TSRMLS_CC, c)
+      style: primary
+      start: 23
+      end: 43
+    - source: TSRMLS_CC
+      style: secondary
+      start: 30
+      end: 39
+  "zend_throw_exception_ex(ce, type TSRMLS_CC, msg);":
     labels:
     - source: zend_throw_exception_ex(ce, type TSRMLS_CC, msg)
       style: primary

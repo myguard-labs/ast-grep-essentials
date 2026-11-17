@@ -1,5 +1,11 @@
 id: c-tsrmls-cc-not-trailing-arg
 valid:
   - 'zend_throw_exception_ex(ce, type, msg TSRMLS_CC);'
+  - "void f(void) { zend_error(E_WARNING, \"x\" TSRMLS_CC); }"
+  - "void f(void) { g(a, h(b TSRMLS_CC)); }"
+  - "void f(int a TSRMLS_DC) { g(a, h(a) TSRMLS_CC); }"
 invalid:
   - 'zend_throw_exception_ex(ce, type TSRMLS_CC, msg);'
+  - "void f(void) { g(a, b TSRMLS_CC, c, d); }"
+  - "void f(void) { int r = g(a, b TSRMLS_CC, c); }"
+  - "void f(void) { if (g(a, b TSRMLS_CC, c)) { return; } }"
