@@ -1,5 +1,11 @@
 id: wp-comments-template-expression-arg
 valid:
   - '<?php comments_template( ''/comments.php'' ); ?>'
+  - "<?php comments_template(); ?>"
+  - "<?php if ( is_single() ) { comments_template( '/comments.php', true ); } ?>"
+  - "<?php comments_template( is_single() ? '/single-comments.php' : '/comments.php' ); ?>"
 invalid:
   - '<?php comments_template( is_single() ); ?>'
+  - "<?php if ( have_comments() ) { comments_template( is_single() ); } ?>"
+  - "<?php function load_comments() {\n    comments_template(\n        is_single()\n    );\n}"
+  - "<?php echo comments_template(is_single());"

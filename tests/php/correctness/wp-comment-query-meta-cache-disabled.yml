@@ -1,7 +1,13 @@
 id: wp-comment-query-meta-cache-disabled
 valid:
   - '$args = array( ''status'' => ''approve'', ''update_comment_meta_cache'' => true );'
+  - "<?php $args = array( 'update_comment_post_cache' => false, 'update_comment_meta_cache' => true );"
+  - "<?php $args = [ 'status' => 'approve', 'update_comment_meta_cache' => true ];"
+  - "<?php $args = array( 'update_post_meta_cache' => false, 'number' => 5 );"
 invalid:
   - >-
     $args = array( 'status' => 'approve', 'update_comment_meta_cache' => false
     );
+  - "<?php $args = [ 'status' => 'approve', 'update_comment_meta_cache' => false ];"
+  - "<?php $c = get_comments( array( 'post_id' => $id, 'update_comment_meta_cache' => false ) );"
+  - "<?php $args = array( 'update_comment_meta_cache' => FALSE, 'number' => 10 );"
