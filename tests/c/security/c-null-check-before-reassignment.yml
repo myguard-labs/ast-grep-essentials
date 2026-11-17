@@ -15,6 +15,8 @@ valid:
     void f(int *p) { if (p) { p = next(p); } if (!p) { return; } use(*p); }
   - |-
     void f(int *p) { if (p) { p = next(p); } if (p) { p = next(p); if (p) { use(*p); } } }
+  - |-
+    void f(int *p) { if (p) { p = next(p); } if (!p) return; p = next(p); if (!p) return; use(*p); }
 
 invalid:
   - >-
@@ -30,3 +32,7 @@ invalid:
     void f(int *p) { if (p) { p = lookup(1); } /* c */ h(*p); }
   - |-
     void f(int *p) { if (p) { p = next(p); } if (p) { p = NULL; use(*p); } }
+  - |-
+    void f(int *p) { if (p) { p = next(p); } if (!p) { return; } p = NULL; use(*p); }
+  - |-
+    void f(int *p) { if (p) { p = next(p); } if (!p) return; p = NULL; use(*p); if (!p) return; use(*p); }
