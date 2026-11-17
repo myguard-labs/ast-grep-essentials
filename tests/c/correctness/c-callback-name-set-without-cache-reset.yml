@@ -3,5 +3,12 @@ valid:
   - >-
     static void f(zend_bgl *bg, zval *fn) { bg->user_compare_func_name = fn;
     bg->user_compare_fci_cache.initialized = 0; }
+  - 'static void f(zend_bgl *bg, zval *fn) { bg->user_compare_fci_cache.initialized = 0; bg->user_compare_func_name = fn; }'
+  - 'static void f(zend_bgl *bg, zval *fn) { bg->user_compare_func_name = fn; bg->user_walk_func_name = fn; bg->user_compare_fci_cache.initialized = 0; bg->user_walk_fci_cache.initialized = 0; }'
+  - 'static void f(zend_bgl bg, zval *fn) { bg.user_compare_func_name = fn; bg.user_compare_fci_cache.initialized = 0; }'
 invalid:
   - 'static void f(zend_bgl *bg, zval *fn) { bg->user_compare_func_name = fn; }'
+  - 'static void f(zend_bgl bg, zval *fn) { bg.user_compare_func_name = fn; }'
+  - 'static void f(zend_bgl *bg, zval *fn) { bg->user_walk_func_name = fn; }'
+  - 'static void f(zend_bgl *bg, zval *fn) { bg->user_compare_func_name = fn; bg->user_compare_fci_cache.function_handler = NULL; }'
+  - 'static void f(zend_bgl *bg, zval *fn) { bg->user_compare_func_name = fn; } static void g(zend_bgl *bg) { bg->user_compare_fci_cache.initialized = 0; }'

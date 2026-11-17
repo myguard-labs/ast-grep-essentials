@@ -1,5 +1,11 @@
 id: c-call-result-reassigned-to-argument
 valid:
   - 'inst = init(zobj); if (!inst) return err;'
+  - 'void f(char *p) { q = dup(p); if (!q) return; }'
+  - 'void f(char *p, char *q) { p = dup(q); if (!p) return; }'
+  - 'void f(char *p) { char *t = dup(p); if (!t) return; free(p); p = t; }'
 invalid:
   - 'zobj = init(zobj); if (!zobj) return err;'
+  - 'void f(S *s) { s->buf = dup(s->buf); if (!s->buf) return; }'
+  - 'void f(char *p) { p = dup(p); if (!p) { return; } else { use(p); } }'
+  - 'int f(char *name) { name = strip(name); if (!name) { return -1; } return 0; }'

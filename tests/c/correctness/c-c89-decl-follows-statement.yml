@@ -1,5 +1,11 @@
 id: c-c89-decl-follows-statement
 valid:
   - 'void f(int x) { int y = x; if (x) x++; (void)y; }'
+  - 'void f(int x) { if (x) x++; { int y = x; (void)y; } }'
+  - 'void f(int x) { if (x) { int y = x; (void)y; } }'
+  - 'void f(int a, int b) { int c = a; int d = b; if (c) c++; (void)d; }'
 invalid:
   - 'void f(int x) { if (x) x++; int y = x; (void)y; }'
+  - 'void f(int x) { if (x) x++; else x--; int y = x; (void)y; }'
+  - 'void f(int n) { for (int i = 0; i < n; i++) { if (i) continue; int k = i * 2; (void)k; } }'
+  - 'void f(int x) { if (x) x++; int y = x, z = x; (void)y; (void)z; }'

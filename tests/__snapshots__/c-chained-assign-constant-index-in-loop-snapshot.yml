@@ -1,11 +1,37 @@
 id: c-chained-assign-constant-index-in-loop
 snapshots:
-  ? |-
-    static void init(unsigned char t[2][256], int i, int n) {
-        for (; i < n; ++i)
-            t[0][i] = t[1][0] = 0;
-    }
-  : labels:
+  "static void f(unsigned char a[256], unsigned char b[256], int n) { for (int i = 0; i < n; i++) { a[i] = b[0] = 0; } }":
+    labels:
+    - source: a[i] = b[0] = 0
+      style: primary
+      start: 97
+      end: 112
+    - source: for (int i = 0; i < n; i++) { a[i] = b[0] = 0; }
+      style: secondary
+      start: 67
+      end: 115
+  "static void f(unsigned char a[256], unsigned char b[256], int n) { for (int i = 0; i < n; i++) { for (int j = 0; j < n; j++) a[j] = b[0] = i; } }":
+    labels:
+    - source: a[j] = b[0] = i
+      style: primary
+      start: 125
+      end: 140
+    - source: for (int j = 0; j < n; j++) a[j] = b[0] = i;
+      style: secondary
+      start: 97
+      end: 141
+  "static void f(unsigned char a[256], unsigned char b[256], unsigned char c[256], int n) { for (int i = 0; i < n; i++) a[i] = b[0] = c[i]; }":
+    labels:
+    - source: a[i] = b[0] = c[i]
+      style: primary
+      start: 117
+      end: 135
+    - source: for (int i = 0; i < n; i++) a[i] = b[0] = c[i];
+      style: secondary
+      start: 89
+      end: 136
+  "static void init(unsigned char t[2][256], int i, int n) {\n    for (; i < n; ++i)\n        t[0][i] = t[1][0] = 0;\n}":
+    labels:
     - source: t[0][i] = t[1][0] = 0
       style: primary
       start: 89

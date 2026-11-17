@@ -1,5 +1,11 @@
 id: c-cast-as-assignment-lvalue
 valid:
   - 'void f(long a, long b) { a ^= (long)b; }'
+  - 'void f(long a, long b) { long c = (long)a ^ b; (void)c; }'
+  - 'void f(long a, long b) { a = (long)(a ^ b); }'
+  - 'void f(long a, long b) { *(long *)&a ^= b; }'
 invalid:
   - 'void f(const char *a, const char *b) { (long)a ^= (long)b; }'
+  - 'void f(char c) { (char)c ^= 1; }'
+  - 'void f(unsigned *p) { (unsigned)*p ^= 7; }'
+  - 'void f(int *a, int i) { (int)a[i] ^= 1; }'
