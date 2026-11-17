@@ -1,5 +1,12 @@
 id: php-gmdate-for-localized-date-option
 valid:
   - '$d = date_i18n( get_option( ''date_format'' ), $ts );'
+  - '$d = gmdate( ''Y-m-d'', $ts );'
+  - '$d = wp_date( get_option( ''date_format'' ), $ts );'
+  - '$d = gmdate( $fmt, $ts );'
+
 invalid:
   - '$d = gmdate( get_option( ''date_format'' ), $ts );'
+  - '$d = gmdate( get_option( ''date_format'' ), time() );'
+  - 'return gmdate( get_option( ''time_format'' ), strtotime( $d ) );'
+  - 'echo esc_html( gmdate( get_option( ''date_format'' ), $ts ) );'

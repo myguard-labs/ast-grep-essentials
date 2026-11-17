@@ -1,5 +1,14 @@
 id: php-guard-return-falsy-var
 valid:
   - 'function f( $dims ) { if ( !$dims ) return new WP_Error( ''x'' ); }'
+  - 'function f( $a, $b ) { if ( ! $a ) return $b; }'
+  - 'function f( $a ) { if ( $a ) return $a; }'
+  - 'function f( $a ) { if ( ! $a ) return null; }'
+
 invalid:
   - 'function f( $dims ) { if ( !$dims ) return $dims; }'
+  - '<?php if ( !$x ) return $x;'
+  - 'function f( $d ) { if ( ! $d ) return $d; return 1; }'
+  - |-
+      function f( $d ) { if ( ! $d ) return $d; }
+      function g( $e ) { if ( ! $e ) return $e; }

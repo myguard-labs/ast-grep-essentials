@@ -3,7 +3,14 @@ valid:
   - >-
     <?php if ( ! is_null($body) ) { if ( ! is_string($body) ) { $body =
     http_build_query($body); } }
+  - '<?php if ( is_null( $a ) ) { if ( ! is_string( $b ) ) { return; } }'
+  - '<?php if ( is_array( $v ) ) { if ( ! is_string( $v ) ) { return; } }'
+  - '<?php if ( is_null( $v ) && $x ) { if ( ! is_string( $v ) ) { return; } }'
+
 invalid:
   - >-
     <?php if ( is_null($body) ) { if ( ! is_string($body) ) { $body =
     http_build_query($body); } }
+  - '<?php function f( $v ) { if ( is_null( $v ) ) { if ( ! is_string( $v ) ) { return; } } }'
+  - '<?php if (is_null($v)) { if (!is_string($v)) { $a = 1; $b = 2; } }'
+  - '<?php if ( is_null( $this_value ) ) { if ( ! is_string( $this_value ) ) { log_it(); } }'

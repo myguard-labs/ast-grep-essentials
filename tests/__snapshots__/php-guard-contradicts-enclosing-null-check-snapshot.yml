@@ -1,8 +1,30 @@
 id: php-guard-contradicts-enclosing-null-check
 snapshots:
-  <?php if ( is_null($body) ) { if ( ! is_string($body) ) { $body = http_build_query($body); } }:
+  "<?php function f( $v ) { if ( is_null( $v ) ) { if ( ! is_string( $v ) ) { return; } } }":
     labels:
-    - source: if ( is_null($body) ) { if ( ! is_string($body) ) { $body = http_build_query($body); } }
+    - source: if ( is_null( $v ) ) { if ( ! is_string( $v ) ) { return; } }
+      style: primary
+      start: 25
+      end: 86
+  "<?php if ( is_null( $this_value ) ) { if ( ! is_string( $this_value ) ) { log_it(); } }":
+    labels:
+    - source: >-
+        if ( is_null( $this_value ) ) { if ( ! is_string( $this_value ) ) { log_it(); }
+        }
+      style: primary
+      start: 6
+      end: 87
+  "<?php if ( is_null($body) ) { if ( ! is_string($body) ) { $body = http_build_query($body); } }":
+    labels:
+    - source: >-
+        if ( is_null($body) ) { if ( ! is_string($body) ) { $body =
+        http_build_query($body); } }
       style: primary
       start: 6
       end: 94
+  "<?php if (is_null($v)) { if (!is_string($v)) { $a = 1; $b = 2; } }":
+    labels:
+    - source: if (is_null($v)) { if (!is_string($v)) { $a = 1; $b = 2; } }
+      style: primary
+      start: 6
+      end: 66
