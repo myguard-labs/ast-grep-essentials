@@ -10,7 +10,13 @@ valid:
     #include <stdint.h>
     #include <stddef.h>
     #include <string.h>
-    void bind(uint64_t *q, void *buf) { q = (uint64_t *) buf; }
+    #include <stdlib.h>
+    uint64_t *alloc_words(size_t n) {
+      uint64_t *q;
+      void *buf = calloc(n, sizeof *q);
+      q = (uint64_t *) buf;
+      return q;
+    }
   - |-
     unsigned long widen(unsigned x) { unsigned long v; v = (unsigned long) x; return v; }
 invalid:
