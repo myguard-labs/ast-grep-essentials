@@ -1,8 +1,18 @@
 id: go-deref-index-missing-lower-bound
 snapshots:
-  func fillOK(fid *int, fills []int) bool { return fid != nil && *fid < len(fills) }:
+  "func fillOK(fid *int, fills []int) bool { return *fid < len(fills) && fills[*fid] > 0 }":
     labels:
-    - source: '*fid < len(fills)'
+    - source: "*fid < len(fills)"
+      style: primary
+      start: 49
+      end: 66
+    - source: "*fid < len(fills) && fills[*fid] > 0"
+      style: secondary
+      start: 49
+      end: 85
+  "func fillOK(fid *int, fills []int) bool { return fid != nil && *fid < len(fills) }":
+    labels:
+    - source: "*fid < len(fills)"
       style: primary
       start: 63
       end: 80
@@ -10,3 +20,23 @@ snapshots:
       style: secondary
       start: 49
       end: 80
+  "func fillOK(fid *int, fills []int) int {\n\tif fid != nil && *fid < len(fills) {\n\t\treturn fills[*fid]\n\t}\n\treturn 0\n}":
+    labels:
+    - source: "*fid < len(fills)"
+      style: primary
+      start: 59
+      end: 76
+    - source: fid != nil && *fid < len(fills)
+      style: secondary
+      start: 45
+      end: 76
+  "func fillOK(ok bool, fid *int, fills []int) bool { return ok && *fid < len(fills) }":
+    labels:
+    - source: "*fid < len(fills)"
+      style: primary
+      start: 64
+      end: 81
+    - source: ok && *fid < len(fills)
+      style: secondary
+      start: 58
+      end: 81

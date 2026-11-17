@@ -1,8 +1,8 @@
 id: go-formula-reentrant-calc-cell-value
 snapshots:
-  ? 'func (fn *formulaFuncs) ANCHORARRAY(argsList *list.List) formulaArg { r, err := fn.f.CalcCellValue("Sheet1", "A1", Options{RawCellValue: true}); _ = r; _ = err; return formulaArg{} }'
-  : labels:
-    - source: 'func (fn *formulaFuncs) ANCHORARRAY(argsList *list.List) formulaArg { r, err := fn.f.CalcCellValue("Sheet1", "A1", Options{RawCellValue: true}); _ = r; _ = err; return formulaArg{} }'
+  "func (fn *formulaFuncs) ANCHORARRAY(argsList *list.List) formulaArg { r, err := fn.f.CalcCellValue(\"Sheet1\", \"A1\", Options{RawCellValue: true}); _ = r; _ = err; return formulaArg{} }":
+    labels:
+    - source: "func (fn *formulaFuncs) ANCHORARRAY(argsList *list.List) formulaArg { r, err := fn.f.CalcCellValue(\"Sheet1\", \"A1\", Options{RawCellValue: true}); _ = r; _ = err; return formulaArg{} }"
       style: primary
       start: 0
       end: 182
@@ -10,7 +10,65 @@ snapshots:
       style: secondary
       start: 5
       end: 23
-    - source: 'fn.f.CalcCellValue("Sheet1", "A1", Options{RawCellValue: true})'
+    - source: "fn.f.CalcCellValue(\"Sheet1\", \"A1\", Options{RawCellValue: true})"
       style: secondary
       start: 80
       end: 143
+  "func (fn *formulaFuncs) SUM(argsList *list.List) formulaArg {\n\tfor _, c := range cells {\n\t\tv, _ := fn.f.CalcCellValue(\"Sheet1\", c)\n\t\t_ = v\n\t}\n\treturn formulaArg{}\n}":
+    labels:
+    - source: |-
+        func (fn *formulaFuncs) SUM(argsList *list.List) formulaArg {
+        	for _, c := range cells {
+        		v, _ := fn.f.CalcCellValue("Sheet1", c)
+        		_ = v
+        	}
+        	return formulaArg{}
+        }
+      style: primary
+      start: 0
+      end: 164
+    - source: (fn *formulaFuncs)
+      style: secondary
+      start: 5
+      end: 23
+    - source: fn.f.CalcCellValue("Sheet1", c)
+      style: secondary
+      start: 99
+      end: 130
+  "func (fn *formulaFuncs) SUM(argsList *list.List) formulaArg {\n\tif argsList.Len() > 0 {\n\t\tv, _ := fn.f.CalcCellValue(\"Sheet1\", \"A1\")\n\t\t_ = v\n\t}\n\treturn formulaArg{}\n}":
+    labels:
+    - source: |-
+        func (fn *formulaFuncs) SUM(argsList *list.List) formulaArg {
+        	if argsList.Len() > 0 {
+        		v, _ := fn.f.CalcCellValue("Sheet1", "A1")
+        		_ = v
+        	}
+        	return formulaArg{}
+        }
+      style: primary
+      start: 0
+      end: 165
+    - source: (fn *formulaFuncs)
+      style: secondary
+      start: 5
+      end: 23
+    - source: fn.f.CalcCellValue("Sheet1", "A1")
+      style: secondary
+      start: 97
+      end: 131
+  "func (fn formulaFuncs) SUM(argsList *list.List) formulaArg { v, _ := fn.f.CalcCellValue(\"Sheet1\", \"A1\"); _ = v; return formulaArg{} }":
+    labels:
+    - source: >-
+        func (fn formulaFuncs) SUM(argsList *list.List) formulaArg { v, _ :=
+        fn.f.CalcCellValue("Sheet1", "A1"); _ = v; return formulaArg{} }
+      style: primary
+      start: 0
+      end: 133
+    - source: (fn formulaFuncs)
+      style: secondary
+      start: 5
+      end: 22
+    - source: fn.f.CalcCellValue("Sheet1", "A1")
+      style: secondary
+      start: 69
+      end: 103

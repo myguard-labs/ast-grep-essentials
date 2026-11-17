@@ -1,5 +1,10 @@
 id: go-double-close-same-receiver
 valid:
   - "package p\n\nfunc f(it iter) error {\n\terr := step()\n\tif err := run(it.Close, err); err != nil {\n\t\treturn err\n\t}\n\treturn nil\n}"
+  - "package p\n\nfunc f(it iter) error {\n\tdefer it.Close()\n\treturn step()\n}"
+  - "package p\n\nfunc f(it iter) error {\n\terr := step()\n\terr = run(it.Flush, err)\n\terr = run(it.Sync, err)\n\treturn err\n}"
 invalid:
   - "package p\n\nfunc f(it iter) error {\n\terr := step()\n\terr = run(it.Close, err)\n\tif err := run(it.Close, err); err != nil {\n\t\treturn err\n\t}\n\treturn nil\n}"
+  - "package p\n\nfunc f(c conn) error {\n\tvar err error\n\terr = closeAll(c.Close, err)\n\terr = closeAll(c.Close, err)\n\treturn err\n}"
+  - "package p\n\nfunc f(s *srv) error {\n\tvar e error\n\te = join(s.body.Close, e)\n\te = join(s.body.Close, e)\n\treturn e\n}"
+  - "package p\n\nfunc f(w writer) error {\n\tvar err error\n\terr = retry(w.Close, 3)\n\terr = retry(w.Close, 3)\n\treturn err\n}"

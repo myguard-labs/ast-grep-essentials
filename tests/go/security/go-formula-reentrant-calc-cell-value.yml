@@ -5,3 +5,6 @@ valid:
 - 'var astgrepFixture = "func (fn *formulaFuncs) ANCHORARRAY(argsList *list.List) formulaArg { r, err := fn.f.CalcCellValue(\"Sheet1\", \"A1\", Options{RawCellValue: true}); _ = r; _ = err; return formulaArg{} }"'
 invalid:
 - 'func (fn *formulaFuncs) ANCHORARRAY(argsList *list.List) formulaArg { r, err := fn.f.CalcCellValue("Sheet1", "A1", Options{RawCellValue: true}); _ = r; _ = err; return formulaArg{} }'
+- "func (fn *formulaFuncs) SUM(argsList *list.List) formulaArg {\n\tif argsList.Len() > 0 {\n\t\tv, _ := fn.f.CalcCellValue(\"Sheet1\", \"A1\")\n\t\t_ = v\n\t}\n\treturn formulaArg{}\n}"
+- "func (fn formulaFuncs) SUM(argsList *list.List) formulaArg { v, _ := fn.f.CalcCellValue(\"Sheet1\", \"A1\"); _ = v; return formulaArg{} }"
+- "func (fn *formulaFuncs) SUM(argsList *list.List) formulaArg {\n\tfor _, c := range cells {\n\t\tv, _ := fn.f.CalcCellValue(\"Sheet1\", c)\n\t\t_ = v\n\t}\n\treturn formulaArg{}\n}"

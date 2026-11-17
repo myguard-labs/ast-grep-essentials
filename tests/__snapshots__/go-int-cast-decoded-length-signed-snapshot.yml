@@ -1,8 +1,52 @@
 id: go-int-cast-decoded-length-signed
 snapshots:
-  ? "func f(buf []byte, off int) int {\n\tn := int(uint32(buf[off])<<24 | uint32(buf[off+1])<<16 | uint32(buf[off+2])<<8 | uint32(buf[off+3]))\n\treturn n\n}"
-  : labels:
-    - source: int(uint32(buf[off])<<24 | uint32(buf[off+1])<<16 | uint32(buf[off+2])<<8 | uint32(buf[off+3]))
+  "func f(b []byte) bool { return int(uint32(b[0])<<24|uint32(b[1])<<16|uint32(b[2])<<8|uint32(b[3])) > 1024 }":
+    labels:
+    - source: int(uint32(b[0])<<24|uint32(b[1])<<16|uint32(b[2])<<8|uint32(b[3]))
+      style: primary
+      start: 31
+      end: 98
+    - source: uint32(b[0])<<24
+      style: secondary
+      start: 35
+      end: 51
+    - source: uint32(b[0])<<24|uint32(b[1])<<16|uint32(b[2])<<8|uint32(b[3])
+      style: secondary
+      start: 35
+      end: 97
+  "func f(b []byte) int {\n\tn := int((uint32(b[0]) << 24) | uint32(b[1])<<16)\n\treturn n\n}":
+    labels:
+    - source: int((uint32(b[0]) << 24) | uint32(b[1])<<16)
+      style: primary
+      start: 29
+      end: 73
+    - source: uint32(b[0]) << 24
+      style: secondary
+      start: 34
+      end: 52
+    - source: (uint32(b[0]) << 24) | uint32(b[1])<<16
+      style: secondary
+      start: 33
+      end: 72
+  "func f(b []byte) int { return int(uint32(b[0])<<24 | uint32(b[1])) }":
+    labels:
+    - source: int(uint32(b[0])<<24 | uint32(b[1]))
+      style: primary
+      start: 30
+      end: 66
+    - source: uint32(b[0])<<24
+      style: secondary
+      start: 34
+      end: 50
+    - source: uint32(b[0])<<24 | uint32(b[1])
+      style: secondary
+      start: 34
+      end: 65
+  "func f(buf []byte, off int) int {\n\tn := int(uint32(buf[off])<<24 | uint32(buf[off+1])<<16 | uint32(buf[off+2])<<8 | uint32(buf[off+3]))\n\treturn n\n}":
+    labels:
+    - source: >-
+        int(uint32(buf[off])<<24 | uint32(buf[off+1])<<16 | uint32(buf[off+2])<<8 |
+        uint32(buf[off+3]))
       style: primary
       start: 40
       end: 135
@@ -10,7 +54,9 @@ snapshots:
       style: secondary
       start: 44
       end: 64
-    - source: uint32(buf[off])<<24 | uint32(buf[off+1])<<16 | uint32(buf[off+2])<<8 | uint32(buf[off+3])
+    - source: >-
+        uint32(buf[off])<<24 | uint32(buf[off+1])<<16 | uint32(buf[off+2])<<8 |
+        uint32(buf[off+3])
       style: secondary
       start: 44
       end: 134

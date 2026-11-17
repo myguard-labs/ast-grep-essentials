@@ -3,7 +3,12 @@ valid:
   - >-
     func fillOK(fid *int, fills []int) bool { return fid != nil && 0 <= *fid &&
     *fid < len(fills) }
+  - "func fillOK(fid *int, fills []int) bool { return *fid < len(fills) && 0 <= *fid }"
+  - "func fillOK(fid *int, ok bool, fills []int) bool { return 0 <= *fid && (ok && *fid < len(fills)) }"
 invalid:
   - >-
     func fillOK(fid *int, fills []int) bool { return fid != nil && *fid <
     len(fills) }
+  - "func fillOK(ok bool, fid *int, fills []int) bool { return ok && *fid < len(fills) }"
+  - "func fillOK(fid *int, fills []int) int {\n\tif fid != nil && *fid < len(fills) {\n\t\treturn fills[*fid]\n\t}\n\treturn 0\n}"
+  - "func fillOK(fid *int, fills []int) bool { return *fid < len(fills) && fills[*fid] > 0 }"
