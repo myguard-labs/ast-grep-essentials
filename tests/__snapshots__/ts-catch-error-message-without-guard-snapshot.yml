@@ -1,6 +1,6 @@
 id: ts-catch-error-message-without-guard
 snapshots:
-  try { await run(); } catch (error) { setErrorMessage(error.message); }:
+  "try { await run(); } catch (error) { setErrorMessage(error.message); }":
     labels:
     - source: catch (error) { setErrorMessage(error.message); }
       style: primary
@@ -14,3 +14,45 @@ snapshots:
       style: secondary
       start: 53
       end: 66
+  "try { run(); } catch (e) { throw new Error(`failed: ${e.message}`); }":
+    labels:
+    - source: "catch (e) { throw new Error(`failed: ${e.message}`); }"
+      style: primary
+      start: 15
+      end: 69
+    - source: e
+      style: secondary
+      start: 22
+      end: 23
+    - source: e.message
+      style: secondary
+      start: 54
+      end: 63
+  "try { run(); } catch (error) { report(error.message.toLowerCase()); } finally { done(); }":
+    labels:
+    - source: catch (error) { report(error.message.toLowerCase()); }
+      style: primary
+      start: 15
+      end: 69
+    - source: error
+      style: secondary
+      start: 22
+      end: 27
+    - source: error.message
+      style: secondary
+      start: 38
+      end: 51
+  "try { run(); } catch (error: any) { report(error.message); }":
+    labels:
+    - source: "catch (error: any) { report(error.message); }"
+      style: primary
+      start: 15
+      end: 60
+    - source: error
+      style: secondary
+      start: 22
+      end: 27
+    - source: error.message
+      style: secondary
+      start: 43
+      end: 56

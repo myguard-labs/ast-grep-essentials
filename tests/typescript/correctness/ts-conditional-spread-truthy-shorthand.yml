@@ -1,5 +1,15 @@
 id: ts-conditional-spread-truthy-shorthand
 valid:
   - 'const note = { ...(order !== undefined ? { order } : {}) };'
+  - |-
+    const note = { ...(order != null ? { order } : {}) };
+  - |-
+    const note = { ...(typeof order === 'number' ? { order } : {}) };
+  - |-
+    const note = { ...(enabled ? { limit } : {}) };
 invalid:
   - 'const note = { ...(order ? { order } : {}) };'
+  - |-
+    const note = { ...(name ? { name } : {}) };
+  - |-
+    call({ ...(page ? { page } : {}) } as Options);

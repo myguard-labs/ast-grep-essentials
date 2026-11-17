@@ -5,9 +5,49 @@ valid:
     for (const entry of fs.readdirSync(dir)) {
       try { fs.lstatSync(path.join(dir, entry)) } catch {}
     }
+  - |-
+    import fs from 'fs'
+    for (const entry of fs.readdirSync(dir)) {
+      try { fs.statSync(path.join(dir, entry)) } catch {}
+    }
+  - |-
+    import fs from 'fs'
+    const names: string[] = []
+    for (const entry of fs.readdirSync(dir)) {
+      names.push(entry)
+    }
+    const st = fs.statSync(dir)
+  - |-
+    import fs from 'fs'
+    for (const entry of fs.readdirSync(dir)) {
+      const p = path.join(dir, entry)
+      try {
+        if (fs.lstatSync(p).isDirectory()) walk(p)
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e
+      }
+    }
 invalid:
   - |-
     import fs from 'fs'
     for (const entry of fs.readdirSync(dir)) {
       fs.lstatSync(path.join(dir, entry))
+    }
+  - |-
+    import fs from 'fs'
+    for (const entry of fs.readdirSync(dir)) {
+      const st = fs.statSync(path.join(dir, entry))
+      if (st.isFile()) files.push(entry)
+    }
+  - |-
+    import fs from 'fs'
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (fs.lstatSync(`${dir}/${entry.name}`).isSymbolicLink()) links++
+    }
+  - |-
+    import fs from 'fs'
+    for (const name of fs.readdirSync(dir)) {
+      if (!name.startsWith('.')) {
+        total += fs.statSync(path.join(dir, name))?.size ?? 0
+      }
     }

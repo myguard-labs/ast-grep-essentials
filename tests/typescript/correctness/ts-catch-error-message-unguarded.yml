@@ -3,5 +3,17 @@ valid:
   - >-
     try { run(); } catch (error) { if (error instanceof Error)
     shim.showErrorDialog(error.message); }
+  - |-
+    try { run(); } catch (error) { console.error(error); }
+  - |-
+    try { run(); } catch (error) { const msg = error instanceof Error ? error.message : String(error); report(msg); }
+  - |-
+    try { run(); } catch (error) { if (!(error instanceof Error)) throw error; report(error.message); }
 invalid:
   - 'try { run(); } catch (error) { shim.showErrorDialog(error.message); }'
+  - |-
+    try { run(); } catch (e) { throw new Error(`failed: ${e.message}`); }
+  - |-
+    try { run(); } catch (e) { if (retry) { again(); } report(e.message); }
+  - |-
+    try { run(); } catch (error) { report(error.message.toLowerCase()); } finally { done(); }

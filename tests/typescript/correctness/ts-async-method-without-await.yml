@@ -1,5 +1,17 @@
 id: ts-async-method-without-await
 valid:
   - 'class D { afterConnect(): Promise<void> { return Promise.resolve() } }'
+  - |-
+    class D { async load(): Promise<string> { const r = await fetch(url); return r.text() } }
+  - |-
+    class D { static async run(): Promise<void> { try { await job() } catch (e) { log(e) } } }
+  - |-
+    class D { private async save(x: number): Promise<void> { for (const i of items) { await write(i, x) } } }
 invalid:
   - 'class D { async afterConnect(): Promise<void> { return Promise.resolve() } }'
+  - |-
+    class D { private async run(): Promise<number> { return 1 } }
+  - |-
+    class D { static async create(): Promise<D> { return new D() } }
+  - |-
+    class D { @Get() async list(): Promise<string[]> { return this.items } }

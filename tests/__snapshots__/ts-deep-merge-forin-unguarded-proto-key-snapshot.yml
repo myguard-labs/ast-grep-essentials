@@ -1,13 +1,32 @@
 id: ts-deep-merge-forin-unguarded-proto-key
 snapshots:
-  ? |-
-    function merge(target: any, source: any) {
-      for (const key in source) {
-        target[key] = source[key];
-      }
-      return target;
-    }
-  : labels:
+  "const merge = (target: Record<string, unknown>, source: Record<string, unknown>) => {\n  for (const k in source) {\n    target[k] = source[k];\n  }\n  return target;\n};":
+    labels:
+    - source: |-
+        for (const k in source) {
+            target[k] = source[k];
+          }
+      style: primary
+      start: 88
+      end: 144
+    - source: target[k] = source[k]
+      style: secondary
+      start: 118
+      end: 139
+  "function merge(target: any, source: any) {\n  for (const key in source) if (source.hasOwnProperty(key)) target[key] = source[key];\n  return target;\n}":
+    labels:
+    - source: >-
+        for (const key in source) if (source.hasOwnProperty(key)) target[key] =
+        source[key];
+      style: primary
+      start: 45
+      end: 129
+    - source: target[key] = source[key]
+      style: secondary
+      start: 103
+      end: 128
+  "function merge(target: any, source: any) {\n  for (const key in source) {\n    target[key] = source[key];\n  }\n  return target;\n}":
+    labels:
     - source: |-
         for (const key in source) {
             target[key] = source[key];
@@ -19,3 +38,20 @@ snapshots:
       style: secondary
       start: 77
       end: 102
+  "function merge(target: any, source: any): any {\n  for (const key in source) {\n    if (typeof source[key] === 'object') {\n      target[key] = merge(target[key] ?? {}, source[key]);\n    } else {\n      target[key] = source[key];\n    }\n  }\n  return target;\n}":
+    labels:
+    - source: |-
+        for (const key in source) {
+            if (typeof source[key] === 'object') {
+              target[key] = merge(target[key] ?? {}, source[key]);
+            } else {
+              target[key] = source[key];
+            }
+          }
+      style: primary
+      start: 50
+      end: 235
+    - source: target[key] = merge(target[key] ?? {}, source[key])
+      style: secondary
+      start: 127
+      end: 178

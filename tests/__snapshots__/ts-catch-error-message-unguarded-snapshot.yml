@@ -1,6 +1,38 @@
 id: ts-catch-error-message-unguarded
 snapshots:
-  try { run(); } catch (error) { shim.showErrorDialog(error.message); }:
+  "try { run(); } catch (e) { if (retry) { again(); } report(e.message); }":
+    labels:
+    - source: try { run(); } catch (e) { if (retry) { again(); } report(e.message); }
+      style: primary
+      start: 0
+      end: 71
+    - source: e.message
+      style: secondary
+      start: 58
+      end: 67
+  "try { run(); } catch (e) { throw new Error(`failed: ${e.message}`); }":
+    labels:
+    - source: "try { run(); } catch (e) { throw new Error(`failed: ${e.message}`); }"
+      style: primary
+      start: 0
+      end: 69
+    - source: e.message
+      style: secondary
+      start: 54
+      end: 63
+  "try { run(); } catch (error) { report(error.message.toLowerCase()); } finally { done(); }":
+    labels:
+    - source: >-
+        try { run(); } catch (error) { report(error.message.toLowerCase()); } finally {
+        done(); }
+      style: primary
+      start: 0
+      end: 89
+    - source: error.message
+      style: secondary
+      start: 38
+      end: 51
+  "try { run(); } catch (error) { shim.showErrorDialog(error.message); }":
     labels:
     - source: try { run(); } catch (error) { shim.showErrorDialog(error.message); }
       style: primary

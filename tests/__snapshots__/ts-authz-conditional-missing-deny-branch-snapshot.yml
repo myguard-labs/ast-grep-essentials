@@ -1,14 +1,54 @@
 id: ts-authz-conditional-missing-deny-branch
 snapshots:
-  ? |
-    export const getFilters = async (svc: any, creds: any) => {
-      const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });
-      if (d.result === AuthorizeResult.CONDITIONAL) {
-        return transform(d.conditions);
-      }
-      return undefined;
-    };
-  : labels:
+  "export async function getFilters(svc: any, creds: any): Promise<Filter | undefined> {\n  const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });\n  if (d.result === AuthorizeResult.CONDITIONAL) return transform(d.conditions);\n  return undefined;\n}":
+    labels:
+    - source: if (d.result === AuthorizeResult.CONDITIONAL) return transform(d.conditions);
+      style: primary
+      start: 176
+      end: 253
+    - source: (d.result === AuthorizeResult.CONDITIONAL)
+      style: secondary
+      start: 179
+      end: 221
+    - source: return undefined;
+      style: secondary
+      start: 256
+      end: 273
+    - source: "svc.authorizeConditional([{ permission }], { credentials: creds })"
+      style: secondary
+      start: 106
+      end: 172
+    - source: "svc.authorizeConditional([{ permission }], { credentials: creds })"
+      style: secondary
+      start: 106
+      end: 172
+  "export const getFilters = async (svc: any, creds: any) => {\n  const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });\n  audit(d);\n  if (d.result === AuthorizeResult.CONDITIONAL) {\n    return transform(d.conditions);\n  }\n  return undefined\n};":
+    labels:
+    - source: |-
+        if (d.result === AuthorizeResult.CONDITIONAL) {
+            return transform(d.conditions);
+          }
+      style: primary
+      start: 162
+      end: 249
+    - source: (d.result === AuthorizeResult.CONDITIONAL)
+      style: secondary
+      start: 165
+      end: 207
+    - source: return undefined
+      style: secondary
+      start: 252
+      end: 268
+    - source: "svc.authorizeConditional([{ permission }], { credentials: creds })"
+      style: secondary
+      start: 80
+      end: 146
+    - source: "svc.authorizeConditional([{ permission }], { credentials: creds })"
+      style: secondary
+      start: 80
+      end: 146
+  "export const getFilters = async (svc: any, creds: any) => {\n  const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });\n  if (d.result === AuthorizeResult.CONDITIONAL) {\n    return transform(d.conditions);\n  }\n  return undefined;\n};\n":
+    labels:
     - source: |-
         if (d.result === AuthorizeResult.CONDITIONAL) {
             return transform(d.conditions);
@@ -24,11 +64,36 @@ snapshots:
       style: secondary
       start: 240
       end: 257
-    - source: 'svc.authorizeConditional([{ permission }], { credentials: creds })'
+    - source: "svc.authorizeConditional([{ permission }], { credentials: creds })"
       style: secondary
       start: 80
       end: 146
-    - source: 'svc.authorizeConditional([{ permission }], { credentials: creds })'
+    - source: "svc.authorizeConditional([{ permission }], { credentials: creds })"
       style: secondary
       start: 80
       end: 146
+  "export const getFilters = async (svc: any, creds: any) => {\n  const [decision] = await svc.authorizeConditional([{ permission }], { credentials: creds });\n  if (decision.result === AuthorizeResult.CONDITIONAL) {\n    return transform(decision.conditions);\n  }\n  return undefined;\n};":
+    labels:
+    - source: |-
+        if (decision.result === AuthorizeResult.CONDITIONAL) {
+            return transform(decision.conditions);
+          }
+      style: primary
+      start: 157
+      end: 258
+    - source: (decision.result === AuthorizeResult.CONDITIONAL)
+      style: secondary
+      start: 160
+      end: 209
+    - source: return undefined;
+      style: secondary
+      start: 261
+      end: 278
+    - source: "svc.authorizeConditional([{ permission }], { credentials: creds })"
+      style: secondary
+      start: 87
+      end: 153
+    - source: "svc.authorizeConditional([{ permission }], { credentials: creds })"
+      style: secondary
+      start: 87
+      end: 153

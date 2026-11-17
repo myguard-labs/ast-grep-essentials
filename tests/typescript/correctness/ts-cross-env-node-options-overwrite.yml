@@ -3,5 +3,17 @@ valid:
   - >-
     const script = 'cross-env NODE_OPTIONS="${NODE_OPTIONS}
     --experimental-vm-modules" jest'
+  - |-
+    const script = "cross-env NODE_OPTIONS=${NODE_OPTIONS} --max-old-space-size=4096 jest"
+  - |-
+    const script = 'cross-env FORCE_COLOR=1 jest'
+  - |-
+    const desc = 'print the current NODE_OPTIONS value'
 invalid:
   - 'const script = ''cross-env NODE_OPTIONS=--experimental-vm-modules jest'''
+  - |-
+    const script = "cross-env NODE_OPTIONS=--max-old-space-size=4096 jest"
+  - |-
+    run(['NODE_OPTIONS=--require ./setup.js', 'node', 'app.js'])
+  - |-
+    const scripts = { test: 'NODE_OPTIONS=--experimental-vm-modules jest' }

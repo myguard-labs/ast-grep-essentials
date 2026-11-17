@@ -11,6 +11,34 @@ valid:
       }
       return undefined;
     };
+  - |-
+    export const getFilters = async (svc: any, creds: any) => {
+      const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });
+      if (d.result === AuthorizeResult.CONDITIONAL) {
+        return transform(d.conditions);
+      }
+      throw new NotAllowedError();
+    };
+  - |-
+    export const getFilters = async (svc: any, creds: any) => {
+      const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });
+      if (d.result === AuthorizeResult.CONDITIONAL) {
+        return transform(d.conditions);
+      }
+      return false;
+    };
+  - |-
+    export const getFilters = async (svc: any, creds: any) => {
+      const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });
+      log('decision', d);
+      if (d.result === AuthorizeResult.DENY) {
+        return false;
+      }
+      if (d.result === AuthorizeResult.CONDITIONAL) {
+        return transform(d.conditions);
+      }
+      return undefined;
+    };
 invalid:
   - |
     export const getFilters = async (svc: any, creds: any) => {
@@ -20,3 +48,26 @@ invalid:
       }
       return undefined;
     };
+  - |-
+    export const getFilters = async (svc: any, creds: any) => {
+      const [decision] = await svc.authorizeConditional([{ permission }], { credentials: creds });
+      if (decision.result === AuthorizeResult.CONDITIONAL) {
+        return transform(decision.conditions);
+      }
+      return undefined;
+    };
+  - |-
+    export const getFilters = async (svc: any, creds: any) => {
+      const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });
+      audit(d);
+      if (d.result === AuthorizeResult.CONDITIONAL) {
+        return transform(d.conditions);
+      }
+      return undefined
+    };
+  - |-
+    export async function getFilters(svc: any, creds: any): Promise<Filter | undefined> {
+      const [d] = await svc.authorizeConditional([{ permission }], { credentials: creds });
+      if (d.result === AuthorizeResult.CONDITIONAL) return transform(d.conditions);
+      return undefined;
+    }
