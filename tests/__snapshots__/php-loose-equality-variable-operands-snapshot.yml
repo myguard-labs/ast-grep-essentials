@@ -1,5 +1,19 @@
 id: php-loose-equality-variable-operands
 snapshots:
+  "<?php function f( $a ) { return $a == Foo::$bar; }\n":
+    labels:
+    - source: $a == Foo::$bar
+      style: primary
+      start: 32
+      end: 47
+    - source: $a
+      style: secondary
+      start: 32
+      end: 34
+    - source: Foo::$bar
+      style: secondary
+      start: 38
+      end: 47
   "<?php function f( $a, $b ) { if ( $a == $b ) { echo 1; } }\n":
     labels:
     - source: $a == $b
@@ -70,6 +84,20 @@ snapshots:
       style: secondary
       start: 43
       end: 45
+  "<?php function f( $a, $b, $i ) { return $a == $b[$i]; }\n":
+    labels:
+    - source: $a == $b[$i]
+      style: primary
+      start: 40
+      end: 52
+    - source: $a
+      style: secondary
+      start: 40
+      end: 42
+    - source: $b[$i]
+      style: secondary
+      start: 46
+      end: 52
   "<?php function f( $a, $o ) { return $a == $o->y; }\n":
     labels:
     - source: $a == $o->y
@@ -84,3 +112,17 @@ snapshots:
       style: secondary
       start: 42
       end: 47
+  "<?php function f( $a, $o ) { return $a == $o?->y; }\n":
+    labels:
+    - source: $a == $o?->y
+      style: primary
+      start: 36
+      end: 48
+    - source: $a
+      style: secondary
+      start: 36
+      end: 38
+    - source: $o?->y
+      style: secondary
+      start: 42
+      end: 48
