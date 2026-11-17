@@ -42,16 +42,39 @@ rule:
                     - pattern: '$N & 1'
             - not:
                 follows:
-                  stopBy: end
                   kind: expression_statement
-                  has:
-                    kind: assignment_expression
-                    has:
-                      field: left
-                      pattern: $N
-                  not:
-                    has:
-                      pattern: '$N = strlen($S)'
+                  stopBy:
+                    any:
+                      - kind: declaration
+                        has:
+                          kind: init_declarator
+                          all:
+                            - has:
+                                field: declarator
+                                pattern: $N
+                            - has:
+                                field: value
+                                pattern:
+                                  context: 'strlen($S);'
+                                  selector: call_expression
+                      - kind: expression_statement
+                        has:
+                          pattern: '$N = strlen($S)'
+                  all:
+                    - any:
+                        - has:
+                            kind: assignment_expression
+                            has:
+                              field: left
+                              pattern: $N
+                        - has:
+                            kind: update_expression
+                            has:
+                              field: argument
+                              pattern: $N
+                    - not:
+                        has:
+                          pattern: '$N = strlen($S)'
             - follows:
                 stopBy: end
                 any:
