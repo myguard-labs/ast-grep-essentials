@@ -1,5 +1,64 @@
 id: c-reentrant-errno-after-r-call
 valid:
   - 'ret = getpwnam_r(n, &pw, buf, len, &res); if (ret == ERANGE) return;'
+  - |-
+    #include <pwd.h>
+    int f(const char *n, char *buf, size_t len) {
+      struct passwd pw, *res;
+      int ret = getpwnam_r(n, &pw, buf, len, &res);
+      if (ret != 0) {
+        return -1;
+      }
+      return 0;
+    }
+  - |-
+    #include <errno.h>
+    #include <string.h>
+    int f(int err, char *buf, size_t len) {
+      int rc = strerror_r(err, buf, len);
+      if (rc == ERANGE) {
+        return -1;
+      }
+      return 0;
+    }
+  - |-
+    #include <dirent.h>
+    int f(DIR *d) {
+      struct dirent ent, *res;
+      int e = readdir_r(d, &ent, &res);
+      if (e) return e;
+      return 0;
+    }
 invalid:
   - 'ret = getpwnam_r(n, &pw, buf, len, &res); if (errno == ERANGE) return;'
+  - |-
+    #include <errno.h>
+    #include <pwd.h>
+    int f(const char *n, char *buf, size_t len) {
+      struct passwd pw, *res;
+      getpwnam_r(n, &pw, buf, len, &res);
+      if (errno == ERANGE) {
+        return -1;
+      }
+      return 0;
+    }
+  - |-
+    #include <errno.h>
+    #include <string.h>
+    int f(int err, char *buf, size_t len) {
+      strerror_r(err, buf, len);
+      if (errno == EINVAL) return -1;
+      return 0;
+    }
+  - |-
+    #include <errno.h>
+    #include <dirent.h>
+    int f(DIR *d) {
+      struct dirent ent, *res;
+      readdir_r(d, &ent, &res);
+      if (errno == EBADF) {
+        return -1;
+      } else {
+        return 0;
+      }
+    }

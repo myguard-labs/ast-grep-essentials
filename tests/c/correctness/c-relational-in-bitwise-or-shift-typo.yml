@@ -1,5 +1,32 @@
 id: c-relational-in-bitwise-or-shift-typo
 valid:
   - 'int d = ((c & 0x07) << 18) | ((u2 & 0x3F) << 6);'
+  - |-
+    int f(int a, int b) {
+      return a | ((b & 0x3F) << 6);
+    }
+  - |-
+    int f(int a, int b) {
+      return (a & 0x0F) | ((b & 0x0F) << 4);
+    }
+  - |-
+    int f(int x) {
+      int low_ok = (x & 0x0F) < 8;
+      return low_ok;
+    }
 invalid:
   - 'int d = ((c & 0x07) << 18) | ((u2 & 0x3F) < 6);'
+  - |-
+    int f(int hi, int lo) {
+      return (hi << 4) | ((lo & 0x0F) < 4);
+    }
+  - |-
+    int f(int a, int b) {
+      int r = a | ((b & 0x3F) < 0x10);
+      return r;
+    }
+  - |-
+    int f(int flags, int v) {
+      flags = flags | ((v & 0x07) < 6);
+      return flags;
+    }

@@ -1,5 +1,33 @@
 id: c-range-min-compared-to-max-constant
 valid:
   - 'if (r.max == ZEND_LONG_MAX) { f(); }'
+  - |-
+    int f(struct range r) {
+      return r.min == ZEND_LONG_MIN;
+    }
+  - |-
+    int f(struct range r) {
+      return r.max == ZEND_LONG_MAX;
+    }
+  - |-
+    int f(struct range r) {
+      return r.low == ZEND_LONG_MAX;
+    }
 invalid:
   - 'if (r.min == ZEND_LONG_MAX) { f(); }'
+  - |-
+    int f(struct range r) {
+      return r.min == ZEND_LONG_MAX;
+    }
+  - |-
+    int f(struct cfg c) {
+      while (c.range.min == ZEND_LONG_MAX) {
+        c.range.min = 0;
+      }
+      return 0;
+    }
+  - |-
+    int f(struct range r) {
+      int open = r.min == ZEND_LONG_MAX;
+      return open;
+    }
