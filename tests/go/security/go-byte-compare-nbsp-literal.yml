@@ -1,5 +1,10 @@
 id: go-byte-compare-nbsp-literal
 valid:
   - 'func f(data string) bool { return data[i] == 32 }'
+  - "func f(data string) bool { return data[i] == 161 }"
+  - "func f(r rune) bool { return r == 160 }"
 invalid:
   - 'func f(data string) bool { return data[i] == 160 }'
+  - "func f(s string) bool { return s[0] == 160 }"
+  - "func f(s string) bool { return s[i+1] == 160 }"
+  - "func f(s string) bool {\n\tif s[len(s)-1] == 160 {\n\t\treturn true\n\t}\n\treturn false\n}"

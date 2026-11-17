@@ -1,7 +1,7 @@
 id: go-audit-log-field-crlf-unescaped
 snapshots:
-  ? "func logLine(w io.Writer, req *http.Request) {\n\tfmt.Fprintf(w, \"[%s] %s\\n\", time.Now(), req.Header.Get(\"X-Id\"))\n}"
-  : labels:
+  "func logLine(w io.Writer, req *http.Request) {\n\tfmt.Fprintf(w, \"[%s] %s\\n\", time.Now(), req.Header.Get(\"X-Id\"))\n}":
+    labels:
     - source: fmt.Fprintf(w, "[%s] %s\n", time.Now(), req.Header.Get("X-Id"))
       style: primary
       start: 48
@@ -22,3 +22,47 @@ snapshots:
       style: secondary
       start: 88
       end: 110
+  "package p\n\nfunc logLine(w io.Writer, r *http.Request) {\n\tfmt.Fprintf(w, \"%s referer=%s\\n\", time.Now(), r.Referer())\n}":
+    labels:
+    - source: fmt.Fprintf(w, "%s referer=%s\n", time.Now(), r.Referer())
+      style: primary
+      start: 57
+      end: 115
+    - source: fmt.Fprintf
+      style: secondary
+      start: 57
+      end: 68
+    - source: r.Referer
+      style: secondary
+      start: 103
+      end: 112
+    - source: r.Referer()
+      style: secondary
+      start: 103
+      end: 114
+    - source: r.Referer()
+      style: secondary
+      start: 103
+      end: 114
+  "package p\n\nfunc logLine(w io.Writer, r *http.Request) {\n\tfmt.Fprintln(w, \"ua:\", r.UserAgent())\n}":
+    labels:
+    - source: fmt.Fprintln(w, "ua:", r.UserAgent())
+      style: primary
+      start: 57
+      end: 94
+    - source: fmt.Fprintln
+      style: secondary
+      start: 57
+      end: 69
+    - source: r.UserAgent
+      style: secondary
+      start: 80
+      end: 91
+    - source: r.UserAgent()
+      style: secondary
+      start: 80
+      end: 93
+    - source: r.UserAgent()
+      style: secondary
+      start: 80
+      end: 93

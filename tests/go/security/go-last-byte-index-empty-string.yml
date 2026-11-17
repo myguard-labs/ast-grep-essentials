@@ -1,5 +1,10 @@
 id: go-last-byte-index-empty-string
 valid:
   - "func f(line string) bool {\n\treturn len(line) > 0 && line[len(line)-1] == '`'\n}"
+  - "func f(s string) bool {\n\tif s != \"\" && s[len(s)-1] == '/' {\n\t\treturn true\n\t}\n\treturn false\n}"
+  - "func f(s string) bool {\n\treturn len(s) > 0 && s[len(s)-1] == 'a' && ok(s)\n}"
 invalid:
   - "func f(line string) bool {\n\treturn line[len(line)-1] == '`' && line[0] != '#'\n}"
+  - "func f(path string) bool {\n\treturn path[len(path)-1] == '/' && ok(path)\n}"
+  - "func f(path string) bool {\n\tif path[len(path)-1] == '/' && len(path) > 1 {\n\t\treturn true\n\t}\n\treturn false\n}"
+  - "func f(name string) bool {\n\treturn name[len(name)-1] == 'x' && name[0] == 'y'\n}"

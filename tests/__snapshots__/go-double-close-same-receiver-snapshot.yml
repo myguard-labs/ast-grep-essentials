@@ -1,8 +1,26 @@
 id: go-double-close-same-receiver
 snapshots:
-  ? "package p\n\nfunc f(it iter) error {\n\terr := step()\n\terr = run(it.Close, err)\n\tif err := run(it.Close, err); err != nil {\n\t\treturn err\n\t}\n\treturn nil\n}"
-  : labels:
+  "package p\n\nfunc f(c conn) error {\n\tvar err error\n\terr = closeAll(c.Close, err)\n\terr = closeAll(c.Close, err)\n\treturn err\n}":
+    labels:
+    - source: err = closeAll(c.Close, err)
+      style: primary
+      start: 50
+      end: 78
+  "package p\n\nfunc f(it iter) error {\n\terr := step()\n\terr = run(it.Close, err)\n\tif err := run(it.Close, err); err != nil {\n\t\treturn err\n\t}\n\treturn nil\n}":
+    labels:
     - source: err = run(it.Close, err)
       style: primary
       start: 51
+      end: 75
+  "package p\n\nfunc f(s *srv) error {\n\tvar e error\n\te = join(s.body.Close, e)\n\te = join(s.body.Close, e)\n\treturn e\n}":
+    labels:
+    - source: e = join(s.body.Close, e)
+      style: primary
+      start: 48
+      end: 73
+  "package p\n\nfunc f(w writer) error {\n\tvar err error\n\terr = retry(w.Close, 3)\n\terr = retry(w.Close, 3)\n\treturn err\n}":
+    labels:
+    - source: err = retry(w.Close, 3)
+      style: primary
+      start: 52
       end: 75

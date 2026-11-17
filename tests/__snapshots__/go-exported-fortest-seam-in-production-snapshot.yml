@@ -1,8 +1,49 @@
 id: go-exported-fortest-seam-in-production
 snapshots:
-  ? "package p\n\nfunc SetLimitForTest(d int) func() {\n\treturn func() {}\n}"
-  : labels:
-    - source: "func SetLimitForTest(d int) func() {\n\treturn func() {}\n}"
+  "package p\n\nfunc New_ClockForTest() *Clock {\n\treturn &Clock{}\n}":
+    labels:
+    - source: |-
+        func New_ClockForTest() *Clock {
+        	return &Clock{}
+        }
+      style: primary
+      start: 11
+      end: 62
+    - source: New_ClockForTest
+      style: secondary
+      start: 16
+      end: 32
+  "package p\n\nfunc OverrideForTest[T any](v T) func() {\n\treturn func() {}\n}":
+    labels:
+    - source: |-
+        func OverrideForTest[T any](v T) func() {
+        	return func() {}
+        }
+      style: primary
+      start: 11
+      end: 72
+    - source: OverrideForTest
+      style: secondary
+      start: 16
+      end: 31
+  "package p\n\nfunc ResetStateForTest() {\n}":
+    labels:
+    - source: |-
+        func ResetStateForTest() {
+        }
+      style: primary
+      start: 11
+      end: 39
+    - source: ResetStateForTest
+      style: secondary
+      start: 16
+      end: 33
+  "package p\n\nfunc SetLimitForTest(d int) func() {\n\treturn func() {}\n}":
+    labels:
+    - source: |-
+        func SetLimitForTest(d int) func() {
+        	return func() {}
+        }
       style: primary
       start: 11
       end: 67
