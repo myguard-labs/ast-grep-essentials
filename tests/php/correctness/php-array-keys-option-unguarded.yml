@@ -1,5 +1,11 @@
 id: php-array-keys-option-unguarded
 valid:
   - '$keys = array_keys( (array) get_option( ''cron'' ) );'
+  - '<?php $k = array_keys( (array) get_option( $name, array() ) );'
+  - '<?php $k = array_keys( wp_parse_args( get_option( ''a'' ), array() ) );'
+  - '<?php $o = get_option(''cron''); $k = is_array($o) ? array_keys($o) : array();'
 invalid:
   - '$keys = array_keys( get_option( ''cron'' ) );'
+  - '<?php foreach ( array_keys( get_option( ''widgets'' ) ) as $k ) {}'
+  - '<?php $k = array_keys( get_option( $name ) );'
+  - '<?php $k = array_keys( get_option( ''cron'', false ) );'

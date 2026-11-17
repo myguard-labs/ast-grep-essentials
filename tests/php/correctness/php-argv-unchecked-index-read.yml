@@ -1,5 +1,13 @@
 id: php-argv-unchecked-index-read
 valid:
   - '<?php $timeout = $argv[++$i] ?? '''';'
+  - '<?php $timeout = $argv[1] ?? ''x'';'
+  - '<?php $name = isset($argv[1]) ? $argv[1] : ''x'';'
+  - '<?php $name = $argc > 1 ? $argv[1] : ''x'';'
+  - '<?php $name = $argv[$i] ?? null;'
 invalid:
   - '<?php $timeout = $argv[++$i];'
+  - '<?php $file = $argv[2];'
+  - '<?php $this->file = $argv[1];'
+  - '<?php $opts[''n''] = $argv[$i + 1];'
+  - '<?php function f($argv) { $name = $argv[3]; return $name; }'
