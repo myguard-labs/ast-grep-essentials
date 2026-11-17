@@ -1,5 +1,11 @@
 id: php-array-diff-scandir-unchecked
 valid:
   - '<?php $files = array_diff( $entries, array( ''.'', ''..'' ) );'
+  - "<?php $list = scandir( $dir ); if ( false !== $list ) { $files = array_diff( $list, array( '.', '..' ) ); }"
+  - "<?php $files = array_diff( array_keys( $map ), array( '.', '..' ) );"
+  - "<?php $files = array_diff( glob( $pattern ) ?: array(), $skip );"
 invalid:
   - '<?php $files = array_diff( scandir( $dir ), array( ''.'', ''..'' ) );'
+  - "<?php $files = array_diff( scandir( $dir ), array( '.', '..', '.git' ) );"
+  - "<?php $files = array_diff( scandir( $dir, SCANDIR_SORT_NONE ), $skip, $more );"
+  - "<?php function f( $d ) { return array_diff( scandir( ABSPATH . $d ), array( '.' ) ); }"

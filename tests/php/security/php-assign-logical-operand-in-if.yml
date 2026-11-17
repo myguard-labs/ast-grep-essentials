@@ -3,5 +3,11 @@ valid:
   - >-
     if ( ( $thumb = get_thumb_file() ) && ( $info = getimagesize( $thumb ) ) ) {
     }
+  - "<?php if ( ( $thumb = get_thumb_file() ) || ( $info = getimagesize( $thumb ) ) ) { }"
+  - "<?php if ( ( $thumb = get_thumb_file() ) and ( $info = getimagesize( $thumb ) ) ) { }"
+  - "<?php if ( $thumb = get_thumb_file() ) { $info = $thumb && $flag; }"
 invalid:
   - 'if ( $thumb = get_thumb_file() && $info = getimagesize( $thumb ) ) { }'
+  - "<?php if ( $info = getimagesize( $file ) && $info[0] > 0 ) { }"
+  - "<?php if ( $fh = fopen( $path, 'r' ) && flock( $fh, LOCK_EX ) ) { }"
+  - "<?php if ( $x > 0 && $row = fetch_row( $id ) && $row['ok'] ) { }"

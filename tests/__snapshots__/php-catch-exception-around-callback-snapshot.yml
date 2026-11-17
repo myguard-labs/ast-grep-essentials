@@ -1,8 +1,32 @@
 id: php-catch-exception-around-callback
 snapshots:
-  try { $value = call_user_func( $callback, $input ); } catch ( Exception $e ) { $value = null; }:
+  "<?php function f( $cb ) { try { return call_user_func( $cb ); } catch ( Exception $ex ) { return false; } }":
     labels:
-    - source: try { $value = call_user_func( $callback, $input ); } catch ( Exception $e ) { $value = null; }
+    - source: try { return call_user_func( $cb ); } catch ( Exception $ex ) { return false; }
+      style: primary
+      start: 26
+      end: 105
+  "<?php try { $v = $cb( $in ); } catch ( Exception $e ) { error_log( $e->getMessage() ); }":
+    labels:
+    - source: >-
+        try { $v = $cb( $in ); } catch ( Exception $e ) { error_log( $e->getMessage()
+        ); }
+      style: primary
+      start: 6
+      end: 88
+  "<?php try { $v = array_map( $cb, $items ); } catch ( Exception $e ) { throw new RuntimeException( 'x', 0, $e ); } finally { cleanup(); }":
+    labels:
+    - source: >-
+        try { $v = array_map( $cb, $items ); } catch ( Exception $e ) { throw new
+        RuntimeException( 'x', 0, $e ); } finally { cleanup(); }
+      style: primary
+      start: 6
+      end: 136
+  "try { $value = call_user_func( $callback, $input ); } catch ( Exception $e ) { $value = null; }":
+    labels:
+    - source: >-
+        try { $value = call_user_func( $callback, $input ); } catch ( Exception $e ) {
+        $value = null; }
       style: primary
       start: 0
       end: 95

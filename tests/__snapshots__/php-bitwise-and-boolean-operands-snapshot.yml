@@ -1,12 +1,45 @@
 id: php-bitwise-and-boolean-operands
 snapshots:
-  ? "<?php\nif ( is_network_admin() & !$is_profile ) {\n\t$x = 1;\n}"
-  : labels:
+  "<?php\nif ( is_network_admin() & !$is_profile ) {\n\t$x = 1;\n}":
+    labels:
     - source: is_network_admin() & !$is_profile
       style: primary
       start: 11
       end: 44
-    - source: "if ( is_network_admin() & !$is_profile ) {\n\t$x = 1;\n}"
+    - source: |-
+        if ( is_network_admin() & !$is_profile ) {
+        	$x = 1;
+        }
       style: secondary
       start: 6
       end: 59
+  "<?php if ( $a & ! $b ) { $x = 1; }":
+    labels:
+    - source: $a & ! $b
+      style: primary
+      start: 11
+      end: 20
+    - source: if ( $a & ! $b ) { $x = 1; }
+      style: secondary
+      start: 6
+      end: 34
+  "<?php if ( $a ) { } elseif ( $b & ! $c ) { $x = 1; }":
+    labels:
+    - source: $b & ! $c
+      style: primary
+      start: 29
+      end: 38
+    - source: if ( $a ) { } elseif ( $b & ! $c ) { $x = 1; }
+      style: secondary
+      start: 6
+      end: 52
+  "<?php if ( $user->can( 'edit' ) & ! empty( $id ) ) { $x = 1; }":
+    labels:
+    - source: $user->can( 'edit' ) & ! empty( $id )
+      style: primary
+      start: 11
+      end: 48
+    - source: if ( $user->can( 'edit' ) & ! empty( $id ) ) { $x = 1; }
+      style: secondary
+      start: 6
+      end: 62

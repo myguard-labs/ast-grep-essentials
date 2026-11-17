@@ -20,6 +20,10 @@ rule:
       kind: assignment_expression
       pattern: '$VAR = $CALL && $RIGHT'
 metadata:
+  todo_cases:
+    - "if ( $a = f() || $b = g() ) { } (|| form) is not reported although the message claims it"
+    - "elseif ( $m = preg_match( $re, $s ) && $s ) { } is not reported (only the first parenthesized condition is considered)"
+    - "false positive: if ( ( $ok = $a && $b ) ) { } with an explicit parenthesised boolean assignment is reported"
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
