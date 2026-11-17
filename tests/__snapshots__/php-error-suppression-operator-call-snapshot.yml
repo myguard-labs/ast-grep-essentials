@@ -1,8 +1,20 @@
 id: php-error-suppression-operator-call
 snapshots:
-  function f($m) { @error_log($m, 0); }:
+  <?php $ok = @error_log( $m );:
     labels:
-    - source: '@error_log($m, 0)'
+    - source: "@error_log( $m )"
+      style: primary
+      start: 12
+      end: 28
+  "<?php @error_log( 'x', 3, '/tmp/l' );":
+    labels:
+    - source: "@error_log( 'x', 3, '/tmp/l' )"
+      style: primary
+      start: 6
+      end: 36
+  "function f($m) { @error_log($m, 0); }":
+    labels:
+    - source: "@error_log($m, 0)"
       style: primary
       start: 17
       end: 34

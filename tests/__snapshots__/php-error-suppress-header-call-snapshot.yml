@@ -1,8 +1,20 @@
 id: php-error-suppress-header-call
 snapshots:
-  '@header( ''Content-type: text/html'' );':
+  <?php @header( $line );:
     labels:
-    - source: '@header( ''Content-type: text/html'' )'
+    - source: "@header( $line )"
+      style: primary
+      start: 6
+      end: 22
+  "<?php if ( ! @header( 'X-A: 1' ) ) { exit; }":
+    labels:
+    - source: "@header( 'X-A: 1' )"
+      style: primary
+      start: 13
+      end: 32
+  "@header( 'Content-type: text/html' );":
+    labels:
+    - source: "@header( 'Content-type: text/html' )"
       style: primary
       start: 0
       end: 36
