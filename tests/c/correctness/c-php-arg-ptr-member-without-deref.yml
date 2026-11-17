@@ -1,5 +1,11 @@
 id: c-php-arg-ptr-member-without-deref
 valid:
   - 'p = (*arg2)->value.str.val;'
+  - 'static void f(zval **arg3) { double d; d = (*arg3)->value.dval; }'
+  - 'static void f(zval **arg1) { long n; n = (**arg1).value.lval; }'
+  - 'static void f(struct opt *arg) { int n; n = arg->value; }'
 invalid:
   - 'p = arg2->value.str.val;'
+  - 'static void f(zval **arg1) { long n; n = arg1->value.lval; }'
+  - 'static void f(zval **arg10) { zend_hash_destroy(arg10->value.ht); }'
+  - 'static void f(zval **arg1) { if (arg1->value.lval > 0) { return; } }'

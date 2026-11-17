@@ -1,5 +1,11 @@
 id: c-pointer-cast-on-subscript-value
 valid:
   - 'static void f(char *s) { unsigned char low; low = (unsigned char)s[0]; }'
+  - 'static void f(unsigned char *buf) { unsigned int w; w = (unsigned int)buf[0] << 8 | buf[1]; }'
+  - 'static void f(char *s) { unsigned char *p; p = (unsigned char *)&s[0]; }'
+  - 'static int f(const char *s) { return (unsigned char)s[0] < 0x80; }'
 invalid:
   - 'static void f(char *s) { unsigned char low; low = (unsigned char *)s[0]; }'
+  - 'static void f(char *s, int i) { unsigned char *q; q = (unsigned char *)s[i]; }'
+  - 'static void f(unsigned char *buf) { char *p; p = (char *)buf[0]; }'
+  - 'static void f(char *s) { struct node *n; n = (struct node *)s[0]; }'

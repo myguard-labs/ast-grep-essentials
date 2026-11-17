@@ -1,8 +1,34 @@
 id: c-printf-p-modifier-unchecked-next
 snapshots:
-  'void f(const char *fmt) { switch (*fmt) { case ''p'': fmt++; break; } }':
+  "void f(const char *fmt) {\n  switch (*fmt) {\n  case 'p':\n    fmt++;\n    return;\n  }\n}":
     labels:
-    - source: 'case ''p'': fmt++; break;'
+    - source: |-
+        case 'p':
+            fmt++;
+            return;
+      style: primary
+      start: 46
+      end: 78
+  "void f(const char *fmt) {\n  switch (*fmt) {\n  case 'p':\n    fmt++;\n  }\n}":
+    labels:
+    - source: |-
+        case 'p':
+            fmt++;
+      style: primary
+      start: 46
+      end: 66
+  "void f(const char *fmt) {\n  while (*fmt) {\n    switch (*fmt) {\n    case 'd':\n      break;\n    case 'p':\n      fmt++;\n      continue;\n    default:\n      break;\n    }\n    fmt++;\n  }\n}":
+    labels:
+    - source: |-
+        case 'p':
+              fmt++;
+              continue;
+      style: primary
+      start: 94
+      end: 132
+  "void f(const char *fmt) { switch (*fmt) { case 'p': fmt++; break; } }":
+    labels:
+    - source: "case 'p': fmt++; break;"
       style: primary
       start: 42
       end: 65

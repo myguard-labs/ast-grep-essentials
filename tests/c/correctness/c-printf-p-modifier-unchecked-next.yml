@@ -3,5 +3,65 @@ valid:
   - >-
     void f(const char *fmt) { switch (*fmt) { case 'p': if (fmt[1] == 'd') {
     fmt++; } break; } }
+  - |-
+    void f(const char *fmt) {
+      switch (*fmt) {
+      case 'p':
+        if (!isalpha((unsigned char) fmt[1])) {
+          return;
+        }
+        fmt++;
+        break;
+      }
+    }
+  - |-
+    void f(const char *fmt) {
+      switch (*fmt) {
+      case 's':
+        fmt++;
+        break;
+      }
+    }
+  - |-
+    void f(const char *fmt) {
+      switch (*fmt) {
+      case 'p':
+        if (fmt[1] != 'x' && fmt[1] != 'd') {
+          return;
+        }
+        fmt++;
+        break;
+      }
+    }
 invalid:
   - 'void f(const char *fmt) { switch (*fmt) { case ''p'': fmt++; break; } }'
+  - |-
+    void f(const char *fmt) {
+      switch (*fmt) {
+      case 'p':
+        fmt++;
+      }
+    }
+  - |-
+    void f(const char *fmt) {
+      switch (*fmt) {
+      case 'p':
+        fmt++;
+        return;
+      }
+    }
+  - |-
+    void f(const char *fmt) {
+      while (*fmt) {
+        switch (*fmt) {
+        case 'd':
+          break;
+        case 'p':
+          fmt++;
+          continue;
+        default:
+          break;
+        }
+        fmt++;
+      }
+    }

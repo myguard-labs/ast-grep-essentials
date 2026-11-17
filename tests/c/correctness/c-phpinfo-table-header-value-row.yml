@@ -1,5 +1,11 @@
 id: c-phpinfo-table-header-value-row
 valid:
   - 'php_info_print_table_row(2, "libfoo version", foo_version_string());'
+  - 'PHP_MINFO_FUNCTION(foo) { php_info_print_table_start(); php_info_print_table_header(2, "libfoo", "enabled"); php_info_print_table_end(); }'
+  - 'PHP_MINFO_FUNCTION(foo) { php_info_print_table_start(); php_info_print_table_header(2, "Directive", "Local Value"); php_info_print_table_end(); }'
+  - 'PHP_MINFO_FUNCTION(foo) { php_info_print_table_start(); php_info_print_table_row(2, "libfoo version", foo_version_string()); php_info_print_table_end(); }'
 invalid:
   - 'php_info_print_table_header(2, "libfoo version", foo_version_string());'
+  - 'PHP_MINFO_FUNCTION(foo) { php_info_print_table_start(); php_info_print_table_header(2, "libfoo version", foo_version_string()); php_info_print_table_end(); }'
+  - 'PHP_MINFO_FUNCTION(foo) { php_info_print_table_start(); php_info_print_table_header(2, "libfoo build", foo_build_date(ctx, 0)); php_info_print_table_end(); }'
+  - 'PHP_MINFO_FUNCTION(foo) { php_info_print_table_start(); php_info_print_table_header(2, "libfoo version", curl_version()); php_info_print_table_end(); }'
