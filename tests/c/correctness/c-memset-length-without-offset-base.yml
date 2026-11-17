@@ -1,5 +1,29 @@
 id: c-memset-length-without-offset-base
 valid:
   - 'memset(buf + offset, ''\0'', total - offset);'
+  - |
+    void clear_tail(char *buf, size_t total, size_t offset) {
+        memset(&buf[offset], 0, total - offset);
+    }
+  - |
+    void clear_all(char *buf, size_t total) {
+        memset(buf, 0, total);
+    }
+  - |
+    void clear_tail(char *buf, size_t total, size_t offset) {
+        memset((char *)buf + offset, 0, total - offset);
+    }
 invalid:
   - 'memset(buf, ''\0'', total - offset);'
+  - |
+    void clear_tail(char *dst, size_t len, size_t offset) {
+        memset(dst, 0, len - offset);
+    }
+  - |
+    void fill_tail(unsigned char *out, int c, size_t size, size_t offset) {
+        memset(out, c, size - offset);
+    }
+  - |
+    void wipe(char *p, size_t n, size_t offset) {
+        memset(p, 0xff, n - offset);
+    }

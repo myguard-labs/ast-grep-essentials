@@ -18,3 +18,57 @@ snapshots:
       style: secondary
       start: 81
       end: 106
+  "void f(struct pkt *p) {\n    memset(&p->a, 0, sizeof(p->a));\n    memset(&p->a, 0, sizeof(p->b));\n}\n":
+    labels:
+    - source: memset(&p->a, 0, sizeof(p->b));
+      style: primary
+      start: 64
+      end: 95
+    - source: memset(&p->a, 0, sizeof(p->b))
+      style: secondary
+      start: 64
+      end: 94
+    - source: memset(&p->a, 0, sizeof(p->a))
+      style: secondary
+      start: 28
+      end: 58
+    - source: memset(&p->a, 0, sizeof(p->a));
+      style: secondary
+      start: 28
+      end: 59
+  "void f(void) {\n    struct a x;\n    struct b y;\n    struct c z;\n    memset(&x, 0, sizeof(x));\n    memset(&y, 0, sizeof(y));\n    memset(&y, 0, sizeof(z));\n}\n":
+    labels:
+    - source: memset(&y, 0, sizeof(z));
+      style: primary
+      start: 127
+      end: 152
+    - source: memset(&y, 0, sizeof(z))
+      style: secondary
+      start: 127
+      end: 151
+    - source: memset(&y, 0, sizeof(y))
+      style: secondary
+      start: 97
+      end: 121
+    - source: memset(&y, 0, sizeof(y));
+      style: secondary
+      start: 97
+      end: 122
+  "void f(void) {\n    struct hdr hdr;\n    struct body body;\n    memset(&hdr, 0, sizeof(hdr));\n    memset(&hdr, 0, sizeof(body));\n}\n":
+    labels:
+    - source: memset(&hdr, 0, sizeof(body));
+      style: primary
+      start: 95
+      end: 125
+    - source: memset(&hdr, 0, sizeof(body))
+      style: secondary
+      start: 95
+      end: 124
+    - source: memset(&hdr, 0, sizeof(hdr))
+      style: secondary
+      start: 61
+      end: 89
+    - source: memset(&hdr, 0, sizeof(hdr));
+      style: secondary
+      start: 61
+      end: 90

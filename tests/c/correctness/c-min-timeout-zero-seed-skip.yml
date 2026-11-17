@@ -3,7 +3,59 @@ valid:
   - >-
     for (i = 0; i < n; i++) { if (i == 0) { wait = nswait; } else if (nswait > 0
     && (wait == 0 || nswait < wait)) { wait = nswait; } }
+  - |
+    int f(int n) {
+        int wait = INT_MAX;
+        int i;
+        for (i = 0; i < n; i++) {
+            if (nswait > 0 && nswait < wait) { wait = nswait; }
+        }
+        return wait;
+    }
+  - |
+    int f(int n) {
+        int i;
+        for (i = 0; i < n; i++) {
+            if (nswait > 0 && (wait == 0 || nswait < wait)) { wait = nswait; }
+        }
+        return wait;
+    }
+  - |
+    int f(int n) {
+        int i;
+        for (i = 0; i < n; i++) {
+            if (nswait > 0) {
+                if (wait == 0 || nswait < wait) { wait = nswait; }
+            }
+        }
+        return wait;
+    }
 invalid:
   - >-
     for (i = 0; i < n; i++) { if (i == 0) { wait = nswait; } else if (nswait > 0
     && nswait < wait) { wait = nswait; } }
+  - |
+    int f(int n) {
+        int first;
+        for (first = 0; first < n; first++) {
+            if (first == 0) { min = t; } else if (t > 0 && t < min) { min = t; }
+        }
+        return min;
+    }
+  - |
+    int f(int n) {
+        int i = 0;
+        while (i < n) {
+            if (i == 0) { wait = nswait; } else if (nswait > 0 && nswait < wait) { wait = nswait; }
+            i++;
+        }
+        return wait;
+    }
+  - |
+    int f(struct q *q, int n) {
+        int i;
+        for (i = 0; i < n; i++) {
+            if (i == 0) { q->w = q->t; } else if (q->t > 0 && q->t < q->w) { q->w = q->t; }
+        }
+        return q->w;
+    }

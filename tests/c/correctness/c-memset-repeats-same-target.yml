@@ -3,7 +3,49 @@ valid:
   - >-
     struct a { int x; }; struct b { int y; }; void f(void) { struct a x; struct
     b y; memset(&x, 0, sizeof(x)); memset(&y, 0, sizeof(y)); }
+  - |
+    void f(void) {
+        struct hdr h;
+        memset(&h, 0, sizeof(h));
+        h.len = 4;
+        memset(&h, 0, sizeof(h));
+    }
+  - |
+    void f(struct pkt *s) {
+        memset(&s->a, 0, sizeof(s->a));
+        memset(&s->b, 0, sizeof(s->b));
+    }
+  - |
+    void f(void) {
+        struct a x;
+        struct b y;
+        struct c z;
+        memset(&x, 0, sizeof(x));
+        memset(&y, 0, sizeof(y));
+        memset(&z, 0, sizeof(z));
+    }
 invalid:
   - >-
     struct a { int x; }; struct b { int y; }; void f(void) { struct a x; struct
     b y; memset(&x, 0, sizeof(x)); memset(&x, 0, sizeof(y)); }
+  - |
+    void f(void) {
+        struct hdr hdr;
+        struct body body;
+        memset(&hdr, 0, sizeof(hdr));
+        memset(&hdr, 0, sizeof(body));
+    }
+  - |
+    void f(struct pkt *p) {
+        memset(&p->a, 0, sizeof(p->a));
+        memset(&p->a, 0, sizeof(p->b));
+    }
+  - |
+    void f(void) {
+        struct a x;
+        struct b y;
+        struct c z;
+        memset(&x, 0, sizeof(x));
+        memset(&y, 0, sizeof(y));
+        memset(&y, 0, sizeof(z));
+    }

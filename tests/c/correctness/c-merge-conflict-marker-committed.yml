@@ -2,6 +2,17 @@ id: c-merge-conflict-marker-committed
 valid:
   - |
     int x; /* <<<<<<< util.c */
+  - |
+    int a = 1;
+    int b = a << 2;
+    int c = b >> 1;
+  - |
+    const char *banner = "<<<<<<< HEAD";
+    int x;
+  - |
+    int x;
+    // >>>>>>> feature-branch
+    int y;
 invalid:
   - |
     <<<<<<< util.c
@@ -9,3 +20,19 @@ invalid:
     =======
     int x;
     >>>>>>> 1.60
+  - |
+    int x;
+    <<<<<<< HEAD
+    int y;
+    =======
+    int z;
+    >>>>>>> feature
+  - |
+    =======
+    int x;
+  - |
+    void f(void) {
+        int a;
+    >>>>>>> topic
+        a = 1;
+    }
