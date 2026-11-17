@@ -1,5 +1,17 @@
 id: php-single-quoted-curly-interpolation
 valid:
   - '$out .= "<a href=''{$url}''>";'
+  - |-
+    <?php $s = 'plain {text}';
+  - |-
+    <?php $s = "{$obj->name}";
+  - |-
+    <?php $s = '{' . $v . '}';
 invalid:
   - '$out .= ''<a href="{$url}">'';'
+  - |-
+    <?php $q = sprintf('Hello {$name}', $x);
+  - |-
+    <?php $q = 'WHERE id = {$id}';
+  - |-
+    <?php $m = 'User {$user->name} logged in';
