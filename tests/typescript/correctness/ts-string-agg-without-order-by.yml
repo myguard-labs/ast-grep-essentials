@@ -3,5 +3,15 @@ valid:
   - >-
     const sql = `SELECT string_agg(e.enumlabel, '|' ORDER BY e.enumsortorder) AS
     value FROM pg_enum e`
+  - 'const sql = `SELECT string_agg(x, '','' order by y) FROM t`'
+  - |-
+    const sql = `SELECT string_agg(DISTINCT x, ','
+      ORDER BY x) FROM t`
+  - 'const sql = `SELECT json_agg(x ORDER BY y) FROM t`'
 invalid:
   - 'const sql = `SELECT string_agg(e.enumlabel, ''|'') AS value FROM pg_enum e`'
+  - 'const sql = `SELECT STRING_AGG(x, '','') FROM t`'
+  - 'const sql = `SELECT string_agg (x, '','') FROM t GROUP BY ${col}`'
+  - |-
+    const sql = `SELECT a,
+     string_agg(x, ',') AS v FROM t`

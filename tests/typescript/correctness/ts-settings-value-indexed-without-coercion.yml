@@ -3,5 +3,11 @@ valid:
   - >-
     const all = getSettingWithCoercion('countries', {}, isObject); return
     all[code];
+  - 'const all = coerceObject(getSetting(''countries'', {})); return all[code];'
+  - 'const flag = Boolean(getSetting(''x'')); return flag;'
+  - 'const raw = getSettingWithCoercion(''c'', {}, isObject); const all = { ...raw }; return all[code];'
 invalid:
   - 'const all = getSetting(''countries'', {}); return all[code];'
+  - 'const cfg = getSetting(''countries''); return cfg[key];'
+  - 'const all = getSetting(''countries'', {}); const v = all[code]; return v;'
+  - 'const s = getSetting(...args); return s[k];'

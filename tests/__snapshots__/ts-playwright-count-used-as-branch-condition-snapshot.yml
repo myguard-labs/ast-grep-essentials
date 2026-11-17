@@ -1,10 +1,7 @@
 id: ts-playwright-count-used-as-branch-condition
 snapshots:
-  ? |-
-    if ( await miniCartTitleLabelBlock.count() ) {
-      doThing();
-    }
-  : labels:
+  "if ( await miniCartTitleLabelBlock.count() ) {\n  doThing();\n}":
+    labels:
     - source: |-
         if ( await miniCartTitleLabelBlock.count() ) {
           doThing();
@@ -20,3 +17,45 @@ snapshots:
       style: secondary
       start: 3
       end: 44
+  if (await loc.first().count()) doThing();:
+    labels:
+    - source: if (await loc.first().count()) doThing();
+      style: primary
+      start: 0
+      end: 41
+    - source: await loc.first().count()
+      style: secondary
+      start: 4
+      end: 29
+    - source: (await loc.first().count())
+      style: secondary
+      start: 3
+      end: 30
+  "if (await page.locator('.a').count()) { doThing(); }":
+    labels:
+    - source: if (await page.locator('.a').count()) { doThing(); }
+      style: primary
+      start: 0
+      end: 52
+    - source: await page.locator('.a').count()
+      style: secondary
+      start: 4
+      end: 36
+    - source: (await page.locator('.a').count())
+      style: secondary
+      start: 3
+      end: 37
+  "if (await this.items.count()) { a(); } else { b(); }":
+    labels:
+    - source: if (await this.items.count()) { a(); } else { b(); }
+      style: primary
+      start: 0
+      end: 52
+    - source: await this.items.count()
+      style: secondary
+      start: 4
+      end: 28
+    - source: (await this.items.count())
+      style: secondary
+      start: 3
+      end: 29

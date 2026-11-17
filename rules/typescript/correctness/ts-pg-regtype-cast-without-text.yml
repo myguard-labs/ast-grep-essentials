@@ -20,6 +20,10 @@ rule:
       kind: string_fragment
       regex: '::"regtype"::text'
 metadata:
+  todo_cases:
+    - 'A template literal cast is not matched (kind string only): const sql = `SELECT ("a")::"regtype" AS t`.'
+    - 'An unquoted cast is not matched: const sql = ''SELECT a::regtype AS t''.'
+    - 'One string holding both a ::"regtype"::text cast and a bare ::"regtype" cast is not reported because the text cast suppresses the match.'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

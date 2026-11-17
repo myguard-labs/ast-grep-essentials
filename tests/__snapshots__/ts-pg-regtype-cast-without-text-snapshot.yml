@@ -1,8 +1,38 @@
 id: ts-pg-regtype-cast-without-text
 snapshots:
-  const sql = 'SELECT ("udt_name")::"regtype" AS "regtype"':
+  "await pool.query('SELECT (\"a\")::\"regtype\"::int FROM t')":
     labels:
-    - source: '''SELECT ("udt_name")::"regtype" AS "regtype"'''
+    - source: "'SELECT (\"a\")::\"regtype\"::int FROM t'"
+      style: primary
+      start: 17
+      end: 54
+    - source: SELECT ("a")::"regtype"::int FROM t
+      style: secondary
+      start: 18
+      end: 53
+  "const sql = 'SELECT (\"a\")::\"regtype\" FROM t WHERE x = 1'":
+    labels:
+    - source: "'SELECT (\"a\")::\"regtype\" FROM t WHERE x = 1'"
+      style: primary
+      start: 12
+      end: 56
+    - source: SELECT ("a")::"regtype" FROM t WHERE x = 1
+      style: secondary
+      start: 13
+      end: 55
+  "const sql = 'SELECT (\"a\")::\"regtype\", (\"b\")::\"regtype\"'":
+    labels:
+    - source: "'SELECT (\"a\")::\"regtype\", (\"b\")::\"regtype\"'"
+      style: primary
+      start: 12
+      end: 55
+    - source: SELECT ("a")::"regtype", ("b")::"regtype"
+      style: secondary
+      start: 13
+      end: 54
+  "const sql = 'SELECT (\"udt_name\")::\"regtype\" AS \"regtype\"'":
+    labels:
+    - source: "'SELECT (\"udt_name\")::\"regtype\" AS \"regtype\"'"
       style: primary
       start: 12
       end: 57

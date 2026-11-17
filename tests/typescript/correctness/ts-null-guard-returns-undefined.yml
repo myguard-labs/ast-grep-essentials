@@ -3,7 +3,13 @@ valid:
   - >-
     function f (entity: any) { if (entity === undefined || entity === null)
     return entity; return entity }
+  - 'function f(x: any) { if (x === null) return null; return x }'
+  - 'function f(x: any) { if (x === undefined) return undefined; return x }'
+  - 'function f(x: any) { if (x === null) return x; return x }'
 invalid:
   - >-
     function f (entity: any) { if (entity === undefined || entity === null)
     return undefined; return entity }
+  - 'function f(x: any) { if (x === null) return undefined; return x }'
+  - 'function f(x: any) { if (!ready || x?.a === null) return undefined; return x }'
+  - 'function f(x: any) { if ((x === null)) return undefined; return x }'

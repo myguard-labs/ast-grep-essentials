@@ -1,8 +1,34 @@
 id: ts-query-template-interpolation
 snapshots:
-  connection.query(`SELECT * FROM t WHERE id = ${id}`):
+  "await client.query(`SELECT ${cols} FROM t`)":
     labels:
-    - source: '`SELECT * FROM t WHERE id = ${id}`'
+    - source: "`SELECT ${cols} FROM t`"
+      style: primary
+      start: 19
+      end: 42
+    - source: query
+      style: secondary
+      start: 13
+      end: 18
+    - source: client.query
+      style: secondary
+      start: 6
+      end: 18
+    - source: client.query(`SELECT ${cols} FROM t`)
+      style: secondary
+      start: 6
+      end: 43
+    - source: (`SELECT ${cols} FROM t`)
+      style: secondary
+      start: 18
+      end: 43
+    - source: ${cols}
+      style: secondary
+      start: 27
+      end: 34
+  "connection.query(`SELECT * FROM t WHERE id = ${id}`)":
+    labels:
+    - source: "`SELECT * FROM t WHERE id = ${id}`"
       style: primary
       start: 17
       end: 51
@@ -26,3 +52,55 @@ snapshots:
       style: secondary
       start: 45
       end: 50
+  "pool?.query(`DELETE FROM t WHERE id = ${id}`)":
+    labels:
+    - source: "`DELETE FROM t WHERE id = ${id}`"
+      style: primary
+      start: 12
+      end: 44
+    - source: query
+      style: secondary
+      start: 6
+      end: 11
+    - source: pool?.query
+      style: secondary
+      start: 0
+      end: 11
+    - source: pool?.query(`DELETE FROM t WHERE id = ${id}`)
+      style: secondary
+      start: 0
+      end: 45
+    - source: (`DELETE FROM t WHERE id = ${id}`)
+      style: secondary
+      start: 11
+      end: 45
+    - source: ${id}
+      style: secondary
+      start: 38
+      end: 43
+  "this.pool.query(`SELECT * FROM t WHERE id = ${id}`, [])":
+    labels:
+    - source: "`SELECT * FROM t WHERE id = ${id}`"
+      style: primary
+      start: 16
+      end: 50
+    - source: query
+      style: secondary
+      start: 10
+      end: 15
+    - source: this.pool.query
+      style: secondary
+      start: 0
+      end: 15
+    - source: this.pool.query(`SELECT * FROM t WHERE id = ${id}`, [])
+      style: secondary
+      start: 0
+      end: 55
+    - source: (`SELECT * FROM t WHERE id = ${id}`, [])
+      style: secondary
+      start: 15
+      end: 55
+    - source: ${id}
+      style: secondary
+      start: 44
+      end: 49

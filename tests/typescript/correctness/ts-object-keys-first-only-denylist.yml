@@ -3,7 +3,13 @@ valid:
   - >-
     const DENY = new Set(['plantuml_cmd']); if (Object.keys(ext).some(key =>
     DENY.has(key))) { return false; }
+  - 'const keys = Object.keys(ext); for (const key of keys) { if (DENY.has(key)) return false; }'
+  - 'const first = Object.keys(ext)[0]; log(first);'
+  - 'const ok = Object.keys(ext).every(k => !DENY.has(k));'
 invalid:
   - >-
     const DENY = new Set(['plantuml_cmd']); const key = Object.keys(ext)[0]; if
     (DENY.has(key)) { return false; }
+  - 'function g(ext: any) { const key = Object.keys(ext)[0]; log(1); if (!DENY.has(key)) return true; }'
+  - 'const key = Object.keys(ext)[0]; if (this.deny.has(key)) { return false; }'
+  - 'const k = Object.keys(a.b)[0]; const bad = DENY.has(k);'
