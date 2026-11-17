@@ -3,7 +3,13 @@ valid:
   - >-
     <?php function pings_open( $post_id = null ) { $_post = get_post( $post_id
     ); return 'open' == $_post->ping_status; }
+  - '<?php function f( $id ) { $p = get_post( $id ); if ( ! $p ) { return ''''; } return $p->post_content; }'
+  - '<?php function f( $id ) { $p = get_post( $id ); return $p ? $p->post_content : ''''; }'
+  - '<?php function f( $id ) { $p = get_post( $id ); $q = $p; return $q->post_content; }'
 invalid:
   - >-
     <?php function pings_open( $post_id = null ) { $_post = get_post( $post_id
     ); return 'open' == $post->ping_status; }
+  - '<?php function f( $id ) { $_post = get_post( $id, ARRAY_A ); return $post->post_title; }'
+  - '<?php function f( $id ) { $_post = get_post( $id ); $title = $post->post_title; return $title; }'
+  - '<?php function f( $id ) { $_post = get_post( $id ); return esc_html( $other->name ); }'

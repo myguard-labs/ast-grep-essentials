@@ -1,6 +1,6 @@
 id: php-get-page-in-foreach
 snapshots:
-  foreach ( $all_page_ids as $page_id ) { $page = get_page( $page_id ); }:
+  "foreach ( $all_page_ids as $page_id ) { $page = get_page( $page_id ); }":
     labels:
     - source: get_page( $page_id )
       style: primary
@@ -10,3 +10,43 @@ snapshots:
       style: secondary
       start: 0
       end: 71
+  "foreach ( $groups as $g ) { foreach ( $g as $id ) { $page = get_page( $id ); } }":
+    labels:
+    - source: get_page( $id )
+      style: primary
+      start: 60
+      end: 75
+    - source: foreach ( $g as $id ) { $page = get_page( $id ); }
+      style: secondary
+      start: 28
+      end: 78
+  "foreach ( $ids as $id ) : $page = get_page( $id ); endforeach;":
+    labels:
+    - source: get_page( $id )
+      style: primary
+      start: 34
+      end: 49
+    - source: "foreach ( $ids as $id ) : $page = get_page( $id ); endforeach;"
+      style: secondary
+      start: 0
+      end: 62
+  "foreach ( $ids as $id ) { if ( $id ) { $page = get_page( $id ); } }":
+    labels:
+    - source: get_page( $id )
+      style: primary
+      start: 47
+      end: 62
+    - source: foreach ( $ids as $id ) { if ( $id ) { $page = get_page( $id ); } }
+      style: secondary
+      start: 0
+      end: 67
+  "foreach ( $ids as $id => $slug ) { $page = get_page( $id ); }":
+    labels:
+    - source: get_page( $id )
+      style: primary
+      start: 43
+      end: 58
+    - source: foreach ( $ids as $id => $slug ) { $page = get_page( $id ); }
+      style: secondary
+      start: 0
+      end: 61

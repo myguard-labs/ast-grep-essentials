@@ -3,7 +3,13 @@ valid:
   - >-
     <?php function f() { $cat = get_query_var( 'category_name' ); if ( $cat ) {
     $category = get_category_by_path( $cat ); } }
+  - '<?php function f() { $path = get_query_var( ''category_name'' ); if ( empty( $path ) ) { return; } $category = get_category_by_path( $path ); }'
+  - '<?php function f() { $category = get_category_by_path( ''news'' ); }'
+  - '<?php function f() { $category = get_category_by_path( get_query_var( ''category_name'' ) ?: ''uncategorized'' ); }'
 invalid:
   - >-
     <?php function f() { $category = get_category_by_path( get_query_var(
     'category_name' ) ); }
+  - '<?php function f() { $category = get_category_by_path( get_query_var( ''category_name'', '''' ) ); }'
+  - '<?php function f() { if ( get_category_by_path( get_query_var( ''category_name'' ) ) ) { echo 1; } }'
+  - '<?php function f() { return get_category_by_path( get_query_var( ''category_name'' ) ); }'
