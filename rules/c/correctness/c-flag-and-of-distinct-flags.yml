@@ -8,8 +8,10 @@ message: >-
   result is zero, so the check may never fire.
 note: >-
   Purely syntactic match on a parenthesized binary & whose two operands are
-  both identifiers. It cannot verify that the macros are distinct flag
-  constants, resolve their values, or confirm that | was intended.
+  both all-caps macro-style identifiers (^[A-Z_][A-Z0-9_]*$) with different
+  names. Lowercase or mixed-case variables and member operands stay silent. It
+  cannot resolve macro values, so a macro that expands to a variable is still
+  reported or missed, nor confirm that | was intended.
 rule:
   kind: parenthesized_expression
   has:
@@ -19,12 +21,14 @@ rule:
       - has:
           kind: identifier
           pattern: '$A'
+          regex: '^[A-Z_][A-Z0-9_]*$'
       - has:
           kind: identifier
           pattern: '$B'
+          regex: '^[A-Z_][A-Z0-9_]*$'
+      - not:
+          pattern: '$A & $A'
 metadata:
-  todo_cases:
-    - 'FP: a flag test against a variable such as if (mask & FLAG_NEW) or (mask & FLAG_NEW) == FLAG_NEW is reported because both operands are plain identifiers (observed in a function body)'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
