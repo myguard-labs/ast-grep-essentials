@@ -7,6 +7,8 @@ valid:
     return 0; }
   - 'int f(zval **p, zend_class_entry *ce, int x) { if (Z_TYPE_PP(p) == IS_OBJECT && instanceof_function(Z_OBJCE_PP(p), ce) && x) { return 1; } return 0; }'
   - 'int f(zval **p, zend_class_entry *ce) { if (!(Z_TYPE_PP(p) == IS_OBJECT && instanceof_function(Z_OBJCE_PP(p), ce))) { return 0; } return 1; }'
+  - 'int f(zval **p, zend_class_entry *ce) { if (Z_TYPE_PP(p) != IS_OBJECT || !instanceof_function(Z_OBJCE_PP(p), ce)) { return 0; } return 1; }'
+  - 'int f(zval **p, zend_class_entry *ce) { if (Z_TYPE_PP(p) == IS_OBJECT) { if (instanceof_function(Z_OBJCE_PP(p), ce)) { return 1; } } return 0; }'
 invalid:
   - >-
     static int f(zval **parameter, zend_class_entry *ce TSRMLS_DC) { if
@@ -15,3 +17,7 @@ invalid:
   - 'int f(zval **p, zval **q, zend_class_entry *ce) { if (Z_TYPE_PP(q) == IS_OBJECT && instanceof_function(Z_OBJCE_PP(p), ce)) { return 1; } return 0; }'
   - 'int f(zval **p, zend_class_entry *ce) { if (a && b && instanceof_function(Z_OBJCE_PP(p), ce)) { return 1; } return 0; }'
   - 'int f(zval **p, zend_class_entry *ce) { if ((instanceof_function(Z_OBJCE_PP(p), ce))) { return 1; } return 0; }'
+  - 'int f(zval **p, zend_class_entry *ce) { if (Z_TYPE_PP(p) != IS_OBJECT && instanceof_function(Z_OBJCE_PP(p), ce)) { return 1; } return 0; }'
+  - 'int f(zval **p, zend_class_entry *ce) { if (Z_TYPE_PP(p) == IS_OBJECT) { return 0; } else { if (instanceof_function(Z_OBJCE_PP(p), ce)) { return 1; } } return 0; }'
+  - 'int f(zval **p, zval **q, zend_class_entry *ce) { if (Z_TYPE_PP(q) == IS_OBJECT) { if (instanceof_function(Z_OBJCE_PP(p), ce)) { return 1; } } return 0; }'
+  - 'int f(zval **p, zval **q, zend_class_entry *ce) { if (Z_TYPE_PP(q) != IS_OBJECT || !instanceof_function(Z_OBJCE_PP(p), ce)) { return 0; } return 1; }'
