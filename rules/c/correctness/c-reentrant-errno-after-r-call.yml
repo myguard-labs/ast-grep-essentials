@@ -10,10 +10,10 @@ note: >-
   Single-file syntactic check: an `if (errno == X)` statement that has an
   earlier sibling statement (same block or translation-unit fragment) containing
   a call whose callee is an identifier ending in `_r`. The earlier statement is
-  searched without descending into a compound statement beneath it (an if,
-  loop or switch body), so an *_r call in a different function, in the body of
-  an earlier if or loop, in an enclosing block only, or after the errno test
-  does not count. It does not verify that errno is stale or that the call's
+  searched without descending into a compound statement beneath it (a braced
+  if, loop or switch body), so an *_r call in a different function, in the
+  braced body of an earlier if or loop, in an enclosing block only, or after the
+  errno test does not count; a call in an unbraced earlier body still counts. It does not verify that errno is stale or that the call's
   result is unused.
 rule:
   all:
@@ -38,5 +38,5 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FN: an *_r call in an enclosing block only (`getpwnam_r(...); if (k) { ... } else { if (errno == ERANGE) ... }`) or in the body of an earlier if or loop is not reported; the errno test needs an earlier *_r statement in its own block.'
+    - 'FN: an *_r call in an enclosing block only (`getpwnam_r(...); if (k) { ... } else { if (errno == ERANGE) ... }`) or in the braced body of an earlier if or loop is not reported; the errno test needs an earlier *_r statement in its own block.'
     - 'FN: an *_r call in the same condition (`if (getpwnam_r(...) == 0 && errno == ERANGE)`) and other errno tests (`errno != X`, `X == errno`) are not matched, as on the base rule.'
