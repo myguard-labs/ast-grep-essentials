@@ -3,7 +3,37 @@ valid:
   - >-
     void f(void) { for (j = 0; j < n; j++) { ptr = cache[j]; total -= ptr->size;
     } }
+  - |-
+    void f(void) {
+      for (j = 0; j < n; j++) {
+        total += a->size;
+        b = cache[j];
+      }
+    }
+  - |-
+    void f(void) {
+      for (j = 0; j < n; j++) {
+        total -= ptr->size;
+      }
+      ptr = cache[0];
+    }
 invalid:
   - >-
     void f(void) { for (j = 0; j < n; j++) { total -= ptr->size; ptr = cache[j];
     } }
+  - |-
+    void f(void) {
+      for (j = 0; j < n; j++) {
+        log_msg(ptr->name);
+        total++;
+        ptr = lookup(j);
+      }
+    }
+  - |-
+    void f(void) {
+      for (j = 0; j < n; j++) {
+        n2 = cur->len;
+        ptr = cache[j];
+        cur = tbl[j];
+      }
+    }

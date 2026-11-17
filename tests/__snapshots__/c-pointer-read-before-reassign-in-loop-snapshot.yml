@@ -1,5 +1,69 @@
 id: c-pointer-read-before-reassign-in-loop
 snapshots:
+  "void f(void) {\n  for (j = 0; j < n; j++) {\n    log_msg(ptr->name);\n    total++;\n    ptr = lookup(j);\n  }\n}":
+    labels:
+    - source: log_msg(ptr->name);
+      style: primary
+      start: 47
+      end: 66
+    - source: ptr->name
+      style: secondary
+      start: 55
+      end: 64
+    - source: ptr = lookup(j);
+      style: secondary
+      start: 84
+      end: 100
+    - source: |-
+        for (j = 0; j < n; j++) {
+            log_msg(ptr->name);
+            total++;
+            ptr = lookup(j);
+          }
+      style: secondary
+      start: 17
+      end: 104
+    - source: |-
+        {
+            log_msg(ptr->name);
+            total++;
+            ptr = lookup(j);
+          }
+      style: secondary
+      start: 41
+      end: 104
+  "void f(void) {\n  for (j = 0; j < n; j++) {\n    n2 = cur->len;\n    ptr = cache[j];\n    cur = tbl[j];\n  }\n}":
+    labels:
+    - source: n2 = cur->len;
+      style: primary
+      start: 47
+      end: 61
+    - source: cur->len
+      style: secondary
+      start: 52
+      end: 60
+    - source: cur = tbl[j];
+      style: secondary
+      start: 86
+      end: 99
+    - source: |-
+        for (j = 0; j < n; j++) {
+            n2 = cur->len;
+            ptr = cache[j];
+            cur = tbl[j];
+          }
+      style: secondary
+      start: 17
+      end: 103
+    - source: |-
+        {
+            n2 = cur->len;
+            ptr = cache[j];
+            cur = tbl[j];
+          }
+      style: secondary
+      start: 41
+      end: 103
   "void f(void) { for (j = 0; j < n; j++) { total -= ptr->size; ptr = cache[j]; } }":
     labels:
     - source: total -= ptr->size;

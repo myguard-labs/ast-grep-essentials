@@ -1,7 +1,28 @@
 id: c-parse-s-then-lookup-class
 valid:
   - 'zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "C", &ce);'
+  - |-
+    static void f(INTERNAL_FUNCTION_PARAMETERS) {
+      zend_lookup_class(known_name, known_len, &pce);
+      zend_parse_parameters(ZEND_NUM_ARGS(), "s", &other, &other_len);
+    }
+  - |-
+    static void f(INTERNAL_FUNCTION_PARAMETERS) {
+      zend_parse_parameters(ZEND_NUM_ARGS(), "l", &idx);
+      zend_lookup_class(names[idx], name_lens[idx], &pce);
+    }
 invalid:
   - |-
     zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &class_name, &class_name_len);
     zend_lookup_class(class_name, class_name_len, &pce);
+  - |-
+    static void f(INTERNAL_FUNCTION_PARAMETERS) {
+      zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &len);
+      zend_lookup_class(name, len, &pce);
+    }
+  - |-
+    static void f(INTERNAL_FUNCTION_PARAMETERS) {
+      zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &len);
+      if (!len) RETURN_FALSE;
+      zend_lookup_class(name, len, &pce);
+    }

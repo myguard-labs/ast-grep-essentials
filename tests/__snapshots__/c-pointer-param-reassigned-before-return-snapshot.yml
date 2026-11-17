@@ -1,5 +1,28 @@
 id: c-pointer-param-reassigned-before-return
 snapshots:
+  "static void fetch(zval *result, int bad) {\n  zval err;\n  ZVAL_NULL(&err);\n  result = &err;\n}":
+    labels:
+    - source: result = &err
+      style: primary
+      start: 76
+      end: 89
+    - source: result
+      style: secondary
+      start: 24
+      end: 30
+    - source: zval *result
+      style: secondary
+      start: 18
+      end: 30
+    - source: |-
+        static void fetch(zval *result, int bad) {
+          zval err;
+          ZVAL_NULL(&err);
+          result = &err;
+        }
+      style: secondary
+      start: 0
+      end: 92
   "static void fetch(zval *result, int bad) { if (bad) { result = &error_zval; return; } }":
     labels:
     - source: result = &error_zval
@@ -20,3 +43,24 @@ snapshots:
       style: secondary
       start: 0
       end: 87
+  "static void set(char **out, char *buf) {\n  out = &buf;\n}":
+    labels:
+    - source: out = &buf
+      style: primary
+      start: 43
+      end: 53
+    - source: out
+      style: secondary
+      start: 23
+      end: 26
+    - source: char **out
+      style: secondary
+      start: 16
+      end: 26
+    - source: |-
+        static void set(char **out, char *buf) {
+          out = &buf;
+        }
+      style: secondary
+      start: 0
+      end: 56
