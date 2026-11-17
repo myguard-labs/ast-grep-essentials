@@ -9,7 +9,8 @@ message: >-
 note: >-
   Syntactic match only on a binary subtraction whose both operands are
   parenthesized-free cast expressions with a signed integer type name. It does
-  not verify operand types, unsignedness, or overflow at runtime.
+  not verify operand types, unsignedness, or overflow at runtime. Skips a
+  subtraction where both casts are to unsigned types.
 rule:
   all:
     - pattern: '(long) $A - (long) $B'
@@ -39,4 +40,4 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/190.html|https://cwe.mitre.org/data/definitions/191.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'not flagged: long f(unsigned long a, long b) { return (unsigned long)a - (long)b; }'
+    - 'known limitation: mixed casts in either order, e.g. (unsigned long)a - (long)b and (long)a - (unsigned long)b, still report although the subtraction is evaluated in unsigned arithmetic; unsigned spellings that do not start with unsigned (long unsigned) are not recognised'
