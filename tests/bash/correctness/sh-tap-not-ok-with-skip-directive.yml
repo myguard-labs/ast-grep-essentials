@@ -1,5 +1,17 @@
 id: sh-tap-not-ok-with-skip-directive
 valid:
   - 'echo "ok $N - $NAME # SKIP reason"'
+  - |-
+    echo "not ok $N - $NAME"
+  - |-
+    echo "not ok $N - $NAME # TODO known failure"
+  - |-
+    echo "1..0 # SKIP no tests on this host"
 invalid:
   - 'echo "not ok $N - $NAME # SKIP reason"'
+  - |-
+    echo "not ok $N - $NAME # SKIP"
+  - |-
+    echo -e "not ok $N - $NAME # SKIP reason"
+  - |-
+    echo "not ok $N - $NAME # SKIPPED"

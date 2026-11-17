@@ -3,7 +3,27 @@ valid:
   - |-
     [ -n "$FILES_LIST" ] || exit 0
     mapfile -t FILES <<<"$FILES_LIST"
+  - |-
+    mapfile -t FILES < "$list_file"
+    [ "${#FILES[@]}" -gt 0 ] || exit 0
+  - |-
+    mapfile -t FILES < <(git ls-files)
+    [ "${#FILES[@]}" -gt 0 ] || exit 0
+  - |-
+    [ -z "$FILES_LIST" ] && exit 0
+    mapfile -t FILES <<<"$FILES_LIST"
+    echo "${FILES[0]}"
 invalid:
   - |-
     mapfile -t FILES <<<"$FILES_LIST"
     [ "${#FILES[@]}" -gt 0 ] || exit 0
+  - |-
+    mapfile -t FILES <<<"$FILES_LIST"
+    [[ "${#FILES[@]}" -eq 0 ]] && exit 0
+  - |-
+    mapfile -t FILES <<<"$FILES_LIST"
+    if [ "${#FILES[@]}" -eq 0 ]; then exit 0; fi
+  - |-
+    mapfile -t FILES <<<"$FILES_LIST"
+    [ "${#FILES[@]}" -gt 0 ] || exit 0
+    echo "${FILES[0]}"

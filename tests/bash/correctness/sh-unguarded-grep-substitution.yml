@@ -1,5 +1,19 @@
 id: sh-unguarded-grep-substitution
 valid:
   - 'files=$(grep -rl pattern .github/ || :)'
+  - |-
+    files=$(grep -rl pattern .github/ || echo none)
+  - |-
+    files=$(grep -rl pattern .github/ || [ $? -eq 1 ])
+  - |-
+    f=$(grep -m1 foo "$x"; true)
 invalid:
   - 'files=$(grep -rl pattern .github/)'
+  - |-
+    count=$(grep -c "^ERR" "$log")
+  - |-
+    set -e
+    name=$(grep -m1 "^Name:" "$f")
+    echo "$name"
+  - |-
+    hit=$(grep -m1 -E "^v[0-9]+" "$f")

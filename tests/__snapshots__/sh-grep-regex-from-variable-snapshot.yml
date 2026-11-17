@@ -1,12 +1,42 @@
 id: sh-grep-regex-from-variable
 snapshots:
-  grep -qE "id=${label}" "$f":
+  grep -qE "$a|$b" /etc/hosts:
+    labels:
+    - source: grep -qE "$a|$b" /etc/hosts
+      style: primary
+      start: 0
+      end: 27
+    - source: "\"$a|$b\""
+      style: secondary
+      start: 9
+      end: 16
+  "grep -qE \"id=${label}\" \"$f\"":
     labels:
     - source: grep -qE "id=${label}" "$f"
       style: primary
       start: 0
       end: 27
-    - source: '"id=${label}"'
+    - source: "\"id=${label}\""
       style: secondary
       start: 9
       end: 22
+  grep -qE -- "$pat" "$f":
+    labels:
+    - source: grep -qE -- "$pat" "$f"
+      style: primary
+      start: 0
+      end: 23
+    - source: "\"$pat\""
+      style: secondary
+      start: 12
+      end: 18
+  "if grep -qE \"^${prefix}-[0-9]+$\" \"$f\"; then echo hit; fi":
+    labels:
+    - source: grep -qE "^${prefix}-[0-9]+$" "$f"
+      style: primary
+      start: 3
+      end: 37
+    - source: "\"^${prefix}-[0-9]+$\""
+      style: secondary
+      start: 12
+      end: 32
