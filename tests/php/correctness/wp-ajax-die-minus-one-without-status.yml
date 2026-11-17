@@ -1,5 +1,11 @@
 id: wp-ajax-die-minus-one-without-status
 valid:
   - 'wp_die( -1, 403 );'
+  - '<?php wp_die( -1, 403 );'
+  - '<?php wp_die( -1, '''', array( ''response'' => 403 ) );'
+  - '<?php wp_die( __( ''Forbidden'' ), '''', array( ''response'' => 403 ) );'
 invalid:
   - 'wp_die( -1 );'
+  - '<?php wp_die(-1);'
+  - '<?php if ( ! $ok ) { wp_die( -1 ); }'
+  - '<?php check_ajax_referer( ''x'' ) || wp_die( -1 );'

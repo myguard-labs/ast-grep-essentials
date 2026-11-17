@@ -3,7 +3,13 @@ valid:
   - >-
     function f() { $page = $_POST['page']; if ( !preg_match( '/^[a-z_-]+$/',
     $page ) ) die('0'); }
+  - '<?php function f() { if ( ! current_user_can( ''edit_posts'' ) ) die(''-1''); }'
+  - '<?php function f() { if ( ! preg_match( ''/^[a-z]+$/'', $p ) ) { wp_send_json_error( ''bad'', 400 ); } }'
+  - '<?php function f() { if ( ! preg_match( ''/^[a-z]+$/'', $p ) ) { die(''0''); } die(''1''); }'
 invalid:
   - >-
     function f() { $page = $_POST['page']; if ( !preg_match( '/^[a-z_-]+$/',
     $page ) ) die('-1'); }
+  - '<?php function f() { if ( ! preg_match( ''/^[a-z_-]+$/'', $p ) ) { die(''-1''); } }'
+  - '<?php function f() { if ( empty( $p ) || ! preg_match( ''/^[a-z_-]+$/'', $p ) ) die(''-1''); }'
+  - '<?php function f() { if ( preg_match( ''/^[a-z]+$/'', $p ) ) { run(); } else { die(''-1''); } }'

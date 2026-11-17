@@ -1,5 +1,11 @@
 id: wp-admin-url-concatenated-query
 valid:
   - '<?php $u = network_admin_url( "themes.php?deleted=1" ); ?>'
+  - '<?php $u = network_admin_url( ''themes.php'' );'
+  - '<?php $u = network_admin_url( add_query_arg( ''deleted'', absint( $n ), ''themes.php'' ) );'
+  - '<?php $u = network_admin_url( ''themes.php?deleted=1'', ''https'' );'
 invalid:
   - '<?php $u = network_admin_url( "themes.php?deleted=" . $n ); ?>'
+  - '<?php wp_redirect( network_admin_url( "themes.php?deleted=" . absint( $count ) ) );'
+  - '<?php $u = network_admin_url( "themes.php?deleted=" . $_GET[''n''] );'
+  - '<?php echo esc_url( network_admin_url( "themes.php?deleted=" . $this->count ) );'
