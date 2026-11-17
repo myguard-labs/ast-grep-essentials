@@ -1,5 +1,11 @@
 id: php-raw-ampersand-in-href-string
 valid:
   - '<?php $link = ''<a href="index.php?tab=plugin&amp;plugin=foo">x</a>'';'
+  - '<?php $l = ''<a href="index.php">x</a>'';'
+  - '<?php $l = ''<a href="index.php?tab=plugin">x</a>'';'
+  - '<?php $l = ''<a href="index.php?tab=a&#038;plugin=foo">x</a>'';'
 invalid:
   - '<?php $link = ''<a href="index.php?tab=plugin&plugin=foo">x</a>'';'
+  - '<?php $l = ''<a href="page.php?a=1&b=2&c=3">x</a>'';'
+  - '<?php $l = ''<a class="btn" href="page.php?id=3&action=edit">x</a>'';'
+  - '<?php $l = ''<a href="x.php?a=1&b='' . $v . ''">x</a>'';'

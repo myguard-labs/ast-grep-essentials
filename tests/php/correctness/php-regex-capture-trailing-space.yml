@@ -1,5 +1,10 @@
 id: php-regex-capture-trailing-space
 valid:
   - '<?php preg_match(''|Name:(.*)|i'', $d, $m); ?>'
+  - '<?php preg_match(''|Name:(.*) |i'', $d, $m);'
+  - '<?php preg_match(''|Name: (.*)|i'', $d, $m);'
+  - '<?php preg_match(''|Name:(.*)|'', $d, $m);'
 invalid:
   - '<?php preg_match(''|Name:(.* )|i'', $d, $m); ?>'
+  - '<?php if (preg_match(''|Name:(.* )|i'', $line, $matches)) { $n = 1; }'
+  - '<?php $ok = preg_match(''|Name:(.* )|i'', $this->line, $out[0]);'

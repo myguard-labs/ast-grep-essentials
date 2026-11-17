@@ -1,8 +1,26 @@
 id: php-redundant-inequality-after-equality
 snapshots:
-  if ( 'http' === $scheme && 'https' !== $scheme ) { $x = 1; }:
+  $ok = 'http' === $scheme && 'https' !== $scheme && $host;:
     labels:
-    - source: '''http'' === $scheme && ''https'' !== $scheme'
+    - source: "'http' === $scheme && 'https' !== $scheme"
+      style: primary
+      start: 6
+      end: 47
+  "if ( 'http' === $scheme && 'https' !== $scheme ) { $x = 1; }":
+    labels:
+    - source: "'http' === $scheme && 'https' !== $scheme"
       style: primary
       start: 5
       end: 46
+  return 'http' === $scheme && 'https' !== $scheme;:
+    labels:
+    - source: "'http' === $scheme && 'https' !== $scheme"
+      style: primary
+      start: 7
+      end: 48
+  "while ( ( 'http' === $scheme && 'https' !== $scheme ) ) { $i++; }":
+    labels:
+    - source: "'http' === $scheme && 'https' !== $scheme"
+      style: primary
+      start: 10
+      end: 51
