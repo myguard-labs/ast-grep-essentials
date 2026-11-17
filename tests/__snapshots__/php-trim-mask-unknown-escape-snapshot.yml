@@ -1,8 +1,26 @@
 id: php-trim-mask-unknown-escape
 snapshots:
-  $tags = trim($tags, " \s,");:
+  "$tags = trim($line, \"\\W\");":
+    labels:
+    - source: trim($line, "\W")
+      style: primary
+      start: 8
+      end: 25
+  "$tags = trim($tags, \" \\s,\");":
     labels:
     - source: trim($tags, " \s,")
       style: primary
       start: 8
       end: 27
+  "function f($s) { return trim($s, \"\\w,\"); }":
+    labels:
+    - source: trim($s, "\w,")
+      style: primary
+      start: 24
+      end: 39
+  "if (trim($a, \"\\s\") === \"\") {}":
+    labels:
+    - source: trim($a, "\s")
+      style: primary
+      start: 4
+      end: 18

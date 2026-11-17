@@ -1,5 +1,12 @@
 id: php-umask-without-decoct
 valid:
   - '<?php define(''PEAR_CONFIG_DEFAULT_UMASK'', decoct(umask()));'
+  - '<?php $m = decoct( umask() & 0777 );'
+  - '<?php $m = str_pad(decoct(umask()), 4, "0", STR_PAD_LEFT);'
+  - '<?php $m = decoct(0777 & ~umask());'
+  - '<?php $old = umask(0); umask($old);'
 invalid:
   - '<?php define(''PEAR_CONFIG_DEFAULT_UMASK'', umask());'
+  - '<?php echo ''umask: '' . umask();'
+  - '<?php $msg = sprintf(''mask %s'', umask());'
+  - '<?php printf("umask %s\n", umask());'

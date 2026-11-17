@@ -1,5 +1,12 @@
 id: php-trigger-error-user-error-level
 valid:
   - '<?php trigger_error( ''Cannot use an empty bucket name'', E_USER_WARNING );'
+  - '<?php trigger_error( ''Cannot use an empty bucket name'', E_USER_NOTICE );'
+  - '<?php trigger_error( ''Cannot use an empty bucket name'', E_USER_DEPRECATED );'
+  - '<?php trigger_error( ''Cannot use an empty bucket name'' );'
+  - '<?php throw new InvalidArgumentException( ''Cannot use an empty bucket name'' );'
 invalid:
   - '<?php trigger_error( ''Cannot use an empty bucket name'', E_USER_ERROR );'
+  - '<?php trigger_error( $message, E_USER_ERROR );'
+  - '<?php function check( $name ) { trigger_error( "Bad bucket $name", E_USER_ERROR ); }'
+  - '<?php return trigger_error( ''Cannot use an empty bucket name'', E_USER_ERROR );'

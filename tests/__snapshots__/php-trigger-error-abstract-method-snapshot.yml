@@ -1,14 +1,7 @@
 id: php-trigger-error-abstract-method
 snapshots:
-  ? |-
-    <?php
-    class Op {
-        function &reverse()
-        {
-            trigger_error('Abstract method', E_USER_ERROR);
-        }
-    }
-  : labels:
+  "<?php\nclass Op {\n    function &reverse()\n    {\n        trigger_error('Abstract method', E_USER_ERROR);\n    }\n}":
+    labels:
     - source: |-
         function &reverse()
             {
@@ -32,3 +25,78 @@ snapshots:
       style: secondary
       start: 45
       end: 108
+  "<?php\nclass Op {\n    protected function reverse()\n    {\n        trigger_error( 'Abstract method', E_USER_ERROR );\n    }\n}":
+    labels:
+    - source: |-
+        protected function reverse()
+            {
+                trigger_error( 'Abstract method', E_USER_ERROR );
+            }
+      style: primary
+      start: 21
+      end: 119
+    - source: trigger_error( 'Abstract method', E_USER_ERROR )
+      style: secondary
+      start: 64
+      end: 112
+    - source: trigger_error( 'Abstract method', E_USER_ERROR );
+      style: secondary
+      start: 64
+      end: 113
+    - source: |-
+        {
+                trigger_error( 'Abstract method', E_USER_ERROR );
+            }
+      style: secondary
+      start: 54
+      end: 119
+  "<?php\nclass Op {\n    public static function reverse($x)\n    {\n        trigger_error('Abstract method', E_USER_ERROR);\n    }\n}":
+    labels:
+    - source: |-
+        public static function reverse($x)
+            {
+                trigger_error('Abstract method', E_USER_ERROR);
+            }
+      style: primary
+      start: 21
+      end: 123
+    - source: trigger_error('Abstract method', E_USER_ERROR)
+      style: secondary
+      start: 70
+      end: 116
+    - source: trigger_error('Abstract method', E_USER_ERROR);
+      style: secondary
+      start: 70
+      end: 117
+    - source: |-
+        {
+                trigger_error('Abstract method', E_USER_ERROR);
+            }
+      style: secondary
+      start: 60
+      end: 123
+  "<?php\ntrait Op {\n    function reverse()\n    {\n        trigger_error('Abstract method', E_USER_ERROR);\n    }\n}":
+    labels:
+    - source: |-
+        function reverse()
+            {
+                trigger_error('Abstract method', E_USER_ERROR);
+            }
+      style: primary
+      start: 21
+      end: 107
+    - source: trigger_error('Abstract method', E_USER_ERROR)
+      style: secondary
+      start: 54
+      end: 100
+    - source: trigger_error('Abstract method', E_USER_ERROR);
+      style: secondary
+      start: 54
+      end: 101
+    - source: |-
+        {
+                trigger_error('Abstract method', E_USER_ERROR);
+            }
+      style: secondary
+      start: 44
+      end: 107

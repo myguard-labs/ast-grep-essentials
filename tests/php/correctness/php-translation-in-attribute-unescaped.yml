@@ -1,5 +1,11 @@
 id: php-translation-in-attribute-unescaped
 valid:
   - '<a title="<?php esc_attr_e( ''Hidden from search engines'' ); ?>">Privacy</a>'
+  - '<p><?php _e( ''Hidden from search engines'', ''my-domain'' ); ?></p>'
+  - '<a title="<?php echo esc_attr__( ''Hidden'', ''my-domain'' ); ?>">Privacy</a>'
+  - '<a class="x" title="Static <?php esc_attr_e( ''Hidden'' ); ?>"><?php _e( ''Privacy'' ); ?></a>'
 invalid:
   - '<a title="<?php _e( ''Hidden from search engines'' ); ?>">Privacy</a>'
+  - '<a title="<?php _e( ''Hidden'', ''my-domain'' ); ?>">Privacy</a>'
+  - '<a href="<?php _e(''Privacy'') ?>">Privacy</a>'
+  - '<div class="a" title="<?php _e( ''Hidden'' ); ?>">Privacy</div>'
