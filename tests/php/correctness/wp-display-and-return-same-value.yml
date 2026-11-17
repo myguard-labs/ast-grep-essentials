@@ -1,5 +1,11 @@
 id: wp-display-and-return-same-value
 valid:
   - "<?php\nfunction show_name( $name, $display = true ) {\n\tif ( $display )\n\t\techo $name;\n\telse\n\t\treturn $name;\n}\n"
+  - "<?php\nfunction show_name( $name, $display = true ) {\n\tif ( ! $display )\n\t\treturn $name;\n\techo $name;\n}\n"
+  - "<?php\nfunction show_name( $name, $display = true ) {\n\tif ( $display )\n\t\techo $name;\n\treturn $other;\n}\n"
+  - "<?php\nfunction show_name( $name, $display = true ) {\n\tif ( $display )\n\t\techo $name;\n\treturn;\n}\n"
 invalid:
   - "<?php\nfunction show_name( $name, $display = true ) {\n\tif ( $display )\n\t\techo $name;\n\treturn $name;\n}\n"
+  - "<?php\nfunction show_title( $post, $echo = true ) {\n\t$title = get_the_title( $post );\n\tif ( $echo )\n\t\techo $title;\n\treturn $title;\n}\n"
+  - "<?php\nfunction show_name( $name, $display = true ) {\n\tif ( $display )\n\t\techo esc_html( $name );\n\treturn esc_html( $name );\n}\n"
+  - "<?php\nfunction show_name( $obj, $display = true ) {\n\tif ( $display )\n\t\techo $obj->name;\n\treturn $obj->name;\n}\n"

@@ -1,5 +1,10 @@
 id: wp-esc-attr-get-the-title
 valid:
   - '<?php $title = esc_attr( get_the_ID() ); ?>'
+  - "<?php $t = the_title_attribute( array( 'echo' => false ) );"
+  - "<?php $t = esc_attr( wp_strip_all_tags( get_the_title() ) );"
+  - "<?php $t = esc_attr( get_bloginfo( 'name' ) );"
 invalid:
   - '<?php $title = esc_attr( get_the_title() ); ?>'
+  - "<?php echo '<a title=\"' . esc_attr( get_the_title() ) . '\">';"
+  - "<?php printf( '<a title=\"%s\">', esc_attr( get_the_title() ) );"
