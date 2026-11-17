@@ -1,5 +1,29 @@
 id: c-openssl-verify-eq-zero-misses-error
 snapshots:
+  "int j = EVP_DigestVerify(mctx, data, len, hdata, hdatalen);\nif (j == 0) return 0;":
+    labels:
+    - source: if (j == 0) return 0;
+      style: primary
+      start: 60
+      end: 81
+    - source: int j = EVP_DigestVerify(mctx, data, len, hdata, hdatalen);
+      style: secondary
+      start: 0
+      end: 59
+  "int j = EVP_DigestVerify(mctx, data, len, hdata, hdatalen);\nif (j == 0) {\n    log_error(\"bad signature\");\n    return -1;\n}":
+    labels:
+    - source: |-
+        if (j == 0) {
+            log_error("bad signature");
+            return -1;
+        }
+      style: primary
+      start: 60
+      end: 122
+    - source: int j = EVP_DigestVerify(mctx, data, len, hdata, hdatalen);
+      style: secondary
+      start: 0
+      end: 59
   "int j = EVP_DigestVerify(mctx, data, len, hdata, hdatalen);\nif (j == 0) {\n    return 0;\n}":
     labels:
     - source: |-
@@ -13,3 +37,16 @@ snapshots:
       style: secondary
       start: 0
       end: 59
+  "long r = EVP_DigestVerify(mctx, data, len, hdata, hdatalen);\nif (r == 0) {\n    goto err;\n}":
+    labels:
+    - source: |-
+        if (r == 0) {
+            goto err;
+        }
+      style: primary
+      start: 61
+      end: 90
+    - source: long r = EVP_DigestVerify(mctx, data, len, hdata, hdatalen);
+      style: secondary
+      start: 0
+      end: 60

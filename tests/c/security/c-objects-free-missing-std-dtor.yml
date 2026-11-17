@@ -4,7 +4,13 @@ valid:
     static void foo_objects_dtor(void *object, zend_object_handle handle
     TSRMLS_DC) { struct foo_object *intern = object;
     zend_object_std_dtor(&intern->zo TSRMLS_CC); efree(intern); }
+  - 'static void obj_free(void *o) { my_obj *intern = o; zend_object_std_dtor(&intern->zo); efree(intern); }'
+  - 'static void obj_free(void *o) { my_obj *intern = o; zend_object_std_dtor(&intern->zo); }'
+  - 'static void obj_free(void *o) { my_obj *intern = o; efree(intern->buf); zend_object_std_dtor(&intern->zo); efree(intern); }'
 invalid:
   - >-
     static void foo_objects_dtor(void *object, zend_object_handle handle
     TSRMLS_DC) { struct foo_object *intern = object; efree(intern); }
+  - 'static void obj_free(void *o) { my_obj *intern = o; if (intern->buf) { efree(intern->buf); } }'
+  - 'static void obj_free(void *o) { my_obj *intern = o; efree(intern->a); efree(intern->b); }'
+  - 'static void obj_free(void *o) { my_obj *intern = o; while (intern) { efree(intern); intern = NULL; } }'

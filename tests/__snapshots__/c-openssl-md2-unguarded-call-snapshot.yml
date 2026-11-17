@@ -1,8 +1,26 @@
 id: c-openssl-md2-unguarded-call
 snapshots:
-  void f(void) { EVP_md2(); }:
+  "const EVP_MD *pick(int legacy) { if (legacy) { return EVP_md2(); } return NULL; }":
+    labels:
+    - source: EVP_md2()
+      style: primary
+      start: 54
+      end: 63
+  "void f(EVP_MD_CTX *ctx) { EVP_DigestInit_ex(ctx, EVP_md2(), NULL); }":
+    labels:
+    - source: EVP_md2()
+      style: primary
+      start: 49
+      end: 58
+  "void f(void) { EVP_md2(); }":
     labels:
     - source: EVP_md2()
       style: primary
       start: 15
       end: 24
+  "void f(void) { const EVP_MD *md = EVP_md2(); (void)md; }":
+    labels:
+    - source: EVP_md2()
+      style: primary
+      start: 34
+      end: 43

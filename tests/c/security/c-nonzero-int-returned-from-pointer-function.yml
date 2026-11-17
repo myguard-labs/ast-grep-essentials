@@ -3,7 +3,13 @@ valid:
   - >-
     static const void *veneer(const void *addr) { if (addr) { return addr; }
     return 0; }
+  - 'static int count_items(void) { return 1; }'
+  - 'char *find_name(void) { return NULL; }'
+  - 'void *find_slot(int i) { if (i < 0) { return 0x0; } return 00; }'
 invalid:
   - >-
     static const void *veneer(const void *addr) { if (addr) { return 1; } return
     0; }
+  - 'char *find_name(void) { return 0x10; }'
+  - 'void *find_slot(int i) { if (i < 0) { return 0; } return 2; }'
+  - 'int **find_tab(void) { return 07; }'

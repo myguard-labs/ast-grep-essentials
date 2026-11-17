@@ -5,11 +5,46 @@ valid:
     void init_app_idx(void) {
         app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
     }
+  - |-
+    void init_idx(void) {
+        app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
+        if (app_idx < 0) {
+            abort();
+        }
+    }
+  - |-
+    void init_idx(void) {
+        int idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
+        store_idx(idx);
+    }
+  - |-
+    void init_idx(int ok) {
+        if (ok) {
+            app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
+        }
+    }
 invalid:
   - |-
     static int app_idx = -1;
     void get_app_idx(void) {
         if (app_idx < 0) {
             app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
+        }
+    }
+  - |-
+    void get_idx(void) {
+        if (app_idx < 0)
+            app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
+    }
+  - |-
+    void get_idx(int force) {
+        if (force || app_idx < 0) {
+            app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
+        }
+    }
+  - |-
+    void get_idx(struct g *g) {
+        if (g->idx < 0) {
+            g->idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
         }
     }

@@ -1,5 +1,72 @@
 id: c-null-check-chain-returns-without-free
 snapshots:
+  "buf_t *a = alloc(), *b = alloc(), *c = alloc();\nif (!a || !b || !c) {\n  return NULL;\n}":
+    labels:
+    - source: |-
+        if (!a || !b || !c) {
+          return NULL;
+        }
+      style: primary
+      start: 48
+      end: 86
+    - source: (!a || !b || !c)
+      style: secondary
+      start: 51
+      end: 67
+    - source: return NULL;
+      style: secondary
+      start: 72
+      end: 84
+    - source: return NULL;
+      style: secondary
+      start: 72
+      end: 84
+  "buf_t *p = alloc(), *q = alloc();\nif ( ! p || ! q ) {\n  log_error(\"alloc\");\n  return -1;\n}":
+    labels:
+    - source: |-
+        if ( ! p || ! q ) {
+          log_error("alloc");
+          return -1;
+        }
+      style: primary
+      start: 34
+      end: 90
+    - source: ( ! p || ! q )
+      style: secondary
+      start: 37
+      end: 51
+    - source: return -1;
+      style: secondary
+      start: 78
+      end: 88
+    - source: return -1;
+      style: secondary
+      start: 78
+      end: 88
+  "buf_t *p = alloc(), *q = alloc();\nif (!p || !q) {\n  if (verbose) {\n    log_error(\"alloc\");\n  }\n  return -1;\n}":
+    labels:
+    - source: |-
+        if (!p || !q) {
+          if (verbose) {
+            log_error("alloc");
+          }
+          return -1;
+        }
+      style: primary
+      start: 34
+      end: 109
+    - source: (!p || !q)
+      style: secondary
+      start: 37
+      end: 47
+    - source: return -1;
+      style: secondary
+      start: 97
+      end: 107
+    - source: return -1;
+      style: secondary
+      start: 97
+      end: 107
   "buf_t *p = alloc(), *q = alloc();\nif (!p || !q) {\n  return 0;\n}":
     labels:
     - source: |-

@@ -4,5 +4,17 @@ valid:
     #ifdef HAVE_OPENSSL_MD2_H
     void f(void) { EVP_md2(); }
     #endif
+  - |-
+    #ifndef OPENSSL_NO_MD2
+    void f(void) { EVP_md2(); }
+    #endif
+  - |-
+    #if defined(HAVE_MD2) && !defined(OPENSSL_NO_MD2)
+    void f(void) { EVP_md2(); }
+    #endif
+  - 'void f(void) { EVP_sha256(); }'
 invalid:
   - 'void f(void) { EVP_md2(); }'
+  - 'void f(void) { const EVP_MD *md = EVP_md2(); (void)md; }'
+  - 'void f(EVP_MD_CTX *ctx) { EVP_DigestInit_ex(ctx, EVP_md2(), NULL); }'
+  - 'const EVP_MD *pick(int legacy) { if (legacy) { return EVP_md2(); } return NULL; }'

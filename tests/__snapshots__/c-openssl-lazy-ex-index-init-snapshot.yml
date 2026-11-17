@@ -1,13 +1,7 @@
 id: c-openssl-lazy-ex-index-init
 snapshots:
-  ? |-
-    static int app_idx = -1;
-    void get_app_idx(void) {
-        if (app_idx < 0) {
-            app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
-        }
-    }
-  : labels:
+  "static int app_idx = -1;\nvoid get_app_idx(void) {\n    if (app_idx < 0) {\n        app_idx = SSL_get_ex_new_index(0, \"x\", NULL, NULL, NULL);\n    }\n}":
+    labels:
     - source: app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL)
       style: primary
       start: 81
@@ -23,3 +17,53 @@ snapshots:
       style: secondary
       start: 54
       end: 144
+  "void get_idx(int force) {\n    if (force || app_idx < 0) {\n        app_idx = SSL_get_ex_new_index(0, \"x\", NULL, NULL, NULL);\n    }\n}":
+    labels:
+    - source: app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL)
+      style: primary
+      start: 66
+      end: 122
+    - source: (force || app_idx < 0)
+      style: secondary
+      start: 33
+      end: 55
+    - source: |-
+        if (force || app_idx < 0) {
+                app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
+            }
+      style: secondary
+      start: 30
+      end: 129
+  "void get_idx(struct g *g) {\n    if (g->idx < 0) {\n        g->idx = SSL_get_ex_new_index(0, \"x\", NULL, NULL, NULL);\n    }\n}":
+    labels:
+    - source: g->idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL)
+      style: primary
+      start: 58
+      end: 113
+    - source: (g->idx < 0)
+      style: secondary
+      start: 35
+      end: 47
+    - source: |-
+        if (g->idx < 0) {
+                g->idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
+            }
+      style: secondary
+      start: 32
+      end: 120
+  "void get_idx(void) {\n    if (app_idx < 0)\n        app_idx = SSL_get_ex_new_index(0, \"x\", NULL, NULL, NULL);\n}":
+    labels:
+    - source: app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL)
+      style: primary
+      start: 50
+      end: 106
+    - source: (app_idx < 0)
+      style: secondary
+      start: 28
+      end: 41
+    - source: |-
+        if (app_idx < 0)
+                app_idx = SSL_get_ex_new_index(0, "x", NULL, NULL, NULL);
+      style: secondary
+      start: 25
+      end: 107

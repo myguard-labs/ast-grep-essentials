@@ -4,5 +4,22 @@ valid:
     #ifndef OPENSSL_NO_SSL3
     void f(void) { SSL_METHOD *m = SSLv3_client_method(); (void)m; }
     #endif
+  - |-
+    #ifdef OPENSSL_NO_SSL3
+    void f(void) { }
+    #else
+    void f(void) { SSL_METHOD *m = SSLv3_server_method(); (void)m; }
+    #endif
+  - 'void f(void) { const SSL_METHOD *m = TLS_client_method(); (void)m; }'
+  - |-
+    #ifndef OPENSSL_NO_SSL3
+    void f(int x) { if (x) { SSL_CTX_new(SSLv3_client_method()); } }
+    #endif
 invalid:
   - 'void f(void) { SSL_METHOD *m = SSLv3_client_method(); (void)m; }'
+  - 'void f(void) { SSL_METHOD *m = SSLv3_server_method(); (void)m; }'
+  - 'void f(void) { SSL_CTX *c = SSL_CTX_new(SSLv3_client_method()); (void)c; }'
+  - |-
+    #ifdef USE_LEGACY_TLS
+    void f(void) { SSL_METHOD *m = SSLv3_client_method(); (void)m; }
+    #endif

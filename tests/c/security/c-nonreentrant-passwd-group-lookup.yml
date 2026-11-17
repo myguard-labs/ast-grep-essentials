@@ -3,5 +3,11 @@ valid:
   - >-
     struct passwd pw; struct passwd *res; getpwnam_r(name, &pw, buf, buflen,
     &res); uid = pw.pw_uid;
+  - 'struct group gr; struct group *res; int rc = getgrnam_r(name, &gr, buf, buflen, &res);'
+  - 'struct passwd pw; struct passwd *res; if (getpwnam_r(name, &pw, buf, sizeof buf, &res) != 0 || res == NULL) return -1;'
+  - 'struct group gr; struct group *res; do { rc = getgrnam_r(name, &gr, buf, buflen, &res); } while (rc == EINTR);'
 invalid:
   - 'struct passwd *pw = getpwnam(name); uid = pw->pw_uid;'
+  - 'struct group *gr = getgrnam(name); gid = gr->gr_gid;'
+  - 'if (getpwnam(user) == NULL) { return -1; }'
+  - 'uid_t uid = getpwnam("nobody")->pw_uid;'

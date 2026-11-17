@@ -14,3 +14,45 @@ snapshots:
       style: secondary
       start: 80
       end: 134
+  "static void obj_free(void *o) { my_obj *intern = o; efree(intern->a); efree(intern->b); }":
+    labels:
+    - source: efree(intern->a)
+      style: primary
+      start: 52
+      end: 68
+    - source: efree
+      style: secondary
+      start: 52
+      end: 57
+    - source: "{ my_obj *intern = o; efree(intern->a); efree(intern->b); }"
+      style: secondary
+      start: 30
+      end: 89
+  "static void obj_free(void *o) { my_obj *intern = o; if (intern->buf) { efree(intern->buf); } }":
+    labels:
+    - source: efree(intern->buf)
+      style: primary
+      start: 71
+      end: 89
+    - source: efree
+      style: secondary
+      start: 71
+      end: 76
+    - source: "{ efree(intern->buf); }"
+      style: secondary
+      start: 69
+      end: 92
+  "static void obj_free(void *o) { my_obj *intern = o; while (intern) { efree(intern); intern = NULL; } }":
+    labels:
+    - source: efree(intern)
+      style: primary
+      start: 69
+      end: 82
+    - source: efree
+      style: secondary
+      start: 69
+      end: 74
+    - source: "{ efree(intern); intern = NULL; }"
+      style: secondary
+      start: 67
+      end: 100

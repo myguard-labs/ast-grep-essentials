@@ -7,10 +7,49 @@ valid:
         s->alpn_selected = NULL;
         s->alpn_selected_len = 0;
     }
+  - |-
+    static void reset(struct s *s) {
+        s->alpn_len = 0;
+        OPENSSL_free(s->alpn);
+        s->alpn = NULL;
+    }
+  - |-
+    static void reset(void) {
+        unsigned char *tmp = get_tmp();
+        OPENSSL_free(tmp);
+        tmp = NULL;
+    }
+  - |-
+    static void reset(struct s *s) {
+        OPENSSL_free(s->a);
+        s->a = NULL;
+        s->a_len = 0;
+        OPENSSL_free(s->b);
+        s->b = NULL;
+        s->b_len = 0;
+    }
 invalid:
   - |-
     struct s { unsigned char *alpn_selected; size_t alpn_selected_len; };
     static void reset(struct s *s) {
         OPENSSL_free(s->alpn_selected);
         s->alpn_selected = NULL;
+    }
+  - |-
+    static void reset(struct s *s) {
+        OPENSSL_free(s->peer);
+        s->peer = NULL;
+        s->flags = 0;
+    }
+  - |-
+    static void reset(struct ctx *c) {
+        OPENSSL_free(c->tls->sess_id);
+        c->tls->sess_id = NULL;
+    }
+  - |-
+    static void reset(struct s *s) {
+        if (s->peer) {
+            OPENSSL_free(s->peer);
+            s->peer = NULL;
+        }
     }
