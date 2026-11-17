@@ -26,7 +26,7 @@ rule:
             kind: cast_expression
             has:
               field: type
-              regex: '^\(?\s*(const\s+)?(unsigned\s+|signed\s+)?(char|short|int|long|size_t|ssize_t|ptrdiff_t|u?int(8|16|32|64)_t)\b'
+              regex: '^\s*(const\s+)?((unsigned|signed)\s+)?((long\s+long|long|short)(\s+int)?|char|int|size_t|ssize_t|ptrdiff_t|u?int(8|16|32|64)_t|unsigned|signed)\s*$'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
@@ -40,3 +40,4 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   todo_cases:
     - 'An initialiser cast to an integer type that is nested inside a larger expression, or a cast hidden behind parentheses, is not recognised as the outermost expression (kept as a report).'
+    - 'A multi-declarator `int a = (int)(x * 0.5), b = x * 0.5;` is suppressed as a whole because the cast on a hides the uncast b (kept as a known limitation).'
