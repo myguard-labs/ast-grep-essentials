@@ -6,7 +6,9 @@ severity: warning
 message: Result of PKCS7_get_signed_attribute is dereferenced without a NULL check.
 note: >-
   Syntactic only; matches an if condition using -> on the assigned variable
-  without an && guard on it, and does not track aliasing or other guards.
+  unless the condition guards it (`V && ...`, `V != NULL && ...`, `!V || ...`,
+  `V == NULL || ...`) or an earlier if tests `!V` / `V == NULL` and returns or
+  jumps unconditionally. It does not track aliasing or other guards.
 rule:
   kind: if_statement
   all:
@@ -23,7 +25,31 @@ rule:
           field: condition
           has:
             stopBy: end
-            pattern: '$V && $X'
+            any:
+              - pattern: '$V && $X'
+              - pattern: '$V != NULL && $X'
+              - pattern: '!$V || $X'
+              - pattern: '$V == NULL || $X'
+    - not:
+        follows:
+          stopBy: end
+          kind: if_statement
+          all:
+            - has:
+                field: condition
+                has:
+                  any:
+                    - pattern: '!$V'
+                    - pattern: '$V == NULL'
+            - has:
+                field: consequence
+                any:
+                  - kind: return_statement
+                  - kind: goto_statement
+                  - has:
+                      kind: return_statement
+                  - has:
+                      kind: goto_statement
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
@@ -37,7 +63,4 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/476.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FP: so = PKCS7_get_signed_attribute(si, 1); if (so != NULL && so->type == 16) return 1;'
-    - 'FP: so = PKCS7_get_signed_attribute(si, 1); if (!so) return 0; if (so->type == 16) return 1; (guard in an earlier statement)'
-    - 'FP: so = PKCS7_get_signed_attribute(si, 1); if (!so || so->type != 16) return 0;'
     - 'FN: ASN1_TYPE *so = PKCS7_get_signed_attribute(si, 1); if (so->type == 16) return 1; (declaration initialiser form)'
