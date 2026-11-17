@@ -1,21 +1,22 @@
 id: wp-widget-return-instead-of-echo
 snapshots:
-  "<?php class W extends WP_Widget { function widget( $args, $instance ) { if ( empty( $instance ) ) { return ''; } return '<p>' . $args['x'] . '</p>'; } } ?>":
+  "<?php class W extends WP_Widget { function widget( $args, $instance ) { $title = apply_filters( 'widget_title', $instance['title'] ); return $args['before_widget'] . $title . $args['after_widget']; } } ?>":
     labels:
     - source: >-
-        function widget( $args, $instance ) { if ( empty( $instance ) ) { return ''; }
-        return '<p>' . $args['x'] . '</p>'; }
+        function widget( $args, $instance ) { $title = apply_filters( 'widget_title',
+        $instance['title'] ); return $args['before_widget'] . $title .
+        $args['after_widget']; }
       style: primary
       start: 34
-      end: 150
+      end: 199
     - source: widget
       style: secondary
       start: 43
       end: 49
-    - source: return '';
+    - source: return $args['before_widget'] . $title . $args['after_widget'];
       style: secondary
-      start: 100
-      end: 110
+      start: 134
+      end: 197
   "<?php class W extends WP_Widget { public function widget( $args, $instance ) { $out = '<div>'; $out .= $instance['t']; return $out; } } ?>":
     labels:
     - source: >-
