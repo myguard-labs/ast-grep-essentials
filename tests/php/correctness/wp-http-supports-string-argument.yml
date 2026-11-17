@@ -3,5 +3,11 @@ valid:
   - >-
     if ( wp_http_supports( array( 'ssl' ) ) ) { $url = set_url_scheme( $url,
     'https' ); }
+  - '$ok = wp_http_supports( array( ''ssl'', ''json'' ) );'
+  - '$ok = wp_http_supports( $caps );'
+  - '$ok = wp_http_supports( array( ''ssl'' ), $url );'
 invalid:
   - 'if ( wp_http_supports( ''ssl'' ) ) { $url = set_url_scheme( $url, ''https'' ); }'
+  - 'if ( ! wp_http_supports( ''json'' ) ) { return; }'
+  - 'function f() { return wp_http_supports( ''encoding'' ); }'
+  - '$scheme = wp_http_supports( ''ssl'' ) ? ''https'' : ''http'';'

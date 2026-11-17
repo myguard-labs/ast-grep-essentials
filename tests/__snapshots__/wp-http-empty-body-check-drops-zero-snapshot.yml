@@ -1,8 +1,26 @@
 id: wp-http-empty-body-check-drops-zero
 snapshots:
-  if ( empty($body) ) { return; }:
+  <?php $missing = empty( $body ) || $code !== 200;:
+    labels:
+    - source: empty( $body )
+      style: primary
+      start: 17
+      end: 31
+  "if ( ! empty( $body ) ) { process( $body ); }":
+    labels:
+    - source: empty( $body )
+      style: primary
+      start: 7
+      end: 21
+  "if ( empty($body) ) { return; }":
     labels:
     - source: empty($body)
       style: primary
       start: 5
       end: 17
+  "return empty($body) ? null : $body;":
+    labels:
+    - source: empty($body)
+      style: primary
+      start: 7
+      end: 19
