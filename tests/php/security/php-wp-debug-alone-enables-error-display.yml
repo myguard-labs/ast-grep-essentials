@@ -3,5 +3,11 @@ valid:
   - >-
     <?php function f() { if ( WP_DEBUG && WP_DEBUG_DISPLAY ) {
     $this->show_errors(); } }
+  - '<?php function f() { if ( WP_DEBUG_DISPLAY ) { $this->show_errors(); } }'
+  - '<?php function f() { if ( defined( ''WP_DEBUG'' ) && WP_DEBUG && WP_DEBUG_DISPLAY ) { $wpdb->show_errors(); } }'
 invalid:
   - '<?php function f() { if ( WP_DEBUG ) { $this->show_errors(); } }'
+  - '<?php function f() { if (WP_DEBUG) $wpdb->show_errors(); }'
+  - '<?php function f() { if ( WP_DEBUG ): $wpdb->show_errors(); endif; }'
+  - '<?php function f( $x ) { if ( WP_DEBUG ) { if ( $x ) { $wpdb->show_errors(); } } }'
+  - '<?php function f() { if ( WP_DEBUG ) { $this->db->show_errors(); } }'

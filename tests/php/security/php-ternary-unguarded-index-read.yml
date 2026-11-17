@@ -1,5 +1,12 @@
 id: php-ternary-unguarded-index-read
 valid:
   - '<?php function f($a, $k) { return isset($a[$k]) ? $a[$k] : null; }'
+  - '<?php $v = array_key_exists( $k, $a ) ? $a[$k] : 0;'
+  - '<?php $v = $a[$k] ?? ''d'';'
+  - '<?php $v = ! empty( $a[$k] ) ? $a[$k] : ''d'';'
 invalid:
   - '<?php function f($a, $k) { return $a[$k] ? $a[$k] : null; }'
+  - '<?php $v = $a[''x''] ? $a[''x''] : ''d'';'
+  - '<?php $v = $_GET[''a''] ? $_GET[''a''] : '''';'
+  - '<?php $v = $this->opts[$k] ? $this->opts[$k] : 1;'
+  - '<?php echo ( $a[$k] ? $a[$k] : ''d'' );'

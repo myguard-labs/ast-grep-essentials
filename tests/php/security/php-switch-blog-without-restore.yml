@@ -3,5 +3,11 @@ valid:
   - >-
     function f( $blog_id ) { switch_to_blog( $blog_id ); restore_current_blog();
     return 1; }
+  - '<?php function f() { return 1; }'
+  - '<?php function f( $id ) { try { switch_to_blog( $id ); work(); } finally { restore_current_blog(); } }'
+  - '<?php function f( $ids ) { foreach ( $ids as $id ) { switch_to_blog( $id ); work(); restore_current_blog(); } }'
 invalid:
   - 'function f( $blog_id ) { switch_to_blog( $blog_id ); return 1; }'
+  - '<?php function f( $ids ) { foreach ( $ids as $id ) { switch_to_blog( $id ); work(); } }'
+  - '<?php function f( $id ) { if ( $id ) { switch_to_blog( $id ); work(); } return 1; }'
+  - '<?php function f( $id ) { switch_to_blog( $id ); try { work(); } catch ( Exception $e ) { return; } }'
