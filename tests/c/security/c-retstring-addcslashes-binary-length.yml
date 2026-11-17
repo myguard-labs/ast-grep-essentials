@@ -1,7 +1,13 @@
 id: c-retstring-addcslashes-binary-length
 valid:
   - 'RETURN_STRINGL(s, n, 0);'
+  - "RETURN_STRINGL(php_addcslashes(s, n, &l, 0, w, wl), l, 0);"
+  - "char *r = php_addcslashes(s, n, &l, 0, w, wl); RETURN_STRINGL(r, l, 0);"
+  - "RETVAL_STRINGL(php_addcslashes(s, n, &l, 0, w, wl), l, 0);"
 invalid:
   - >-
     RETURN_STRING(php_addcslashes(s, n, &Z_STRLEN_P(return_value), 0, w, wl
     TSRMLS_CC), 0);
+  - "RETURN_STRING(php_addcslashes(s, n, &l, 0, w, wl), 1);"
+  - "RETURN_STRING( php_addcslashes( s, n, &l, 0, w, wl ), 0 );"
+  - "RETURN_STRING(php_addcslashes(s, n, &l, 0, w, wl TSRMLS_CC), 0);"

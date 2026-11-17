@@ -1,5 +1,11 @@
 id: c-quote-check-skips-escaping
 valid:
   - 'if (pw[0] != ''\'''') { escape(pw); }'
+  - "escape(pw); if (pw[0] != Q && pw[n] != Q) { add_quotes(pw); }"
+  - "if (a && b) { add_quotes(pw); } escape(pw);"
+  - "if (pw[0] != Q) { add_quotes(pw); } escape(pw);"
 invalid:
   - 'if (pw[0] != ''\'''' && pw[strlen(pw) - 1] != ''\'''') { escape(pw); }'
+  - "if (pw[0] == '\\'' && pw[n] == '\\'') { escape(pw); }"
+  - "if ((pw[0] == '\\'') && (pw[n] == '\\'')) { escape(pw); }"
+  - "if (pw[0] == '\\'' && pw[n] == '\\'') { escape(pw); } else { fail(); }"

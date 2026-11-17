@@ -1,5 +1,11 @@
 id: c-printf-extra-args-literal-format
 valid:
   - 'php_error_docref(NULL, E_WARNING, "Path %s", path);'
+  - "php_error_docref(NULL, E_WARNING, \"Path too long\");"
+  - "php_error_docref(NULL, E_WARNING, \"%s and %d\", name, count);"
+  - "php_error_docref(NULL, E_WARNING, \"id=%ld\", id);"
 invalid:
   - 'php_error_docref(NULL, E_WARNING, "Path too long", php_sock->type);'
+  - "php_error_docref(NULL, E_WARNING, \"Path too long\", x, y);"
+  - "php_error_docref(NULL, E_WARNING, \"Path too long\", ZSTR_VAL(s));"
+  - "php_error_docref(\"ref\", E_ERROR, \"Path too long\", x);"

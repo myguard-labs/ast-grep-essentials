@@ -6,9 +6,15 @@ valid:
         PQfinish(conn);
         return -1;
     }
+  - "PGconn *conn = PQconnectdb(s);\nif (PQstatus(conn) == CONNECTION_BAD) {\n    log(PQerrorMessage(conn));\n    PQfinish(conn);\n    return -1;\n}"
+  - "PGconn *conn = PQconnectdb(s);\nif (PQstatus(conn) == CONNECTION_BAD) {\n    (void) PQfinish(conn);\n    return -1;\n}"
+  - "PGconn *conn = PQconnectdb(s);\nif (PQstatus(conn) == CONNECTION_BAD) {\n    PQfinish(conn);\n    return NULL;\n}\nreturn conn;"
 invalid:
   - |-
     PGconn *conn = PQconnectdb(s);
     if (PQstatus(conn) == CONNECTION_BAD) {
         return -1;
     }
+  - "PGconn *conn = PQconnectdb(s);\nif (PQstatus(conn) == CONNECTION_BAD)\n    return -1;"
+  - "PGconn *conn = PQconnectdb(s);\nif (PQstatus(conn) == CONNECTION_BAD) {\n    log(PQerrorMessage(conn));\n    return -1;\n}"
+  - "PGconn *conn = PQconnectdb(s);\nif (PQstatus(conn) == CONNECTION_BAD) {\n    return NULL;\n} else {\n    return conn;\n}"

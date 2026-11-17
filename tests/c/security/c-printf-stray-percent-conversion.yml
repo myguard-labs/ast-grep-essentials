@@ -3,7 +3,13 @@ valid:
   - >-
     php_error_docref(NULL TSRMLS_CC, E_WARNING, "extension author too lazy to
     parse %s", data);
+  - "php_error_docref(NULL, E_WARNING, \"100%% sure\");"
+  - "php_error_docref(NULL, E_WARNING, \"%%extension author\");"
+  - "php_error_docref(NULL, E_WARNING, \"total %lld items\", n);"
 invalid:
   - >-
     php_error_docref(NULL TSRMLS_CC, E_WARNING, "%extension author too lazy to
     parse %s", data);
+  - "php_error_docref(NULL, E_WARNING, \"%word\");"
+  - "php_error_docref(NULL, E_WARNING, \"path: %Foobar\");"
+  - "php_error_docref(NULL, E_WARNING, \"x\\n%extension\");"

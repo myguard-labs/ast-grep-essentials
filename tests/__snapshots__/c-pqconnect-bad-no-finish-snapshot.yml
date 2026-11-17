@@ -1,5 +1,31 @@
 id: c-pqconnect-bad-no-finish
 snapshots:
+  "PGconn *conn = PQconnectdb(s);\nif (PQstatus(conn) == CONNECTION_BAD)\n    return -1;":
+    labels:
+    - source: |-
+        if (PQstatus(conn) == CONNECTION_BAD)
+            return -1;
+      style: primary
+      start: 31
+      end: 83
+    - source: return -1;
+      style: secondary
+      start: 73
+      end: 83
+  "PGconn *conn = PQconnectdb(s);\nif (PQstatus(conn) == CONNECTION_BAD) {\n    log(PQerrorMessage(conn));\n    return -1;\n}":
+    labels:
+    - source: |-
+        if (PQstatus(conn) == CONNECTION_BAD) {
+            log(PQerrorMessage(conn));
+            return -1;
+        }
+      style: primary
+      start: 31
+      end: 118
+    - source: return -1;
+      style: secondary
+      start: 106
+      end: 116
   "PGconn *conn = PQconnectdb(s);\nif (PQstatus(conn) == CONNECTION_BAD) {\n    return -1;\n}":
     labels:
     - source: |-
@@ -13,3 +39,18 @@ snapshots:
       style: secondary
       start: 75
       end: 85
+  "PGconn *conn = PQconnectdb(s);\nif (PQstatus(conn) == CONNECTION_BAD) {\n    return NULL;\n} else {\n    return conn;\n}":
+    labels:
+    - source: |-
+        if (PQstatus(conn) == CONNECTION_BAD) {
+            return NULL;
+        } else {
+            return conn;
+        }
+      style: primary
+      start: 31
+      end: 115
+    - source: return NULL;
+      style: secondary
+      start: 75
+      end: 87

@@ -1,5 +1,19 @@
 id: c-pqexec-null-check-without-status
 snapshots:
+  "PGresult *res; if ((res = PQexec(conn, \"select 1\")) == NULL) { goto fail; } n = PQntuples(res);":
+    labels:
+    - source: if ((res = PQexec(conn, "select 1")) == NULL) { goto fail; }
+      style: primary
+      start: 15
+      end: 75
+    - source: (res = PQexec(conn, "select 1")) == NULL
+      style: secondary
+      start: 19
+      end: 59
+    - source: ((res = PQexec(conn, "select 1")) == NULL)
+      style: secondary
+      start: 18
+      end: 60
   "PGresult *res; if ((res = PQexec(conn, \"select oid,typname from pg_type\")) == NULL) { return NULL; } n = PQntuples(res);":
     labels:
     - source: >-
@@ -16,3 +30,33 @@ snapshots:
       style: secondary
       start: 18
       end: 83
+  "PGresult *res; if ((res = PQexec(conn, q)) == NULL) return NULL; n = PQntuples(res);":
+    labels:
+    - source: if ((res = PQexec(conn, q)) == NULL) return NULL;
+      style: primary
+      start: 15
+      end: 64
+    - source: (res = PQexec(conn, q)) == NULL
+      style: secondary
+      start: 19
+      end: 50
+    - source: ((res = PQexec(conn, q)) == NULL)
+      style: secondary
+      start: 18
+      end: 51
+  "PGresult *res; if ((res = PQexec(conn, q)) == NULL) { return NULL; } else { n = PQntuples(res); }":
+    labels:
+    - source: >-
+        if ((res = PQexec(conn, q)) == NULL) { return NULL; } else { n =
+        PQntuples(res); }
+      style: primary
+      start: 15
+      end: 97
+    - source: (res = PQexec(conn, q)) == NULL
+      style: secondary
+      start: 19
+      end: 50
+    - source: ((res = PQexec(conn, q)) == NULL)
+      style: secondary
+      start: 18
+      end: 51

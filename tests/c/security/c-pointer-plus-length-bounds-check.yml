@@ -3,7 +3,12 @@ valid:
   - >-
     static int f(char *p, char *end, long n) { if (n < 0 || (end - p) <= n)
     return 0; return 1; }
+  - "int f(char *p, char *end, long n) { if (n < 0 || n > (end - p)) return 0; return 1; }"
+  - "int f(char *p, char *end, long n) { if (n >= 0 && (end - p) >= n) return 1; return 0; }"
 invalid:
   - >-
     static int f(char *p, char *end, long n) { if (n < 0 || (p + n) >= end)
     return 0; return 1; }
+  - "int f(char *p, char *end, long n) { if ((p + n) > end) return 0; return 1; }"
+  - "int f(char *p, char *end, long n) { while ((p + n) > end) { n--; } return n; }"
+  - "int f(char *p, char *end, long n) { return (p + 2 * n) >= end; }"

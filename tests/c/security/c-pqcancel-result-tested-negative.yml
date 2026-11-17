@@ -1,5 +1,11 @@
 id: c-pqcancel-result-tested-negative
 valid:
   - "int rc = PQcancel(c, err, sizeof(err));\nif (rc == 0) {\n\tzend_error(E_WARNING, \"cannot cancel the query: %s\", err);\n}"
+  - "int rc = PQcancel(c, err, sizeof(err));\nif (rc != 1) {\n\twarn(err);\n}"
+  - "int rc = PQcancel(c, err, sizeof(err));\nif (!rc) {\n\twarn(err);\n}"
+  - "int rc = PQcancel(c, err, sizeof(err));\nif (rc <= 0) {\n\twarn(err);\n}"
 invalid:
   - "int rc = PQcancel(c, err, sizeof(err));\nif (rc < 0) {\n\tzend_error(E_WARNING, \"cannot cancel the query: %s\", err);\n}"
+  - "int rc = PQcancel(c, err, sizeof(err));\nif (rc < 0) return -1;"
+  - "int f(PGcancel *c, char *err) { int rc = PQcancel(c, err, 256); log(err); if (rc < 0) { return -1; } return 0; }"
+  - "int ok = PQcancel(c, err, 256);\nif (ok < 0) {\n\twarn(err);\n} else {\n\tdone();\n}"

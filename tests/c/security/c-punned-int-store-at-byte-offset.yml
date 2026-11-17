@@ -3,5 +3,11 @@ valid:
   - >-
     static void f(unsigned char *buf) { int v = 3; memcpy(buf + 4, &v,
     sizeof(int)); }
+  - "static void f(unsigned char *buf, int v) { memcpy(buf + 8, &v, sizeof(v)); }"
+  - "static void f(unsigned char *buf, int v) { *(char *)(buf + 4) = (char)v; }"
+  - "static void f(int *ip, int v) { ip[1] = v; }"
 invalid:
   - 'static void f(unsigned char *buf) { *(int *) (buf + 4) = 3; }'
+  - "static void f(unsigned char *buf, int off, int v) { *(int *)(buf + off) = v; }"
+  - "static void f(unsigned char *buf, int v) { *(int*)(buf+8) = v; }"
+  - "static void f(unsigned char *buf, int i, int v) { *(int *)(buf + 2 * i) = v; }"

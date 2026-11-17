@@ -3,7 +3,13 @@ valid:
   - >-
     void f(void *w, int o, zval **v) { php_stream_wrapper_log_error(w, o
     TSRMLS_CC, "Unable to resume from offset %ld", Z_LVAL_PP(v)); }
+  - "void f(zval *v) { printf(\"n=%ld\", Z_LVAL_P(v)); }"
+  - "void f(zval *v) { printf(\"n=%d\", (int)Z_LVAL_P(v)); }"
+  - "void f(int n) { printf(\"n=%d\", n); }"
 invalid:
   - >-
     void f(void *w, int o, zval **v) { php_stream_wrapper_log_error(w, o
     TSRMLS_CC, "Unable to resume from offset %d", Z_LVAL_PP(v)); }
+  - "void f(zval *v) { printf(\"n=%i\", Z_LVAL_P(v)); }"
+  - "void f(zval *v) { printf(\"n=%5d\", Z_LVAL(*v)); }"
+  - "void f(zval *v, char *k) { printf(\"%s=%d\", k, Z_LVAL_P(v)); }"
