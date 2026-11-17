@@ -3,7 +3,14 @@ valid:
   - |-
     #include <curl/curl.h>
     void f(CURL *h) { char *url; curl_easy_getinfo(h, CURLINFO_EFFECTIVE_URL, &url); }
+  - "#include <curl/curl.h>\nvoid f(CURL *h) { long code; curl_easy_getinfo(h, CURLINFO_RESPONSE_CODE, &code); }"
+  - "#include <curl/curl.h>\nvoid f(CURL *h) { char buf[10]; long code; curl_easy_getinfo(h, CURLINFO_RESPONSE_CODE, &code); }"
+  - "#include <curl/curl.h>\nvoid g(void) { char url[250]; }\nvoid f(CURL *h) { char *url; curl_easy_getinfo(h, CURLINFO_EFFECTIVE_URL, &url); }"
+  - "#include <curl/curl.h>\nvoid f(CURL *h) { char *ct; char tmp[8]; curl_easy_getinfo(h, CURLINFO_CONTENT_TYPE, &ct); }"
 invalid:
   - |-
     #include <curl/curl.h>
     void f(CURL *h) { char url[250]; curl_easy_getinfo(h, CURLINFO_EFFECTIVE_URL, url); }
+  - "#include <curl/curl.h>\nvoid f(CURL *h) { char ct[64]; curl_easy_getinfo(h, CURLINFO_CONTENT_TYPE, ct); }"
+  - "#include <curl/curl.h>\nvoid f(CURL *h) { char loc[200]; curl_easy_getinfo(h, CURLINFO_REDIRECT_URL, loc); }"
+  - "#include <curl/curl.h>\nvoid f(struct C *c) { char ip[46]; curl_easy_getinfo(c->h, CURLINFO_PRIMARY_IP, ip); }"

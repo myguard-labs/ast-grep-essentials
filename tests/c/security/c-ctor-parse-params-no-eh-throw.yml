@@ -8,6 +8,9 @@ valid:
      return;
      }
     }
+  - "PHP_METHOD(A, b) { if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", &dsn) == FAILURE) { return; } }"
+  - "PHP_METHOD(A, b) { if (obj == NULL) { ZEND_CTOR_MAKE_NULL(); return; } }"
+  - "PHP_METHOD(A, b) { zend_replace_error_handling(EH_THROW, ce, &zeh); setup(); if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", &dsn) == FAILURE) { ZEND_CTOR_MAKE_NULL(); return; } }"
 invalid:
   - |-
     PHP_METHOD(PDO, dbh_constructor) {
@@ -16,3 +19,7 @@ invalid:
      return;
      }
     }
+  - "PHP_METHOD(A, b) { zend_replace_error_handling(EH_NORMAL, NULL, &zeh); if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", &dsn) == FAILURE) { ZEND_CTOR_MAKE_NULL(); return; } }"
+  - "PHP_METHOD(A, b) { if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", &dsn) != SUCCESS) { ZEND_CTOR_MAKE_NULL(); return; } }"
+  - "PHP_METHOD(A, b) { if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", &dsn) == FAILURE) { ZEND_CTOR_MAKE_NULL(); return; } else { go(); } }"
+  - "PHP_METHOD(A, b) { if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", &dsn) == FAILURE) { ZEND_CTOR_MAKE_NULL(); return; } zend_replace_error_handling(EH_THROW, ce, &zeh); }"

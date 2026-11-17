@@ -3,7 +3,15 @@ valid:
   - >-
     struct S { unsigned id; }; int id_cmp(const struct S *x, const struct S *y)
     { return x->id < y->id ? -1 : 1; }
+  - "int cmp(const struct S *a, const struct S *b) { return (a->k > b->k) - (a->k < b->k); }"
+  - "int cmp(const struct S *a, const struct S *b) { return a->k == b->k ? 0 : (a->k < b->k ? -1 : 1); }"
+  - "int cmp(const struct S *a, const struct S *b) { return strcmp(a->name, b->name); }"
+  - "int cmp(const struct S *a, const struct S *b) { return cmp_u32(a->k, b->k); }"
 invalid:
   - >-
     struct S { unsigned id; }; int id_cmp(const struct S *x, const struct S *y)
     { return x->id - y->id; }
+  - "int cmp(const struct S *a, const struct S *b) { return a->len - b->len; }"
+  - "int cmp(const void *x, const void *y) { const struct S *pa = x, *pb = y; return pa->prio - pb->prio; }"
+  - "int cmp(const struct S *a, const struct S *b) { if (a->t) { return a->k - b->k; } return 0; }"
+  - "int cmp(const struct S *one, const struct S *two) { return one->size - two->size; }"

@@ -1,5 +1,13 @@
 id: c-decimal-accumulate-unbounded
 valid:
   - 'if (octet > 255) { return 0; } octet = octet * 10 + (c - ''0'');'
+  - "if (n > 214748363) return -1; n = n * 10 + (c - '0');"
+  - "while (isdigit(*p)) { if (v > MAX / 10) { return -1; } v = v * 10 + (*p - '0'); p++; }"
+  - "if (__builtin_mul_overflow(v, 10, &v) || __builtin_add_overflow(v, c - '0', &v)) { return -1; }"
 invalid:
   - 'octet = octet * 10 + (c - ''0'');'
+  - "while (*p) { v = v * 10 + (*p - '0'); p++; }"
+  - "n = n * 10 + (ch - '0'); if (n > 255) return 0;"
+  - "ctx->n = ctx->n * 10 + (c - '0');"
+  - "if (x) { y(); } while (*p) { v = v * 10 + (*p - '0'); p++; }"
+  - "for (i = 0; i < 4; i++) { v = v * 10 + (s[i] - '0'); }"

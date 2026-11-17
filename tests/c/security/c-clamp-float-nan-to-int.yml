@@ -3,7 +3,15 @@ valid:
   - >-
     static float f(float x) { return (x > 255.0f) ? 255.0f : ((x < 0.0f) ? 0.0f
     : x); }
+  - "int f(int n) { return (n > 255) ? 255 : ((n < 0) ? 0 : n); }"
+  - "int f(int a, int b) { return (int)(a ? (b ? 1 : 2) : 3); }"
+  - "int f(float x) { return (int)fminf(fmaxf(x, 0.0f), 255.0f); }"
+  - "int f(int a) { return (int)(a ? 1 : 2); }"
 invalid:
   - >-
     static int f(float x) { return (int)((x > 255.0f) ? 255.0f : ((x < 0.0f) ?
     0.0f : x)); }
+  - "unsigned char f(float x) { return (unsigned char)((x > 255.0f) ? 255.0f : ((x < 0.0f) ? 0.0f : x)); }"
+  - "long f(double d) { return (long)(d < 0 ? 0 : (d > 9 ? 9 : d)); }"
+  - "void f(float x, unsigned char *o) { *o = (unsigned char)(x > 255.0f ? 255.0f : (x < 0.0f ? 0.0f : x)); }"
+  - "int f(double d) { int v = (int)(d > 1e9 ? 1e9 : (d < -1e9 ? -1e9 : d)); return v; }"

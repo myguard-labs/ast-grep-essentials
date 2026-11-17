@@ -3,7 +3,15 @@ valid:
   - |-
     #include <ctype.h>
     int f(char *p) { return isalnum((unsigned char)*p); }
+  - "int f(int c) { return isalpha(c); }"
+  - "int f(char *p, int i) { return isdigit((unsigned char)p[i]); }"
+  - "int f(char *p) { return isalnum(*p & 0xff); }"
+  - "int f(unsigned char *p) { return isalpha((unsigned char)*p); }"
 invalid:
   - |-
     #include <ctype.h>
     int f(char *p) { return isalnum(*p); }
+  - "int f(char *p) { return isdigit(*p); }"
+  - "int f(char *s) { return tolower(*s++); }"
+  - "void f(char *p) { while (isspace(*(p + 1))) p++; }"
+  - "int f(char *str) { return toupper(*str); }"

@@ -5,9 +5,16 @@ valid:
     {
         return (a > b) - (a < b);
     }
+  - "static int cmp(long a, long b) { return a < b ? -1 : (a > b); }"
+  - "static int cmp(long a, long b) { return (int)(a > b) - (int)(a < b); }"
+  - "static int cmp(const char *a, const char *b) { return strcmp(a, b); }"
+  - "static int cmp(long a, long b) { return a == b ? 0 : (a < b ? -1 : 1); }"
 invalid:
   - |-
     static int cmp_long(long a, long b)
     {
         return a - b;
     }
+  - "static int cmp(int x, int y) { return x - y; }"
+  - "static int cmp(int len1, int len2) { if (len1 != len2) return len1 - len2; return 0; }"
+  - "static int cmp(int a, int b) { int r; return a - b; }"

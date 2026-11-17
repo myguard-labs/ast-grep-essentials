@@ -1,11 +1,32 @@
 id: c-decimal-accumulator-unguarded
 snapshots:
-  ? |-
-    void f(int min, int ch) {
-        min = 10 * min + ch;
-    }
-  : labels:
+  "void f(char *s, int x) { for (; *s; s++) x = 10 * x + (*s - '0'); }":
+    labels:
+    - source: x = 10 * x + (*s - '0')
+      style: primary
+      start: 41
+      end: 64
+  "void f(int min, int ch) {\n    min = 10 * min + ch;\n}":
+    labels:
     - source: min = 10 * min + ch
       style: primary
       start: 30
       end: 49
+  "void f(int v, int c) { if (c < '0') return; v = 10 * v + (c - '0'); }":
+    labels:
+    - source: v = 10 * v + (c - '0')
+      style: primary
+      start: 44
+      end: 66
+  "void f(int v, int c) { v = 10 * v + (c - '0'); }":
+    labels:
+    - source: v = 10 * v + (c - '0')
+      style: primary
+      start: 23
+      end: 45
+  "void f(struct C *ctx, int d) { ctx->n = 10 * ctx->n + d; }":
+    labels:
+    - source: ctx->n = 10 * ctx->n + d
+      style: primary
+      start: 31
+      end: 55

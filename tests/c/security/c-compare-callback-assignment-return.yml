@@ -3,7 +3,14 @@ valid:
   - >-
     static int _session_compare(void *a, void *b) { return sess1->num ==
     sess2->num; }
+  - "static int _session_compare(void *a, void *b) { return sess1->num < sess2->num ? -1 : sess1->num > sess2->num; }"
+  - "static int _session_compare(void *a, void *b) { return strcmp(sess1->name, sess2->name); }"
+  - "static int _session_copy(void *a, void *b) { return sess1->num = sess2->num; }"
 invalid:
   - >-
     static int _session_compare(void *a, void *b) { return sess1->num =
     sess2->num; }
+  - "static int node_compare(void *a, void *b) { return n1->key = n2->key; }"
+  - "static int node_compare(void *a, void *b) { if (n1->t) { return n1->key = n2->key; } return 0; }"
+  - "int entry_compare(void *a, void *b) { return e1.key = e2.key; }"
+  - "static int _entry_compare(const void *a, const void *b) { return left->v = right->v; }"
