@@ -1,5 +1,57 @@
 id: c-alloc-returned-through-failing-call
 snapshots:
+  "char *b = pemalloc(n, 1); x = 1; return g(b);":
+    labels:
+    - source: return g(b);
+      style: primary
+      start: 33
+      end: 45
+    - source: g(b)
+      style: secondary
+      start: 40
+      end: 44
+    - source: pemalloc
+      style: secondary
+      start: 10
+      end: 18
+    - source: pemalloc(n, 1)
+      style: secondary
+      start: 10
+      end: 24
+    - source: "*b = pemalloc(n, 1)"
+      style: secondary
+      start: 5
+      end: 24
+    - source: char *b = pemalloc(n, 1);
+      style: secondary
+      start: 0
+      end: 25
+  "void *p = malloc(n); return register_ptr(ctx, p);":
+    labels:
+    - source: return register_ptr(ctx, p);
+      style: primary
+      start: 21
+      end: 49
+    - source: register_ptr(ctx, p)
+      style: secondary
+      start: 28
+      end: 48
+    - source: malloc
+      style: secondary
+      start: 10
+      end: 16
+    - source: malloc(n)
+      style: secondary
+      start: 10
+      end: 19
+    - source: "*p = malloc(n)"
+      style: secondary
+      start: 5
+      end: 19
+    - source: void *p = malloc(n);
+      style: secondary
+      start: 0
+      end: 20
   "void *p = pemalloc(n, 0); return zend_hash_add_ptr(ht, key, p);":
     labels:
     - source: return zend_hash_add_ptr(ht, key, p);

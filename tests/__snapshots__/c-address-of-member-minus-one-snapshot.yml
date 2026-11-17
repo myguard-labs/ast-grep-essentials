@@ -1,8 +1,20 @@
 id: c-address-of-member-minus-one
 snapshots:
-  struct t { int a; }; struct o { int m; struct t op; }; const struct t *f(struct o *p) { return &p->op - 1; }:
+  "const struct t *f(struct o *p) { struct t *q = &p->op - 1; return q; }":
     labels:
-    - source: '&p->op - 1'
+    - source: "&p->op - 1"
+      style: primary
+      start: 47
+      end: 57
+  "struct t { int a; }; struct o { int m; struct t op; }; const struct t *f(struct o *p) { return &p->op - 1; }":
+    labels:
+    - source: "&p->op - 1"
       style: primary
       start: 95
       end: 105
+  "void *f(struct h *hdr) { return &hdr->data - 1; }":
+    labels:
+    - source: "&hdr->data - 1"
+      style: primary
+      start: 32
+      end: 46

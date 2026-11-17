@@ -1,10 +1,23 @@
 id: c-alloc-null-return-zero-no-error
 snapshots:
-  ? |-
-    x = OPENSSL_malloc(len);
-    if (x == NULL)
-        return 0;
-  : labels:
+  "if (a->buf == NULL)\n    return 0;":
+    labels:
+    - source: |-
+        if (a->buf == NULL)
+            return 0;
+      style: primary
+      start: 0
+      end: 33
+  "int f(void) {\n    if (ctx == NULL)\n        return 0;\n    return 1;\n}":
+    labels:
+    - source: |-
+        if (ctx == NULL)
+                return 0;
+      style: primary
+      start: 18
+      end: 52
+  "x = OPENSSL_malloc(len);\nif (x == NULL)\n    return 0;":
+    labels:
     - source: |-
         if (x == NULL)
             return 0;

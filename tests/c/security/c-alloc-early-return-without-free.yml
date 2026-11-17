@@ -1,5 +1,9 @@
 id: c-alloc-early-return-without-free
 valid:
   - 'buf = emalloc(n); if (bad) { efree(buf); return FAILURE; } use(buf);'
+  - 'buf = emalloc(n); if (bad) { release_buf(buf); return 0; }'
+  - 'buf = emalloc(n); if (bad) { log_it(); } use(buf);'
 invalid:
   - 'buf = emalloc(n); if (bad) { return FAILURE; } use(buf);'
+  - 's = estrdup(x); if (!ok) return NULL; use(s);'
+  - 'buf = emalloc(n); if (bad) { log_it(); return FAILURE; } use(buf);'

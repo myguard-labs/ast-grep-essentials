@@ -3,5 +3,9 @@ valid:
   - >-
     unsigned long long f(unsigned long long p) { return *(unsigned long long
     *)&p; }
+  - 'void f(char *p) { char *q; memcpy(&q, &p, sizeof q); }'
+  - 'int f(char *p) { int *ip = (int *)p; return *ip; }'
 invalid:
   - 'unsigned long long f(char *p) { return *(unsigned long long *)&p; }'
+  - 'unsigned long f(void *p) { return *(unsigned long *)&p; }'
+  - 'int f(char **pp) { return *(int *)&pp; }'

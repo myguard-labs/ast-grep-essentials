@@ -1,5 +1,9 @@
 id: c-alloc-result-used-before-null-check
 valid:
   - 'ctx = BN_CTX_new(); if (!ctx) goto err; BN_CTX_start(ctx);'
+  - 'p = f(); log_it(msg); if (!p) return;'
+  - 'p = f(); if (p == NULL) goto err; use(p);'
 invalid:
   - 'ctx = BN_CTX_new(); BN_CTX_start(ctx); if (!ctx) goto err;'
+  - 'buf = malloc(n); memset(buf, 0, n); if (!buf) return;'
+  - 'p = xmalloc(n); strcpy(p, s); if (!p) goto err;'

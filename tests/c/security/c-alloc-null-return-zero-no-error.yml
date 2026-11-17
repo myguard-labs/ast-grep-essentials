@@ -6,8 +6,25 @@ valid:
         SSLfatal(s, SSL_AD_INTERNAL_ERROR, ERR_R_CRYPTO_LIB);
         return 0;
     }
+  - |-
+      if (x == NULL)
+          return -1;
+  - |-
+      if (x == NULL) {
+          ERR_raise(ERR_LIB_SSL, ERR_R_MALLOC_FAILURE);
+          return 0;
+      }
 invalid:
   - |-
     x = OPENSSL_malloc(len);
     if (x == NULL)
         return 0;
+  - |-
+      if (a->buf == NULL)
+          return 0;
+  - |-
+      int f(void) {
+          if (ctx == NULL)
+              return 0;
+          return 1;
+      }

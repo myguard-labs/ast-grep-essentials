@@ -1,7 +1,21 @@
 id: c-addref-then-retval-copy-doubles-refcount
 valid:
   - 'RETVAL_ZVAL(value_out, 1, 0);'
+  - |-
+      Z_ADDREF_P(a);
+      RETVAL_ZVAL(b, 1, 0);
+  - |-
+      Z_ADDREF_P(v);
+      RETVAL_ZVAL(v, 0, 0);
 invalid:
   - |-
     Z_ADDREF_P(value_out);
     RETVAL_ZVAL(value_out, 1, 0);
+  - |-
+      Z_ADDREF_P(zv);
+      RETVAL_ZVAL(zv, 1, 0);
+  - |-
+      if (ok) {
+       Z_ADDREF_P(obj);
+       RETVAL_ZVAL(obj, 1, 0);
+      }

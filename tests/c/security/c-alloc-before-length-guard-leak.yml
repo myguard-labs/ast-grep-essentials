@@ -1,5 +1,9 @@
 id: c-alloc-before-length-guard-leak
 valid:
   - 'if (len <= 0) { return 0; } char *norm = emalloc(len+1); use(norm);'
+  - 'char *b = emalloc(n); if (n > 0) { fill(b); } efree(b);'
+  - 'char *b = emalloc(n); if (bad) { goto out; } use(b); out: efree(b);'
 invalid:
   - 'char *norm = emalloc(len+1); if (len <= 0) { return 0; } use(norm);'
+  - 'char *b = emalloc(n); use(b); if (bad) return -1;'
+  - 'int f(int n) { zend_string *s = emalloc(n); if (n < 0) { return 0; } return 1; }'

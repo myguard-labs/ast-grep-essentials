@@ -1,5 +1,9 @@
 id: c-alloc-null-check-empty-branch
 valid:
   - 'char *p = malloc(n); if (p == NULL) { return; }'
+  - 'if (p == NULL) { abort(); }'
+  - 'if (p != NULL) { }'
 invalid:
   - 'char *p = malloc(n); if (p == NULL) { }'
+  - 'if (a->b == NULL) { }'
+  - 'if (p == NULL) { /* ignore */ }'
