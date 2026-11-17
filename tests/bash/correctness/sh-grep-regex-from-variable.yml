@@ -13,6 +13,10 @@ valid:
     grep -qE "^x" -- "$f"
   - |-
     grep -qE "^[a-z]+$" "$f1" "$f2"
+  - |-
+    grep -qE -m "$n" "^x" "$f"
+  - |-
+    grep -qE -e "^x" "$f"
 invalid:
   - 'grep -qE "id=${label}" "$f"'
   - |-
@@ -25,3 +29,7 @@ invalid:
     grep -qE -x "^${p}x" "$f"
   - |-
     cat "$f" | grep -qE "$p"
+  - |-
+    grep -qE -e "^x" -e "$p" "$f"
+  - |-
+    grep -qE -m 1 "$p" "$f"

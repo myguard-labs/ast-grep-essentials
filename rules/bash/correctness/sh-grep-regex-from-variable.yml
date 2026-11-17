@@ -7,46 +7,39 @@ message: >-
   grep runs in regex mode with a pattern built from a shell variable;
   metacharacters in the value change the match. Use -F for literal matching.
 note: >-
-  Single-file syntactic check only. It flags grep invocations using -E whose
-  pattern argument (the first non-option argument, after optional -- or
-  simple flags) contains a variable expansion, not a later file operand; it does not verify the value is
-  untrusted or that a regex was unintended.
+  Single-file syntactic check only. It flags grep invocations using -qE whose
+  pattern argument contains a variable expansion: the argument after -e or
+  --regexp, or else the first argument that is neither an option nor the value
+  of a value-taking option (-m, -A, -B, -C, -d, -D and their long forms). A
+  variable in a later file operand is not reported. It does not verify the
+  value is untrusted or that a regex was unintended.
 rule:
   pattern: 'grep -qE $$$ARGS'
-  any:
-    - has:
-        nthChild: 3
-        regex: '\$\{?[A-Za-z_]'
-    - all:
-        - has:
-            nthChild: 3
-            regex: '^(--|-[ivxwsHhnoIcle]+)$'
-        - has:
-            nthChild: 4
-            regex: '\$\{?[A-Za-z_]'
-    - all:
-        - has:
-            nthChild: 3
-            regex: '^-[ivxwsHhnoIcle]+$'
-        - has:
-            nthChild: 4
-            regex: '^(--|-[ivxwsHhnoIcle]+)$'
-        - has:
-            nthChild: 5
-            regex: '\$\{?[A-Za-z_]'
-    - all:
-        - has:
-            nthChild: 3
-            regex: '^-[ivxwsHhnoIcle]+$'
-        - has:
-            nthChild: 4
-            regex: '^-[ivxwsHhnoIcle]+$'
-        - has:
-            nthChild: 5
-            regex: '^(--|-[ivxwsHhnoIcle]+)$'
-        - has:
-            nthChild: 6
-            regex: '\$\{?[A-Za-z_]'
+  has:
+    regex: '\$\{?[A-Za-z_]'
+    any:
+      - follows:
+          regex: '^(-[A-Za-z]*e|--regexp)$'
+      - regex: '^--regexp='
+      - all:
+          - not:
+              regex: '^-'
+          - not:
+              follows:
+                regex: '^(-[mABCdD]|--(max-count|after-context|before-context|context|directories|devices|binary-files|label))$'
+          - not:
+              follows:
+                stopBy: end
+                regex: '^(-[A-Za-z]*e|--regexp(=.*)?)$'
+          - not:
+              follows:
+                stopBy: end
+                not:
+                  any:
+                    - kind: command_name
+                    - regex: '^-'
+                    - follows:
+                        regex: '^(-[mABCdD]|--(max-count|after-context|before-context|context|directories|devices|binary-files|label))$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -56,5 +49,4 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'grep -qE -e "^x" -e "$p" "$f": a variable pattern after an earlier -e pattern is not flagged (only the first pattern position, behind up to three simple flags, is checked); -m/-A style options that take a value are not treated as simple flags either'
     - 'grep -qEi "^${prefix}" "$f": same -E regex-from-variable smell is not flagged (pattern requires the exact -qE flag cluster)'
