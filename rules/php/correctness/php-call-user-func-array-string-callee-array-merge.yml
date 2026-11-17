@@ -13,6 +13,24 @@ note: >-
   array is string-keyed.
 rule:
   pattern: 'call_user_func_array(''array_merge'', $ARG)'
+constraints:
+  ARG:
+    not:
+      has:
+        any:
+          - kind: function_call_expression
+            has:
+              field: function
+              regex: '^\\?array_values$'
+          - all:
+              - kind: array_creation_expression
+              - not:
+                  has:
+                    kind: array_element_initializer
+                    has:
+                      any:
+                        - kind: variadic_unpacking
+                        - regex: '^=>$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -22,6 +40,4 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'Observed false positive: the recommended fix is reported too (`call_user_func_array( ''array_merge'', array_values( $w ) );`).'
-    - 'Observed false positive: a literal positional list is reported (`call_user_func_array( ''array_merge'', array( $a, $b ) );`).'
     - 'Not matched: double-quoted callee (`call_user_func_array( "array_merge", $w );`) and leading-backslash call (`\call_user_func_array( ''array_merge'', $w );`).'
