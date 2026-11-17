@@ -1,5 +1,11 @@
 id: wp-direct-flush-rules-method
 valid:
   - "<?php\nfunction flush_my_rules() {\n\tflush_rewrite_rules( false );\n}"
+  - '<?php global $wp_rewrite; $r = $wp_rewrite->rewrite_rules();'
+  - '<?php global $wp_rewrite; $wp_rewrite->init();'
+  - '<?php $this->flush_rules();'
 invalid:
   - "<?php\nfunction flush_my_rules() {\n\tglobal $wp_rewrite;\n\t$wp_rewrite->flush_rules( false );\n}"
+  - '<?php global $wp_rewrite; $wp_rewrite->flush_rules();'
+  - '<?php global $wp_rewrite; $wp_rewrite->flush_rules( true );'
+  - '<?php add_action( ''init'', function() { global $wp_rewrite; $wp_rewrite->flush_rules( false ); } );'
