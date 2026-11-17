@@ -1,12 +1,32 @@
 id: py-tarfile-getmembers-full-enumeration
 snapshots:
-  ? |-
-    import tarfile
-    def scan(path):
-        tf = tarfile.open(path)
-        for member in tf.getmembers():
-            pass
-  : labels:
+  "import tarfile\n\n\ndef scan(path):\n    for m in tarfile.open(path).getmembers():\n        pass":
+    labels:
+    - source: |-
+        for m in tarfile.open(path).getmembers():
+                pass
+      style: primary
+      start: 37
+      end: 91
+    - source: tarfile.open(path).getmembers()
+      style: secondary
+      start: 46
+      end: 77
+  "import tarfile\n\n\ndef scan(path):\n    with tarfile.open(path) as tf:\n        for m in tf.getmembers():\n            if m.isdir():\n                continue":
+    labels:
+    - source: |-
+        for m in tf.getmembers():
+                    if m.isdir():
+                        continue
+      style: primary
+      start: 76
+      end: 152
+    - source: tf.getmembers()
+      style: secondary
+      start: 85
+      end: 100
+  "import tarfile\ndef scan(path):\n    tf = tarfile.open(path)\n    for member in tf.getmembers():\n        pass":
+    labels:
     - source: |-
         for member in tf.getmembers():
                 pass
