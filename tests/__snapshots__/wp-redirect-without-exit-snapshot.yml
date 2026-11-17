@@ -20,12 +20,22 @@ snapshots:
       style: secondary
       start: 39
       end: 54
-  "<?php\nfunction f($u) {\n  wp_redirect($u) and die();\n  do_work();\n}":
+  "<?php\nfunction f($u) {\n  wp_redirect($u) or die();\n}":
     labels:
-    - source: wp_redirect($u) and die();
+    - source: wp_redirect($u) or die();
       style: primary
       start: 25
-      end: 51
+      end: 50
+    - source: wp_redirect($u)
+      style: secondary
+      start: 25
+      end: 40
+  "<?php\nfunction f($u) {\n  wp_redirect($u) or exit('x');\n}":
+    labels:
+    - source: wp_redirect($u) or exit('x');
+      style: primary
+      start: 25
+      end: 54
     - source: wp_redirect($u)
       style: secondary
       start: 25
@@ -36,6 +46,16 @@ snapshots:
       style: primary
       start: 25
       end: 53
+    - source: wp_redirect($u)
+      style: secondary
+      start: 25
+      end: 40
+  "<?php\nfunction f($u) {\n  wp_redirect($u) || die;\n}":
+    labels:
+    - source: wp_redirect($u) || die;
+      style: primary
+      start: 25
+      end: 48
     - source: wp_redirect($u)
       style: secondary
       start: 25
