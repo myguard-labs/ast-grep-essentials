@@ -9,13 +9,22 @@ message: >-
 note: >-
   Purely syntactic check on a literal numeric comparison inside a for-in body.
   It does not resolve types or confirm the iterated object's keys; the loop
-  variable is matched by name only within the loop body.
+  variable is matched by name only within the loop body; for...of loops and
+  converted keys such as Number(k) are not reported.
 rule:
-  kind: for_in_statement
-  has:
-    kind: binary_expression
-    pattern: '$K === 0'
-    stopBy: end
+  all:
+    - kind: for_in_statement
+    - has:
+        field: operator
+        regex: '^in$'
+    - has:
+        field: left
+        kind: identifier
+        pattern: $K
+    - has:
+        kind: binary_expression
+        pattern: '$K === 0'
+        stopBy: end
 metadata:
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
@@ -25,6 +34,4 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'false positive: for-of loops over numeric values (for (var v of nums) { if (v === 0) {} }) are reported because for_of parses as for_in_statement'
-    - 'false positive: an explicit numeric conversion (Number(k) === 0) inside a for-in body is reported'
     - 'swapped operand order (0 === k) and other numeric literals (k === 1) are not matched'
