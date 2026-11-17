@@ -1,6 +1,36 @@
 id: c-bitwise-eq-precedence
 snapshots:
-  int f(int flags, int mask) { if (flags & mask == 0) { return 1; } return 0; }:
+  "int f(int a, int b, int c) { int r = a & b == c; return r; }":
+    labels:
+    - source: a & b == c
+      style: primary
+      start: 37
+      end: 47
+    - source: b == c
+      style: secondary
+      start: 41
+      end: 47
+  "int f(int a, int b, int c, int d) { if (a & b == c && d) { return 1; } return 0; }":
+    labels:
+    - source: a & b == c
+      style: primary
+      start: 40
+      end: 50
+    - source: b == c
+      style: secondary
+      start: 44
+      end: 50
+  "int f(int flags) { return flags & 1 == 1; }":
+    labels:
+    - source: flags & 1 == 1
+      style: primary
+      start: 26
+      end: 40
+    - source: 1 == 1
+      style: secondary
+      start: 34
+      end: 40
+  "int f(int flags, int mask) { if (flags & mask == 0) { return 1; } return 0; }":
     labels:
     - source: flags & mask == 0
       style: primary

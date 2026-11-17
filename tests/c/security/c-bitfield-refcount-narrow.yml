@@ -1,5 +1,12 @@
 id: c-bitfield-refcount-narrow
 valid:
   - 'struct req { unsigned count:16; unsigned subrequests:8; };'
+  - 'struct req { unsigned count:9; };'
+  - 'struct req { unsigned count; unsigned flags:3; };'
+  - 'struct req { unsigned long count:32; };'
+
 invalid:
   - 'struct req { unsigned count:8; unsigned subrequests:8; };'
+  - 'struct req { unsigned char refcount:4; };'
+  - 'struct req { unsigned int count : 8; };'
+  - 'struct req { unsigned ref_count:1; unsigned other:16; };'

@@ -1,5 +1,12 @@
 id: c-bitwise-or-unparenthesized-in-and-condition
 valid:
   - 'void f(unsigned flags) { if ((flags & 1) | (flags & 2)) { return; } }'
+  - 'void f(unsigned flags) { if (flags & (1 | 2)) { return; } }'
+  - 'void f(unsigned a, unsigned b, unsigned c) { if (a | b | c) { return; } }'
+  - 'void f(unsigned a, unsigned b, unsigned c) { if (a & b || c) { return; } }'
+
 invalid:
   - 'void f(unsigned flags) { if (flags & 1|2) { return; } }'
+  - 'unsigned f(unsigned a, unsigned b, unsigned c) { unsigned x = a & b | c; return x; }'
+  - 'unsigned f(unsigned flags) { return flags & MASK | EXTRA; }'
+  - 'void f(unsigned flags, unsigned x) { if (x && flags & 1 | 2) { return; } }'

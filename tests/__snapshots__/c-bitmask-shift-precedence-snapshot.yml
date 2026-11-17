@@ -1,8 +1,26 @@
 id: c-bitmask-shift-precedence
 snapshots:
-  static unsigned f(unsigned n, unsigned char *p) { return (n & 0x3f << 8) + *p; }:
+  "static unsigned f(unsigned *p) { return (p[0] & 0xff << 8) | p[1]; }":
+    labels:
+    - source: p[0] & 0xff << 8
+      style: primary
+      start: 41
+      end: 57
+  "static unsigned f(unsigned a, unsigned b, unsigned c) { unsigned r = a & b << c; return r; }":
+    labels:
+    - source: a & b << c
+      style: primary
+      start: 69
+      end: 79
+  "static unsigned f(unsigned n, unsigned char *p) { return (n & 0x3f << 8) + *p; }":
     labels:
     - source: n & 0x3f << 8
       style: primary
       start: 58
       end: 71
+  "static unsigned f(unsigned v) { return v & 0xf << 4; }":
+    labels:
+    - source: v & 0xf << 4
+      style: primary
+      start: 39
+      end: 51

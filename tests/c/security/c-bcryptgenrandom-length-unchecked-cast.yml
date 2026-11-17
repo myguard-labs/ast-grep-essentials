@@ -1,5 +1,10 @@
 id: c-bcryptgenrandom-length-unchecked-cast
 valid:
   - 'BCryptGenRandom(NULL, buffer, (ULONG)bytes_needed, 0);'
+  - 'BCryptGenRandom(NULL, buffer, (ULONG)len, 0);'
+  - 'if (len > 0xffffffffu) return -1; status = BCryptGenRandom(NULL, buffer, (ULONG)len, 0);'
 invalid:
   - 'BCryptGenRandom(NULL, buffer, bytes_needed, 0);'
+  - 'status = BCryptGenRandom(NULL, buf, n, 0);'
+  - 'if (BCryptGenRandom(NULL, p, size, 0) != 0) return -1;'
+  - 'BCryptGenRandom(NULL, buf, req->len, 0);'

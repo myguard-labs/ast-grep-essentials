@@ -1,5 +1,12 @@
 id: c-bitand-bitor-no-parens
 valid:
   - 'int f(int opts) { return !((opts & 1) | 2); }'
+  - 'int f(int a, int b, int c) { return (a & b) | c; }'
+  - 'int f(int a, int b, int c) { return a | b | c; }'
+  - 'int f(int a, int b, int c) { return a & (b | c); }'
+
 invalid:
   - 'int f(int opts) { return !(opts & 1 | 2); }'
+  - 'int f(int a, int b) { return a & 1 | b; }'
+  - 'unsigned f(unsigned flags) { unsigned v = flags & 0xf | 0x80; return v; }'
+  - 'int f(int a, int b, int c, int d) { return a & b | c & d; }'

@@ -3,7 +3,14 @@ valid:
   - >-
     int f(int flags, int mask) { if ((flags & mask) == 0) { return 1; } return
     0; }
+  - 'int f(int a, int b, int c) { return (a & b) == c; }'
+  - 'int f(int a, int b, int c) { return a & (b == c); }'
+  - 'int f(int a, int b, int c) { return a && b == c; }'
+
 invalid:
   - >-
     int f(int flags, int mask) { if (flags & mask == 0) { return 1; } return 0;
     }
+  - 'int f(int a, int b, int c) { int r = a & b == c; return r; }'
+  - 'int f(int flags) { return flags & 1 == 1; }'
+  - 'int f(int a, int b, int c, int d) { if (a & b == c && d) { return 1; } return 0; }'
