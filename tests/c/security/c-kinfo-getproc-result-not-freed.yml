@@ -7,6 +7,8 @@ valid:
   - "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n if (kp == NULL) return;\n use(kp);\n free(kp);\n}"
   - "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n use(kp);\n free(kp);\n use2();\n}"
   - "void f(int pid) {\n struct kinfo_proc *kp;\n kp = kinfo_getproc(pid);\n free(kp);\n}"
+  - "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n if (kp) { free(kp); }\n}"
+  - "struct kinfo_proc *f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n return kp;\n}"
 invalid:
   - |-
     struct kinfo_proc *p = kinfo_getproc(0);
@@ -15,3 +17,5 @@ invalid:
   - "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n struct kinfo_proc *q = other();\n free(q);\n}"
   - "int f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n int r = kp->ki_pid;\n return r;\n}"
   - "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n free(kp->ki_name);\n}"
+  - "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n if (kp) { use(kp); }\n return;\n}"
+  - "void f(int pid, int cleanup) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n if (cleanup) { free(kp); }\n}"
