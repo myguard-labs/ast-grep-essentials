@@ -3,7 +3,7 @@ valid:
   - "function get_thing_terms( $id = false ) {\n\t$terms = wp_get_object_terms( $id, 'category' );\n\twp_cache_add( $id, $terms, 'thing_relationships' );\n}"
   - '<?php function f( $id ) { wp_cache_add( "post_$id", $v, ''g'' ); }'
   - '<?php function f( $id ) { $p = get_post( $id ); wp_cache_add( $p->ID, $v, ''g'' ); }'
-  - '<?php function f( $id ) { wp_cache_add( $other->ID, $v, ''g'' ); }'
+  - '<?php function f( $id ) { wp_cache_add( ''thing_'' . $id, $v, ''g'' ); }'
 invalid:
   - "function get_thing_terms( $id = false ) {\n\t$terms = wp_get_object_terms( $id, 'category' );\n\twp_cache_add( $post->ID, $terms, 'thing_relationships' );\n}"
   - '<?php function f( $id ) { wp_cache_add( $post->ID, $v ); }'
