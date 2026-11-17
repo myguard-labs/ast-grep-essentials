@@ -1,5 +1,13 @@
 id: c-duplicate-or-operand
 valid:
   - 'int f(int s) { return s == 1 || s == 2; }'
+  - 'int f(int a, int b) { return a == 1 || b == 1; }'
+  - 'int f(const char *s) { return s[0] == 0x61 || s[1] == 0x61; }'
+  - 'int f(struct s *p) { return p->a || p->b; }'
+  - 'int f(int a) { return a < 0 || a > 9; }'
 invalid:
   - 'int f(int s) { return s == 1 || s == 1; }'
+  - 'int f(struct s *p) { return p->flags & 4 || p->flags & 4; }'
+  - 'int f(int a) { return a < 0 || a < 0; }'
+  - 'int f(int c) { return c == 0x61 || c == 0x61 || c == 0x62; }'
+  - 'int f(int a, int b) { return (a == b) || (a == b); }'

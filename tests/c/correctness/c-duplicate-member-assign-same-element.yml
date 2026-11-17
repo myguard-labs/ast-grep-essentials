@@ -3,7 +3,48 @@ valid:
   - |-
     iov[0].iov_base = a;
     iov[1].iov_base = b;
+  - |-
+    void f(struct iovec *iov, void *a, int n) {
+        iov[0].iov_base = a;
+        iov[0].iov_len = n;
+    }
+  - |-
+    void f(struct node *p, struct node *a, struct node *b) {
+        p->next = a;
+        p->prev = b;
+    }
+  - |-
+    void f(struct s *p, int a, int b) {
+        p->v = a;
+        use(p->v);
+        p->v = b;
+    }
+  - |-
+    void f(struct iovec *iov, void *a, void *b) {
+        iov[0].iov_base = a;
+        iov[1].iov_base = b;
+    }
 invalid:
   - |-
     iov[0].iov_base = a;
     iov[0].iov_base = b;
+  - |-
+    void f(struct node *p, struct node *a, struct node *b) {
+        p->next = a;
+        p->next = b;
+    }
+  - |-
+    void f(struct iovec *iov, int a, int b) {
+        iov[2].iov_len = a;
+        iov[2].iov_len = b;
+    }
+  - |-
+    void f(struct pt *pts, int a, int b) {
+        pts[i].x = a;
+        pts[i].x = b;
+    }
+  - |-
+    void f(struct s *p) {
+        p->a.b = 1;
+        p->a.b = 2;
+    }

@@ -3,7 +3,43 @@ valid:
   - >-
     stmt->param_bind = mnd_pecalloc(stmt->param_count,
     sizeof(MYSQLND_PARAM_BIND), stmt->persistent);
+  - |-
+    void f(struct s *p, int n) {
+        char *buf = mnd_ecalloc(n, 1);
+        p->len = n;
+        (void)buf;
+    }
+  - |-
+    void f(struct s *p, int n) {
+        p->buf = mnd_pecalloc(n, 1, p->persistent);
+    }
+  - |-
+    void f(int n) {
+        char *buf;
+        buf = mnd_ecalloc(n, 1);
+        (void)buf;
+    }
+  - |-
+    void f(struct s *p, int n) {
+        p->buf = mnd_pemalloc(n, p->persistent);
+    }
 invalid:
   - >-
     stmt->param_bind = mnd_ecalloc(stmt->param_count,
     sizeof(MYSQLND_PARAM_BIND)); if (stmt->persistent) { }
+  - |-
+    void f(struct s *p, int n) {
+        p->buf = mnd_ecalloc(n, 1);
+    }
+  - |-
+    void f(struct conn *c, int n) {
+        c->data->buf = mnd_ecalloc(n, sizeof(char));
+    }
+  - |-
+    void f(struct s **pp, int n) {
+        (*pp)->tab = mnd_ecalloc(n, 8);
+    }
+  - |-
+    void f(struct s *p) {
+        p->cfg = mnd_ecalloc(1, sizeof(*p->cfg));
+    }

@@ -5,9 +5,50 @@ valid:
         struct s x = { 0 };
         (void)x;
     }
+  - |-
+    void f(void) {
+        int a[4] = { 0 };
+        (void)a;
+    }
+  - |-
+    void f(void) {
+        struct s x = { .a = 0, .b = 1 };
+        (void)x;
+    }
+  - |-
+    void f(int a) {
+        if (a) {}
+    }
+  - |-
+    void f(void) {
+        char s[] = "{}";
+        (void)s;
+    }
 invalid:
   - |-
     void f(void) {
         struct s x = {};
         (void)x;
+    }
+  - |-
+    void f(void) {
+        int a[4] = {};
+        (void)a;
+    }
+  - |-
+    void f(void) {
+        struct s x = { };
+        (void)x;
+    }
+  - 'static const struct ops o = {};'
+  - |-
+    void f(void) {
+        struct s x = {
+        };
+        (void)x;
+    }
+  - |-
+    void f(void) {
+        struct t y = { .in = {} };
+        (void)y;
     }

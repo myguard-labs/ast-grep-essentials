@@ -1,5 +1,54 @@
 id: c-duplicate-return-unreachable
 valid:
   - 'int f(int a) { if (a) return 1; return 2; }'
+  - |-
+    int f(int a) {
+        if (a) { return 1; }
+        return 2;
+    }
+  - |-
+    int f(int a) {
+        switch (a) {
+        case 1: return 10;
+        case 2: return 20;
+        }
+        return 0;
+    }
+  - |-
+    int f(int a) {
+        if (a) goto out;
+        return 1;
+    out:
+        return 2;
+    }
+  - |-
+    int f(int a) { return a; }
+    int g(int a) { return a + 1; }
 invalid:
   - 'int f(void) { return 1; return 1; }'
+  - |-
+    int f(int a) {
+        return a;
+        return a + 1;
+    }
+  - |-
+    int f(int a) {
+        if (a) {
+            return 1;
+            return 2;
+        }
+        return 3;
+    }
+  - |-
+    void f(void) {
+        return;
+        return;
+    }
+  - |-
+    int f(int a) {
+        while (a) {
+            return 1;
+            return 0;
+        }
+        return 2;
+    }

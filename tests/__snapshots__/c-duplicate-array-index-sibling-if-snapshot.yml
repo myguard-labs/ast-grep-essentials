@@ -18,3 +18,75 @@ snapshots:
       style: secondary
       start: 0
       end: 20
+  "void f(int a, int b, int *x) {\n    if (a) x[3] = 1;\n    if (b) x[3] = 2;\n}":
+    labels:
+    - source: if (b) x[3] = 2;
+      style: primary
+      start: 56
+      end: 72
+    - source: x[3] = 2
+      style: secondary
+      start: 63
+      end: 71
+    - source: x[3] = 1
+      style: secondary
+      start: 42
+      end: 50
+    - source: if (a) x[3] = 1;
+      style: secondary
+      start: 35
+      end: 51
+  "void f(int a, int b, int *x) {\n    if (a) { x[0] = 1; x[1] = 2; }\n    if (b) { x[1] = 3; }\n}":
+    labels:
+    - source: if (b) { x[1] = 3; }
+      style: primary
+      start: 70
+      end: 90
+    - source: x[1] = 3
+      style: secondary
+      start: 79
+      end: 87
+    - source: x[1] = 2
+      style: secondary
+      start: 54
+      end: 62
+    - source: if (a) { x[0] = 1; x[1] = 2; }
+      style: secondary
+      start: 35
+      end: 65
+  "void f(int a, int b, int c, char *buf) {\n    if (a) { buf[2] = 'a'; }\n    if (b) { buf[5] = 'b'; }\n    if (c) { buf[5] = 'c'; }\n}":
+    labels:
+    - source: if (c) { buf[5] = 'c'; }
+      style: primary
+      start: 103
+      end: 127
+    - source: buf[5] = 'c'
+      style: secondary
+      start: 112
+      end: 124
+    - source: buf[5] = 'b'
+      style: secondary
+      start: 83
+      end: 95
+    - source: if (b) { buf[5] = 'b'; }
+      style: secondary
+      start: 74
+      end: 98
+  "void f(int a, int b, struct s *p) {\n    if (a) { p->tab[1] = 10; }\n    if (b) { p->tab[1] = 20; }\n}":
+    labels:
+    - source: if (b) { p->tab[1] = 20; }
+      style: primary
+      start: 71
+      end: 97
+    - source: p->tab[1] = 20
+      style: secondary
+      start: 80
+      end: 94
+    - source: p->tab[1] = 10
+      style: secondary
+      start: 49
+      end: 63
+    - source: if (a) { p->tab[1] = 10; }
+      style: secondary
+      start: 40
+      end: 66

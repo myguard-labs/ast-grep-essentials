@@ -3,7 +3,47 @@ valid:
   - |-
     if (a) { x[8] = n; }
     if (b) { x[9] = m; }
+  - |-
+    void f(int a, int b, int *x) {
+        if (a) { x[0] = 1; }
+        if (b) { x[1] = 2; }
+    }
+  - |-
+    void f(int a, int b, int *x, int *y) {
+        if (a) { x[3] = 1; }
+        if (b) { y[3] = 2; }
+    }
+  - |-
+    void f(int a, int b, int *x) {
+        if (a) { x[3] = 1; } else if (b) { x[3] = 2; }
+    }
+  - |-
+    void f(int a, int b, int *x, int i, int j) {
+        if (a) { x[i] = 1; }
+        if (b) { x[j] = 2; }
+    }
 invalid:
   - |-
     if (a) { x[8] = n; }
     if (b) { x[8] = m; }
+  - |-
+    void f(int a, int b, int *x) {
+        if (a) x[3] = 1;
+        if (b) x[3] = 2;
+    }
+  - |-
+    void f(int a, int b, int c, char *buf) {
+        if (a) { buf[2] = 'a'; }
+        if (b) { buf[5] = 'b'; }
+        if (c) { buf[5] = 'c'; }
+    }
+  - |-
+    void f(int a, int b, struct s *p) {
+        if (a) { p->tab[1] = 10; }
+        if (b) { p->tab[1] = 20; }
+    }
+  - |-
+    void f(int a, int b, int *x) {
+        if (a) { x[0] = 1; x[1] = 2; }
+        if (b) { x[1] = 3; }
+    }
