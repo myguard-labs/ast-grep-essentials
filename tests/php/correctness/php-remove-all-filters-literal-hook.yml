@@ -1,5 +1,11 @@
 id: php-remove-all-filters-literal-hook
 valid:
   - 'remove_filter( ''upgrader_pre_install'', ''my_callback'' );'
+  - '<?php remove_filter( ''the_content'', ''wpautop'', 10 );'
+  - '<?php $this->remove_all_filters( ''init'' );'
+  - '<?php remove_filter( ''init'', array( $this, ''cb'' ) );'
 invalid:
   - 'remove_all_filters( ''upgrader_pre_install'' );'
+  - '<?php remove_all_filters( "init" );'
+  - '<?php function f() { remove_all_filters( ''the_content'' ); }'
+  - '<?php if ( $x ) { remove_all_filters(''admin_init''); }'
