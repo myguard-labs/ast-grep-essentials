@@ -1,5 +1,17 @@
 id: php-list-explode-unguarded-second-element
 valid:
   - '<?php list($main) = explode(''<!--more-->'', $post, 2);'
+  - |
+    <?php list( $k, $v ) = array_pad( explode( '=', $line, 2 ), 2, '' );
+  - |
+    <?php list( $k ) = explode( '=', $line );
+  - |
+    <?php $parts = explode( '=', $line, 2 ); $v = $parts[1] ?? '';
 invalid:
   - '<?php list($main, $extended) = explode(''<!--more-->'', $post, 2);'
+  - |
+    <?php list( $k, $v ) = explode( '=', $line );
+  - |
+    <?php foreach ( $lines as $l ) { list( $k, $v ) = explode( ':', $l ); }
+  - |
+    <?php list( $k, $v ) = explode( ',', trim( $s ) );

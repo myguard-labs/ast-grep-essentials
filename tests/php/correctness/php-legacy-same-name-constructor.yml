@@ -1,5 +1,17 @@
 id: php-legacy-same-name-constructor
 valid:
   - '<?php class Foo { function __construct() {} }'
+  - |
+    <?php class Foo { function Bar() {} }
+  - |
+    <?php class Foo { function __construct() {} function FooBar() {} }
+  - |
+    <?php class A { function B() {} } class B { function A() {} }
 invalid:
   - '<?php class Foo { function Foo() {} }'
+  - |
+    <?php class Foo { public function Foo( $a ) { $this->a = $a; } }
+  - |
+    <?php class Foo { function __construct() {} function Foo() {} }
+  - |
+    <?php namespace A\B; class Widget { public function Widget() {} }

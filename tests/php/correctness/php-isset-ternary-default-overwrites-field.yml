@@ -3,7 +3,19 @@ valid:
   - >-
     if ( isset( $post_data['content'] ) ) $post_data['post_content'] =
     $post_data['content'];
+  - |
+    <?php if ( isset( $in['k'] ) ) { $out['k'] = $in['k']; }
+  - |
+    <?php $out['k'] = isset( $in['k'] ) ? $in['k'] : $out['k'];
+  - |
+    <?php $out['k'] = $in['k'] ?? $out['k'];
 invalid:
   - >-
     $post_data['post_content'] = isset( $post_data['content'] ) ?
     $post_data['content'] : '';
+  - |
+    <?php $this->data['k'] = isset( $in['k'] ) ? $in['k'] : '';
+  - |
+    <?php function f( $in ) { $out['title'] = isset( $in['title'] ) ? $in['title'] : ''; return $out; }
+  - |
+    <?php $out['a']['b'] = isset( $in['a']['b'] ) ? $in['a']['b'] : '';
