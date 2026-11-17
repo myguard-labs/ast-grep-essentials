@@ -1,5 +1,9 @@
 id: php-ereg-deprecated-call
 valid:
   - 'if (preg_match(''/^\./'', $line)) { $x = 1; }'
+  - '<?php if (mb_ereg("^a", $line)) { $x = 1; }'
+  - '<?php if ($db->ereg("^a", $line)) { $x = 1; }'
 invalid:
   - 'if (ereg("^\.", $line)) { $x = 1; }'
+  - '<?php if (!ereg("^a", $line)) { $x = 1; }'
+  - '<?php $ok = ereg("^a", $line, $m);'
