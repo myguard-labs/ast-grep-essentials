@@ -6,9 +6,50 @@ valid:
       return;
     }
     RETVAL_TRUE;
+  - |-
+    if (!write_out(bio)) {
+      report_error();
+      goto fail;
+    }
+    RETVAL_TRUE;
+  - |-
+    while (more()) {
+      if (!write_out(bio)) {
+        report_error();
+        break;
+      }
+    }
+    RETVAL_TRUE;
+  - |-
+    if (!write_out(bio)) {
+      report_error();
+      return;
+    }
+    if (!flush(bio)) {
+      report_error();
+      return;
+    }
+    RETVAL_TRUE;
 invalid:
   - |-
     if (!write_out(bio)) {
       report_error();
     }
     RETVAL_TRUE;
+  - |-
+    if (a && !write_out(bio)) {
+      report_error();
+    }
+    RETVAL_TRUE;
+  - |-
+    if (write_out(bio) < 0) {
+      report_error();
+    }
+    RETVAL_TRUE;
+  - |-
+    void f(void) {
+      if (!write_out(bio)) {
+        report_error();
+      }
+      RETVAL_TRUE;
+    }

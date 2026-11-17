@@ -1,5 +1,17 @@
 id: c-tautological-inequality-disjunction
 valid:
   - 'if ((*p != '':'') && (*p != '','')) break;'
+  - |-
+    if ((*p == ':') || (*p == ',')) break;
+  - |-
+    if ((*p != ':') && (*p != ',') && (*p != ';')) break;
+  - |-
+    if ((*p != ':') || (*p == ',')) break;
 invalid:
   - 'if ((*p != '':'') || (*p != '','')) break;'
+  - |-
+    if ((*p != ',') || (*p != ':')) break;
+  - |-
+    while (*s != ':' || *s != ',') s++;
+  - |-
+    if (((*p != ':') || (*p != ',')) && ok) break;

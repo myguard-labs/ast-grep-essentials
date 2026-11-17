@@ -1,5 +1,17 @@
 id: c-struct-field-named-libc-macro
 valid:
   - 'struct wops { int (*stream_mkdir)(void *w, char *url, int mode); };'
+  - |-
+    struct s { int mkdir_mode; };
+  - |-
+    struct s { int (*do_rmdir)(const char *path); };
+  - |-
+    struct s { char *name; int mode; };
 invalid:
   - 'struct wops { int (*mkdir)(void *w, char *url, int mode); };'
+  - |-
+    struct s { int rmdir; };
+  - |-
+    struct s { int (*rmdir)(const char *path); };
+  - |-
+    struct s { char mkdir[8]; int mode; };

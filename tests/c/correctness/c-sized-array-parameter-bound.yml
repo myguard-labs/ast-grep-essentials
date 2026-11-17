@@ -4,8 +4,35 @@ valid:
     void f(const unsigned char *header) {
         (void)header;
     }
+  - |-
+    void f(int n, int items[]) {
+        (void)n;
+        (void)items;
+    }
+  - |-
+    void f(int n, char buf[n]) {
+        (void)buf;
+    }
+  - |-
+    void f(void) {
+        char buf[16];
+        (void)buf;
+    }
 invalid:
   - |-
     void f(const unsigned char header[13]) {
         (void)header;
+    }
+  - |-
+    void f(int n, char name[32]) {
+        (void)n;
+        (void)name;
+    }
+  - |-
+    void f(int m[3][3]) {
+        (void)m;
+    }
+  - |-
+    int g(const char *names[8]) {
+        return names != 0;
     }

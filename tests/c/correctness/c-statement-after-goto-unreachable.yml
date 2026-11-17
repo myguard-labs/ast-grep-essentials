@@ -1,5 +1,56 @@
 id: c-statement-after-goto-unreachable
 valid:
   - "void f(int x) {\n\tif (x) {\n\t\tgoto finish;\n\t}\n\tx = x + 1;\nfinish:\n\treturn;\n}"
+  - |-
+    void f(int x) {
+    	if (x)
+    		goto finish;
+    	x = x + 1;
+    finish:
+    	return;
+    }
+  - |-
+    void f(int x) {
+    	x = x + 1;
+    	goto finish;
+    finish:
+    	x = 0;
+    }
+  - |-
+    void f(int x) {
+    	while (x) {
+    		if (x > 3) {
+    			goto finish;
+    		}
+    		x--;
+    	}
+    finish:
+    	return;
+    }
 invalid:
   - "void f(int x) {\n\tgoto finish;\n\tx = x + 1;\nfinish:\n\treturn;\n}"
+  - |-
+    void f(int *p) {
+    	goto out;
+    	free(p);
+    out:
+    	return;
+    }
+  - |-
+    void f(int x) {
+    	while (x) {
+    		goto out;
+    		x--;
+    	}
+    out:
+    	return;
+    }
+  - |-
+    void f(int x) {
+    	x = 1;
+    	goto out;
+    	x = 2;
+    	x = 3;
+    out:
+    	return;
+    }
