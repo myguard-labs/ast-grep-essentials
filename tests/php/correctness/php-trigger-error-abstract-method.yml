@@ -5,11 +5,61 @@ valid:
     abstract class Op {
         abstract function &reverse();
     }
+  - |-
+    <?php
+    interface Op {
+        public function reverse();
+    }
+  - |-
+    <?php
+    class Op {
+        function reverse()
+        {
+            throw new LogicException('Abstract method');
+        }
+    }
+  - |-
+    <?php
+    abstract class Op {
+        abstract public function reverse();
+    }
+  - |-
+    <?php
+    class Op {
+        function reverse()
+        {
+            return 1;
+        }
+    }
 invalid:
   - |-
     <?php
     class Op {
         function &reverse()
+        {
+            trigger_error('Abstract method', E_USER_ERROR);
+        }
+    }
+  - |-
+    <?php
+    class Op {
+        public static function reverse($x)
+        {
+            trigger_error('Abstract method', E_USER_ERROR);
+        }
+    }
+  - |-
+    <?php
+    class Op {
+        protected function reverse()
+        {
+            trigger_error( 'Abstract method', E_USER_ERROR );
+        }
+    }
+  - |-
+    <?php
+    trait Op {
+        function reverse()
         {
             trigger_error('Abstract method', E_USER_ERROR);
         }

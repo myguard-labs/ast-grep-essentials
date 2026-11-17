@@ -1,5 +1,12 @@
 id: php-trim-mask-unknown-escape
 valid:
   - '$tags = trim($tags, " \t,");'
+  - '$tags = trim($tags, "\r\n");'
+  - '$path = trim($path, "/\\");'
+  - '$s = trim($s, "\0\x0B");'
+  - '$s = trim($s, "a..z");'
 invalid:
   - '$tags = trim($tags, " \s,");'
+  - '$tags = trim($line, "\W");'
+  - 'function f($s) { return trim($s, "\w,"); }'
+  - 'if (trim($a, "\s") === "") {}'
