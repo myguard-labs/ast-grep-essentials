@@ -1,5 +1,26 @@
 id: wp-superglobal-key-read-unguarded
 valid:
   - '<?php if ( ! empty( $_GET[''settings-updated''] ) ) { return; }'
+  - |-
+    <?php
+    if ( isset( $_GET['a'] ) ) { run(); }
+  - |-
+    <?php
+    if ( ! isset( $_POST['x'] ) ) { return; }
+  - |-
+    <?php
+    if ( isset( $_GET['a'] ) && $_GET['a'] ) { run(); }
+  - |-
+    <?php
+    if ( array_key_exists( 'a', $_GET ) ) { run(); }
 invalid:
   - '<?php if ( $_GET[''settings-updated''] ) { return; }'
+  - |-
+    <?php
+    while ( $_POST['more'] ) { run(); }
+  - |-
+    <?php
+    $x = ( $_GET['a'] ) ? 1 : 0;
+  - |-
+    <?php
+    do { run(); } while ( $_GET['again'] );

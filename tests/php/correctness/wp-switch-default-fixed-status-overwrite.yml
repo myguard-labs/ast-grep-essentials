@@ -1,5 +1,57 @@
 id: wp-switch-default-fixed-status-overwrite
 valid:
   - "<?php\nswitch ( $action ) {\n\tcase 'publish':\n\t\tbreak;\n\tdefault:\n\t\tif ( ! get_post_status_object( $post_data['post_status'] ) ) {\n\t\t\t$post_data['post_status'] = 'draft';\n\t\t}\n\t\tbreak;\n}\n"
+  - |-
+    <?php
+    switch ( $action ) {
+    	case 'save':
+    		$post_data['post_status'] = 'draft';
+    		break;
+    	default:
+    		break;
+    }
+  - |-
+    <?php
+    $post_data['post_status'] = 'draft';
+  - |-
+    <?php
+    switch ( $action ) {
+    	case 'publish':
+    		break;
+    	default:
+    		$status = 'draft';
+    		break;
+    }
 invalid:
   - "<?php\nswitch ( $action ) {\n\tcase 'publish':\n\t\tbreak;\n\tdefault:\n\t\t$post_data['post_status'] = 'draft';\n\t\tbreak;\n}\n"
+  - |-
+    <?php
+    switch ( $action ) {
+    	case 'publish':
+    		break;
+    	default:
+    		$args['post_status'] = 'draft';
+    		break;
+    }
+  - |-
+    <?php
+    switch ( $action ) {
+    	case 'publish':
+    		break;
+    	default:
+    		foreach ( $keys as $k ) {
+    			$post_data[ $k ] = 'draft';
+    		}
+    		break;
+    }
+  - |-
+    <?php
+    switch ( $action ) {
+    	case 'publish':
+    		break;
+    	default:
+    		while ( $n-- ) {
+    			$post_data['post_status'] = 'draft';
+    		}
+    		break;
+    }

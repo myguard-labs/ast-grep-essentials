@@ -1,5 +1,23 @@
 id: wp-taxonomy-public-without-show-ui
 valid:
   - '<?php if ( ! $t[''public''] || ! $t[''show_ui''] ) continue;'
+  - |-
+    <?php
+    if ( ! $t['show_ui'] ) continue;
+  - |-
+    <?php
+    if ( ! $t['public'] && ! $t['show_ui'] ) continue;
+  - |-
+    <?php
+    if ( empty( $t['show_ui'] ) ) { continue; }
 invalid:
   - '<?php if ( ! $t[''public''] ) continue;'
+  - |-
+    <?php
+    foreach ( $taxes as $t ) { if ( ! $t['public'] ) continue; list_it( $t ); }
+  - |-
+    <?php
+    while ( $t = next_tax() ) { if ( ! $t['public'] ) continue; $out[] = $t; }
+  - |-
+    <?php
+    foreach ( $tax as $t ) { if ( $t['hidden'] ) { x(); } else { if ( ! $t['public'] ) continue; } }
