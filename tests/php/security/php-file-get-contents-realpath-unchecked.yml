@@ -1,5 +1,11 @@
 id: php-file-get-contents-realpath-unchecked
 valid:
   - '$js = file_get_contents( $path );'
+  - '<?php $r = realpath( $p ); if ( false !== $r ) { $js = file_get_contents( $r ); }'
+  - '<?php $full = realpath( $p ); if ( ! $full ) { return; } $js = file_get_contents( $full );'
+  - '<?php $js = file_get_contents( __DIR__ . ''/a.json'' );'
 invalid:
   - '$js = file_get_contents( realpath( $path ) );'
+  - '<?php $js = file_get_contents( realpath( $a . ''/'' . $b ) );'
+  - '<?php $js = file_get_contents( realpath( __DIR__ . ''/x.json'' ) ) ?: '''';'
+  - '<?php $d = json_decode( file_get_contents( realpath( dirname( __FILE__ ) . ''/x.json'' ) ), true );'

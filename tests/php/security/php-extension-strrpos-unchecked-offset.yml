@@ -1,5 +1,11 @@
 id: php-extension-strrpos-unchecked-offset
 valid:
   - 'if ( ''.php'' == pathinfo( $real_file, PATHINFO_EXTENSION ) ) {}'
+  - '<?php $pos = strrpos( $name, ''.'' ); $e = false === $pos ? '''' : substr( $name, $pos );'
+  - '<?php if ( false !== ( $dot = strrpos( $name, ''.'' ) ) ) { $e = substr( $name, $dot ); }'
+  - '<?php $is_php = str_ends_with( $name, ''.php'' );'
 invalid:
   - 'if ( ''.php'' == substr( $real_file, strrpos( $real_file, ''.'' ) ) ) {}'
+  - '<?php $e = strtolower( substr( $this->file, strrpos( $this->file, ''.'' ) ) );'
+  - '<?php return substr( $f, strrpos( $f, "." ) );'
+  - '<?php $e = substr( $this->name, strrpos( $this->name, ''.'' ) );'
