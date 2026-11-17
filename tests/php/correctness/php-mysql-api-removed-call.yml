@@ -1,5 +1,12 @@
 id: php-mysql-api-removed-call
 valid:
   - '<?php $result = mysqli_query($db, $sql);'
+  - '<?php $x = $obj->mysql_query($sql);'
+  - '<?php function mysql_query_log($s) { return $s; } $r = mysql_query_log($sql);'
+  - '<?php $r = $db->query($sql);'
 invalid:
   - '<?php $result = mysql_query($sql);'
+  - '<?php $r = mysql_query($sql, $link);'
+  - '<?php if (mysql_query("SELECT 1", $link)) { echo 1; }'
+  - '<?php $r = @mysql_query($sql) or die(mysql_error());'
+  - '<?php $r = mysql_query("SELECT * FROM t WHERE id=" . (int)$id);'

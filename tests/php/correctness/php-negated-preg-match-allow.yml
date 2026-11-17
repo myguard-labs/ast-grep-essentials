@@ -1,5 +1,12 @@
 id: php-negated-preg-match-allow
 valid:
   - '$allow_css = 0 === preg_match( ''%[\\(&=}]|/\*%'', $css );'
+  - '<?php if ( 1 === preg_match( "/^[a-z]+$/", $name ) ) { $ok = true; }'
+  - '<?php if ( false === preg_match( "/x/", $s ) ) { $err = preg_last_error(); }'
+  - '<?php if ( 0 === preg_match( "/x/", $s ) ) { $skip = true; }'
 invalid:
   - '$allow_css = ! preg_match( ''%[\\(&=}]|/\*%'', $css );'
+  - '<?php if ( ! preg_match( "/^[a-z]+$/", $name ) ) { wp_die(); }'
+  - '<?php if (!preg_match($re, $s, $m)) { return false; }'
+  - '<?php $ok = !preg_match("/x/", $s) && $flag;'
+  - '<?php return ! preg_match( "/x/", $s );'

@@ -3,7 +3,15 @@ valid:
   - |-
     <?php
     $blog_s = $site->path . $suffix;
+  - '<?php $this->path .= $suffix;'
+  - '<?php $this->path .= $suffix; $blog_s = $this->path;'
+  - '<?php $blog_s = $site->path . $suffix; $site->path = $blog_s;'
+  - '<?php $a = $b->c = $d;'
 invalid:
   - |-
     <?php
     $blog_s = $site->path .= $suffix;
+  - '<?php $out = $this->buf .= $chunk;'
+  - '<?php $out = $this->buf .= "a" . $chunk;'
+  - '<?php $r[] = $o->p .= $x;'
+  - '<?php $o->q = $o->p .= $x;'

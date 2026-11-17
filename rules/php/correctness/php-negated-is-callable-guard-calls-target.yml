@@ -22,3 +22,7 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  todo_cases:
+    - 'Observed false positive: a negated is_callable(''f'') guard whose braced body never calls f (e.g. body is `return;` or `$mime = ''none'';`) is flagged; the pattern has no check that the body calls the target.'
+    - 'Observed false positive: `if ( ! is_callable(''f'') ) { $m = ''none''; } else { $m = f(); }` is flagged although f is only called in the else branch.'
+    - 'Observed miss: a brace-less body (`if ( ! is_callable(''f'') ) $m = f();`) and a double-quoted argument (`is_callable("f")`) are not flagged.'

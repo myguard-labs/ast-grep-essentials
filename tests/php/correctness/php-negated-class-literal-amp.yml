@@ -1,5 +1,11 @@
 id: php-negated-class-literal-amp
 valid:
   - '$s = preg_replace( ''#&([^;])#is'', ''&amp;$1'', $s );'
+  - '<?php $s = preg_replace(''#&(?!amp;)#is'', ''&amp;'', $s);'
+  - '<?php $s = preg_replace(''#&([^;]+;)#is'', ''&$1'', $s);'
+  - '<?php $s = preg_replace(''/&(?![a-z0-9#]+;)/i'', ''&amp;'', $s);'
 invalid:
   - '$s = preg_replace( ''#&([^amp;])#is'', ''&amp;$1'', $s );'
+  - '<?php $s = preg_replace(''#&([^amp;])#is'', ''&amp;$1'', $s, 1);'
+  - '<?php return preg_replace(''#&([^amp;])#is'', ''&amp;$1'', $text);'
+  - '<?php $this->out = preg_replace(''#&([^amp;])#is'', ''&amp;$1'', $subjects);'
