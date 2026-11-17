@@ -3,7 +3,45 @@ valid:
   - >-
     zend_eval_const_expr(&ast->child[1]); if (ast->child[1]->kind !=
     ZEND_AST_ZVAL) return;
+  - |-
+    void f(zend_ast *ast) {
+      if (ast->child[0]->kind != ZEND_AST_ZVAL) return;
+      zend_eval_const_expr(&ast->child[1]);
+    }
+  - |-
+    void f(zend_ast *ast) {
+      zend_eval_const_expr(&ast->child[1]);
+      if (ast->child[1]->kind != ZEND_AST_ZVAL) return;
+    }
+  - |-
+    void f(zend_ast *ast) {
+      if (ast->child[1]->kind != ZEND_AST_ZVAL) return;
+    }
+    void g(zend_ast *ast) {
+      zend_eval_const_expr(&ast->child[1]);
+    }
 invalid:
   - >-
     if (ast->child[1]->kind != ZEND_AST_ZVAL) return;
     zend_eval_const_expr(&ast->child[1]);
+  - |-
+    void f(zend_ast *ast) {
+      if (ast->child[1]->kind != ZEND_AST_ZVAL) return;
+      zend_eval_const_expr(&ast->child[1]);
+      use(ast);
+    }
+  - |-
+    void f(zend_ast *ast, int c) {
+      if (c) {
+        if (ast->child[1]->kind != ZEND_AST_ZVAL) return;
+        zend_eval_const_expr(&ast->child[1]);
+      }
+    }
+  - |-
+    void f(zend_ast *ast) {
+      int n = 0;
+      while (n++ < 2) {
+        if (ast->child[1]->kind != ZEND_AST_ZVAL) return;
+        zend_eval_const_expr(&ast->child[1]);
+      }
+    }

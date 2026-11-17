@@ -1,5 +1,11 @@
 id: c-legacy-err-macro-call
 valid:
   - 'ERR_raise(ERR_LIB_SM2, SM2_R_BUFFER_TOO_SMALL);'
+  - 'void f(void) { ERR_raise_data(ERR_LIB_EVP, EVP_R_BAD_X, "detail"); }'
+  - 'void f(void) { ERR_clear_error(); }'
+  - 'void f(void) { ERR_raise(ERR_LIB_RSA, ERR_R_MALLOC_FAILURE); }'
 invalid:
   - 'SM2err(SM2_F_SM2_DECRYPT, SM2_R_BUFFER_TOO_SMALL);'
+  - 'void f(void) { RSAerr(RSA_F_RSA_SIGN, RSA_R_DIGEST_TOO_BIG_FOR_RSA_KEY); }'
+  - 'void f(void *p) { if (p == NULL) { EVPerr(EVP_F_EVP_PKEY_NEW, ERR_R_MALLOC_FAILURE); return; } }'
+  - 'void f(void) { ECerr(EC_F_EC_GROUP_NEW, ERR_R_MALLOC_FAILURE); }'

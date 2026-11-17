@@ -1,12 +1,51 @@
 id: c-length-accumulator-assigned-in-loop
 snapshots:
-  ? |-
-    size_t len = 0;
-    while (p != NULL) {
-        len = p->value.len + 2;
-        p = p->next;
-    }
-  : labels:
+  "size_t f(node *e, size_t n) {\n  size_t len = 0;\n  while (n-- > 0) {\n    len = e[n].len + 2;\n  }\n  return len;\n}":
+    labels:
+    - source: len = e[n].len + 2
+      style: primary
+      start: 72
+      end: 90
+    - source: |-
+        while (n-- > 0) {
+            len = e[n].len + 2;
+          }
+      style: secondary
+      start: 50
+      end: 95
+  "size_t f(node *p) {\n  size_t len = 0;\n  while (1) {\n    len = p->key.len + 2;\n    if (!p->next) break;\n    p = p->next;\n  }\n  return len;\n}":
+    labels:
+    - source: len = p->key.len + 2
+      style: primary
+      start: 56
+      end: 76
+    - source: |-
+        while (1) {
+            len = p->key.len + 2;
+            if (!p->next) break;
+            p = p->next;
+          }
+      style: secondary
+      start: 40
+      end: 123
+  "size_t f(node *p) {\n  size_t len = 0;\n  while (p != NULL) {\n    if (p->value.len) {\n      len = p->value.len + 2;\n    }\n    p = p->next;\n  }\n  return len;\n}":
+    labels:
+    - source: len = p->value.len + 2
+      style: primary
+      start: 90
+      end: 112
+    - source: |-
+        while (p != NULL) {
+            if (p->value.len) {
+              len = p->value.len + 2;
+            }
+            p = p->next;
+          }
+      style: secondary
+      start: 40
+      end: 140
+  "size_t len = 0;\nwhile (p != NULL) {\n    len = p->value.len + 2;\n    p = p->next;\n}":
+    labels:
     - source: len = p->value.len + 2
       style: primary
       start: 40
