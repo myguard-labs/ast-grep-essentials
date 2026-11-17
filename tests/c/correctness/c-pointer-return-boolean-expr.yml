@@ -1,5 +1,9 @@
 id: c-pointer-return-boolean-expr
 valid:
   - 'static int exists(void *a, void *b) { return a && b; }'
+  - 'static char *pick(char *a, char *b) { return a ? a : b; }'
+  - 'static char *both(char *a, char *b) { if (a && b) return a; return b; }'
 invalid:
   - 'static int *exists(void *a, void *b) { return a && b; }'
+  - 'static void *both(void *a, void *b) { return a && b; }'
+  - 'static struct node *both(struct node *a, struct node *b) { return a && b; }'
