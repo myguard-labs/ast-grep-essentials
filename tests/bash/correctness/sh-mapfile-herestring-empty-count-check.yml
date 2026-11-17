@@ -7,8 +7,10 @@ valid:
     mapfile -t FILES < "$list_file"
     [ "${#FILES[@]}" -gt 0 ] || exit 0
   - |-
-    mapfile -t FILES < <(git ls-files)
+    FILES=()
+    if [ -n "$FILES_LIST" ]; then mapfile -t FILES <<<"$FILES_LIST"; fi
     [ "${#FILES[@]}" -gt 0 ] || exit 0
+    echo "${FILES[0]}"
   - |-
     [ -z "$FILES_LIST" ] && exit 0
     mapfile -t FILES <<<"$FILES_LIST"
