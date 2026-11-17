@@ -13,6 +13,22 @@ valid:
     <?php
     global $wpdb;
     echo $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name = 'x'" );
+  - |
+    <?php
+    global $wpdb;
+    $r = $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name = 'x'" );
+  - |
+    <?php
+    global $wpdb;
+    $ok = (bool) $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name = 'x'" );
+  - |
+    <?php
+    global $wpdb;
+    $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name = 'x'" ) or die( 'fail' );
+  - |
+    <?php
+    global $wpdb;
+    $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name = 'x'" ) ?: error_log( 'fail' );
 invalid:
   - |
     <?php
@@ -32,3 +48,7 @@ invalid:
     foreach ( $ids as $id ) {
     	$wpdb->query( $wpdb->prepare( 'DELETE FROM t WHERE id = %d', $id ) );
     }
+  - |
+    <?php
+    global $wpdb;
+    ( $wpdb->query( "DELETE FROM $wpdb->options WHERE option_name = 'x'" ) );
