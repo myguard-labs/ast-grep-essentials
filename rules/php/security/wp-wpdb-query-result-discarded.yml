@@ -7,15 +7,20 @@ message: >-
   The result of $wpdb->query() is discarded; check it for false to detect
   database failures.
 note: >-
-  Matches a literal $wpdb->query(...) call used as a bare expression
-  statement. It does not resolve the receiver's runtime type or check whether
+  Matches a literal $wpdb->query(...) call that is the whole expression
+  statement, optionally under any nesting of the @ operator and parentheses. Stored, cast, compared or
+  or/?:-handled results are not matched. It does not resolve the receiver's runtime type or check whether
   the result is handled elsewhere.
 rule:
   all:
     - kind: expression_statement
     - has:
         pattern: '$wpdb->query($$$ARGS)'
-        stopBy: end
+        stopBy:
+          not:
+            any:
+              - kind: error_suppression_expression
+              - kind: parenthesized_expression
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -29,6 +34,4 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
   todo_cases:
-    - 'FP: $r = $wpdb->query("DELETE FROM t"); and $ok = (bool) $wpdb->query(...); are reported although the result is stored or cast (any expression_statement containing the call matches)'
-    - 'FP: $wpdb->query("DELETE FROM t") or die("fail"); and ... ?: error_log("fail"); are reported although the failure is handled'
     - 'FN: $this->wpdb->query("DELETE FROM t"); and $GLOBALS[''wpdb'']->query(...) as a bare statement are not matched (literal $wpdb receiver only)'
