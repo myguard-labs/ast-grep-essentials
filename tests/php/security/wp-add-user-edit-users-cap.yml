@@ -3,7 +3,16 @@ valid:
   - >-
     function f($role) { if ( current_user_can('create_users') ) {
     add_user($role); } }
+  - |-
+    function f($id) { if ( current_user_can('edit_users') ) { edit_user($id); } }
+  - |-
+    function f($d) { if ( current_user_can('create_users') ) { wp_insert_user($d); } }
+
 invalid:
   - >-
     function f($role) { if ( current_user_can('edit_users') ) { add_user($role);
     } }
+  - |-
+    function f($r, $ok) { if ( current_user_can('edit_users') ) { if ( $ok ) { add_user($r); } } }
+  - |-
+    function f($r) { if ( current_user_can('edit_users') ) { add_user($r, 'x'); } }

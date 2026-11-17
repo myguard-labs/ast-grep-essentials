@@ -1,6 +1,21 @@
 id: wp-superadmin-early-return-skips-caps
 snapshots:
-  function has_cap( $cap ) { if ( is_multisite() && is_super_admin() ) { return true; } return map_meta_cap( $cap, 1 ); }:
+  "add_filter( 'user_has_cap', function ( $caps ) { if ( is_multisite() && is_super_admin() ) { return true; } return $caps; } );":
+    labels:
+    - source: if ( is_multisite() && is_super_admin() ) { return true; }
+      style: primary
+      start: 49
+      end: 107
+  "class C { public function has_cap( $cap ) {\n    if ( is_multisite() && is_super_admin() ) {\n        return true;\n    }\n    return map_meta_cap( $cap, 1 );\n} }":
+    labels:
+    - source: |-
+        if ( is_multisite() && is_super_admin() ) {
+                return true;
+            }
+      style: primary
+      start: 48
+      end: 118
+  "function has_cap( $cap ) { if ( is_multisite() && is_super_admin() ) { return true; } return map_meta_cap( $cap, 1 ); }":
     labels:
     - source: if ( is_multisite() && is_super_admin() ) { return true; }
       style: primary

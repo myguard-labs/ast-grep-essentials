@@ -1,5 +1,14 @@
 id: php-current-user-can-capability-space
 valid:
   - '<?php if ( ! current_user_can( ''switch_themes'' ) ) { return; }'
+  - |-
+    <?php if ( current_user_can( "switch_themes" ) ) { echo 'x'; }
+  - |-
+    <?php if ( current_user_can( $cap ) ) { echo 'x'; }
+
 invalid:
   - '<?php if ( ! current_user_can( ''switch themes'' ) ) { return; }'
+  - |-
+    <?php if ( current_user_can( "switch themes" ) ) { echo 'x'; }
+  - |-
+    <?php $ok = $a && current_user_can( 'edit posts' );

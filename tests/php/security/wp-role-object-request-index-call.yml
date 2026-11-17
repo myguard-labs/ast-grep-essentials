@@ -3,7 +3,16 @@ valid:
   - >-
     <?php $ok = $wp_roles->role_objects[ 'administrator' ]->has_cap(
     'promote_users' );
+  - |-
+    <?php $r = $wp_roles->get_role( $_REQUEST['new_role'] ); if ( $r ) { $ok = $r->has_cap( 'promote_users' ); }
+  - |-
+    <?php $wp_roles->role_objects['editor']->add_cap( 'edit_theme_options' );
+
 invalid:
   - >-
     <?php $ok = $wp_roles->role_objects[ $_REQUEST['new_role'] ]->has_cap(
     'promote_users' );
+  - |-
+    <?php $wp_roles->role_objects[ $_POST['role'] ]->add_cap( 'x' );
+  - |-
+    <?php $this->roles->role_objects[ $_REQUEST["r"] ]->has_cap( 'read' );

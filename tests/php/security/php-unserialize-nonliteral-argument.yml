@@ -3,7 +3,16 @@ valid:
   - |-
     <?php
     $response = unserialize( 'b:0;' );
+  - |-
+    <?php $v = unserialize( 'a:1:{i:0;i:1;}' );
+  - |-
+    <?php $v = unserialize( $body, array( 'allowed_classes' => false ) );
+
 invalid:
   - |-
     <?php
     $response = unserialize( $body );
+  - |-
+    <?php $v = unserialize( $_COOKIE['state'] );
+  - |-
+    <?php $v = unserialize( base64_decode( $data ) );
