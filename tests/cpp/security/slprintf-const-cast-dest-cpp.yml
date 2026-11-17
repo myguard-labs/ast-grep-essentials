@@ -1,5 +1,11 @@
 id: slprintf-const-cast-dest-cpp
 valid:
   - 'const char *id = "GMT+00:00"; int n = slprintf(id, 16, "%d", 1);'
+  - 'char buf[16]; int n = slprintf(buf, sizeof(buf), "%d", 1);'
+  - 'char *dst = (char*)malloc(16); int n = slprintf(dst, 16, "%d", 1);'
+  - 'std::string s(16, 0); int n = slprintf(&s[0], s.size(), "%d", 1);'
 invalid:
   - 'const char *id = "GMT+00:00"; int n = slprintf((char*)id, 16, "%d", 1);'
+  - 'static const char name[] = "ab"; int n = slprintf((char*)name, sizeof(name), "%d", 1);'
+  - 'const char *id = "GMT"; int n = slprintf((char *) id, 16, "%d", 1);'
+  - 'const char *id = "GMT"; int n = slprintf((char*)id, 16);'

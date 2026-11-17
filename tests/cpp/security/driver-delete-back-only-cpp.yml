@@ -1,5 +1,11 @@
 id: driver-delete-back-only-cpp
 valid:
   - 'Driver::~Driver() { delete loc; }'
+  - 'Driver::~Driver() { for (auto *p : locs) delete p; }'
+  - 'Driver::~Driver() { delete locs; }'
+  - 'Driver::~Driver() { for (size_t i = 0; i < locs.size(); ++i) delete locs[i]; }'
 invalid:
   - 'Driver::~Driver() { delete loc.back(); }'
+  - 'Driver::~Driver() { delete this->locs.back(); }'
+  - 'void Registry::clear() { delete items_.back(); }'
+  - 'void f(std::vector<A*> &v) { delete v.back(); v.pop_back(); }'

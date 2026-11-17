@@ -1,5 +1,11 @@
 id: php-delete-array-mismatch-cpp
 valid:
   - 'void f(void) { int *p = new int[4]; delete [] p; }'
+  - 'void f(void) { int *p = new int[4]; delete[] p; }'
+  - 'void f(void) { int *p = new int[n * 2]; int *q = new int; delete q; delete [] p; }'
+  - 'void f(void) { int *p = new int; delete p; }'
 invalid:
   - 'void f(void) { int *p = new int[4]; delete p; }'
+  - 'void f(int n) { int *p = new int[n]; delete p; }'
+  - 'void f(void) { int *p = new int[n]; if (n) { delete p; } }'
+  - 'void C::g(int n) { int *buf = new int[n]; fill(buf, n); delete buf; }'

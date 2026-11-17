@@ -4,6 +4,12 @@ valid:
     void coderabbit_control() { const char *text = "CodeRabbit"; }
   - |
     return sizeof(*this);
+  - 'size_t C::sz() { return sizeof(C); }'
+  - 'void C::m() { memset(this, 0, sizeof(*this)); }'
+  - 'void C::m() { size_t n = sizeof(this->buf) / sizeof(this->buf[0]); }'
 invalid:
   - |
     return sizeof(this);
+  - 'void C::m() { memset(this, 0, sizeof(this)); }'
+  - 'void C::m() { char *b = (char*)malloc(sizeof(this)); }'
+  - 'size_t C::sz() { return sizeof this; }'

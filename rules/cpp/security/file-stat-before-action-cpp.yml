@@ -512,3 +512,6 @@ metadata:
   category: 'security'
   subcategory: 'race-condition'
   references: 'https://wiki.sei.cmu.edu/confluence/display/c/FIO45-C.+Avoid+TOCTOU+race+conditions+while+accessing+files'
+  todo_cases:
+    - 'FN: struct stat st; if (stat(p, &st) != 0) { return; } FILE *fp = fopen(p, "r"); (negated stat check followed by a later use is not matched)'
+    - 'FN: struct stat st; if (0 == stat(p, &st)) { fopen(p, "r"); } (stat call on the right side of the comparison is not matched)'
