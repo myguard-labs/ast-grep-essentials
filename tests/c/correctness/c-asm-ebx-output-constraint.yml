@@ -4,8 +4,12 @@ valid:
     static void probe(uint32_t f, uint32_t *b) {
         __asm__ __volatile__ ("cpuid" : "=r"(*b) : "a"(f));
     }
+  - 'static void probe(uint32_t f, uint32_t *a, uint32_t *b) { __asm__ __volatile__ ("xchgl %%ebx, %1\n\tcpuid\n\txchgl %%ebx, %1" : "=a"(*a), "=&r"(*b) : "0"(f) : "ecx", "edx"); }'
+  - 'static uint64_t tsc(void) { uint32_t lo, hi; __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi)); return ((uint64_t)hi << 32) | lo; }'
 invalid:
   - |-
     static void probe(uint32_t f, uint32_t *b) {
         __asm__ __volatile__ ("cpuid" : "=b"(*b) : "a"(f));
     }
+  - 'static void probe(uint32_t f, uint32_t *b) { __asm__ __volatile__ ("cpuid" : "+b"(*b) : "a"(f)); }'
+  - 'static void probe(uint32_t f, uint32_t *a, uint32_t *b) { __asm__ __volatile__ ("cpuid" : "=a"(*a), "=&b"(*b) : "0"(f)); }'

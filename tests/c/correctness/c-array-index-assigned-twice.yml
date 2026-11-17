@@ -1,5 +1,9 @@
 id: c-array-index-assigned-twice
 valid:
   - 'void f(long *m, long a, long b) { m[0] = a; m[1] = b; m[2] = a; m[3] = b; }'
+  - 'void f(long *m, long *n, long a, long b) { m[0] = a; n[0] = b; m[1] = a; n[1] = b; }'
+  - 'void f(int c, long *m, long a, long b) { if (c) { m[0] = a; } else { m[0] = b; } }'
 invalid:
   - 'void f(long *m, long a, long b) { m[0] = a; m[1] = b; m[0] = a; m[1] = b; }'
+  - 'void f(long *m, long a, long b) { m[2] = a; m[2] = b; }'
+  - 'void f(long *m, long a, long b, long c) { m[0] = a; m[1] = b; m[0] = c; }'
