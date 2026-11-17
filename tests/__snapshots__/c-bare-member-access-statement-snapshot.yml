@@ -1,8 +1,32 @@
 id: c-bare-member-access-statement
 snapshots:
-  ? "void f(struct s *p) {\n\tp->is_writeable;\n}"
-  : labels:
+  "void f(struct s *p) {\n\tp->is_writeable;\n}":
+    labels:
     - source: p->is_writeable;
       style: primary
       start: 23
       end: 39
+  "void f(struct s *p) {\n\tp->next->value;\n}":
+    labels:
+    - source: p->next->value;
+      style: primary
+      start: 23
+      end: 38
+  "void f(struct s *p) {\n\twhile (p) {\n\t\tp->len;\n\t\tp = p->next;\n\t}\n}":
+    labels:
+    - source: p->len;
+      style: primary
+      start: 37
+      end: 44
+  "void f(struct s *p, int c) {\n\tif (c) {\n\t\tp->is_writeable;\n\t}\n}":
+    labels:
+    - source: p->is_writeable;
+      style: primary
+      start: 41
+      end: 57
+  "void f(struct s v) {\n\tv.inner->flag;\n}":
+    labels:
+    - source: v.inner->flag;
+      style: primary
+      start: 22
+      end: 36

@@ -1,5 +1,13 @@
 id: c-bare-include-directive
 valid:
   - '#include "win32/php_stdint.h"'
+  - "#include <stdio.h>\n#include \"win32/php_stdint.h\"\nint x;"
+  - "int include_count;\nvoid f(void) { include_count = 1; }"
+  - "#  include \"a.h\"\n"
+  - "/* see header */\n#include \"a.h\" /* include \"b.h\" */\nint y;"
 invalid:
   - 'include "win32/php_stdint.h"'
+  - "#include <stdio.h>\ninclude \"win32/php_stdint.h\"\nint x;"
+  - "\tinclude \"a.h\"\nint y;"
+  - "include   \"a.h\"   \nint y;"
+  - "int x;\n  include \"a/b.h\"\nvoid f(void) { }"

@@ -5,9 +5,15 @@ valid:
     do {
         n = BIO_gets(fbio, buf, 1024);
     } while (n > 3 && buf[3] == '-');
+  - "int n;\ndo {\n    n = BIO_read(sbio, buf, 1024);\n} while (n > 0);"
+  - "int n;\ndo {\n    n = BIO_read(sbio, buf, 1024);\n} while (n <= 0 && BIO_should_retry(sbio));"
+  - "int n;\ndo {\n    n = BIO_gets(fbio, buf, 1024);\n} while (buf[3] == '-');"
 invalid:
   - |-
     int n;
     do {
         n = BIO_read(sbio, buf, 1024);
     } while (n > 3 && buf[3] == '-');
+  - "int n;\ndo {\n    n = BIO_read(sbio, buf, 1024);\n} while (buf[3] == '-');"
+  - "int n;\ndo {\n    n = BIO_read(sbio, buf, 1024);\n} while (buf[3] == '-' && n > 0);"
+  - "int n;\ndo {\n    n = BIO_read(sbio, buf, 1024);\n    if (n <= 0)\n        break;\n} while (n > 3 && buf[3] == '-');"

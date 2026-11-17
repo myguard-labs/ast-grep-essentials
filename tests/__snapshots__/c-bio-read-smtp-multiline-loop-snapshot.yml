@@ -1,11 +1,60 @@
 id: c-bio-read-smtp-multiline-loop
 snapshots:
-  ? |-
-    int n;
-    do {
-        n = BIO_read(sbio, buf, 1024);
-    } while (n > 3 && buf[3] == '-');
-  : labels:
+  "int n;\ndo {\n    n = BIO_read(sbio, buf, 1024);\n    if (n <= 0)\n        break;\n} while (n > 3 && buf[3] == '-');":
+    labels:
+    - source: |-
+        do {
+            n = BIO_read(sbio, buf, 1024);
+            if (n <= 0)
+                break;
+        } while (n > 3 && buf[3] == '-');
+      style: primary
+      start: 7
+      end: 111
+    - source: n = BIO_read(sbio, buf, 1024);
+      style: secondary
+      start: 16
+      end: 46
+    - source: buf[3] == '-'
+      style: secondary
+      start: 96
+      end: 109
+  "int n;\ndo {\n    n = BIO_read(sbio, buf, 1024);\n} while (buf[3] == '-' && n > 0);":
+    labels:
+    - source: |-
+        do {
+            n = BIO_read(sbio, buf, 1024);
+        } while (buf[3] == '-' && n > 0);
+      style: primary
+      start: 7
+      end: 80
+    - source: n = BIO_read(sbio, buf, 1024);
+      style: secondary
+      start: 16
+      end: 46
+    - source: buf[3] == '-'
+      style: secondary
+      start: 56
+      end: 69
+  "int n;\ndo {\n    n = BIO_read(sbio, buf, 1024);\n} while (buf[3] == '-');":
+    labels:
+    - source: |-
+        do {
+            n = BIO_read(sbio, buf, 1024);
+        } while (buf[3] == '-');
+      style: primary
+      start: 7
+      end: 71
+    - source: n = BIO_read(sbio, buf, 1024);
+      style: secondary
+      start: 16
+      end: 46
+    - source: buf[3] == '-'
+      style: secondary
+      start: 56
+      end: 69
+  "int n;\ndo {\n    n = BIO_read(sbio, buf, 1024);\n} while (n > 3 && buf[3] == '-');":
+    labels:
     - source: |-
         do {
             n = BIO_read(sbio, buf, 1024);

@@ -1,5 +1,13 @@
 id: c-bitfield-non-int-type
 valid:
   - 'struct s { unsigned int passes:1; };'
+  - "struct s { _Bool passes:1; };"
+  - "struct s { int level:3; unsigned mode:2; };"
+  - "struct s { unsigned char tag; unsigned int passes:1; };"
+  - "struct s { signed int delta:4; };"
 invalid:
   - 'struct s { unsigned char passes:1; };'
+  - "struct s { unsigned char passes : 4; };"
+  - "struct s { int a; unsigned char flags:3; int b; };"
+  - "struct s { struct { unsigned char inner:1; } in; };"
+  - "struct s { unsigned char a:1, b:2; };"
