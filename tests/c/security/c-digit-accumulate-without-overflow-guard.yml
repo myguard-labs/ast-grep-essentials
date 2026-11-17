@@ -6,9 +6,15 @@ valid:
   - "void f(int *x, int d) { while (d) { if (*x > (INT_MAX - d) / 10) return; *x = *x * 10 + d; d--; } }"
   - "void f(unsigned *x, unsigned d) { while (d) { d--; if (*x > 0xfffffffu / 10) goto out; *x = *x * 10 + d; } out: return; }"
   - "void f(int *x, int d) { while (d) { *x = d; d--; } }"
+  - "unsigned f(const char *p) { unsigned h = 0; while (*p) { h = h * 31 + *p++; } return h; }"
+  - "unsigned f(const char *p, unsigned h) { while (*p) { h = h * 33 + *p++; } return h; }"
+  - "unsigned f(const char *p) { uint32_t h = 0; while (*p) { h = h * 31 + *p++; } return h; }"
+  - "unsigned f(const char *p) { unsigned long h = 5381; while (*p) { h = (h << 5) + h + *p++; } return h; }"
 invalid:
   - 'void f(int *e, int d) { while (d) { *e = *e * 16 + d; } }'
   - "void f(int *x, int d, int base) { while (d) { *x = *x * base + d; d--; } }"
   - "void f(struct st *st, int d) { while (d) { st->acc = st->acc * 10 + d; d /= 10; } }"
   - "void f(int x, int d) { while (d) x = x * 10 + d; }"
   - "void f(int x, int d) { while (d) { x = x * 10 + d; if (x > 100) break; } }"
+  - "int f(const char *p) { unsigned n = 0; int h = 0; while (*p) { h = h * 31 + *p++; n++; } return h; }"
+  - "int f(const char *p) { int h = 0; unsigned m = h; while (*p) { h = h * 31 + *p++; } return h; }"

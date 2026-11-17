@@ -7,8 +7,10 @@ message: >-
   Digit accumulation x = x * base + d inside a while loop with no earlier
   if-check in the same block may overflow.
 note: >-
-  Syntactic only; covers while loops, does not verify the accumulator type or
-  that an earlier if actually compares it to a limit.
+  Syntactic only; covers while loops, skips an identifier accumulator declared
+  unsigned or uintN_t in the same function (defined wraparound), does not
+  verify other accumulator types or that an earlier if actually compares it
+  to a limit.
 rule:
   all:
     - pattern: '$X = $X * $B + $D;'
@@ -19,6 +21,31 @@ rule:
         follows:
           stopBy: end
           kind: if_statement
+    - not:
+        inside:
+          stopBy: end
+          kind: function_definition
+          has:
+            stopBy: end
+            any:
+              - kind: declaration
+              - kind: parameter_declaration
+            all:
+              - has:
+                  stopBy: end
+                  any:
+                    - kind: sized_type_specifier
+                      regex: '\bunsigned\b'
+                    - kind: primitive_type
+                      regex: '^uint(8|16|32|64)_t$'
+              - has:
+                  field: declarator
+                  any:
+                    - pattern: $X
+                    - kind: init_declarator
+                      has:
+                        field: declarator
+                        pattern: $X
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
@@ -32,5 +59,4 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   todo_cases:
     - "FN (subtract-digit form): while (*p) { x = x * 10 + *p++ - 48; } is not matched because the top-level operator is minus."
-    - "FP (unsigned hash multiply): while (*p) { h = h * 31 + *p++; } with unsigned h wraps by definition but is matched."
     - "FN (fixed bound, variable multiplier): if (*x > 0x7ffffff) return; *x = *x * b + d; is accepted as a guard although a large b still overflows."
