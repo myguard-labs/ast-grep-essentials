@@ -1,10 +1,16 @@
 id: py-asyncio-mark-on-sync-def
 snapshots:
-  ? |-
-    @pytest.mark.asyncio(loop_scope="module")
-    def test_responses_image_input(client):
-        pass
-  : labels:
+  "@pytest.mark.asyncio()\ndef test_a(client):\n    pass\n":
+    labels:
+    - source: |-
+        @pytest.mark.asyncio()
+        def test_a(client):
+            pass
+      style: primary
+      start: 0
+      end: 51
+  "@pytest.mark.asyncio(loop_scope=\"module\")\ndef test_responses_image_input(client):\n    pass":
+    labels:
     - source: |-
         @pytest.mark.asyncio(loop_scope="module")
         def test_responses_image_input(client):
@@ -12,3 +18,21 @@ snapshots:
       style: primary
       start: 0
       end: 90
+  "@pytest.mark.asyncio(loop_scope='session')\ndef test_b(client, tmp=None):\n    assert client\n":
+    labels:
+    - source: |-
+        @pytest.mark.asyncio(loop_scope='session')
+        def test_b(client, tmp=None):
+            assert client
+      style: primary
+      start: 0
+      end: 90
+  "class T:\n    @pytest.mark.asyncio(loop_scope='function')\n    def test_a(self):\n        pass\n":
+    labels:
+    - source: |-
+        @pytest.mark.asyncio(loop_scope='function')
+            def test_a(self):
+                pass
+      style: primary
+      start: 13
+      end: 91

@@ -4,8 +4,29 @@ valid:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_responses_image_input(client):
         pass
+  - |
+    @pytest.mark.asyncio
+    async def test_a(client):
+        pass
+  - |
+    @pytest.mark.slow
+    def test_a(client):
+        pass
 invalid:
   - |-
     @pytest.mark.asyncio(loop_scope="module")
     def test_responses_image_input(client):
         pass
+  - |
+    @pytest.mark.asyncio()
+    def test_a(client):
+        pass
+  - |
+    class T:
+        @pytest.mark.asyncio(loop_scope='function')
+        def test_a(self):
+            pass
+  - |
+    @pytest.mark.asyncio(loop_scope='session')
+    def test_b(client, tmp=None):
+        assert client

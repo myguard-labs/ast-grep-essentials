@@ -1,13 +1,7 @@
 id: py-broad-except-log-swallow
 snapshots:
-  ? |-
-    def render():
-        try:
-            build()
-        except Exception as e:
-            logger.exception(e)
-        return ''
-  : labels:
+  "def render():\n    try:\n        build()\n    except Exception as e:\n        logger.exception(e)\n    return ''":
+    labels:
     - source: |-
         except Exception as e:
                 logger.exception(e)
@@ -26,3 +20,67 @@ snapshots:
       style: secondary
       start: 74
       end: 93
+  "try:\n    build()\nexcept Exception as e:\n    # ignore\n    logger.debug(e, exc_info=True)\n":
+    labels:
+    - source: |-
+        except Exception as e:
+            # ignore
+            logger.debug(e, exc_info=True)
+      style: primary
+      start: 17
+      end: 87
+    - source: logger.debug(e, exc_info=True)
+      style: secondary
+      start: 57
+      end: 87
+    - source: logger.debug(e, exc_info=True)
+      style: secondary
+      start: 57
+      end: 87
+    - source: logger.debug(e, exc_info=True)
+      style: secondary
+      start: 57
+      end: 87
+  "try:\n    build()\nexcept Exception as e:\n    logger.error('a')\n    logger.info(e)\n":
+    labels:
+    - source: |-
+        except Exception as e:
+            logger.error('a')
+            logger.info(e)
+      style: primary
+      start: 17
+      end: 80
+    - source: logger.error('a')
+      style: secondary
+      start: 44
+      end: 61
+    - source: logger.error('a')
+      style: secondary
+      start: 44
+      end: 61
+    - source: |-
+        logger.error('a')
+            logger.info(e)
+      style: secondary
+      start: 44
+      end: 80
+  "try:\n    build()\nexcept Exception:\n    logger.warning('failed')\n":
+    labels:
+    - source: |-
+        except Exception:
+            logger.warning('failed')
+      style: primary
+      start: 17
+      end: 63
+    - source: logger.warning('failed')
+      style: secondary
+      start: 39
+      end: 63
+    - source: logger.warning('failed')
+      style: secondary
+      start: 39
+      end: 63
+    - source: logger.warning('failed')
+      style: secondary
+      start: 39
+      end: 63

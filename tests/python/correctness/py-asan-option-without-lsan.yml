@@ -5,8 +5,30 @@ valid:
         env['ASAN_OPTIONS'] = 'detect_leaks=0'
         env['LSAN_OPTIONS'] = 'detect_leaks=0'
         return env
+  - |
+    def make_env(env):
+        env['LSAN_OPTIONS'] = 'detect_leaks=0'
+        return env
+  - |
+    def make_env(env):
+        env['LSAN_OPTIONS'] = 'x=1'
+        env['ASAN_OPTIONS'] = 'detect_leaks=0'
+        return env
 invalid:
   - |-
     def make_env(env):
         env['ASAN_OPTIONS'] = 'detect_leaks=0'
         return env
+  - |
+    def make_env():
+        os.environ['ASAN_OPTIONS'] = 'detect_leaks=0'
+  - |
+    class T:
+        def setUp(self):
+            self.env['ASAN_OPTIONS'] = 'a=1'
+  - |
+    def make_env(env):
+        env['ASAN_OPTIONS'] = 'a=1'
+
+    def other(env):
+        env['LSAN_OPTIONS'] = 'b=1'

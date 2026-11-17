@@ -1,10 +1,55 @@
 id: py-asan-option-without-lsan
 snapshots:
-  ? |-
-    def make_env(env):
-        env['ASAN_OPTIONS'] = 'detect_leaks=0'
-        return env
-  : labels:
+  "class T:\n    def setUp(self):\n        self.env['ASAN_OPTIONS'] = 'a=1'\n":
+    labels:
+    - source: self.env['ASAN_OPTIONS'] = 'a=1'
+      style: primary
+      start: 38
+      end: 70
+    - source: self.env['ASAN_OPTIONS'] = 'a=1'
+      style: secondary
+      start: 38
+      end: 70
+    - source: |-
+        def setUp(self):
+                self.env['ASAN_OPTIONS'] = 'a=1'
+      style: secondary
+      start: 13
+      end: 70
+  "def make_env():\n    os.environ['ASAN_OPTIONS'] = 'detect_leaks=0'\n":
+    labels:
+    - source: os.environ['ASAN_OPTIONS'] = 'detect_leaks=0'
+      style: primary
+      start: 20
+      end: 65
+    - source: os.environ['ASAN_OPTIONS'] = 'detect_leaks=0'
+      style: secondary
+      start: 20
+      end: 65
+    - source: |-
+        def make_env():
+            os.environ['ASAN_OPTIONS'] = 'detect_leaks=0'
+      style: secondary
+      start: 0
+      end: 65
+  "def make_env(env):\n    env['ASAN_OPTIONS'] = 'a=1'\n\ndef other(env):\n    env['LSAN_OPTIONS'] = 'b=1'\n":
+    labels:
+    - source: env['ASAN_OPTIONS'] = 'a=1'
+      style: primary
+      start: 23
+      end: 50
+    - source: env['ASAN_OPTIONS'] = 'a=1'
+      style: secondary
+      start: 23
+      end: 50
+    - source: |-
+        def make_env(env):
+            env['ASAN_OPTIONS'] = 'a=1'
+      style: secondary
+      start: 0
+      end: 50
+  "def make_env(env):\n    env['ASAN_OPTIONS'] = 'detect_leaks=0'\n    return env":
+    labels:
     - source: env['ASAN_OPTIONS'] = 'detect_leaks=0'
       style: primary
       start: 23

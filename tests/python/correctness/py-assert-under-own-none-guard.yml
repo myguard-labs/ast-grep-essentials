@@ -3,7 +3,30 @@ valid:
   - |-
     if value is not None:
         assert other is not None
+  - |
+    assert value is not None
+    if value is not None:
+        use(value)
+  - |
+    if value is not None:
+        use(value)
+    assert value is not None
+  - |
+    if self.x is not None:
+        assert self.y is not None
 invalid:
   - |-
     if value is not None:
         assert value is not None
+  - |
+    if self.x is not None:
+        assert self.x is not None
+  - |
+    if value is not None:
+        for item in rows:
+            assert value is not None
+  - |
+    def f(v):
+        if v is not None:
+            do()
+            assert v is not None

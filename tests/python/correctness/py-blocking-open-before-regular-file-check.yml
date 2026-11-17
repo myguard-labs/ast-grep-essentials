@@ -11,6 +11,12 @@ valid:
                 raise ValueError('Expected a regular file')
         finally:
             os.close(fd)
+  - |
+    import os
+    fd = os.open(path, os.O_NONBLOCK | os.O_RDONLY)
+  - |
+    import os
+    fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_CLOEXEC)
 invalid:
   - |
     import os
@@ -23,3 +29,13 @@ invalid:
                 raise ValueError('Expected a regular file')
         finally:
             os.close(fd)
+  - |
+    import os
+    fd = os.open(self.path, os.O_RDONLY)
+  - |
+    import os
+    fd = os.open('/tmp/x', os.O_RDONLY)
+  - |
+    import os
+    def f(a, b):
+        return os.open(os.path.join(a, b), os.O_RDONLY)
