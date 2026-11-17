@@ -1,5 +1,10 @@
 id: ts-settings-value-indexed-without-coercion
 valid:
+  - 'const n = getSetting(''count''); return n + 1;'
+  - 'const s = getSetting(''x''); return other[k];'
+  - 'return s[k]; const s = getSetting(''x'');'
+  - 'const s = getSetting(''x''); return String(s);'
+  - 'const s = getSetting(''x''); return Number(s);'
   - >-
     const all = getSettingWithCoercion('countries', {}, isObject); return
     all[code];
@@ -11,3 +16,5 @@ invalid:
   - 'const cfg = getSetting(''countries''); return cfg[key];'
   - 'const all = getSetting(''countries'', {}); const v = all[code]; return v;'
   - 'const s = getSetting(...args); return s[k];'
+  - 'const s = getSetting(''x''); return s.foo;'
+  - 'const s = getSetting(''x''); if (a) { return s[k]; }'
