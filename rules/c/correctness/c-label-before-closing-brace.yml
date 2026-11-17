@@ -8,10 +8,16 @@ message: >-
   a compile error. Add an empty statement.
 note: >-
   Matches syntactically a case/default label whose text ends at the colon; it
-  does not check the C standard version in use.
+  does not check the C standard version in use. Only the last label before
+  the closing brace is reported; an earlier empty label of a stacked group is
+  skipped. Goto labels are not matched.
 rule:
   kind: case_statement
   regex: ':\s*$'
+  not:
+    precedes:
+      kind: case_statement
+      stopBy: end
 metadata:
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
@@ -20,5 +26,3 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - 'False positive: stacked labels before a statement, `void f(int s) { switch (s) { case 0: case 1: s++; break; } }`; the first label ends at the colon and is reported although the later label carries the statement.'

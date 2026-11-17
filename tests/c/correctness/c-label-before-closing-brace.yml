@@ -4,6 +4,9 @@ valid:
   - 'void f(int s) { switch (s) { case 0: break; default: ; } }'
   - 'void f(int s) { switch (s) { case 0: { } } }'
   - 'int f(int s) { switch (s) { case 0: return 1; default: return 0; } }'
+  - 'void f(int s) { switch (s) { case 0: case 1: s++; break; } }'
+  - 'void f(int s) { switch (s) { case 0: default: s++; } }'
+  - 'void f(int s) { switch (s) { case 0: case 1: case 2: s++; break; } }'
 invalid:
   - 'void f(int s) { switch (s) { case 0: } }'
   - 'void f(int s) { switch (s) { default: } }'
@@ -18,3 +21,6 @@ invalid:
         }
       }
     }
+  - 'void f(int s) { switch (s) { case 0: case 1: } }'
+  - 'void f(int s) { switch (s) { case 0: s++; break; case 1: case 2: } }'
+  - 'void f(int s) { switch (s) { case 0: switch (s) { case 1: case 2: s++; } break; case 3: } }'
