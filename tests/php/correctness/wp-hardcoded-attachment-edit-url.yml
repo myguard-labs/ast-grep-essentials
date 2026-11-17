@@ -1,5 +1,11 @@
 id: wp-hardcoded-attachment-edit-url
 valid:
   - '$href = ''media.php?action=delete&attachment_id='' . $post->ID;'
+  - '$href = get_edit_post_link( $post->ID );'
+  - '$href = wp_get_attachment_url( $post->ID );'
+  - '$href = get_edit_post_link( $attachment_id, ''raw'' );'
 invalid:
   - '$href = ''media.php?action=edit&attachment_id='' . $post->ID;'
+  - '$href = ''media.php?action=edit&attachment_id='' . $attachment_id;'
+  - 'return ''media.php?action=edit&attachment_id='' . absint( $id ) . ''&foo=1'';'
+  - 'echo esc_url( ''media.php?action=edit&attachment_id='' . $item[''ID''] );'

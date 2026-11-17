@@ -1,5 +1,12 @@
 id: wp-hardcoded-table-prefix-sql
 valid:
   - '$sql = ''SELECT post_author FROM '' . $wpdb->posts . '' WHERE 1'';'
+  - '$sql = ''SELECT ID FROM '' . $wpdb->users . '' WHERE 1'';'
+  - '$sql = "SELECT ID FROM {$wpdb->prefix}posts";'
+  - '$sql = ''SELECT ID FROM '' . $wpdb->prefix . ''custom_log'';'
 invalid:
   - '$sql = ''SELECT post_author FROM wp_posts WHERE 1'';'
+  - '$sql = ''SELECT a FROM x JOIN wp_options o ON 1'';'
+  - '$sql = ''select * from wp_users'';'
+  - '$sql = ''DELETE FROM wp_comments WHERE comment_approved = 0'';'
+  - '$sql = ''SELECT * FROM wp_posts JOIN wp_postmeta ON 1'';'
