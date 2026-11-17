@@ -3,5 +3,12 @@ valid:
   - >-
     if ( 'page' == $post->post_type && 0 != count( get_page_templates() ) ) {
     echo '<select></select>'; }
+  - '<?php if ( $page->post_type == ''page'' && count( get_page_templates() ) > 0 ) { echo ''x''; }'
+  - '<?php if ( ''page'' === $post->post_type && get_page_templates() ) { echo ''x''; }'
+  - '<?php if ( $this->post->post_type === ''page'' && ! empty( get_page_templates() ) ) { echo ''x''; }'
 invalid:
   - 'if ( 0 != count( get_page_templates() ) ) { echo ''<select></select>''; }'
+  - '<?php if ( get_page_templates() ) { echo ''x''; }'
+  - '<?php if ( ! empty( get_page_templates() ) ) { echo ''x''; }'
+  - '<?php if ( count( get_page_templates() ) > 1 && $enabled ) { echo ''x''; }'
+  - '<?php if ( get_page_templates() ): echo ''x''; endif;'
