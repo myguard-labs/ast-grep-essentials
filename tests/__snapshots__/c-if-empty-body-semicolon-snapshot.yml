@@ -1,12 +1,26 @@
 id: c-if-empty-body-semicolon
 snapshots:
-  ? |-
-    int f(int a) {
-        if (a);
-        return 1;
-    }
-  : labels:
+  "int f(int a) {\n    if (a);\n    return 1;\n}":
+    labels:
     - source: if (a);
       style: primary
       start: 19
       end: 26
+  "int f(int a, int b) {\n    if (a == b);\n    return 1;\n}":
+    labels:
+    - source: if (a == b);
+      style: primary
+      start: 26
+      end: 38
+  "int f(int a, int b) {\n    if (a)\n        b = 1;\n    else if (b);\n    return b;\n}":
+    labels:
+    - source: if (b);
+      style: primary
+      start: 57
+      end: 64
+  "int f(void) {\n    int *p;\n    if ((p = get_ptr()) != NULL);\n    return *p;\n}":
+    labels:
+    - source: if ((p = get_ptr()) != NULL);
+      style: primary
+      start: 30
+      end: 59

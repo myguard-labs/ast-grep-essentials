@@ -8,6 +8,37 @@ valid:
         return 0;
     #endif
     }
+  - |-
+    int f(int a) {
+        g(a);
+    #ifdef DEBUG
+        log_value(a);
+    #endif
+        return a;
+    }
+  - |-
+    int f(const EVP_MD *md) {
+    #ifdef FIPS
+        if (md == NULL) {
+            return 0;
+        }
+    #else
+        if (md == NULL) {
+            md = EVP_sha1();
+        }
+    #endif
+        return md != NULL;
+    }
+  - |-
+    int f(const EVP_MD *md) {
+        if (md == NULL) {
+            md = EVP_sha256();
+        }
+    #ifdef FIPS
+        md = EVP_sha384();
+    #endif
+        return md != NULL;
+    }
 invalid:
   - |
     if (md == NULL)
@@ -16,3 +47,33 @@ invalid:
     #else
         return 0;
     #endif
+  - |-
+    int f(const EVP_MD *md) {
+        if (md == NULL)
+    #ifdef FIPS
+            return 0;
+    #else
+            md = EVP_sha1();
+    #endif
+        return md != NULL;
+    }
+  - |-
+    int f(int rc) {
+        if (rc != 0)
+    #ifdef DEBUG
+            log_error(rc);
+    #endif
+        return rc;
+    }
+  - |-
+    int f(int a, int b) {
+        if (a)
+            b = 1;
+        else if (b)
+    #ifndef NDEBUG
+            b = 2;
+    #else
+            b = 3;
+    #endif
+        return b;
+    }

@@ -1,5 +1,28 @@
 id: c-hmac-ctx-init-removed
 valid:
   - 'HMAC_CTX_reset(ctx);'
+  - 'HMAC_CTX *ctx = HMAC_CTX_new();'
+  - |-
+    int f(HMAC_CTX *ctx, const void *key, int len) {
+        return HMAC_Init_ex(ctx, key, len, EVP_sha256(), NULL);
+    }
+  - |-
+    void f(HMAC_CTX *ctx) {
+        HMAC_CTX_free(ctx);
+    }
 invalid:
   - 'HMAC_CTX_init(ctx);'
+  - |-
+    void f(void) {
+        HMAC_CTX ctx;
+        HMAC_CTX_init(&ctx);
+    }
+  - |-
+    void f(struct st *st) {
+        HMAC_CTX_init(&st->hctx);
+    }
+  - |-
+    void f(struct st *st) {
+        if (st != NULL)
+            HMAC_CTX_init(st->hctx);
+    }

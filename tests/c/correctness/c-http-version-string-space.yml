@@ -1,5 +1,13 @@
 id: c-http-version-string-space
 valid:
   - 'static const char *v = "HTTP/1.1";'
+  - 'static const char *f(void) { return "HTTP/1.0"; }'
+  - 'static const char *f(void) { return "HTTP/2"; }'
+  - 'static const char *f(void) { return "HTTP/1.1 200 OK\r\n"; }'
+  - 'static const char *f(void) { return "HTTP status"; }'
 invalid:
   - 'static const char *v = "HTTP 1.1";'
+  - 'static const char *f(void) { return "HTTP 1.0"; }'
+  - 'static const char *f(void) { return "HTTP 2"; }'
+  - 'static const char *f(void) { return "HTTP 1.1 200 OK\r\n"; }'
+  - 'static const char *v[] = { "HTTP 1.0", NULL };'
