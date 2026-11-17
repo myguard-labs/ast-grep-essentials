@@ -7,8 +7,13 @@ message: >-
   Digit accumulation x = x * base + d inside a while loop with no earlier
   if-check in the same block may overflow.
 note: >-
-  Syntactic only; covers while loops, does not verify the accumulator type or
-  that an earlier if actually compares it to a limit.
+  Syntactic only; covers while loops, skips an identifier accumulator declared
+  with an unsigned type at least int wide (unsigned, unsigned long, unsigned
+  long long, size_t, uint32_t, uint64_t, uintptr_t, uintmax_t), read from the
+  declaration type only, in the same function (defined wraparound); unsigned
+  char/short and uint8_t/uint16_t promote to int and still report. Does not
+  verify other accumulator types or that an earlier if actually compares it
+  to a limit.
 rule:
   all:
     - pattern: '$X = $X * $B + $D;'
@@ -19,6 +24,33 @@ rule:
         follows:
           stopBy: end
           kind: if_statement
+    - not:
+        inside:
+          stopBy: end
+          kind: function_definition
+          has:
+            stopBy: end
+            any:
+              - kind: declaration
+              - kind: parameter_declaration
+            all:
+              - has:
+                  field: type
+                  any:
+                    - kind: sized_type_specifier
+                      regex: '\bunsigned\b'
+                      not:
+                        regex: '\b(char|short)\b'
+                    - kind: primitive_type
+                      regex: '^(size_t|uint(32|64|ptr|max)_t)$'
+              - has:
+                  field: declarator
+                  any:
+                    - pattern: $X
+                    - kind: init_declarator
+                      has:
+                        field: declarator
+                        pattern: $X
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
@@ -31,6 +63,7 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/190.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
+    - "FN: a same-named unsigned declaration in another scope of the function suppresses a signed accumulator"
     - "FN (subtract-digit form): while (*p) { x = x * 10 + *p++ - 48; } is not matched because the top-level operator is minus."
-    - "FP (unsigned hash multiply): while (*p) { h = h * 31 + *p++; } with unsigned h wraps by definition but is matched."
     - "FN (fixed bound, variable multiplier): if (*x > 0x7ffffff) return; *x = *x * b + d; is accepted as a guard although a large b still overflows."
+    - "FP: an unsigned pointee accumulator (*x with unsigned *x) is still reported"
