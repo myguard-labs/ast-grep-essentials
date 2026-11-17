@@ -7,12 +7,21 @@ message: >-
   Zero-argument .focus() on a jQuery object is a deprecated event-trigger
   shorthand; use .trigger('focus') instead.
 note: >-
-  Matches only the literal zero-argument syntax X.focus() with a literal
-  receiver; it does not resolve whether the receiver is a jQuery object or
-  check imports or types.
+  Matches the zero-argument syntax X.focus() only when the receiver is
+  syntactically a jQuery form: a chain rooted at $(...) or jQuery(...), an
+  identifier starting with $ ($input), or a member whose last property starts
+  with $ (this.$input). Native DOM receivers (el.focus(),
+  document.getElementById('x').focus()) are not reported. It does not resolve
+  types or imports, so a jQuery object held in a plain-named variable is not
+  reported.
 rule:
   pattern: '$OBJ.focus()'
+constraints:
+  OBJ:
+    regex: '^(\$|jQuery\s*\()|\.\$[A-Za-z0-9_$]*$'
 metadata:
+  todo_cases:
+    - "var el = $('#x'); el.focus();  # jQuery object in a plain-named variable is not reported"
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-16'
