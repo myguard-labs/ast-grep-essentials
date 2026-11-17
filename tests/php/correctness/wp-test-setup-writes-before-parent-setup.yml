@@ -3,7 +3,13 @@ valid:
   - >-
     <?php class T extends WC_Unit_Test_Case { protected function setUp(): void {
     parent::setUp(); update_option( 'wc_feature', 'yes' ); } } ?>
+  - '<?php class T extends WC_Unit_Test_Case { protected function setUp(): void { parent::setUp(); } }'
+  - '<?php class T extends WC_Unit_Test_Case { protected function tearDown(): void { update_option( ''wc_feature'', ''no'' ); parent::tearDown(); } }'
+  - '<?php class T extends WC_Unit_Test_Case { protected function setUp(): void { parent::setUp(); update_option( ''a'', 1 ); update_option( ''b'', 2 ); } }'
 invalid:
   - >-
     <?php class T extends WC_Unit_Test_Case { protected function setUp(): void {
     update_option( 'wc_feature', 'yes' ); parent::setUp(); } } ?>
+  - '<?php class T extends WC_Unit_Test_Case { public function setUp() { update_option( ''a'', 1 ); update_option( ''b'', 2 ); parent::setUp(); } }'
+  - '<?php class T extends WC_Unit_Test_Case { protected function setUp(): void { update_option( ''a'', 1 ); $this->x = 1; parent::setUp(); } }'
+  - '<?php class T extends WC_Unit_Test_Case { public function setUp(): void { update_option( ''woocommerce_currency'', ''EUR'' ); parent::setUp(); } }'
