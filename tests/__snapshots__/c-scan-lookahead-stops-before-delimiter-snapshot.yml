@@ -1,12 +1,42 @@
 id: c-scan-lookahead-stops-before-delimiter
 snapshots:
+  "void f(const char *p, int n) { while (n > 0 && *(p + 1) != ' ') { p++; n--; } }":
+    labels:
+    - source: while (n > 0 && *(p + 1) != ' ') { p++; n--; }
+      style: primary
+      start: 31
+      end: 77
+    - source: "*(p + 1) != ' '"
+      style: secondary
+      start: 47
+      end: 62
+  "void f(const char *q) { while (*(q + 1) != '\\0') q++; }":
+    labels:
+    - source: while (*(q + 1) != '\0') q++;
+      style: primary
+      start: 24
+      end: 53
+    - source: "*(q + 1) != '\\0'"
+      style: secondary
+      start: 31
+      end: 47
+  "void f(const char *s) { while (*s && *(s + 1) != ',') { s++; } }":
+    labels:
+    - source: while (*s && *(s + 1) != ',') { s++; }
+      style: primary
+      start: 24
+      end: 62
+    - source: "*(s + 1) != ','"
+      style: secondary
+      start: 37
+      end: 52
   while (*path && *(path + 1) != '/') ++path;:
     labels:
     - source: while (*path && *(path + 1) != '/') ++path;
       style: primary
       start: 0
       end: 43
-    - source: '*(path + 1) != ''/'''
+    - source: "*(path + 1) != '/'"
       style: secondary
       start: 16
       end: 34

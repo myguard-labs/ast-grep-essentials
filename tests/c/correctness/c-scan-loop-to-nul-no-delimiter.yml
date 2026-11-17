@@ -1,5 +1,15 @@
 id: c-scan-loop-to-nul-no-delimiter
 valid:
   - 'void f(char **p) { while (isdigit(**p) || **p == '':'') { ++*p; } }'
+  - |-
+    void f(char **p) { while (**p != ':' && **p != '\0') { ++*p; } }
+  - |-
+    void f(char **p) { while (**p >= '0' && **p <= '9') { ++*p; } }
+  - |-
+    void f(char **p) { while (**p == ' ') { ++*p; } }
 invalid:
   - 'void f(char **p) { while (**p != ''\0'') { ++*p; } }'
+  - |-
+    void f(char **s) { while (**s != '\0') { ++*s; } }
+  - |-
+    void f(char **cursor) { while (**cursor != '\0') { ++*cursor; } }

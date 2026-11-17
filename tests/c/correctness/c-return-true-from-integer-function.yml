@@ -3,7 +3,24 @@ valid:
   - |-
     #include <stdbool.h>
     static unsigned f(unsigned x) { return x; }
+  - |-
+    #include <stdbool.h>
+    static bool f(unsigned x) { return true; }
+  - |-
+    #include <stdbool.h>
+    static inline bool f(int x) { if (x) { return true; } return false; }
+  - |-
+    static int f(int x) { if (x) { return 1; } return 0; }
 invalid:
   - |-
     #include <stdbool.h>
     static unsigned f(unsigned x) { (void)x; return true; }
+  - |-
+    #include <stdbool.h>
+    static int f(int x) { if (x) { return true; } return 0; }
+  - |-
+    #include <stdbool.h>
+    long f(long x) { (void)x; return true; }
+  - |-
+    #include <stdbool.h>
+    static unsigned char f(int x) { (void)x; return true; }

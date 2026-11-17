@@ -3,7 +3,41 @@ valid:
   - >-
     static int f(int total, int off, int len) { if (off >= total || len > total)
     { len = total; } return 1; }
+  - |-
+    static int f(int total, int off, int len)
+    {
+        if (off >= total) { return 0; }
+        if (len > total - off) { len = total - off; }
+        return len;
+    }
+  - |-
+    static int f(int total, int off, int len)
+    {
+        if (off >= total) { return 0; }
+        len = len > total - off ? total - off : len;
+        return len;
+    }
 invalid:
   - >-
     static int f(int total, int off, int len) { if (off >= total || len > total)
     { return 0; } return 1; }
+  - |-
+    static int f(int total, int off, int len)
+    {
+        if (off >= total || len > total) { return -1; }
+        return len;
+    }
+  - |-
+    static size_t f(size_t size, size_t pos, size_t n)
+    {
+        if (pos >= size || n > size) {
+            return 0;
+        }
+        return n;
+    }
+  - |-
+    static int f(int total, int off, int len)
+    {
+        if (off >= total || len > total) return 0;
+        return len;
+    }
