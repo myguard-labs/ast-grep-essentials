@@ -7,8 +7,10 @@ message: >-
   Character minus '0' is accumulated into a number without a preceding digit
   range check.
 note: >-
-  Syntactic only. It checks for a preceding sibling if statement, not whether
-  that check actually validates digits.
+  Syntactic only. A preceding sibling if statement suppresses the match
+  without checking that it validates digits. An enclosing if consequence
+  suppresses it only when its condition range-checks or isdigit()-checks the
+  same accumulated character expression.
 rule:
   pattern: '$E = $E * 10 + ($C - ''0'');'
   all:
@@ -26,7 +28,8 @@ rule:
             any:
               - pattern: '($C >= ''0'' && $C <= ''9'')'
               - pattern: '(''0'' <= $C && $C <= ''9'')'
-              - pattern: '(isdigit($$$))'
+              - pattern: '(isdigit($C))'
+              - pattern: '(isdigit((unsigned char)$C))'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
