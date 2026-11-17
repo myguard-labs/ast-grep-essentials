@@ -8,7 +8,7 @@ note: >-
   Syntactic only; matches an if condition using -> on the assigned variable
   unless the condition guards it (`V && ...`, `V != NULL && ...`, `!V || ...`,
   `V == NULL || ...`) or an earlier if tests `!V` / `V == NULL` and returns
-  unconditionally (or jumps with `goto L` to a label that follows the dereference), with no reassignment of the variable between that guard and the dereference. It does not track aliasing or other guards.
+  unconditionally (or jumps with `goto L` to a sibling label that follows the dereference; a label in a nested block is not matched), with no reassignment of the variable between that guard and the dereference (a later recheck after a reassignment re-establishes the guard). Only sibling statements are scanned, so a nested reassignment inside an if block is missed. It does not track aliasing or other guards.
 rule:
   kind: if_statement
   all:
@@ -52,7 +52,34 @@ rule:
               - not:
                   follows:
                     stopBy: end
-                    pattern: '$V = $B;'
+                    all:
+                      - pattern: '$V = $B;'
+                      - not:
+                          precedes:
+                            stopBy:
+                              kind: if_statement
+                              has:
+                                field: condition
+                                has:
+                                  stopBy: end
+                                  pattern: '$W->$G'
+                            kind: if_statement
+                            all:
+                              - has:
+                                  field: condition
+                                  has:
+                                    any:
+                                      - pattern: '!$V'
+                                      - pattern: '$V == NULL'
+                              - has:
+                                  field: consequence
+                                  any:
+                                    - kind: return_statement
+                                    - pattern: 'goto $L;'
+                                    - has:
+                                        any:
+                                          - kind: return_statement
+                                          - pattern: 'goto $L;'
                     follows:
                       stopBy: end
                       kind: if_statement
@@ -85,7 +112,34 @@ rule:
               - not:
                   follows:
                     stopBy: end
-                    pattern: '$V = $B;'
+                    all:
+                      - pattern: '$V = $B;'
+                      - not:
+                          precedes:
+                            stopBy:
+                              kind: if_statement
+                              has:
+                                field: condition
+                                has:
+                                  stopBy: end
+                                  pattern: '$W->$G'
+                            kind: if_statement
+                            all:
+                              - has:
+                                  field: condition
+                                  has:
+                                    any:
+                                      - pattern: '!$V'
+                                      - pattern: '$V == NULL'
+                              - has:
+                                  field: consequence
+                                  any:
+                                    - kind: return_statement
+                                    - pattern: 'goto $L;'
+                                    - has:
+                                        any:
+                                          - kind: return_statement
+                                          - pattern: 'goto $L;'
                     follows:
                       stopBy: end
                       kind: if_statement
@@ -108,5 +162,6 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/476.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
+    - 'FN: if (!so) return 0; if (y) { so = NULL; } if (so->type == 16) return 1; (nested reassignment between guard and dereference is not seen)'
     - 'FN: ASN1_TYPE *so = PKCS7_get_signed_attribute(si, 1); if (so->type == 16) return 1; (declaration initialiser form)'
     - 'FN: `!V ||` / `V == NULL ||` found anywhere in the condition, e.g. if ((!so || a) && so->type == 16)'

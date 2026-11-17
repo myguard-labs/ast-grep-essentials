@@ -9,7 +9,7 @@ message: >-
 note: >-
   Syntactic single-file match on a ZVAL_STRING call whose second argument is a
   MyG(...) global call. A call is accepted when an earlier sibling statement
-  is `if (!MyG(x))` or `if (MyG(x) == NULL)` and returns unconditionally with no `MyG(x) = ...;` between that guard and the call. It
+  is `if (!MyG(x))` or `if (MyG(x) == NULL)` and returns unconditionally with no `MyG(x) = ...;` between that guard and the call (sibling statements only; a nested reassignment is missed). It
   does not check enclosing if-tests for the same expression by type or
   dataflow, and cannot prove the value is actually NULL at runtime.
 rule:
@@ -59,4 +59,5 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
   todo_cases:
+    - 'FN: if (!MyG(error_msg)) return; if (y) { MyG(error_msg) = NULL; } ZVAL_STRING(retval, MyG(error_msg), 1); (nested reassignment between guard and call is not seen)'
     - 'FN: ZVAL_STRING(retval, (MyG(error_msg)), 1); (parenthesised source)'
