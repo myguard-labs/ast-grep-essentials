@@ -1,9 +1,22 @@
 id: c-sizeof-long-guard-not-zend-long
 snapshots:
-  ? |-
-    #if SIZEOF_LONG == 8
-    #endif
-  : labels:
+  "#if SIZEOF_LONG == 4\nint x;\n#else\nlong x;\n#endif":
+    labels:
+    - source: |-
+        #if SIZEOF_LONG == 4
+        int x;
+        #else
+        long x;
+        #endif
+      style: primary
+      start: 0
+      end: 48
+    - source: SIZEOF_LONG
+      style: secondary
+      start: 4
+      end: 15
+  "#if SIZEOF_LONG == 8\n#endif":
+    labels:
     - source: |-
         #if SIZEOF_LONG == 8
         #endif
@@ -14,3 +27,28 @@ snapshots:
       style: secondary
       start: 4
       end: 15
+  "#if SIZEOF_LONG > 4\nlong y;\n#endif":
+    labels:
+    - source: |-
+        #if SIZEOF_LONG > 4
+        long y;
+        #endif
+      style: primary
+      start: 0
+      end: 34
+    - source: SIZEOF_LONG
+      style: secondary
+      start: 4
+      end: 15
+  "#if defined(SIZEOF_LONG) && SIZEOF_LONG == 8\n#endif":
+    labels:
+    - source: |-
+        #if defined(SIZEOF_LONG) && SIZEOF_LONG == 8
+        #endif
+      style: primary
+      start: 0
+      end: 51
+    - source: SIZEOF_LONG
+      style: secondary
+      start: 12
+      end: 23

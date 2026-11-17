@@ -1,7 +1,17 @@
 id: c-statement-after-goto-unreachable
 snapshots:
-  ? "void f(int x) {\n\tgoto finish;\n\tx = x + 1;\nfinish:\n\treturn;\n}"
-  : labels:
+  "void f(int *p) {\n\tgoto out;\n\tfree(p);\nout:\n\treturn;\n}":
+    labels:
+    - source: free(p);
+      style: primary
+      start: 29
+      end: 37
+    - source: goto out;
+      style: secondary
+      start: 18
+      end: 27
+  "void f(int x) {\n\tgoto finish;\n\tx = x + 1;\nfinish:\n\treturn;\n}":
+    labels:
     - source: x = x + 1;
       style: primary
       start: 31
@@ -10,3 +20,23 @@ snapshots:
       style: secondary
       start: 17
       end: 29
+  "void f(int x) {\n\twhile (x) {\n\t\tgoto out;\n\t\tx--;\n\t}\nout:\n\treturn;\n}":
+    labels:
+    - source: x--;
+      style: primary
+      start: 43
+      end: 47
+    - source: goto out;
+      style: secondary
+      start: 31
+      end: 40
+  "void f(int x) {\n\tx = 1;\n\tgoto out;\n\tx = 2;\n\tx = 3;\nout:\n\treturn;\n}":
+    labels:
+    - source: x = 2;
+      style: primary
+      start: 36
+      end: 42
+    - source: goto out;
+      style: secondary
+      start: 25
+      end: 34

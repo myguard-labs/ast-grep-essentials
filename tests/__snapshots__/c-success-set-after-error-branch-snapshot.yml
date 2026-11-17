@@ -1,11 +1,7 @@
 id: c-success-set-after-error-branch
 snapshots:
-  ? |-
-    if (!write_out(bio)) {
-      report_error();
-    }
-    RETVAL_TRUE;
-  : labels:
+  "if (!write_out(bio)) {\n  report_error();\n}\nRETVAL_TRUE;":
+    labels:
     - source: |-
         if (!write_out(bio)) {
           report_error();
@@ -13,3 +9,30 @@ snapshots:
       style: primary
       start: 0
       end: 42
+  "if (a && !write_out(bio)) {\n  report_error();\n}\nRETVAL_TRUE;":
+    labels:
+    - source: |-
+        if (a && !write_out(bio)) {
+          report_error();
+        }
+      style: primary
+      start: 0
+      end: 47
+  "if (write_out(bio) < 0) {\n  report_error();\n}\nRETVAL_TRUE;":
+    labels:
+    - source: |-
+        if (write_out(bio) < 0) {
+          report_error();
+        }
+      style: primary
+      start: 0
+      end: 45
+  "void f(void) {\n  if (!write_out(bio)) {\n    report_error();\n  }\n  RETVAL_TRUE;\n}":
+    labels:
+    - source: |-
+        if (!write_out(bio)) {
+            report_error();
+          }
+      style: primary
+      start: 17
+      end: 63

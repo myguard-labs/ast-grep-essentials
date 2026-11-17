@@ -1,5 +1,17 @@
 id: c-signed-one-bit-field
 valid:
   - 'struct s { unsigned int seen_eos : 1; };'
+  - |-
+    struct s { unsigned int flag : 1; int level : 3; };
+  - |-
+    struct s { int level : 2; unsigned int ready : 1; };
+  - |-
+    struct s { _Bool done : 1; int mode : 2; };
 invalid:
   - 'struct s { int seen_eos : 1; };'
+  - |-
+    struct s { int a; int b : 1; };
+  - |-
+    union u { int flag : 1; long wide; };
+  - |-
+    struct s { int a : 1, b : 1; };
