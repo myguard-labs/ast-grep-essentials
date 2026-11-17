@@ -10,10 +10,11 @@ note: >-
   Single-file syntactic check only. It flags grep invocations using -qE whose
   pattern argument contains a variable expansion: the argument after -e or
   --regexp (or attached to it), or else, when no -e or -f option precedes it,
-  the first argument that is neither an option nor the value of a
-  value-taking option (-m, -A, -B, -C, -d, -D and their long forms). A
-  variable in a later file operand or a -f pattern-file path is not reported. It does not verify the
-  value is untrusted or that a regex was unintended.
+  the first argument that is neither an option nor the value of a value-taking
+  option (-m, -A, -B, -C, -d, -D, --include, --exclude and similar long
+  forms). A variable in a later file operand or a -f pattern-file path is not
+  reported. It does not verify the value is untrusted or that a regex was
+  unintended.
 rule:
   pattern: 'grep -qE $$$ARGS'
   has:
@@ -27,7 +28,7 @@ rule:
               regex: '^-'
           - not:
               follows:
-                regex: '^(-[A-Za-z]*[mABCdD]|--(max-count|after-context|before-context|context|directories|devices|binary-files|label))$'
+                regex: '^(-[A-Za-z]*[mABCdD]|--(max-count|after-context|before-context|context|directories|devices|binary-files|label|include|exclude|exclude-dir|exclude-from|group-separator))$'
           - not:
               follows:
                 stopBy: end
@@ -40,7 +41,7 @@ rule:
                     - kind: command_name
                     - regex: '^-'
                     - follows:
-                        regex: '^(-[A-Za-z]*[mABCdD]|--(max-count|after-context|before-context|context|directories|devices|binary-files|label))$'
+                        regex: '^(-[A-Za-z]*[mABCdD]|--(max-count|after-context|before-context|context|directories|devices|binary-files|label|include|exclude|exclude-dir|exclude-from|group-separator))$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
