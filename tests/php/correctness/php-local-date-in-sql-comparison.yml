@@ -3,7 +3,19 @@ valid:
   - >-
     <?php $wpdb->get_results("SELECT id FROM t WHERE d < '" . gmdate("Y-m-d
     H:i:s") . "'");
+  - |
+    <?php $wpdb->get_results( "SELECT id FROM t WHERE d < '" . current_time( 'mysql', true ) . "'" );
+  - |
+    <?php $wpdb->get_results( 'SELECT id FROM t WHERE d < DATE_SUB(NOW(), INTERVAL 1 DAY)' );
+  - |
+    <?php $x = date( 'Y' ); $wpdb->get_results( 'SELECT id FROM t' );
 invalid:
   - >-
     <?php $wpdb->get_results("SELECT id FROM t WHERE d < '" . date("Y-m-d
     H:i:s") . "'");
+  - |
+    <?php $wpdb->get_results( "SELECT id FROM t WHERE d < '" . date( 'Y-m-d' ) . "'" );
+  - |
+    <?php $wpdb->get_results( $wpdb->prepare( 'SELECT id FROM t WHERE d < %s', date( 'Y-m-d H:i:s' ) ) );
+  - |
+    <?php $wpdb->get_results( "SELECT id FROM t WHERE a < '" . date( 'Y-m-d' ) . "' AND b < '" . date( 'Y' ) . "'" );

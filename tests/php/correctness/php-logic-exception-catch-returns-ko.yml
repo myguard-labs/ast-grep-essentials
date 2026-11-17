@@ -3,5 +3,17 @@ valid:
   - >-
     try { $x = build(); } catch (\RuntimeException) { return new Response('ko');
     }
+  - |
+    <?php try { $x = build(); } catch (\LogicException $e) { throw $e; }
+  - |
+    <?php try { $x = build(); } catch (\LogicException) { throw new \RuntimeException('bad config'); }
+  - |
+    <?php try { $x = build(); } catch (\InvalidArgumentException) { return new Response('ko'); }
 invalid:
   - 'try { $x = build(); } catch (\LogicException) { return new Response(''ko''); }'
+  - |
+    <?php try { $x = build(); $y = more(); } catch (\LogicException) { return new Response('ko'); }
+  - |
+    <?php function f() { try { $x = build(); } catch (\LogicException) { return new Response('ko'); } }
+  - |
+    <?php try { $x = build(); } catch (\LogicException) { return new Response('ko'); } finally { cleanup(); }

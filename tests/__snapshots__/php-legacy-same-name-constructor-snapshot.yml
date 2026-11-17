@@ -1,6 +1,6 @@
 id: php-legacy-same-name-constructor
 snapshots:
-  <?php class Foo { function Foo() {} }:
+  "<?php class Foo { function Foo() {} }":
     labels:
     - source: function Foo() {}
       style: primary
@@ -22,3 +22,69 @@ snapshots:
       style: secondary
       start: 27
       end: 30
+  "<?php class Foo { function __construct() {} function Foo() {} }\n":
+    labels:
+    - source: function Foo() {}
+      style: primary
+      start: 44
+      end: 61
+    - source: Foo
+      style: secondary
+      start: 53
+      end: 56
+    - source: Foo
+      style: secondary
+      start: 12
+      end: 15
+    - source: class Foo { function __construct() {} function Foo() {} }
+      style: secondary
+      start: 6
+      end: 63
+    - source: Foo
+      style: secondary
+      start: 53
+      end: 56
+  "<?php class Foo { public function Foo( $a ) { $this->a = $a; } }\n":
+    labels:
+    - source: public function Foo( $a ) { $this->a = $a; }
+      style: primary
+      start: 18
+      end: 62
+    - source: Foo
+      style: secondary
+      start: 34
+      end: 37
+    - source: Foo
+      style: secondary
+      start: 12
+      end: 15
+    - source: class Foo { public function Foo( $a ) { $this->a = $a; } }
+      style: secondary
+      start: 6
+      end: 64
+    - source: Foo
+      style: secondary
+      start: 34
+      end: 37
+  "<?php namespace A\\B; class Widget { public function Widget() {} }\n":
+    labels:
+    - source: public function Widget() {}
+      style: primary
+      start: 36
+      end: 63
+    - source: Widget
+      style: secondary
+      start: 52
+      end: 58
+    - source: Widget
+      style: secondary
+      start: 27
+      end: 33
+    - source: class Widget { public function Widget() {} }
+      style: secondary
+      start: 21
+      end: 65
+    - source: Widget
+      style: secondary
+      start: 52
+      end: 58

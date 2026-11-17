@@ -1,5 +1,17 @@
 id: php-loose-equality-variable-operands
 valid:
   - '<?php function f( $a ) { return $a == ''x''; }'
+  - |
+    <?php function f( $a, $b ) { return $a === $b; }
+  - |
+    <?php function f( $a, $b ) { return $a !== $b; }
+  - |
+    <?php function f( $a, $b ) { return strcmp( $a, $b ) === 0; }
 invalid:
   - '<?php function f( $a, $b ) { return $a == $b; }'
+  - |
+    <?php function f( $a, $b ) { if ( $a == $b ) { echo 1; } }
+  - |
+    <?php function f( $a, $b ) { return $a == $b ? 1 : 0; }
+  - |
+    <?php function f( $a, $b ) { while ( $a == $b ) { $a++; } }
