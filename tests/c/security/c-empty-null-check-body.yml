@@ -6,9 +6,40 @@ valid:
         return;
       }
     }
+  - |-
+    void f(void *p) {
+      if (!p) {
+        log_error();
+      }
+    }
+  - |-
+    int f(void *p) {
+      if (!p)
+        return -1;
+      return 0;
+    }
 invalid:
   - |-
     void f(void *p) {
       if (!p) {
+      }
+    }
+  - |-
+    void f(struct s *p) {
+      if (!p->next) {
+      }
+    }
+  - |-
+    void f(void *p) {
+      if (!p) {
+      } else {
+        use(p);
+      }
+    }
+  - |-
+    void f(void *p) {
+      for (;;) {
+        if (!p) {
+        }
       }
     }

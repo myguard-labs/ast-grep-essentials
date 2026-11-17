@@ -3,7 +3,25 @@ valid:
   - |-
     p->name_length = 8;
     p->name = dup("stdClass", p->name_length);
+  - |-
+    p->name = dup("stdClass");
+    p->name_length = 8;
+  - |-
+    p->name = dup("stdClass", q->name_length);
+    p->name_length = 8;
 invalid:
   - |-
     p->name = dup("stdClass", p->name_length);
     p->name_length = 8;
+  - |-
+    obj->buf = alloc(obj->size);
+    obj->size = 8;
+  - |-
+    p->name = dup("stdClass", p->name_length);
+    init_other(p);
+    p->name_length = 8;
+  - |-
+    void f(struct s *p) {
+        p->name = dup("x", p->name_length);
+        p->name_length = 8;
+    }

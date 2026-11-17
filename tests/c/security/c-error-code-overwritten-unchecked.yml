@@ -4,8 +4,25 @@ valid:
     int a(void);
     int b(void);
     int f(void) { int rv; rv = a(); if (rv) return rv; rv = b(); return rv; }
+  - |-
+    int a(void);
+    int b(void);
+    int f(void) { int rv; int rc; rv = a(); rc = b(); return rv ? rv : rc; }
+  - |-
+    int a(void);
+    int b(void);
+    int f(void) { int rv; rv = a(); log(rv); rv = b(); return rv; }
 invalid:
   - |-
     int a(void);
     int b(void);
     int f(void) { int rv; rv = a(); rv = b(); return rv; }
+  - |-
+    int a(int);
+    int b(int);
+    int f(int x, int y) { int rv; rv = a(x); rv = b(y); return rv; }
+  - 'int f(struct ops *o) { int rv; rv = o->open(); rv = o->close(); return rv; }'
+  - |-
+    int a(void);
+    int b(void);
+    int f(int c) { int rv; if (c) { rv = a(); rv = b(); } return rv; }

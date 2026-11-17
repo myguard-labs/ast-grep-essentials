@@ -1,5 +1,19 @@
 id: c-error-return-leaves-out-position-unset
 snapshots:
+  "int f(int *status, long *newpos) { *status = 1; return 0; }":
+    labels:
+    - source: int f(int *status, long *newpos) { *status = 1; return 0; }
+      style: primary
+      start: 0
+      end: 59
+    - source: "*newpos"
+      style: secondary
+      start: 24
+      end: 31
+    - source: "*status = 1"
+      style: secondary
+      start: 35
+      end: 46
   "int f(int x, long *newpos, int *status) { *status = 1; return 0; }":
     labels:
     - source: int f(int x, long *newpos, int *status) { *status = 1; return 0; }
@@ -14,3 +28,33 @@ snapshots:
       style: secondary
       start: 42
       end: 53
+  "int f(int x, long *newpos, int *status) { *status = x; return x; }":
+    labels:
+    - source: int f(int x, long *newpos, int *status) { *status = x; return x; }
+      style: primary
+      start: 0
+      end: 66
+    - source: "*newpos"
+      style: secondary
+      start: 18
+      end: 25
+    - source: "*status = x"
+      style: secondary
+      start: 42
+      end: 53
+  "static int f(int x, size_t *newpos, int *status) { if (x < 0) { *status = -1; return -1; } return 0; }":
+    labels:
+    - source: >-
+        static int f(int x, size_t *newpos, int *status) { if (x < 0) { *status = -1;
+        return -1; } return 0; }
+      style: primary
+      start: 0
+      end: 102
+    - source: "*newpos"
+      style: secondary
+      start: 27
+      end: 34
+    - source: "*status = -1"
+      style: secondary
+      start: 64
+      end: 76

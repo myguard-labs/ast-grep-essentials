@@ -1,10 +1,43 @@
 id: c-error-code-overwritten-unchecked
 snapshots:
-  ? |-
-    int a(void);
-    int b(void);
-    int f(void) { int rv; rv = a(); rv = b(); return rv; }
-  : labels:
+  "int a(int);\nint b(int);\nint f(int x, int y) { int rv; rv = a(x); rv = b(y); return rv; }":
+    labels:
+    - source: rv = a(x);
+      style: primary
+      start: 54
+      end: 64
+    - source: rv = a(x);
+      style: secondary
+      start: 54
+      end: 64
+    - source: rv = b(y);
+      style: secondary
+      start: 65
+      end: 75
+    - source: "{ int rv; rv = a(x); rv = b(y); return rv; }"
+      style: secondary
+      start: 44
+      end: 88
+  "int a(void);\nint b(void);\nint f(int c) { int rv; if (c) { rv = a(); rv = b(); } return rv; }":
+    labels:
+    - source: rv = a();
+      style: primary
+      start: 58
+      end: 67
+    - source: rv = a();
+      style: secondary
+      start: 58
+      end: 67
+    - source: rv = b();
+      style: secondary
+      start: 68
+      end: 77
+    - source: "{ rv = a(); rv = b(); }"
+      style: secondary
+      start: 56
+      end: 79
+  "int a(void);\nint b(void);\nint f(void) { int rv; rv = a(); rv = b(); return rv; }":
+    labels:
     - source: rv = a();
       style: primary
       start: 48
@@ -17,7 +50,25 @@ snapshots:
       style: secondary
       start: 58
       end: 67
-    - source: '{ int rv; rv = a(); rv = b(); return rv; }'
+    - source: "{ int rv; rv = a(); rv = b(); return rv; }"
       style: secondary
       start: 38
       end: 80
+  "int f(struct ops *o) { int rv; rv = o->open(); rv = o->close(); return rv; }":
+    labels:
+    - source: rv = o->open();
+      style: primary
+      start: 31
+      end: 46
+    - source: rv = o->open();
+      style: secondary
+      start: 31
+      end: 46
+    - source: rv = o->close();
+      style: secondary
+      start: 47
+      end: 63
+    - source: "{ int rv; rv = o->open(); rv = o->close(); return rv; }"
+      style: secondary
+      start: 21
+      end: 76

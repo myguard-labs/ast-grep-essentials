@@ -1,5 +1,65 @@
 id: c-field-read-before-assigned-in-init
 snapshots:
+  "obj->buf = alloc(obj->size);\nobj->size = 8;":
+    labels:
+    - source: obj->buf = alloc(obj->size);
+      style: primary
+      start: 0
+      end: 28
+    - source: obj->size
+      style: secondary
+      start: 17
+      end: 26
+    - source: alloc(obj->size)
+      style: secondary
+      start: 11
+      end: 27
+    - source: obj->buf = alloc(obj->size)
+      style: secondary
+      start: 0
+      end: 27
+    - source: obj->size
+      style: secondary
+      start: 29
+      end: 38
+    - source: obj->size = 8
+      style: secondary
+      start: 29
+      end: 42
+    - source: obj->size = 8;
+      style: secondary
+      start: 29
+      end: 43
+  "p->name = dup(\"stdClass\", p->name_length);\ninit_other(p);\np->name_length = 8;":
+    labels:
+    - source: p->name = dup("stdClass", p->name_length);
+      style: primary
+      start: 0
+      end: 42
+    - source: p->name_length
+      style: secondary
+      start: 26
+      end: 40
+    - source: dup("stdClass", p->name_length)
+      style: secondary
+      start: 10
+      end: 41
+    - source: p->name = dup("stdClass", p->name_length)
+      style: secondary
+      start: 0
+      end: 41
+    - source: p->name_length
+      style: secondary
+      start: 58
+      end: 72
+    - source: p->name_length = 8
+      style: secondary
+      start: 58
+      end: 76
+    - source: p->name_length = 8;
+      style: secondary
+      start: 58
+      end: 77
   "p->name = dup(\"stdClass\", p->name_length);\np->name_length = 8;":
     labels:
     - source: p->name = dup("stdClass", p->name_length);
@@ -30,3 +90,33 @@ snapshots:
       style: secondary
       start: 43
       end: 62
+  "void f(struct s *p) {\n    p->name = dup(\"x\", p->name_length);\n    p->name_length = 8;\n}":
+    labels:
+    - source: p->name = dup("x", p->name_length);
+      style: primary
+      start: 26
+      end: 61
+    - source: p->name_length
+      style: secondary
+      start: 45
+      end: 59
+    - source: dup("x", p->name_length)
+      style: secondary
+      start: 36
+      end: 60
+    - source: p->name = dup("x", p->name_length)
+      style: secondary
+      start: 26
+      end: 60
+    - source: p->name_length
+      style: secondary
+      start: 66
+      end: 80
+    - source: p->name_length = 8
+      style: secondary
+      start: 66
+      end: 84
+    - source: p->name_length = 8;
+      style: secondary
+      start: 66
+      end: 85
