@@ -3,7 +3,39 @@ valid:
   - >-
     int first_nonzero(int *s) { for (; *s; s++) { if (*s == 1) continue; return
     *s; } return 0; }
+  - |
+    void drain(int *s) {
+        while (*s) s++;
+    }
+  - |
+    char *skip_blanks(char *s) {
+        while (*s == ' ') s++;
+        return s;
+    }
+  - |
+    unsigned long sum(const int *a, int n) {
+        unsigned long t = 0;
+        int i;
+        for (i = 0; i < n; i++) t += a[i];
+        return t;
+    }
 invalid:
   - >-
     int first_nonzero(int *s) { for (; *s; s++) { if (*s == 1) continue; return
     *s; } }
+  - |
+    int count(const char *s) {
+        int n = 0;
+        while (*s++) n++;
+    }
+  - |
+    char *skip_blanks(char *s) {
+        while (*s == ' ') s++;
+    }
+  - |
+    static int find(const int *a, int n) {
+        int i;
+        for (i = 0; i < n; i++) {
+            if (a[i] == 0) return i;
+        }
+    }

@@ -1,5 +1,33 @@
 id: c-missing-semicolon-before-declaration
 valid:
   - "void f(void) {\n\tchar tmp[32];\n\tint ver;\n}"
+  - |
+    void f(void) {
+        char a[32], b[16];
+        int ver;
+    }
+  - |
+    void f(void) {
+        int v[3] = {1, 2, 3};
+        int ver;
+    }
+  - |
+    void f(void) {
+        char m[2][3];
+        int ver;
+    }
 invalid:
   - "void f(void) {\n\tchar tmp[32]\n\tint ver;\n}"
+  - |
+    void f(void) {
+        int v[4]
+        int ver;
+    }
+  - |
+    void f(void) {
+        char m[2][3]
+        int ver;
+    }
+  - |
+    static char buf[64]
+    int x;

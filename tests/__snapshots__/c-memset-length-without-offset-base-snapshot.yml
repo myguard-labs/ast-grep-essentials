@@ -1,6 +1,6 @@
 id: c-memset-length-without-offset-base
 snapshots:
-  memset(buf, '\0', total - offset);:
+  "memset(buf, '\\0', total - offset);":
     labels:
     - source: memset(buf, '\0', total - offset)
       style: primary
@@ -14,3 +14,45 @@ snapshots:
       style: secondary
       start: 6
       end: 33
+  "void clear_tail(char *dst, size_t len, size_t offset) {\n    memset(dst, 0, len - offset);\n}\n":
+    labels:
+    - source: memset(dst, 0, len - offset)
+      style: primary
+      start: 60
+      end: 88
+    - source: dst
+      style: secondary
+      start: 67
+      end: 70
+    - source: (dst, 0, len - offset)
+      style: secondary
+      start: 66
+      end: 88
+  "void fill_tail(unsigned char *out, int c, size_t size, size_t offset) {\n    memset(out, c, size - offset);\n}\n":
+    labels:
+    - source: memset(out, c, size - offset)
+      style: primary
+      start: 76
+      end: 105
+    - source: out
+      style: secondary
+      start: 83
+      end: 86
+    - source: (out, c, size - offset)
+      style: secondary
+      start: 82
+      end: 105
+  "void wipe(char *p, size_t n, size_t offset) {\n    memset(p, 0xff, n - offset);\n}\n":
+    labels:
+    - source: memset(p, 0xff, n - offset)
+      style: primary
+      start: 50
+      end: 77
+    - source: p
+      style: secondary
+      start: 57
+      end: 58
+    - source: (p, 0xff, n - offset)
+      style: secondary
+      start: 56
+      end: 77
