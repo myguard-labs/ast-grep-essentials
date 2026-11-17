@@ -1,5 +1,11 @@
 id: php-substr-strpos-unchecked-offset
 valid:
   - '$home = substr($file, 0, strlen($needle));'
+  - '<?php $pos = strpos($f, $n); if ($pos !== false) { $h = substr($f, 0, $pos); }'
+  - '<?php $h = substr($s, 0, 5);'
+  - '<?php $h = substr($s, 0, strpos($s, ''/'') ?: 0);'
 invalid:
   - '$home = substr($file, 0, strpos($file, $needle));'
+  - '<?php return substr($path, 1, strpos($path, ''?''));'
+  - '<?php function f($p) { return substr($p, 0, strpos($p, ''?'')); }'
+  - '<?php $h = substr($s, 0, strpos($s, $n, 2));'

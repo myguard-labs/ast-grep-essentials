@@ -1,5 +1,10 @@
 id: php-referer-strpos-authorization
 valid:
   - 'if ( false !== strpos( $_REQUEST[''context''], ''post.php'' ) ) { $thumb = 1; }'
+  - 'if ( wp_verify_nonce( $_POST[''n''], ''save'' ) ) { $ok = 1; }'
+  - 'if ( false !== strpos( get_permalink(), ''post.php'' ) ) { $thumb = 1; }'
+  - 'check_admin_referer( ''save_action'' );'
 invalid:
   - 'if ( false !== strpos( wp_get_referer(), ''post.php'' ) ) { $thumb = 1; }'
+  - 'if ( strpos( wp_get_referer(), ''post.php'' ) === 0 ) { $ok = 1; }'
+  - '$is = strpos( wp_get_referer(), $needle ) !== false;'

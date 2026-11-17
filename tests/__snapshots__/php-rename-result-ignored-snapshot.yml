@@ -1,6 +1,36 @@
 id: php-rename-result-ignored
 snapshots:
-  <?php rename($temp_file, $cache_file);:
+  "<?php $x = true; rename($a, $b); echo 1;":
+    labels:
+    - source: rename($a, $b);
+      style: primary
+      start: 17
+      end: 32
+    - source: rename($a, $b)
+      style: secondary
+      start: 17
+      end: 31
+  "<?php @rename($temp_file, $cache_file);":
+    labels:
+    - source: "@rename($temp_file, $cache_file);"
+      style: primary
+      start: 6
+      end: 39
+    - source: rename($temp_file, $cache_file)
+      style: secondary
+      start: 7
+      end: 38
+  "<?php function f($a,$b) { rename($a, $b, $ctx); }":
+    labels:
+    - source: rename($a, $b, $ctx);
+      style: primary
+      start: 26
+      end: 47
+    - source: rename($a, $b, $ctx)
+      style: secondary
+      start: 26
+      end: 46
+  "<?php rename($temp_file, $cache_file);":
     labels:
     - source: rename($temp_file, $cache_file);
       style: primary
