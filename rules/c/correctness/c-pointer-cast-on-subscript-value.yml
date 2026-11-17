@@ -9,9 +9,34 @@ message: >-
 note: >-
   Matches the literal syntax of a pointer cast (T *) applied directly to a
   subscript expression. It does not resolve types, so arrays whose elements
-  are genuinely pointers may be legitimate and need review.
+  are genuinely pointers may be legitimate and need review. A subscript
+  whose base identifier is declared in the same function as a pointer to
+  pointer (T **x) or an array of pointers (T *x[N]) is skipped.
 rule:
-  pattern: '($TYPE *) $ARR[$IDX]'
+  all:
+    - pattern: '($TYPE *) $ARR[$IDX]'
+    - not:
+        inside:
+          kind: function_definition
+          stopBy:
+            kind: function_definition
+          has:
+            stopBy: end
+            all:
+              - kind: identifier
+              - pattern: $ARR
+              - any:
+                  - inside:
+                      kind: pointer_declarator
+                      field: declarator
+                      inside:
+                        kind: pointer_declarator
+                  - inside:
+                      kind: array_declarator
+                      field: declarator
+                      inside:
+                        kind: pointer_declarator
+                        field: declarator
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -21,5 +46,5 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FP: static void f(char **argv) { char *name; name = (char *)argv[0]; } is reported although the element is genuinely a pointer (redundant cast).'
+    - 'FN: the exclusion ignores scope within the function: static void f(char **argv) { char *argv2; { char *argv; argv2 = (char *)argv[0]; } } is not reported when a same-named pointer-to-pointer is declared elsewhere in the function.'
     - 'FN: static void f(const char *s) { const char *p; p = (const char *)s[0]; } is not reported (const-qualified pointer type in the cast).'
