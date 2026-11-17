@@ -1,5 +1,34 @@
 id: c-init-flag-set-outside-guard
 snapshots:
+  "static int init_crypto(void)\n{\n#if defined(CONFIG_CRYPTO)\n    setup_crypto();\n#endif\n    crypto_inited = 1;\n    return 1;\n}":
+    labels:
+    - source: crypto_inited = 1;
+      style: primary
+      start: 89
+      end: 107
+    - source: crypto_inited
+      style: secondary
+      start: 89
+      end: 102
+    - source: "1"
+      style: secondary
+      start: 105
+      end: 106
+    - source: crypto_inited = 1
+      style: secondary
+      start: 89
+      end: 106
+    - source: setup_crypto()
+      style: secondary
+      start: 62
+      end: 76
+    - source: |-
+        #if defined(CONFIG_CRYPTO)
+            setup_crypto();
+        #endif
+      style: secondary
+      start: 31
+      end: 84
   "static int init_strings(void)\n{\n#if !defined(OPENSSL_NO_ERR)\n    load_strings();\n#endif\n    strings_inited = 1;\n    return 1;\n}":
     labels:
     - source: strings_inited = 1;
@@ -29,3 +58,62 @@ snapshots:
       style: secondary
       start: 32
       end: 87
+  "static int init_x(void)\n{\n#if defined(USE_X)\n    x_init();\n#endif\n    inited = 1;\n    return 1;\n}":
+    labels:
+    - source: inited = 1;
+      style: primary
+      start: 70
+      end: 81
+    - source: inited
+      style: secondary
+      start: 70
+      end: 76
+    - source: "1"
+      style: secondary
+      start: 79
+      end: 80
+    - source: inited = 1
+      style: secondary
+      start: 70
+      end: 80
+    - source: x_init()
+      style: secondary
+      start: 49
+      end: 57
+    - source: |-
+        #if defined(USE_X)
+            x_init();
+        #endif
+      style: secondary
+      start: 26
+      end: 65
+  "static void init_all(void)\n{\n#if OPENSSL_API_COMPAT < 0x10100000L\n    ERR_load_crypto_strings();\n    ssl_load();\n#endif\n    all_inited = 1;\n}":
+    labels:
+    - source: all_inited = 1;
+      style: primary
+      start: 124
+      end: 139
+    - source: all_inited
+      style: secondary
+      start: 124
+      end: 134
+    - source: "1"
+      style: secondary
+      start: 137
+      end: 138
+    - source: all_inited = 1
+      style: secondary
+      start: 124
+      end: 138
+    - source: ERR_load_crypto_strings()
+      style: secondary
+      start: 70
+      end: 95
+    - source: |-
+        #if OPENSSL_API_COMPAT < 0x10100000L
+            ERR_load_crypto_strings();
+            ssl_load();
+        #endif
+      style: secondary
+      start: 29
+      end: 119
