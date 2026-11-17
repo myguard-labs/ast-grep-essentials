@@ -1,5 +1,13 @@
 id: c-const-param-cast-return
 valid:
   - 'char *f(char *s) { if (!s[0]) return (char *)s; return 0; }'
+  - "char *f(const char *s) { return strdup(s); }"
+  - "const char *f(const char *s) { return s; }"
+  - "char *f(char *s, int n) { return (char *)s; }"
+  - "char *f(const char *s) { char *d = strdup(s); return d; }"
 invalid:
   - 'char *f(const char *s) { if (!s[0]) return (char *)s; return 0; }'
+  - "char *f(const char *s) { return (char *)s; }"
+  - "char *f(int n, const char *s) { return (char *)s; }"
+  - "char *f(const char* s) { return (char *)(s + 1); }"
+  - "static char *f(size_t n, const char *s, int k) { if (k) { return (char *)s; } return 0; }"

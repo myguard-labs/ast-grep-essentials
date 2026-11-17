@@ -5,8 +5,16 @@ valid:
         if (min < 214748364)
             min = 10 * min + ch;
     }
+  - "void f(int v, int d) { if (v <= 214748364) { v = 10 * v + d; } }"
+  - "void f(int v, int d) { if (v > 214748364) { return; } else { v = 10 * v + d; } }"
+  - "void f(int a, int v, int d) { if (a) { if (v < 100) { v = 10 * v + d; } } }"
+  - "void f(int v, int d) { v = (v > 214748364) ? 214748364 : 10 * v + d; }"
 invalid:
   - |-
     void f(int min, int ch) {
         min = 10 * min + ch;
     }
+  - "void f(int v, int c) { v = 10 * v + (c - '0'); }"
+  - "void f(struct C *ctx, int d) { ctx->n = 10 * ctx->n + d; }"
+  - "void f(int v, int c) { if (c < '0') return; v = 10 * v + (c - '0'); }"
+  - "void f(char *s, int x) { for (; *s; s++) x = 10 * x + (*s - '0'); }"

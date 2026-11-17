@@ -1,5 +1,12 @@
 id: c-copy-before-fallible-register
 valid:
   - 'if (register_cb(obj)) { RETURN_FALSE; } ZVAL_COPY(&obj->cb, &fn);'
+  - "zend_string *s = name; if (register_cb(obj)) { RETURN_FALSE; } RETURN_TRUE;"
+  - "if (a()) { return 0; } if (b()) { return 1; } ZVAL_COPY(&o->cb, &fn);"
+  - "ZVAL_COPY(&o->cb, &fn); if (register_cb(obj)) { zval_ptr_dtor(&o->cb); ZVAL_UNDEF(&o->cb); }"
 invalid:
   - 'ZVAL_COPY(&obj->cb, &fn); if (register_cb(obj)) { RETURN_FALSE; }'
+  - "ZVAL_COPY(&obj->cb, &fn); if (register_cb(obj) != SUCCESS) { return FAILURE; }"
+  - "ZVAL_COPY_VALUE(&o->v, &x); if (reg(o)) { return 0; }"
+  - "ZVAL_COPY(&o->cb, &fn); o->n++; if (register_cb(o)) { RETURN_NULL(); }"
+  - "ZVAL_COPY(&o->cb, &fn); if (!register_cb(o)) { RETURN_FALSE; }"

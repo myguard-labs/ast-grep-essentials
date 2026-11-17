@@ -1,5 +1,12 @@
 id: c-cmsg-len-sizeof-buffer
 valid:
   - 'cmsg.cm.cmsg_len = CMSG_LEN(sizeof(int));'
+  - "cmsg.cm.cmsg_len = CMSG_LEN(sizeof(fd));"
+  - "cmsg.cm.cmsg_len = CMSG_LEN(n);"
+  - "cmsg.cm.cmsg_level = SOL_SOCKET;"
+  - "void f(struct cmsghdr *cm) { cm->cmsg_len = CMSG_LEN(sizeof(int)); }"
 invalid:
   - 'cmsg.cm.cmsg_len = sizeof(cmsg);'
+  - "cmsg.cm.cmsg_len = sizeof(cmsg.buf);"
+  - "void f(void) { cmsg.cm.cmsg_len = sizeof(cmsg.cm); }"
+  - "void f(void) { cmsg.cm.cmsg_len = sizeof(ctl); }"

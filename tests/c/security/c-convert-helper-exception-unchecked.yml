@@ -1,5 +1,13 @@
 id: c-convert-helper-exception-unchecked
 valid:
   - 'convert_to_string(arg); if (EG(exception)) return; ZVAL_COPY(dest, arg);'
+  - "convert_to_long(arg); if (EG(exception)) { RETURN_THROWS(); }"
+  - "zend_is_true(arg); if (EG(exception)) return; use(arg);"
+  - "void f(zval *arg) { convert_to_string(arg); }"
+  - "if (zend_is_true(val)) { do_it(val); }"
 invalid:
   - 'convert_to_string(arg); ZVAL_COPY(dest, arg);'
+  - "convert_to_long(arg); use(arg);"
+  - "zend_is_true(arg); foo();"
+  - "convert_to_string(arg); len = Z_STRLEN_P(arg);"
+  - "convert_to_string( arg ); convert_to_long(other);"

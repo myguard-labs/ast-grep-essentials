@@ -1,5 +1,69 @@
 id: c-ctor-parse-params-no-eh-throw
 snapshots:
+  "PHP_METHOD(A, b) { if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", &dsn) != SUCCESS) { ZEND_CTOR_MAKE_NULL(); return; } }":
+    labels:
+    - source: >-
+        if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &dsn) != SUCCESS) {
+        ZEND_CTOR_MAKE_NULL(); return; }
+      style: primary
+      start: 19
+      end: 119
+    - source: zend_parse_parameters(ZEND_NUM_ARGS(), "s", &dsn)
+      style: secondary
+      start: 23
+      end: 72
+    - source: ZEND_CTOR_MAKE_NULL()
+      style: secondary
+      start: 87
+      end: 108
+  "PHP_METHOD(A, b) { if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", &dsn) == FAILURE) { ZEND_CTOR_MAKE_NULL(); return; } else { go(); } }":
+    labels:
+    - source: >-
+        if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &dsn) == FAILURE) {
+        ZEND_CTOR_MAKE_NULL(); return; } else { go(); }
+      style: primary
+      start: 19
+      end: 134
+    - source: zend_parse_parameters(ZEND_NUM_ARGS(), "s", &dsn)
+      style: secondary
+      start: 23
+      end: 72
+    - source: ZEND_CTOR_MAKE_NULL()
+      style: secondary
+      start: 87
+      end: 108
+  "PHP_METHOD(A, b) { if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", &dsn) == FAILURE) { ZEND_CTOR_MAKE_NULL(); return; } zend_replace_error_handling(EH_THROW, ce, &zeh); }":
+    labels:
+    - source: >-
+        if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &dsn) == FAILURE) {
+        ZEND_CTOR_MAKE_NULL(); return; }
+      style: primary
+      start: 19
+      end: 119
+    - source: zend_parse_parameters(ZEND_NUM_ARGS(), "s", &dsn)
+      style: secondary
+      start: 23
+      end: 72
+    - source: ZEND_CTOR_MAKE_NULL()
+      style: secondary
+      start: 87
+      end: 108
+  "PHP_METHOD(A, b) { zend_replace_error_handling(EH_NORMAL, NULL, &zeh); if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", &dsn) == FAILURE) { ZEND_CTOR_MAKE_NULL(); return; } }":
+    labels:
+    - source: >-
+        if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &dsn) == FAILURE) {
+        ZEND_CTOR_MAKE_NULL(); return; }
+      style: primary
+      start: 71
+      end: 171
+    - source: zend_parse_parameters(ZEND_NUM_ARGS(), "s", &dsn)
+      style: secondary
+      start: 75
+      end: 124
+    - source: ZEND_CTOR_MAKE_NULL()
+      style: secondary
+      start: 139
+      end: 160
   "PHP_METHOD(PDO, dbh_constructor) {\n if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", &dsn)) {\n ZEND_CTOR_MAKE_NULL();\n return;\n }\n}":
     labels:
     - source: |-

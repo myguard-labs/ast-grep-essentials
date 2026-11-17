@@ -3,7 +3,15 @@ valid:
   - |-
     zval_dtor(*current);
     ZVAL_STRING(*current, buf, 1);
+  - "convert_to_string(a); ZVAL_STRING(b, buf, 1);"
+  - "convert_to_string(*current); zval_ptr_dtor(*current); ZVAL_STRING(*current, buf, 1);"
+  - "ZVAL_LONG(*current, n);"
+  - "zval_ptr_dtor(current); ZVAL_DOUBLE(current, d);"
 invalid:
   - |-
     convert_to_string(*current);
     ZVAL_STRING(*current, buf, 1);
+  - "convert_to_string(*current); ZVAL_LONG(*current, n);"
+  - "convert_to_string(z); ZVAL_DOUBLE(z, d);"
+  - "convert_to_string(&zv); ZVAL_STRING(&zv, \"x\");"
+  - "foo(); convert_to_long(*current); ZVAL_LONG(*current, 1);"

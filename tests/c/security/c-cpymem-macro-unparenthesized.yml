@@ -1,5 +1,13 @@
 id: c-cpymem-macro-unparenthesized
 valid:
   - '#define cpymem(dst, src, n) (((u_char *) memcpy(dst, src, n)) + (n))'
+  - "#define cpymem(dst, src, n) ((u_char *) memcpy(dst, src, n))"
+  - "#define cpymem(dst, src, n) memcpy(dst, src, n)"
+  - "#define ADD(a, b) ((a) + (b))"
+  - "#define ngx_cpymem(dst, src, n)  (((u_char *) ngx_memcpy(dst, src, n)) + (n))"
 invalid:
   - '#define cpymem(dst, src, n) ((u_char *) memcpy(dst, src, n)) + (n)'
+  - "#define cpymem(dst, src, n) ((u_char*) memcpy(dst, src, n)) + (n)"
+  - "#define ngx_cpymem(dst, src, n) ((u_char *) ngx_memcpy(dst, src, n)) + (n)"
+  - "#define advance(p, n) ((u_char *) (p)) + (n)"
+  - "#define cpymem(dst, src, n)   ( ( u_char * ) memcpy(dst, src, n) )  +  (n)"

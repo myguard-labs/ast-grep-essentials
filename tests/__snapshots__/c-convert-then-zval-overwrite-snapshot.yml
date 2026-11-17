@@ -1,5 +1,15 @@
 id: c-convert-then-zval-overwrite
 snapshots:
+  "convert_to_string(&zv); ZVAL_STRING(&zv, \"x\");":
+    labels:
+    - source: ZVAL_STRING(&zv, "x");
+      style: primary
+      start: 24
+      end: 46
+    - source: convert_to_string(&zv);
+      style: secondary
+      start: 0
+      end: 23
   "convert_to_string(*current);\nZVAL_STRING(*current, buf, 1);":
     labels:
     - source: ZVAL_STRING(*current, buf, 1);
@@ -10,3 +20,33 @@ snapshots:
       style: secondary
       start: 0
       end: 28
+  "convert_to_string(*current); ZVAL_LONG(*current, n);":
+    labels:
+    - source: ZVAL_LONG(*current, n);
+      style: primary
+      start: 29
+      end: 52
+    - source: convert_to_string(*current);
+      style: secondary
+      start: 0
+      end: 28
+  "convert_to_string(z); ZVAL_DOUBLE(z, d);":
+    labels:
+    - source: ZVAL_DOUBLE(z, d);
+      style: primary
+      start: 22
+      end: 40
+    - source: convert_to_string(z);
+      style: secondary
+      start: 0
+      end: 21
+  "foo(); convert_to_long(*current); ZVAL_LONG(*current, 1);":
+    labels:
+    - source: ZVAL_LONG(*current, 1);
+      style: primary
+      start: 34
+      end: 57
+    - source: convert_to_long(*current);
+      style: secondary
+      start: 7
+      end: 33

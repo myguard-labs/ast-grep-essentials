@@ -1,5 +1,33 @@
 id: c-clamp-float-nan-to-int
 snapshots:
+  "int f(double d) { int v = (int)(d > 1e9 ? 1e9 : (d < -1e9 ? -1e9 : d)); return v; }":
+    labels:
+    - source: "(int)(d > 1e9 ? 1e9 : (d < -1e9 ? -1e9 : d))"
+      style: primary
+      start: 26
+      end: 70
+    - source: "d < -1e9 ? -1e9 : d"
+      style: secondary
+      start: 49
+      end: 68
+    - source: "d > 1e9 ? 1e9 : (d < -1e9 ? -1e9 : d)"
+      style: secondary
+      start: 32
+      end: 69
+  "long f(double d) { return (long)(d < 0 ? 0 : (d > 9 ? 9 : d)); }":
+    labels:
+    - source: "(long)(d < 0 ? 0 : (d > 9 ? 9 : d))"
+      style: primary
+      start: 26
+      end: 61
+    - source: "d > 9 ? 9 : d"
+      style: secondary
+      start: 46
+      end: 59
+    - source: "d < 0 ? 0 : (d > 9 ? 9 : d)"
+      style: secondary
+      start: 33
+      end: 60
   "static int f(float x) { return (int)((x > 255.0f) ? 255.0f : ((x < 0.0f) ? 0.0f : x)); }":
     labels:
     - source: "(int)((x > 255.0f) ? 255.0f : ((x < 0.0f) ? 0.0f : x))"
@@ -14,3 +42,31 @@ snapshots:
       style: secondary
       start: 37
       end: 84
+  "unsigned char f(float x) { return (unsigned char)((x > 255.0f) ? 255.0f : ((x < 0.0f) ? 0.0f : x)); }":
+    labels:
+    - source: "(unsigned char)((x > 255.0f) ? 255.0f : ((x < 0.0f) ? 0.0f : x))"
+      style: primary
+      start: 34
+      end: 98
+    - source: "(x < 0.0f) ? 0.0f : x"
+      style: secondary
+      start: 75
+      end: 96
+    - source: "(x > 255.0f) ? 255.0f : ((x < 0.0f) ? 0.0f : x)"
+      style: secondary
+      start: 50
+      end: 97
+  "void f(float x, unsigned char *o) { *o = (unsigned char)(x > 255.0f ? 255.0f : (x < 0.0f ? 0.0f : x)); }":
+    labels:
+    - source: "(unsigned char)(x > 255.0f ? 255.0f : (x < 0.0f ? 0.0f : x))"
+      style: primary
+      start: 41
+      end: 101
+    - source: "x < 0.0f ? 0.0f : x"
+      style: secondary
+      start: 80
+      end: 99
+    - source: "x > 255.0f ? 255.0f : (x < 0.0f ? 0.0f : x)"
+      style: secondary
+      start: 57
+      end: 100

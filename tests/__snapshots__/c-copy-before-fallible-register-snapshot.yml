@@ -1,5 +1,59 @@
 id: c-copy-before-fallible-register
 snapshots:
+  "ZVAL_COPY(&o->cb, &fn); if (!register_cb(o)) { RETURN_FALSE; }":
+    labels:
+    - source: if (!register_cb(o)) { RETURN_FALSE; }
+      style: primary
+      start: 24
+      end: 62
+    - source: register_cb(o)
+      style: secondary
+      start: 29
+      end: 43
+    - source: register_cb(o)
+      style: secondary
+      start: 29
+      end: 43
+    - source: ZVAL_COPY(&o->cb, &fn);
+      style: secondary
+      start: 0
+      end: 23
+  "ZVAL_COPY(&o->cb, &fn); o->n++; if (register_cb(o)) { RETURN_NULL(); }":
+    labels:
+    - source: if (register_cb(o)) { RETURN_NULL(); }
+      style: primary
+      start: 32
+      end: 70
+    - source: register_cb(o)
+      style: secondary
+      start: 36
+      end: 50
+    - source: register_cb(o)
+      style: secondary
+      start: 36
+      end: 50
+    - source: ZVAL_COPY(&o->cb, &fn);
+      style: secondary
+      start: 0
+      end: 23
+  "ZVAL_COPY(&obj->cb, &fn); if (register_cb(obj) != SUCCESS) { return FAILURE; }":
+    labels:
+    - source: if (register_cb(obj) != SUCCESS) { return FAILURE; }
+      style: primary
+      start: 26
+      end: 78
+    - source: register_cb(obj)
+      style: secondary
+      start: 30
+      end: 46
+    - source: register_cb(obj)
+      style: secondary
+      start: 30
+      end: 46
+    - source: ZVAL_COPY(&obj->cb, &fn);
+      style: secondary
+      start: 0
+      end: 25
   "ZVAL_COPY(&obj->cb, &fn); if (register_cb(obj)) { RETURN_FALSE; }":
     labels:
     - source: if (register_cb(obj)) { RETURN_FALSE; }
@@ -18,3 +72,21 @@ snapshots:
       style: secondary
       start: 0
       end: 25
+  "ZVAL_COPY_VALUE(&o->v, &x); if (reg(o)) { return 0; }":
+    labels:
+    - source: if (reg(o)) { return 0; }
+      style: primary
+      start: 28
+      end: 53
+    - source: reg(o)
+      style: secondary
+      start: 32
+      end: 38
+    - source: reg(o)
+      style: secondary
+      start: 32
+      end: 38
+    - source: ZVAL_COPY_VALUE(&o->v, &x);
+      style: secondary
+      start: 0
+      end: 27
