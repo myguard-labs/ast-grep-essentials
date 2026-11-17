@@ -6,6 +6,19 @@ valid:
 
     def fetch(url):
         return requests.get(url, timeout=5).status_code
+  - |-
+    import requests
+
+
+    def fetch(url, cap):
+        resp = requests.get(url, timeout=5, stream=True)
+        return resp.raw.read(cap + 1)
+  - |-
+    import requests
+
+
+    def fetch(url):
+        return requests.head(url, timeout=5).headers
 invalid:
   - |-
     import requests
@@ -13,3 +26,16 @@ invalid:
 
     def fetch(url):
         return requests.get(url, timeout=5).content
+  - |-
+    import requests
+
+
+    def fetch(url, h):
+        data = requests.get(url, headers=h, timeout=5, stream=False).content
+        return data
+  - |-
+    import requests
+
+
+    def fetch(url):
+        return requests.get(url=url, timeout=5).content

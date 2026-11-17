@@ -1,5 +1,14 @@
 id: ts-upload-abort-on-limit-false
 valid:
   - 'const opts = { abortOnLimit: true, limits: { fileSize: 10 } }'
+  - 'const opts = { abortOnLimit: true }'
+  - 'const opts = { limits: { fileSize: 10 }, abortOnLimit: true }'
 invalid:
   - 'const opts = { abortOnLimit: false, limits: { fileSize: 10 } }'
+  - 'app.use(fileUpload({ abortOnLimit: false, limits: { fileSize: 10 } }))'
+  - |-
+    const opts = {
+      abortOnLimit: false,
+      safeFileNames: true,
+      limits: { fileSize: 1024 },
+    }

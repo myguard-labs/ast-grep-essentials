@@ -1,15 +1,29 @@
 id: py-stat-size-guard-before-json-load
 snapshots:
-  ? |
-    import json
-    from pathlib import Path
-
-    def load_json(path: Path, max_bytes: int):
-        if path.stat().st_size > max_bytes:
-            raise ValueError("File too large")
-        with path.open("rb") as stream:
-            return json.load(stream)
-  : labels:
+  "import json\n\n\nasync def read(p, limit):\n    if p.stat().st_size > limit:\n        raise ValueError(\"big\")\n    with p.open(\"rb\") as f:\n        return json.load(f)":
+    labels:
+    - source: |-
+        async def read(p, limit):
+            if p.stat().st_size > limit:
+                raise ValueError("big")
+            with p.open("rb") as f:
+                return json.load(f)
+      style: primary
+      start: 14
+      end: 160
+  "import json\n\n\ndef read(p: Path, limit: int = 1024):\n    if p.stat().st_size > limit:\n        raise ValueError(\"big\")\n    with p.open(\"rb\") as f:\n        return json.load(f)":
+    labels:
+    - source: |-
+        def read(p: Path, limit: int = 1024):
+            if p.stat().st_size > limit:
+                raise ValueError("big")
+            with p.open("rb") as f:
+                return json.load(f)
+      style: primary
+      start: 14
+      end: 172
+  "import json\nfrom pathlib import Path\n\ndef load_json(path: Path, max_bytes: int):\n    if path.stat().st_size > max_bytes:\n        raise ValueError(\"File too large\")\n    with path.open(\"rb\") as stream:\n        return json.load(stream)\n":
+    labels:
     - source: |-
         def load_json(path: Path, max_bytes: int):
             if path.stat().st_size > max_bytes:

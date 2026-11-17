@@ -10,6 +10,25 @@ valid:
         if len(data) > max_bytes:
             raise ValueError("File too large")
         return json.loads(data)
+  - |-
+    import json
+
+
+    def read(p, limit):
+        if p.stat().st_size > limit:
+            raise ValueError("big")
+        with p.open("rb") as f:
+            return json.loads(f.read(limit))
+  - |-
+    import json
+
+
+    def read(path, limit):
+        with open(path, "rb") as f:
+            data = f.read(limit + 1)
+        if len(data) > limit:
+            raise ValueError("big")
+        return json.loads(data)
 invalid:
   - |
     import json
@@ -20,3 +39,21 @@ invalid:
             raise ValueError("File too large")
         with path.open("rb") as stream:
             return json.load(stream)
+  - |-
+    import json
+
+
+    def read(p: Path, limit: int = 1024):
+        if p.stat().st_size > limit:
+            raise ValueError("big")
+        with p.open("rb") as f:
+            return json.load(f)
+  - |-
+    import json
+
+
+    async def read(p, limit):
+        if p.stat().st_size > limit:
+            raise ValueError("big")
+        with p.open("rb") as f:
+            return json.load(f)

@@ -20,3 +20,19 @@ invalid:
       tf = tarfile.open(path)
       for member in tf.getmembers():
           pass
+- |-
+  import tarfile
+
+
+  def scan(path):
+      for m in tarfile.open(path).getmembers():
+          pass
+- |-
+  import tarfile
+
+
+  def scan(path):
+      with tarfile.open(path) as tf:
+          for m in tf.getmembers():
+              if m.isdir():
+                  continue

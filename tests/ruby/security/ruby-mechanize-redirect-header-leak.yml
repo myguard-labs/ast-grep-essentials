@@ -20,3 +20,15 @@ invalid:
       follow_redirect(URI(response['location']), headers)
     end
   end
+- |-
+  def fetch_page(uri, limit, headers)
+    if response.is_a?(Net::HTTPRedirection)
+      fetch_page(URI(response['location']), limit - 1, headers)
+    end
+  end
+- |-
+  def follow(uri, headers = {})
+    if response.redirect?
+      follow(response.location, headers)
+    end
+  end
