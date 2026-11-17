@@ -3,5 +3,17 @@ valid:
   - >-
     <?php $cb = $this->createPartialMock( 'Mock_Invokable', array( '__invoke' )
     ); ?>
+  - |-
+    <?php $cb = $this->createPartialMock( Invokable::class, array( '__invoke' ) );
+  - |-
+    <?php $cb = $this->createPartialMock( 'Foo', array( 'stdClass' ) );
+  - |-
+    <?php $cb = $this->createMock( 'stdClass' );
 invalid:
   - '<?php $cb = $this->createPartialMock( ''stdClass'', array( ''__invoke'' ) ); ?>'
+  - |-
+    <?php $cb = $this->createPartialMock( 'stdClass', [ '__invoke' ] );
+  - |-
+    <?php $cb = $test->createPartialMock( 'stdClass', $methods );
+  - |-
+    <?php function f() { return $this->createPartialMock('stdClass', array('__invoke')); }

@@ -5,9 +5,21 @@ valid:
     if ( 'http' != $arrURL['scheme'] && 'https' != $arrURL['scheme'] ) {
       $url = 'x';
     }
+  - |-
+    <?php if ( 'http' == $u['scheme'] || 'https' == $u['scheme'] ) { $k = 1; }
+  - |-
+    <?php if ( 'http' != $a['scheme'] || 'https' != $b['scheme'] ) { $k = 1; }
+  - |-
+    <?php if ( 'a' == $x || 'b' != $x ) { $k = 1; }
 invalid:
   - |-
     <?php
     if ( 'http' != $arrURL['scheme'] || 'https' != $arrURL['scheme'] ) {
       $url = 'x';
     }
+  - |-
+    <?php if ( 'a' != $this->mode || 'b' != $this->mode ) { $k = 1; }
+  - |-
+    <?php function f($t) { return 'x' != $t || 'y' != $t; }
+  - |-
+    <?php while ( 'GET' != $m['verb'] || 'POST' != $m['verb'] ) { $m = n(); }

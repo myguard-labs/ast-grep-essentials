@@ -1,5 +1,17 @@
 id: php-pathinfo-extension-key-access
 valid:
   - '<?php $ext = pathinfo($filename, PATHINFO_EXTENSION);'
+  - |-
+    <?php $i = pathinfo($f); $ext = $i['extension'] ?? '';
+  - |-
+    <?php $n = pathinfo($f)['filename'];
+  - |-
+    <?php $ext = $info['extension'];
 invalid:
   - '<?php $ext = pathinfo($filename)[''extension''];'
+  - |-
+    <?php $ext = pathinfo($dir . '/' . $name)['extension'];
+  - |-
+    <?php $ext = strtolower(pathinfo($name)['extension']);
+  - |-
+    <?php $ext = pathinfo($f, PATHINFO_DIRNAME)['extension'];

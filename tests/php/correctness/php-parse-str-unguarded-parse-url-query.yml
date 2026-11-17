@@ -4,7 +4,19 @@ valid:
     function f($url) { $parsed_url = parse_url($url); if ( ! empty(
     $parsed_url['query'] ) ) { parse_str($parsed_url['query'], $parsed_query); }
     return $parsed_query; }
+  - |-
+    <?php function f($u) { $p = parse_url($u); if ( empty( $p['query'] ) ) { return array(); } else { parse_str($p['query'], $q); } return $q; }
+  - |-
+    <?php function f($u) { $p = parse_url($u); if ( ! empty( $p['query'] ) ) { if ($x) { parse_str($p['query'], $q); } } return $q; }
+  - |-
+    <?php function f($u) { $p = parse_url($u); parse_str( empty($p['query']) ? '' : $p['query'], $q); return $q; }
 invalid:
   - >-
     function f($url) { $parsed_url = parse_url($url);
     parse_str($parsed_url['query'], $parsed_query); return $parsed_query; }
+  - |-
+    <?php class A { function f($u) { $parts = parse_url($u); parse_str($parts['query'], $this->q); } }
+  - |-
+    <?php function f($u) { $p = parse_url($u); $o = parse_url('x'); if ( ! empty( $o['query'] ) ) { parse_str($p['query'], $q); } return $q; }
+  - |-
+    <?php function f($u) { $p = parse_url($u); if ( isset($p['host']) ) { parse_str($p['query'], $q); } return $q; }

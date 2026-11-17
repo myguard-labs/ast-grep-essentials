@@ -3,7 +3,19 @@ valid:
   - |
     <?php
     $this->max_num_pages = ceil($this->found_posts / $per_page);
+  - |-
+    <?php $this->max_num_pages = (int) ceil( $total / max( 1, $per ) );
+  - |-
+    <?php $this->total_pages = $this->found_posts / $per_page;
+  - |-
+    <?php $this->max_num_pages = intdiv($total + $per - 1, $per);
 invalid:
   - |
     <?php
     $this->max_num_pages = $this->found_posts / $per_page;
+  - |-
+    <?php class Q { function f() { $this->max_num_pages = $this->found_posts / $this->posts_per_page; } }
+  - |-
+    <?php $this->max_num_pages = ($total) / ($per);
+  - |-
+    <?php $this->max_num_pages = count($rows) / $per;
