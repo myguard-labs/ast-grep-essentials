@@ -71,15 +71,38 @@ rule:
                                     any:
                                       - pattern: '!$V'
                                       - pattern: '$V == NULL'
-                              - has:
-                                  field: consequence
-                                  any:
-                                    - kind: return_statement
-                                    - pattern: 'goto $L;'
-                                    - has:
-                                        any:
-                                          - kind: return_statement
-                                          - pattern: 'goto $L;'
+                              - any:
+                                  - has:
+                                      field: consequence
+                                      any:
+                                        - kind: return_statement
+                                        - has:
+                                            kind: return_statement
+                                  - all:
+                                      - has:
+                                          field: consequence
+                                          any:
+                                            - pattern: 'goto $L;'
+                                            - has:
+                                                pattern: 'goto $L;'
+                                      - precedes:
+                                          stopBy: end
+                                          pattern: '$L: $S'
+                                          follows:
+                                            stopBy:
+                                              kind: if_statement
+                                              has:
+                                                field: condition
+                                                has:
+                                                  any:
+                                                    - pattern: '!$V'
+                                                    - pattern: '$V == NULL'
+                                            kind: if_statement
+                                            has:
+                                              field: condition
+                                              has:
+                                                stopBy: end
+                                                pattern: '$W->$G'
                     follows:
                       stopBy: end
                       kind: if_statement
@@ -131,15 +154,38 @@ rule:
                                     any:
                                       - pattern: '!$V'
                                       - pattern: '$V == NULL'
-                              - has:
-                                  field: consequence
-                                  any:
-                                    - kind: return_statement
-                                    - pattern: 'goto $L;'
-                                    - has:
-                                        any:
-                                          - kind: return_statement
-                                          - pattern: 'goto $L;'
+                              - any:
+                                  - has:
+                                      field: consequence
+                                      any:
+                                        - kind: return_statement
+                                        - has:
+                                            kind: return_statement
+                                  - all:
+                                      - has:
+                                          field: consequence
+                                          any:
+                                            - pattern: 'goto $L;'
+                                            - has:
+                                                pattern: 'goto $L;'
+                                      - precedes:
+                                          stopBy: end
+                                          pattern: '$L: $S'
+                                          follows:
+                                            stopBy:
+                                              kind: if_statement
+                                              has:
+                                                field: condition
+                                                has:
+                                                  any:
+                                                    - pattern: '!$V'
+                                                    - pattern: '$V == NULL'
+                                            kind: if_statement
+                                            has:
+                                              field: condition
+                                              has:
+                                                stopBy: end
+                                                pattern: '$W->$G'
                     follows:
                       stopBy: end
                       kind: if_statement
