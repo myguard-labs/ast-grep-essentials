@@ -4,15 +4,31 @@ id: c-openssl-ex-variant-dropped-libctx
 language: c
 severity: warning
 message: >-
-  This non-_ex OpenSSL constructor is called in a function that refers to
-  libctx; consider the _ex variant so the library context is passed.
+  This non-_ex OpenSSL constructor is called in a function that refers to a
+  library context (libctx or OSSL_LIB_CTX); consider the _ex variant so the
+  library context is passed.
 note: >-
   Purely syntactic single-file check. It matches the literal call name
-  X509_new with zero arguments and does not verify that libctx is in scope,
-  that the function body actually refers to libctx, or any runtime or type
-  information.
+  X509_new with zero arguments, only when the enclosing function definition
+  contains an identifier or field name spelled libctx or a type named
+  OSSL_LIB_CTX (parameter, local, member access). It does not verify that the
+  reference is the same object, that it is in scope at the call, or any runtime
+  or type information; a library context behind a macro or another name is
+  not recognized.
 rule:
   pattern: 'X509_new()'
+  inside:
+    kind: function_definition
+    stopBy: end
+    has:
+      stopBy: end
+      any:
+        - kind: identifier
+          regex: '^libctx$'
+        - kind: field_identifier
+          regex: '^libctx$'
+        - kind: type_identifier
+          regex: '^OSSL_LIB_CTX$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -22,4 +38,4 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FP: `X509 *f(void) { return X509_new(); }` in a function with no libctx is reported although the message only claims functions that refer to libctx.'
+    - 'FN: a library context reached only through a macro or a differently named variable without an OSSL_LIB_CTX type in the same function (`X509 *f(void *LC) { return X509_new(); }` with LC defined as libctx) is not reported.'
