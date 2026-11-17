@@ -111,20 +111,17 @@ rule:
                                 - kind: if_statement
                                 - not:
                                     follows:
-                                      stopBy: end
-                                      all:
-                                        - has:
-                                            pattern: '*$P'
-                                            stopBy: end
-                                        - follows:
-                                            stopBy: end
-                                            all:
-                                              - kind: expression_statement
-                                              - has:
-                                                  kind: assignment_expression
-                                                  has:
-                                                    field: left
-                                                    pattern: '$P'
+                                      stopBy:
+                                        all:
+                                          - kind: expression_statement
+                                          - has:
+                                              kind: assignment_expression
+                                              has:
+                                                field: left
+                                                pattern: '$P'
+                                      has:
+                                        pattern: '*$P'
+                                        stopBy: end
                                 - any:
                                     - pattern: 'if (!$P) $S'
                                     - pattern: 'if ($P == NULL) $S'

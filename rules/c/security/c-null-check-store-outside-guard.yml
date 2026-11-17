@@ -36,7 +36,15 @@ rule:
                       - not:
                           any:
                             - pattern: '$P = $P'
-                            - pattern: '$P = &$Z'
+                            - all:
+                                - pattern: '$P = &$Z'
+                                - not:
+                                    has:
+                                      field: right
+                                      kind: pointer_expression
+                                      has:
+                                        field: argument
+                                        kind: pointer_expression
             - has:
                 field: condition
                 any:
