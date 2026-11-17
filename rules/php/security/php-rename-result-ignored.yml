@@ -10,20 +10,14 @@ note: >-
   by types or dataflow, nor resolve whether rename is the global PHP function.
 rule:
   kind: expression_statement
-  any:
-    - has:
-        kind: function_call_expression
-        pattern: 'rename($$$ARGS)'
-    - has:
-        kind: error_suppression_expression
-        has:
-          kind: function_call_expression
-          pattern: 'rename($$$ARGS)'
-    - has:
-        kind: parenthesized_expression
-        has:
-          kind: function_call_expression
-          pattern: 'rename($$$ARGS)'
+  has:
+    kind: function_call_expression
+    pattern: 'rename($$$ARGS)'
+    stopBy:
+      not:
+        any:
+          - kind: parenthesized_expression
+          - kind: error_suppression_expression
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
