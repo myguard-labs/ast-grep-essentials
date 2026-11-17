@@ -1,9 +1,30 @@
 id: missing-ssl-minversion-go
 snapshots:
-  ? |
-    server.TLS = &tls.Config{ Rand: zeroSource{}, }
-  : labels:
-    - source: 'tls.Config{ Rand: zeroSource{}, }'
+  "func cfg() *tls.Config {\n\treturn &tls.Config{ServerName: \"example.test\", InsecureSkipVerify: true}\n}":
+    labels:
+    - source: "tls.Config{ServerName: \"example.test\", InsecureSkipVerify: true}"
+      style: primary
+      start: 34
+      end: 98
+    - source: tls
+      style: secondary
+      start: 34
+      end: 37
+    - source: Config
+      style: secondary
+      start: 38
+      end: 44
+    - source: tls.Config
+      style: secondary
+      start: 34
+      end: 44
+    - source: "{ServerName: \"example.test\", InsecureSkipVerify: true}"
+      style: secondary
+      start: 44
+      end: 98
+  "server.TLS = &tls.Config{ Rand: zeroSource{}, }\n":
+    labels:
+    - source: "tls.Config{ Rand: zeroSource{}, }"
       style: primary
       start: 14
       end: 47
@@ -19,7 +40,37 @@ snapshots:
       style: secondary
       start: 14
       end: 24
-    - source: '{ Rand: zeroSource{}, }'
+    - source: "{ Rand: zeroSource{}, }"
       style: secondary
       start: 24
       end: 47
+  "var serverTLS = tls.Config{\n\tCertificates: certs,\n\tClientAuth:   tls.RequireAnyClientCert,\n}":
+    labels:
+    - source: |-
+        tls.Config{
+        	Certificates: certs,
+        	ClientAuth:   tls.RequireAnyClientCert,
+        }
+      style: primary
+      start: 16
+      end: 92
+    - source: tls
+      style: secondary
+      start: 16
+      end: 19
+    - source: Config
+      style: secondary
+      start: 20
+      end: 26
+    - source: tls.Config
+      style: secondary
+      start: 16
+      end: 26
+    - source: |-
+        {
+        	Certificates: certs,
+        	ClientAuth:   tls.RequireAnyClientCert,
+        }
+      style: secondary
+      start: 26
+      end: 92

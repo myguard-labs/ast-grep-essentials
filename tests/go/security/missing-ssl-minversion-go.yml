@@ -12,6 +12,10 @@ valid:
       InsecureSkipVerify: true,
       },
 
+  - "func cfg() *tls.Config {\n\treturn &tls.Config{\n\t\tServerName: \"example.test\",\n\t\tMinVersion: tls.VersionTLS12,\n\t}\n}"
+  - "var serverTLS = tls.Config{\n\tCertificates: certs,\n\tMinVersion:   tls.VersionTLS13,\n}"
 invalid:
    - |
      server.TLS = &tls.Config{ Rand: zeroSource{}, }
+   - "func cfg() *tls.Config {\n\treturn &tls.Config{ServerName: \"example.test\", InsecureSkipVerify: true}\n}"
+   - "var serverTLS = tls.Config{\n\tCertificates: certs,\n\tClientAuth:   tls.RequireAnyClientCert,\n}"

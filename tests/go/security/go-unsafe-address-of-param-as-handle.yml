@@ -1,5 +1,9 @@
 id: go-unsafe-address-of-param-as-handle
 valid:
   - "package p\n\nimport \"unsafe\"\n\nfunc handle(tx *T) uint64 {\n\treturn *(*uint64)(unsafe.Pointer(tx))\n}"
+  - "package p\n\nimport \"math\"\n\nfunc bits(f float64) uint64 {\n\treturn math.Float64bits(f)\n}"
+  - "package p\n\ntype T struct{ id uint64 }\n\nfunc handle(tx *T) uint64 {\n\treturn tx.id\n}"
 invalid:
   - "package p\n\nimport \"unsafe\"\n\nfunc handle(tx T) uint64 {\n\treturn *(*uint64)(unsafe.Pointer(&tx))\n}"
+  - "package p\n\nimport \"unsafe\"\n\nfunc (s S) handle() uint64 {\n\treturn *(*uint64)(unsafe.Pointer(&s))\n}"
+  - "package p\n\nimport \"unsafe\"\n\nfunc open(req Request) uint64 {\n\th := *(*uint64)(unsafe.Pointer(&req))\n\treturn h\n}"

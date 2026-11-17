@@ -12,6 +12,8 @@ valid:
         }},
       }
 
+  - "func cfg() *tls.Config {\n\treturn &tls.Config{CipherSuites: []uint16{\n\t\ttls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,\n\t\ttls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,\n\t}}\n}"
+  - "func cfg() *tls.Config {\n\treturn &tls.Config{MinVersion: tls.VersionTLS12}\n}"
 invalid:
    - |
       tr := &http.Transport{
@@ -20,3 +22,5 @@ invalid:
         tls.TLS_RSA_WITH_AES_128_CBC_SHA256,
         }},
       }
+   - "func cfg() *tls.Config {\n\treturn &tls.Config{CipherSuites: []uint16{tls.TLS_ECDHE_RSA_WITH_RC4_128_SHA}}\n}"
+   - "var c = tls.Config{\n\tMinVersion: tls.VersionTLS12,\n\tCipherSuites: []uint16{\n\t\ttls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,\n\t\ttls.TLS_RSA_WITH_3DES_EDE_CBC_SHA,\n\t},\n}"
