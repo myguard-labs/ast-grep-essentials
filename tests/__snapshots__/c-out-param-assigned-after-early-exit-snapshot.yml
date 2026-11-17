@@ -14,3 +14,49 @@ snapshots:
       style: secondary
       start: 40
       end: 61
+  "static int f(char **out, int rc)\n{\n  if (rc != 0) goto fail;\n  *out = strdup(\"ok\");\n  return 0;\nfail:\n  return -1;\n}":
+    labels:
+    - source: "*out = strdup(\"ok\");"
+      style: primary
+      start: 63
+      end: 83
+    - source: goto fail;
+      style: secondary
+      start: 50
+      end: 60
+    - source: if (rc != 0) goto fail;
+      style: secondary
+      start: 37
+      end: 60
+  "static int f(int *count, int x)\n{\n  if (x < 0) {\n    log_error();\n    goto fail;\n  }\n  *count = x;\n  return 0;\nfail:\n  return -1;\n}":
+    labels:
+    - source: "*count = x;"
+      style: primary
+      start: 87
+      end: 98
+    - source: goto fail;
+      style: secondary
+      start: 70
+      end: 80
+    - source: |-
+        if (x < 0) {
+            log_error();
+            goto fail;
+          }
+      style: secondary
+      start: 36
+      end: 84
+  "static int f(int *len, int a, int b)\n{\n  if (a) goto fail;\n  if (b) goto fail;\n  *len = a + b;\n  return 0;\nfail:\n  return -1;\n}":
+    labels:
+    - source: "*len = a + b;"
+      style: primary
+      start: 81
+      end: 94
+    - source: goto fail;
+      style: secondary
+      start: 68
+      end: 78
+    - source: if (b) goto fail;
+      style: secondary
+      start: 61
+      end: 78

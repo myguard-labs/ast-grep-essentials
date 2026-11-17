@@ -6,8 +6,38 @@ valid:
     void f(void) { }
     #endif
     #endif
+  - |-
+    #if OPENSSL_VERSION_NUMBER >= 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER)
+    void f(void) { }
+    #endif
+  - |-
+    #if defined(LIBRESSL_VERSION_NUMBER) || OPENSSL_VERSION_NUMBER >= 0x10100000L
+    void f(void) { }
+    #endif
+  - |-
+    #if OPENSSL_VERSION_NUMBER >= 0x10100000L
+    #if LIBRESSL_VERSION_NUMBER >= 0x3050000fL
+    void f(void) { }
+    #endif
+    #endif
 invalid:
   - |-
     #if OPENSSL_VERSION_NUMBER >= 0x1000205fL
     void f(void) { }
+    #endif
+  - |-
+    #if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER < 0x10100000L
+    void f(void) { }
+    #endif
+  - |-
+    #if OPENSSL_VERSION_NUMBER < 0x30000000L
+    void f(void) { }
+    #else
+    void g(void) { }
+    #endif
+  - |-
+    #ifdef USE_SSL
+    #if OPENSSL_VERSION_NUMBER >= 0x1010100fL
+    void f(void) { }
+    #endif
     #endif

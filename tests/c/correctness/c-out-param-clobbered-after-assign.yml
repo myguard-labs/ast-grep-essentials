@@ -4,8 +4,38 @@ valid:
     *chain = chn;
     X509_STORE_CTX_cleanup(&ctx);
     *other = NULL;
+  - |-
+    *chain = chn;
+    X509_STORE_CTX_cleanup(&ctx);
+    chain = NULL;
+  - |-
+    *chain = NULL;
+    X509_STORE_CTX_cleanup(&ctx);
+    *chain = chn;
+  - |-
+    if (ok) {
+      *chain = chn;
+    } else {
+      *chain = NULL;
+    }
 invalid:
   - |-
     *chain = chn;
     X509_STORE_CTX_cleanup(&ctx);
     *chain = NULL;
+  - |-
+    *out = BIO_new(BIO_s_mem());
+    BIO_free(b);
+    *out = NULL;
+  - |-
+    int f(char **chain, char *chn)
+    {
+      *chain = chn;
+      cleanup();
+      *chain = NULL;
+      return 0;
+    }
+  - |-
+    *ctx->chain = chn;
+    cleanup(ctx);
+    *ctx->chain = NULL;

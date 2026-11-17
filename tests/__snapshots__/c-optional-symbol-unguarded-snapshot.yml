@@ -1,5 +1,35 @@
 id: c-optional-symbol-unguarded
 snapshots:
+  "#ifdef HAVE_RAND_EGD\nint a(void) { return 1; }\n#endif\nint seed_pool(const char *path) { return RAND_egd(path); }":
+    labels:
+    - source: RAND_egd(path)
+      style: primary
+      start: 95
+      end: 109
+    - source: RAND_egd
+      style: secondary
+      start: 95
+      end: 103
+  "int seed_pool(const char *path) {\n  if (RAND_egd(path) < 0) {\n    return -1;\n  }\n  return 0;\n}":
+    labels:
+    - source: RAND_egd(path)
+      style: primary
+      start: 40
+      end: 54
+    - source: RAND_egd
+      style: secondary
+      start: 40
+      end: 48
+  "int seed_pool(const char *path) {\n  int r = RAND_egd(path);\n  return r;\n}":
+    labels:
+    - source: RAND_egd(path)
+      style: primary
+      start: 44
+      end: 58
+    - source: RAND_egd
+      style: secondary
+      start: 44
+      end: 52
   "int seed_pool(const char *path) { return RAND_egd(path); }":
     labels:
     - source: RAND_egd(path)

@@ -4,8 +4,34 @@ valid:
     #if OPENSSL_VERSION_NUMBER >= 0x1010100fL && !defined(LIBRESSL_VERSION_NUMBER)
     int x;
     #endif
+  - |-
+    #if defined(LIBRESSL_VERSION_NUMBER) || OPENSSL_VERSION_NUMBER >= 0x10100000L
+    int x;
+    #endif
+  - |-
+    #if !defined(LIBRESSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
+    int x;
+    #endif
+  - |-
+    #if LIBRESSL_VERSION_NUMBER >= 0x3050000fL || OPENSSL_VERSION_NUMBER >= 0x10100000L
+    int x;
+    #endif
 invalid:
   - |-
     #if OPENSSL_VERSION_NUMBER >= 0x1010100fL
+    int x;
+    #endif
+  - |-
+    #if OPENSSL_VERSION_NUMBER < 0x10100000L
+    int x;
+    #else
+    int y;
+    #endif
+  - |-
+    #if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
+    int x;
+    #endif
+  - |-
+    #if defined(HAVE_SSL) && OPENSSL_VERSION_NUMBER >= 0x10101000L
     int x;
     #endif
