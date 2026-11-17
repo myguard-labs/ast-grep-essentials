@@ -6,8 +6,16 @@ valid:
   - "if ( isset( $GLOBALS['x'] ) ) { $a = 1; }"
   - "if ( isset( $GLOBALS['x'], $GLOBALS['y'] ) ) { $a = 1; }"
   - "if ( isset ( $GLOBALS['x'] ) && $GLOBALS['x'] ) { $a = 1; }"
+  - "if ( ! empty( $GLOBALS['x'] ) ) { $a = 1; }"
+  - "if ( empty( $GLOBALS['x'] ) ) { $a = 1; }"
+  - "if ( array_key_exists( 'x', $GLOBALS ) && $GLOBALS['x'] ) { $a = 1; }"
+  - "if ( $GLOBALS['x'] ?? false ) { $a = 1; }"
 invalid:
   - 'if ( $GLOBALS[''post_type''] == ''attachment'' ) { $path = $this->MEDIA_PATH; }'
   - "if ( $GLOBALS['x'] ) { $a = 1; }"
   - "if ( ! $GLOBALS['x'] ) { $a = 1; }"
   - "if ( $a && $GLOBALS['x'] === 1 ) { $a = 1; }"
+  - "if ( array_key_exists( 'y', $GLOBALS ) && $GLOBALS['x'] ) { $a = 1; }"
+  - "if ( array_key_exists( 'x', $other ) && $GLOBALS['x'] ) { $a = 1; }"
+  - "if ( empty( $GLOBALS['y'] ) || $GLOBALS['x'] ) { $a = 1; }"
+  - "if ( ( $GLOBALS['x'] ?? 0 ) || $GLOBALS['y'] ) { $a = 1; }"
