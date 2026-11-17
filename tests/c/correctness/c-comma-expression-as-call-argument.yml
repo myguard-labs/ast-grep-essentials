@@ -3,7 +3,13 @@ valid:
   - |-
     int g(int, int);
     int f(int dest) { int fd; if ((fd = g(dest, 0777)) == -1) return 1; return fd; }
+  - "int g(int, int);\nint f(int a) { return g((a + 1), 2); }"
+  - "int g(int, int);\nint f(int a, int b) { int i, j; for (i = 0, j = 1; i < a; i++, j--) { b += g(i, j); } return b; }"
+  - "int g(int);\nint h(int, int);\nint f(int a) { return g(h(a, 1)); }"
+  - "int g(int);\nint f(int a, int b) { int r = (g(a), g(b)); return r; }"
 invalid:
   - |-
     int g(int, int);
     int f(int dest) { int fd; if ((fd = g((dest, 0777))) == -1) return 1; return fd; }
+  - "int g(int, int);\nint f(int a) { return g((a, 1), 2); }"
+  - "int p(const char *, int);\nint f(int a, int b) { return p(\"x\", (a = 1, b)); }"

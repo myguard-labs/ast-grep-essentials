@@ -1,8 +1,26 @@
 id: c-class-table-foreach-alias
 snapshots:
+  "ZEND_HASH_MAP_FOREACH_PTR(&EG(class_table), ce) { use(ce->function_table); }":
+    labels:
+    - source: ZEND_HASH_MAP_FOREACH_PTR(&EG(class_table), ce) { use(ce->function_table); }
+      style: primary
+      start: 0
+      end: 76
   "ZEND_HASH_MAP_FOREACH_PTR(&script->class_table, ce) { use(ce->function_table); }":
     labels:
     - source: ZEND_HASH_MAP_FOREACH_PTR(&script->class_table, ce) { use(ce->function_table); }
       style: primary
       start: 0
       end: 80
+  "void walk(void) {\n\tZEND_HASH_MAP_FOREACH_PTR(\n\t\t&CG(class_table), ce) {\n\t\tcount(ce);\n\t} ZEND_HASH_FOREACH_END();\n}":
+    labels:
+    - source: |-
+        void walk(void) {
+        	ZEND_HASH_MAP_FOREACH_PTR(
+        		&CG(class_table), ce) {
+        		count(ce);
+        	} ZEND_HASH_FOREACH_END();
+        }
+      style: primary
+      start: 0
+      end: 114

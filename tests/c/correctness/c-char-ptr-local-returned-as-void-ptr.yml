@@ -1,5 +1,10 @@
 id: c-char-ptr-local-returned-as-void-ptr
 valid:
   - 'void *f(void) { void *ret = 0; return ret; }'
+  - "char *f(void) { char *ret = 0; return ret; }"
+  - "void *f(void) { char *ret = 0; return 0; }"
+  - "void *f(void) { void *ret = 0; char *other = 0; return ret; }"
 invalid:
   - 'void *f(void) { char *ret = 0; return ret; }'
+  - "void * f ( void )\n{\n  char * ret = 0;\n  return ret;\n}"
+  - "static int counter;\nvoid *f(void) { char *ret = 0; return ret; }"

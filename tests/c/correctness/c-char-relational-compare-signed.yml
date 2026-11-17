@@ -1,5 +1,11 @@
 id: c-char-relational-compare-signed
 valid:
   - 'int f(const char *a) { unsigned char ca = a[0]; return ca < ''a''; }'
+  - "int f(const char *a) { signed char c = a[0]; return c < 0; }"
+  - "int f(const char *a) { char c = a[0]; return c == 0x30; }"
+  - "int f(const char *a) { int c = a[0]; return c < 0x30; }"
+  - "int f(const char *a, int n) { char c = a[0]; return n < 4 && c == 0; }"
 invalid:
   - 'int f(const char *a) { char ca = a[0]; return ca < ''a''; }'
+  - "int f(const char *a) { char c = a[0]; return c >= 0x30 && c <= 0x39; }"
+  - "int f(const char *a) { char c = a[0]; return 0x7f > c; }"

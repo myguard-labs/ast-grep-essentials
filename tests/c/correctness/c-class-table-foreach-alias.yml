@@ -3,7 +3,12 @@ valid:
   - >-
     ZEND_HASH_MAP_FOREACH_PTR(&script->class_table, ce) { if (ZEND_IS_ALIAS(ce))
     { continue; } use(ce->function_table); }
+  - "ZEND_HASH_MAP_FOREACH_PTR(&script->function_table, fn) { use(fn); }"
+  - "ZEND_HASH_MAP_FOREACH_PTR(&script->class_table, ce) { if (!ZEND_IS_ALIAS(ce)) { use(ce); } }"
+  - "void count(void) { n = zend_hash_num_elements(&script->class_table); }"
 invalid:
   - >-
     ZEND_HASH_MAP_FOREACH_PTR(&script->class_table, ce) {
     use(ce->function_table); }
+  - "ZEND_HASH_MAP_FOREACH_PTR(&EG(class_table), ce) { use(ce->function_table); }"
+  - "void walk(void) {\n\tZEND_HASH_MAP_FOREACH_PTR(\n\t\t&CG(class_table), ce) {\n\t\tcount(ce);\n\t} ZEND_HASH_FOREACH_END();\n}"
