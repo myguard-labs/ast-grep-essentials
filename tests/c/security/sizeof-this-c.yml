@@ -4,6 +4,7 @@ valid:
     void coderabbit_control(void) { const char *text = "CodeRabbit"; }
   - |
     sizeof(*this);
+  - 'struct Foo { size_t get_size() const { return sizeof(Foo); } };'
 invalid:
   - |
     struct Foo {
@@ -12,3 +13,5 @@ invalid:
       size_t get_size() const {
       return sizeof(this);
     }
+  - 'struct Foo { void clear() { memset(this, 0, sizeof(this)); } };'
+  - 'struct Foo { size_t get_size() const { return 2 * sizeof(this); } };'

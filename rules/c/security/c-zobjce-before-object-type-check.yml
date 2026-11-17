@@ -32,3 +32,9 @@ metadata:
   cwe: 'CWE-843'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/843.html'
   taxonomy_cited_keys: 'cwe'
+  todo_cases:
+    - 'FP: type check in an enclosing if (`if (Z_TYPE_PP(p) == IS_OBJECT) { if (instanceof_function(Z_OBJCE_PP(p), ce)) ... }`) is still reported'
+    - 'FP: `if (Z_TYPE_PP(p) != IS_OBJECT || !instanceof_function(Z_OBJCE_PP(p), ce)) { return 0; }` is still reported (only `== IS_OBJECT` recognised)'
+    - 'FP: `if (Z_TYPE_PP(p) == IS_OBJECT && 1 && instanceof_function(Z_OBJCE_PP(p), ce))` is reported because the check sits two binary levels up'
+    - 'FN: wrong order `instanceof_function(Z_OBJCE_PP(p), ce) && Z_TYPE_PP(p) == IS_OBJECT` and `Z_TYPE_PP(p) == IS_OBJECT || instanceof_function(Z_OBJCE_PP(p), ce)` are not matched'
+    - 'FN: use inside a while condition is not matched, only if statements'

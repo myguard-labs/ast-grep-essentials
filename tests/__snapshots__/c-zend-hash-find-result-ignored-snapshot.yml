@@ -1,6 +1,36 @@
 id: c-zend-hash-find-result-ignored
 snapshots:
-  zend_hash_index_find(ht, idx, (void **) &brake); new_break = *brake;:
+  "void f(void) { if (ht) { zend_hash_index_find(ht, 0, (void **) &p); v = *p; } }":
+    labels:
+    - source: zend_hash_index_find(ht, 0, (void **) &p);
+      style: primary
+      start: 25
+      end: 67
+    - source: v = *p;
+      style: secondary
+      start: 68
+      end: 75
+  "void f(void) { zend_hash_index_find(ht, idx, (void **) &brake); log_it(); new_break = *brake; }":
+    labels:
+    - source: zend_hash_index_find(ht, idx, (void **) &brake);
+      style: primary
+      start: 15
+      end: 63
+    - source: new_break = *brake;
+      style: secondary
+      start: 74
+      end: 93
+  "void f(void) { zend_hash_index_find(ht, idx, (void **) &brake); other = 1; new_break = *brake; }":
+    labels:
+    - source: zend_hash_index_find(ht, idx, (void **) &brake);
+      style: primary
+      start: 15
+      end: 63
+    - source: new_break = *brake;
+      style: secondary
+      start: 75
+      end: 94
+  "zend_hash_index_find(ht, idx, (void **) &brake); new_break = *brake;":
     labels:
     - source: zend_hash_index_find(ht, idx, (void **) &brake);
       style: primary

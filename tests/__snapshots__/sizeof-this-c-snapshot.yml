@@ -1,13 +1,7 @@
 id: sizeof-this-c
 snapshots:
-  ? |
-    struct Foo {
-      uint64_t a;
-      uint8_t b;
-      size_t get_size() const {
-      return sizeof(this);
-    }
-  : labels:
+  "struct Foo {\n  uint64_t a;\n  uint8_t b;\n  size_t get_size() const {\n  return sizeof(this);\n}\n":
+    labels:
     - source: sizeof(this)
       style: primary
       start: 77
@@ -24,3 +18,43 @@ snapshots:
       style: secondary
       start: 83
       end: 89
+  "struct Foo { size_t get_size() const { return 2 * sizeof(this); } };":
+    labels:
+    - source: sizeof(this)
+      style: primary
+      start: 50
+      end: 62
+    - source: sizeof
+      style: secondary
+      start: 50
+      end: 56
+    - source: this
+      style: secondary
+      start: 57
+      end: 61
+    - source: (this)
+      style: secondary
+      start: 56
+      end: 62
+  "struct Foo { void clear() { memset(this, 0, sizeof(this)); } };":
+    labels:
+    - source: sizeof(this)
+      style: primary
+      start: 44
+      end: 56
+    - source: sizeof
+      style: secondary
+      start: 44
+      end: 50
+    - source: this
+      style: secondary
+      start: 51
+      end: 55
+    - source: (this)
+      style: secondary
+      start: 50
+      end: 56
+    - source: (this)
+      style: secondary
+      start: 50
+      end: 56

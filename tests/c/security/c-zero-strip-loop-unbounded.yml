@@ -1,5 +1,10 @@
 id: c-zero-strip-loop-unbounded
 valid:
   - 'void f(unsigned char *n, int i) { while (!*n && i > 1) { n--; i--; } }'
+  - 'void f(unsigned char *p, unsigned char *s) { while (p > s && !*p) { p--; } }'
+  - 'void f(unsigned char *p, unsigned char *s) { while (p != s && !*p) p--; }'
 invalid:
   - 'void f(unsigned char *n, int i) { while (!*n) { n--; i--; } }'
+  - 'void f(unsigned char *p) { while (!*p) p--; }'
+  - 'void f(unsigned char *p) { while ((!*p)) { p--; } }'
+  - 'void f(unsigned char *p, int total) { while (!*p) { total += 1; p--; } }'

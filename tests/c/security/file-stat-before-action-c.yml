@@ -2,6 +2,9 @@ id: file-stat-before-action-c
 valid:
   - |
     void coderabbit_control(void) { const char *text = "CodeRabbit"; }
+  - 'void f(const char *p) { struct stat st; int fd = open(p, O_RDONLY | O_NOFOLLOW); if (fd < 0) { return; } if (fstat(fd, &st) == 0) { read_it(fd); } }'
+  - 'void f(const char *p) { struct stat st; int fd = open(p, O_RDONLY); if (fd >= 0 && fstat(fd, &st) == 0 && S_ISREG(st.st_mode)) { read_it(fd); } }'
+  - 'void f(int fd) { struct stat st; if (fstat(fd, &st) == 0) { read_it(fd); } }'
 invalid:
   - |
     if (stat(file.c_str(), &buf) == 0){
@@ -35,3 +38,6 @@ invalid:
       // Close the file
       fclose(fp);
     }
+  - 'void f(const char *p) { struct stat st; if (lstat(p, &st) == 0) { unlink(p); } }'
+  - 'void f(const char *p) { struct stat st; if (stat(p, &st) == 0) { rename(p, "x"); } }'
+  - 'void f(const char *p) { struct stat st; if (stat(p, &st) == 0) { if (x) { chdir(p); } } }'

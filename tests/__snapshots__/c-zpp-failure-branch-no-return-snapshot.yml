@@ -1,8 +1,28 @@
 id: c-zpp-failure-branch-no-return
 snapshots:
-  if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { warn_bad_args(); } use(r, s);:
+  "if (zend_parse_parameters(argc TSRMLS_CC, \"rs\", &r, &s) == FAILURE) { warn(); } use(r, s);":
+    labels:
+    - source: if (zend_parse_parameters(argc TSRMLS_CC, "rs", &r, &s) == FAILURE) { warn(); }
+      style: primary
+      start: 0
+      end: 79
+  "if (zend_parse_parameters(argc, \"rs\", &r, &s) == FAILURE) { log_err(); r = NULL; } use(r, s);":
+    labels:
+    - source: >-
+        if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { log_err(); r =
+        NULL; }
+      style: primary
+      start: 0
+      end: 82
+  "if (zend_parse_parameters(argc, \"rs\", &r, &s) == FAILURE) { warn_bad_args(); } use(r, s);":
     labels:
     - source: if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { warn_bad_args(); }
       style: primary
       start: 0
       end: 78
+  "if (zend_parse_parameters(argc, \"rs\", &r, &s) == FAILURE) { } use(r, s);":
+    labels:
+    - source: if (zend_parse_parameters(argc, "rs", &r, &s) == FAILURE) { }
+      style: primary
+      start: 0
+      end: 61
