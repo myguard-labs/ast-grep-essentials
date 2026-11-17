@@ -1,5 +1,11 @@
 id: wp-query-post-status-published
 valid:
   - '<?php new WP_Query( array( ''post_status'' => ''publish'' ) );'
+  - '<?php new WP_Query( array( ''post_status'' => array( ''publish'', ''draft'' ) ) );'
+  - '<?php new WP_Query( array( ''post_status'' => ''draft'' ) );'
+  - '<?php new WP_Query( array( ''post_status'' => ''any'' ) );'
 invalid:
   - '<?php new WP_Query( array( ''post_status'' => ''published'' ) );'
+  - '<?php $q = new WP_Query( [ ''post_status'' => ''published'' ] );'
+  - '<?php $q = get_posts( array( ''post_type'' => ''post'', ''post_status'' => ''published'', ''numberposts'' => 5 ) );'
+  - '<?php $args = array( ''post_type'' => ''post'', ''post_status'' => ''published'' );'

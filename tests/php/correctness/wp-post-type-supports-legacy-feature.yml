@@ -1,5 +1,12 @@
 id: wp-post-type-supports-legacy-feature
 valid:
   - '<?php if ( post_type_supports( $post_type, ''excerpt'' ) ) { echo 1; }'
+  - '<?php $s = post_type_supports( $pt, ''thumbnail'' );'
+  - '<?php $s = post_type_supports( $pt, $feature );'
+  - '<?php $s = current_theme_supports( ''post-thumbnails'' );'
 invalid:
   - '<?php if ( post_type_supports( $post_type, ''excerpts'' ) ) { echo 1; }'
+  - '<?php $s = post_type_supports( get_post_type(), ''excerpts'' );'
+  - '<?php if ( ! post_type_supports( ''post'', ''excerpts'' ) ) { echo 1; }'
+  - '<?php $s = post_type_supports( $post->post_type, ''excerpts'' );'
+  - '<?php $f = array_filter( $types, fn( $t ) => post_type_supports( $t, ''excerpts'' ) );'

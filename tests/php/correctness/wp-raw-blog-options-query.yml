@@ -3,7 +3,14 @@ valid:
   - >-
     $v = $wpdb->get_var( "SELECT option_value FROM {$prefix}posts WHERE ID = 1"
     );
+  - '<?php $v = $wpdb->get_var( "SELECT blog_id FROM {$wpdb->blogs} WHERE domain = ''a''" );'
+  - '<?php $v = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_name = %s", $n ) );'
+  - '<?php $v = $wpdb->get_var( "SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = ''option_value''" );'
 invalid:
   - >-
     $v = $wpdb->get_var( "SELECT option_value FROM {$prefix}options WHERE
     option_name = 'siteurl'" );
+  - '<?php $v = $wpdb->get_var( "SELECT option_value FROM $wpdb->options WHERE option_name = ''home''" );'
+  - '<?php $v = $wpdb->get_var( "SELECT option_value FROM {$wpdb->options} WHERE option_name = ''home''" );'
+  - '<?php $v = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", ''x'' ) );'
+  - '<?php $v = $wpdb->get_var( "SELECT option_value FROM wp_2_options WHERE option_name = ''home''" );'

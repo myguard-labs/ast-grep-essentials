@@ -3,7 +3,13 @@ valid:
   - >-
     <?php $wpdb->insert( $wpdb->blogs, array( 'domain' => $domain ) );
     update_usermeta( $uid, 'primary_blog', $wpdb->insert_id ); ?>
+  - '<?php update_usermeta( $uid, ''primary_blog'', $blog_id );'
+  - '<?php update_usermeta( $uid, ''primary_blog'', (int) $blog_id );'
+  - '<?php update_usermeta( $uid, ''source_domain'', 1 );'
 invalid:
   - >-
     <?php $wpdb->insert( $wpdb->blogs, array( 'domain' => $domain ) );
     update_usermeta( $uid, 'primary_blog', 1 ); ?>
+  - '<?php update_usermeta( 5, ''primary_blog'', 1 );'
+  - '<?php update_usermeta( $user->ID, ''primary_blog'', 1 );'
+  - '<?php function f( $uid ) { update_usermeta( $uid, ''primary_blog'', 1 ); }'
