@@ -1,5 +1,13 @@
 id: c-bare-long-local-declaration
 valid:
   - 'void f(void) { zend_long elements; }'
+  - "void f(void) { double elements; }"
+  - "long g_elements;\nvoid f(void) { g_elements = 1; }"
+  - "void f(void) { int64_t elements; }"
+  - "void f(void) { short s; char c; }"
 invalid:
   - 'void f(void) { long elements; }'
+  - "void f(int c) { if (c) { long elements; } }"
+  - "void f(int c) { while (c--) { long n; } }"
+  - "int f(void) { long a; long b; return 0; }"
+  - "void f(int c) { switch (c) { case 1: { long n; break; } } }"

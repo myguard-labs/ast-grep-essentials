@@ -1,5 +1,14 @@
 id: c-bare-member-access-statement
 valid:
   - "void f(struct s *p) {\n\tp->is_writeable = 1;\n}"
+  - "void f(struct s *p) {\n\tp->callback();\n}"
+  - "int f(struct s *p) {\n\treturn p->count;\n}"
+  - "void f(struct s *p) {\n\tp->count++;\n}"
+  - "void f(struct s *p, int *out) {\n\t*out = p->count;\n}"
+  - "void f(struct s *p) {\n\t(void) p->count;\n}"
 invalid:
   - "void f(struct s *p) {\n\tp->is_writeable;\n}"
+  - "void f(struct s *p) {\n\tp->next->value;\n}"
+  - "void f(struct s *p, int c) {\n\tif (c) {\n\t\tp->is_writeable;\n\t}\n}"
+  - "void f(struct s *p) {\n\twhile (p) {\n\t\tp->len;\n\t\tp = p->next;\n\t}\n}"
+  - "void f(struct s v) {\n\tv.inner->flag;\n}"

@@ -4,8 +4,16 @@ valid:
     void f(unsigned long number, unsigned long *tried) { unsigned long i, n; n =
     (number + (8 * sizeof(unsigned long) - 1)) / (8 * sizeof(unsigned long));
     for (i = 0; i < n; i++) { tried[i] = 0; } }
+  - "unsigned long f(unsigned long bit) { return bit / (8 * sizeof(unsigned long)); }"
+  - "unsigned long f(unsigned long number) { return (number + 8 * sizeof(long) - 1) / (8 * sizeof(long)); }"
+  - "unsigned long f(unsigned long number) { return number / (8 * sizeof(long)) + (number % (8 * sizeof(long)) != 0); }"
+  - "unsigned long f(unsigned long number, unsigned long base) { return number / base + 1; }"
 invalid:
   - >-
     void f(unsigned long number, unsigned long *tried) { unsigned long i, n; n =
     number / (8 * sizeof(unsigned long)) + 1; for (i = 0; i < n; i++) { tried[i]
     = 0; } }
+  - "unsigned long f(unsigned long number) { return number / (8 * sizeof(unsigned int)) + 1; }"
+  - "void *f(unsigned long number) { return calloc(number / (8 * sizeof(long)) + 1, sizeof(long)); }"
+  - "unsigned long f(unsigned long number) { return number / ( 8 * sizeof ( long ) ) + 1; }"
+  - "unsigned long f(unsigned long bits) { unsigned long words = bits / (8 * sizeof(uint32_t)) + 1; return words; }"
