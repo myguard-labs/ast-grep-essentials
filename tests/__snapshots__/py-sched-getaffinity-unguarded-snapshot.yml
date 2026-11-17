@@ -1,8 +1,26 @@
 id: py-sched-getaffinity-unguarded
 snapshots:
-  cpu_count = max(1, len(os.sched_getaffinity(0))):
+  CPUS = len(os.sched_getaffinity(0)):
+    labels:
+    - source: os.sched_getaffinity(0)
+      style: primary
+      start: 11
+      end: 34
+  "cpu_count = max(1, len(os.sched_getaffinity(0)))":
     labels:
     - source: os.sched_getaffinity(0)
       style: primary
       start: 23
       end: 46
+  "def cpus():\n    if hasattr(os, 'sched_getaffinity'):\n        return len(os.sched_getaffinity(os.getpid()))\n    return 1":
+    labels:
+    - source: os.sched_getaffinity(os.getpid())
+      style: primary
+      start: 72
+      end: 105
+  "def cpus():\n    return max(1, len(os.sched_getaffinity(0)))":
+    labels:
+    - source: os.sched_getaffinity(0)
+      style: primary
+      start: 34
+      end: 57

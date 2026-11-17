@@ -1,19 +1,52 @@
 id: py-resource-warning-before-finally-in-del
 snapshots:
-  ? |
-    import warnings
-
-    class Writer:
-        def __init__(self, stream):
-            self.stream = stream
-
+  "import warnings\n\nclass Writer:\n    def __init__(self, stream):\n        self.stream = stream\n\n    def __del__(self):\n        warnings.warn(\"Unclosed writer\", ResourceWarning)\n        self.stream.flush()\n        try:\n            self.stream.sync()\n        finally:\n            self.stream.close()":
+    labels:
+    - source: warnings.warn("Unclosed writer", ResourceWarning)
+      style: primary
+      start: 124
+      end: 173
+    - source: warnings.warn("Unclosed writer", ResourceWarning)
+      style: secondary
+      start: 124
+      end: 173
+    - source: |-
         def __del__(self):
-            warnings.warn("Unclosed writer", ResourceWarning)
-            try:
+                warnings.warn("Unclosed writer", ResourceWarning)
                 self.stream.flush()
-            finally:
-                self.stream.close()
-  : labels:
+                try:
+                    self.stream.sync()
+                finally:
+                    self.stream.close()
+      style: secondary
+      start: 97
+      end: 294
+    - source: |-
+        warnings.warn("Unclosed writer", ResourceWarning)
+                self.stream.flush()
+                try:
+                    self.stream.sync()
+                finally:
+                    self.stream.close()
+      style: secondary
+      start: 124
+      end: 294
+    - source: |-
+        finally:
+                    self.stream.close()
+      style: secondary
+      start: 254
+      end: 294
+    - source: |-
+        try:
+                    self.stream.sync()
+                finally:
+                    self.stream.close()
+      style: secondary
+      start: 210
+      end: 294
+  "import warnings\n\nclass Writer:\n    def __init__(self, stream):\n        self.stream = stream\n\n    def __del__(self):\n        warnings.warn(\"Unclosed writer\", ResourceWarning)\n        try:\n            self.stream.flush()\n        finally:\n            self.stream.close()\n":
+    labels:
     - source: warnings.warn("Unclosed writer", ResourceWarning)
       style: primary
       start: 124
@@ -55,3 +88,95 @@ snapshots:
       style: secondary
       start: 182
       end: 267
+  "import warnings\n\nclass Writer:\n    def __init__(self, stream):\n        self.stream = stream\n\n    def __del__(self):\n        warnings.warn(f\"Unclosed writer {self.stream!r}\", ResourceWarning)\n        try:\n            self.stream.flush()\n        except OSError:\n            pass\n        finally:\n            self.stream.close()":
+    labels:
+    - source: warnings.warn(f"Unclosed writer {self.stream!r}", ResourceWarning)
+      style: primary
+      start: 124
+      end: 190
+    - source: warnings.warn(f"Unclosed writer {self.stream!r}", ResourceWarning)
+      style: secondary
+      start: 124
+      end: 190
+    - source: |-
+        def __del__(self):
+                warnings.warn(f"Unclosed writer {self.stream!r}", ResourceWarning)
+                try:
+                    self.stream.flush()
+                except OSError:
+                    pass
+                finally:
+                    self.stream.close()
+      style: secondary
+      start: 97
+      end: 325
+    - source: |-
+        warnings.warn(f"Unclosed writer {self.stream!r}", ResourceWarning)
+                try:
+                    self.stream.flush()
+                except OSError:
+                    pass
+                finally:
+                    self.stream.close()
+      style: secondary
+      start: 124
+      end: 325
+    - source: |-
+        finally:
+                    self.stream.close()
+      style: secondary
+      start: 285
+      end: 325
+    - source: |-
+        try:
+                    self.stream.flush()
+                except OSError:
+                    pass
+                finally:
+                    self.stream.close()
+      style: secondary
+      start: 199
+      end: 325
+  "import warnings\n\nclass Writer:\n    def __init__(self, stream):\n        self.stream = stream\n\n    def __del__(self, _warn=warnings.warn):\n        warnings.warn(\"Unclosed writer\", ResourceWarning)\n        try:\n            self.stream.flush()\n        finally:\n            self.stream.close()":
+    labels:
+    - source: warnings.warn("Unclosed writer", ResourceWarning)
+      style: primary
+      start: 145
+      end: 194
+    - source: warnings.warn("Unclosed writer", ResourceWarning)
+      style: secondary
+      start: 145
+      end: 194
+    - source: |-
+        def __del__(self, _warn=warnings.warn):
+                warnings.warn("Unclosed writer", ResourceWarning)
+                try:
+                    self.stream.flush()
+                finally:
+                    self.stream.close()
+      style: secondary
+      start: 97
+      end: 288
+    - source: |-
+        warnings.warn("Unclosed writer", ResourceWarning)
+                try:
+                    self.stream.flush()
+                finally:
+                    self.stream.close()
+      style: secondary
+      start: 145
+      end: 288
+    - source: |-
+        finally:
+                    self.stream.close()
+      style: secondary
+      start: 248
+      end: 288
+    - source: |-
+        try:
+                    self.stream.flush()
+                finally:
+                    self.stream.close()
+      style: secondary
+      start: 203
+      end: 288

@@ -1,14 +1,22 @@
 id: py-subprocess-timeout-except-misses-timeout
 snapshots:
-  ? |
-    import subprocess
-
-    def f():
+  "import subprocess\n\ndef f():\n    try:\n        result = subprocess.run([\"yr\", \"check\"], capture_output=True, timeout=30)\n        print(result.stdout)\n    except OSError:\n        pass":
+    labels:
+    - source: |-
         try:
-            subprocess.run(["yr", "check"], timeout=10)
-        except OSError:
-            pass
-  : labels:
+                result = subprocess.run(["yr", "check"], capture_output=True, timeout=30)
+                print(result.stdout)
+            except OSError:
+                pass
+      style: primary
+      start: 32
+      end: 180
+    - source: subprocess.run(["yr", "check"], capture_output=True, timeout=30)
+      style: secondary
+      start: 54
+      end: 118
+  "import subprocess\n\ndef f():\n    try:\n        subprocess.run([\"yr\", \"check\"], timeout=10)\n    except OSError:\n        pass\n":
+    labels:
     - source: |-
         try:
                 subprocess.run(["yr", "check"], timeout=10)
@@ -21,3 +29,35 @@ snapshots:
       style: secondary
       start: 45
       end: 88
+  "import subprocess\n\ndef f(cmd):\n    try:\n        subprocess.run(cmd, timeout=5)\n    except OSError:\n        log()\n    finally:\n        cleanup()":
+    labels:
+    - source: |-
+        try:
+                subprocess.run(cmd, timeout=5)
+            except OSError:
+                log()
+            finally:
+                cleanup()
+      style: primary
+      start: 35
+      end: 143
+    - source: subprocess.run(cmd, timeout=5)
+      style: secondary
+      start: 48
+      end: 78
+  "import subprocess\n\ndef f(cmd, t):\n    try:\n        subprocess.run(cmd, check=True, timeout=t)\n    except OSError:\n        pass\n    else:\n        print('done')":
+    labels:
+    - source: |-
+        try:
+                subprocess.run(cmd, check=True, timeout=t)
+            except OSError:
+                pass
+            else:
+                print('done')
+      style: primary
+      start: 38
+      end: 158
+    - source: subprocess.run(cmd, check=True, timeout=t)
+      style: secondary
+      start: 51
+      end: 93

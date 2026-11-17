@@ -3,7 +3,19 @@ valid:
   - >-
     subprocess.run(['git', 'clone', url], env={**os.environ,
     'GIT_CONFIG_VALUE_0': f'Authorization: Bearer {token}'})
+  - |-
+    subprocess.run(['curl', '-H', '@-', url], input=f'Authorization: Bearer {token}'.encode())
+  - |-
+    subprocess.run(['git', 'clone', f'{base}/{repo}.git'], check=True)
+  - |-
+    requests.post(url, headers={'Authorization': f'Bearer {token}'})
 invalid:
   - >-
     subprocess.run(['git', '-c', f'http.extraHeader=Authorization: Bearer
     {token}', 'clone', url])
+  - |-
+    subprocess.check_output(['curl', '-H', f'Authorization: token {tok}', url], text=True)
+  - |-
+    subprocess.Popen(['curl', '-s', '-H', f"Authorization: Bearer {self.token}", url], stdout=subprocess.PIPE)
+  - |-
+    subprocess.call(['wget', f'--header=Authorization: Bearer {token}', url])

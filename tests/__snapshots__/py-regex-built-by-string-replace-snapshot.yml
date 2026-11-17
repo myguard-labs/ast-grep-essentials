@@ -1,11 +1,21 @@
 id: py-regex-built-by-string-replace
 snapshots:
-  ? |-
-    import re
-
-    def wild(p):
-        return re.compile(p.replace("*", ".*?"))
-  : labels:
+  "import re\n\nclass Glob:\n    def matches(self, name):\n        return re.fullmatch(self.glob.replace('?', '.'), name, re.IGNORECASE)":
+    labels:
+    - source: re.fullmatch(self.glob.replace('?', '.'), name, re.IGNORECASE)
+      style: primary
+      start: 67
+      end: 129
+    - source: self.glob.replace('?', '.')
+      style: secondary
+      start: 80
+      end: 107
+    - source: self.glob.replace('?', '.')
+      style: secondary
+      start: 80
+      end: 107
+  "import re\n\ndef wild(p):\n    return re.compile(p.replace(\"*\", \".*?\"))":
+    labels:
     - source: re.compile(p.replace("*", ".*?"))
       style: primary
       start: 35
@@ -18,3 +28,31 @@ snapshots:
       style: secondary
       start: 46
       end: 67
+  "import re\n\ndef wild(p):\n    return re.match(p.replace('.', r'\\.').replace('*', '.*'), 'x')":
+    labels:
+    - source: re.match(p.replace('.', r'\.').replace('*', '.*'), 'x')
+      style: primary
+      start: 35
+      end: 90
+    - source: p.replace('.', r'\.').replace('*', '.*')
+      style: secondary
+      start: 44
+      end: 84
+    - source: p.replace('.', r'\.').replace('*', '.*')
+      style: secondary
+      start: 44
+      end: 84
+  "import re\n\ndef wild(p, text):\n    return re.search(p.replace(\"*\", \".*?\"), text)":
+    labels:
+    - source: re.search(p.replace("*", ".*?"), text)
+      style: primary
+      start: 41
+      end: 79
+    - source: p.replace("*", ".*?")
+      style: secondary
+      start: 51
+      end: 72
+    - source: p.replace("*", ".*?")
+      style: secondary
+      start: 51
+      end: 72

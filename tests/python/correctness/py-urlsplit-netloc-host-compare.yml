@@ -4,8 +4,30 @@ valid:
     from urllib.parse import urlsplit
     if urlsplit(entered).hostname == urlsplit(site_url).hostname:
         reject()
+  - |-
+    from urllib.parse import urlsplit
+    a, b = urlsplit(entered), urlsplit(site_url)
+    if (a.hostname, a.port) == (b.hostname, b.port):
+        reject()
+  - |-
+    from urllib.parse import urlsplit
+    same = urlsplit(entered).hostname.lower() == urlsplit(site_url).hostname.lower()
+  - |-
+    from urllib.parse import urlsplit
+    same = urlsplit(entered).scheme == urlsplit(site_url).scheme
 invalid:
   - |-
     from urllib.parse import urlsplit
     if urlsplit(entered).netloc == urlsplit(site_url).netloc:
         reject()
+  - |-
+    from urllib.parse import urlsplit
+    def same_site(entered, site_url):
+        return urlsplit(entered).netloc == urlsplit(site_url).netloc
+  - |-
+    from urllib.parse import urlsplit
+    assert urlsplit(self.base).netloc == urlsplit(request.url).netloc
+  - |-
+    from urllib.parse import urlsplit
+    if redirect and urlsplit(target).netloc == urlsplit(origin).netloc and ok:
+        follow()

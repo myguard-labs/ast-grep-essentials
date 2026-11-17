@@ -6,10 +6,52 @@ valid:
       const rel = relative(base, join(base, p));
       return rel.length > 0;
     }
+  - |-
+    import { join, relative } from 'path';
+    import { isInside } from './paths';
+    export function within(base: string, p: string): boolean {
+      const rel = relative(base, join(base, p));
+      return isInside(rel);
+    }
+  - |-
+    import { resolve, sep } from 'path';
+    export function within(base: string, p: string): boolean {
+      const full = resolve(base, p);
+      return full === base || full.startsWith(base + sep);
+    }
+  - |-
+    import { isAbsolute, join, relative } from 'path';
+    export function within(base: string, p: string): boolean {
+      const rel = relative(base, join(base, p));
+      return rel !== '..' && !rel.startsWith('..' + '/') && !isAbsolute(rel);
+    }
 invalid:
   - |-
     import { join, relative } from 'path';
     export function within(base: string, p: string): boolean {
       const rel = relative(base, join(base, p));
       return !(rel === '..' || rel.startsWith('../'));
+    }
+  - |-
+    import { join, relative } from 'path';
+    export function check(base: string, p: string): void {
+      const rel = relative(base, join(base, p));
+      if (rel === '..' || rel.startsWith('../')) {
+        throw new Error('escape');
+      }
+    }
+  - |-
+    import { join, relative } from 'path';
+    export const within = (base: string, p: string): boolean => {
+      const rel = relative(base, join(base, p));
+      return !(rel === '..' || rel.startsWith('../'));
+    };
+  - |-
+    import { join, relative } from 'path';
+    class Guard {
+      allowed(base: string, p: string): boolean {
+        const rel = relative(base, join(base, p));
+        const escapes = rel === '..' || rel.startsWith('../') ? true : false;
+        return !escapes;
+      }
     }

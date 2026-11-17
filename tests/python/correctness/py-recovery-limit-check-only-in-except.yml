@@ -11,6 +11,40 @@ valid:
             except ValueError:
                 pass
         return out
+  - |-
+    def recover(data, limit):
+        out = b''
+        for index in range(len(data)):
+            try:
+                out += data[index:index + 1]
+                if index > limit:
+                    raise RuntimeError('limit')
+            except ValueError:
+                pass
+        return out
+  - |-
+    def recover(data, limit):
+        out = b''
+        for index in range(len(data)):
+            try:
+                out += data[index:index + 1]
+            except ValueError:
+                pass
+            finally:
+                if index > limit:
+                    raise RuntimeError('limit')
+        return out
+  - |-
+    def recover(data, limit):
+        out = b''
+        for index in range(len(data)):
+            if index > limit:
+                raise RuntimeError('limit')
+            try:
+                out += data[index:index + 1]
+            except (ValueError, KeyError) as exc:
+                print(exc)
+        return out
 invalid:
   - |-
     def recover(data, limit):
@@ -22,3 +56,38 @@ invalid:
                 if index > limit:
                     raise RuntimeError('limit')
         return out
+  - |-
+    def recover(data, limit):
+        out = b''
+        for index in range(len(data)):
+            try:
+                out += data[index:index + 1]
+            except (ValueError, KeyError) as exc:
+                print(exc)
+                if index > limit:
+                    raise RuntimeError('limit') from exc
+        return out
+  - |-
+    def recover(blocks, max_blocks):
+        for i in range(len(blocks)):
+            try:
+                blocks[i].decode()
+            except UnicodeError:
+                if i > max_blocks:
+                    break
+                blocks[i] = b''
+            else:
+                continue
+        return blocks
+  - |-
+    def recover(data, limit):
+        for pos in range(len(data)):
+            try:
+                data[pos].run()
+            except OSError:
+                try:
+                    data[pos].reset()
+                except OSError:
+                    if pos > limit:
+                        return None
+        return data

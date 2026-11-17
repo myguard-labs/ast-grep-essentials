@@ -3,7 +3,25 @@ valid:
   - |-
     import { defineConfig } from 'tsdown'
     export default defineConfig({ deps: { onlyAllowBundle: ['@types/hast'] } })
+  - |-
+    import { defineConfig } from 'tsdown'
+    export default defineConfig({ entry: ['src/index.ts'], format: ['esm'] })
+  - |-
+    import { build } from 'esbuild'
+    await build({ entry: ['src/index.ts'], external: ['react'] })
+  - |-
+    import { defineConfig } from 'tsdown'
+    export default defineConfig({ entry: ['src/index.ts'], deps: { onlyAllowBundle: ['@types/hast'] } })
 invalid:
   - |-
     import { defineConfig } from 'tsdown'
     export default defineConfig({ inlineOnly: ['@types/hast'] })
+  - |-
+    import { defineConfig } from 'tsdown'
+    export default defineConfig({ entry: ['src/index.ts'], external: ['react'] })
+  - |-
+    import { defineConfig } from 'tsdown'
+    export default defineConfig({ 'inlineOnly': ['@types/hast'], "external": ['react'] })
+  - |-
+    import { defineConfig } from 'tsdown'
+    export default defineConfig<Options>({ format: ['esm'], external: [/^node:/] })

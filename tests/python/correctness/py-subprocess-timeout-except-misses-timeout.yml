@@ -8,6 +8,30 @@ valid:
             subprocess.run(["yr", "check"], timeout=10)
         except (OSError, subprocess.SubprocessError):
             pass
+  - |-
+    import subprocess
+
+    def f():
+        try:
+            subprocess.run(["yr", "check"], timeout=10)
+        except subprocess.TimeoutExpired:
+            pass
+  - |-
+    import subprocess
+
+    def f():
+        try:
+            subprocess.run(["yr", "check"], timeout=10)
+        except subprocess.SubprocessError as exc:
+            print(exc)
+  - |-
+    import subprocess
+
+    def f():
+        try:
+            subprocess.run(["yr", "check"], check=True)
+        except OSError:
+            pass
 invalid:
   - |
     import subprocess
@@ -17,3 +41,32 @@ invalid:
             subprocess.run(["yr", "check"], timeout=10)
         except OSError:
             pass
+  - |-
+    import subprocess
+
+    def f():
+        try:
+            result = subprocess.run(["yr", "check"], capture_output=True, timeout=30)
+            print(result.stdout)
+        except OSError:
+            pass
+  - |-
+    import subprocess
+
+    def f(cmd, t):
+        try:
+            subprocess.run(cmd, check=True, timeout=t)
+        except OSError:
+            pass
+        else:
+            print('done')
+  - |-
+    import subprocess
+
+    def f(cmd):
+        try:
+            subprocess.run(cmd, timeout=5)
+        except OSError:
+            log()
+        finally:
+            cleanup()

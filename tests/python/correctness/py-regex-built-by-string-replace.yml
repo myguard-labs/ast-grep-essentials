@@ -5,9 +5,42 @@ valid:
 
     def wild(p):
         return re.compile(re.escape(p).replace("\\*", ".*?"))
+  - |-
+    import re
+
+    def wild(p, text):
+        return re.search(re.escape(p), text.replace("\\", "/"))
+  - |-
+    import re
+
+    def wild(p):
+        return re.compile(re.escape(p.replace("*", "")))
+  - |-
+    import re
+
+    PATTERN = re.compile(r'^[a-z]+$')
+
+    def check(text):
+        return PATTERN.match(text.replace('-', ''))
 invalid:
   - |-
     import re
 
     def wild(p):
         return re.compile(p.replace("*", ".*?"))
+  - |-
+    import re
+
+    def wild(p, text):
+        return re.search(p.replace("*", ".*?"), text)
+  - |-
+    import re
+
+    class Glob:
+        def matches(self, name):
+            return re.fullmatch(self.glob.replace('?', '.'), name, re.IGNORECASE)
+  - |-
+    import re
+
+    def wild(p):
+        return re.match(p.replace('.', r'\.').replace('*', '.*'), 'x')

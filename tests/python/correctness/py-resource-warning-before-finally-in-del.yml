@@ -13,6 +13,45 @@ valid:
                 self.stream.flush()
             finally:
                 self.stream.close()
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
+            try:
+                self.stream.flush()
+            finally:
+                self.stream.close()
+            warnings.warn("Unclosed writer", ResourceWarning)
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def close(self):
+            warnings.warn("Unclosed writer", ResourceWarning)
+            try:
+                self.stream.flush()
+            finally:
+                self.stream.close()
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
+            warnings.warn("Unclosed writer", ResourceWarning)
+            try:
+                self.stream.flush()
+            except OSError:
+                pass
 invalid:
   - |
     import warnings
@@ -22,6 +61,48 @@ invalid:
             self.stream = stream
 
         def __del__(self):
+            warnings.warn("Unclosed writer", ResourceWarning)
+            try:
+                self.stream.flush()
+            finally:
+                self.stream.close()
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
+            warnings.warn(f"Unclosed writer {self.stream!r}", ResourceWarning)
+            try:
+                self.stream.flush()
+            except OSError:
+                pass
+            finally:
+                self.stream.close()
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
+            warnings.warn("Unclosed writer", ResourceWarning)
+            self.stream.flush()
+            try:
+                self.stream.sync()
+            finally:
+                self.stream.close()
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self, _warn=warnings.warn):
             warnings.warn("Unclosed writer", ResourceWarning)
             try:
                 self.stream.flush()

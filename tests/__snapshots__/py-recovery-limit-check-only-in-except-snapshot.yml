@@ -1,16 +1,115 @@
 id: py-recovery-limit-check-only-in-except
 snapshots:
-  ? |-
-    def recover(data, limit):
-        out = b''
+  "def recover(blocks, max_blocks):\n    for i in range(len(blocks)):\n        try:\n            blocks[i].decode()\n        except UnicodeError:\n            if i > max_blocks:\n                break\n            blocks[i] = b''\n        else:\n            continue\n    return blocks":
+    labels:
+    - source: |-
+        if i > max_blocks:
+                        break
+      style: primary
+      start: 151
+      end: 191
+    - source: i
+      style: secondary
+      start: 41
+      end: 42
+    - source: |-
+        for i in range(len(blocks)):
+                try:
+                    blocks[i].decode()
+                except UnicodeError:
+                    if i > max_blocks:
+                        break
+                    blocks[i] = b''
+                else:
+                    continue
+      style: secondary
+      start: 37
+      end: 254
+    - source: |-
+        except UnicodeError:
+                    if i > max_blocks:
+                        break
+                    blocks[i] = b''
+      style: secondary
+      start: 118
+      end: 219
+    - source: i > max_blocks
+      style: secondary
+      start: 154
+      end: 168
+  "def recover(data, limit):\n    for pos in range(len(data)):\n        try:\n            data[pos].run()\n        except OSError:\n            try:\n                data[pos].reset()\n            except OSError:\n                if pos > limit:\n                    return None\n    return data":
+    labels:
+    - source: |-
+        if pos > limit:
+                            return None
+      style: primary
+      start: 219
+      end: 266
+    - source: pos
+      style: secondary
+      start: 34
+      end: 37
+    - source: |-
+        for pos in range(len(data)):
+                try:
+                    data[pos].run()
+                except OSError:
+                    try:
+                        data[pos].reset()
+                    except OSError:
+                        if pos > limit:
+                            return None
+      style: secondary
+      start: 30
+      end: 266
+    - source: |-
+        except OSError:
+                        if pos > limit:
+                            return None
+      style: secondary
+      start: 187
+      end: 266
+    - source: pos > limit
+      style: secondary
+      start: 222
+      end: 233
+  "def recover(data, limit):\n    out = b''\n    for index in range(len(data)):\n        try:\n            out += data[index:index + 1]\n        except (ValueError, KeyError) as exc:\n            print(exc)\n            if index > limit:\n                raise RuntimeError('limit') from exc\n    return out":
+    labels:
+    - source: |-
+        if index > limit:
+                        raise RuntimeError('limit') from exc
+      style: primary
+      start: 210
+      end: 280
+    - source: index
+      style: secondary
+      start: 48
+      end: 53
+    - source: |-
         for index in range(len(data)):
-            try:
-                out += data[index:index + 1]
-            except ValueError:
-                if index > limit:
-                    raise RuntimeError('limit')
-        return out
-  : labels:
+                try:
+                    out += data[index:index + 1]
+                except (ValueError, KeyError) as exc:
+                    print(exc)
+                    if index > limit:
+                        raise RuntimeError('limit') from exc
+      style: secondary
+      start: 44
+      end: 280
+    - source: |-
+        except (ValueError, KeyError) as exc:
+                    print(exc)
+                    if index > limit:
+                        raise RuntimeError('limit') from exc
+      style: secondary
+      start: 137
+      end: 280
+    - source: index > limit
+      style: secondary
+      start: 213
+      end: 226
+  "def recover(data, limit):\n    out = b''\n    for index in range(len(data)):\n        try:\n            out += data[index:index + 1]\n        except ValueError:\n            if index > limit:\n                raise RuntimeError('limit')\n    return out":
+    labels:
     - source: |-
         if index > limit:
                         raise RuntimeError('limit')

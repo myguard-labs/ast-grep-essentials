@@ -1,5 +1,20 @@
 id: js-platform-arch-package-name-typescript
 valid:
   - 'const name = `@pacquet/${process.platform}-${process.arch}${libc}/pacquet`'
+  - |-
+    const name = `@pacquet/${process.platform}-${process.arch}-${getLibc()}/pacquet`
+  - |-
+    const { platform, arch } = process
+    const name = `@pacquet/${platform}-${arch}${libc}/pacquet`
+  - |-
+    const name = `@pacquet/${process.platform}-${process.arch}${isMusl ? '-musl' : ''}/pacquet`
+  - |-
+    const name = `@pacquet/${process.platform}`
 invalid:
   - 'const name = `@pacquet/${process.platform}-${process.arch}/pacquet`'
+  - |-
+    const name = `@pacquet/${ process.platform }-${ process.arch }/pacquet`
+  - |-
+    const bin = `node_modules/@pacquet/${process.platform}-${process.arch}/bin/pacquet`
+  - |-
+    const mod = require(`@x/${process.platform}-${process.arch}/index.node`)

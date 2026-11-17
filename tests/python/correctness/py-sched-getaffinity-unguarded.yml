@@ -5,5 +5,32 @@ valid:
         cpu_count = max(1, len(os.sched_getaffinity(0)))
     except OSError:
         cpu_count = 1
+  - |-
+    def cpus():
+        try:
+            return len(os.sched_getaffinity(0))
+        except (AttributeError, OSError):
+            return os.cpu_count() or 1
+  - |-
+    def cpus():
+        return os.cpu_count() or 1
+  - |-
+    def cpus():
+        for _ in range(2):
+            try:
+                return len(os.sched_getaffinity(os.getpid()))
+            except OSError:
+                continue
+        return 1
 invalid:
   - 'cpu_count = max(1, len(os.sched_getaffinity(0)))'
+  - |-
+    CPUS = len(os.sched_getaffinity(0))
+  - |-
+    def cpus():
+        if hasattr(os, 'sched_getaffinity'):
+            return len(os.sched_getaffinity(os.getpid()))
+        return 1
+  - |-
+    def cpus():
+        return max(1, len(os.sched_getaffinity(0)))
