@@ -4,8 +4,22 @@ valid:
     static void get_id(int x) {
       x++;
     }
+  - |-
+    static int pick(int x) { if (x > 0) { return 1; } return 0; }
+  - |-
+    static void *grab(unsigned long n) { return malloc(n); }
+  - |-
+    static int sw(int x) { switch (x) { case 1: return 1; default: return 0; } }
 invalid:
   - |-
     static int get_id(int x) {
       x++;
     }
+  - |-
+    static unsigned long hash_str(const char *s) { unsigned long h = 5381; while (*s) { h = h * 33 + (unsigned char)*s++; } }
+  - |-
+    char *dup_name(const char *s) { strlen(s); }
+  - |-
+    static int clamp(int x) { if (x > 9) { x = 9; } }
+  - |-
+    struct point origin(void) { int zero = 0; (void)zero; }

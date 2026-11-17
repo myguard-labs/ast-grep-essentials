@@ -1,5 +1,17 @@
 id: c-nonstatic-inline-definition
 valid:
   - 'static inline int helper_fn(void) { return 1; }'
+  - |-
+    inline static int helper_fn(void) { return 1; }
+  - |-
+    int helper_fn(void) { return 1; }
+  - |-
+    inline int helper_fn(void);
 invalid:
   - 'inline int helper_fn(void) { return 1; }'
+  - |-
+    inline unsigned long helper_fn(unsigned long x) { return x * 2; }
+  - |-
+    inline const char *helper_fn(void) { return "x"; }
+  - |-
+    inline int helper_fn(int a, int b) { return a < b ? a : b; }

@@ -8,6 +8,12 @@ valid:
       }
       return -1;
     }
+  - |-
+    static int f(int k) { switch (k) { case 1: return 0; default: return -1; } }
+  - |-
+    static void f(int k) { switch (k) { case 1: k++; break; } }
+  - |-
+    static int f(int k) { switch (k) { default: return 7; case 1: return 0; } }
 invalid:
   - |-
     static int f(int k) {
@@ -16,3 +22,9 @@ invalid:
         case 2: return 1;
       }
     }
+  - |-
+    static int f(int k) { int r = 0; switch (k) { case 1: r = 1; break; case 2: r = 2; break; } }
+  - |-
+    static const char *f(int k) { switch (k) { case 1: return "a"; case 2: return "b"; } }
+  - |-
+    static unsigned long f(int k) { if (k < 0) return 0; switch (k) { case 1: return 2; case 2: return 3; } }

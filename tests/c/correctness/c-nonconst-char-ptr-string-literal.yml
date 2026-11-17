@@ -1,5 +1,17 @@
 id: c-nonconst-char-ptr-string-literal
 valid:
   - 'static const char *host_field = "localhost";'
+  - |-
+    static char host_buf[] = "localhost";
+  - |-
+    static char name_buf[16] = "host";
+  - |-
+    static char *dup_host(void) { char *p = strdup("localhost"); return p; }
 invalid:
   - 'static char *host_field = "localhost";'
+  - |-
+    int f(void) { char *msg = "hello"; return msg != 0; }
+  - |-
+    static char *a = "x", *b = "y";
+  - |-
+    char *argv0 = "prog";

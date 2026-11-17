@@ -1,5 +1,19 @@
 id: c-nonvoid-switch-tail-no-return
 snapshots:
+  "static char *f(int x) { switch (x) { case 1: return \"a\"; } }":
+    labels:
+    - source: "static char *f(int x) { switch (x) { case 1: return \"a\"; } }"
+      style: primary
+      start: 0
+      end: 60
+    - source: "switch (x) { case 1: return \"a\"; }"
+      style: secondary
+      start: 24
+      end: 58
+    - source: "{ switch (x) { case 1: return \"a\"; } }"
+      style: secondary
+      start: 22
+      end: 60
   "static int f(int x) {\n\tswitch (x) {\n\t\tcase 1: return 1;\n\t}\n}":
     labels:
     - source: |-
@@ -27,3 +41,31 @@ snapshots:
       style: secondary
       start: 20
       end: 60
+  "static int f(int x) { int v = 0; switch (x) { case 1: v = 1; break; } }":
+    labels:
+    - source: "static int f(int x) { int v = 0; switch (x) { case 1: v = 1; break; } }"
+      style: primary
+      start: 0
+      end: 71
+    - source: "switch (x) { case 1: v = 1; break; }"
+      style: secondary
+      start: 33
+      end: 69
+    - source: "{ int v = 0; switch (x) { case 1: v = 1; break; } }"
+      style: secondary
+      start: 20
+      end: 71
+  "static long f(int x) { x++; switch (x) { case 3: return 1; case 4: return 2; } }":
+    labels:
+    - source: "static long f(int x) { x++; switch (x) { case 3: return 1; case 4: return 2; } }"
+      style: primary
+      start: 0
+      end: 80
+    - source: "switch (x) { case 3: return 1; case 4: return 2; }"
+      style: secondary
+      start: 28
+      end: 78
+    - source: "{ x++; switch (x) { case 3: return 1; case 4: return 2; } }"
+      style: secondary
+      start: 21
+      end: 80
