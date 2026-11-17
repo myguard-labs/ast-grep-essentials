@@ -57,10 +57,13 @@ valid:
     #include <errno.h>
     #include <pwd.h>
     #include <stddef.h>
-    int f(const char *n, char *buf, size_t len) {
+    #include <stdlib.h>
+    int f(const char *s, const char *n, char *buf, size_t len) {
       struct passwd pw, *res;
-      if (errno == ERANGE) return 1;
-      return getpwnam_r(n, &pw, buf, len, &res);
+      errno = 0;
+      long v = strtol(s, NULL, 10);
+      if (errno == ERANGE) return -1;
+      return v > 0 ? getpwnam_r(n, &pw, buf, len, &res) : 0;
     }
 invalid:
   - 'ret = getpwnam_r(n, &pw, buf, len, &res); if (errno == ERANGE) return;'
