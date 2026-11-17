@@ -3,5 +3,17 @@ valid:
   - >-
     if ( function_exists( 'mb_strlen' ) && mb_strlen( $blog_name, 'UTF-8' ) > 30
     ) $title_class = 'long';
+  - |-
+    <?php if ( function_exists( 'mb_substr' ) && mb_substr( $s, 0, 3 ) === 'abc' ) { $x = 1; }
+  - |-
+    <?php $n = function_exists( 'mb_strtolower' ) && mb_strtolower( $s ) === 'a';
+  - |-
+    <?php $ok = function_exists( 'mb_strlen' ) && ( mb_strlen( $s ) > 3 || $force );
 invalid:
   - 'if ( mb_strlen( $blog_name, ''UTF-8'' ) > 30 ) $title_class = ''long'';'
+  - |-
+    <?php $n = mb_strtolower( $s );
+  - |-
+    <?php $ok = mb_substr( $s, 0, 3 ) === 'abc' && function_exists( 'mb_strlen' );
+  - |-
+    <?php $ok = $enabled && mb_strlen( $s ) > 3;

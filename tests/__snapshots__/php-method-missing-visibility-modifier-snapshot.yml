@@ -1,12 +1,26 @@
 id: php-method-missing-visibility-modifier
 snapshots:
-  ? |-
-    <?php
-    class A {
-        function f( &$q ) {}
-    }
-  : labels:
+  "<?php\nclass A {\n    function f( &$q ) {}\n}":
+    labels:
     - source: function f( &$q ) {}
       style: primary
       start: 20
       end: 40
+  "<?php abstract class A { abstract function f(); }":
+    labels:
+    - source: abstract function f();
+      style: primary
+      start: 25
+      end: 47
+  "<?php class A { final function f() {} }":
+    labels:
+    - source: final function f() {}
+      style: primary
+      start: 16
+      end: 37
+  "<?php class A { static function f() {} }":
+    labels:
+    - source: static function f() {}
+      style: primary
+      start: 16
+      end: 38
