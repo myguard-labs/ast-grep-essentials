@@ -19,7 +19,7 @@ rule:
     - not:
         follows:
           kind: if_statement
-          regex: '%\s*2'
+          regex: '%\s*2\b|(^|[^&])&\s*1\b'
           stopBy: end
 metadata:
   rule_modified_at: '2026-10-20'
@@ -34,5 +34,5 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/131.html|https://cwe.mitre.org/data/definitions/20.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FP: if (strlen(hex) & 1) return NULL; str = zend_string_alloc(strlen(hex) / 2, 0); is flagged although parity is checked with & 1'
     - 'FN: if (strlen(a) % 2) return NULL; str = zend_string_alloc(strlen(b) / 2, 0); (parity check on a different string suppresses the match)'
+    - 'FN: if (strlen(a) & 0x1) return NULL; str = zend_string_alloc(strlen(a) / 2, 0); (& 0x1 and & 1U parity masks are not recognized as a parity guard)'

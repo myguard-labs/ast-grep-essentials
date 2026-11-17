@@ -10,10 +10,23 @@ note: >-
   Syntactic match on identical size and index text in sibling statements. It
   does not track reassignment, control flow, or aliasing.
 rule:
-  pattern: '$S[$N] = $V;'
-  follows:
-    stopBy: end
-    pattern: '$T *$S = emalloc($N);'
+  all:
+    - pattern: '$S[$N] = $V;'
+    - follows:
+        stopBy: end
+        pattern: '$T *$S = emalloc($N);'
+    - not:
+        follows:
+          stopBy: end
+          all:
+            - any:
+                - pattern: '$N = $_;'
+                - pattern: '$N -= $_;'
+                - pattern: '$N--;'
+                - pattern: '--$N;'
+            - follows:
+                stopBy: end
+                pattern: '$T *$S = emalloc($N);'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
@@ -26,4 +39,4 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/193.html|https://cwe.mitre.org/data/definitions/122.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FP: char *s = emalloc(n); n = n - 1; s[n] = 0; is flagged although n was reduced before the write'
+    - 'FN: n = strlen(s); n = n + 1; buf = emalloc(n); buf[n] = 0; (growing reassignment of the size, such as n = n + 1 or n = n * 2, suppresses the finding)'

@@ -18,6 +18,20 @@ rule:
         pattern: 'Number.isNaN($X)'
         stopBy: end
     - not:
+        any:
+          - precedes:
+              kind: if_statement
+              stopBy: end
+              has:
+                pattern: 'Number.isInteger($X)'
+                stopBy: end
+          - follows:
+              kind: if_statement
+              stopBy: end
+              has:
+                pattern: 'Number.isInteger($X)'
+                stopBy: end
+    - not:
         has:
           pattern: 'Number.isInteger($$$ARGS)'
           stopBy: end
@@ -34,5 +48,5 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A05:2025'
   todo_cases:
-    - 'FP: if (Number.isNaN(n)) { throw ... } followed by a separate if (!Number.isInteger(n)) { throw ... } is flagged on the first if'
     - 'FN: if (isNaN(n)) throw new Error("invalid"); (global isNaN)'
+    - 'FN: if (Number.isInteger(n)) { log(); } if (Number.isNaN(n)) throw new Error("invalid"); (a sibling isInteger check that does not reject suppresses the match)'

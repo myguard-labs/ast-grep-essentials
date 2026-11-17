@@ -24,6 +24,12 @@ rule:
             field: function
             kind: identifier
             regex: '^isfinite$'
+    - not:
+        has:
+          stopBy: end
+          any:
+            - pattern: 'isnan($X) || isinf($X)'
+            - pattern: 'isinf($X) || isnan($X)'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
@@ -37,7 +43,6 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A05:2025'
   todo_cases:
-    - 'FP: if (isnan(gamma) || isinf(gamma)) { return -1; } if (gamma <= 0.0) { return -1; } is flagged although NaN and inf are rejected'
     - 'FN: if (gamma <= 0) { return -1; } (integer literal zero)'
     - 'FN: if (gamma <= 0.0f) { return -1; } (float literal)'
     - 'FN: if (0.0 >= gamma) { return -1; } (reversed operands)'

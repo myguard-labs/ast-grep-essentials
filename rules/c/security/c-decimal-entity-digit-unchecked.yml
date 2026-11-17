@@ -7,14 +7,29 @@ message: >-
   Character minus '0' is accumulated into a number without a preceding digit
   range check.
 note: >-
-  Syntactic only. It checks for a preceding sibling if statement, not whether
-  that check actually validates digits.
+  Syntactic only. A preceding sibling if statement suppresses the match
+  without checking that it validates digits. An enclosing if consequence
+  suppresses it only when its condition range-checks or isdigit()-checks the
+  same accumulated character expression.
 rule:
   pattern: '$E = $E * 10 + ($C - ''0'');'
-  not:
-    follows:
-      kind: if_statement
-      stopBy: end
+  all:
+    - not:
+        follows:
+          kind: if_statement
+          stopBy: end
+    - not:
+        inside:
+          stopBy: end
+          kind: if_statement
+          field: consequence
+          has:
+            field: condition
+            any:
+              - pattern: '($C >= ''0'' && $C <= ''9'')'
+              - pattern: '(''0'' <= $C && $C <= ''9'')'
+              - pattern: '(isdigit($C))'
+              - pattern: '(isdigit((unsigned char)$C))'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
@@ -28,7 +43,6 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A05:2025'
   todo_cases:
-    - 'FP: if (buf[0] >= ''0'' && buf[0] <= ''9'') { ent = ent * 10 + (buf[0] - ''0''); } is flagged although the digit check encloses the statement'
     - 'FN: ent *= 10; ent += (buf[0] - ''0''); (compound assignment)'
     - 'FN: ent = 10 * ent + (buf[0] - ''0''); (operands swapped)'
     - 'FN: if (x) { y(); } ent = ent * 10 + (buf[0] - ''0''); (an unrelated earlier if suppresses the match)'
