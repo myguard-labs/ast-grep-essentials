@@ -1,5 +1,12 @@
 id: php-dirname-concat-dot-path
 valid:
   - '$p = dirname(__FILE__) . ''/build/shtool'';'
+  - '<?php $p = dirname(__FILE__) . ''/build/.hidden'';'
+  - '<?php $p = dirname(__FILE__) . ''/../lib'';'
+  - '<?php $p = dirname(__FILE__) . DIRECTORY_SEPARATOR . ''build'';'
+  - '<?php $p = dirname(__FILE__, 2) . ''/x'';'
 invalid:
   - '$p = dirname(__FILE__) . ''./build/shtool'';'
+  - '<?php $p = dirname(__FILE__, 2) . ''./x'';'
+  - '<?php $p = dirname(__FILE__) . ''../lib/x.php'';'
+  - '<?php $p = dirname(dirname(__FILE__)) . ''./x'';'

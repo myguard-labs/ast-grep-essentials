@@ -1,5 +1,11 @@
 id: php-do-action-drops-parameter
 valid:
   - 'function get_footer( $name = null ) { do_action( ''get_footer'', $name ); }'
+  - '<?php function f($n) { do_action(''hook'', $n, $m); }'
+  - '<?php function f($n) { do_action_ref_array(''hook'', array($n)); }'
+  - '<?php do_action(''hook'');'
 invalid:
   - 'function get_footer( $name = null ) { do_action( ''get_footer'' ); }'
+  - '<?php function f($n, $m) { do_action(''hook''); }'
+  - '<?php function f(&$n) { do_action(''hook''); }'
+  - '<?php function f($n) { if ($n) { do_action(''hook''); } }'

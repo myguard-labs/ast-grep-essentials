@@ -1,5 +1,14 @@
 id: php-discarded-concat-statement
 valid:
   - '$cap_key = $cap_key . ''capabilities'';'
+  - '<?php $s .= ''x'';'
+  - '<?php $s = $a . $b;'
+  - '<?php echo $a . $b;'
+  - '<?php return ''a'' . $b;'
+  - '<?php $arr[] = $a . ''x'';'
 invalid:
   - '$cap_key. ''capabilities'';'
+  - '<?php $a . ''x'';'
+  - '<?php foo() . ''x'';'
+  - '<?php $this->a . $b;'
+  - '<?php if ($x) $a . ''x'';'
