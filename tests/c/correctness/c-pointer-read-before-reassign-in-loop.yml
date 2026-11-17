@@ -17,6 +17,62 @@ valid:
       }
       ptr = cache[0];
     }
+  - |-
+    struct node { int val; int len; struct node *next; };
+    int f(struct node *h) {
+      int x = 0;
+      struct node *p;
+      for (p = h; p;) {
+        x = p->val;
+        p = p->next;
+      }
+      return x;
+    }
+  - |-
+    struct node { int val; struct node *next; };
+    void use(int v);
+    void f(struct node *h) {
+      struct node *p;
+      for (p = h; p;) {
+        use(p->val);
+        p = p->next;
+      }
+    }
+  - |-
+    struct node { int val; int len; struct node *next; };
+    int f(struct node *h) {
+      int x = 0;
+      int y = 0;
+      struct node *p;
+      for (p = h; p;) {
+        x = p->val;
+        y = p->len;
+        p = p->next;
+      }
+      return x + y;
+    }
+  - |-
+    struct node { int val; struct node *next; };
+    int f(struct node *h) {
+      int x = 0;
+      struct node *p;
+      for (p = h; p && p->next;) {
+        x = p->val;
+        p = p->next->next;
+      }
+      return x;
+    }
+  - |-
+    struct node { int val; struct node *next; };
+    int f(struct node *h) {
+      int x = 0;
+      struct node *p;
+      for (p = h; p;) {
+        x = p->val;
+        p = (struct node *) p->next;
+      }
+      return x;
+    }
 invalid:
   - >-
     void f(void) { for (j = 0; j < n; j++) { total -= ptr->size; ptr = cache[j];
@@ -35,5 +91,26 @@ invalid:
         n2 = cur->len;
         ptr = cache[j];
         cur = tbl[j];
+      }
+    }
+  - |-
+    void f(void) {
+      for (j = 0; j < n; j++) {
+        total += a->size;
+        a = cache[j];
+      }
+    }
+  - |-
+    void f(void) {
+      for (j = 0; j < n; j++) {
+        n2 = cur->len;
+        cur = tbl[j];
+      }
+    }
+  - |-
+    void f(void) {
+      for (j = 0; j < n; j++) {
+        x = p->v;
+        p = (node_t *) q->next;
       }
     }

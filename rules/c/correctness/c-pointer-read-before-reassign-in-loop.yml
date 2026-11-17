@@ -17,7 +17,14 @@ rule:
         pattern: '$P->$F'
     - precedes:
         stopBy: end
-        pattern: '$P = $V;'
+        all:
+          - pattern: '$P = $V;'
+          - not:
+              pattern: '$P = $P->$G;'
+          - not:
+              pattern: '$P = $P->$H->$G;'
+          - not:
+              pattern: '$P = ($T *) $P->$G;'
     - inside:
         kind: compound_statement
         inside:
@@ -31,4 +38,5 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'Observed false positive: the linked-list walk `x = p->val; p = p->next;` in a for body is reported although each read precedes the advance by design.'
+    - 'Known limitation: an advance through a helper call (`p = next_of(p);`) or a three-deep member chain (`p = p->a->b->c;`) is still reported after a read of p; only `p = p->f;`, `p = p->a->f;` and a pointer cast of `p->f` are treated as cursor advances.'
+    - 'Known limitation: rule scope is for loops only; the same read-then-reassign shape in a while loop is not reported.'
