@@ -3,7 +3,13 @@ valid:
   - >-
     <?php function f( &$post ) { if ( has_post_format( 'gallery', $post ) ) {
     return 1; } } ?>
+  - '<?php function f( $post ) { return has_post_format( array( ''gallery'', ''video'' ), $post ); }'
+  - '<?php function f( WP_Post $post ) { return has_post_format( ''quote'', $post->ID ); }'
+  - '<?php function f( $post ) { return has_post_format( ''video'', get_post( $id ) ); }'
 invalid:
   - >-
     <?php function f( &$post ) { if ( has_post_format( 'gallery' ) ) { return 1;
     } } ?>
+  - '<?php function f( $post ) { return has_post_format( array( ''gallery'', ''video'' ) ); }'
+  - '<?php function f( WP_Post $post ) { if ( ! has_post_format( ''quote'' ) ) { return 0; } }'
+  - '<?php function f( $post ) { $is = has_post_format( $fmt ); return $is; }'

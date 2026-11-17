@@ -3,7 +3,13 @@ valid:
   - |-
     <?php
     $url = home_url( '/' );
+  - '<?php $u = home_url( $wp->request );'
+  - '<?php $u = home_url();'
+  - '<?php $u = home_url( ''/'' . ltrim( $slug, ''/'' ) );'
 invalid:
   - |-
     <?php
     $url = home_url( $_SERVER['REQUEST_URI'] );
+  - '<?php $u = esc_url( home_url( $_SERVER["REQUEST_URI"] ) );'
+  - '<?php $u = home_url( $_SERVER[''REQUEST_URI''], ''https'' );'
+  - '<?php function f() { return home_url($_SERVER[''REQUEST_URI'']); }'

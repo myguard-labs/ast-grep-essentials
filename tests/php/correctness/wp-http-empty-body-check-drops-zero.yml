@@ -1,5 +1,11 @@
 id: wp-http-empty-body-check-drops-zero
 valid:
   - 'if ( is_null($body) ) { return; }'
+  - 'if ( '''' === $body ) { return; }'
+  - 'if ( ! isset( $body ) ) { return; }'
+  - 'if ( null === $body || '''' === $body ) { return; }'
 invalid:
   - 'if ( empty($body) ) { return; }'
+  - 'if ( ! empty( $body ) ) { process( $body ); }'
+  - 'return empty($body) ? null : $body;'
+  - '<?php $missing = empty( $body ) || $code !== 200;'

@@ -1,5 +1,11 @@
 id: wp-if-superglobal-truthiness-without-isset
 valid:
   - '<?php if ( isset( $_POST[''pages-submit''] ) ) { echo ''saved''; }'
+  - '<?php if ( ! empty( $_POST[''a''] ) ) { echo ''x''; }'
+  - '<?php if ( isset( $_POST[''a''] ) && $_POST[''a''] ) { echo ''x''; }'
+  - '<?php if ( ( $_POST[''a''] ?? '''' ) !== '''' ) { echo ''x''; }'
 invalid:
   - '<?php if ( $_POST[''pages-submit''] ) { echo ''saved''; }'
+  - '<?php if ( $_POST["pages-submit"] ) { echo ''saved''; } else { echo ''no''; }'
+  - '<?php if ( $_POST [''a''] ) { echo ''x''; }'
+  - '<?php if ( $_POST[''a''][''b''] ) { echo ''x''; }'
