@@ -3,7 +3,23 @@ valid:
   - >-
     int f(void *manager, int le_pspell) { int ind = zend_list_insert(manager,
     le_pspell TSRMLS_CC); return ind; }
+  - |-
+    void f(void *manager, int le TSRMLS_DC) { (void) zend_list_insert(manager, le TSRMLS_CC); }
+  - |-
+    int f(void *res, int type) { int id; id = zend_list_insert(res, type TSRMLS_CC); return id; }
+  - |-
+    int f(void *res, int type) { return zend_list_insert(res, type TSRMLS_CC); }
 invalid:
   - >-
     int f(void *manager, int le_pspell) { int ind = zend_list_insert(manager,
     le_pspell); return ind; }
+  - |-
+    int f(void *ptr, int le) { return zend_list_insert(ptr, le); }
+  - |-
+    void f(void *res, int le_type) { zend_list_insert(res, le_type); }
+  - |-
+    int f(void *ptr, int le) {
+      int rsrc;
+      rsrc = zend_list_insert( ptr , le );
+      return rsrc;
+    }

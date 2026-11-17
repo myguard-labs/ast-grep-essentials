@@ -1,5 +1,17 @@
 id: c-void-return-followed-by-dead-code
 valid:
   - 'void f(int *p) { *p = 1; return; }'
+  - |-
+    void f(int *p) { if (!p) { return; } *p = 1; }
+  - |-
+    void f(int *p) { if (!p) return; *p = 1; }
+  - |-
+    int f(int *p) { *p = 1; return 0; }
 invalid:
   - 'void f(int *p) { return; *p = 1; }'
+  - |-
+    void f(int *p) { if (!p) { return; *p = 0; } }
+  - |-
+    void f(int *p) { return; free(p); }
+  - |-
+    void f(int *p) { *p = 0; return; *p = 1; }

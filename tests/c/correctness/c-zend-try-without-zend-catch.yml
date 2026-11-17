@@ -1,5 +1,50 @@
 id: c-zend-try-without-zend-catch
 valid:
   - "void f(void) {\n\tzend_try {\n\t\trun_user_code();\n\t} zend_catch {\n\t\tcleanup();\n\t} zend_end_try();\n}"
+  - |-
+    void f(void) {
+    	zend_first_try {
+    		run_user_code();
+    	} zend_catch {
+    		cleanup();
+    	} zend_end_try();
+    }
+  - |-
+    void f(void) {
+    	run_user_code();
+    	cleanup();
+    }
+  - |-
+    int f(void) {
+    	int failed = 0;
+    	zend_try {
+    		run_user_code();
+    	} zend_catch {
+    		failed = 1;
+    	} zend_end_try();
+    	return failed;
+    }
 invalid:
   - "void f(void) {\n\tzend_try {\n\t\trun_user_code();\n\t} zend_end_try();\n}"
+  - |-
+    void f(void) {
+    	zend_first_try {
+    		run_user_code();
+    	} zend_end_try();
+    }
+  - |-
+    void f(int x) {
+    	if (x) {
+    		zend_try {
+    			run_user_code();
+    		} zend_end_try();
+    	}
+    }
+  - |-
+    void f(int n) {
+    	while (n--) {
+    		zend_try {
+    			run_user_code();
+    		} zend_end_try();
+    	}
+    }

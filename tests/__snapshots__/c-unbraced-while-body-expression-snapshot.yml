@@ -1,6 +1,18 @@
 id: c-unbraced-while-body-expression
 snapshots:
-  void f(char *loc) { while (*loc == ' ') loc++; }:
+  "int f(int *b, int len) {\n  int sum = 0, i = 0;\n  while (i < len)\n    sum += b[i++];\n  return sum;\n}":
+    labels:
+    - source: |-
+        while (i < len)
+            sum += b[i++];
+      style: primary
+      start: 49
+      end: 83
+    - source: sum += b[i++];
+      style: secondary
+      start: 69
+      end: 83
+  "void f(char *loc) { while (*loc == ' ') loc++; }":
     labels:
     - source: while (*loc == ' ') loc++;
       style: primary
@@ -10,3 +22,25 @@ snapshots:
       style: secondary
       start: 40
       end: 46
+  "void f(char *s, char *d) {\n  while (*s)\n    *d++ = *s++;\n}":
+    labels:
+    - source: |-
+        while (*s)
+            *d++ = *s++;
+      style: primary
+      start: 29
+      end: 56
+    - source: "*d++ = *s++;"
+      style: secondary
+      start: 44
+      end: 56
+  "void f(int *n) { while (*n > 0) (*n)--; }":
+    labels:
+    - source: while (*n > 0) (*n)--;
+      style: primary
+      start: 17
+      end: 39
+    - source: (*n)--;
+      style: secondary
+      start: 32
+      end: 39

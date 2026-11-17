@@ -1,5 +1,17 @@
 id: c-unary-minus-unsigned-cast
 valid:
   - 'unsigned long neg(long v) { return 0 - (unsigned long)v; }'
+  - |-
+    double neg(long v) { return -(double)v; }
+  - |-
+    unsigned long neg(unsigned long v) { return 0UL - v; }
+  - |-
+    long neg(int v) { return -(long)v; }
 invalid:
   - 'unsigned long neg(long v) { return -(unsigned long)v; }'
+  - |-
+    unsigned long neg(long v) { unsigned long r = -(unsigned long)v; return r; }
+  - |-
+    unsigned long neg(long a, long b) { return -(unsigned long)(a + b); }
+  - |-
+    unsigned long neg(unsigned long *p) { return -(unsigned long) *p; }

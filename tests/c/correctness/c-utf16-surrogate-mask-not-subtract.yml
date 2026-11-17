@@ -3,7 +3,51 @@ valid:
   - >-
     int g(int c) { if (c < 0x10000) { return c; } else { c -= 0x10000; return c;
     } }
+  - |-
+    int g(int c) { if (c < 0x10000) { c &= 0xFFFF; return c; } else { c -= 0x10000; return c; } }
+  - |-
+    void g(unsigned cp, unsigned short *o) {
+      if (cp < 0x10000) {
+        o[0] = cp;
+      } else {
+        cp -= 0x10000;
+        o[0] = 0xD800 | (cp >> 10);
+        o[1] = 0xDC00 | (cp & 0x3FF);
+      }
+    }
+  - |-
+    int g(int c) {
+      if (c < 0x10000) {
+        return c;
+      } else {
+        c = (c - 0x10000) & 0xFFFFF;
+        return c;
+      }
+    }
 invalid:
   - >-
     int g(int c) { if (c < 0x10000) { return c; } else { c &= 0xFFFF; return c;
     } }
+  - |-
+    int g(int c) { if (c < 0x10000) return c; else c &= 0xFFFF; return c; }
+  - |-
+    void g(unsigned cp, unsigned short *o) {
+      if (cp < 0x10000) {
+        o[0] = cp;
+      } else {
+        cp &= 0xFFFF;
+        o[0] = 0xD800 | (cp >> 10);
+        o[1] = 0xDC00 | (cp & 0x3FF);
+      }
+    }
+  - |-
+    int g(int c) {
+      if (c < 0x10000) {
+        return c;
+      } else if (c > 0x10FFFF) {
+        return -1;
+      } else {
+        c &= 0xFFFF;
+        return c;
+      }
+    }
