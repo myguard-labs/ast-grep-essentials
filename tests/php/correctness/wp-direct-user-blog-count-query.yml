@@ -1,5 +1,11 @@
 id: wp-direct-user-blog-count-query
 valid:
   - '$c_users = $wpdb->get_var( "SELECT COUNT(id) FROM {$wpdb->posts}" );'
+  - "<?php $n = $wpdb->get_var( \"SELECT COUNT(*) FROM {$wpdb->usermeta}\" );"
+  - "<?php $n = $wpdb->get_var( \"SELECT user_login FROM {$wpdb->users} WHERE ID = 1\" );"
+  - "<?php $n = get_user_count();"
 invalid:
   - '$c_users = $wpdb->get_var( "SELECT COUNT(id) FROM {$wpdb->users}" );'
+  - "<?php $n = $wpdb->get_var( \"SELECT COUNT(*) FROM {$wpdb->blogs} WHERE public = 1\" );"
+  - "<?php $n = $wpdb->get_var( \"SELECT COUNT(ID) FROM {$wpdb->users} WHERE user_status = 0\" );"
+  - "<?php $n = $wpdb->get_var( \"SELECT COUNT(*) FROM {$wpdb->blogs}\" );"

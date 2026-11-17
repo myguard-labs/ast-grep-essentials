@@ -1,5 +1,10 @@
 id: wp-echo-attribute-comma-args
 valid:
   - '<tr class=''<?php echo $class . '' '' . $class1; ?>''>'
+  - "<tr class='<?php echo implode( ' ', $classes ); ?>'>"
+  - "<tr class='<?php echo esc_attr( $class . ' ' . $class1 ); ?>'>"
+  - "<tr class='<?php echo sprintf( '%s %s', $class, $class1 ); ?>'>"
 invalid:
   - '<tr class=''<?php echo $class, $class1; ?>''>'
+  - "<tr class='<?php echo esc_attr( $class ), esc_attr( $class1 ); ?>'>"
+  - "<tr class=\"<?php echo $a, $b, $c; ?>\">"

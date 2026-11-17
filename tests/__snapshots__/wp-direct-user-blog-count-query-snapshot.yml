@@ -1,6 +1,6 @@
 id: wp-direct-user-blog-count-query
 snapshots:
-  $c_users = $wpdb->get_var( "SELECT COUNT(id) FROM {$wpdb->users}" );:
+  "$c_users = $wpdb->get_var( \"SELECT COUNT(id) FROM {$wpdb->users}\" );":
     labels:
     - source: $wpdb->get_var( "SELECT COUNT(id) FROM {$wpdb->users}" )
       style: primary
@@ -10,3 +10,33 @@ snapshots:
       style: secondary
       start: 25
       end: 67
+  "<?php $n = $wpdb->get_var( \"SELECT COUNT(*) FROM {$wpdb->blogs} WHERE public = 1\" );":
+    labels:
+    - source: $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->blogs} WHERE public = 1" )
+      style: primary
+      start: 11
+      end: 83
+    - source: ( "SELECT COUNT(*) FROM {$wpdb->blogs} WHERE public = 1" )
+      style: secondary
+      start: 25
+      end: 83
+  "<?php $n = $wpdb->get_var( \"SELECT COUNT(*) FROM {$wpdb->blogs}\" );":
+    labels:
+    - source: $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->blogs}" )
+      style: primary
+      start: 11
+      end: 66
+    - source: ( "SELECT COUNT(*) FROM {$wpdb->blogs}" )
+      style: secondary
+      start: 25
+      end: 66
+  "<?php $n = $wpdb->get_var( \"SELECT COUNT(ID) FROM {$wpdb->users} WHERE user_status = 0\" );":
+    labels:
+    - source: $wpdb->get_var( "SELECT COUNT(ID) FROM {$wpdb->users} WHERE user_status = 0" )
+      style: primary
+      start: 11
+      end: 89
+    - source: ( "SELECT COUNT(ID) FROM {$wpdb->users} WHERE user_status = 0" )
+      style: secondary
+      start: 25
+      end: 89

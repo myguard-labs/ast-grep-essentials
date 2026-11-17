@@ -1,5 +1,11 @@
 id: wp-direct-mail-call
 valid:
   - '<?php @wp_mail( ''a@example.test'', ''subject'', ''body'' );'
+  - "<?php wp_mail( $to, $subject, $body, array( 'Content-Type: text/html' ) );"
+  - "<?php $mailer->mail( $to, $subject, $body );"
+  - "<?php Mailer::mail( $to, $subject, $body );"
 invalid:
   - '<?php @mail( ''a@example.test'', ''subject'', ''body'' );'
+  - "<?php return mail( $to, $subject, $body );"
+  - "<?php $sent = @mail( $to, $subject, $body, $headers, '-f' . $from );"
+  - "<?php add_action( 'init', function () { mail( 'a@example.test', 's', 'b' ); } );"
