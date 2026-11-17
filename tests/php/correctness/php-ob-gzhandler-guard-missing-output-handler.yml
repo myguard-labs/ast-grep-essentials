@@ -3,7 +3,22 @@ valid:
   - >-
     if (function_exists('ob_gzhandler') && !ini_get('zlib.output_compression')
     && ini_get('output_handler') != 'ob_gzhandler') { $supportsGzip = true; }
+  - |
+    <?php
+    if ( !ini_get('zlib.output_compression') && function_exists('ob_gzhandler') && !ini_get('output_handler') ) { $g = true; }
+  - |
+    <?php
+    function can_gzip() {
+        if ( function_exists('ob_gzhandler') && !ini_get('zlib.output_compression') && ini_get('output_handler') === '' ) { return true; }
+        return false;
+    }
 invalid:
   - >-
     if (function_exists('ob_gzhandler') && !ini_get('zlib.output_compression'))
     { $supportsGzip = true; }
+  - |
+    <?php
+    if ( !ini_get('zlib.output_compression') && function_exists('ob_gzhandler') ) { $g = true; }
+  - |
+    <?php
+    if ( $enabled && function_exists('ob_gzhandler') && !ini_get('zlib.output_compression') ) { $g = true; }

@@ -1,6 +1,24 @@
 id: php-or-not-equal-same-operand
 snapshots:
-  if ( 'http' != $scheme || 'https' != $scheme ) { $url = 'x'; }:
+  "<?php\nfunction f( $scheme ) { if ( 'http' != $scheme || 'https' != $scheme ) { return false; } return true; }\n":
+    labels:
+    - source: if ( 'http' != $scheme || 'https' != $scheme ) { return false; }
+      style: primary
+      start: 30
+      end: 94
+  "<?php\nif ( 'ftp' != $mode || 'sftp' != $mode ) { return false; }\n":
+    labels:
+    - source: if ( 'ftp' != $mode || 'sftp' != $mode ) { return false; }
+      style: primary
+      start: 6
+      end: 64
+  "<?php\nif ( 'http' != $this->scheme || 'https' != $this->scheme ) { $url = 'x'; }\n":
+    labels:
+    - source: if ( 'http' != $this->scheme || 'https' != $this->scheme ) { $url = 'x'; }
+      style: primary
+      start: 6
+      end: 80
+  "if ( 'http' != $scheme || 'https' != $scheme ) { $url = 'x'; }":
     labels:
     - source: if ( 'http' != $scheme || 'https' != $scheme ) { $url = 'x'; }
       style: primary

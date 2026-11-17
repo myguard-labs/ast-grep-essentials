@@ -1,5 +1,17 @@
 id: php-object-schema-empty-array-default
 valid:
   - '$schema = array( ''type'' => ''object'', ''default'' => (object) array() );'
+  - |
+    <?php
+    $schema = array( 'type' => 'array', 'default' => array() );
+  - |
+    <?php
+    $schema = array( 'type' => 'object', 'default' => array( 'a' => 1 ) );
 invalid:
   - '$schema = array( ''type'' => ''object'', ''default'' => array() );'
+  - |
+    <?php
+    $schema = array( 'default' => array(), 'type' => 'object' );
+  - |
+    <?php
+    $schema = array( 'type' => 'object', 'description' => 'Options', 'default' => array(), 'context' => array( 'view' ) );

@@ -3,7 +3,19 @@ valid:
   - |
     <?php
     ob_start();
+  - |
+    <?php
+    ob_start('mb_output_handler');
+  - |
+    <?php
+    ob_start(array($this, 'filter'));
 invalid:
   - |
     <?php
     ob_start('ob_gzhandler');
+  - |
+    <?php
+    if ( $gzip ) { ob_start( 'ob_gzhandler' ); }
+  - |
+    <?php
+    function start_buffer() { return ob_start('ob_gzhandler'); }

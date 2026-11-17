@@ -1,5 +1,20 @@
 id: php-or-not-equal-same-operand
 valid:
   - 'if ( ''http'' != $scheme && ''https'' != $scheme ) { $url = ''x''; }'
+  - |
+    <?php
+    if ( 'http' == $scheme || 'https' == $scheme ) { $url = 'x'; }
+  - |
+    <?php
+    if ( 'http' != $scheme || 'https' != $other ) { $url = 'x'; }
 invalid:
   - 'if ( ''http'' != $scheme || ''https'' != $scheme ) { $url = ''x''; }'
+  - |
+    <?php
+    if ( 'ftp' != $mode || 'sftp' != $mode ) { return false; }
+  - |
+    <?php
+    if ( 'http' != $this->scheme || 'https' != $this->scheme ) { $url = 'x'; }
+  - |
+    <?php
+    function f( $scheme ) { if ( 'http' != $scheme || 'https' != $scheme ) { return false; } return true; }
