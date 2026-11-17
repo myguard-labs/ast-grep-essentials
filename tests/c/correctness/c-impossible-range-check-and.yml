@@ -3,7 +3,23 @@ valid:
   - >-
     #define CHECK(l) do { if ((l) < INT_MIN || (l) > INT_MAX) { return; } }
     while (0)
+  - |-
+    #define IN_RANGE(l) ((l) >= INT_MIN && (l) <= INT_MAX)
+  - |-
+    #define IN_RANGE(l) ((l) > INT_MIN && (l) < INT_MAX)
+  - |-
+    #define OUT(l) (((l) < INT_MIN) || ((l) > INT_MAX))
 invalid:
   - >-
     #define CHECK(l) do { if ((l) < INT_MIN && (l) > INT_MAX) { return; } }
     while (0)
+  - |-
+    #define OUT(l) ((l) < INT_MIN && (l) > INT_MAX)
+  - |-
+    #define OUT(l) (((l) < INT_MIN) && ((l) > INT_MAX))
+  - |-
+    #define OUT(l) (l < INT_MIN && l > INT_MAX)
+  - |-
+    #define CHK(l)    \
+      if ((l) < INT_MIN && (l) > INT_MAX) \
+        abort()

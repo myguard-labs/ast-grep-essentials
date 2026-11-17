@@ -1,5 +1,28 @@
 id: c-implicit-int-function-definition
 valid:
   - 'static int ftp_proxyerror(int x) { return x; }'
+  - |-
+    static void f(void) { }
+  - |-
+    static const char *f(void) { return 0; }
+  - |-
+    int f(int x) { return x; }
+  - |-
+    static inline int f(int x) { return x; }
+  - |-
+    static int *f(void) { return 0; }
 invalid:
   - 'static ftp_proxyerror(int x) { return x; }'
+  - |-
+    static inline f(int x) { return x; }
+  - |-
+    static const f(int x) { return x; }
+  - |-
+    inline static f(int x) { return x; }
+  - |-
+    static f(char *s) { return s[0]; }
+  - |-
+    static f(int x)
+    {
+      return x;
+    }
