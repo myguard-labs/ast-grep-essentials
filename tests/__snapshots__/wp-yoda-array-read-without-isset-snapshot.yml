@@ -1,8 +1,18 @@
 id: wp-yoda-array-read-without-isset
 snapshots:
-  function f( $c ) { if ( 'publish' == $c['post_status'] ) { return 'publish_posts'; } }:
+  "function f( $c ) { if ( $c && 'publish' == $c['post_status'] ) { return 1; } }":
     labels:
-    - source: '''publish'' == $c[''post_status'']'
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 30
+      end: 60
+    - source: if ( $c && 'publish' == $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 19
+      end: 76
+  "function f( $c ) { if ( 'publish' == $c['post_status'] ) { return 'publish_posts'; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
       style: primary
       start: 24
       end: 54
@@ -10,3 +20,35 @@ snapshots:
       style: secondary
       start: 19
       end: 84
+  "function f( $c ) { if ( isset( $c['ID'] ) && 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 45
+      end: 75
+    - source: if ( isset( $c['ID'] ) && 'publish' == $c['post_status'] ) { return 1; }
+      style: secondary
+      start: 19
+      end: 91
+  "function f( $c, $d ) { if ( isset( $d['post_status'] ) && 'publish' == $c['post_status'] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c['post_status']"
+      style: primary
+      start: 58
+      end: 88
+    - source: >-
+        if ( isset( $d['post_status'] ) && 'publish' == $c['post_status'] ) { return 1;
+        }
+      style: secondary
+      start: 23
+      end: 104
+  "function f( $c, $k ) { if ( 'publish' == $c[ $k ] ) { return 1; } }":
+    labels:
+    - source: "'publish' == $c[ $k ]"
+      style: primary
+      start: 28
+      end: 49
+    - source: if ( 'publish' == $c[ $k ] ) { return 1; }
+      style: secondary
+      start: 23
+      end: 65

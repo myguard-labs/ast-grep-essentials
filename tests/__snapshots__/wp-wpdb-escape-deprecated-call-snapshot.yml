@@ -1,10 +1,32 @@
 id: wp-wpdb-escape-deprecated-call
 snapshots:
-  ? |-
-    <?php
-    $safe = $wpdb->escape( $sql );
-  : labels:
+  "$clean = array_map( 'trim', array( $wpdb->escape( $a ), $b ) );":
+    labels:
+    - source: $wpdb->escape( $a )
+      style: primary
+      start: 35
+      end: 54
+  "$q = \"SELECT ID FROM t WHERE n = '\" . $wpdb->escape( $_POST['n'] ) . \"'\";":
+    labels:
+    - source: $wpdb->escape( $_POST['n'] )
+      style: primary
+      start: 38
+      end: 66
+  $wpdb->escape( $name );:
+    labels:
+    - source: $wpdb->escape( $name )
+      style: primary
+      start: 0
+      end: 22
+  "<?php\n$safe = $wpdb->escape( $sql );":
+    labels:
     - source: $wpdb->escape( $sql )
       style: primary
       start: 14
       end: 35
+  "function f( $n ) { global $wpdb; return $wpdb->escape( $n ); }":
+    labels:
+    - source: $wpdb->escape( $n )
+      style: primary
+      start: 40
+      end: 59

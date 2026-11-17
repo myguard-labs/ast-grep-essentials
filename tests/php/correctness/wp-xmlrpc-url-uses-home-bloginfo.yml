@@ -2,5 +2,13 @@ id: wp-xmlrpc-url-uses-home-bloginfo
 valid:
   - '<?php $u = get_bloginfo(''wpurl'') . ''/xmlrpc.php'';'
   - '<?php /* $u = get_bloginfo(''url'') . ''/xmlrpc.php''; */ $x = 1;'
+  - "<?php $u = get_bloginfo( \"wpurl\" ) . '/xmlrpc.php';"
+  - "<?php $u = get_bloginfo( 'url' ) . '/feed/';"
+  - "<?php $u = site_url( 'xmlrpc.php' );"
 invalid:
   - '<?php $u = get_bloginfo(''url'') . ''/xmlrpc.php'';'
+  - "<?php echo get_bloginfo( 'url' ) . '/xmlrpc.php';"
+  - "<?php $r = wp_remote_post( get_bloginfo( 'url' ) . '/xmlrpc.php', $args );"
+  - "<?php function f() { return get_bloginfo( 'url' ) . '/xmlrpc.php'; }"
+  - "<?php $c = array( 'endpoint' => get_bloginfo( 'url' ) . '/xmlrpc.php' );"
+  - "<?php $u = get_bloginfo( 'url' ) . '/xmlrpc.php' . '?rsd';"
