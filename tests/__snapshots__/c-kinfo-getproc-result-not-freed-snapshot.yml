@@ -1,8 +1,32 @@
 id: c-kinfo-getproc-result-not-freed
 snapshots:
+  "int f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n int r = kp->ki_pid;\n return r;\n}":
+    labels:
+    - source: struct kinfo_proc *kp = kinfo_getproc(pid);
+      style: primary
+      start: 18
+      end: 61
   "struct kinfo_proc *p = kinfo_getproc(0);\nreturn p != NULL;":
     labels:
     - source: struct kinfo_proc *p = kinfo_getproc(0);
       style: primary
       start: 0
       end: 40
+  "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n free(kp->ki_name);\n}":
+    labels:
+    - source: struct kinfo_proc *kp = kinfo_getproc(pid);
+      style: primary
+      start: 19
+      end: 62
+  "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n if (kp == NULL) return;\n use(kp);\n}":
+    labels:
+    - source: struct kinfo_proc *kp = kinfo_getproc(pid);
+      style: primary
+      start: 19
+      end: 62
+  "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n struct kinfo_proc *q = other();\n free(q);\n}":
+    labels:
+    - source: struct kinfo_proc *kp = kinfo_getproc(pid);
+      style: primary
+      start: 19
+      end: 62

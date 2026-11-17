@@ -4,7 +4,14 @@ valid:
     struct kinfo_proc *p = kinfo_getproc(0);
     free(p);
     return p != NULL;
+  - "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n if (kp == NULL) return;\n use(kp);\n free(kp);\n}"
+  - "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n use(kp);\n free(kp);\n use2();\n}"
+  - "void f(int pid) {\n struct kinfo_proc *kp;\n kp = kinfo_getproc(pid);\n free(kp);\n}"
 invalid:
   - |-
     struct kinfo_proc *p = kinfo_getproc(0);
     return p != NULL;
+  - "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n if (kp == NULL) return;\n use(kp);\n}"
+  - "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n struct kinfo_proc *q = other();\n free(q);\n}"
+  - "int f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n int r = kp->ki_pid;\n return r;\n}"
+  - "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n free(kp->ki_name);\n}"

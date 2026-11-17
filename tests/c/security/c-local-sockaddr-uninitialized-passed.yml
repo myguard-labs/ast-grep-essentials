@@ -3,7 +3,15 @@ valid:
   - >-
     static void f(const char *ip) { struct sockaddr_in6 sa6 = {0};
     inet_pton(AF_INET6, ip, &sa6.sin6_addr); }
+  - "static void f(void) { struct sockaddr_in6 sa = { .sin6_family = AF_INET6 }; connect(fd, (struct sockaddr *)&sa, sizeof sa); }"
+  - "static void f(void) { struct stat st; stat(\"x\", &st); }"
+  - "static void f(void) { struct sockaddr_in6 sa; other(1); }"
+  - "static void f(void) { struct sockaddr_storage ss; socklen_t l = sizeof ss; accept(fd, (struct sockaddr *)&ss, &l); }"
 invalid:
   - >-
     static void f(const char *ip) { struct sockaddr_in6 sa6; inet_pton(AF_INET6,
     ip, &sa6.sin6_addr); }
+  - "static void f(int fd) { struct sockaddr_in6 sa; sa.sin6_family = AF_INET6; connect(fd, (struct sockaddr *)&sa, sizeof sa); }"
+  - "static void f(int fd) { struct sockaddr_in6 sa; bind(fd, (struct sockaddr *)&sa, sizeof(sa)); }"
+  - "static void f(int fd) { struct sockaddr sa; sendto(fd, buf, 1, 0, &sa, sizeof sa); }"
+  - "static void f(int fd) { struct sockaddr_in6 sa; if (x) { connect(fd, (struct sockaddr *)&sa, sizeof sa); } }"

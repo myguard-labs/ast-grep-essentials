@@ -1,5 +1,11 @@
 id: c-int32-bound-off-by-one-literal
 valid:
   - 'int f(int64_t n) { return n > 2147483647; }'
+  - "int f(int64_t n) { return n >= 2147483648; }"
+  - "int f(int64_t n) { return n > INT32_MAX; }"
+  - "int f(int64_t n) { return n < 2147483648; }"
 invalid:
   - 'int f(int64_t n) { return n > 2147483648; }'
+  - "int f(int64_t n) { if (n > 2147483648) return -1; return 0; }"
+  - "int f(long n) { return (n + 1) > 2147483648; }"
+  - "int f(struct s *p) { return p->len > 2147483648; }"

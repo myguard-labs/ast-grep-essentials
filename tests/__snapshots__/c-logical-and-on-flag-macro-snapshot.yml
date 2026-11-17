@@ -1,12 +1,68 @@
 id: c-logical-and-on-flag-macro
 snapshots:
-  int options; if (!(options && TIMELIB_OVERRIDE_TIME)) { return 0; }:
+  "int f(int flags) { if (flags && FLAG_X) return 1; return 0; }":
+    labels:
+    - source: flags && FLAG_X
+      style: primary
+      start: 23
+      end: 38
+    - source: "&&"
+      style: secondary
+      start: 29
+      end: 31
+    - source: FLAG_X
+      style: secondary
+      start: 32
+      end: 38
+  "int f(int flags) { return (flags && OPT_VERBOSE) ? 1 : 0; }":
+    labels:
+    - source: flags && OPT_VERBOSE
+      style: primary
+      start: 27
+      end: 47
+    - source: "&&"
+      style: secondary
+      start: 33
+      end: 35
+    - source: OPT_VERBOSE
+      style: secondary
+      start: 36
+      end: 47
+  "int f(int flags) { while (flags && F_BUSY) flags--; return 0; }":
+    labels:
+    - source: flags && F_BUSY
+      style: primary
+      start: 26
+      end: 41
+    - source: "&&"
+      style: secondary
+      start: 32
+      end: 34
+    - source: F_BUSY
+      style: secondary
+      start: 35
+      end: 41
+  "int f(struct o *p) { return p->flags && O_RDONLY; }":
+    labels:
+    - source: p->flags && O_RDONLY
+      style: primary
+      start: 28
+      end: 48
+    - source: "&&"
+      style: secondary
+      start: 37
+      end: 39
+    - source: O_RDONLY
+      style: secondary
+      start: 40
+      end: 48
+  "int options; if (!(options && TIMELIB_OVERRIDE_TIME)) { return 0; }":
     labels:
     - source: options && TIMELIB_OVERRIDE_TIME
       style: primary
       start: 19
       end: 51
-    - source: '&&'
+    - source: "&&"
       style: secondary
       start: 27
       end: 29

@@ -3,7 +3,15 @@ valid:
   - >-
     void f(xmlNodePtr p) { while (p != NULL) { if (p->type == XML_TEXT_NODE) { p
     = p->next; } else { p = p->next; } } }
+  - "void f(xmlNodePtr p) { while (p != NULL) { if (p->type == 1) { use(p); } p = p->next; } }"
+  - "void f(xmlNodePtr p) { for (; p != NULL; p = p->next) { if (p->type == 1) { use(p); } } }"
+  - "void f(xmlNodePtr p) { while (p != NULL) { if (p->type == 1) { p = p->next; } else { break; } } }"
+  - "void f(xmlNodePtr p) { while (p != NULL) { if (p->type == 1) { p = p->next; } else { p = NULL; } } }"
 invalid:
   - >-
     void f(xmlNodePtr p) { while (p != NULL) { if (p->type == XML_TEXT_NODE) { p
     = p->next; } } }
+  - "void f(node *cur) { while (cur != NULL) { if (!skip(cur)) { cur = cur->next; } } }"
+  - "void f(node *n) { while (n != NULL) { if (n->k == 1 && n->v > 0) { n = n->next; } } }"
+  - "void f(node *n) { while (n != NULL) { if (n->k == 1) { n = n->next; } } }"
+  - "void f(xmlNodePtr p) { while (p != NULL) { if (p->type == 1) { p = p->next; } } use(p); }"

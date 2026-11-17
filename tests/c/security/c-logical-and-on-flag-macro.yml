@@ -1,5 +1,13 @@
 id: c-logical-and-on-flag-macro
 valid:
   - 'int options; if (!(options & TIMELIB_OVERRIDE_TIME)) { return 0; }'
+  - "int f(int flags) { return flags & FLAG_X; }"
+  - "int f(int flags, int ready) { return flags && ready; }"
+  - "int f(int flags) { return flags && (flags & FLAG_X); }"
+  - "int f(int flags) { return flags && Flag_x; }"
 invalid:
   - 'int options; if (!(options && TIMELIB_OVERRIDE_TIME)) { return 0; }'
+  - "int f(int flags) { if (flags && FLAG_X) return 1; return 0; }"
+  - "int f(struct o *p) { return p->flags && O_RDONLY; }"
+  - "int f(int flags) { return (flags && OPT_VERBOSE) ? 1 : 0; }"
+  - "int f(int flags) { while (flags && F_BUSY) flags--; return 0; }"
