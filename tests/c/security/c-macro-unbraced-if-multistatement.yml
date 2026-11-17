@@ -3,7 +3,13 @@ valid:
   - >-
     #define php_free_mutex() do { if (pcre_mt) tsrm_mutex_free(pcre_mt); pcre_mt
     = NULL; } while (0)
+  - "#define M() if (x) { a(); b(); }"
+  - "#define M() if (x) {a();} b();"
+  - "#define M() if (x) a();"
 invalid:
   - >-
     #define php_free_mutex() if (pcre_mt) tsrm_mutex_free(pcre_mt); pcre_mt =
     NULL;
+  - "#define M() if(x) a(); b = 1;"
+  - "#define M(x) if (x) a(x); b(x);"
+  - "#define M() if ((x)) a(); do_b();"

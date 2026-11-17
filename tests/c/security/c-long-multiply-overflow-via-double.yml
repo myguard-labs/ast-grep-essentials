@@ -4,7 +4,13 @@ valid:
     void f(long a, long b, long *out) { long lr = a * b; long double dr = (long
     double)a * (long double)b; if ((dr + ((long double)lr - dr)) != dr) {
     return; } *out = lr; }
+  - "int f(long a, long b) { long r; return __builtin_mul_overflow(a, b, &r); }"
+  - "int f(long a, long b) { if (a != 0 && b > LONG_MAX / a) { return 1; } return 0; }"
+  - "long f(long a, long b) { return (long)((__int128)a * (__int128)b); }"
 invalid:
   - >-
     void f(long a, long b, long *out) { long lr = a * b; double dr = (double)a *
     (double)b; if ((dr + ((double)lr - dr)) != dr) { return; } *out = lr; }
+  - "int f(long a, long b) { return (double)(a) * (double)(b) > 9.2e18; }"
+  - "double f(long a, long b) { return (double) a * (double) b; }"
+  - "int f(long a, long b) { return (double)a * (double)b < -9.2e18; }"

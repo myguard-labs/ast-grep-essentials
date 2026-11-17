@@ -1,5 +1,11 @@
 id: c-malloc-leak-on-early-return
 valid:
   - 'char *cmd = malloc(n); if (!run(cmd)) { free(cmd); return NULL; } free(cmd);'
+  - "char *cmd = malloc(n); if (!run(cmd)) { free(cmd); return NULL; }"
+  - "char *cmd = malloc(n); if (!run(cmd)) { free(cmd); return NULL; } return cmd;"
+  - "char *cmd = malloc(n); if (!run(cmd)) { free(cmd); return -1; } free(cmd);"
 invalid:
   - 'char *cmd = malloc(n); if (!run(cmd)) { return NULL; } free(cmd);'
+  - "char *cmd = malloc(n); if (!run(cmd)) { return -1; } free(cmd);"
+  - "char *cmd = malloc(n); if (!run(cmd)) { return; } free(cmd);"
+  - "char *cmd = malloc(n); if (a) { return 0; } free(cmd);"

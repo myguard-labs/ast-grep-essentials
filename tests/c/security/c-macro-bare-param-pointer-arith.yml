@@ -1,5 +1,11 @@
 id: c-macro-bare-param-pointer-arith
 valid:
   - '#define STORE3(T, A) *((char *)(T) + 1) = (A);'
+  - "#define LOAD(p) *((p) + 1)"
+  - "#define LOAD(p) (*((unsigned char *)(p) + 1))"
+  - "#define LOAD(p) *((char *)p + 1)"
 invalid:
   - '#define STORE3(T, A) *(T + 1) = (A);'
+  - "#define LOAD(p) *(p - 1)"
+  - "#define STORE(p, v) *(p + 2) = (v)"
+  - "#define LOAD(p, n) *( p + n)"

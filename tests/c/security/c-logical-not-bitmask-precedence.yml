@@ -1,5 +1,11 @@
 id: c-logical-not-bitmask-precedence
 valid:
   - 'int f(int flags) { return !(flags & 0x4); }'
+  - "int f(int flags) { return !flags && 0x4; }"
+  - "int f(int flags) { return (flags & 0x4) == 0; }"
+  - "int f(int flags) { return !(flags & (A | B)); }"
 invalid:
   - 'int f(int flags) { return !flags & 0x4; }'
+  - "int f(int flags) { return !flags & FLAG_A; }"
+  - "int f(int flags) { if (!flags & MASK) { return 1; } return 0; }"
+  - "int f(int flags) { return !flags & (A | B); }"

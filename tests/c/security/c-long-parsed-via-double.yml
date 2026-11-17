@@ -1,5 +1,11 @@
 id: c-long-parsed-via-double
 valid:
   - 'long l = strtol(buf, NULL, 10);'
+  - "unsigned long u = strtoul(buf, NULL, 10);"
+  - "long long l = strtoll(buf, NULL, 10);"
+  - "double d = 3.0; long l = (long)d;"
 invalid:
   - 'double d = zend_strtod(buf, NULL); long l = (long)d;'
+  - "double d = strtod(buf, &end); long l = (long)d;"
+  - "double d = strtod(buf, NULL); long l = (long) d;"
+  - "double d = zend_strtod(buf, NULL); int pad = 1; long l = (long)d;"

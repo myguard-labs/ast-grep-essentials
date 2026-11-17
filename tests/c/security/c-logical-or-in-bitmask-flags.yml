@@ -1,5 +1,11 @@
 id: c-logical-or-in-bitmask-flags
 valid:
   - 'if (flags & (FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6)) { }'
+  - "int f(int m) { return (m & A) || (m & B); }"
+  - "int f(int m) { return m && (A || B); }"
+  - "int f(int m) { return m & (A | B | C); }"
 invalid:
   - 'if (flags & (FILTER_FLAG_IPV4 || FILTER_FLAG_IPV6)) { }'
+  - "int f(int m) { return m & (A || B || C); }"
+  - "int f(int m) { int r = m & (A || B); return r; }"
+  - "void f(int m) { if (m & (FLAG_X || FLAG_Y)) { g(); } }"

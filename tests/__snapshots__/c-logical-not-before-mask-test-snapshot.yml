@@ -1,8 +1,26 @@
 id: c-logical-not-before-mask-test
 snapshots:
-  ? "if (! mask & NOFILE) {\n\tdo_thing();\n}"
-  : labels:
-    - source: '! mask & NOFILE'
+  "if (! mask & NOFILE) {\n\tdo_thing();\n}":
+    labels:
+    - source: "! mask & NOFILE"
       style: primary
       start: 4
       end: 19
+  "int f(int mask) { if (!mask & FLAG) { return 1; } return 0; }":
+    labels:
+    - source: "!mask & FLAG"
+      style: primary
+      start: 22
+      end: 34
+  "int f(int mask) { return ! mask & (A | B); }":
+    labels:
+    - source: "! mask & (A | B)"
+      style: primary
+      start: 25
+      end: 41
+  "int f(int mask) { return !mask & FLAG; }":
+    labels:
+    - source: "!mask & FLAG"
+      style: primary
+      start: 25
+      end: 37
