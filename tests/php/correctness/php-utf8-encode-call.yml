@@ -3,7 +3,12 @@ valid:
   - |
     <?php
     $meta['credit'] = my_encode(trim($raw));
+  - '<?php $s = mb_convert_encoding($raw, ''UTF-8'', ''ISO-8859-1'');'
+  - '<?php $s = $conv->utf8_encode($raw);'
 invalid:
   - |
     <?php
     $meta['credit'] = utf8_encode(trim($raw));
+  - '<?php $s = json_encode(utf8_encode($raw));'
+  - '<?php $s = @utf8_encode($raw);'
+  - '<?php $s = utf8_encode($a) . ''x'';'

@@ -1,5 +1,10 @@
 id: php-usermeta-unserialize-meta-key
 valid:
   - '<?php $value = unserialize($meta->meta_value); ?>'
+  - '<?php $v = unserialize($row->meta_value, [''allowed_classes'' => false]);'
+  - '<?php $k = $row->meta_key; $v = unserialize($row->meta_value);'
 invalid:
   - '<?php $value = unserialize($meta->meta_key); ?>'
+  - '<?php $v = @unserialize($m->meta_key);'
+  - '<?php if (is_array(unserialize($r->meta_key))) { f(); }'
+  - '<?php $v = unserialize($this->meta_key);'

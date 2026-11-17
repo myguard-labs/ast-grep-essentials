@@ -1,7 +1,12 @@
 id: php-update-permalink-option-direct
 valid:
   - '<?php function f() { update_option( ''blogname'', ''Example'' ); }'
+  - '<?php get_option(''permalink_structure'');'
+  - '<?php $wp_rewrite->set_permalink_structure(''/%postname%/'');'
 invalid:
   - >-
     <?php function f() { update_option( 'permalink_structure', '/%postname%/' );
     }
+  - '<?php update_option(''permalink_structure'', $s);'
+  - '<?php update_option(''permalink_structure'', '''');'
+  - '<?php update_option(''permalink_structure'', $s, false);'

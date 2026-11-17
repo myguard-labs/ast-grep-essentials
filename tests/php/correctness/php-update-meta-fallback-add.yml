@@ -1,7 +1,12 @@
 id: php-update-meta-fallback-add
 valid:
   - '<?php if ( ! update_post_meta( $id, ''_k'', $v ) ) error_log( ''failed'' );'
+  - '<?php if ( ! get_post_meta( $id, ''_k'', true ) ) add_post_meta( $id, ''_k'', $v, true );'
+  - '<?php update_post_meta( $id, ''_k'', $v );'
 invalid:
   - >-
     <?php if ( ! update_post_meta( $id, '_k', $v ) ) add_post_meta( $id, '_k',
     $v, true );
+  - '<?php if (!update_post_meta($id,''_k'',$v)) add_post_meta($id,''_k'',$v,true);'
+  - '<?php if ( ! update_post_meta( $id, ''_k'', $v ) ) add_post_meta( $id, ''_k'', $v, false );'
+  - '<?php if ( ! update_post_meta( $post_id, ''views'', 0 ) ) add_post_meta( $post_id, ''views'', 0, true );'
