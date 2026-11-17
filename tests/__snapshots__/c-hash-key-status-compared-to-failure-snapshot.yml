@@ -1,12 +1,26 @@
 id: c-hash-key-status-compared-to-failure
 snapshots:
-  ? |-
-    if (zend_hash_get_current_key_ex(ht, &key, NULL, NULL, 0, &pos) == FAILURE) {
-      continue;
-    }
-    use(key);
-  : labels:
+  "if (zend_hash_get_current_key_ex(ht, &key, NULL, NULL, 0, &pos) == FAILURE) {\n  continue;\n}\nuse(key);":
+    labels:
     - source: zend_hash_get_current_key_ex(ht, &key, NULL, NULL, 0, &pos) == FAILURE
       style: primary
       start: 4
       end: 74
+  "int f(HashTable *ht) { return zend_hash_get_current_key_ex(ht, &key, NULL, &num, 0, &pos) == FAILURE; }":
+    labels:
+    - source: zend_hash_get_current_key_ex(ht, &key, NULL, &num, 0, &pos) == FAILURE
+      style: primary
+      start: 30
+      end: 100
+  "void f(HashTable *ht) { if ((zend_hash_get_current_key_ex(ht, &key, NULL, &num, 0, &pos) == FAILURE) && ready) { skip(); } }":
+    labels:
+    - source: zend_hash_get_current_key_ex(ht, &key, NULL, &num, 0, &pos) == FAILURE
+      style: primary
+      start: 29
+      end: 99
+  "void f(HashTable *ht) { while (zend_hash_get_current_key_ex(ht, &key, NULL, &num, 0, &pos) == FAILURE) { advance(); } }":
+    labels:
+    - source: zend_hash_get_current_key_ex(ht, &key, NULL, &num, 0, &pos) == FAILURE
+      style: primary
+      start: 31
+      end: 101

@@ -3,7 +3,39 @@ valid:
   - |-
     zend_hash_destroy(h);
     FREE_HASHTABLE(h);
+  - |-
+    void f(HashTable *h, char *buf) {
+      zend_hash_destroy(h);
+      efree(buf);
+    }
+  - |-
+    void f(obj_t *obj) {
+      zend_hash_destroy(&obj->ht);
+      efree(obj);
+    }
+  - |-
+    void f(HashTable *h) {
+      efree(h);
+      zend_hash_destroy(h);
+    }
 invalid:
   - |-
     zend_hash_destroy(h);
     efree(h);
+  - |-
+    void f(obj_t *obj) {
+      zend_hash_destroy(obj->props);
+      efree(obj->props);
+    }
+  - |-
+    void f(HashTable *h, int own) {
+      if (own) {
+        zend_hash_destroy(h);
+        efree(h);
+      }
+    }
+  - |-
+    void f(HashTable **h) {
+      zend_hash_destroy(*h);
+      efree(*h);
+    }

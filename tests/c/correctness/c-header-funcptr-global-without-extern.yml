@@ -1,5 +1,19 @@
 id: c-header-funcptr-global-without-extern
 valid:
   - 'extern void (*handler)(int);'
+  - |-
+    static void (*handler)(int);
+  - |-
+    extern void (*log_hook)(const char *msg, int level);
+  - |-
+    typedef void (*handler_t)(int);
+  - |-
+    void handler(int sig);
 invalid:
   - 'void (*handler)(int);'
+  - |-
+    void (*cb)(void);
+  - |-
+    void (*log_hook)(const char *msg, int level);
+  - |-
+    void (*handler)(int, char *);

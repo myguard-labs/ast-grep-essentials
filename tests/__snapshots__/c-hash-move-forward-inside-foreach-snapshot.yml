@@ -12,3 +12,33 @@ snapshots:
       style: secondary
       start: 0
       end: 95
+  "void f(HashTable *h) { zend_string *k; zval *v; ZEND_HASH_FOREACH_STR_KEY_VAL(h, k, v) { zend_hash_move_forward(h); use(k, v); } ZEND_HASH_FOREACH_END(); }":
+    labels:
+    - source: zend_hash_move_forward(h)
+      style: primary
+      start: 89
+      end: 114
+    - source: "{ zend_string *k; zval *v; ZEND_HASH_FOREACH_STR_KEY_VAL(h, k, v) { zend_hash_move_forward(h); use(k, v); } ZEND_HASH_FOREACH_END(); }"
+      style: secondary
+      start: 21
+      end: 155
+  "void f(HashTable *h) { zval *v; ZEND_HASH_FOREACH_VAL(h, v) { if (v) { zend_hash_move_forward(h); } } ZEND_HASH_FOREACH_END(); }":
+    labels:
+    - source: zend_hash_move_forward(h)
+      style: primary
+      start: 71
+      end: 96
+    - source: "{ zval *v; ZEND_HASH_FOREACH_VAL(h, v) { if (v) { zend_hash_move_forward(h); } } ZEND_HASH_FOREACH_END(); }"
+      style: secondary
+      start: 21
+      end: 128
+  "void f(HashTable *h) { zval *v; ZEND_HASH_FOREACH_VAL(h, v) { use(v); zend_hash_move_forward(h); } ZEND_HASH_FOREACH_END(); }":
+    labels:
+    - source: zend_hash_move_forward(h)
+      style: primary
+      start: 70
+      end: 95
+    - source: "{ zval *v; ZEND_HASH_FOREACH_VAL(h, v) { use(v); zend_hash_move_forward(h); } ZEND_HASH_FOREACH_END(); }"
+      style: secondary
+      start: 21
+      end: 125

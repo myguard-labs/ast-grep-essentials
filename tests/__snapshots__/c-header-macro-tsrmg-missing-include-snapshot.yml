@@ -1,5 +1,11 @@
 id: c-header-macro-tsrmg-missing-include
 snapshots:
+  "#define ZLIBG(v) TSRMG (zlib_globals_id, zend_zlib_globals *, v)":
+    labels:
+    - source: "#define ZLIBG(v) TSRMG (zlib_globals_id, zend_zlib_globals *, v)"
+      style: primary
+      start: 0
+      end: 64
   "#ifdef ZTS\n# define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)\n#endif":
     labels:
     - source: |
@@ -7,3 +13,16 @@ snapshots:
       style: primary
       start: 11
       end: 76
+  "#include \"ext_globals.h\"\n#ifdef ZTS\n# define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)\n#else\n# define ZLIBG(v) (zlib_globals.v)\n#endif":
+    labels:
+    - source: |
+        # define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)
+      style: primary
+      start: 36
+      end: 101
+  "#include <stdlib.h>\n#define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)":
+    labels:
+    - source: "#define ZLIBG(v) TSRMG(zlib_globals_id, zend_zlib_globals *, v)"
+      style: primary
+      start: 20
+      end: 83
