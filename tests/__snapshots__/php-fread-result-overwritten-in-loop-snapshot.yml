@@ -1,13 +1,7 @@
 id: php-fread-result-overwritten-in-loop
 snapshots:
-  ? |-
-    <?php
-    $fp = fopen($file_name, 'r');
-    while (!feof($fp)) {
-        $file_content = fread($fp, 8192);
-    }
-    fclose($fp);
-  : labels:
+  "<?php\n$fp = fopen($file_name, 'r');\nwhile (!feof($fp)) {\n    $file_content = fread($fp, 8192);\n}\nfclose($fp);":
+    labels:
     - source: $file_content = fread($fp, 8192)
       style: primary
       start: 61
@@ -23,3 +17,45 @@ snapshots:
       style: secondary
       start: 36
       end: 96
+  "<?php while (!feof($fp)) { $data[\"k\"] = fread($fp, 10); }":
+    labels:
+    - source: $data["k"] = fread($fp, 10)
+      style: primary
+      start: 27
+      end: 54
+    - source: fread($fp, 10)
+      style: secondary
+      start: 40
+      end: 54
+    - source: while (!feof($fp)) { $data["k"] = fread($fp, 10); }
+      style: secondary
+      start: 6
+      end: 57
+  "<?php while (!feof($fp)) { if ($ok) { $c = fread($fp, 10); } }":
+    labels:
+    - source: $c = fread($fp, 10)
+      style: primary
+      start: 38
+      end: 57
+    - source: fread($fp, 10)
+      style: secondary
+      start: 43
+      end: 57
+    - source: while (!feof($fp)) { if ($ok) { $c = fread($fp, 10); } }
+      style: secondary
+      start: 6
+      end: 62
+  "<?php while ($n > 0) { $buf = fread($fp, $n); $n--; }":
+    labels:
+    - source: $buf = fread($fp, $n)
+      style: primary
+      start: 23
+      end: 44
+    - source: fread($fp, $n)
+      style: secondary
+      start: 30
+      end: 44
+    - source: while ($n > 0) { $buf = fread($fp, $n); $n--; }
+      style: secondary
+      start: 6
+      end: 53

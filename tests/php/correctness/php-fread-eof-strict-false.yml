@@ -3,5 +3,11 @@ valid:
   - >-
     <?php $line = fread($pipes[1], 8192); if ($line === false &&
     feof($pipes[1])) { break; }
+  - '<?php $line = fread($h, 8192); if (feof($h)) { break; }'
+  - '<?php $line = fread($h, 8192); if ($line !== false) { echo $line; }'
+  - '<?php $line = fgets($h); if ($line === false) { break; }'
 invalid:
   - '<?php $line = fread($pipes[1], 8192); if ($line === false) { break; }'
+  - '<?php while (true) { $chunk = fread($fp, 1024); if ($chunk === false) { break; } echo $chunk; }'
+  - '<?php function r($fp) { $data = fread($fp, 4096); if ($data === false) { return null; } return $data; }'
+  - '<?php $buf = fread($this->handle, 100); if ($buf === false) { throw new Exception("eof"); }'

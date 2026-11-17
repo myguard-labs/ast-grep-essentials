@@ -1,6 +1,36 @@
 id: php-function-redeclares-hash-builtin
 snapshots:
-  function hash($n) { return $n; }:
+  "<?php function &hash($n) { return $n; }":
+    labels:
+    - source: function &hash($n) { return $n; }
+      style: primary
+      start: 6
+      end: 39
+    - source: hash
+      style: secondary
+      start: 16
+      end: 20
+  "<?php function hash() {} function other() {}":
+    labels:
+    - source: function hash() {}
+      style: primary
+      start: 6
+      end: 24
+    - source: hash
+      style: secondary
+      start: 15
+      end: 19
+  "<?php function hash(string $algo, string $data): string { return md5($data); }":
+    labels:
+    - source: "function hash(string $algo, string $data): string { return md5($data); }"
+      style: primary
+      start: 6
+      end: 78
+    - source: hash
+      style: secondary
+      start: 15
+      end: 19
+  "function hash($n) { return $n; }":
     labels:
     - source: function hash($n) { return $n; }
       style: primary

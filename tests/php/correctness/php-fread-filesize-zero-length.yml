@@ -4,8 +4,14 @@ valid:
     <?php
     $f = fopen($path, 'r');
     $content = fread($f, 8192);
+  - '<?php $c = fread($f, max(1, filesize($p)));'
+  - '<?php $c = file_get_contents($p);'
+  - '<?php $c = fread($f, filesize($p) ?: 1);'
 invalid:
   - |-
     <?php
     $f = fopen($path, 'r');
     $content = fread($f, filesize($path));
+  - '<?php $c = fread(fopen($p, "rb"), filesize($p));'
+  - '<?php return fread($handle, filesize($this->path));'
+  - '<?php $c = fread($f, filesize(__FILE__));'
