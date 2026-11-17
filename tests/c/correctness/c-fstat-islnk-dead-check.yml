@@ -10,6 +10,40 @@ valid:
             return -1;
         return 0;
     }
+  - |-
+    #include <sys/stat.h>
+    int is_reg(int fd) {
+        struct stat sb;
+        if (fstat(fd, &sb) != 0)
+            return -1;
+        return S_ISREG(sb.st_mode);
+    }
+  - |-
+    #include <sys/stat.h>
+    int is_reg(int fd) {
+        struct stat sb;
+        if (fstat(fd, &sb) != 0)
+            return -1;
+        return S_ISREG(sb.st_mode);
+    }
+    int is_link(const char *path) {
+        struct stat sb;
+        if (lstat(path, &sb) != 0)
+            return -1;
+        return S_ISLNK(sb.st_mode);
+    }
+  - |-
+    #include <sys/stat.h>
+    int is_link(const char *path) {
+        struct stat sb;
+        if (lstat(path, &sb) == -1)
+            return -1;
+        return S_ISLNK(sb.st_mode) ? 1 : 0;
+    }
+    int is_dir(int fd) {
+        struct stat sb;
+        return fstat(fd, &sb) == 0 && S_ISDIR(sb.st_mode);
+    }
 invalid:
   - |-
     #include <sys/stat.h>
@@ -20,4 +54,31 @@ invalid:
         if (S_ISLNK(sb.st_mode))
             return -1;
         return 0;
+    }
+  - |-
+    #include <sys/stat.h>
+    int is_link(int fd) {
+        struct stat sb;
+        return fstat(fd, &sb) == 0 && S_ISLNK(sb.st_mode);
+    }
+  - |-
+    #include <sys/stat.h>
+    int is_link(int fd) {
+        struct stat sb;
+        if (fstat(fd, &sb) == -1)
+            return -1;
+        return S_ISLNK(sb.st_mode) ? 1 : 0;
+    }
+  - |-
+    #include <sys/stat.h>
+    int scan(int fd, int n) {
+        struct stat sb;
+        int i, links = 0;
+        for (i = 0; i < n; i++) {
+            if (fstat(fd + i, &sb) == 0) {
+                if (S_ISLNK(sb.st_mode))
+                    links++;
+            }
+        }
+        return links;
     }

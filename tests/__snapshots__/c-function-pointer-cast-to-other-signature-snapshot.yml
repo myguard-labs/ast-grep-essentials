@@ -1,10 +1,25 @@
 id: c-function-pointer-cast-to-other-signature
 snapshots:
-  ? |-
-    typedef int (*cb_t)(void *ctx, int v);
-    int use(cb_t fn, void *ctx);
-    int run(void *ctx) { return use((cb_t)ctx, ctx); }
-  : labels:
+  "typedef int (*cb_t)(void *ctx, int v);\nint use(cb_t fn, void *ctx);\nint other(int x);\nint same(void *ctx, int v);\nint run(void *ctx) { cb_t fn = (cb_t)other; return fn(ctx, 1); }":
+    labels:
+    - source: (cb_t)other
+      style: primary
+      start: 145
+      end: 156
+  "typedef int (*cb_t)(void *ctx, int v);\nint use(cb_t fn, void *ctx);\nint other(int x);\nint same(void *ctx, int v);\nint run(void *ctx) { return ((cb_t)other)(ctx, 1); }":
+    labels:
+    - source: (cb_t)other
+      style: primary
+      start: 143
+      end: 154
+  "typedef int (*cb_t)(void *ctx, int v);\nint use(cb_t fn, void *ctx);\nint other(int x);\nint same(void *ctx, int v);\nint run(void *ctx) { return use((cb_t)other, ctx); }":
+    labels:
+    - source: (cb_t)other
+      style: primary
+      start: 146
+      end: 157
+  "typedef int (*cb_t)(void *ctx, int v);\nint use(cb_t fn, void *ctx);\nint run(void *ctx) { return use((cb_t)ctx, ctx); }":
+    labels:
     - source: (cb_t)ctx
       style: primary
       start: 100

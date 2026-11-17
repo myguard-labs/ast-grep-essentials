@@ -1,5 +1,19 @@
 id: c-function-like-macro-multistatement-no-braces
 valid:
   - '#define FC(x) { \ zend_function *p; \ call(x); \ }'
+  - |-
+    #define SWAP_INT(a, b) do { int t = a; a = b; b = t; } while (0)
+  - |-
+    #define ADD(a, b) ((a) + (b))
+  - |-
+    #define BUMP(a, b) ((a)++, (b)++)
 invalid:
   - '#define FC(x) \ zend_function *p; \ call(x)'
+  - |-
+    #define BUMP(a, b) a++; b++
+  - |-
+    #define CLEAR(p) (p)->a = 0; (p)->b = 0
+  - |-
+    #define LOG_AND_FAIL(x) \
+        log(x); \
+        fail(x)

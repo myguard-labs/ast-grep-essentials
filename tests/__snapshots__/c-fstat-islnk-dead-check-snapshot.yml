@@ -30,3 +30,90 @@ snapshots:
       style: secondary
       start: 22
       end: 176
+  "#include <sys/stat.h>\nint is_link(int fd) {\n    struct stat sb;\n    if (fstat(fd, &sb) == -1)\n        return -1;\n    return S_ISLNK(sb.st_mode) ? 1 : 0;\n}":
+    labels:
+    - source: S_ISLNK(sb.st_mode)
+      style: primary
+      start: 124
+      end: 143
+    - source: S_ISLNK
+      style: secondary
+      start: 124
+      end: 131
+    - source: fstat
+      style: secondary
+      start: 72
+      end: 77
+    - source: fstat(fd, &sb)
+      style: secondary
+      start: 72
+      end: 86
+    - source: |-
+        int is_link(int fd) {
+            struct stat sb;
+            if (fstat(fd, &sb) == -1)
+                return -1;
+            return S_ISLNK(sb.st_mode) ? 1 : 0;
+        }
+      style: secondary
+      start: 22
+      end: 154
+  "#include <sys/stat.h>\nint is_link(int fd) {\n    struct stat sb;\n    return fstat(fd, &sb) == 0 && S_ISLNK(sb.st_mode);\n}":
+    labels:
+    - source: S_ISLNK(sb.st_mode)
+      style: primary
+      start: 98
+      end: 117
+    - source: S_ISLNK
+      style: secondary
+      start: 98
+      end: 105
+    - source: fstat
+      style: secondary
+      start: 75
+      end: 80
+    - source: fstat(fd, &sb)
+      style: secondary
+      start: 75
+      end: 89
+    - source: |-
+        int is_link(int fd) {
+            struct stat sb;
+            return fstat(fd, &sb) == 0 && S_ISLNK(sb.st_mode);
+        }
+      style: secondary
+      start: 22
+      end: 120
+  "#include <sys/stat.h>\nint scan(int fd, int n) {\n    struct stat sb;\n    int i, links = 0;\n    for (i = 0; i < n; i++) {\n        if (fstat(fd + i, &sb) == 0) {\n            if (S_ISLNK(sb.st_mode))\n                links++;\n        }\n    }\n    return links;\n}":
+    labels:
+    - source: S_ISLNK(sb.st_mode)
+      style: primary
+      start: 175
+      end: 194
+    - source: S_ISLNK
+      style: secondary
+      start: 175
+      end: 182
+    - source: fstat
+      style: secondary
+      start: 132
+      end: 137
+    - source: fstat(fd + i, &sb)
+      style: secondary
+      start: 132
+      end: 150
+    - source: |-
+        int scan(int fd, int n) {
+            struct stat sb;
+            int i, links = 0;
+            for (i = 0; i < n; i++) {
+                if (fstat(fd + i, &sb) == 0) {
+                    if (S_ISLNK(sb.st_mode))
+                        links++;
+                }
+            }
+            return links;
+        }
+      style: secondary
+      start: 22
+      end: 256

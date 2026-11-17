@@ -3,7 +3,53 @@ valid:
   - |-
     struct s { char *a; char *b; };
     void f(struct s *p) { if (p->a != NULL) { free(p->a); } }
+  - |-
+    struct s { char *a; char *b; };
+    void f(struct s *p) {
+        if (p->a != NULL) {
+            free(p->a);
+            p->a = NULL;
+        }
+    }
+  - |-
+    struct s { char *a; char *b; };
+    void f(struct s *p) {
+        if (p->b != NULL)
+            free(p->b);
+    }
+  - |-
+    struct s { char *a; char *b; };
+    void f(struct s *p) {
+        if (p->a != NULL) {
+            free(p->a);
+        }
+        if (p->b != NULL) {
+            free(p->b);
+        }
+    }
 invalid:
   - |-
     struct s { char *a; char *b; };
     void f(struct s *p) { if (p->a != NULL) { free(p->b); } }
+  - |-
+    struct s { char *a; char *b; };
+    void f(struct s *p) {
+        if (p->a != NULL)
+            free(p->b);
+    }
+  - |-
+    struct s { char *a; char *b; };
+    void f(struct s *p) {
+        if (p->a != NULL) {
+            log_release(p);
+            free(p->b);
+            p->b = NULL;
+        }
+    }
+  - |-
+    struct s { char *a; char *abuf; };
+    void f(struct s *p) {
+        if (p->a != NULL) {
+            free(p->abuf);
+        }
+    }
