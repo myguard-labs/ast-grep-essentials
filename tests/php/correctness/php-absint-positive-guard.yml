@@ -1,5 +1,9 @@
 id: php-absint-positive-guard
 valid:
   - "<?php\nif ( $qty > 0 ) {\n\treturn true;\n}"
+  - "<?php\nif ( intval( $qty ) > 0 ) { return true; }"
+  - "<?php\nif ( $qty > 0 && absint( $qty ) === $qty ) { return true; }"
 invalid:
   - "<?php\nif ( absint( $qty ) > 0 ) {\n\treturn true;\n}"
+  - "<?php\n$ok = absint( $_POST[\"n\"] ) > 0;"
+  - "<?php\nif ( absint( $a + $b ) > 0 ) { return 1; }"

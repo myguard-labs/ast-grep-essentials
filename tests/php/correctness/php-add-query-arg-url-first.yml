@@ -1,5 +1,11 @@
 id: php-add-query-arg-url-first
 valid:
   - '<?php $link = add_query_arg( ''preview'', ''true'', get_permalink($id) );'
+  - "<?php $u = add_query_arg( 'preview', 'true' );"
+  - "<?php $u = add_query_arg( array( 'preview' => 'true' ), get_permalink( $id ) );"
+  - "<?php $u = add_query_arg( 'preview', 'true', get_permalink( $id ) );"
 invalid:
   - '<?php $link = add_query_arg( get_permalink($id), ''preview'', ''true'' );'
+  - "<?php $u = add_query_arg( wp_get_referer(), 'preview', 'true' );"
+  - "<?php $u = add_query_arg( esc_url( get_permalink( $id ) ), 'preview', 'true' );"
+  - "<?php $u = add_query_arg( get_permalink($id), 'preview', 1 );"

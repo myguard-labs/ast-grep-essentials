@@ -1,5 +1,11 @@
 id: php-annotation-block-comment-not-docblock
 valid:
   - '/** @strict-properties */ final class Watcher {}'
+  - "<?php\n/** @Entity */\nclass A {}"
+  - "<?php\n/* plain note, no tag */\nclass A {}"
+  - "<?php\n/**\n * @ORM\\Entity\n */\nfinal class A {}"
 invalid:
   - '/* @strict-properties */ final class Watcher {}'
+  - "<?php\n/*\n * @ORM\\Entity\n */\nclass A {}"
+  - "<?php\n/* @Entity */\nabstract class A {}"
+  - "<?php\n/*@Entity*/\nclass A {}"
