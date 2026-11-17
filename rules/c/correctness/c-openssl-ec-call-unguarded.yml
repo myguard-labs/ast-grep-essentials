@@ -8,14 +8,14 @@ note: >-
   Name-based heuristic on the callee identifier; does not resolve the
   function, and guards are matched by literal OPENSSL_NO_EC text in an
   enclosing ifdef/ifndef or `#if !defined(OPENSSL_NO_EC)` (alone or as an
-  `&&` operand). Callee names are anchored: `EC_*` and `*_EC_KEY`.
+  `&&` operand). Callee names match `EC_` at the start or after an underscore.
 rule:
   all:
     - kind: call_expression
     - has:
         field: function
         kind: identifier
-        regex: '^(EC_|\w+_EC_KEY)'
+        regex: '(^|_)EC_'
     - not:
         inside:
           stopBy: end
@@ -33,13 +33,11 @@ rule:
               - kind: unary_expression
                 regex: '^!\s*defined\b[\s(]*OPENSSL_NO_EC[\s)]*$'
               - kind: binary_expression
-                all:
-                  - has:
-                      field: operator
-                      regex: '^&&$'
-                  - has:
-                      kind: unary_expression
-                      regex: '^!\s*defined\b[\s(]*OPENSSL_NO_EC[\s)]*$'
+                regex: '^[^|]*&&[^|]*$'
+                has:
+                  stopBy: end
+                  kind: unary_expression
+                  regex: '^!\s*defined\b[\s(]*OPENSSL_NO_EC[\s)]*$'
 metadata:
   todo_cases:
     - 'FN: an EC call inside `#ifdef OPENSSL_NO_EC` (compiled only when EC is absent) is not reported because any OPENSSL_NO_EC name suppresses it, whether ifdef or ifndef side; the same holds for an EC call in the `#else` branch of `#if !defined(OPENSSL_NO_EC)`'
