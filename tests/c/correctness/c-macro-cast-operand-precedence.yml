@@ -3,7 +3,13 @@ valid:
   - >-
     #define KIND_CTOR(ce) (((copy_ctor_func_t) ((ce)->type)) == KIND_INTERNAL ?
     ctor_a : ctor_b)
+  - "#define KIND_CTOR2(ce) ((ce)->type == KIND_INTERNAL ? ctor_a : ctor_b)"
+  - "#define IS_INT(o) (((int) (o)->t) == 1 ? 1 : 0)"
+  - "#define AS_T(p) ((T) (p)->m)"
 invalid:
   - >-
     #define KIND_CTOR(ce) ((copy_ctor_func_t) (ce)->type == KIND_INTERNAL ?
     ctor_a : ctor_b)
+  - "#define CB_KIND(c) ((callback_t) (c)->kind == CB_NATIVE ? native_cb : user_cb)"
+  - "#define DTOR_FOR(z) (dtor_func_t) (z)->type == IS_ARRAY ? arr_dtor : str_dtor"
+  - "#define KIND_CTOR3(ce) ((copy_ctor_func_t)(ce)->type==KIND_INTERNAL ? ctor_a : ctor_b)"

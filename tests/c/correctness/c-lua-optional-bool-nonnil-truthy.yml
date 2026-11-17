@@ -3,5 +3,11 @@ valid:
   - >-
     lua_getfield(L, -1, "inclusive"); if (lua_toboolean(L, -1)) { inclusive = 1;
     }
+  - "int f(lua_State *L) {\n  int flag = 0;\n  lua_getfield(L, -1, \"inclusive\");\n  if (lua_isboolean(L, -1)) {\n    flag = lua_toboolean(L, -1);\n  }\n  return flag;\n}"
+  - "int f(lua_State *L) {\n  int flag;\n  lua_getfield(L, -1, \"inclusive\");\n  if (lua_isnil(L, -1)) {\n    flag = 1;\n  } else {\n    flag = lua_toboolean(L, -1);\n  }\n  return flag;\n}"
+  - "int f(lua_State *L) {\n  int flag = 0;\n  lua_getfield(L, -1, \"inclusive\");\n  if (!lua_isnil(L, -1) && lua_toboolean(L, -1)) {\n    flag = 1;\n  }\n  return flag;\n}"
 invalid:
   - 'lua_getfield(L, -1, "inclusive"); if (!lua_isnil(L, -1)) { inclusive = 1; }'
+  - "int f(lua_State *L) {\n  int flag = 0;\n  lua_getfield(L, -1, \"inclusive\");\n  if (!lua_isnil(L, -1))\n    flag = 1;\n  return flag;\n}"
+  - "int f(lua_State *L) {\n  int flag = 0;\n  lua_getfield(L, 2, \"strict\");\n  if (!lua_isnil(L, -1)) {\n    flag = 1;\n  } else {\n    flag = 0;\n  }\n  return flag;\n}"
+  - "int f(lua_State *state, int idx) {\n  int n, flag = 0;\n  for (n = 0; n < 2; n++) {\n    lua_rawgeti(state, idx, n + 1);\n    if (!lua_isnil(state, -1)) { flag |= 1 << n; }\n    lua_pop(state, 1);\n  }\n  return flag;\n}"

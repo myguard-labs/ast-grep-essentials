@@ -1,5 +1,11 @@
 id: c-macro-multi-statement-no-do-while
 valid:
   - '#define PHP_IMAP_CLEAN do { free(a); free(b); } while (0)'
+  - "#define NOP ((void) 0)"
+  - "#define TWO_STEP (step_one(), step_two())"
+  - "#define BOTH \\\n\tdo { f(); g(); } while (0)"
 invalid:
   - '#define PHP_IMAP_CLEAN free(a); free(b);'
+  - "#define RESET x = 0; y = 0;"
+  - "#define CLEANUP free(a); free(b)"
+  - "#define LOG_AND_RET log_err(); return 0;"

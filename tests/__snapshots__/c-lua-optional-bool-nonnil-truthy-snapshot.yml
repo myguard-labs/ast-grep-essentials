@@ -1,5 +1,30 @@
 id: c-lua-optional-bool-nonnil-truthy
 snapshots:
+  "int f(lua_State *L) {\n  int flag = 0;\n  lua_getfield(L, -1, \"inclusive\");\n  if (!lua_isnil(L, -1))\n    flag = 1;\n  return flag;\n}":
+    labels:
+    - source: |-
+        if (!lua_isnil(L, -1))
+            flag = 1;
+      style: primary
+      start: 76
+      end: 112
+  "int f(lua_State *L) {\n  int flag = 0;\n  lua_getfield(L, 2, \"strict\");\n  if (!lua_isnil(L, -1)) {\n    flag = 1;\n  } else {\n    flag = 0;\n  }\n  return flag;\n}":
+    labels:
+    - source: |-
+        if (!lua_isnil(L, -1)) {
+            flag = 1;
+          } else {
+            flag = 0;
+          }
+      style: primary
+      start: 72
+      end: 139
+  "int f(lua_State *state, int idx) {\n  int n, flag = 0;\n  for (n = 0; n < 2; n++) {\n    lua_rawgeti(state, idx, n + 1);\n    if (!lua_isnil(state, -1)) { flag |= 1 << n; }\n    lua_pop(state, 1);\n  }\n  return flag;\n}":
+    labels:
+    - source: if (!lua_isnil(state, -1)) { flag |= 1 << n; }
+      style: primary
+      start: 122
+      end: 168
   "lua_getfield(L, -1, \"inclusive\"); if (!lua_isnil(L, -1)) { inclusive = 1; }":
     labels:
     - source: if (!lua_isnil(L, -1)) { inclusive = 1; }
