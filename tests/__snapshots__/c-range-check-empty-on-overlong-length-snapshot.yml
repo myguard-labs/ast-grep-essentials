@@ -1,6 +1,42 @@
 id: c-range-check-empty-on-overlong-length
 snapshots:
-  static int f(int total, int off, int len) { if (off >= total || len > total) { return 0; } return 1; }:
+  "static int f(int total, int off, int len)\n{\n    if (off >= total || len > total) return 0;\n    return len;\n}":
+    labels:
+    - source: if (off >= total || len > total) return 0;
+      style: primary
+      start: 48
+      end: 90
+    - source: off >= total || len > total
+      style: secondary
+      start: 52
+      end: 79
+    - source: (off >= total || len > total)
+      style: secondary
+      start: 51
+      end: 80
+    - source: return 0;
+      style: secondary
+      start: 81
+      end: 90
+  "static int f(int total, int off, int len)\n{\n    if (off >= total || len > total) { return -1; }\n    return len;\n}":
+    labels:
+    - source: if (off >= total || len > total) { return -1; }
+      style: primary
+      start: 48
+      end: 95
+    - source: off >= total || len > total
+      style: secondary
+      start: 52
+      end: 79
+    - source: (off >= total || len > total)
+      style: secondary
+      start: 51
+      end: 80
+    - source: return -1;
+      style: secondary
+      start: 83
+      end: 93
+  "static int f(int total, int off, int len) { if (off >= total || len > total) { return 0; } return 1; }":
     labels:
     - source: if (off >= total || len > total) { return 0; }
       style: primary
@@ -18,3 +54,24 @@ snapshots:
       style: secondary
       start: 79
       end: 88
+  "static size_t f(size_t size, size_t pos, size_t n)\n{\n    if (pos >= size || n > size) {\n        return 0;\n    }\n    return n;\n}":
+    labels:
+    - source: |-
+        if (pos >= size || n > size) {
+                return 0;
+            }
+      style: primary
+      start: 57
+      end: 111
+    - source: pos >= size || n > size
+      style: secondary
+      start: 61
+      end: 84
+    - source: (pos >= size || n > size)
+      style: secondary
+      start: 60
+      end: 85
+    - source: return 0;
+      style: secondary
+      start: 96
+      end: 105

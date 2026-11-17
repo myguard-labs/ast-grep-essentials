@@ -1,5 +1,17 @@
 id: c-scan-lookahead-stops-before-delimiter
 valid:
   - 'while (*path && *path != ''/'') ++path;'
+  - |-
+    void f(const char *p) { while (*p != '\0' && *p != '/') { p++; } }
+  - |-
+    void f(const char *buf, int n) { int i = 0; while (i < n && buf[i] != '/') i++; }
+  - |-
+    void f(const char *p) { while (*p && *p != *(p + 1)) p++; }
 invalid:
   - 'while (*path && *(path + 1) != ''/'') ++path;'
+  - |-
+    void f(const char *s) { while (*s && *(s + 1) != ',') { s++; } }
+  - |-
+    void f(const char *p, int n) { while (n > 0 && *(p + 1) != ' ') { p++; n--; } }
+  - |-
+    void f(const char *q) { while (*(q + 1) != '\0') q++; }

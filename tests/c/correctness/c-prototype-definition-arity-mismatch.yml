@@ -3,7 +3,33 @@ valid:
   - |-
     void h(int p);
     void h(int p) { (void) p; }
+  - |-
+    void g(void);
+    void h(int p);
+    void h(int p) { (void) p; }
+  - |-
+    void h(void);
+    void h(void) { return; }
+  - |-
+    void g(void);
+    void h(int p) { (void) p; }
 invalid:
   - |-
     void h(void);
     void h(int p) { (void) p; }
+  - |-
+    void h(void);
+    int unrelated(int x);
+    void h(char *p) { (void) p; }
+  - |-
+    static void h(int a);
+    void g(void);
+    void h(void);
+    void h(unsigned long n) { (void) n; }
+  - |-
+    void h(void);
+    
+    void h(const char *name)
+    {
+        (void) name;
+    }

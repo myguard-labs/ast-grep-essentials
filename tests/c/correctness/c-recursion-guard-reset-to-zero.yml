@@ -3,7 +3,61 @@ valid:
   - >-
     static void f(struct ht *h) { if (++h->nApplyCount > 1) { h->nApplyCount--;
     return; } }
+  - |-
+    static void f(struct ht *h)
+    {
+        if (++h->nApplyCount > 1) {
+            --h->nApplyCount;
+            return;
+        }
+        --h->nApplyCount;
+    }
+  - |-
+    static void f(struct ctx *c)
+    {
+        if (++c->depth > 8) {
+            c->depth -= 1;
+            c->flags = 0;
+            return;
+        }
+        c->depth--;
+    }
+  - |-
+    static void f(struct ctx *c)
+    {
+        if (c->done) {
+            c->depth = 0;
+        }
+    }
 invalid:
   - >-
     static void f(struct ht *h) { if (++h->nApplyCount > 1) { h->nApplyCount =
     0; return; } }
+  - |-
+    static void f(struct ctx *c)
+    {
+        if (++c->depth > 8) {
+            c->depth = 0;
+            return;
+        }
+        c->depth--;
+    }
+  - |-
+    static void f(struct ht *h)
+    {
+        if (++h->nApplyCount > 1 && h->flags) {
+            h->nApplyCount = 0;
+        }
+        h->nApplyCount--;
+    }
+  - |-
+    static int f(struct ctx *c)
+    {
+        if (++c->level > 3) {
+            log_err("too deep");
+            c->level = 0;
+            return -1;
+        }
+        c->level--;
+        return 0;
+    }

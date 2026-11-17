@@ -3,7 +3,53 @@ valid:
   - >-
     ZEND_METHOD(Foo, bar) { if (UNEXPECTED(zval_update_constant_ex(&c, ce) !=
     SUCCESS)) { RETURN_THROWS(); } }
+  - |-
+    ZEND_METHOD(Foo, bar)
+    {
+        if (zend_hash_x(ht) != SUCCESS) {
+            zend_throw_error(NULL, "failed");
+            RETURN_THROWS();
+        }
+    }
+  - |-
+    ZEND_METHOD(Foo, bar)
+    {
+        if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &n) == FAILURE) {
+            RETURN_THROWS();
+        }
+    }
+  - |-
+    ZEND_METHOD(Foo, bar)
+    {
+        if (php_do(a) != SUCCESS) {
+            goto cleanup;
+        }
+    cleanup:
+        return;
+    }
 invalid:
   - >-
     ZEND_METHOD(Foo, bar) { if (UNEXPECTED(zval_update_constant_ex(&c, ce) !=
     SUCCESS)) { RETURN_NULL(); } }
+  - |-
+    ZEND_METHOD(Foo, bar)
+    {
+        if (zend_hash_x(ht) != SUCCESS) {
+            RETURN_NULL();
+        }
+    }
+  - |-
+    ZEND_METHOD(Foo, bar)
+    {
+        if (php_do(a) != SUCCESS) {
+            efree(buf);
+            RETURN_NULL();
+        }
+    }
+  - |-
+    ZEND_FUNCTION(foo)
+    {
+        if (UNEXPECTED(zend_call_known_function(fn, obj, ce, &rv, 0, NULL, NULL) != SUCCESS)) {
+            RETURN_NULL();
+        }
+    }

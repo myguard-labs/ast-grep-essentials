@@ -1,6 +1,58 @@
 id: c-return-null-on-zend-result-error
 snapshots:
-  ZEND_METHOD(Foo, bar) { if (UNEXPECTED(zval_update_constant_ex(&c, ce) != SUCCESS)) { RETURN_NULL(); } }:
+  "ZEND_FUNCTION(foo)\n{\n    if (UNEXPECTED(zend_call_known_function(fn, obj, ce, &rv, 0, NULL, NULL) != SUCCESS)) {\n        RETURN_NULL();\n    }\n}":
+    labels:
+    - source: |-
+        if (UNEXPECTED(zend_call_known_function(fn, obj, ce, &rv, 0, NULL, NULL) != SUCCESS)) {
+                RETURN_NULL();
+            }
+      style: primary
+      start: 25
+      end: 141
+    - source: RETURN_NULL()
+      style: secondary
+      start: 121
+      end: 134
+    - source: zend_call_known_function(fn, obj, ce, &rv, 0, NULL, NULL) != SUCCESS
+      style: secondary
+      start: 40
+      end: 108
+  "ZEND_METHOD(Foo, bar)\n{\n    if (php_do(a) != SUCCESS) {\n        efree(buf);\n        RETURN_NULL();\n    }\n}":
+    labels:
+    - source: |-
+        if (php_do(a) != SUCCESS) {
+                efree(buf);
+                RETURN_NULL();
+            }
+      style: primary
+      start: 28
+      end: 104
+    - source: RETURN_NULL()
+      style: secondary
+      start: 84
+      end: 97
+    - source: php_do(a) != SUCCESS
+      style: secondary
+      start: 32
+      end: 52
+  "ZEND_METHOD(Foo, bar)\n{\n    if (zend_hash_x(ht) != SUCCESS) {\n        RETURN_NULL();\n    }\n}":
+    labels:
+    - source: |-
+        if (zend_hash_x(ht) != SUCCESS) {
+                RETURN_NULL();
+            }
+      style: primary
+      start: 28
+      end: 90
+    - source: RETURN_NULL()
+      style: secondary
+      start: 70
+      end: 83
+    - source: zend_hash_x(ht) != SUCCESS
+      style: secondary
+      start: 32
+      end: 58
+  "ZEND_METHOD(Foo, bar) { if (UNEXPECTED(zval_update_constant_ex(&c, ce) != SUCCESS)) { RETURN_NULL(); } }":
     labels:
     - source: if (UNEXPECTED(zval_update_constant_ex(&c, ce) != SUCCESS)) { RETURN_NULL(); }
       style: primary

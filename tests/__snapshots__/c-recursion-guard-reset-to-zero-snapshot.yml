@@ -1,6 +1,60 @@
 id: c-recursion-guard-reset-to-zero
 snapshots:
-  static void f(struct ht *h) { if (++h->nApplyCount > 1) { h->nApplyCount = 0; return; } }:
+  "static int f(struct ctx *c)\n{\n    if (++c->level > 3) {\n        log_err(\"too deep\");\n        c->level = 0;\n        return -1;\n    }\n    c->level--;\n    return 0;\n}":
+    labels:
+    - source: |-
+        if (++c->level > 3) {
+                log_err("too deep");
+                c->level = 0;
+                return -1;
+            }
+      style: primary
+      start: 34
+      end: 131
+    - source: ++c->level
+      style: secondary
+      start: 38
+      end: 48
+    - source: c->level = 0
+      style: secondary
+      start: 93
+      end: 105
+  "static void f(struct ctx *c)\n{\n    if (++c->depth > 8) {\n        c->depth = 0;\n        return;\n    }\n    c->depth--;\n}":
+    labels:
+    - source: |-
+        if (++c->depth > 8) {
+                c->depth = 0;
+                return;
+            }
+      style: primary
+      start: 35
+      end: 100
+    - source: ++c->depth
+      style: secondary
+      start: 39
+      end: 49
+    - source: c->depth = 0
+      style: secondary
+      start: 65
+      end: 77
+  "static void f(struct ht *h)\n{\n    if (++h->nApplyCount > 1 && h->flags) {\n        h->nApplyCount = 0;\n    }\n    h->nApplyCount--;\n}":
+    labels:
+    - source: |-
+        if (++h->nApplyCount > 1 && h->flags) {
+                h->nApplyCount = 0;
+            }
+      style: primary
+      start: 34
+      end: 107
+    - source: ++h->nApplyCount
+      style: secondary
+      start: 38
+      end: 54
+    - source: h->nApplyCount = 0
+      style: secondary
+      start: 82
+      end: 100
+  "static void f(struct ht *h) { if (++h->nApplyCount > 1) { h->nApplyCount = 0; return; } }":
     labels:
     - source: if (++h->nApplyCount > 1) { h->nApplyCount = 0; return; }
       style: primary
