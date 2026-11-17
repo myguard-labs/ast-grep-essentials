@@ -12,8 +12,16 @@ note: >-
   by a letter that is not a recognized PHP escape. It does not resolve
   function identity, imports, or runtime values.
 rule:
-  pattern: 'trim($SRC, "$MASK")'
-  regex: '\\[ces-zCEGHIJKLMNOPQRSUVWXYZ]'
+  any:
+    - pattern: 'trim($SRC, $MASK)'
+    - pattern: 'ltrim($SRC, $MASK)'
+    - pattern: 'rtrim($SRC, $MASK)'
+constraints:
+  MASK:
+    kind: argument
+    has:
+      kind: encapsed_string
+      regex: '(?:^|[^\\])(?:\\\\)*\\(?:[^nrtvef\\$"0-7xu]|x[^0-9A-Fa-f]|u[^{])'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -23,5 +31,4 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FN: ltrim($a, " \s,") and rtrim($a, " \s,") are not reported although the note names ltrim and rtrim; trim($a, "\s$x") and trim($a, "\d") are not reported either.'
-    - 'FP: trim($a, "\t"), trim($a, "\x00") and trim($a, "\u{00A0}") are reported although \t, \x and \u are recognized PHP escapes.'
+    - 'FN: namespaced \trim($a, "\s") is not reported.'
