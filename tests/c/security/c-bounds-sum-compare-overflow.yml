@@ -1,5 +1,11 @@
 id: c-bounds-sum-compare-overflow
 valid:
   - 'if (count > length - offset) { count = length - offset; }'
+  - 'if (len > SIZE_MAX - off) { return -1; }'
+  - 'if (off > max || n > max - off) { n = 0; }'
+  - 'if ((uint64_t)a + b > c) { n = 0; }'
 invalid:
   - 'if ((offset + count) > length) { count = length - offset; }'
+  - 'if ((a + b) > c) x = 1;'
+  - 'if ((p->off + p->len) > max) { n = 0; }'
+  - 'if (((a) + (b)) > c) { n = 0; }'

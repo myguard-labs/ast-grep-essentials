@@ -1,5 +1,13 @@
 id: c-char-array-cast-to-wider-int-deref
 valid:
   - 'void f(void) { int b[1]; int n = *(int *) b; (void) n; }'
+  - 'void f(void) { int b[4]; char c[4]; int n = *(int *) b; (void) n; (void) c; }'
+  - 'void f(void) { char b[4]; int n; memcpy(&n, b, sizeof n); (void) n; }'
+  - 'void f(void) { char b[4]; char n = *(char *) b; (void) n; }'
+  - 'void f(int *p) { int n = *(int *) p; (void) n; }'
 invalid:
   - 'void f(void) { char b[4]; int n = *(int *) b; (void) n; }'
+  - 'void f(void) { char buf[8]; int x; x = *(int *) buf; (void) x; }'
+  - 'void f(void) { char b[sizeof(int)]; int n = *(int *) b; (void) n; }'
+  - 'void f(void) { char b[4]; *(int *) b = 1; }'
+  - 'void f(void) { char b[4]; if (*(int *) b == 0) { g(); } }'

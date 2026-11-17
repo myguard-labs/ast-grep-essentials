@@ -3,5 +3,12 @@ valid:
   - >-
     unsigned long get32(const unsigned char *p) { return ((uint32_t) p[0] <<
     24); }
+  - 'unsigned long g(const unsigned char *p) { return (unsigned long) p[3] << 24; }'
+  - 'unsigned long g(const unsigned char *p) { return p[0] << 16; }'
+  - 'uint32_t g(const unsigned char *p) { return ((uint32_t) p[0] << 24) | ((uint32_t) p[1] << 16); }'
 invalid:
   - 'unsigned long get32(const unsigned char *p) { return (p[0] << 24); }'
+  - 'unsigned long g(const unsigned char *p) { return p[0] << 24 | p[1] << 16; }'
+  - 'unsigned long g(struct s *s) { return s->buf[0] << 24; }'
+  - 'unsigned long g(const unsigned char *p, int i) { return (p[i + 3] << 24); }'
+  - 'void g(unsigned long *q, const unsigned char *p) { *q = p[0] << 24; }'

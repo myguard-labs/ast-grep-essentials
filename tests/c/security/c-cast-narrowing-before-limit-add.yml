@@ -1,5 +1,12 @@
 id: c-cast-narrowing-before-limit-add
 valid:
   - 'void f(uint32_t *lim, size_t ov) { *lim += (uint64_t)ov; }'
+  - 'void f(size_t *tot, size_t ov) { *tot += (size_t)ov; }'
+  - 'void f(uint32_t *lim, uint32_t ov) { *lim += ov; }'
 invalid:
   - 'void f(uint32_t *lim, size_t ov) { *lim += (uint32_t)ov; }'
+  - 'void f(uint32_t lim, size_t ov) { lim += (uint32_t)ov; }'
+  - 'void f(struct s *s, size_t ov) { s->lim += (uint32_t)ov; }'
+  - 'void f(uint32_t *lim, const char *s) { *lim += (uint32_t) strlen(s); }'
+  - 'void f(uint32_t *lim, size_t a, size_t b) { *lim += (uint32_t) (a + b); }'
+  - 'void f(uint32_t *lim, size_t ov) { *lim += ( uint32_t ) ov; }'

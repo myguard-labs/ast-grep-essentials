@@ -1,5 +1,13 @@
 id: c-char-pointer-brace-initializer
 valid:
   - 'static const char servercontext[] = { 0x54, 0x4c, 0x53, 0x20 };'
+  - 'static const char *p = "abc";'
+  - 'static const char key[4] = { 1, 2, 3, 4 };'
+  - 'struct s *p = NULL;'
 invalid:
   - 'static const char *servercontext = { 0x54, 0x4c, 0x53, 0x20 };'
+  - 'static const char *p = { 1, 2 };'
+  - 'unsigned char *k = { 0x01, 0x02 };'
+  - 'void f(void) { char *p = { 0 }; (void) p; }'
+  - 'static char **pp = { 0, 0 };'
+  - 'int *p = { 0 };'

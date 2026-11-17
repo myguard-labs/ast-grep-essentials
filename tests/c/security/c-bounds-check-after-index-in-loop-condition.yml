@@ -1,5 +1,11 @@
 id: c-bounds-check-after-index-in-loop-condition
 valid:
   - 'void f(char *result, int i, int n) { while (i < n && result[i] != 0) {} }'
+  - 'void f(char *p, int i, int n) { while (i < n && p[i]) { i++; } }'
+  - 'void f(char *s, int i, int n) { while (i < n && s[i] != 0 && s[i] != 44) i++; }'
+  - 'void f(char *s, int i, int n) { for (i = 0; i < n && s[i] != 0; i++) {} }'
 invalid:
   - 'void f(char *result, int i, int n) { while (result[i] != 0 && i < n) {} }'
+  - 'void f(char *s, int i, int n) { while (s[i] != 0 && i < n) i++; }'
+  - 'void f(struct b *s, int i, int n) { while (s->buf[i] != 0 && i < n) { i++; } }'
+  - 'void f(int *t, int i) { while (t[i] != 0 && i < MAX) { i++; } }'

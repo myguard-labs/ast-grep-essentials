@@ -1,8 +1,38 @@
 id: c-cast-narrowing-before-limit-add
 snapshots:
-  void f(uint32_t *lim, size_t ov) { *lim += (uint32_t)ov; }:
+  "void f(struct s *s, size_t ov) { s->lim += (uint32_t)ov; }":
     labels:
-    - source: '*lim += (uint32_t)ov'
+    - source: s->lim += (uint32_t)ov
+      style: primary
+      start: 33
+      end: 55
+  "void f(uint32_t *lim, const char *s) { *lim += (uint32_t) strlen(s); }":
+    labels:
+    - source: "*lim += (uint32_t) strlen(s)"
+      style: primary
+      start: 39
+      end: 67
+  "void f(uint32_t *lim, size_t a, size_t b) { *lim += (uint32_t) (a + b); }":
+    labels:
+    - source: "*lim += (uint32_t) (a + b)"
+      style: primary
+      start: 44
+      end: 70
+  "void f(uint32_t *lim, size_t ov) { *lim += ( uint32_t ) ov; }":
+    labels:
+    - source: "*lim += ( uint32_t ) ov"
+      style: primary
+      start: 35
+      end: 58
+  "void f(uint32_t *lim, size_t ov) { *lim += (uint32_t)ov; }":
+    labels:
+    - source: "*lim += (uint32_t)ov"
       style: primary
       start: 35
       end: 55
+  "void f(uint32_t lim, size_t ov) { lim += (uint32_t)ov; }":
+    labels:
+    - source: lim += (uint32_t)ov
+      style: primary
+      start: 34
+      end: 53

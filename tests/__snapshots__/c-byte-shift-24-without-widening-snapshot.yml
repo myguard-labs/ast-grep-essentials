@@ -1,8 +1,32 @@
 id: c-byte-shift-24-without-widening
 snapshots:
-  unsigned long get32(const unsigned char *p) { return (p[0] << 24); }:
+  "unsigned long g(const unsigned char *p) { return p[0] << 24 | p[1] << 16; }":
+    labels:
+    - source: p[0] << 24
+      style: primary
+      start: 49
+      end: 59
+  "unsigned long g(const unsigned char *p, int i) { return (p[i + 3] << 24); }":
+    labels:
+    - source: p[i + 3] << 24
+      style: primary
+      start: 57
+      end: 71
+  "unsigned long g(struct s *s) { return s->buf[0] << 24; }":
+    labels:
+    - source: s->buf[0] << 24
+      style: primary
+      start: 38
+      end: 53
+  "unsigned long get32(const unsigned char *p) { return (p[0] << 24); }":
     labels:
     - source: p[0] << 24
       style: primary
       start: 54
       end: 64
+  "void g(unsigned long *q, const unsigned char *p) { *q = p[0] << 24; }":
+    labels:
+    - source: p[0] << 24
+      style: primary
+      start: 56
+      end: 66
