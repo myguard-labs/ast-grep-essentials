@@ -1,5 +1,11 @@
 id: wp-get-pages-number-without-hierarchical
 valid:
   - '$q = get_pages( array( ''number'' => 1, ''hierarchical'' => 0 ) );'
+  - '$p = get_pages( array( ''hierarchical'' => false, ''number'' => 5 ) );'
+  - '$p = get_pages( array( ''child_of'' => $id, ''sort_column'' => ''post_title'' ) );'
+  - '$p = get_pages( [ ''number'' => 3, ''hierarchical'' => false ] );'
 invalid:
   - '$q = get_pages( array( ''number'' => 1 ) );'
+  - '$p = get_pages( array( ''number'' => 10, ''sort_column'' => ''post_title'' ) );'
+  - '$p = get_pages( array( ''child_of'' => $id, ''number'' => 5 ) );'
+  - '$p = get_pages( [ ''number'' => 3 ] );'

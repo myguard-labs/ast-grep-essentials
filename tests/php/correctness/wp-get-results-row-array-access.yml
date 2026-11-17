@@ -1,5 +1,11 @@
 id: wp-get-results-row-array-access
 valid:
   - '<?php $t = $wpdb->get_row($q)->Type;'
+  - '<?php $t = $wpdb->get_row( $q, ARRAY_A )[''Type''];'
+  - '<?php $t = $wpdb->get_col( $q )[0];'
+  - '<?php $r = $wpdb->get_results( $q ); $t = $r[0]->Type;'
 invalid:
   - '<?php $t = $wpdb->get_results($q)[0][''Type''];'
+  - '<?php $t = $wpdb->get_results( "SHOW COLUMNS FROM t", OBJECT )[0][''Field''];'
+  - '<?php $t = $wpdb->get_results( $q )[ $i ][''name''];'
+  - '<?php $t = $wpdb->get_results( $q )[0]["Type"];'

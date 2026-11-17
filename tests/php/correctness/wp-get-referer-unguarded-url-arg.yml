@@ -3,5 +3,11 @@ valid:
   - >-
     $sendback = remove_query_arg( array( 'trashed' ), wp_get_referer() ?:
     admin_url() );
+  - '$u = remove_query_arg( ''trashed'', wp_get_referer() ? wp_get_referer() : admin_url() );'
+  - 'if ( $ref = wp_get_referer() ) { $u = remove_query_arg( ''x'', $ref ); }'
+  - '$u = remove_query_arg( ''trashed'' );'
 invalid:
   - '$sendback = remove_query_arg( array( ''trashed'' ), wp_get_referer() );'
+  - '$u = remove_query_arg( ''_wp_http_referer'', wp_get_referer() );'
+  - '$u = remove_query_arg( array( ''a'', ''b'' ), wp_get_referer() );'
+  - 'wp_safe_redirect( remove_query_arg( ''msg'', wp_get_referer() ) );'
