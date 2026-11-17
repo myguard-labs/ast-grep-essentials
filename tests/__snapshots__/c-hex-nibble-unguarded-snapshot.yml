@@ -1,5 +1,43 @@
 id: c-hex-nibble-unguarded
 snapshots:
+  "static int hexdec(const char *s, int n) {\n    int i, v = 0;\n    for (i = 0; i < n; i++) {\n        v = v * 16 + (s[i] >= 'A' ? s[i] - 0x37 : s[i] - '0');\n    }\n    return v;\n}":
+    labels:
+    - source: |-
+        static int hexdec(const char *s, int n) {
+            int i, v = 0;
+            for (i = 0; i < n; i++) {
+                v = v * 16 + (s[i] >= 'A' ? s[i] - 0x37 : s[i] - '0');
+            }
+            return v;
+        }
+      style: primary
+      start: 0
+      end: 174
+    - source: s[i] - 0x37
+      style: secondary
+      start: 126
+      end: 137
+    - source: "s[i] >= 'A' ? s[i] - 0x37 : s[i] - '0'"
+      style: secondary
+      start: 112
+      end: 150
+  "static int hexval(char c) {\n    return (c >= 'A') ? c - 0x37 : c - 0x30;\n}":
+    labels:
+    - source: |-
+        static int hexval(char c) {
+            return (c >= 'A') ? c - 0x37 : c - 0x30;
+        }
+      style: primary
+      start: 0
+      end: 74
+    - source: c - 0x37
+      style: secondary
+      start: 52
+      end: 60
+    - source: "(c >= 'A') ? c - 0x37 : c - 0x30"
+      style: secondary
+      start: 39
+      end: 71
   "static int hexval(char c) { return c >= 'A' ? c - 0x37 : c - 0x30; }":
     labels:
     - source: "static int hexval(char c) { return c >= 'A' ? c - 0x37 : c - 0x30; }"
@@ -14,3 +52,23 @@ snapshots:
       style: secondary
       start: 35
       end: 65
+  "static int hexval(int c) {\n    if (!isalnum(c)) {\n        return -1;\n    }\n    return c >= 'A' ? c - 0x37 : c - 0x30;\n}":
+    labels:
+    - source: |-
+        static int hexval(int c) {
+            if (!isalnum(c)) {
+                return -1;
+            }
+            return c >= 'A' ? c - 0x37 : c - 0x30;
+        }
+      style: primary
+      start: 0
+      end: 119
+    - source: c - 0x37
+      style: secondary
+      start: 97
+      end: 105
+    - source: "c >= 'A' ? c - 0x37 : c - 0x30"
+      style: secondary
+      start: 86
+      end: 116
