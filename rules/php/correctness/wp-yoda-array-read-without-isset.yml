@@ -21,79 +21,81 @@ rule:
     - inside:
         kind: if_statement
         stopBy: end
-        not:
-          has:
+    - not:
+        inside:
+          stopBy: end
+          kind: parenthesized_expression
+          inside:
             field: condition
-            has:
-              stopBy: end
-              all:
-                - any:
-                    - pattern: 'isset( $C[$K] )'
-                    - pattern: '! empty( $C[$K] )'
-                - not:
-                    inside:
-                      stopBy: end
-                      kind: binary_expression
-                      has:
-                        field: left
-                        any:
-                          - pattern: '''publish'' == $C[$K]'
-                          - has:
-                              stopBy: end
-                              pattern: '''publish'' == $C[$K]'
-                - any:
-                    - all:
-                        - not:
-                            inside:
-                              stopBy: end
-                              kind: unary_op_expression
-                              regex: '^!'
-                        - not:
-                            inside:
-                              stopBy: end
-                              kind: binary_expression
-                              has:
-                                field: operator
-                                regex: '^(\|\||or|==|===|!=|!==|<>)$'
-                    - all:
-                        - inside:
+            any:
+              - kind: if_statement
+              - kind: else_if_clause
+          has:
+            stopBy: end
+            all:
+              - any:
+                  - pattern: 'isset( $C[$K] )'
+                  - pattern: '! empty( $C[$K] )'
+              - not:
+                  inside:
+                    stopBy: end
+                    kind: binary_expression
+                    has:
+                      field: left
+                      any:
+                        - pattern: '''publish'' == $C[$K]'
+                        - has:
+                            stopBy: end
+                            pattern: '''publish'' == $C[$K]'
+              - any:
+                  - all:
+                      - not:
+                          inside:
                             stopBy: end
                             kind: unary_op_expression
                             regex: '^!'
-                        - inside:
+                      - not:
+                          inside:
                             stopBy: end
                             kind: binary_expression
                             has:
                               field: operator
-                              regex: '^(\|\||or)$'
+                              regex: '^(\|\||or|==|===|!=|!==|<>)$'
+                  - all:
+                      - inside:
+                          stopBy: end
+                          kind: unary_op_expression
+                          regex: '^!'
+                      - inside:
+                          stopBy: end
+                          kind: binary_expression
+                          has:
+                            field: operator
+                            regex: '^(\|\||or)$'
     - not:
         inside:
-          kind: if_statement
           stopBy: end
-          all:
-            - has:
-                field: condition
-                has:
-                  stopBy: end
-                  all:
-                    - any:
-                        - pattern: 'isset( $C[$K] )'
-                        - pattern: '! empty( $C[$K] )'
-                    - not:
-                        inside:
-                          stopBy: end
-                          any:
-                            - kind: unary_op_expression
-                              regex: '^!'
-                            - kind: binary_expression
-                              has:
-                                field: operator
-                                regex: '^(\|\||or|==|===|!=|!==|<>)$'
-            - has:
-                field: body
-                has:
-                  stopBy: end
-                  pattern: '''publish'' == $C[$K]'
+          inside:
+            kind: if_statement
+            field: body
+            has:
+              field: condition
+              has:
+                stopBy: end
+                all:
+                  - any:
+                      - pattern: 'isset( $C[$K] )'
+                      - pattern: '! empty( $C[$K] )'
+                  - not:
+                      inside:
+                        stopBy: end
+                        any:
+                          - kind: unary_op_expression
+                            regex: '^!'
+                          - kind: binary_expression
+                            has:
+                              field: operator
+                              regex: '^(\|\||or|==|===|!=|!==|<>)$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
