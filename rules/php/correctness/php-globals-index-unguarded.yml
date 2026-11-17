@@ -7,11 +7,14 @@ message: >-
   Element of the GLOBALS array is read in an if condition without an isset()
   guard.
 note: >-
-  Syntactic check only; it looks for isset text in the same if condition and
-  does not track earlier guards, aliasing, or runtime values.
+  Syntactic check only; it looks for isset text in the same if condition,
+  and accepts an empty() argument, the left operand of ??, and the right
+  operand of an && whose direct left operand is array_key_exists() of the same
+  key on GLOBALS. It does not track earlier guards, aliasing, or runtime values.
 rule:
   all:
     - kind: subscript_expression
+    - pattern: $S[$K]
     - regex: '^\$GLOBALS\s*\['
     - inside:
         kind: parenthesized_expression
@@ -23,6 +26,53 @@ rule:
           kind: parenthesized_expression
           stopBy: end
           regex: 'isset\s*\('
+    - not:
+        inside:
+          kind: argument
+          inside:
+            kind: arguments
+            inside:
+              kind: function_call_expression
+              has:
+                field: function
+                regex: '^empty$'
+    - not:
+        inside:
+          kind: binary_expression
+          field: left
+          has:
+            field: operator
+            regex: '^\?\?$'
+    - not:
+        inside:
+          kind: binary_expression
+          field: right
+          all:
+            - has:
+                field: operator
+                regex: '^&&$'
+            - has:
+                field: left
+                all:
+                  - kind: function_call_expression
+                  - has:
+                      field: function
+                      regex: '^array_key_exists$'
+                  - has:
+                      field: arguments
+                      all:
+                        - has:
+                            kind: argument
+                            has:
+                              pattern: $K
+                        - has:
+                            kind: argument
+                            has:
+                              kind: variable_name
+                              regex: '^\$GLOBALS$'
+constraints:
+  S:
+    regex: '^\$GLOBALS(\s*\[[^\]]*\])*$'
 metadata:
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
@@ -32,7 +82,8 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - "Observed false positive: if ( !empty( $GLOBALS['x'] ) ) { } is reported although empty() does not warn on a missing key."
-    - "Observed false positive: if ( array_key_exists( 'x', $GLOBALS ) && $GLOBALS['x'] ) { } is reported although the read is guarded."
-    - "Observed false positive: if ( $GLOBALS['x'] ?? false ) { } is reported although ?? does not warn on a missing key."
+    - "Known limitation: a guard that is not the direct left operand of the && (for example if ( $a && array_key_exists( 'x', $GLOBALS ) && $GLOBALS['x'] ) { }), a namespace-qualified \\array_key_exists is not recognised and the read is still reported."
     - "Observed miss: if ( isset( $GLOBALS['x'] ) || $GLOBALS['y'] ) { } is not reported although the right operand is unguarded."
+    - "Known limitation: a guarded read wrapped in a comparison or negation, for example if ( array_key_exists( 'x', $GLOBALS ) && $GLOBALS['x'] === 1 ) { } or && !$GLOBALS['x'], is still reported because the read is not the direct right operand."
+    - "Known limitation: a nested read such as if ( empty( $GLOBALS['x']['y'] ) ) { } or if ( $GLOBALS['x']['y'] ?? 0 ) { } is still reported once (the guard exclusions only cover the outer subscript)."
+    - "Known limitation: the guard key must match textually, so array_key_exists( \"x\", $GLOBALS ) && $GLOBALS['x'] (different quoting of the same key) is still reported."
