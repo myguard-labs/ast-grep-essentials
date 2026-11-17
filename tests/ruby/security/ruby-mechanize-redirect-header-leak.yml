@@ -45,3 +45,15 @@ invalid:
       follow(response.location, headers)
     end
   end
+- |-
+  def follow(uri, headers)
+    if response.code.start_with?('3')
+      follow(response['location'], headers)
+    end
+  end
+- |-
+  def follow(uri, headers)
+    if [301, 302].include?(code)
+      follow(response['location'], headers)
+    end
+  end
