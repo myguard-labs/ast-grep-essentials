@@ -1,5 +1,11 @@
 id: c-size-narrowed-to-int
 valid:
   - '#include <string.h> void f(const char *s) { size_t n = strlen(s); (void)n; }'
+  - 'int f(const char *s) { int n = strnlen(s, 64); return n; }'
+  - 'int f(const char *s) { size_t n = strlen(s); if (n > INT_MAX) { return -1; } int m = (int)n; return m; }'
+  - 'unsigned long f(const char *s) { unsigned long n = strlen(s); return n; }'
 invalid:
   - '#include <string.h> void f(const char *s) { int n = strlen(s); (void)n; }'
+  - 'int f(char **argv) { int len = strlen(argv[1]); return len; }'
+  - 'void f(const char *s) { int n = strlen(s + 1); (void)n; }'
+  - 'void f(struct s *p) { int n = strlen(p->name); (void)n; }'

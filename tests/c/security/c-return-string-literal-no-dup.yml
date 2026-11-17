@@ -1,5 +1,11 @@
 id: c-return-string-literal-no-dup
 valid:
   - 'PHP_METHOD(Phar, running) { RETURN_STRING("", 1); }'
+  - 'PHP_METHOD(Phar, running) { RETURN_STRING("abc", 1); }'
+  - 'PHP_METHOD(Phar, running) { RETURN_STRING(estrdup("abc"), 0); }'
+  - 'PHP_METHOD(Phar, running) { char *s = emalloc(4); memcpy(s, "abc", 4); RETURN_STRING(s, 0); }'
 invalid:
   - 'PHP_METHOD(Phar, running) { RETURN_STRING("", 0); }'
+  - 'PHP_METHOD(Phar, running) { if (x) { RETURN_STRING("none", 0); } RETURN_NULL(); }'
+  - 'PHP_METHOD(Phar, running) { RETURN_STRING("line\n", 0); }'
+  - 'PHP_FUNCTION(version) { RETURN_STRING("1.2.3", 0); }'

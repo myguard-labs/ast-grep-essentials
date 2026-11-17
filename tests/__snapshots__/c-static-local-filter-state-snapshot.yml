@@ -1,16 +1,66 @@
 id: c-static-local-filter-state
 snapshots:
-  static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { static int done = 0; if (done) { return 0; } done++; return 0; }:
+  "static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { int a = 1; static unsigned long count = 0; count += a; return 0; }":
+    labels:
+    - source: static unsigned long count = 0;
+      style: primary
+      start: 75
+      end: 106
+    - source: >-
+        static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { int a = 1;
+        static unsigned long count = 0; count += a; return 0; }
+      style: secondary
+      start: 0
+      end: 130
+    - source: "{ int a = 1; static unsigned long count = 0; count += a; return 0; }"
+      style: secondary
+      start: 62
+      end: 130
+  "static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { static char *cache = NULL; if (cache) { return 0; } return 1; }":
+    labels:
+    - source: static char *cache = NULL;
+      style: primary
+      start: 64
+      end: 90
+    - source: >-
+        static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { static char
+        *cache = NULL; if (cache) { return 0; } return 1; }
+      style: secondary
+      start: 0
+      end: 127
+    - source: "{ static char *cache = NULL; if (cache) { return 0; } return 1; }"
+      style: secondary
+      start: 62
+      end: 127
+  "static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { static int done = 0; if (done) { return 0; } done++; return 0; }":
     labels:
     - source: static int done = 0;
       style: primary
       start: 64
       end: 84
-    - source: static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { static int done = 0; if (done) { return 0; } done++; return 0; }
+    - source: >-
+        static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { static int done
+        = 0; if (done) { return 0; } done++; return 0; }
       style: secondary
       start: 0
       end: 128
-    - source: '{ static int done = 0; if (done) { return 0; } done++; return 0; }'
+    - source: "{ static int done = 0; if (done) { return 0; } done++; return 0; }"
       style: secondary
       start: 62
       end: 128
+  "static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { static int seen = 0; if (seen) { return 0; } seen = 1; return 1; }":
+    labels:
+    - source: static int seen = 0;
+      style: primary
+      start: 64
+      end: 84
+    - source: >-
+        static int ap_filter_fn(ap_filter_t *f, ap_bucket_brigade *b) { static int seen
+        = 0; if (seen) { return 0; } seen = 1; return 1; }
+      style: secondary
+      start: 0
+      end: 130
+    - source: "{ static int seen = 0; if (seen) { return 0; } seen = 1; return 1; }"
+      style: secondary
+      start: 62
+      end: 130

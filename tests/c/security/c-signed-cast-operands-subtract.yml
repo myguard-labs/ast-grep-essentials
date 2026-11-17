@@ -1,5 +1,11 @@
 id: c-signed-cast-operands-subtract
 valid:
   - 'void f(void) { long d = (long) (node->key - current); }'
+  - 'size_t f(size_t a, size_t b) { return (size_t)a - (size_t)b; }'
+  - 'unsigned f(unsigned a, unsigned b) { return (unsigned)a - (unsigned)b; }'
+  - 'int f(int a, int b) { return (long)a < (long)b; }'
 invalid:
   - 'void f(void) { long d = (long) node->key - (long) current; }'
+  - 'long f(int a, int b) { return (long)a - (long)b; }'
+  - 'int f(struct n *p, struct n *q) { return (long)p->x - (long)q->x < 0; }'
+  - 'long f(long a, long b) { return (long) a - (long) b; }'

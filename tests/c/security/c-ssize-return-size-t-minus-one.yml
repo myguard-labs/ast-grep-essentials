@@ -1,5 +1,12 @@
 id: c-ssize-return-size-t-minus-one
 valid:
   - 'static ssize_t w(void) { return (ssize_t)-1; }'
+  - 'static ssize_t w(void) { return -1; }'
+  - 'static ssize_t w(void) { return (ssize_t) -1; }'
+  - 'static size_t w(void) { return SIZE_MAX; }'
 invalid:
   - 'static ssize_t w(void) { return (size_t)-1; }'
+  - 'static ssize_t r(int fd) { if (fd < 0) return (size_t)-1; return 0; }'
+  - 'static ssize_t r(int fd) { switch (fd) { default: { return (size_t)-1; } } }'
+  - 'static ssize_t r(int fd) { if (fd) { return 0; } else { return (size_t)-1; } }'
+  - 'static ssize_t w(void) { return (size_t) -1; }'

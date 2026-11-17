@@ -1,8 +1,26 @@
 id: c-size-compare-0xffffffff-no-header
 snapshots:
-  if ((uint64_t) n > (uint64_t) 0xffffffff) { size = 1; }:
+  "if ((uint64_t) n > (uint64_t) 0xffffffff) { size = 1; }":
     labels:
     - source: (uint64_t) n > (uint64_t) 0xffffffff
       style: primary
       start: 4
       end: 40
+  "int f(size_t *p) { return (uint64_t) *p > (uint64_t) 0xffffffff; }":
+    labels:
+    - source: (uint64_t) *p > (uint64_t) 0xffffffff
+      style: primary
+      start: 26
+      end: 63
+  "int f(size_t len) { return (uint64_t) len > (uint64_t) 0xffffffff; }":
+    labels:
+    - source: (uint64_t) len > (uint64_t) 0xffffffff
+      style: primary
+      start: 27
+      end: 65
+  "void f(size_t len) { while ((uint64_t) len > (uint64_t) 0xffffffff) { len >>= 1; } }":
+    labels:
+    - source: (uint64_t) len > (uint64_t) 0xffffffff
+      style: primary
+      start: 28
+      end: 66

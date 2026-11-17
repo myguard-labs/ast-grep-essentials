@@ -1,5 +1,11 @@
 id: c-signed-cast-left-shift
 valid:
   - 'unsigned f(unsigned n) { return ((unsigned)(n) << 4) & 0xff; }'
+  - 'unsigned f(unsigned n) { return ((unsigned int)(n) << 4); }'
+  - 'unsigned f(unsigned char b) { return ((unsigned char)(b) << 4); }'
+  - 'uint32_t f(int b) { return ((uint32_t)(b) << 24); }'
 invalid:
   - 'unsigned f(unsigned n) { return ((int)(n) << 4) & 0xff; }'
+  - 'int f(const unsigned char *p) { return ((int)(p[0]) << 24); }'
+  - 'int f(const unsigned char *p) { return ((int)(*p) << 8); }'
+  - 'int f(int b, int s) { int x = ((int)(b) << s); return x; }'

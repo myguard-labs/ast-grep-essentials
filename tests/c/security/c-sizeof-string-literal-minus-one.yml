@@ -1,5 +1,11 @@
 id: c-sizeof-string-literal-minus-one
 valid:
   - 'size_t n = sizeof("memb") - 1;'
+  - 'size_t n = sizeof("abc");'
+  - 'size_t n = sizeof(buf) - 1;'
+  - 'size_t n = sizeof("abc" "def") - 1;'
 invalid:
   - 'static const char name[] = "x"; size_t n = sizeof("memb" - 1);'
+  - 'size_t n = sizeof("abc" - 1);'
+  - 'int f(const char *p) { return memcmp(p, "GET", sizeof("GET" - 1)); }'
+  - 'size_t n = sizeof("a" - 2);'
