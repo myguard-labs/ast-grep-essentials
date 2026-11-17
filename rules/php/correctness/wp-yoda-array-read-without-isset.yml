@@ -11,11 +11,11 @@ note: >-
   with a subscript read inside an if condition and cannot prove the key is
   absent or present at runtime, nor resolve aliases or types. A same-array,
   same-key isset( $C[$K] ) or ! empty( $C[$K] ) guard silences the report only
-  when it protects the read: joined only through && or and before the
-  read, or through && or and in the condition of an enclosing if whose body holds the read. A negated guard
-  joined with || or or before the read also protects it. A guard compared
-  with a literal (isset( ... ) == false), or nested in a ternary, call
-  argument or assignment, never counts.
+  when it protects the read: joined only through && or and before the read,
+  or through && or and in the condition of an enclosing if whose body holds
+  the read. A negated guard joined to the read only through || or or also
+  protects it. A guard compared with a literal (isset( ... ) == false), or
+  nested in a ternary, call argument or assignment, never counts.
 rule:
   all:
     - pattern: '''publish'' == $C[$K]'
@@ -84,9 +84,25 @@ rule:
                       - inside:
                           stopBy: end
                           kind: binary_expression
-                          has:
-                            field: operator
-                            regex: '^(\|\||or)$'
+                          all:
+                            - has:
+                                field: operator
+                                regex: '^(\|\||or)$'
+                            - has:
+                                stopBy: end
+                                pattern: '''publish'' == $C[$K]'
+                      - not:
+                          inside:
+                            stopBy:
+                              kind: binary_expression
+                              has:
+                                stopBy: end
+                                pattern: '''publish'' == $C[$K]'
+                            kind: binary_expression
+                            has:
+                              field: operator
+                              not:
+                                regex: '^(\|\||or)$'
     - not:
         inside:
           stopBy: end
@@ -138,6 +154,5 @@ metadata:
     - "Known limitation: an early-return guard (`if ( ! isset( $c['post_status'] ) ) { return; } if ( 'publish' == $c['post_status'] ) { ... }`) is reported; only a guard in the same condition or an enclosing if is recognised"
     - "FP: `if ( empty( $c['post_status'] ) || 'publish' == $c['post_status'] )` and an else body of `if ( ! isset( $c['post_status'] ) ) { } else { if ( read ) }` are reported although the read cannot run with the key absent: only isset and ! empty are recognised as guards"
     - "FN: `if ( ! ( ! isset( $c['post_status'] ) ) || 'publish' == $c['post_status'] )` is not reported: negation parity is not counted, so a doubly negated guard under || counts as protecting"
-    - "FN: `if ( ( ! isset( $c['post_status'] ) || $y ) && 'publish' == $c['post_status'] )` is not reported: a negated guard under any || ancestor counts, even when the || does not join it to the read"
     - "FN: `$ok = 'publish' == $c['post_status'];` outside an if condition and `if ( 'publish' === $c['post_status'] )` (identical comparison) are not reported"
     - "FN: `if ( $c['post_status'] == 'publish' )` (literal on the right) is not reported"

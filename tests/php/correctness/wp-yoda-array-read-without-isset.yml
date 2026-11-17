@@ -14,6 +14,7 @@ valid:
   - "function f( $c, $x ) { if ( isset( $c['post_status'] ) and 'publish' == $c['post_status'] ) { return 1; } }"
   - "function f( $c, $x ) { if ( isset( $c['post_status'] ) ) if ( 'publish' == $c['post_status'] ) { return 1; } }"
   - "function f( $c, $x ) { if ( $x ) { return 0; } elseif ( isset( $c['post_status'] ) && 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c, $y ) { if ( ! ( ! empty( $c['post_status'] ) ) || $y || 'publish' == $c['post_status'] ) { return 1; } }"
 invalid:
   - >-
     function f( $c ) { if ( 'publish' == $c['post_status'] ) { return
@@ -51,3 +52,5 @@ invalid:
   - "function f( $c, $y ) { if ( ! empty( $c['post_status'] ) xor $y ) { if ( 'publish' == $c['post_status'] ) { return 1; } } }"
   - "function f( $c, $y ) { if ( ( $y ? ! empty( $c['post_status'] ) : true ) && 'publish' == $c['post_status'] ) { return 1; } }"
   - "function f( $c ) { if ( foo( ! empty( $c['post_status'] ) ) && 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c, $y ) { if ( ( ! ( ! empty( $c['post_status'] ) ) || $y ) && 'publish' == $c['post_status'] ) { return 1; } }"
+  - "function f( $c, $y ) { if ( ( ! isset( $c['post_status'] ) && $y ) || 'publish' == $c['post_status'] ) { return 1; } }"
