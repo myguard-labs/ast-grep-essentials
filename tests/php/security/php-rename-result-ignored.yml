@@ -3,8 +3,12 @@ valid:
   - '<?php if (!rename($temp_file, $cache_file)) { return false; }'
   - '<?php return rename($temp_file, $cache_file);'
   - '<?php if (rename($a, $b) === false) { throw new RuntimeException(''x''); }'
+  - '<?php $ok = rename($a, $b);'
+  - '<?php rename($a, $b) or die("x");'
+  - '<?php rename($a, $b) || exit(1);'
 invalid:
   - '<?php rename($temp_file, $cache_file);'
   - '<?php @rename($temp_file, $cache_file);'
   - '<?php function f($a,$b) { rename($a, $b, $ctx); }'
   - '<?php $x = true; rename($a, $b); echo 1;'
+  - '<?php (rename($a, $b));'
