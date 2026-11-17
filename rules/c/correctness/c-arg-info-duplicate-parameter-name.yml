@@ -3,22 +3,23 @@
 id: c-arg-info-duplicate-parameter-name
 language: c
 severity: warning
-message: Duplicate parameter name in ZEND_ARG_INFO entries.
+message: Duplicate parameter name in ZEND_ARG_INFO / ZEND_ARG_TYPE_INFO entries of one block.
 note: >-
-  Matches an arg-info call that follows an earlier sibling arg-info call with
-  the same name argument. It does not verify that both lie in the same
-  BEGIN/END block. The optional leading n tolerates literal backslash-n text
-  glued to the macro name.
+  Reports a ZEND_ARG_INFO or ZEND_ARG_TYPE_INFO entry whose name (second
+  argument) equals the name of an earlier ZEND_ARG_INFO or ZEND_ARG_TYPE_INFO
+  entry in the same ZEND_BEGIN_ARG_INFO_EX block. The search for an earlier
+  entry stops at the nearest ZEND_BEGIN_ARG_INFO_EX, so two blocks that reuse a
+  name are not reported. Other arg-info macros are not matched.
 rule:
-  pattern: '$F($A, $N)'
+  any:
+    - pattern: ZEND_ARG_INFO($A, $N);
+    - pattern: ZEND_ARG_TYPE_INFO($A, $N, $T, $X);
   follows:
-    pattern: '$G($B, $N)'
-    stopBy: end
-constraints:
-  F:
-    regex: '^n?ZEND_ARG_INFO$'
-  G:
-    regex: '^n?ZEND_ARG_INFO$'
+    stopBy:
+      pattern: ZEND_BEGIN_ARG_INFO_EX($$$B);
+    any:
+      - pattern: ZEND_ARG_INFO($C, $N);
+      - pattern: ZEND_ARG_TYPE_INFO($C, $N, $U, $Y);
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
@@ -27,5 +28,3 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - 'FN: real PHP source (ZEND_ARG_INFO entries separated by real newlines or spaces) is never reported on 0.51.3 and 0.45.2; the existing fixtures spell line breaks as a literal backslash-n, which parses as calls to `nZEND_ARG_INFO`. Fixture deepening waits for the matcher rework.'
