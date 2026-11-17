@@ -1,5 +1,71 @@
 id: php-global-set-after-callback
 snapshots:
+  "<?php function f($a) { if ($a) { call_user_func($a); return; } $GLOBALS[\"x\"] = 1; }":
+    labels:
+    - source: if ($a) { call_user_func($a); return; }
+      style: primary
+      start: 23
+      end: 62
+    - source: call_user_func($a)
+      style: secondary
+      start: 33
+      end: 51
+    - source: return;
+      style: secondary
+      start: 53
+      end: 60
+    - source: $GLOBALS["x"] = 1
+      style: secondary
+      start: 63
+      end: 80
+    - source: $GLOBALS["x"] = 1;
+      style: secondary
+      start: 63
+      end: 81
+  "<?php function f($a) { if ($a) { call_user_func($a); return; } $b = 2; $GLOBALS['x'] = $b; }":
+    labels:
+    - source: if ($a) { call_user_func($a); return; }
+      style: primary
+      start: 23
+      end: 62
+    - source: call_user_func($a)
+      style: secondary
+      start: 33
+      end: 51
+    - source: return;
+      style: secondary
+      start: 53
+      end: 60
+    - source: $GLOBALS['x'] = $b
+      style: secondary
+      start: 71
+      end: 89
+    - source: $GLOBALS['x'] = $b;
+      style: secondary
+      start: 71
+      end: 90
+  "<?php function f($a) { if ($a) { call_user_func($a); return; } else { echo 1; } $GLOBALS['x'] = 1; }":
+    labels:
+    - source: if ($a) { call_user_func($a); return; } else { echo 1; }
+      style: primary
+      start: 23
+      end: 79
+    - source: call_user_func($a)
+      style: secondary
+      start: 33
+      end: 51
+    - source: return;
+      style: secondary
+      start: 53
+      end: 60
+    - source: $GLOBALS['x'] = 1
+      style: secondary
+      start: 80
+      end: 97
+    - source: $GLOBALS['x'] = 1;
+      style: secondary
+      start: 80
+      end: 98
   "<?php function start_el( $comment, $args ) { if ( !empty($args['callback']) ) { call_user_func($args['callback'], $comment, $args); return; } $GLOBALS['comment'] = $comment; }":
     labels:
     - source: >-

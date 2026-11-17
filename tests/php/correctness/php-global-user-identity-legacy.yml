@@ -1,5 +1,11 @@
 id: php-global-user-identity-legacy
 valid:
   - 'function f() { global $wpdb; echo $wpdb; }'
+  - "function f() { global $user_ID; echo $user_ID; }"
+  - "function f() { global $user_identities; echo 1; }"
+  - "function f() { global $current_user; $u = $current_user; }"
 invalid:
   - 'function f() { global $user_identity; echo $user_identity; }'
+  - "class A { function m() { global $user_identity; return $user_identity; } }"
+  - "$f = function() { global $user_identity; return 1; };"
+  - "global $user_identity;"

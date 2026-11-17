@@ -3,7 +3,13 @@ valid:
   - >-
     function f() { global $class; $row = 'alternate' == $class ? '' :
     'alternate'; return $row; }
+  - "function f() { global $a; $b = $a; return $b; }"
+  - "function f() { global $abc; $ab = 1; return $ab; }"
+  - "function f() { global $a; return $a; }"
 invalid:
   - >-
     function f() { global $class; $class = 'alternate' == $class ? '' :
     'alternate'; return $class; }
+  - "function f() { global $a; if ($x) { $a = 1; } return $a; }"
+  - "function f() { global $a; $a = $a + 1; return $a; }"
+  - "function f() { global $a; $b = 1; $a = $b; return $a; }"

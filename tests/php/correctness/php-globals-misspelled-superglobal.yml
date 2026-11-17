@@ -1,5 +1,11 @@
 id: php-globals-misspelled-superglobal
 valid:
   - '<?php $GLOBALS[''cache''] = 1;'
+  - "<?php $x = $GLOBALS['_GLOBALS'];"
+  - "<?php $y = $GLOBALS['a']['b'];"
+  - "<?php $_SERVER['a'] = 1;"
 invalid:
   - '<?php $_GLOBALS[''cache''] = 1;'
+  - "<?php echo $_GLOBALS['a'];"
+  - "<?php if ( isset( $_GLOBALS['a'] ) ) { f(); }"
+  - "<?php function f() { return $_GLOBALS[\"k\"]; }"
