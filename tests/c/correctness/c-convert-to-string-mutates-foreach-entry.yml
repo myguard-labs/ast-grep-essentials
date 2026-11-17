@@ -3,7 +3,11 @@ valid:
   - >-
     ZEND_HASH_FOREACH_VAL(arr, entry) { zend_string *s = zval_get_string(entry);
     zend_string_release(s); } ZEND_HASH_FOREACH_END();
+  - "void f(zval *entry) { zend_string *s = zval_try_get_string(entry); zend_string_release(s); }"
+  - "void f(zval *entry) { zend_string *s = zval_get_string_func(entry); zend_string_release(s); }"
 invalid:
   - >-
     ZEND_HASH_FOREACH_VAL(arr, entry) { convert_to_string(entry); }
     ZEND_HASH_FOREACH_END();
+  - "void f(HashTable *ht) { zval *e; ZEND_HASH_FOREACH_VAL(ht, e) { convert_to_string(e); } ZEND_HASH_FOREACH_END(); }"
+  - "void f(HashTable *ht) { zend_string *k; zval *e; ZEND_HASH_FOREACH_STR_KEY_VAL(ht, k, e) { convert_to_string(e); } ZEND_HASH_FOREACH_END(); }"

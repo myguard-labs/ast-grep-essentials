@@ -1,5 +1,11 @@
 id: c-contradictory-char-range-test
 valid:
   - "if (*walk < '0' || *walk > '9') {\n\treturn 0;\n}"
+  - "if (c >= '0' && c <= '9') {\n\treturn 1;\n}"
+  - "if (c > '0' && c < '9') {\n\treturn 1;\n}"
+  - "if (c < 'a' && d > 'z') {\n\treturn 0;\n}"
 invalid:
   - "if (*walk < '0' && *walk > '9') {\n\treturn 0;\n}"
+  - "if (c < 'a' && c > 'z') {\n\treturn 0;\n}"
+  - "while (n < 1 && n > 10) {\n\tn++;\n}"
+  - "if (*p < 0x20 && *p > 0x7e) {\n\treturn 0;\n}"

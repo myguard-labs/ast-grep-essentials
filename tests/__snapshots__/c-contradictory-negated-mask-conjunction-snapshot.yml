@@ -2,7 +2,25 @@ id: c-contradictory-negated-mask-conjunction
 snapshots:
   if (!(flags & FLAG_A) && (flags & FLAG_A)) return 1;:
     labels:
-    - source: '!(flags & FLAG_A) && (flags & FLAG_A)'
+    - source: "!(flags & FLAG_A) && (flags & FLAG_A)"
       style: primary
       start: 4
       end: 41
+  if (!(st->flags & F_OPEN) && (st->flags & F_OPEN)) return 1;:
+    labels:
+    - source: "!(st->flags & F_OPEN) && (st->flags & F_OPEN)"
+      style: primary
+      start: 4
+      end: 49
+  "int f(int mode) { return !(mode & 0x4) && (mode & 0x4); }":
+    labels:
+    - source: "!(mode & 0x4) && (mode & 0x4)"
+      style: primary
+      start: 25
+      end: 54
+  "void g(int f) { while (!(f & M_BUSY) && (f & M_BUSY)) { f = 0; } }":
+    labels:
+    - source: "!(f & M_BUSY) && (f & M_BUSY)"
+      style: primary
+      start: 23
+      end: 52
