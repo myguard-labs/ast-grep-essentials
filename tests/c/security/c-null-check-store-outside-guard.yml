@@ -16,6 +16,10 @@ valid:
     void f(struct s *ctx) { if (ctx != NULL) { run(); } else { return; } ctx->b = 1; }
   - |-
     void f(struct s *ctx) { if (ctx != NULL && ctx->ready) { run(); } else { return; } ctx->b = 1; }
+  - |-
+    void f(struct s *ctx) { if (ctx != NULL) { ctx = ctx; } else { return; } ctx->b = 1; }
+  - |-
+    void f(struct s *ctx) { struct s l; if (ctx != NULL) { ctx = &l; } else { return; } ctx->b = 1; }
 
 invalid:
   - |-
@@ -36,3 +40,7 @@ invalid:
     void f(struct s *ctx) { if (ctx != NULL || x) { run(); } else { return; } ctx->b = 1; }
   - |-
     void f(struct s *ctx) { if (ctx != NULL) { ctx = NULL; } else { return; } ctx->b = 1; }
+  - |-
+    void f(struct s *ctx, struct s *other) { if (ctx != NULL) { ctx = &*other; } else { return; } ctx->b = 1; }
+  - |-
+    void f(struct s *ctx, struct s *other) { if (ctx != NULL) { ctx = &(*other); } else { return; } ctx->b = 1; }

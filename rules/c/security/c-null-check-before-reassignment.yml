@@ -106,12 +106,22 @@ rule:
                               pattern: '$P'
                         - not:
                             precedes:
-                              stopBy:
-                                has:
-                                  kind: pointer_expression
-                                  stopBy: end
+                              stopBy: end
                               all:
                                 - kind: if_statement
+                                - not:
+                                    follows:
+                                      stopBy:
+                                        all:
+                                          - kind: expression_statement
+                                          - has:
+                                              kind: assignment_expression
+                                              has:
+                                                field: left
+                                                pattern: '$P'
+                                      has:
+                                        pattern: '*$P'
+                                        stopBy: end
                                 - any:
                                     - pattern: 'if (!$P) $S'
                                     - pattern: 'if ($P == NULL) $S'
@@ -184,3 +194,5 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/476.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
+  todo_cases:
+    - 'void f(int *p) { if (p) { p = next(p); } if ((p = f()) == NULL) return; use(*p); }'

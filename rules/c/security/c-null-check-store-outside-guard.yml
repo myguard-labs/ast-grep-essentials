@@ -29,9 +29,24 @@ rule:
                   has:
                     stopBy: end
                     kind: assignment_expression
-                    has:
-                      field: left
-                      pattern: '$P'
+                    all:
+                      - has:
+                          field: left
+                          pattern: '$P'
+                      - not:
+                          any:
+                            - pattern: '$P = $P'
+                            - all:
+                                - pattern: '$P = &$Z'
+                                - not:
+                                    has:
+                                      field: right
+                                      kind: pointer_expression
+                                      has:
+                                        field: argument
+                                        any:
+                                          - kind: pointer_expression
+                                          - kind: parenthesized_expression
             - has:
                 field: condition
                 any:

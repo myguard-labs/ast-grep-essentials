@@ -17,6 +17,10 @@ valid:
     void f(int *p) { if (p) { p = next(p); } if (p) { p = next(p); if (p) { use(*p); } } }
   - |-
     void f(int *p) { if (p) { p = next(p); } if (!p) return; p = next(p); if (!p) return; use(*p); }
+  - |-
+    void f(int *p, int *q) { if (p) { p = next(p); } if (!p) return; p = next(p); use(*q); if (!p) return; use(*p); }
+  - |-
+    void f(int *p) { if (p) { p = next(p); } if (!p) return; p = next(p); if (!p) return; use(*p); p = next(p); if (!p) return; use(*p); }
 
 invalid:
   - >-

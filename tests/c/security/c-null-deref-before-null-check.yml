@@ -19,6 +19,12 @@ valid:
     void f(struct s *key) { n = (key != NULL) ? key->len : 0; if (key && key->ok) { g(); } }
   - |-
     void f(struct k *key) { if (!key) return; n = key->len; if (key && key->ok) g(); key = next(key); m = key->len; }
+  - |-
+    int f(struct k *key) { int n; if (!key) goto out; n = key->len; if (key && key->ok) g(); out: return 0; }
+  - |-
+    int f(struct k *key) { int n; if (!key) { log(); goto out; } n = key->len; if (key && key->ok) g(); out: return 0; }
+  - |-
+    int f(struct k *key) { int n; retry: key = next(); if (!key) goto retry; n = key->len; if (key && key->ok) g(); return n; }
 
 invalid:
   - |-
@@ -36,3 +42,7 @@ invalid:
     void f(struct k *key) { if (!key) return; key = NULL; n = key->len; if (key && key->ok) g(); }
   - |-
     void f(struct k *key) { if (!key) { return; } key = next(key); n = key->len; if (key && key->ok) g(); }
+  - |-
+    int f(struct k *key) { int n; if (!key) { goto resume; } resume: ; n = key->len; if (key && key->ok) g(); return n; }
+  - |-
+    int f(struct k *key) { int n; if (!key) goto resume; resume: ; n = key->len; if (key && key->ok) g(); return n; }
