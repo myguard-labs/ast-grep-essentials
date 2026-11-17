@@ -5,7 +5,16 @@ valid:
 - class AstgrepFixture { String value = "class A { void f(char c) { while (c != '\\n') { c = read(); } } }"; }
 - class A { void f(char c) { while (c != '\n') { c = read(); if (c == CharacterIterator.DONE) break; } } }
 - class A { void f(char c) { while (c == '\n') { c = read(); } } }
+- class A { void f(char c) { while (c != ';' && c != CharacterIterator.DONE) { c = read(); } } }
+- class A { void f(String s, int i) { while (i < s.length() && s.charAt(i) != ',') { i++; } } }
+- class A { void f(char c, char d) { while (c != d) { c = read(); } } }
 invalid:
 - class A { void f(char c) { while (c != '\n') { c = read(); } } }
 - class A { void skipLine(char ch) { while (ch != '\n') { ch = read(); } } }
 - class A { void readToken(char next) { while (next != '\n') { next = read(); } } }
+- class B { void f(char c) { while (c != '\n') { c = read(); } } }
+- class A { public void f(char c) { while (c != '\n') { c = read(); } } }
+- class A { void f(char c) throws IOException { while (c != '\n') { c = read(); } } }
+- class A { int f(char c, int n) { while (c != '\"') { c = read(); n++; } return n; } }
+- class A { void f() { char c = read(); while (c != ';') c = read(); } }
+- class A { void f(char c) { while ('\n' != c) { c = read(); } } }

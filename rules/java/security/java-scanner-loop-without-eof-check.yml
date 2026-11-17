@@ -7,11 +7,33 @@ note: Hand-written scanners that stop only on a delimiter loop forever on trunca
   input, a DoS shape. The pattern recurs in comment, string and token readers. Expect
   noise where a loop is bounded by other means.
 rule:
-  pattern: class A { void $V0(char $V1) { while ($V1 != '\n') { $V1 = read(); } }
-    }
+  all:
+    - kind: while_statement
+    - has:
+        field: condition
+        has:
+          all:
+            - pattern: $X != $Y
+            - any:
+                - all:
+                    - has:
+                        field: left
+                        kind: identifier
+                    - has:
+                        field: right
+                        kind: character_literal
+                - all:
+                    - has:
+                        field: left
+                        kind: character_literal
+                    - has:
+                        field: right
+                        kind: identifier
+    - not:
+        regex: \bDONE\b
 metadata:
   cwe: 'CWE-835'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/835.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'Not matched: a method with a modifier (`public void f(char c)`), a throws clause, a class named other than A, a delimiter other than the newline literal (`c != ''"''`), or a loop body with a second statement; the pattern pins one exact class and method shape.'
+    - 'Not matched: a condition that combines the comparison with another test (`c != x && ...`), including an index bound, and a char read through a call or field (`s.charAt(i) != x`), a doubly parenthesised condition `((c != x))`; only a plain identifier compared with a character literal is reported. A loop mentioning DONE anywhere (also in the body) is skipped.'
