@@ -18,6 +18,27 @@ note: >-
   A sprintf into a malloc(n) buffer without a strlen sum is not matched here;
   c-sprintf-into-sized-alloc reports any sprintf call with a variable
   destination.
+utils:
+  strlen-sum-alloc:
+    all:
+      - any:
+          - pattern: '$DST = malloc($SZ)'
+          - pattern:
+              context: 'char *$DST = malloc($SZ)'
+              selector: init_declarator
+      - has:
+          stopBy: end
+          kind: binary_expression
+          all:
+            - has: {field: operator, regex: '^\+$'}
+            - not:
+                inside:
+                  stopBy: end
+                  kind: sizeof_expression
+            - has:
+                stopBy: end
+                kind: call_expression
+                has: {field: function, regex: '^strlen$'}
 rule:
   all:
     - pattern: 'sprintf($DST, "$$$FMT", $$$ARGS)'
@@ -27,25 +48,7 @@ rule:
             kind: compound_statement
             has:
               stopBy: end
-              all:
-                - any:
-                    - pattern: '$DST = malloc($SZ)'
-                    - pattern:
-                        context: 'char *$DST = malloc($SZ)'
-                        selector: init_declarator
-                - has:
-                    stopBy: end
-                    kind: binary_expression
-                    all:
-                      - has: {field: operator, regex: '^\+$'}
-                      - not:
-                          inside:
-                            stopBy: end
-                            kind: sizeof_expression
-                      - has:
-                          stopBy: end
-                          kind: call_expression
-                          has: {field: function, regex: '^strlen$'}
+              matches: strlen-sum-alloc
         - all:
             - not:
                 inside:
@@ -57,24 +60,7 @@ rule:
                 has:
                   stopBy: end
                   all:
-                    - any:
-                        - pattern: '$DST = malloc($SZ)'
-                        - pattern:
-                            context: 'char *$DST = malloc($SZ)'
-                            selector: init_declarator
-                    - has:
-                        stopBy: end
-                        kind: binary_expression
-                        all:
-                          - has: {field: operator, regex: '^\+$'}
-                          - not:
-                              inside:
-                                stopBy: end
-                                kind: sizeof_expression
-                          - has:
-                              stopBy: end
-                              kind: call_expression
-                              has: {field: function, regex: '^strlen$'}
+                    - matches: strlen-sum-alloc
                     - not:
                         inside:
                           stopBy: end
