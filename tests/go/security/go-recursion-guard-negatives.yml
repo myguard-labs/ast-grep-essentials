@@ -1,5 +1,12 @@
 id: go-recursion-guard-negatives
 valid:
   - "if maxRecursion <= 0 {\n\treturn\n}"
+  - "if maxRecursion < 1 {\n\treturn\n}"
+  - "if maxRecursion <= 0 || depth > maxRecursion {\n\treturn\n}"
+  - "if maxRecursion > 0 {\n\trecurse(maxRecursion - 1)\n}"
+
 invalid:
   - "if maxRecursion == 0 {\n\treturn\n}"
+  - "if (maxRecursion == 0) {\n\treturn\n}"
+  - "if depth > 0 && maxRecursion == 0 {\n\treturn\n}"
+  - "if maxRecursion == 0 || depth > 10 {\n\treturn\n}"

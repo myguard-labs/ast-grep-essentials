@@ -3,5 +3,11 @@ valid:
 - func read(entry Entry) []byte { return make([]byte, 16) }
 - // func read(entry Entry) []byte { return make([]byte, entry.Size) }
 - var astgrepFixture = "func read(entry Entry) []byte { return make([]byte, entry.Size) }"
+- "func r(h Header) []byte { return make([]byte, min(h.Size, 4096)) }"
+- "func r(h Header) []byte { return make([]byte, len(h.Data)) }"
+
 invalid:
 - func read(entry Entry) []byte { return make([]byte, entry.Size) }
+- "func r(h Header) []byte { return make([]byte, h.Length) }"
+- "func r(rd io.Reader, e *Entry) ([]byte, error) { buf := make([]byte, e.Size); _, err := io.ReadFull(rd, buf); return buf, err }"
+- "func r(c *Conn) []byte { return make([]byte, c.hdr.Size) }"

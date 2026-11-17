@@ -3,5 +3,10 @@ valid:
 - "func f(s string) byte {\n\tb, _ := strconv.ParseUint(s, 8, 16)\n\treturn byte(b)\n}"
 - "// func f(s string) byte {\n// \tb, _ := strconv.ParseUint(s, 8, 8)\n// \treturn byte(b)\n// }"
 - var astgrepFixture = "func f(s string) byte {\n\tb, _ := strconv.ParseUint(s, 8, 8)\n\treturn byte(b)\n}"
+- "func f(s string) byte {\n\tb, err := strconv.ParseUint(s, 8, 8)\n\tif err != nil {\n\t\treturn 0\n\t}\n\treturn byte(b)\n}"
+
 invalid:
 - "func f(s string) byte {\n\tb, _ := strconv.ParseUint(s, 8, 8)\n\treturn byte(b)\n}"
+- "func oct(in string) byte {\n\tv, _ := strconv.ParseUint(in, 8, 8)\n\treturn byte(v)\n}"
+- "package p\n\nimport \"strconv\"\n\nfunc oct(in string) byte {\n\tv, _ := strconv.ParseUint(in, 8, 8)\n\treturn byte(v)\n}\n"
+- "package p\n\nimport \"strconv\"\n\nfunc oct(in string) byte {\n\tv, _ := strconv.ParseUint(in, 8, 8)\n\treturn byte(v)\n}\n\nfunc dec(x string) byte {\n\tn, _ := strconv.ParseUint(x, 8, 8)\n\treturn byte(n)\n}\n"
