@@ -1,5 +1,11 @@
 id: wp-regex-rewrite-rendered-html-attr
 valid:
   - '<?php $avatar = preg_replace( ''/alt=[^ ]+/'', ''x'', $avatar );'
+  - '<?php $a = preg_replace( ''/\s+/'', '' '', $avatar );'
+  - '<?php $a = preg_replace( ''/[^a-z0-9-]/'', '''', $slug );'
+  - '<?php $a = get_avatar( $id, 96, '''', '''', array( ''extra_attr'' => ''loading="lazy"'' ) );'
 invalid:
   - '<?php $avatar = preg_replace( ''/src=[^ ]+/'', ''x'', $avatar );'
+  - '<?php $out = preg_replace( ''/src=[^ ]+/'', '''', get_avatar( $id ) );'
+  - '<?php echo preg_replace( ''/src=[^ ]+/'', ''src="y"'', $html );'
+  - '<?php function f($h) { return preg_replace( ''/src=[^ ]+/'', ''src=""'', $h ); }'
