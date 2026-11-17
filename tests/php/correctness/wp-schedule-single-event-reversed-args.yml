@@ -1,5 +1,11 @@
 id: wp-schedule-single-event-reversed-args
 valid:
   - '<?php wp_schedule_single_event( time() + 60, ''wp_batch_split_terms'' );'
+  - "<?php wp_schedule_single_event( $timestamp, 'my_hook', array( $id ) );"
+  - "<?php wp_schedule_single_event( strtotime( '+1 hour' ), 'my_hook' );"
+  - "<?php wp_schedule_single_event( time(), $hook );"
 invalid:
   - '<?php wp_schedule_single_event( ''wp_batch_split_terms'', time() + 60 );'
+  - "<?php wp_schedule_single_event( 'my_hook', time() + 3600, array( $id ) );"
+  - "<?php $ok = wp_schedule_single_event( 'my_hook', $when );"
+  - "<?php function f() { if ( ! wp_next_scheduled( 'h' ) ) { wp_schedule_single_event( 'h', time() ); } }"

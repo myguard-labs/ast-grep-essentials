@@ -3,7 +3,13 @@ valid:
   - >-
     function f($id) { wp_clear_scheduled_hook('publish_future_post', $id);
     wp_schedule_single_event(time() + 60, 'publish_future_post', array($id)); }
+  - "<?php function f($hook) { wp_clear_scheduled_hook( $hook ); if ( ! wp_next_scheduled( $hook ) ) { wp_schedule_single_event( time() + 60, $hook ); } }"
+  - "<?php function f($ids) { wp_clear_scheduled_hook( 'h' ); foreach ( $ids as $id ) { wp_schedule_single_event( time() + 60, 'h', array( $id ) ); } }"
+  - "<?php function f($id) { wp_clear_scheduled_hook( 'h', array( $id ) ); wp_schedule_single_event( time() + 60, 'h', array( $id ) ); }"
 invalid:
   - >-
     function f($id) { wp_schedule_single_event(time() + 60,
     'publish_future_post', array($id)); }
+  - "<?php function f($id) { $ok = wp_schedule_single_event( time() + 60, 'h', array( $id ) ); return $ok; }"
+  - "<?php function a($id) { wp_clear_scheduled_hook( 'h' ); } function b($id) { wp_schedule_single_event( time() + 60, 'h', array( $id ) ); }"
+  - "<?php function f($ids) { foreach ( $ids as $id ) { wp_schedule_single_event( time() + 60, 'h', array( $id ) ); } }"

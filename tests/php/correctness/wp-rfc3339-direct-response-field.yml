@@ -3,7 +3,13 @@ valid:
   - >-
     function f( $data, $template ) { $modified = mysql_to_rfc3339(
     $template->modified ); return $modified; }
+  - "<?php function f( $d, $t ) { $m = mysql_to_rfc3339( $t->modified ); if ( false !== $m ) { $d['modified'] = $m; } return $d; }"
+  - "<?php function f( $d, $t ) { $m = mysql_to_rfc3339( $t->modified ); $d['modified'] = false === $m ? null : $m; return $d; }"
+  - "<?php function f( $d, $t ) { $m = mysql_to_rfc3339( $t->modified ); if ( ! $m ) { return $d; } $d['modified'] = $m; return $d; }"
 invalid:
   - >-
     function f( $data, $template ) { $data['modified'] = mysql_to_rfc3339(
     $template->modified ); return $data; }
+  - "<?php function f( $d, $t ) { $d['modified']['gmt'] = mysql_to_rfc3339( $t->modified_gmt ); return $d; }"
+  - "<?php function f( $d, $field, $v ) { $d[ $field ] = mysql_to_rfc3339( $v ); return $d; }"
+  - "<?php function f( $r, $t ) { $r->data['date'] = mysql_to_rfc3339( $t->post_date ); return $r; }"

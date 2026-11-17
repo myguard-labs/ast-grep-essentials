@@ -3,7 +3,13 @@ valid:
   - >-
     $deprecated_files = array( '.*wp-app\\.php(/.*)?$' => $this->index .
     '?error=403', );
+  - "<?php $f = array( '.*wp-app\\\\.html$' => 'x' );"
+  - "<?php $f = array( '^blog/([^/]+)/?$' => 'index.php?name=$matches[1]' );"
+  - "<?php $f = array( '.*wp-app\\\\.php(.*)$' => 'x' );"
 invalid:
   - >-
     $deprecated_files = array( '.*wp-app\\.php$' => $this->index . '?error=403',
     );
+  - "<?php $f = array( '.*wp-register\\\\.php$' => $this->index . '?error=403', );"
+  - "<?php $f = [ '.*xmlrpc\\\\.php$' => 'index.php?error=403', '.*wp-trackback\\\\.php$' => 'index.php?error=403' ];"
+  - "<?php $rules = array( 'blog/?$' => 'index.php?pagename=blog', 'old\\\\.php$' => 'index.php?legacy=1' );"

@@ -1,5 +1,11 @@
 id: wp-roles-hardcoded-index
 valid:
   - 'function f( $u ) { return current( $u->roles ); }'
+  - "<?php function f( $u ) { return reset( $u->roles ); }"
+  - "<?php function f( $u ) { return in_array( 'editor', $u->roles, true ); }"
+  - "<?php function f( $u ) { return $u->roles['administrator'] ?? null; }"
 invalid:
   - 'function f( $u ) { return $u->roles[0]; }'
+  - "<?php function f() { return wp_get_current_user()->roles[0]; }"
+  - "<?php class A { function f() { return $this->user->roles[0]; } }"
+  - "<?php function f( $u ) { if ( 'editor' === $u->roles[0] ) { return 1; } }"

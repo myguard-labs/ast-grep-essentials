@@ -1,5 +1,11 @@
 id: wp-rtl-css-replace-drops-min-suffix
 valid:
   - '$rtl_path = str_replace( ''.min.css'', ''-rtl.min.css'', $path );'
+  - "<?php $r = preg_replace( '/(\\.min)?\\.css$/', '-rtl$1.css', $path );"
+  - "<?php $r = str_replace( '.min.css', '-rtl.min.css', $this->url );"
+  - "<?php $r = str_replace( '.min.css', '-rtl.min.css', plugins_url( 'a.min.css', __FILE__ ) );"
 invalid:
   - '$rtl_path = str_replace( ''.css'', ''-rtl.css'', $path );'
+  - "<?php return str_replace( '.css', '-rtl.css', get_stylesheet_uri() );"
+  - "<?php wp_style_add_data( 'h', 'path', str_replace( '.css', '-rtl.css', $p ) );"
+  - "<?php $assets = array( 'rtl' => str_replace( '.css', '-rtl.css', $src ) );"
