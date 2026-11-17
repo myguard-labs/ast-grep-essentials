@@ -3,7 +3,13 @@ valid:
   - >-
     function walk( $items, $depth ) { foreach ( $items as $item ) { walk(
     $items, $depth + 1 ); } }
+  - 'function walk( $items ) { foreach ( $items as $i ) { walk( $i ); } }'
+  - 'function walk( &$items ) { return count( $items ); }'
+  - 'function walk( &$items ) { return walk_children( $items ); }'
 invalid:
   - >-
     function walk( &$items, $depth ) { foreach ( $items as $item ) { walk(
     $items, $depth + 1 ); } }
+  - 'function walk( array &$items, $d = 0 ) { if ( $d < 3 ) { walk( $items, $d + 1 ); } }'
+  - 'function walk( $a, &$b, $c = 0 ) { walk( $a, $b, $c + 1 ); }'
+  - 'function walk( &...$items ) { walk( ...$items ); }'

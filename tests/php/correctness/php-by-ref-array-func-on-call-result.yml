@@ -1,5 +1,11 @@
 id: php-by-ref-array-func-on-call-result
 valid:
   - 'array_pop( $args );'
+  - '$args = $obj->get_args(); $last = array_pop( $args );'
+  - '$last = array_pop( $obj->args );'
+  - '$first = current( $obj->get_args() );'
 invalid:
   - 'array_pop( $obj->get_args() );'
+  - '$last = array_pop( $obj->get_args( 1, 2 ) );'
+  - 'if ( array_pop( $obj->items() ) ) { run(); }'
+  - '$last = array_pop( $a->b->get_args() );'
