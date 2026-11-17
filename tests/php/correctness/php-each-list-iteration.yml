@@ -1,5 +1,11 @@
 id: php-each-list-iteration
 valid:
   - '<?php foreach ( $arr as $k => $v ) { echo $k; }'
+  - '<?php while ( list( $k, $v ) = next_pair( $arr ) ) { echo $k; }'
+  - '<?php while ( $row = array_shift( $arr ) ) { echo $row; }'
+  - '<?php foreach ( $this->items as $k => $v ) { echo $v; }'
 invalid:
   - '<?php while ( list( $k, $v ) = each( $arr ) ) { echo $k; }'
+  - '<?php while ( list( $k ) = each( $this->items ) ) { echo $k; }'
+  - '<?php while ( list( , $v ) = each( $arr ) ) echo $v;'
+  - '<?php while (list($key, $val) = each($data)) { $out[$key] = $val; }'
