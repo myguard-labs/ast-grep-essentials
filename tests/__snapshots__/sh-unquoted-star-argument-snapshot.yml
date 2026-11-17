@@ -1,9 +1,7 @@
 id: sh-unquoted-star-argument
 snapshots:
-  ? |
-    #!/usr/bin/env bash
-    run $*
-  : labels:
+  "#!/usr/bin/env bash\nrun $*\n":
+    labels:
     - source: $*
       style: primary
       start: 24
@@ -12,3 +10,33 @@ snapshots:
       style: secondary
       start: 20
       end: 26
+  echo prefix $* suffix:
+    labels:
+    - source: $*
+      style: primary
+      start: 12
+      end: 14
+    - source: echo prefix $* suffix
+      style: secondary
+      start: 0
+      end: 21
+  "if grep -q foo $*; then :; fi":
+    labels:
+    - source: $*
+      style: primary
+      start: 15
+      end: 17
+    - source: grep -q foo $*
+      style: secondary
+      start: 3
+      end: 17
+  x=$(wc -l $*):
+    labels:
+    - source: $*
+      style: primary
+      start: 10
+      end: 12
+    - source: wc -l $*
+      style: secondary
+      start: 4
+      end: 12
