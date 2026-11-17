@@ -3,7 +3,14 @@ valid:
   - |-
     <?php
     $this->assertArrayHasKey( 'rendered', $props );
+  - '<?php $this->assertArrayNotHasKey(''x'', $props);'
+  - '<?php $this->assertArrayHasKey(''a'', $props, ''message'');'
+  - '<?php self::assertArrayHasKey(''a'', $props);'
+
 invalid:
   - |-
     <?php
     $this->arrayHasKey( 'rendered', $props );
+  - '<?php $this->arrayHasKey(''a'', $props, ''message'');'
+  - '<?php $this->assertTrue($this->arrayHasKey(''a'', $props));'
+  - '<?php class T extends TestCase { function t() { $this->arrayHasKey(''a'', $props); } }'

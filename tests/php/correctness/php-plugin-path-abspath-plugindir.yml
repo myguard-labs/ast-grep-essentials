@@ -1,5 +1,12 @@
 id: php-plugin-path-abspath-plugindir
 valid:
   - 'include( WP_PLUGIN_DIR . "/$plugin_page" );'
+  - 'include( ABSPATH . WPINC . ''/plugin.php'' );'
+  - 'include( ABSPATH . ''wp-content/plugins/'' . $plugin );'
+  - 'include( WP_PLUGIN_DIR . ''/'' . $plugin );'
+
 invalid:
   - 'include( ABSPATH . PLUGINDIR . "/$plugin_page" );'
+  - '$path = ABSPATH . PLUGINDIR . ''/'' . $plugin . ''/main.php'';'
+  - 'require_once ABSPATH . PLUGINDIR . ''/'' . $dir . ''/x.php'';'
+  - '<?php if ( file_exists( ABSPATH . PLUGINDIR . ''/hello.php'' ) ) {}'

@@ -3,7 +3,16 @@ valid:
   - >-
     <?php if ( is_category() && !empty($_GET['cat']) && preg_match(
     '|^[0-9]+$|', $_GET['cat'] ) ) { $x = 1; }
+  - '<?php if ( isset($_REQUEST[''q'']) && preg_match( ''/x/'', $_REQUEST[''q''] ) ) { $x = 1; }'
+  - '<?php if ( !empty($_REQUEST[''cat'']) && preg_match( ''|^[0-9]+$|'', $_REQUEST[''cat''] ) ) { $x = 1; }'
+  - '<?php if ( preg_match( ''|^[0-9]+$|'', $cat ) ) { $x = 1; }'
+  - '<?php if ( empty($_GET[''cat'']) || !preg_match( ''|^[0-9]+$|'', $_GET[''cat''] ) ) { return; }'
+
 invalid:
   - >-
     <?php if ( is_category() && preg_match( '|^[0-9]+$|', $_GET['cat'] ) ) { $x
     = 1; }
+  - '<?php if ( preg_match( ''|^[0-9]+$|'', $_REQUEST[''cat''] ) ) { $x = 1; }'
+  - '<?php if ( ! preg_match( ''|^[0-9]+$|'', $_GET[''id''] ) ) { exit; }'
+  - '<?php if ( $a && preg_match( "/x/", $_GET["q"], $m ) ) { $x = 1; }'
+  - '<?php if ( preg_match( ''/x/'', $_GET[''q''] ) || $b ) { $x = 1; }'
