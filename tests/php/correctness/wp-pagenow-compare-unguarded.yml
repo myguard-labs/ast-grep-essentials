@@ -1,5 +1,11 @@
 id: wp-pagenow-compare-unguarded
 valid:
   - '<?php if ( isset( $pagenow ) && ''edit.php'' == $pagenow ) { echo 1; }'
+  - '<?php if ( $x ) { echo 0; } elseif ( isset( $pagenow ) && ''edit.php'' == $pagenow ) { echo 1; }'
+  - '<?php if ( isset( $pagenow ) && ( ''post.php'' == $pagenow || ''post-new.php'' == $pagenow ) ) { echo 1; }'
+  - '<?php if ( ''edit.php'' == $hook_suffix ) { echo 1; }'
 invalid:
   - '<?php if ( ''edit.php'' == $pagenow ) { echo 1; }'
+  - '<?php if ( ''post.php'' == $pagenow || ''post-new.php'' == $pagenow ) { echo 1; }'
+  - '<?php function f() { global $pagenow; if ( $x && ''edit.php'' == $pagenow ) { echo 1; } }'
+  - '<?php if ( $y ) { echo 2; } elseif ( ''edit.php'' == $pagenow ) { echo 1; }'
