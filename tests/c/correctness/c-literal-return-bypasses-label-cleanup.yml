@@ -10,6 +10,59 @@ valid:
     out:
         return rc;
     }
+  - |-
+    int f(int n) {
+        char *p = malloc(8);
+        if (!p) goto out;
+        p[0] = 0;
+    out:
+        free(p);
+        return 0;
+    }
+  - |-
+    int f(int n) {
+        char *p = malloc(8);
+        if (!p) goto out;
+        p[0] = 0;
+    out: {
+        free(p);
+    }
+        return 0;
+    }
+  - |-
+    char *f(int n) {
+        char *p = malloc(8);
+        if (!p) goto out;
+        p[0] = 0;
+    out:
+        free(p);
+        return NULL;
+    }
+  - |-
+    int f(int n) {
+        char *p = malloc(8);
+        if (!p) goto out;
+        p[0] = 0;
+    out:
+        free(p);
+        if (n) { return 0; }
+        return 1;
+    }
+  - |-
+    int g(void) {
+      char *p = malloc(4);
+      if (!p) goto out;
+      use(p);
+    out:
+      free(p);
+      return 0;
+    }
+    int h(int x) {
+      if (x) goto done;
+      return x;
+    done:
+      return 1;
+    }
 invalid:
   - 'static int f(int x) { if (x) { return 0; } err: return 0; }'
   - |-
@@ -31,4 +84,50 @@ invalid:
     out:
         if (f) fclose(f);
         return rc;
+    }
+  - |-
+    int f(int n) {
+        char *p = malloc(8);
+        if (n) return 0;
+        p[0] = 0;
+    out:
+        free(p);
+        return 0;
+    }
+  - |-
+    int f(int n) {
+        char *p;
+    retry:
+        p = malloc(8);
+        if (!p) goto retry;
+        if (n) return 0;
+        p[0] = 0;
+    out:
+        free(p);
+        return 1;
+    }
+  - |-
+    int f(int n) {
+        char *a = malloc(8), *b = malloc(8);
+        if (!a) goto err;
+        if (n) goto out;
+        return 1;
+    err:
+        free(b);
+        return 0;
+    out:
+        free(a);
+        free(b);
+        return 1;
+    }
+  - |-
+    int f(int n) {
+        char *p = malloc(8);
+        if (n) return 0;
+        while (p) {
+        out:
+            free(p);
+            break;
+        }
+        return 1;
     }
