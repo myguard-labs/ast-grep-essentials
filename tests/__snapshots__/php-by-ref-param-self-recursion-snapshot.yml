@@ -1,12 +1,32 @@
 id: php-by-ref-param-self-recursion
 snapshots:
-  function walk( &$items, $depth ) { foreach ( $items as $item ) { walk( $items, $depth + 1 ); } }:
+  "function walk( $a, &$b, $c = 0 ) { walk( $a, $b, $c + 1 ); }":
     labels:
-    - source: function walk( &$items, $depth ) { foreach ( $items as $item ) { walk( $items, $depth + 1 ); } }
+    - source: function walk( $a, &$b, $c = 0 ) { walk( $a, $b, $c + 1 ); }
+      style: primary
+      start: 0
+      end: 60
+    - source: "&"
+      style: secondary
+      start: 19
+      end: 20
+    - source: ( $a, &$b, $c = 0 )
+      style: secondary
+      start: 13
+      end: 32
+    - source: walk( $a, $b, $c + 1 )
+      style: secondary
+      start: 35
+      end: 57
+  "function walk( &$items, $depth ) { foreach ( $items as $item ) { walk( $items, $depth + 1 ); } }":
+    labels:
+    - source: >-
+        function walk( &$items, $depth ) { foreach ( $items as $item ) { walk( $items,
+        $depth + 1 ); } }
       style: primary
       start: 0
       end: 96
-    - source: '&'
+    - source: "&"
       style: secondary
       start: 15
       end: 16
@@ -18,3 +38,41 @@ snapshots:
       style: secondary
       start: 65
       end: 91
+  "function walk( &...$items ) { walk( ...$items ); }":
+    labels:
+    - source: function walk( &...$items ) { walk( ...$items ); }
+      style: primary
+      start: 0
+      end: 50
+    - source: "&"
+      style: secondary
+      start: 15
+      end: 16
+    - source: ( &...$items )
+      style: secondary
+      start: 13
+      end: 27
+    - source: walk( ...$items )
+      style: secondary
+      start: 30
+      end: 47
+  "function walk( array &$items, $d = 0 ) { if ( $d < 3 ) { walk( $items, $d + 1 ); } }":
+    labels:
+    - source: >-
+        function walk( array &$items, $d = 0 ) { if ( $d < 3 ) { walk( $items, $d + 1
+        ); } }
+      style: primary
+      start: 0
+      end: 84
+    - source: "&"
+      style: secondary
+      start: 21
+      end: 22
+    - source: ( array &$items, $d = 0 )
+      style: secondary
+      start: 13
+      end: 38
+    - source: walk( $items, $d + 1 )
+      style: secondary
+      start: 57
+      end: 79

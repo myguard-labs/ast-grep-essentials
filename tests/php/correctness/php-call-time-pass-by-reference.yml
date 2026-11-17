@@ -1,5 +1,11 @@
 id: php-call-time-pass-by-reference
 valid:
   - '<?php do_action( ''http_api_curl'', array( &$handle ) ); ?>'
+  - '<?php foo( $a & $b ); ?>'
+  - '<?php function f( &$x ) { return $x; } ?>'
+  - '<?php $y = &$x; ?>'
 invalid:
   - '<?php do_action( ''http_api_curl'', &$handle ); ?>'
+  - '<?php $obj->method( &$x ); ?>'
+  - '<?php Foo::bar( &$x, 1 ); ?>'
+  - '<?php $o = new Foo( &$x ); ?>'

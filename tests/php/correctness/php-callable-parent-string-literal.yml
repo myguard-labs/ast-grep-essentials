@@ -3,7 +3,13 @@ valid:
   - >-
     <?php if ( is_callable( array( $this, 'setExpectedException' ) ) ) {
     parent::setExpectedException( $e ); }
+  - '<?php $ok = method_exists( get_parent_class( $this ), ''setExpectedException'' ); ?>'
+  - '<?php $ok = is_callable( ''setExpectedException'' ); ?>'
+  - '<?php $ok = is_callable( [ $this, ''setExpectedException'' ] ); ?>'
 invalid:
   - >-
     <?php if ( is_callable( 'parent::setExpectedException' ) ) {
     parent::setExpectedException( $e ); }
+  - '<?php $ok = is_callable( ''parent::setExpectedException'' ); ?>'
+  - '<?php $ok = !is_callable( ''parent::setExpectedException'' ); ?>'
+  - '<?php return is_callable( ''parent::setExpectedException'' ) ? 1 : 0; ?>'

@@ -1,5 +1,11 @@
 id: php-bool-cast-request-param
 valid:
   - '$ima = (bool) (int) $this->param(''ima'', 0);'
+  - '$ima = (int) $this->param(''ima'', 0);'
+  - '$ima = filter_var( $this->param(''ima''), FILTER_VALIDATE_BOOLEAN );'
+  - '$ima = (bool) $this->input(''ima'');'
 invalid:
   - '$ima = (bool) $this->param(''ima'', 0);'
+  - 'if ( (bool) $this->param(''ima'', 0) ) { run(); }'
+  - '$ima = (bool) $request->param(''ima'');'
+  - 'return (bool) $this->param(''ima'');'

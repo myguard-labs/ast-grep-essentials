@@ -3,7 +3,13 @@ valid:
   - |-
     <?php
     $shown_widgets = call_user_func_array( $callback, $sidebars_widgets );
+  - '<?php $r = array_merge( ...array_values( $w ) );'
+  - '<?php $r = call_user_func( ''array_merge'', $a, $b );'
+  - '<?php $r = call_user_func_array( $callback, array_values( $w ) );'
 invalid:
   - |-
     <?php
     $shown_widgets = call_user_func_array( 'array_merge', $sidebars_widgets );
+  - '<?php $r = call_user_func_array( ''array_merge'', array_filter( $w ) );'
+  - '<?php $r = call_user_func_array( ''array_merge'', $w, );'
+  - '<?php $r = call_user_func_array( ''array_merge'', $this->widgets( $x ) );'
