@@ -1,5 +1,12 @@
 id: php-foreach-value-shadows-iterable
 valid:
   - 'foreach ( $actions as $class => $action ) { echo $class; }'
+  - "<?php foreach ( $this->items as $k => $items ) { echo $k; }"
+  - "<?php foreach ( $rows as $i => $row ) { echo $i; }"
+  - "<?php foreach ( $list as $list_key => $list_val ) { echo $list_key; }"
 invalid:
   - 'foreach ( $actions as $class => $actions ) { echo $class; }'
+  - "<?php foreach ( $items as $i => $items ) { $out[] = $i; }"
+  - "<?php foreach ( $rows as $key => $rows ) { }"
+  - "<?php foreach ( $list as $idx => $list ) { if ( $list ) { break; } }"
+  - "<?php foreach ( $opts as $name => $opts ) { echo $name; echo $opts; }"

@@ -1,5 +1,13 @@
 id: php-foreach-cast-superglobal-unguarded
 valid:
   - '<?php foreach ( (array) ( $_POST[''widget-id''] ?? array() ) as $v ) {}'
+  - "<?php foreach ( (array) ( $_GET['ids'] ?? array() ) as $id ) { echo $id; }"
+  - "<?php foreach ( (array) ( $_COOKIE['seen'] ?? [] ) as $k => $v ) { echo $k; }"
+  - "<?php foreach ( (array) $items as $item ) { echo $item; }"
+  - "<?php foreach ( (array) ( $_REQUEST['ids'] ?? [] ) as $id ) { echo $id; }"
 invalid:
   - '<?php foreach ( (array) $_POST[''widget-id''] as $v ) {}'
+  - "<?php foreach ( (array) $_GET['ids'] as $id ) { echo $id; }"
+  - "<?php foreach ( (array) $_REQUEST['ids'] as $k => $v ) { echo $k; }"
+  - "<?php foreach ( (array) $_COOKIE['seen'] as $v ) { echo $v; }"
+  - "<?php foreach ( ( array ) $_POST[\"ids\"] as $v ) { echo $v; }"
