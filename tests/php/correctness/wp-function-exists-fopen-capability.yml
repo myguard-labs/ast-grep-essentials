@@ -1,5 +1,11 @@
 id: wp-function-exists-fopen-capability
 valid:
   - 'if ( function_exists( ''mb_strlen'' ) ) { $ok = true; }'
+  - '<?php if ( ini_get( ''allow_url_fopen'' ) ) { $ok = true; }'
+  - '<?php if ( function_exists( ''curl_init'' ) ) { $ok = true; }'
+  - '<?php if ( in_array( ''https'', stream_get_wrappers(), true ) ) { $ok = true; }'
 invalid:
   - 'if ( function_exists( ''fopen'' ) ) { $ok = true; }'
+  - '<?php if ( ! function_exists( ''fopen'' ) ) { return false; }'
+  - '<?php $can = function_exists( ''fopen'' ) && $url;'
+  - '<?php class A { public function can_fetch() { return function_exists( ''fopen'' ); } }'

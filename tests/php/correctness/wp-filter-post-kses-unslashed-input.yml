@@ -1,5 +1,11 @@
 id: wp-filter-post-kses-unslashed-input
 valid:
   - '$text = wp_filter_post_kses( addslashes( $value ) );'
+  - '<?php $t = wp_filter_post_kses( addslashes( $_POST[''content''] ) );'
+  - '<?php $t = wp_filter_post_kses( addslashes( $a . $b ) );'
+  - '<?php return wp_filter_post_kses( addslashes( trim( $v ) ) );'
 invalid:
   - '$text = wp_filter_post_kses( $value );'
+  - '<?php $t = wp_filter_post_kses( $_POST[''content''] );'
+  - '<?php $t = wp_filter_post_kses( $this->content );'
+  - '<?php $t = wp_filter_post_kses( stripslashes( $v ) );'

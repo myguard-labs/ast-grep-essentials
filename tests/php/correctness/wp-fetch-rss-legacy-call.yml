@@ -3,7 +3,13 @@ valid:
   - |-
     <?php
     $feed = fetch_feed( $url );
+  - '<?php $feed = fetch_feed( $url ); if ( is_wp_error( $feed ) ) { return; } $items = $feed->get_items();'
+  - '<?php $r = $this->fetch_rss( $url );'
+  - '<?php $feed = fetch_feed( array( $a, $b ) );'
 invalid:
   - |-
     <?php
     $rss = fetch_rss( $url );
+  - '<?php $rss = fetch_rss();'
+  - '<?php if ( ! $rss = fetch_rss( $url, 10 ) ) { return; }'
+  - '<?php function f( $u ) { return fetch_rss( $u ); }'

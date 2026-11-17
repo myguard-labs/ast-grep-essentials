@@ -1,5 +1,11 @@
 id: wp-file-exists-abspath-htaccess
 valid:
   - '<?php if ( file_exists( $home_path . ''.htaccess'' ) ) { echo ''x''; }'
+  - '<?php if ( file_exists( ABSPATH . ''wp-config.php'' ) ) { echo 1; }'
+  - '<?php if ( file_exists( get_home_path() . ''.htaccess'' ) ) { echo 1; }'
+  - '<?php if ( file_exists( ABSPATH . ''index.php'' ) ) { echo 1; }'
 invalid:
   - '<?php if ( file_exists( ABSPATH . ''.htaccess'' ) ) { echo ''x''; }'
+  - '<?php if ( ! file_exists( ABSPATH . ''.htaccess'' ) ) { echo 1; }'
+  - '<?php $has = file_exists(ABSPATH.''.htaccess'');'
+  - '<?php $has = ( file_exists( ABSPATH . ''.htaccess'' ) && is_writable( ABSPATH . ''.htaccess'' ) );'
