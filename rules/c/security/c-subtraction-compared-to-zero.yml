@@ -8,8 +8,9 @@ message: >-
   wraps and may not mean the intended ordering.
 note: >-
   Syntactic check only. Matches a parenthesized binary subtraction of two
-  identifiers compared with literal 0 using a relational operator. Does not
-  verify operand types, signedness, or values.
+  identifiers compared with literal 0 using an ordering operator (<, <=, >,
+  >=); equality and inequality are not reported. Does not verify operand
+  types, signedness, or values.
 rule:
   kind: parenthesized_expression
   has:
@@ -24,10 +25,14 @@ rule:
           pattern: '$B'
   inside:
     kind: binary_expression
-    has:
-      field: right
-      kind: number_literal
-      regex: '^0$'
+    all:
+      - has:
+          field: right
+          kind: number_literal
+          regex: '^0$'
+      - has:
+          field: operator
+          regex: '^(<|<=|>|>=)$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -40,5 +45,4 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/191.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FP: equality test of a parenthesized difference is reported although it cannot wrap, e.g. if ((a - b) == 0) { }'
     - 'FN: constant on the left is missed, e.g. if (0 < (a - b)) { }'
