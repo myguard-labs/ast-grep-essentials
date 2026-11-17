@@ -7,11 +7,54 @@ valid:
     #endif
     return SUCCESS;
     }
+  - |-
+    static int f(void *p) {
+    if (p == NULL) { return FAILURE; }
+    return SUCCESS;
+    }
+  - |-
+    static int f(void *p) {
+    #if HAVE_FOO
+    if (p == NULL) { return FAILURE; }
+    #endif
+    return SUCCESS;
+    }
+  - |-
+    static int f(void *p) {
+    #if ZEND_DEBUG
+    puts("x");
+    #endif
+    if (p == NULL) { return FAILURE; }
+    return SUCCESS;
+    }
 invalid:
   - |-
     static int f(void *p) {
     #if ZEND_DEBUG
     if (p == NULL) { return FAILURE; }
+    #endif
+    return SUCCESS;
+    }
+  - |-
+    static int f(void *p) {
+    #if ZEND_DEBUG
+    if (p == NULL) return FAILURE;
+    #endif
+    return SUCCESS;
+    }
+  - |-
+    static int f(void *p) {
+    #if ZEND_DEBUG
+    if (p == NULL) { return FAILURE; } else { puts("x"); }
+    #endif
+    return SUCCESS;
+    }
+  - |-
+    static int f(void *p) {
+    #if ZEND_DEBUG
+    if (p == NULL) { return FAILURE; }
+    #else
+    puts("x");
     #endif
     return SUCCESS;
     }

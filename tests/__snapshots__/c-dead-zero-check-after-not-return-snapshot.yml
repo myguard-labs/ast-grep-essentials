@@ -1,5 +1,23 @@
 id: c-dead-zero-check-after-not-return
 snapshots:
+  "int f(int *p) { if (!p) return -1; if (p == 0) return 1; return 0; }":
+    labels:
+    - source: if (p == 0) return 1;
+      style: primary
+      start: 35
+      end: 56
+    - source: p == 0
+      style: secondary
+      start: 39
+      end: 45
+    - source: p == 0
+      style: secondary
+      start: 39
+      end: 45
+    - source: if (!p) return -1;
+      style: secondary
+      start: 16
+      end: 34
   "int f(int i, int opt) { if (!i) return 0; if (i == 0 && !opt) return -1; return i; }":
     labels:
     - source: if (i == 0 && !opt) return -1;
@@ -18,3 +36,39 @@ snapshots:
       style: secondary
       start: 24
       end: 41
+  "int f(int n) { if (!n) return -1; log(); if (n == 0) { return 1; } return 0; }":
+    labels:
+    - source: if (n == 0) { return 1; }
+      style: primary
+      start: 41
+      end: 66
+    - source: n == 0
+      style: secondary
+      start: 45
+      end: 51
+    - source: n == 0
+      style: secondary
+      start: 45
+      end: 51
+    - source: if (!n) return -1;
+      style: secondary
+      start: 15
+      end: 33
+  "int f(int n, int m) { if (!n) return -1; if (m > 2 || n == 0) return 1; return 0; }":
+    labels:
+    - source: if (m > 2 || n == 0) return 1;
+      style: primary
+      start: 41
+      end: 71
+    - source: n == 0
+      style: secondary
+      start: 54
+      end: 60
+    - source: n == 0
+      style: secondary
+      start: 54
+      end: 60
+    - source: if (!n) return -1;
+      style: secondary
+      start: 22
+      end: 40

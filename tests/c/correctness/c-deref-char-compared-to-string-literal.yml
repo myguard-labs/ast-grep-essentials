@@ -1,5 +1,12 @@
 id: c-deref-char-compared-to-string-literal
 valid:
   - 'int f(char *err) { return err && *err != ''\0''; }'
+  - 'int f(char *p) { return *p == ''x''; }'
+  - 'int f(char *p) { return strcmp(p, "x") == 0; }'
+  - 'int f(char **pp) { return *pp == NULL; }'
 invalid:
   - 'int f(char *err) { return err && *err != ""; }'
+  - 'int f(char *p) { return *p != "\0"; }'
+  - 'int f(char *p) { return *(p + 1) == "a"; }'
+  - 'int f(char *p) { if (*p == "yes") return 1; return 0; }'
+  - 'int f(char **pp) { return **pp == "x"; }'
