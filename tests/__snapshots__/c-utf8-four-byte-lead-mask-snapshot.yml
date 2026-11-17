@@ -1,8 +1,26 @@
 id: c-utf8-four-byte-lead-mask
 snapshots:
-  int lead(int c) { return (c & 0xF1) == 0xF0; }:
+  "int lead(int c) { return (c & 0xF1) == 0xF0; }":
     labels:
     - source: (c & 0xF1) == 0xF0
       style: primary
       start: 25
       end: 43
+  "int lead4(const unsigned char *s, int i) { return (s[i] & 0xF1) == 0xF0; }":
+    labels:
+    - source: (s[i] & 0xF1) == 0xF0
+      style: primary
+      start: 50
+      end: 71
+  "int len(const unsigned char *p) { if (((unsigned char)*p & 0xF1) == 0xF0) return 4; return 1; }":
+    labels:
+    - source: ((unsigned char)*p & 0xF1) == 0xF0
+      style: primary
+      start: 38
+      end: 72
+  "int len(int c) { return (c & 0xF1) == 0xF0 ? 4 : 1; }":
+    labels:
+    - source: (c & 0xF1) == 0xF0
+      style: primary
+      start: 24
+      end: 42

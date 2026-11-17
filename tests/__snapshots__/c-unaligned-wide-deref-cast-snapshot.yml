@@ -1,8 +1,26 @@
 id: c-unaligned-wide-deref-cast
 snapshots:
+  "int f(const unsigned char *p, uint32_t magic) { if (*((uint32_t *) p) == magic) return 1; return 0; }":
+    labels:
+    - source: "*((uint32_t *) p)"
+      style: primary
+      start: 52
+      end: 69
+  "uint32_t f(const unsigned char *buf, int off) { return *((uint32_t *)(buf + off)); }":
+    labels:
+    - source: "*((uint32_t *)(buf + off))"
+      style: primary
+      start: 55
+      end: 81
+  "uint32_t f(const unsigned char *p, int n) { uint32_t sum = 0; while (n >= 4) { sum += *((uint32_t *) p); p += 4; n -= 4; } return sum; }":
+    labels:
+    - source: "*((uint32_t *) p)"
+      style: primary
+      start: 86
+      end: 103
   uint32_t v = *((uint32_t *) buf);:
     labels:
-    - source: '*((uint32_t *) buf)'
+    - source: "*((uint32_t *) buf)"
       style: primary
       start: 13
       end: 32

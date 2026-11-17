@@ -1,5 +1,17 @@
 id: c-void-cast-pointer-arith
 valid:
   - 'void f(char *s, int n) { void *p = ((char *)s) + n; (void)p; }'
+  - |-
+    unsigned char *f(void *p, int n) { return ((unsigned char *)p) + n; }
+  - |-
+    void *f(void *p, int n) { return (void *)((char *)p + n); }
+  - |-
+    void *f(void *p, uintptr_t n) { return (void *)((uintptr_t)p + n); }
 invalid:
   - 'void f(char *s, int n) { void *p = ((void *)s) + n; (void)p; }'
+  - |-
+    void *f(char *base, int off) { return ((void *)base) + off; }
+  - |-
+    void *f(char *base, int idx, int size) { return ((void *)base) + idx * size; }
+  - |-
+    void *f(char *base) { return ((void *)base) + 8; }

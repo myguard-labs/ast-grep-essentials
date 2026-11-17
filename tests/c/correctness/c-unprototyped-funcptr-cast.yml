@@ -5,9 +5,30 @@ valid:
     void *f(void) {
         return (void *)(char *(*)(void))g;
     }
+  - |-
+    char *g(int);
+    void *f(void) { return (void *)(char *(*)(int))g; }
+  - |-
+    int g(void);
+    void *f(void) { return (void *)(int (*)(void))g; }
+  - |-
+    typedef char *(*handler_fn)(const char *);
+    char *g(const char *);
+    handler_fn f(void) { return (handler_fn)g; }
 invalid:
   - |-
     char *g(void);
     void *f(void) {
         return (void *)(char *(*)())g;
     }
+  - |-
+    char *g(void);
+    void f(void) { char *(*p)(void); p = (char *(*)())g; (void)p; }
+  - |-
+    void use(void *);
+    char *g(void);
+    void f(void) { use((char *(*)())g); }
+  - |-
+    char *g(void);
+    struct ops { char *(*fn)(void); };
+    struct ops o = { (char *(*)())g };

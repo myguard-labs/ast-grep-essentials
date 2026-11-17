@@ -1,8 +1,26 @@
 id: c-unaligned-wide-load-via-cast
 snapshots:
-  unsigned short w = *((unsigned short *)&p[i]);:
+  "int f(const struct hdr *h, unsigned short want) { return *((unsigned short *)&h->raw[2]) == want; }":
     labels:
-    - source: '*((unsigned short *)&p[i])'
+    - source: "*((unsigned short *)&h->raw[2])"
+      style: primary
+      start: 57
+      end: 88
+  "unsigned short f(const unsigned char *buf, int i) { return *((unsigned short *)&buf[i + 1]); }":
+    labels:
+    - source: "*((unsigned short *)&buf[i + 1])"
+      style: primary
+      start: 59
+      end: 91
+  "unsigned short f(const unsigned char *p) { return *((unsigned short *)&p[0]); }":
+    labels:
+    - source: "*((unsigned short *)&p[0])"
+      style: primary
+      start: 50
+      end: 76
+  "unsigned short w = *((unsigned short *)&p[i]);":
+    labels:
+    - source: "*((unsigned short *)&p[i])"
       style: primary
       start: 19
       end: 45
