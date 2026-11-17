@@ -1,5 +1,57 @@
 id: c-num-args-return-false
 valid:
   - "if (ZEND_NUM_ARGS()) {\n\t\tWRONG_PARAM_COUNT;\n\t}"
+  - |-
+    void f(int argc)
+    {
+        if (ZEND_NUM_ARGS()) {
+            WRONG_PARAM_COUNT;
+        }
+        RETURN_TRUE;
+    }
+  - |-
+    void f(int argc)
+    {
+        if (ZEND_NUM_ARGS()) {
+            zend_wrong_parameters_none_error();
+            return;
+        }
+        RETURN_TRUE;
+    }
+  - |-
+    void f(int argc)
+    {
+        if (ZEND_NUM_ARGS() != 2) {
+            WRONG_PARAM_COUNT;
+        }
+        RETURN_TRUE;
+    }
 invalid:
   - "if (ZEND_NUM_ARGS()) {\n\t\tRETURN_FALSE;\n\t}"
+  - |-
+    void f(int argc)
+    {
+        if (ZEND_NUM_ARGS()) { RETURN_FALSE; }
+        RETURN_TRUE;
+    }
+  - |-
+    PHP_FUNCTION(foo)
+    {
+        if (ZEND_NUM_ARGS()) {
+            RETURN_FALSE;
+        }
+        RETURN_TRUE;
+    }
+  - |-
+    void f(int argc)
+    {
+        if (argc < 0) {
+            RETURN_NULL();
+        } else if (argc == 0) {
+            RETURN_TRUE;
+        } else {
+            if (ZEND_NUM_ARGS()) {
+                RETURN_FALSE;
+            }
+        }
+    }

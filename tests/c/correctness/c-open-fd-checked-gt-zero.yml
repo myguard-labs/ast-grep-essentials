@@ -3,7 +3,59 @@ valid:
   - |-
     int fd = open("/proc/self/status", O_RDONLY);
     if (fd >= 0) { close(fd); }
+  - |-
+    int f(const char *path)
+    {
+        int fd = open(path, O_RDONLY);
+        if (fd != -1) {
+            close(fd);
+        }
+        return 0;
+    }
+  - |-
+    int f(const char *path)
+    {
+        int fd = open(path, O_RDONLY);
+        if (fd >= 0) {
+            close(fd);
+            fd = -1;
+        }
+        return 0;
+    }
+  - |-
+    int f(const char *path)
+    {
+        int fd = open(path, O_RDONLY);
+        if (fd < 0) {
+            return -1;
+        }
+        close(fd);
+        return 0;
+    }
 invalid:
   - |-
     int fd = open("/proc/self/status", O_RDONLY);
     if (fd > 0) { close(fd); }
+  - |-
+    int f(struct conn *c)
+    {
+        if (c->fd > 0) { close(c->fd); }
+        return 0;
+    }
+  - |-
+    int f(const char *path)
+    {
+        int sock = open(path, O_RDONLY);
+        if (sock > 0) {
+            close(sock);
+        }
+        return 0;
+    }
+  - |-
+    int f(int fds[2])
+    {
+        if (pipe(fds) != 0) return -1;
+        if (fds[0] > 0) { close(fds[0]); }
+        close(fds[1]);
+        return 0;
+    }

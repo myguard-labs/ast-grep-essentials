@@ -1,5 +1,24 @@
 id: c-openssl-include-private-e-os-header
 valid:
   - '#include <openssl/rand.h>'
+  - |-
+    #include <openssl/e_os2.h>
+  - |-
+    #include <openssl/evp.h>
+  - |-
+    #include <openssl/ssl.h>
+    #include <openssl/err.h>
 invalid:
   - '#include <openssl/e_os.h>'
+  - |-
+    #include <stdio.h>
+    #include <openssl/e_os.h>
+    int x;
+  - |-
+    #ifdef HAVE_OPENSSL
+    #include <openssl/e_os.h>
+    #endif
+  - |-
+    #include <openssl/e_os.h> /* private */
+  - |-
+    #include   <openssl/e_os.h>

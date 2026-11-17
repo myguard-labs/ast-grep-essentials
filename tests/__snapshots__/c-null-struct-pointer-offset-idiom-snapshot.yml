@@ -1,11 +1,26 @@
 id: c-null-struct-pointer-offset-idiom
 snapshots:
-  ? |-
-    #include <stddef.h>
-    struct s { int a; char b[4]; };
-    size_t f(void) { return (size_t)(((struct s *)0)->b); }
-  : labels:
+  "#include <stddef.h>\nstruct s { int a; char b[4]; };\nsize_t f(void) { return (size_t)(((struct s *)0)->b); }":
+    labels:
     - source: ((struct s *)0)->b
       style: primary
       start: 85
       end: 103
+  "struct s { int a; char b[4]; };\nlong f(void) { return (long)&((struct s *)0)->a; }":
+    labels:
+    - source: ((struct s *)0)->a
+      style: primary
+      start: 61
+      end: 79
+  "struct s { int a; char b[4]; };\nunsigned long f(void) { return (unsigned long)&(((struct s *)0)->b); }":
+    labels:
+    - source: ((struct s *)0)->b
+      style: primary
+      start: 80
+      end: 98
+  "struct s { int a; struct { int x; int y; } in; };\nunsigned long f(void) { return (unsigned long)&(((struct s *)0)->in.y); }":
+    labels:
+    - source: ((struct s *)0)->in
+      style: primary
+      start: 98
+      end: 117
