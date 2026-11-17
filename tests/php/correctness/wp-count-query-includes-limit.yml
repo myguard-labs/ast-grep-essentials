@@ -3,7 +3,13 @@ valid:
   - >-
     $total = $wpdb->get_var( 'SELECT COUNT(*) FROM $wpdb->users
     $this->query_where' );
+  - "$total = $wpdb->get_var( 'SELECT COUNT(*) FROM $wpdb->users' );"
+  - "$total = $wpdb->get_var( 'SELECT FOUND_ROWS()' );"
+  - "$rows = $wpdb->get_results( 'SELECT ID FROM $wpdb->users $this->query_limit' );"
 invalid:
   - >-
     $total = $wpdb->get_var( 'SELECT COUNT(*) FROM $wpdb->users
     $this->query_limit' );
+  - "echo $wpdb->get_var( 'SELECT COUNT(*) FROM $wpdb->users $this->query_limit' );"
+  - "$total = (int) $wpdb->get_var( 'SELECT COUNT(*) FROM $wpdb->users $this->query_limit' );"
+  - "return $wpdb->get_var('SELECT COUNT(*) FROM $wpdb->users $this->query_limit');"

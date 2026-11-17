@@ -4,7 +4,13 @@ valid:
     <?php
     $terms = get_terms( $taxonomy, array( 'hide_empty' => 0 ) );
     $total = count( $terms );
+  - "<?php $total = wp_count_terms( array( 'taxonomy' => 'category' ) );"
+  - "<?php $ids = get_terms( array( 'fields' => 'ids' ) );\nif ( count( $ids ) > 0 ) { echo 'some'; }"
+  - "<?php $total = count( $items ); $other = get_terms( $taxonomy );"
 invalid:
   - |-
     <?php
     $total = count( get_terms( $taxonomy, array( 'hide_empty' => 0 ) ) );
+  - "<?php if ( count( get_terms( $args ) ) > 0 ) { echo 'has terms'; }"
+  - "<?php $n = count( get_terms( 'category', array() ) );"
+  - "<?php $n = count( array_filter( get_terms( $taxonomy ) ) );"

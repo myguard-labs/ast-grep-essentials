@@ -3,5 +3,11 @@ valid:
   - >-
     <?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) )
     { echo 'nav'; } ?>
+  - "<?php if ( get_option( 'page_comments' ) && get_comment_pages_count() > 1 ) { previous_comments_link(); next_comments_link(); } ?>"
+  - "<?php $pages = get_comment_pages_count(); if ( get_option( 'page_comments' ) && $pages > 1 ) { next_comments_link(); } ?>"
+  - "<?php if ( get_comment_pages_count() > 1 && 1 == get_option( 'page_comments' ) ) { paginate_comments_links(); } ?>"
 invalid:
   - '<?php if ( get_comment_pages_count() > 1 ) { echo ''nav''; } ?>'
+  - "<?php if ( get_comment_pages_count() > 1 ) { previous_comments_link(); next_comments_link(); } ?>"
+  - "<?php function show_nav() {\n    if ( get_comment_pages_count() > 1 ) {\n        paginate_comments_links();\n    }\n}"
+  - "<?php if ( get_comment_pages_count() > 1 ) { next_comments_link(); } else { echo 'none'; } ?>"

@@ -1,5 +1,11 @@
 id: wp-count-guard-slices-other-array
 valid:
   - 'if ($n > count($list)) { $rem = array_slice($list, $n); }'
+  - "if ($n > count($list)) { $n = count($list); $rem = array_slice($list, $n); }"
+  - "if ($n < count($items)) { $rem = array_slice($items, $n); }"
+  - "if ($n > count($other)) { $flag = true; }"
 invalid:
   - 'if ($n > count($other)) { $rem = array_slice($list, $n); }'
+  - "if ($offset > count($b)) { $part = array_slice($a, $offset, 5); }"
+  - "if ($n > count($this->b)) { return array_slice($this->a, $n); }"
+  - "if ($n > count($other) && $flag) { $rem = array_slice($list, 0, $n); } else { $rem = array(); }"
