@@ -1,5 +1,11 @@
 id: wp-caller-get-posts-query-arg
 valid:
   - '$r = new WP_Query( array( ''ignore_sticky_posts'' => true ) );'
+  - '<?php $r = new WP_Query( array( ''ignore_sticky_posts'' => true, ''posts_per_page'' => 3 ) );'
+  - '<?php $r = new WP_Query( array( ''caller_get_posts_extra'' => 1 ) );'
+  - '<?php $r = new WP_Query( array( ''x'' => ''caller_get_posts'' ) );'
 invalid:
   - '$r = new WP_Query( array( ''caller_get_posts'' => 1 ) );'
+  - '<?php $r = new WP_Query( array( ''posts_per_page'' => 3, ''caller_get_posts'' => 1 ) );'
+  - '<?php $r = new WP_Query( [ ''caller_get_posts'' => 1 ] );'
+  - '<?php $r = get_posts( array( ''caller_get_posts'' => true ) );'
