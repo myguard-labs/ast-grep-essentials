@@ -3,7 +3,11 @@ valid:
   - >-
     function f() { $post_ID = 5; return
     wp_create_nonce("set_post_thumbnail-$post_ID"); }
+  - '<?php function f( $id ) { global $post_ID; return wp_create_nonce("set_post_thumbnail-$id"); }'
+  - '<?php function f() { global $post_ID; return wp_create_nonce( ''set_post_thumbnail-'' . get_the_ID() ); }'
 invalid:
   - >-
     function f() { global $post_ID; return
     wp_create_nonce("set_post_thumbnail-$post_ID"); }
+  - '<?php function f() { global $post_ID; $x = 1; $n = wp_create_nonce("set_post_thumbnail-$post_ID"); echo $n; }'
+  - '<?php function g() { global $post_ID; echo ''<a data-n="'' . wp_create_nonce("set_post_thumbnail-$post_ID") . ''">''; }'

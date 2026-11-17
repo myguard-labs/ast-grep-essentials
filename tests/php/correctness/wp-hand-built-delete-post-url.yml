@@ -3,7 +3,12 @@ valid:
   - >-
     $u = add_query_arg( array( 'action' => 'delete', 'post' => $id ), admin_url(
     'post.php' ) );
+  - '<?php $u = get_delete_post_link( $id );'
+  - '<?php $u = wp_nonce_url( admin_url( ''post.php'' ), ''delete-post_'' . $id );'
 invalid:
   - >-
     $u = wp_nonce_url( add_query_arg( array( 'action' => 'delete', 'post' => $id
     ), admin_url( 'post.php' ) ), 'delete-post_' . $id );
+  - '<?php $u = wp_nonce_url( add_query_arg( ''post'', $id, admin_url( ''post.php'' ) ), ''delete-post_'' . $id );'
+  - '<?php echo esc_url( wp_nonce_url( add_query_arg( array( ''action'' => ''delete'', ''post'' => $id ), admin_url( ''post.php'' ) ), "delete-post_$id" ) );'
+  - '<?php $u = wp_nonce_url( add_query_arg( ''action'', ''delete'', add_query_arg( ''post'', $id, $base ) ), ''delete-post_'' . $id );'
