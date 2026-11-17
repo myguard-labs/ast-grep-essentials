@@ -1,12 +1,69 @@
 id: wp-wpdb-prepare-and-equality-loop
 snapshots:
-  ? "$extra_checks = '';\nforeach ( $stati as $status ) {\n\t$extra_checks .= $wpdb->prepare( ' AND post_status = %s', $status );\n}"
-  : labels:
+  "$extra_checks = '';\nforeach ( $stati as $status ) {\n\t$extra_checks .= $wpdb->prepare( ' AND post_status = %s', $status );\n}":
+    labels:
     - source: $wpdb->prepare( ' AND post_status = %s', $status )
       style: primary
       start: 70
       end: 120
-    - source: "foreach ( $stati as $status ) {\n\t$extra_checks .= $wpdb->prepare( ' AND post_status = %s', $status );\n}"
+    - source: |-
+        foreach ( $stati as $status ) {
+        	$extra_checks .= $wpdb->prepare( ' AND post_status = %s', $status );
+        }
       style: secondary
       start: 20
       end: 123
+  "foreach ( $groups as $g ) {\n\tforeach ( $g as $status ) {\n\t\t$extra .= $wpdb->prepare( ' AND post_status = %s', $status );\n\t}\n}":
+    labels:
+    - source: $wpdb->prepare( ' AND post_status = %s', $status )
+      style: primary
+      start: 69
+      end: 119
+    - source: |-
+        foreach ( $g as $status ) {
+        		$extra .= $wpdb->prepare( ' AND post_status = %s', $status );
+        	}
+      style: secondary
+      start: 29
+      end: 123
+  "foreach ( $stati as $k => $status ) {\n\t$extra .= $wpdb->prepare( ' AND post_status = %s', $status );\n}":
+    labels:
+    - source: $wpdb->prepare( ' AND post_status = %s', $status )
+      style: primary
+      start: 49
+      end: 99
+    - source: |-
+        foreach ( $stati as $k => $status ) {
+        	$extra .= $wpdb->prepare( ' AND post_status = %s', $status );
+        }
+      style: secondary
+      start: 0
+      end: 102
+  "foreach ( $stati as $status ) {\n\tif ( $status ) {\n\t\t$extra .= $wpdb->prepare( ' AND post_status = %s', $status );\n\t}\n}":
+    labels:
+    - source: $wpdb->prepare( ' AND post_status = %s', $status )
+      style: primary
+      start: 62
+      end: 112
+    - source: |-
+        foreach ( $stati as $status ) {
+        	if ( $status ) {
+        		$extra .= $wpdb->prepare( ' AND post_status = %s', $status );
+        	}
+        }
+      style: secondary
+      start: 0
+      end: 118
+  "foreach ( $stati as $status ):\n\t$extra = $extra . $wpdb->prepare( ' AND post_status = %s', $status );\nendforeach;":
+    labels:
+    - source: $wpdb->prepare( ' AND post_status = %s', $status )
+      style: primary
+      start: 50
+      end: 100
+    - source: |-
+        foreach ( $stati as $status ):
+        	$extra = $extra . $wpdb->prepare( ' AND post_status = %s', $status );
+        endforeach;
+      style: secondary
+      start: 0
+      end: 113

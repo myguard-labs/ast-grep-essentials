@@ -3,7 +3,14 @@ valid:
   - >-
     if ( '0000-00-00 00:00:00' == $post->post_date_gmt ) { $stamp = 'Publish
     immediately'; }
+  - "if ( '0000-00-00 00:00:00' === $post->post_date_gmt ) { $s = 1; }"
+  - "if ( '0000-00-00 00:00:00' == $post->post_modified_gmt ) { $s = 1; }"
+  - "if ( '0000-00-00 00:00:00' != $post->post_date_gmt ) { $s = 1; }"
 invalid:
   - >-
     if ( '0000-00-00 00:00:00' == $post->post_date ) { $stamp = 'Publish
     immediately'; }
+  - "$d = ( '0000-00-00 00:00:00' == $post->post_date ) ? 'now' : 'later';"
+  - "function f( $p ) { return '0000-00-00 00:00:00' == $p->post_date; }"
+  - "if ( '0000-00-00 00:00:00' == $this->post->post_date && $x ) { $s = 1; }"
+  - "while ( '0000-00-00 00:00:00' == $item->post_date ) { $item = next_item(); }"

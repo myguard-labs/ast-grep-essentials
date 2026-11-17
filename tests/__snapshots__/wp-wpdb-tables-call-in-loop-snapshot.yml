@@ -1,12 +1,59 @@
 id: wp-wpdb-tables-call-in-loop
 snapshots:
-  foreach ( $tables as $table ) { if ( in_array( $table, $wpdb->tables( 'global' ) ) ) continue; }:
+  "foreach ( $groups as $g ) { foreach ( $g as $id ) { $list[] = $wpdb->tables( 'all' ); } }":
+    labels:
+    - source: $wpdb->tables( 'all' )
+      style: primary
+      start: 62
+      end: 84
+    - source: foreach ( $g as $id ) { $list[] = $wpdb->tables( 'all' ); }
+      style: secondary
+      start: 28
+      end: 87
+  "foreach ( $ids as $id ) { $t = $wpdb->tables( 'blog' ); }":
+    labels:
+    - source: $wpdb->tables( 'blog' )
+      style: primary
+      start: 31
+      end: 54
+    - source: foreach ( $ids as $id ) { $t = $wpdb->tables( 'blog' ); }
+      style: secondary
+      start: 0
+      end: 57
+  "foreach ( $ids as $id ) { if ( $id ) { $names = array_keys( $wpdb->tables( 'ms_global' ) ); } }":
+    labels:
+    - source: $wpdb->tables( 'ms_global' )
+      style: primary
+      start: 60
+      end: 88
+    - source: >-
+        foreach ( $ids as $id ) { if ( $id ) { $names = array_keys( $wpdb->tables(
+        'ms_global' ) ); } }
+      style: secondary
+      start: 0
+      end: 95
+  "foreach ( $ids as $k => $id ):\n\t$t = $wpdb->tables( 'global' );\nendforeach;":
+    labels:
+    - source: $wpdb->tables( 'global' )
+      style: primary
+      start: 37
+      end: 62
+    - source: |-
+        foreach ( $ids as $k => $id ):
+        	$t = $wpdb->tables( 'global' );
+        endforeach;
+      style: secondary
+      start: 0
+      end: 75
+  "foreach ( $tables as $table ) { if ( in_array( $table, $wpdb->tables( 'global' ) ) ) continue; }":
     labels:
     - source: $wpdb->tables( 'global' )
       style: primary
       start: 55
       end: 80
-    - source: foreach ( $tables as $table ) { if ( in_array( $table, $wpdb->tables( 'global' ) ) ) continue; }
+    - source: >-
+        foreach ( $tables as $table ) { if ( in_array( $table, $wpdb->tables( 'global'
+        ) ) ) continue; }
       style: secondary
       start: 0
       end: 96

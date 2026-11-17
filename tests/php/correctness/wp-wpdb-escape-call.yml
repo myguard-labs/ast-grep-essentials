@@ -1,5 +1,12 @@
 id: wp-wpdb-escape-call
 valid:
   - '$x = $wpdb->prepare( ''%s'', $name );'
+  - "$x = esc_sql( $name );"
+  - "$x = $wpdb->esc_like( $name );"
+  - "$x = $wpdb->get_var( $wpdb->prepare( 'SELECT ID FROM t WHERE n = %s', $name ) );"
 invalid:
   - '$x = $wpdb->escape( $name );'
+  - "$q = \"SELECT ID FROM t WHERE n = '\" . $wpdb->escape( $_POST['n'] ) . \"'\";"
+  - "function f( $n ) { global $wpdb; return $wpdb->escape( $n ); }"
+  - "$clean = array_map( 'trim', array( $wpdb->escape( $a ), $b ) );"
+  - "$x = $wpdb->escape( $a, $b );"

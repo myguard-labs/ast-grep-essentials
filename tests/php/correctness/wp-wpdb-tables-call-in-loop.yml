@@ -3,7 +3,14 @@ valid:
   - >-
     $global_tables = $wpdb->tables( 'global' ); foreach ( $tables as $table ) {
     if ( in_array( $table, $global_tables ) ) continue; }
+  - "$blog_tables = $wpdb->tables( 'blog' ); foreach ( $ids as $id ) { $n = count( $blog_tables ); }"
+  - "foreach ( $ids as $id ) { $n++; } $all = $wpdb->tables( 'all' );"
+  - "$names = array_keys( $wpdb->tables( 'ms_global' ) ); foreach ( $names as $name ) { $out[] = $name; }"
 invalid:
   - >-
     foreach ( $tables as $table ) { if ( in_array( $table, $wpdb->tables(
     'global' ) ) ) continue; }
+  - "foreach ( $groups as $g ) { foreach ( $g as $id ) { $list[] = $wpdb->tables( 'all' ); } }"
+  - "foreach ( $ids as $k => $id ):\n\t$t = $wpdb->tables( 'global' );\nendforeach;"
+  - "foreach ( $ids as $id ) { if ( $id ) { $names = array_keys( $wpdb->tables( 'ms_global' ) ); } }"
+  - "foreach ( $ids as $id ) { $t = $wpdb->tables( 'blog' ); }"

@@ -3,7 +3,14 @@ valid:
   - |-
     <?php
     $safe = $wpdb->_escape( $sql );
+  - "$x = esc_sql( $name );"
+  - "$x = $wpdb->esc_like( $name );"
+  - "$x = $wpdb->get_var( $wpdb->prepare( 'SELECT ID FROM t WHERE n = %s', $name ) );"
 invalid:
   - |-
     <?php
     $safe = $wpdb->escape( $sql );
+  - "$q = \"SELECT ID FROM t WHERE n = '\" . $wpdb->escape( $_POST['n'] ) . \"'\";"
+  - "function f( $n ) { global $wpdb; return $wpdb->escape( $n ); }"
+  - "$clean = array_map( 'trim', array( $wpdb->escape( $a ), $b ) );"
+  - "$wpdb->escape( $name );"

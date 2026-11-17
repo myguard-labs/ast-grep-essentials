@@ -1,5 +1,11 @@
 id: wp-wpdb-prepare-and-equality-loop
 valid:
   - "$extra_checks = '';\nforeach ( $stati as $status ) {\n\t$extra_checks .= $wpdb->prepare( ' OR post_status = %s', $status );\n}"
+  - "$where = $wpdb->prepare( ' AND post_status = %s', $status );"
+  - "foreach ( $stati as $s ) { $list[] = $s; }\n$where = $wpdb->prepare( ' AND post_status = %s', $status );"
 invalid:
   - "$extra_checks = '';\nforeach ( $stati as $status ) {\n\t$extra_checks .= $wpdb->prepare( ' AND post_status = %s', $status );\n}"
+  - "foreach ( $stati as $k => $status ) {\n\t$extra .= $wpdb->prepare( ' AND post_status = %s', $status );\n}"
+  - "foreach ( $stati as $status ) {\n\tif ( $status ) {\n\t\t$extra .= $wpdb->prepare( ' AND post_status = %s', $status );\n\t}\n}"
+  - "foreach ( $stati as $status ):\n\t$extra = $extra . $wpdb->prepare( ' AND post_status = %s', $status );\nendforeach;"
+  - "foreach ( $groups as $g ) {\n\tforeach ( $g as $status ) {\n\t\t$extra .= $wpdb->prepare( ' AND post_status = %s', $status );\n\t}\n}"

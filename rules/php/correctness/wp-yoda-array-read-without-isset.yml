@@ -27,3 +27,9 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  todo_cases:
+    - "FP: `if ( array_key_exists( 'post_status', $c ) && 'publish' == $c['post_status'] )` is reported although the key is checked (only an isset( $c[$K] ) guard is recognised)"
+    - "FP: `if ( ! empty( $c['post_status'] ) && 'publish' == $c['post_status'] )` is reported although the key is checked"
+    - "FP: `if ( isset( $c['post_status'] ) ) { if ( 'publish' == $c['post_status'] ) { ... } }` is reported: the inner if has no isset and the stopBy end walk matches it"
+    - "FN: `$ok = 'publish' == $c['post_status'];` outside an if condition and `if ( 'publish' === $c['post_status'] )` (identical comparison) are not reported"
+    - "FN: `if ( $c['post_status'] == 'publish' )` (literal on the right) is not reported"
