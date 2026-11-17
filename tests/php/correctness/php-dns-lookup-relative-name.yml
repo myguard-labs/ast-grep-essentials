@@ -1,5 +1,11 @@
 id: php-dns-lookup-relative-name
 valid:
   - '$lookup = gethostbyname($rev_ip . ''.opm.example.org.'');'
+  - '<?php $l = gethostbyname($a . $b . ''.opm.example.org.'');'
+  - '<?php $l = gethostbyname(''host.opm.example.org.'');'
+  - '<?php $l = gethostbynamel($ip . ''.opm.example.org.'');'
 invalid:
   - '$lookup = gethostbyname($rev_ip . ''.opm.example.org'');'
+  - '<?php $l = gethostbyname($a . $b . ''.opm.example.org'');'
+  - '<?php if (gethostbyname($ip . ''.opm.example.org'') != $ip) {}'
+  - '<?php $l = gethostbyname($this->ip . ''.opm.example.org'');'

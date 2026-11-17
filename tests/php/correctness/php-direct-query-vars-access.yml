@@ -1,5 +1,11 @@
 id: php-direct-query-vars-access
 valid:
   - '<?php $s = attribute_escape(get_search_query());'
+  - '<?php $s = $wp_query->get(''s'');'
+  - '<?php $s = $other->query_vars[''s''];'
+  - '<?php $q = $wp_query->query_vars;'
 invalid:
   - '<?php $s = attribute_escape($wp_query->query_vars[''s'']);'
+  - '<?php $s = $wp_query->query_vars[''s''] ?? '''';'
+  - '<?php foo($wp_query->query_vars[''cat''], 1);'
+  - '<?php if ( $wp_query->query_vars[''p''] ) { echo 1; }'
