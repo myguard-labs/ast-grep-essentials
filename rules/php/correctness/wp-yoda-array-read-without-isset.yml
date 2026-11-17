@@ -13,7 +13,8 @@ note: >-
   same-key isset( $C[$K] ) or ! empty( $C[$K] ) guard silences the report only
   when it protects the read: joined with && or and before the read, or as the
   condition of an enclosing if whose body holds the read. A negated guard
-  joined with || or or before the read also protects it.
+  joined with || or or before the read also protects it. A guard compared
+  with a literal (isset( ... ) == false) never counts.
 rule:
   all:
     - pattern: '''publish'' == $C[$K]'
@@ -53,7 +54,7 @@ rule:
                               kind: binary_expression
                               has:
                                 field: operator
-                                regex: '^(\|\||or)$'
+                                regex: '^(\|\||or|==|===|!=|!==|<>)$'
                     - all:
                         - inside:
                             stopBy: end
@@ -87,7 +88,7 @@ rule:
                             - kind: binary_expression
                               has:
                                 field: operator
-                                regex: '^(\|\||or)$'
+                                regex: '^(\|\||or|==|===|!=|!==|<>)$'
             - has:
                 field: body
                 has:
@@ -105,5 +106,6 @@ metadata:
     - "FP: `if ( array_key_exists( 'post_status', $c ) && 'publish' == $c['post_status'] )` (also as an enclosing if guard) is reported although the key is checked: the argument metavariables bind `argument` nodes and cannot be unified with the subscript operands on 0.45.2 and 0.51.3"
     - "Known limitation: an early-return guard (`if ( ! isset( $c['post_status'] ) ) { return; } if ( 'publish' == $c['post_status'] ) { ... }`) is reported; only a guard in the same condition or an enclosing if is recognised"
     - "FP: `if ( empty( $c['post_status'] ) || 'publish' == $c['post_status'] )` and an else body of `if ( ! isset( $c['post_status'] ) ) { } else { if ( read ) }` are reported although the read cannot run with the key absent: only isset and ! empty are recognised as guards"
+    - "FN: `if ( ( ! isset( $c['post_status'] ) || $y ) && 'publish' == $c['post_status'] )` is not reported: a negated guard under any || ancestor counts, even when the || does not join it to the read"
     - "FN: `$ok = 'publish' == $c['post_status'];` outside an if condition and `if ( 'publish' === $c['post_status'] )` (identical comparison) are not reported"
     - "FN: `if ( $c['post_status'] == 'publish' )` (literal on the right) is not reported"
