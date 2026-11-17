@@ -1,5 +1,11 @@
 id: php-define-guard-redefines-false-constant
 valid:
   - '<?php if ( !defined(''FOO'') ) define(''FOO'', true);'
+  - '<?php if ( !defined(''FOO'') ) { define(''FOO'', false); }'
+  - '<?php if ( !defined(''FOO'') || !FOO ) { $x = 1; }'
+  - '<?php if ( defined(''FOO'') && !FOO ) $x = 1;'
 invalid:
   - '<?php if ( !defined(''FOO'') || !FOO ) define(''FOO'', true);'
+  - '<?php if ( !defined(''FOO'') || !FOO ) define(''FOO'', false);'
+  - '<?php if ( !defined(''FOO'') || !FOO ) define(''FOO'', 1, true);'
+  - '<?php if ( !defined(''FOO'') || !FOO ) define(''FOO'', $value);'

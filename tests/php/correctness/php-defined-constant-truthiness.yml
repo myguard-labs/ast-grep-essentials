@@ -1,5 +1,12 @@
 id: php-defined-constant-truthiness
 valid:
   - 'if ( defined( ''FTP_SSL'' ) && FTP_SSL ) { $connection_type = ''ftps''; }'
+  - 'if ( defined( ''FTP_SSL'' ) && FTP_SSL && $force ) { $t = ''ftps''; }'
+  - 'if ( defined( ''FTP_SSL'' ) and FTP_SSL ) { $t = ''ftps''; }'
+  - 'if ( ( defined( ''FTP_SSL'' ) && FTP_SSL ) || $force ) { $t = ''ftps''; }'
 invalid:
   - 'if ( defined( ''FTP_SSL'' ) ) { $connection_type = ''ftps''; }'
+  - 'if ( defined( ''FTP_SSL'' ) ) { $t = ''ftps''; } else { $t = ''ftp''; }'
+  - 'if ( defined( ''FTP_SSL'' ) || $force ) { $t = ''ftps''; }'
+  - 'if ( $force || defined( ''FTP_SSL'' ) ) { $t = ''ftps''; }'
+  - '$t = ( defined( ''FTP_SSL'' ) ) ? ''ftps'' : ''ftp'';'
