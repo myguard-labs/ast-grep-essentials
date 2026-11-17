@@ -56,6 +56,12 @@ valid:
       fetch(uri, version, headers)
     end
   end
+- |-
+  def fetch(uri, attempts, headers)
+    if response.status == 200 && attempts < 300
+      fetch(uri, attempts + 1, headers)
+    end
+  end
 invalid:
 - |-
   def follow_redirect(uri, headers)
@@ -84,6 +90,18 @@ invalid:
 - |-
   def follow(uri, headers)
     if [301, 302].include?(code)
+      follow(response['location'], headers)
+    end
+  end
+- |-
+  def follow(uri, headers)
+    if response.status == 302 && uri
+      follow(response['location'], headers)
+    end
+  end
+- |-
+  def follow(uri, headers)
+    if (300..399).include?(response.code)
       follow(response['location'], headers)
     end
   end

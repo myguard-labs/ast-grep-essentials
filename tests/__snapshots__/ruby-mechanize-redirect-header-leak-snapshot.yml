@@ -86,6 +86,49 @@ snapshots:
       style: secondary
       start: 32
       end: 98
+  "def follow(uri, headers)\n  if (300..399).include?(response.code)\n    follow(response['location'], headers)\n  end\nend":
+    labels:
+    - source: follow(response['location'], headers)
+      style: primary
+      start: 69
+      end: 106
+    - source: follow
+      style: secondary
+      start: 4
+      end: 10
+    - source: |-
+        def follow(uri, headers)
+          if (300..399).include?(response.code)
+            follow(response['location'], headers)
+          end
+        end
+      style: secondary
+      start: 0
+      end: 116
+    - source: (uri, headers)
+      style: secondary
+      start: 10
+      end: 24
+    - source: |-
+        def follow(uri, headers)
+          if (300..399).include?(response.code)
+            follow(response['location'], headers)
+          end
+        end
+      style: secondary
+      start: 0
+      end: 116
+    - source: (300..399).include?(response.code)
+      style: secondary
+      start: 30
+      end: 64
+    - source: |-
+        if (300..399).include?(response.code)
+            follow(response['location'], headers)
+          end
+      style: secondary
+      start: 27
+      end: 112
   "def follow(uri, headers)\n  if [301, 302].include?(code)\n    follow(response['location'], headers)\n  end\nend":
     labels:
     - source: follow(response['location'], headers)
@@ -172,6 +215,49 @@ snapshots:
       style: secondary
       start: 27
       end: 108
+  "def follow(uri, headers)\n  if response.status == 302 && uri\n    follow(response['location'], headers)\n  end\nend":
+    labels:
+    - source: follow(response['location'], headers)
+      style: primary
+      start: 64
+      end: 101
+    - source: follow
+      style: secondary
+      start: 4
+      end: 10
+    - source: |-
+        def follow(uri, headers)
+          if response.status == 302 && uri
+            follow(response['location'], headers)
+          end
+        end
+      style: secondary
+      start: 0
+      end: 111
+    - source: (uri, headers)
+      style: secondary
+      start: 10
+      end: 24
+    - source: |-
+        def follow(uri, headers)
+          if response.status == 302 && uri
+            follow(response['location'], headers)
+          end
+        end
+      style: secondary
+      start: 0
+      end: 111
+    - source: response.status == 302 && uri
+      style: secondary
+      start: 30
+      end: 59
+    - source: |-
+        if response.status == 302 && uri
+            follow(response['location'], headers)
+          end
+      style: secondary
+      start: 27
+      end: 107
   "def follow_redirect(uri, headers)\n  if response.is_a?(Net::HTTPRedirection)\n    follow_redirect(URI(response['location']), headers)\n  end\nend":
     labels:
     - source: follow_redirect(URI(response['location']), headers)
