@@ -3,5 +3,9 @@ valid:
   - >-
     expect(runOclif).toHaveBeenCalledWith("sandbox:exec", ["owner-a"],
     expect.anything());
+  - 'expect(runOclif.mock.calls[0][0]).toBe("sandbox:exec");'
+  - 'expect(runOclif.mock.calls).toContainEqual(["sandbox:exec", ["owner-a"]]);'
 invalid:
   - 'expect(JSON.stringify(runOclif.mock.calls)).toContain("owner-a");'
+  - 'expect(JSON.stringify(api.client.mock.calls)).toContain("owner-a");'
+  - 'expect(JSON.stringify((runOclif as jest.Mock).mock.calls)).toContain("owner-a");'
