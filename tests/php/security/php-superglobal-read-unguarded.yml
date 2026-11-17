@@ -7,6 +7,12 @@ valid:
   - "<?php if ( ISSET( $_GET[\"a\"] ) ) { echo 1; }"
   - "<?php $x = $other[\"a\"];"
   - "<?php $x = isset( $_GET[\"a\"] ) ? esc_html( $_GET[\"a\"] ) : \"\";"
+  - "<?php $a = $_GET[\"a\"] ?? \"\";"
+  - "<?php $a = $_POST['a'] ?? '';"
+  - "<?php $a = ($_GET[\"a\"]) ?? \"\";"
+  - "<?php $_GET[\"a\"] ??= \"\";"
+  - "<?php if ( isset( $_GET[\"a\"] ) ) { echo $_GET[\"a\"]; }"
+  - "<?php if ( isset( $_GET[\"a\"] ) ) { if ( $x ) { echo $_GET[\"a\"]; } }"
 invalid:
   - '<?php function f() { return $_GET[''author'']; }'
   - "<?php $x = $_POST[\"a\"];"
@@ -14,3 +20,9 @@ invalid:
   - "<?php if ( $_GET[\"a\"] == \"y\" ) { die(); }"
   - "<?php $x = array( \"k\" => $_POST[\"k\"] );"
   - "<?php foreach ( $_POST[\"ids\"] as $id ) { echo $id; }"
+  - "<?php $a = $_GET[\"b\"] ?? $_GET[\"a\"];"
+  - "<?php $a ??= $_GET[\"a\"];"
+  - "<?php $a = ($_GET[\"a\"] . \"z\") ?? \"\";"
+  - "<?php if ( isset( $_GET[\"a\"] ) ) { echo $_GET[\"b\"]; }"
+  - "<?php if ( isset( $_POST[\"a\"] ) ) { echo $_GET[\"a\"]; }"
+  - "<?php if ( isset( $_GET[\"a\"] ) ) { echo 1; } else { echo $_GET[\"a\"]; }"

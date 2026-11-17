@@ -8,8 +8,8 @@ message: >-
   ternary guard.
 note: >-
   Syntactic only; it skips any read inside a ternary or isset()/empty() call
-  and does not check for guards elsewhere, such as earlier isset() checks or
-  null coalescing.
+  and does not check for guards elsewhere, such as earlier isset() checks outside
+  a braced if (isset(same key)) block. A null-coalescing left operand is skipped.
 rule:
   all:
     - kind: subscript_expression
@@ -24,6 +24,32 @@ rule:
           all:
             - kind: function_call_expression
             - regex: '(?i)^(isset|empty)\b'
+    - not:
+        any:
+          - precedes:
+              regex: '^\?\?=?$'
+          - inside:
+              kind: parenthesized_expression
+              precedes:
+                regex: '^\?\?$'
+    - not:
+        all:
+          - pattern: $R[$K]
+          - inside:
+              kind: compound_statement
+              stopBy: end
+              inside:
+                kind: if_statement
+                has:
+                  field: condition
+                  has:
+                    kind: function_call_expression
+                    regex: '^isset\(\s*\$_(GET|POST)\['
+                    has:
+                      stopBy: end
+                      all:
+                        - pattern: $R[$K]
+                        - regex: '^\$_(GET|POST)\['
 metadata:
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
@@ -38,4 +64,5 @@ metadata:
   owasp: 'A05:2025'
   todo_cases:
     - "A spaced subscript ($_GET [ \"a\" ]) is not matched."
-    - "FP: a null-coalescing read ($_GET[\"a\"] ?? \"\") and a read inside if (isset(...)) still report."
+    - "FP: a read in a braceless if (isset($_GET[\"a\"])) echo $_GET[\"a\"]; body, or under a compound condition (isset(a) || $x, isset(a) && isset(b)), still reports; only a braced if whose condition is a single isset of the same key is recognised."
+    - "false negative: a read used only to compute the isset key (if (isset($_GET[$_GET[\"key\"]])) { echo $_GET[\"key\"]; }) is treated as guarded."

@@ -4,6 +4,10 @@ valid:
   - "<?php if ( count( $_GET ) > 0 ) { die(); }"
   - "<?php if ( empty( $_GET[\"a\"] ) ) { die(); }"
   - "<?php if ( $arr[\"a\"] == \"x\" ) { die(); }"
+  - "<?php $a = $_GET[\"a\"] ?? \"d\";"
+  - "<?php $a = $_POST['a'] ?? 'd';"
+  - "<?php $a = ($_GET[\"a\"]) ?? \"d\";"
+  - "<?php $_GET[\"a\"] ??= \"d\";"
 invalid:
   - 'if ( $_GET[''new''] != '''' ) { die(); }'
   - "<?php if ( $_POST[\"a\"] === \"x\" ) { die(); }"
@@ -11,3 +15,5 @@ invalid:
   - "<?php $ok = $_GET[\"a\"] && $b;"
   - "<?php $s = \"x\" . $_GET[\"a\"];"
   - "<?php $ok = 3 < $_POST[\"a\"];"
+  - "<?php $a = $_GET[\"b\"] ?? $_GET[\"a\"];"
+  - "<?php $a = ($_GET[\"a\"] . \"z\") ?? \"d\";"

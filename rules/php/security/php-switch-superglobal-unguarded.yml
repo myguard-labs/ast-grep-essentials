@@ -11,10 +11,24 @@ note: >-
   with a direct GET superglobal subscript and does not detect guards performed
   elsewhere.
 rule:
-  kind: parenthesized_expression
-  regex: '^\(\s*\$_GET\s*\['
-  inside:
-    kind: switch_statement
+  all:
+    - kind: parenthesized_expression
+    - regex: '^\(\s*\$_GET\s*\['
+    - inside:
+        kind: switch_statement
+    - not:
+        has:
+          kind: binary_expression
+          all:
+            - has:
+                kind: subscript_expression
+                precedes:
+                  regex: '^\?\?$'
+            - not:
+                has:
+                  field: right
+                  kind: subscript_expression
+                  regex: '^\$_GET\s*\['
 metadata:
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
@@ -28,4 +42,4 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A05:2025'
   todo_cases:
-    - "FP: a null-coalescing subject (switch ($_GET[\"a\"] ?? \"show\")) still reports."
+    - "false negative: an unguarded GET read nested inside the ?? fallback (switch ($_GET[\"a\"] ?? trim($_GET[\"b\"]))) is not reported; only a direct $_GET subscript fallback is."

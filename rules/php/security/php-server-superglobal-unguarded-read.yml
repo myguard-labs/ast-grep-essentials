@@ -10,11 +10,20 @@ note: >-
   Purely syntactic; it does not detect isset or empty guards elsewhere in the
   function, so guarded reads also match.
 rule:
-  kind: subscript_expression
-  regex: '^\$_SERVER\['
-  inside:
-    kind: assignment_expression
-    stopBy: end
+  all:
+    - kind: subscript_expression
+    - regex: '^\$_SERVER\['
+    - inside:
+        kind: assignment_expression
+        stopBy: end
+    - not:
+        any:
+          - precedes:
+              regex: '^\?\?=?$'
+          - inside:
+              kind: parenthesized_expression
+              precedes:
+                regex: '^\?\?$'
 metadata:
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
@@ -29,4 +38,3 @@ metadata:
   owasp: 'A05:2025'
   todo_cases:
     - "A compound assignment ($h .= $_SERVER[\"HTTP_HOST\"]) is not matched."
-    - "FP: a null-coalescing read ($ua = $_SERVER[\"HTTP_USER_AGENT\"] ?? \"\") still reports (guarded reads also match, as the note says)."
