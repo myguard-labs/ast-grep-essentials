@@ -3,7 +3,19 @@ valid:
   - >-
     <?php $sizes = apply_filters( 'image_sizes_custom', array( 'large',
     'medium', 'thumbnail' ) );
+  - |-
+    <?php $sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes, $metadata );
+  - |-
+    <?php add_filter( 'intermediate_image_sizes', 'my_sizes_cb' );
+  - |-
+    <?php $sizes = get_intermediate_image_sizes();
 invalid:
   - >-
     <?php $sizes = apply_filters( 'intermediate_image_sizes', array( 'large',
     'medium', 'thumbnail' ) );
+  - |-
+    <?php $sizes = apply_filters( 'intermediate_image_sizes', array() );
+  - |-
+    <?php return apply_filters( 'intermediate_image_sizes', $default_sizes );
+  - |-
+    <?php $sizes = apply_filters( 'intermediate_image_sizes', [ 'large', 'medium' ] );

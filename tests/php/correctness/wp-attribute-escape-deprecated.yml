@@ -1,5 +1,17 @@
 id: wp-attribute-escape-deprecated
 valid:
   - '<?php echo esc_attr( $value ); ?>'
+  - |-
+    <?php $x = Util::attribute_escape( $value );
+  - |-
+    <?php function attribute_escape_custom( $v ) { return $v; }
+  - |-
+    <?php $x = $this->attribute_escape( $value );
 invalid:
   - '<?php echo attribute_escape( $value ); ?>'
+  - |-
+    <?php $x = attribute_escape();
+  - |-
+    <?php echo '<input value="' . attribute_escape( $v ) . '" />';
+  - |-
+    <?php if ( attribute_escape( $v ) !== '' ) { echo 1; }

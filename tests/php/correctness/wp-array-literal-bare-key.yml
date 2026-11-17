@@ -1,5 +1,17 @@
 id: wp-array-literal-bare-key
 valid:
   - '<?php $a = array( ''trashed'' => 1, ''ids'' => $post_id ); ?>'
+  - |-
+    <?php $a = array( 'trashed' => 1, $ids => $post_id );
+  - |-
+    <?php $a = [ 'trashed' => 1, 'ids' => $post_id ];
+  - |-
+    <?php $a = array( 'trashed' => 1, 'ids' => array( 1, 2 ) );
 invalid:
   - '<?php $a = array( ''trashed'' => 1, ids => $post_id ); ?>'
+  - |-
+    <?php $a = array( 'trashed' => 1, ids => array_map( 'intval', $p ) );
+  - |-
+    <?php $a = array( 'a' => 1, 'b' => 2, 'c' => 3, ids => $p );
+  - |-
+    <?php $a = array( 'trashed' => 1, "locked" => 2, ids => $p );
