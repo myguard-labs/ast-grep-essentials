@@ -3,7 +3,13 @@ valid:
   - >-
     APR_BRIGADE_FOREACH(e, b) { if (ok) { break; } if (APR_BUCKET_IS_EOS(e)) {
     consume(); } }
+  - "void f(void) { APR_BRIGADE_FOREACH(e, b) { if (APR_BUCKET_IS_EOS(e)) { consume(); } } }"
+  - "void f(void) { APR_BRIGADE_FOREACH(e, b) { if (ok) { saved = e; break; } } if (saved) { consume(saved); } }"
+  - "void f(void) { APR_BRIGADE_FOREACH(e, b) { if (APR_BUCKET_IS_EOS(e)) { seen = 1; } } if (seen) { consume(); } }"
 invalid:
   - |-
     APR_BRIGADE_FOREACH(e, b) { if (ok) { break; } }
     if (APR_BUCKET_IS_EOS(e)) { consume(); }
+  - "void f(void) { APR_BRIGADE_FOREACH(e, b) { if (ok) { break; } } consume(e); }"
+  - "void f(void) { APR_BRIGADE_FOREACH(e, b) { if (ok) { break; } } return e; }"
+  - "void f(void) { APR_BRIGADE_FOREACH(bkt, bb) { if (ok) { break; } } apr_bucket_delete(bkt); }"

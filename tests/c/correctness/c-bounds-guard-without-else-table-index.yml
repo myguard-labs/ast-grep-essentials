@@ -3,7 +3,13 @@ valid:
   - >-
     extern void (*handlers[4])(int); void f(int t) { if (t >= 0 && t <= 3) {
     handlers[t](t); } else { return; } }
+  - "extern void (*handlers[4])(int); void f(int t) { if (t < 0 || t > 3) { return; } handlers[t](t); }"
+  - "extern void (*handlers[4])(int); extern void bad(int); void f(int t) { if (t < 4) handlers[t](t); else bad(t); }"
+  - "extern void (*handlers[4])(int); extern void bad(int); void f(int t) { if (t < 0) { bad(t); } else if (t < 4) { handlers[t](t); } else { bad(t); } }"
 invalid:
   - >-
     extern void (*handlers[4])(int); void f(int t) { if (t >= 0 && t <= 3) {
     handlers[t](t); } }
+  - "extern void (*handlers[4])(int); void f(int t) { if (t < 4) handlers[t](t); }"
+  - "extern void (*handlers[4])(unsigned); void f(int t) { if ((unsigned) t < 4) { handlers[t](t); } }"
+  - "extern void (*handlers[4])(int); extern int count; void f(int idx) { if (idx < 4) { count++; handlers[idx](idx); } }"

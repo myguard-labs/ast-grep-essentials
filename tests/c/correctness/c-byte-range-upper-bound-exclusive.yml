@@ -1,5 +1,11 @@
 id: c-byte-range-upper-bound-exclusive
 valid:
   - 'int f(int c) { return c >= 0x80 && c <= 0xff; }'
+  - "int f(int c) { return c >= 0 && c < 0x100; }"
+  - "int f(int c) { return c != 0xff; }"
+  - "int f(int c) { return (c & 0xff) < 0x100; }"
 invalid:
   - 'int f(int c) { return c >= 0x80 && c < 0xff; }'
+  - "int f(int c) { if (c < 0xff) { return 1; } return 0; }"
+  - "int f(int n) { int i = 0; while (i < 0xff) { i++; } return i; }"
+  - "int f(unsigned char *s, int i) { return s[i] < 0xff; }"

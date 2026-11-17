@@ -1,5 +1,35 @@
 id: c-bucket-read-status-only-no-length-check
 snapshots:
+  "int f(void) { rv = apr_bucket_read(e, &d, &n, APR_NONBLOCK_READ);\n if (!APR_STATUS_IS_SUCCESS(rv)) return rv;\n use(n); return 0; }":
+    labels:
+    - source: if (!APR_STATUS_IS_SUCCESS(rv)) return rv;
+      style: primary
+      start: 67
+      end: 109
+    - source: rv = apr_bucket_read(e, &d, &n, APR_NONBLOCK_READ);
+      style: secondary
+      start: 14
+      end: 65
+  "int f(void) { status = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);\n if (!APR_STATUS_IS_SUCCESS(status)) { return status; }\n use(n); return 0; }":
+    labels:
+    - source: if (!APR_STATUS_IS_SUCCESS(status)) { return status; }
+      style: primary
+      start: 68
+      end: 122
+    - source: status = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);
+      style: secondary
+      start: 14
+      end: 66
+  "int f(void) { while (e) { rv = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);\n if (!APR_STATUS_IS_SUCCESS(rv)) { break; }\n use(n); } return 0; }":
+    labels:
+    - source: if (!APR_STATUS_IS_SUCCESS(rv)) { break; }
+      style: primary
+      start: 76
+      end: 118
+    - source: rv = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);
+      style: secondary
+      start: 26
+      end: 74
   "rv = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);\nif (!APR_STATUS_IS_SUCCESS(rv)) {\n    return 0;\n}\nuse(n);":
     labels:
     - source: |-

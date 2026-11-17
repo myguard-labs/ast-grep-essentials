@@ -1,8 +1,26 @@
 id: c-buffer-writepos-without-readpos
 snapshots:
-  ? "struct s { int writepos; int readpos; };\nint f(struct s *stream) {\n\treturn stream->writepos > 0;\n}"
-  : labels:
+  "struct o { struct s *buf; };\nstruct s { int writepos; int readpos; };\nint f(struct o *o) {\n\tint has = o->buf->writepos > 0;\n\treturn has;\n}":
+    labels:
+    - source: o->buf->writepos > 0
+      style: primary
+      start: 102
+      end: 122
+  "struct s { int writepos; int readpos; };\nint f(struct s *stream) {\n\treturn stream->writepos > 0;\n}":
+    labels:
     - source: stream->writepos > 0
       style: primary
       start: 75
       end: 95
+  "struct s { int writepos; int readpos; };\nint f(struct s *stream, int ok) {\n\tif (stream->writepos > 0) { return ok; }\n\treturn 0;\n}":
+    labels:
+    - source: stream->writepos > 0
+      style: primary
+      start: 80
+      end: 100
+  "struct s { int writepos; int readpos; };\nint f(struct s *stream, int ok) {\n\treturn stream->writepos > 0 && ok;\n}":
+    labels:
+    - source: stream->writepos > 0
+      style: primary
+      start: 83
+      end: 103
