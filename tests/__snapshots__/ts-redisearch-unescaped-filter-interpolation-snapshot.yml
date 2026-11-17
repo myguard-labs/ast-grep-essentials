@@ -1,8 +1,22 @@
 id: ts-redisearch-unescaped-filter-interpolation
 snapshots:
-  class T { toString() { return `@${this.field}:{x}`; } }:
+  "class T { toString() { return `@${this.field}:[${this.min} ${this.max}]`; } }":
     labels:
-    - source: '`@${this.field}:{x}`'
+    - source: "`@${this.field}:[${this.min} ${this.max}]`"
+      style: primary
+      start: 30
+      end: 72
+    - source: this.field
+      style: secondary
+      start: 34
+      end: 44
+    - source: ${this.field}
+      style: secondary
+      start: 32
+      end: 45
+  "class T { toString() { return `@${this.field}:{x}`; } }":
+    labels:
+    - source: "`@${this.field}:{x}`"
       style: primary
       start: 30
       end: 50
@@ -14,3 +28,31 @@ snapshots:
       style: secondary
       start: 32
       end: 45
+  "const f = (o) => `@${o.field}:{x}`;":
+    labels:
+    - source: "`@${o.field}:{x}`"
+      style: primary
+      start: 17
+      end: 34
+    - source: o.field
+      style: secondary
+      start: 21
+      end: 28
+    - source: ${o.field}
+      style: secondary
+      start: 19
+      end: 29
+  "function f(o) { return `@${o.field}:{x}`; }":
+    labels:
+    - source: "`@${o.field}:{x}`"
+      style: primary
+      start: 23
+      end: 40
+    - source: o.field
+      style: secondary
+      start: 27
+      end: 34
+    - source: ${o.field}
+      style: secondary
+      start: 25
+      end: 35

@@ -8,7 +8,24 @@ valid:
   # def report(span, err, include_content):
   #     span.record_exception(err)
 - astgrep_fixture = "def report(span, err, include_content):\n    span.record_exception(err)"
+- |-
+  def report(span, err, include_content):
+      span.set_attribute("error.type", type(err).__name__)
+- |-
+  def report(span, err, include_content):
+      if not include_content:
+          return
+      span.record_exception(err)
 invalid:
 - |-
   def report(span, err, include_content):
       span.record_exception(err)
+- |-
+  def report(span, exc, settings):
+      span.record_exception(exc)
+- |-
+  def report(span, error, flag=False):
+      span.record_exception(error)
+- |-
+  def record(span, e, capture_content):
+      span.record_exception(e)

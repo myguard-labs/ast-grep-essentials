@@ -11,9 +11,32 @@ valid:
   #     if not allow_external_plugins:
   #         return
 - astgrep_fixture = "def load(self, allow_external_plugins):\n    self.manager.load_setuptools_entrypoints(self.group)\n    if not allow_external_plugins:\n        return"
+- |-
+  def load(self, allow_external):
+      if not allow_external:
+          return
+      self.manager.load_setuptools_entrypoints(self.group)
+- |-
+  def load(self, allow_external_plugins):
+      self.manager.register(BUILTIN_PLUGIN)
 invalid:
 - |-
   def load(self, allow_external_plugins):
       self.manager.load_setuptools_entrypoints(self.group)
       if not allow_external_plugins:
+          return
+- |-
+  def load(self, allow_external):
+      self.manager.load_setuptools_entrypoints(self.group)
+      if not allow_external:
+          return
+- |-
+  def load(self, enabled):
+      self.manager.load_setuptools_entrypoints(self.group)
+      if not enabled:
+          return
+- |-
+  def load(self, external_ok):
+      self.manager.load_setuptools_entrypoints(self.group)
+      if not external_ok:
           return

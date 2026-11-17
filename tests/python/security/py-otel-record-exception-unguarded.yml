@@ -8,7 +8,24 @@ valid:
   # def fail(span, err):
   #     span.record_exception(err)
 - astgrep_fixture = "def fail(span, err):\n    span.record_exception(err)\n"
+- |-
+  def fail(span, err):
+      span.set_attribute("error.type", type(err).__name__)
+- |-
+  def fail(span, err, include_content):
+      if not include_content:
+          return
+      span.record_exception(err)
 invalid:
 - |
   def fail(span, err):
       span.record_exception(err)
+- |-
+  def on_error(trace_span, exc):
+      span.record_exception(exc)
+- |-
+  def handle(self, problem):
+      span.record_exception(problem)
+- |-
+  def record(a, b):
+      span.record_exception(b)

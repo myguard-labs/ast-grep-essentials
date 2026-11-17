@@ -7,7 +7,23 @@ valid:
   # validators = {'GET': check_read, 'PUT': check_write}
   # v = validators.get(method)
 - 'astgrep_fixture = "validators = {''GET'': check_read, ''PUT'': check_write}\nv = validators.get(method)"'
+- |-
+  validators = {'GET': check_read, 'PUT': check_write}
+  v = validators[method]
+- |-
+  validators = {'GET': check_read, 'PUT': check_write}
+  v = validators.get(route_name)
 invalid:
 - |-
   validators = {'GET': check_read, 'PUT': check_write}
   v = validators.get(method)
+- |-
+  validators = {'GET': check_read, 'PUT': check_write}
+  v = self.validators.get(http_method)
+- |-
+  AUTH = {'GET': check_read, 'POST': check_post}
+  checker = AUTH.get(request_method)
+  checker(request)
+- |-
+  def pick(method):
+      return {'GET': check_read, 'PUT': check_write}.get(method)

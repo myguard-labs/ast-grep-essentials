@@ -3,5 +3,17 @@ valid:
   - >-
     class T { toString() { assertSafeRedisearchFieldName(this.field); return
     `@${this.field}:{x}`; } }
+  - |-
+    class T { toString() { return `@field:{x}`; } }
+  - |-
+    class T { toString() { const v = escapeTag(this.value); return `@name:{${v}}`; } }
+  - |-
+    function f(o) { assertSafeField(o.field); return `@${o.field}:{x}`; }
 invalid:
   - 'class T { toString() { return `@${this.field}:{x}`; } }'
+  - |-
+    function f(o) { return `@${o.field}:{x}`; }
+  - |-
+    class T { toString() { return `@${this.field}:[${this.min} ${this.max}]`; } }
+  - |-
+    const f = (o) => `@${o.field}:{x}`;

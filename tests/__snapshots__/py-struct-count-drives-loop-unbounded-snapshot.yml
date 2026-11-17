@@ -1,11 +1,44 @@
 id: py-struct-count-drives-loop-unbounded
 snapshots:
-  ? |-
-    import struct
-    def parse(buf):
-        n = struct.unpack('<I', buf[:4])[0]
-        return [buf[4 + 4 * i:8 + 4 * i] for i in range(n)]
-  : labels:
+  "import struct\ndef parse(buf):\n    (count,) = struct.unpack('>H', buf[:2])\n    return [read_item(buf, i) for i in range(count)]":
+    labels:
+    - source: range(count)
+      style: primary
+      start: 113
+      end: 125
+    - source: struct.unpack('>H', buf[:2])
+      style: secondary
+      start: 45
+      end: 73
+    - source: |-
+        def parse(buf):
+            (count,) = struct.unpack('>H', buf[:2])
+            return [read_item(buf, i) for i in range(count)]
+      style: secondary
+      start: 14
+      end: 126
+  "import struct\ndef parse(buf):\n    n = struct.unpack('<I', buf[:4])[0]\n    out = []\n    for i in range(n):\n        out.append(buf[4 + 4 * i:8 + 4 * i])\n    return out":
+    labels:
+    - source: range(n)
+      style: primary
+      start: 96
+      end: 104
+    - source: struct.unpack('<I', buf[:4])
+      style: secondary
+      start: 38
+      end: 66
+    - source: |-
+        def parse(buf):
+            n = struct.unpack('<I', buf[:4])[0]
+            out = []
+            for i in range(n):
+                out.append(buf[4 + 4 * i:8 + 4 * i])
+            return out
+      style: secondary
+      start: 14
+      end: 165
+  "import struct\ndef parse(buf):\n    n = struct.unpack('<I', buf[:4])[0]\n    return [buf[4 + 4 * i:8 + 4 * i] for i in range(n)]":
+    labels:
     - source: range(n)
       style: primary
       start: 116

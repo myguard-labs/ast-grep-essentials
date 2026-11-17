@@ -7,9 +7,33 @@ valid:
         if n > 1000:
             raise ValueError('too many geometries')
         return [buf[4 + 4 * i:8 + 4 * i] for i in range(n)]
+  - |-
+    import struct
+    def parse(buf):
+        n = struct.unpack('<I', buf[:4])[0]
+        if not 0 <= n <= 1000:
+            raise ValueError('bad count')
+        for i in range(n):
+            yield buf[4 + 4 * i:8 + 4 * i]
+  - |-
+    def repeat(items):
+        return [items[i] for i in range(len(items))]
 invalid:
   - |-
     import struct
     def parse(buf):
         n = struct.unpack('<I', buf[:4])[0]
         return [buf[4 + 4 * i:8 + 4 * i] for i in range(n)]
+  - |-
+    import struct
+    def parse(buf):
+        n = struct.unpack('<I', buf[:4])[0]
+        out = []
+        for i in range(n):
+            out.append(buf[4 + 4 * i:8 + 4 * i])
+        return out
+  - |-
+    import struct
+    def parse(buf):
+        (count,) = struct.unpack('>H', buf[:2])
+        return [read_item(buf, i) for i in range(count)]

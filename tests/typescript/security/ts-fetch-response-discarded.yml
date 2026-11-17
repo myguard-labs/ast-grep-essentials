@@ -3,5 +3,17 @@ valid:
 - 'async function put(u, b) { const res = await fetch(u, { method: ''PUT'', body: b }); return res }'
 - '// async function put(u, b) { await fetch(u, { method: ''PUT'', body: b }) }'
 - 'const astgrepFixture: string = "async function put(u, b) { await fetch(u, { method: ''PUT'', body: b }) }";'
+- |-
+  async function put(u, b) { const res = await fetch(u, { method: 'PUT', body: b }); if (!res.ok) throw new Error('fail') }
+- |-
+  async function put(u, b) { return await fetch(u, { method: 'PUT', body: b }) }
 invalid:
 - 'async function put(u, b) { await fetch(u, { method: ''PUT'', body: b }) }'
+- |-
+  async function save(url, data) { await fetch(url, { method: 'PUT', body: data }) }
+- |-
+  async function send(u, b) {
+    await fetch(u, { method: 'PUT', body: b })
+  }
+- |-
+  async function up(target, payload) { await fetch(target, { verb: 'PUT', data: payload }) }

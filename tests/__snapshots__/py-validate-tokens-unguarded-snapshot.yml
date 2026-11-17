@@ -1,10 +1,26 @@
 id: py-validate-tokens-unguarded
 snapshots:
-  ? |
-    def f(grammar, tokens):
-        grammar.validate_tokens(tokens)
-  : labels:
+  "async def f(grammar, tokens):\n    await grammar.validate_tokens(tokens=tokens)":
+    labels:
+    - source: grammar.validate_tokens(tokens=tokens)
+      style: primary
+      start: 40
+      end: 78
+  "def f(grammar, tokens):\n    grammar.validate_tokens(tokens)\n":
+    labels:
     - source: grammar.validate_tokens(tokens)
       style: primary
       start: 28
       end: 59
+  "def f(grammar, tokens):\n    try:\n        def inner():\n            grammar.validate_tokens(tokens)\n    except ValueError:\n        return None":
+    labels:
+    - source: grammar.validate_tokens(tokens)
+      style: primary
+      start: 66
+      end: 97
+  "def f(self, tokens):\n    self.grammar.validate_tokens(tokens)":
+    labels:
+    - source: self.grammar.validate_tokens(tokens)
+      style: primary
+      start: 25
+      end: 61
