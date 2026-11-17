@@ -3,5 +3,11 @@ valid:
   - >-
     if ( isset( $GLOBALS['post_type'] ) && $GLOBALS['post_type'] == 'attachment'
     ) { $path = $this->MEDIA_PATH; }
+  - "if ( isset( $GLOBALS['x'] ) ) { $a = 1; }"
+  - "if ( isset( $GLOBALS['x'], $GLOBALS['y'] ) ) { $a = 1; }"
+  - "if ( isset ( $GLOBALS['x'] ) && $GLOBALS['x'] ) { $a = 1; }"
 invalid:
   - 'if ( $GLOBALS[''post_type''] == ''attachment'' ) { $path = $this->MEDIA_PATH; }'
+  - "if ( $GLOBALS['x'] ) { $a = 1; }"
+  - "if ( ! $GLOBALS['x'] ) { $a = 1; }"
+  - "if ( $a && $GLOBALS['x'] === 1 ) { $a = 1; }"

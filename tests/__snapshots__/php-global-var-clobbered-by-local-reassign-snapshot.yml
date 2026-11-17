@@ -1,8 +1,74 @@
 id: php-global-var-clobbered-by-local-reassign
 snapshots:
-  'function f() { global $class; $class = ''alternate'' == $class ? '''' : ''alternate''; return $class; }':
+  "function f() { global $a; $a = $a + 1; return $a; }":
     labels:
-    - source: 'function f() { global $class; $class = ''alternate'' == $class ? '''' : ''alternate''; return $class; }'
+    - source: function f() { global $a; $a = $a + 1; return $a; }
+      style: primary
+      start: 0
+      end: 51
+    - source: $a
+      style: secondary
+      start: 22
+      end: 24
+    - source: global $a;
+      style: secondary
+      start: 15
+      end: 25
+    - source: $a
+      style: secondary
+      start: 26
+      end: 28
+    - source: $a = $a + 1
+      style: secondary
+      start: 26
+      end: 37
+  "function f() { global $a; $b = 1; $a = $b; return $a; }":
+    labels:
+    - source: function f() { global $a; $b = 1; $a = $b; return $a; }
+      style: primary
+      start: 0
+      end: 55
+    - source: $a
+      style: secondary
+      start: 22
+      end: 24
+    - source: global $a;
+      style: secondary
+      start: 15
+      end: 25
+    - source: $a
+      style: secondary
+      start: 34
+      end: 36
+    - source: $a = $b
+      style: secondary
+      start: 34
+      end: 41
+  "function f() { global $a; if ($x) { $a = 1; } return $a; }":
+    labels:
+    - source: function f() { global $a; if ($x) { $a = 1; } return $a; }
+      style: primary
+      start: 0
+      end: 58
+    - source: $a
+      style: secondary
+      start: 22
+      end: 24
+    - source: global $a;
+      style: secondary
+      start: 15
+      end: 25
+    - source: $a
+      style: secondary
+      start: 36
+      end: 38
+    - source: $a = 1
+      style: secondary
+      start: 36
+      end: 42
+  "function f() { global $class; $class = 'alternate' == $class ? '' : 'alternate'; return $class; }":
+    labels:
+    - source: "function f() { global $class; $class = 'alternate' == $class ? '' : 'alternate'; return $class; }"
       style: primary
       start: 0
       end: 97
@@ -18,7 +84,7 @@ snapshots:
       style: secondary
       start: 30
       end: 36
-    - source: '$class = ''alternate'' == $class ? '''' : ''alternate'''
+    - source: "$class = 'alternate' == $class ? '' : 'alternate'"
       style: secondary
       start: 30
       end: 79

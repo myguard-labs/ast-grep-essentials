@@ -1,5 +1,11 @@
 id: php-global-constant-name
 valid:
   - "<?php\nfunction build_path() {\n\tglobal $ABSPATH;\n\treturn $ABSPATH;\n}"
+  - "<?php\nfunction f() {\n\tglobal $a, $b;\n\treturn $a . $b;\n}"
+  - "<?php\nfunction f() {\n\t$globalvar = 1;\n\treturn $globalvar;\n}"
+  - "<?php\nfunction f() {\n\t// global ABSPATH is documented here\n\treturn 1;\n}"
 invalid:
   - "<?php\nfunction build_path() {\n\tglobal ABSPATH;\n\treturn ABSPATH;\n}"
+  - "<?php\nclass A {\n\tfunction m() {\n\t\tglobal ABSPATH;\n\t\treturn 1;\n\t}\n}"
+  - "<?php\n$f = function() {\n\tglobal ABSPATH;\n\treturn 1;\n};"
+  - "<?php\nfunction f() {\n\t$x = 1;\n\tglobal WPINC;\n\treturn $x;\n}"

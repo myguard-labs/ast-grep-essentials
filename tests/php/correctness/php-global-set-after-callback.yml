@@ -4,8 +4,14 @@ valid:
     <?php function start_el( $comment, $args ) { $GLOBALS['comment'] = $comment;
     if ( !empty($args['callback']) ) { call_user_func($args['callback'],
     $comment, $args); return; } }
+  - "<?php function f($a) { if ($a) { $GLOBALS['x'] = 1; call_user_func($a); return; } }"
+  - "<?php function f($a) { if ($a) { call_user_func($a); return; } echo 'done'; }"
+  - "<?php function f($a) { if ($a) { return; } $GLOBALS['x'] = 1; }"
 invalid:
   - >-
     <?php function start_el( $comment, $args ) { if ( !empty($args['callback'])
     ) { call_user_func($args['callback'], $comment, $args); return; }
     $GLOBALS['comment'] = $comment; }
+  - "<?php function f($a) { if ($a) { call_user_func($a); return; } $b = 2; $GLOBALS['x'] = $b; }"
+  - "<?php function f($a) { if ($a) { call_user_func($a); return; } $GLOBALS[\"x\"] = 1; }"
+  - "<?php function f($a) { if ($a) { call_user_func($a); return; } else { echo 1; } $GLOBALS['x'] = 1; }"

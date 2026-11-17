@@ -31,3 +31,8 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  todo_cases:
+    - "Observed false positive: if ( !empty( $GLOBALS['x'] ) ) { } is reported although empty() does not warn on a missing key."
+    - "Observed false positive: if ( array_key_exists( 'x', $GLOBALS ) && $GLOBALS['x'] ) { } is reported although the read is guarded."
+    - "Observed false positive: if ( $GLOBALS['x'] ?? false ) { } is reported although ?? does not warn on a missing key."
+    - "Observed miss: if ( isset( $GLOBALS['x'] ) || $GLOBALS['y'] ) { } is not reported although the right operand is unguarded."
