@@ -1,8 +1,26 @@
 id: wp-manual-main-site-check
 snapshots:
-  ? <?php if ( is_multisite() && $current_site->domain.$current_site->path == $current_blog->domain.$current_blog->path ) { $x = 1; } ?>
-  : labels:
-    - source: $current_site->domain.$current_site->path == $current_blog->domain.$current_blog->path
+  "<?php $main = ($current_site->domain . $current_site->path == $current_blog->domain . $current_blog->path) ? 1 : 0;":
+    labels:
+    - source: >-
+        $current_site->domain . $current_site->path == $current_blog->domain .
+        $current_blog->path
+      style: primary
+      start: 15
+      end: 105
+  "<?php function f(){ return $current_site->domain.$current_site->path == $current_blog->domain.$current_blog->path; }":
+    labels:
+    - source: >-
+        $current_site->domain.$current_site->path ==
+        $current_blog->domain.$current_blog->path
+      style: primary
+      start: 27
+      end: 113
+  "<?php if ( is_multisite() && $current_site->domain.$current_site->path == $current_blog->domain.$current_blog->path ) { $x = 1; } ?>":
+    labels:
+    - source: >-
+        $current_site->domain.$current_site->path ==
+        $current_blog->domain.$current_blog->path
       style: primary
       start: 29
       end: 115
