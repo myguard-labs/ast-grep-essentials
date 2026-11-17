@@ -23,9 +23,16 @@ rule:
         has:
           field: declarator
           kind: pointer_declarator
-          has:
-            field: declarator
-            kind: array_declarator
+          any:
+            - has:
+                field: declarator
+                kind: array_declarator
+            - has:
+                field: declarator
+                kind: pointer_declarator
+                has:
+                  field: declarator
+                  kind: array_declarator
     - not:
         has:
           field: value
@@ -42,3 +49,5 @@ metadata:
   cwe: 'CWE-587'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/587.html'
   taxonomy_cited_keys: 'cwe'
+  todo_cases:
+    - 'FP: int *p = { 0, }; (trailing comma), { (void *)0 } and { nullptr } null initializers are still reported'
