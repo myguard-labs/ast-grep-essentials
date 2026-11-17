@@ -1,9 +1,7 @@
 id: c-consecutive-store-same-index-overwrites
 snapshots:
-  ? |-
-    e[n] = ';';
-    e[n] = '\0';
-  : labels:
+  "e[n] = ';';\ne[n] = '\\0';":
+    labels:
     - source: e[n] = '\0';
       style: primary
       start: 12
@@ -12,3 +10,33 @@ snapshots:
       style: secondary
       start: 0
       end: 11
+  "struct s { int arr[4]; };\nvoid f(struct s *p, int k, int a, int b) {\n  p->arr[k] = a;\n  p->arr[k] = b;\n}":
+    labels:
+    - source: p->arr[k] = b;
+      style: primary
+      start: 88
+      end: 102
+    - source: p->arr[k] = a;
+      style: secondary
+      start: 71
+      end: 85
+  "void f(char *out) {\n  out[0] = 1;\n  out[0] = 2;\n  out[0] = 3;\n}":
+    labels:
+    - source: out[0] = 2;
+      style: primary
+      start: 36
+      end: 47
+    - source: out[0] = 1;
+      style: secondary
+      start: 22
+      end: 33
+  "void f(int *buf, int i) {\n  buf[i] = 1;\n  buf[i] = 2;\n}":
+    labels:
+    - source: buf[i] = 2;
+      style: primary
+      start: 42
+      end: 53
+    - source: buf[i] = 1;
+      style: secondary
+      start: 28
+      end: 39

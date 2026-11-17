@@ -1,10 +1,25 @@
 id: c-commented-out-refcount-placeholder
 snapshots:
-  ? |-
-    void f(zval *z) {
-    //??? Z_ADDREF_P(z);
-    }
-  : labels:
+  "void f(zval *z) {\n    //??? zval_add_ref(z);\n}":
+    labels:
+    - source: //??? zval_add_ref(z);
+      style: primary
+      start: 22
+      end: 44
+  "void f(zval *z) {\n  zval_copy_ctor(z);\n  //???Z_DELREF_P(z);\n}":
+    labels:
+    - source: //???Z_DELREF_P(z);
+      style: primary
+      start: 41
+      end: 60
+  "void f(zval *z) {\n//???\n}":
+    labels:
+    - source: //???
+      style: primary
+      start: 18
+      end: 23
+  "void f(zval *z) {\n//??? Z_ADDREF_P(z);\n}":
+    labels:
     - source: //??? Z_ADDREF_P(z);
       style: primary
       start: 18

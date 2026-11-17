@@ -3,7 +3,22 @@ valid:
   - >-
     void f(unsigned long *out, unsigned long *s, unsigned long *t) { out[0] =
     s[0] ^ t[0]; }
+  - |-
+    void f(unsigned long *a, unsigned long b, unsigned long c) { b ^= c; a[1] = b; }
+  - |-
+    void f(unsigned long *a, unsigned long b, unsigned long c) { a[1] = b ^ c ^ 7; }
+  - |-
+    void f(unsigned long *a, unsigned long b, unsigned long c) { b ^= c ^ 7; a[1] = b; }
 invalid:
   - >-
     void f(unsigned long *out, unsigned long *s, unsigned long *t) { out[0] =
     s[0] ^= t[0]; }
+  - |-
+    void f(unsigned long *a, unsigned long b, unsigned long c) { a[1] = b ^= c; }
+  - |-
+    struct s { int a; int b; };
+    void f(struct s *p, int k) { p->a = p->b ^= k; }
+  - |-
+    void f(int x, int y, int z) {
+      x = y ^= (z + 1);
+    }

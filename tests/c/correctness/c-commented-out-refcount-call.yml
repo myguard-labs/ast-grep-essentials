@@ -4,10 +4,36 @@ valid:
     void f(zval *z) {
       zval_add_ref(z);
     }
+  - |-
+    void f(zval *z) {
+      /* zval_add_ref is not needed here */
+      zval_copy_ctor(z);
+    }
+  - |-
+    void f(zval *z) {
+      zval_del_ref(z);
+    }
+  - |-
+    const char *s = "zval_add_ref(z);";
+    void f(void) {
+      /* ownership is transferred to the caller */
+    }
 invalid:
   - |-
     void f(zval *z) {
     /*
       zval_add_ref(z);
     */
+    }
+  - |-
+    void f(zval *z) {
+      // zval_del_ref(z);
+    }
+  - |-
+    void f(zval *z) {
+      /* zval_add_ref (z); */
+    }
+  - |-
+    void f(zval *z) {
+      zval_copy_ctor(z); /* zval_del_ref(z); */
     }

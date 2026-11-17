@@ -1,5 +1,26 @@
 id: c-constant-assign-then-contradicting-test
 snapshots:
+  "int f(int x) {\n\tint flag;\n\tflag = 12;\n\tif (x > 0 && !flag) {\n\t\treturn -1;\n\t}\n\treturn 0;\n}":
+    labels:
+    - source: |-
+        if (x > 0 && !flag) {
+        		return -1;
+        	}
+      style: primary
+      start: 39
+      end: 76
+    - source: flag = 12;
+      style: secondary
+      start: 27
+      end: 37
+    - source: "!flag"
+      style: secondary
+      start: 52
+      end: 57
+    - source: "!flag"
+      style: secondary
+      start: 52
+      end: 57
   "int f(int x) {\n\tint ret;\n\tret = 1;\n\tif (!ret && x) {\n\t\treturn -1;\n\t}\n\treturn 0;\n}":
     labels:
     - source: |-
@@ -21,3 +42,45 @@ snapshots:
       style: secondary
       start: 40
       end: 44
+  "int f(int x) {\n\tint ret;\n\tret = 5;\n\tif (!ret) {\n\t\treturn -1;\n\t}\n\treturn x;\n}":
+    labels:
+    - source: |-
+        if (!ret) {
+        		return -1;
+        	}
+      style: primary
+      start: 36
+      end: 63
+    - source: ret = 5;
+      style: secondary
+      start: 26
+      end: 34
+    - source: "!ret"
+      style: secondary
+      start: 40
+      end: 44
+    - source: "!ret"
+      style: secondary
+      start: 40
+      end: 44
+  "struct s { int ok; };\nint f(struct s *p, int x) {\n\tp->ok = 1;\n\tif (!p->ok && x > 0) {\n\t\treturn -1;\n\t}\n\treturn 0;\n}":
+    labels:
+    - source: |-
+        if (!p->ok && x > 0) {
+        		return -1;
+        	}
+      style: primary
+      start: 63
+      end: 101
+    - source: p->ok = 1;
+      style: secondary
+      start: 51
+      end: 61
+    - source: "!p->ok"
+      style: secondary
+      start: 67
+      end: 73
+    - source: "!p->ok"
+      style: secondary
+      start: 67
+      end: 73

@@ -4,8 +4,33 @@ valid:
     void f(zval *z) {
     // Z_ADDREF_P(z);
     }
+  - |-
+    void f(zval *z) {
+      zval_copy_ctor(z); // is this safe???
+    }
+  - |-
+    const char *s = "//??? Z_ADDREF_P(z);";
+    void f(void) {
+    }
+  - |-
+    void f(zval *z) {
+      // TODO: balance refs
+    }
 invalid:
   - |-
     void f(zval *z) {
     //??? Z_ADDREF_P(z);
+    }
+  - |-
+    void f(zval *z) {
+    //???
+    }
+  - |-
+    void f(zval *z) {
+        //??? zval_add_ref(z);
+    }
+  - |-
+    void f(zval *z) {
+      zval_copy_ctor(z);
+      //???Z_DELREF_P(z);
     }
