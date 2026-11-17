@@ -2,7 +2,7 @@ id: wp-wpdb-escape-deprecated
 valid:
   - '$name = $db->escape( $raw_name );'
   - "$x = esc_sql( $name );"
-  - "$x = $wpdb->esc_like( $name );"
+  - "$x = $wpdb->prepare( 'SELECT ID FROM t WHERE n LIKE %s', '%' . $wpdb->esc_like( $name ) . '%' );"
   - "$x = $wpdb->get_var( $wpdb->prepare( 'SELECT ID FROM t WHERE n = %s', $name ) );"
 invalid:
   - '$name = $wpdb->escape( $raw_name );'
