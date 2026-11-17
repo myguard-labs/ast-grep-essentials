@@ -1,14 +1,36 @@
 id: c-empty-null-check-body
 snapshots:
-  ? |-
-    void f(void *p) {
-      if (!p) {
-      }
-    }
-  : labels:
+  "void f(struct s *p) {\n  if (!p->next) {\n  }\n}":
+    labels:
+    - source: |-
+        if (!p->next) {
+          }
+      style: primary
+      start: 24
+      end: 43
+  "void f(void *p) {\n  for (;;) {\n    if (!p) {\n    }\n  }\n}":
+    labels:
+    - source: |-
+        if (!p) {
+            }
+      style: primary
+      start: 35
+      end: 50
+  "void f(void *p) {\n  if (!p) {\n  }\n}":
+    labels:
     - source: |-
         if (!p) {
           }
       style: primary
       start: 20
       end: 33
+  "void f(void *p) {\n  if (!p) {\n  } else {\n    use(p);\n  }\n}":
+    labels:
+    - source: |-
+        if (!p) {
+          } else {
+            use(p);
+          }
+      style: primary
+      start: 20
+      end: 56

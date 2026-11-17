@@ -1,16 +1,37 @@
 id: c-evp-pkey-ctx-negated-status-test
 snapshots:
-  ? |-
-    #include <openssl/evp.h>
-    int f(EVP_PKEY_CTX *ctx, int *s) {
-        if (!EVP_PKEY_CTX_get_rsa_pss_saltlen(ctx, s))
-            return 0;
-        return 1;
-    }
-  : labels:
+  "#include <openssl/evp.h>\nint f(EVP_PKEY_CTX *ctx, int *s) {\n    if (!EVP_PKEY_CTX_get_rsa_pss_saltlen(ctx, s))\n        return 0;\n    return 1;\n}":
+    labels:
     - source: |-
         if (!EVP_PKEY_CTX_get_rsa_pss_saltlen(ctx, s))
                 return 0;
       style: primary
       start: 64
       end: 128
+  "int f(EVP_PKEY_CTX *ctx, int *s) {\n    for (;;) {\n        if (!EVP_PKEY_CTX_get_rsa_pss_saltlen(ctx, s))\n            break;\n    }\n    return 1;\n}":
+    labels:
+    - source: |-
+        if (!EVP_PKEY_CTX_get_rsa_pss_saltlen(ctx, s))
+                    break;
+      style: primary
+      start: 58
+      end: 123
+  "int f(EVP_PKEY_CTX *ctx, int *s) {\n    if (!EVP_PKEY_CTX_get_rsa_pss_saltlen(ctx, s))\n        return 0;\n    else\n        return 1;\n}":
+    labels:
+    - source: |-
+        if (!EVP_PKEY_CTX_get_rsa_pss_saltlen(ctx, s))
+                return 0;
+            else
+                return 1;
+      style: primary
+      start: 39
+      end: 130
+  "int f(EVP_PKEY_CTX *ctx, int *s) {\n    if (!EVP_PKEY_CTX_get_rsa_pss_saltlen(ctx, s)) {\n        goto err;\n    }\n    return 1;\nerr:\n    return 0;\n}":
+    labels:
+    - source: |-
+        if (!EVP_PKEY_CTX_get_rsa_pss_saltlen(ctx, s)) {
+                goto err;
+            }
+      style: primary
+      start: 39
+      end: 111

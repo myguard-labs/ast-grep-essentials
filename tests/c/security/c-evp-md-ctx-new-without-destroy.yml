@@ -3,7 +3,40 @@ valid:
   - >-
     EVP_MD_CTX *md = EVP_MD_CTX_new(); EVP_DigestInit_ex(md, EVP_sha256(),
     NULL); EVP_MD_CTX_destroy(md);
+  - |-
+    int f(void) {
+      EVP_MD_CTX *md = EVP_MD_CTX_new();
+      EVP_DigestInit_ex(md, EVP_sha256(), NULL);
+      EVP_MD_CTX_free(md);
+      return 1;
+    }
+  - |-
+    int f(void) {
+      int ok = 0;
+      EVP_MD_CTX *md = EVP_MD_CTX_new();
+      if (md == NULL) goto out;
+      ok = EVP_DigestInit_ex(md, EVP_sha256(), NULL);
+    out:
+      EVP_MD_CTX_free(md);
+      return ok;
+    }
 invalid:
   - >-
     EVP_MD_CTX *md = EVP_MD_CTX_new(); EVP_DigestInit_ex(md, EVP_sha256(),
     NULL);
+  - |-
+    void f(void) {
+      EVP_MD_CTX *c = EVP_MD_CTX_new();
+      EVP_DigestInit_ex(c, EVP_sha1(), NULL);
+    }
+  - |-
+    void f(void) {
+      EVP_MD_CTX *c = EVP_MD_CTX_new();
+      EVP_MD_CTX_reset(c);
+    }
+  - |-
+    void f(EVP_MD_CTX *old) {
+      EVP_MD_CTX_free(old);
+      EVP_MD_CTX *c = EVP_MD_CTX_new();
+      use(c);
+    }

@@ -3,7 +3,12 @@ valid:
   - >-
     void f(char *a, int x0, int w) { for (int x = x0; x < (x0 + w); x++) { a[x]
     = 0; } }
+  - 'void f(char *a, int x0, int w) { for (int x = x0; x <= (x0 + (w - 1)); x++) { a[x] = 0; } }'
+  - 'void f(char *a, int n) { for (int i = 0; i < (n - 1); i++) { a[i] = a[i + 1]; } }'
 invalid:
   - >-
     void f(char *a, int x0, int w) { for (int x = x0; x < (x0 + (w - 1)); x++) {
     a[x] = 0; } }
+  - 'void f(struct r *p, char *a) { for (int x = p->x0; x < (p->x0 + (p->w - 1)); x++) { a[x] = 0; } }'
+  - 'void f(char *a, int x0, int w) { for (int y = 0; y < 2; y++) { for (int x = x0; x < (x0 + (w - 1)); x++) { a[x] = 0; } } }'
+  - 'void f(char *a, int x0, int w) { int x; for (x = x0; x < (x0 + (w - 1)); ) { a[x++] = 0; } }'

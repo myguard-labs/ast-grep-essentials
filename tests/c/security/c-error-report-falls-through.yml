@@ -6,9 +6,37 @@ valid:
         return 0;
     }
     use(idx);
+  - |-
+    if (idx < 1) {
+        cleanup();
+    }
+    use(idx);
+  - |-
+    if (idx < 1) {
+        zend_error(E_WARNING, "bad");
+        return -1;
+    }
+    use(idx);
 invalid:
   - |-
     if (idx < 1) {
         php_error(E_WARNING, "Bad message number");
     }
     use(idx);
+  - |-
+    if (idx < 1) {
+        zend_error(E_WARNING, "bad");
+    }
+    use(idx);
+  - |-
+    if (idx < 1) {
+        php_error_docref(NULL, E_WARNING, "bad");
+        cleanup();
+    }
+    use(idx);
+  - |-
+    if (idx < 1) {
+        php_error(E_WARNING, "bad");
+    } else {
+        use(idx);
+    }

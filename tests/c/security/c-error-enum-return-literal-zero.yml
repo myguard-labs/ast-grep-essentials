@@ -3,7 +3,20 @@ valid:
   - |-
     typedef enum { E_OK, E_BAD } err_t;
     err_t f(int v) { if (v > 15) { return E_BAD; } return E_OK; }
+  - 'int f(void) { return 0; }'
+  - |-
+    typedef enum { E_OK, E_BAD } err_t;
+    err_t f(void) { return E_OK; }
 invalid:
   - |-
     typedef enum { E_OK, E_BAD } err_t;
     err_t f(int v) { if (v > 15) { return 0; } return E_OK; }
+  - |-
+    typedef enum { E_OK, E_BAD } error_t;
+    error_t g(int v) { if (v) { return 0; } return E_BAD; }
+  - |-
+    typedef enum { E_OK, E_BAD } err_code_t;
+    static err_code_t h(void) { return 0; }
+  - |-
+    typedef enum { E_OK, E_BAD } errno_t;
+    errno_t k(int v) { switch (v) { case 1: return 0; default: return E_BAD; } }
