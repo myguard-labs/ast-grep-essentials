@@ -158,5 +158,7 @@ metadata:
     - "Known limitation: an early-return guard (`if ( ! isset( $c['post_status'] ) ) { return; } if ( 'publish' == $c['post_status'] ) { ... }`) is reported; only a guard in the same condition or an enclosing if is recognised"
     - "FP: `if ( empty( $c['post_status'] ) || 'publish' == $c['post_status'] )` and an else body of `if ( ! isset( $c['post_status'] ) ) { } else { if ( read ) }` are reported although the read cannot run with the key absent: only isset and ! empty are recognised as guards"
     - "FN: `if ( ! ( ! isset( $c['post_status'] ) ) || 'publish' == $c['post_status'] )` is not reported: negation parity is not counted, so a doubly negated guard under || counts as protecting"
+    - "FP: guards joined with uppercase `AND` / `OR` are not recognised (the operator checks match lowercase `and` / `or` only), so the guarded read is still reported"
+    - "FP: a guard in an `elseif` condition whose body holds the read is not recognised as an enclosing guard; only an if condition counts"
     - "FN: `$ok = 'publish' == $c['post_status'];` outside an if condition and `if ( 'publish' === $c['post_status'] )` (identical comparison) are not reported"
     - "FN: `if ( $c['post_status'] == 'publish' )` (literal on the right) is not reported"
