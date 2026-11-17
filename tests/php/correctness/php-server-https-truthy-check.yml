@@ -1,5 +1,9 @@
 id: php-server-https-truthy-check
 valid:
   - '<?php if ( $_SERVER[''HTTPS''] == ''on'' ) { $u = ''https://''; } ?>'
+  - "<?php if ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ) { $u = 'https://'; } ?>"
+  - "<?php if ( 'on' === $_SERVER['HTTPS'] ) { $u = 'https://'; } ?>"
 invalid:
   - '<?php if ( $_SERVER[''HTTPS''] ) { $u = ''https://''; } ?>'
+  - "<?php if ( $_SERVER[\"HTTPS\"] ) { $u = 'https://'; } else { $u = 'http://'; } ?>"
+  - "<?php if ( $_SERVER[ 'HTTPS' ] ): $u = 'https://'; endif; ?>"

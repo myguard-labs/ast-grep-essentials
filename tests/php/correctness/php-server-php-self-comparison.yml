@@ -1,5 +1,9 @@
 id: php-server-php-self-comparison
 valid:
   - "<?php\nif ( 'edit.php' == $pagenow ) {\n\t$ok = true;\n}\n"
+  - "<?php if ( $_SERVER['SCRIPT_NAME'] === '/index.php' ) { $ok = true; } ?>"
+  - "<?php if ( '/a.php' === $_SERVER['REQUEST_URI'] ) { $ok = true; } ?>"
 invalid:
   - "<?php\nif ( '/wp-admin/edit.php' == $_SERVER['PHP_SELF'] ) {\n\t$ok = true;\n}\n"
+  - "<?php if ( $_SERVER['PHP_SELF'] === '/index.php' ) { $ok = true; } ?>"
+  - "<?php if ( $_SERVER[\"PHP_SELF\"] != '/x.php' ) { $ok = true; } ?>"
