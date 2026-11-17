@@ -1,12 +1,26 @@
 id: php-or-same-operand-inequality-tautology
 snapshots:
-  ? |-
-    <?php
-    if ( 'http' != $arrURL['scheme'] || 'https' != $arrURL['scheme'] ) {
-      $url = 'x';
-    }
-  : labels:
-    - source: '''http'' != $arrURL[''scheme''] || ''https'' != $arrURL[''scheme'']'
+  "<?php\nif ( 'http' != $arrURL['scheme'] || 'https' != $arrURL['scheme'] ) {\n  $url = 'x';\n}":
+    labels:
+    - source: "'http' != $arrURL['scheme'] || 'https' != $arrURL['scheme']"
       style: primary
       start: 11
       end: 70
+  "<?php function f($t) { return 'x' != $t || 'y' != $t; }":
+    labels:
+    - source: "'x' != $t || 'y' != $t"
+      style: primary
+      start: 30
+      end: 52
+  "<?php if ( 'a' != $this->mode() || 'b' != $this->mode() ) { $k = 1; }":
+    labels:
+    - source: "'a' != $this->mode() || 'b' != $this->mode()"
+      style: primary
+      start: 11
+      end: 55
+  "<?php while ( 'GET' != $m['verb'] || 'POST' != $m['verb'] ) { $m = n(); }":
+    labels:
+    - source: "'GET' != $m['verb'] || 'POST' != $m['verb']"
+      style: primary
+      start: 14
+      end: 57

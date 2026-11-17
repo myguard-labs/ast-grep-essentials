@@ -21,3 +21,9 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  todo_cases:
+    - 'Observed false positive: add_query_arg() in base without any %#% placeholder is reported although the note claims a %#% argument (paginate_links(array(''base'' => add_query_arg(''foo'', ''bar''), ''format'' => ''?paged=%#%'', ''total'' => 3));).'
+    - 'Observed miss: an array whose only key is base is not reported ($links = paginate_links(array(''base'' => add_query_arg(''paged'', ''%#%'')));).'
+    - 'Observed miss: the short array syntax is not reported (paginate_links([''base'' => add_query_arg(''paged'', ''%#%''), ''format'' => '''']);).'
+    - 'Observed miss: base placed after another key is not reported (paginate_links(array(''format'' => '''', ''base'' => add_query_arg(''paged'', ''%#%'')));).'
+    - 'Observed miss: add_query_arg() wrapped in another call is not reported (paginate_links(array(''base'' => esc_url(add_query_arg(''paged'', ''%#%'')), ''format'' => ''''));).'

@@ -3,7 +3,19 @@ valid:
   - >-
     paginate_links(array('base' => 'users.php?%_%', 'format' => 'paged=%#%',
     'total' => 3));
+  - |-
+    <?php paginate_links(array('base' => str_replace(999, '%#%', get_pagenum_link(999)), 'format' => '', 'total' => $n));
+  - |-
+    <?php paginate_links(array('base' => $base, 'format' => '?paged=%#%', 'total' => $n));
+  - |-
+    <?php paginate_links(array('format' => '?paged=%#%', 'total' => 3));
 invalid:
   - >-
     paginate_links(array('base' => add_query_arg('paged', '%#%'), 'format' =>
     '', 'total' => 3));
+  - |-
+    <?php echo paginate_links(array('base' => add_query_arg('paged', '%#%', $url), 'format' => '', 'total' => $n, 'current' => $c));
+  - |-
+    <?php paginate_links(array('base' => add_query_arg(array('paged' => '%#%')), 'format' => ''));
+  - |-
+    <?php paginate_links(array('base' => add_query_arg("paged", "%#%"), 'format' => ''));

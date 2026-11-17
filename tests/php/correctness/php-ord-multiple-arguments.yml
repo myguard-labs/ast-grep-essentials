@@ -1,5 +1,17 @@
 id: php-ord-multiple-arguments
 valid:
   - '<?php $c = pack(''C*'', ord( $s[1] ), ord( $s[2] ) );'
+  - |-
+    <?php $c = ord($s[0]) + ord($s[1]);
+  - |-
+    <?php $c = ord(substr($s, 1, 1));
+  - |-
+    <?php $c = ord(max($a, $b));
 invalid:
   - '<?php $c = pack(''C*'', ord( $s[1], ord( $s[2] ) ) );'
+  - |-
+    <?php $c = ord($s, 1);
+  - |-
+    <?php $c = ord($s, $a, $b);
+  - |-
+    <?php $c = ord($s[0], 1) + 1;

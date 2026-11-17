@@ -1,6 +1,24 @@
 id: php-parse-str-unguarded-parse-url-query
 snapshots:
-  function f($url) { $parsed_url = parse_url($url); parse_str($parsed_url['query'], $parsed_query); return $parsed_query; }:
+  "<?php class A { function f($u) { $parts = parse_url($u); parse_str($parts['query'], $this->q); } }":
+    labels:
+    - source: parse_str($parts['query'], $this->q)
+      style: primary
+      start: 57
+      end: 93
+  "<?php function f($u) { $p = parse_url($u); $o = parse_url('x'); if ( ! empty( $o['query'] ) ) { parse_str($p['query'], $q); } return $q; }":
+    labels:
+    - source: parse_str($p['query'], $q)
+      style: primary
+      start: 96
+      end: 122
+  "<?php function f($u) { $p = parse_url($u); if ( isset($p['host']) ) { parse_str($p['query'], $q); } return $q; }":
+    labels:
+    - source: parse_str($p['query'], $q)
+      style: primary
+      start: 70
+      end: 96
+  "function f($url) { $parsed_url = parse_url($url); parse_str($parsed_url['query'], $parsed_query); return $parsed_query; }":
     labels:
     - source: parse_str($parsed_url['query'], $parsed_query)
       style: primary

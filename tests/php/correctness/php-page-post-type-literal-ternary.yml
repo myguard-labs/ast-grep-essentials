@@ -1,5 +1,17 @@
 id: php-page-post-type-literal-ternary
 valid:
   - '$c = $post_type_object->hierarchical ? ''page'' : ''post'';'
+  - |-
+    <?php $c = $post_type != 'page' ? 'a' : 'b';
+  - |-
+    <?php $c = $post_type == 'post' ? 'a' : 'b';
+  - |-
+    <?php $c = is_post_type_hierarchical($post_type) ? 'a' : 'b';
 invalid:
   - '$c = $post_type == ''page'' ? ''page'' : ''post'';'
+  - |-
+    <?php function f($post_type) { return $post_type == 'page' ? 'a' : 'b'; }
+  - |-
+    <?php $c = $post->post_type == 'page' ? 1 : 0;
+  - |-
+    <?php $c = $this->get_type() == 'page' ? 'a' : 'b';
