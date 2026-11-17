@@ -8,10 +8,23 @@ message: >-
   that does not compare equal to -1 at a signed caller.
 note: >-
   Purely syntactic match on a return statement whose expression is a cast of
-  -1 to size_t. It does not verify that the enclosing function returns
-  ssize_t, nor does it resolve types, aliases, or callers.
+  -1 to size_t. Skips functions whose declared return type is size_t or
+  another unsigned type (the idiomatic sentinel). It does not resolve type
+  aliases or callers.
 rule:
   pattern: 'return (size_t)-1;'
+  not:
+    inside:
+      stopBy:
+        kind: function_definition
+      kind: function_definition
+      all:
+        - has:
+            field: type
+            regex: '^(size_t|uintptr_t|uintmax_t|uint(8|16|32|64)_t|unsigned\b.*)$'
+        - has:
+            field: declarator
+            kind: function_declarator
 metadata:
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
@@ -24,4 +37,5 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/195.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'false positive (safe code flagged): static size_t w(void) { return (size_t)-1; }'
+    - 'false negative (defect missed): the unsigned-return exclusion keys on the nearest function_definition only; a same-named shadow or macro-wrapped signature is not resolved'
+    - 'known limitation: pointer return type size_t *f(void) keeps reporting (cast of -1 to pointer)'
