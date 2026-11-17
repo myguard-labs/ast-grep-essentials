@@ -5,9 +5,27 @@ valid:
     if (rnode == NULL) {
         xmlFreeNode(node);
     }
+  - |-
+    if (node != NULL) {
+        xmlFreeNode(node);
+    }
+  - |-
+    tmp = xmlAddChild(copy, node);
+    if (tmp == NULL) {
+        return NULL;
+    }
 invalid:
   - |-
     node = xmlAddChild(copy, node);
     if (node == NULL) {
         xmlFreeNode(node);
+    }
+  - |-
+    cur = xmlAddChild(parent, cur);
+    if (cur == NULL) {
+        xmlFreeNode(cur);
+    }
+  - |-
+    if (ctx->node == NULL) {
+        xmlFreeNode(ctx->node);
     }

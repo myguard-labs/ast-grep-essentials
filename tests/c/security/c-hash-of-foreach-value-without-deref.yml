@@ -3,7 +3,16 @@ valid:
   - >-
     ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, pIter) { ZVAL_DEREF(pIter);
     HashTable *sub = HASH_OF(pIter); use(sub); } ZEND_HASH_FOREACH_END();
+  - |-
+    void f(zval *z) { ZVAL_DEREF(z); if (Z_TYPE_P(z) == IS_ARRAY) { use(HASH_OF(z)); } }
+  - |-
+    { HashTable *sub; ZVAL_DEREF(pIter); sub = HASH_OF(pIter); use(sub); }
 invalid:
   - >-
     ZEND_HASH_FOREACH_KEY_VAL(ht, idx, key, pIter) { HashTable *sub =
     HASH_OF(pIter); use(sub); } ZEND_HASH_FOREACH_END();
+  - |-
+    void f(zval *z) { use(HASH_OF(z)); }
+  - |-
+    void a(zval *z) { ZVAL_DEREF(z); }
+    void b(zval *z) { HashTable *ht = HASH_OF(z); use(ht); }

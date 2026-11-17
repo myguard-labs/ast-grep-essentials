@@ -3,7 +3,15 @@ valid:
   - >-
     int f(int how, void **ret) { switch (how) { case 1: if (ret) { *ret = 0; }
     return 0; default: return -1; } }
+  - |-
+    int f(int how, void **ret) { switch (how) { case 1: if (ret) { *ret = 0; return 0; } else { return -1; } default: return -1; } }
+  - |-
+    int f(int how, void **ret) { switch (how) { case 1: if (ret) { return 0; } return -1; case 2: return 1; } return 2; }
 invalid:
   - >-
     int f(int how, void **ret) { switch (how) { case 1: if (ret) { *ret = 0;
     return 0; } default: return -1; } }
+  - |-
+    int f(int how, void *p) { switch (how) { case 1: if (p != NULL) return 0; default: return -1; } }
+  - |-
+    int f(int how, int r) { switch (how) { case 0: r = 1; break; case 2: if (ok(how)) { r = 1; return r; } default: return -1; } return r; }

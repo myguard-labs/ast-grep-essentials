@@ -1,5 +1,15 @@
 id: c-hash-iterator-slot-reset-without-del
 snapshots:
+  "void a(spl_array_object *o) { zend_hash_iterator_del(o->ht_iter); }\nvoid b(spl_array_object *o) { o->ht_iter = (uint32_t)-1; }":
+    labels:
+    - source: o->ht_iter = (uint32_t)-1
+      style: primary
+      start: 98
+      end: 123
+    - source: void b(spl_array_object *o) { o->ht_iter = (uint32_t)-1; }
+      style: secondary
+      start: 68
+      end: 126
   "void f(spl_array_object *intern) { intern->ht_iter = (uint32_t)-1; }":
     labels:
     - source: intern->ht_iter = (uint32_t)-1
@@ -10,3 +20,13 @@ snapshots:
       style: secondary
       start: 0
       end: 68
+  "void f(spl_array_object *intern) { intern->inner->ht_iter = (uint32_t)-1; }":
+    labels:
+    - source: intern->inner->ht_iter = (uint32_t)-1
+      style: primary
+      start: 35
+      end: 72
+    - source: void f(spl_array_object *intern) { intern->inner->ht_iter = (uint32_t)-1; }
+      style: secondary
+      start: 0
+      end: 75

@@ -1,5 +1,23 @@
 id: c-guarded-success-falls-to-default
 snapshots:
+  "int f(int how, int r) { switch (how) { case 0: r = 1; break; case 2: if (ok(how)) { r = 1; return r; } default: return -1; } return r; }":
+    labels:
+    - source: "case 2: if (ok(how)) { r = 1; return r; }"
+      style: primary
+      start: 61
+      end: 102
+    - source: return r;
+      style: secondary
+      start: 91
+      end: 100
+    - source: if (ok(how)) { r = 1; return r; }
+      style: secondary
+      start: 69
+      end: 102
+    - source: "default: return -1;"
+      style: secondary
+      start: 103
+      end: 122
   "int f(int how, void **ret) { switch (how) { case 1: if (ret) { *ret = 0; return 0; } default: return -1; } }":
     labels:
     - source: "case 1: if (ret) { *ret = 0; return 0; }"
@@ -18,3 +36,21 @@ snapshots:
       style: secondary
       start: 85
       end: 104
+  "int f(int how, void *p) { switch (how) { case 1: if (p != NULL) return 0; default: return -1; } }":
+    labels:
+    - source: "case 1: if (p != NULL) return 0;"
+      style: primary
+      start: 41
+      end: 73
+    - source: return 0;
+      style: secondary
+      start: 64
+      end: 73
+    - source: if (p != NULL) return 0;
+      style: secondary
+      start: 49
+      end: 73
+    - source: "default: return -1;"
+      style: secondary
+      start: 74
+      end: 93

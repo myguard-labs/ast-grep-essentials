@@ -1,5 +1,13 @@
 id: c-host-name-max-buffer-no-nul
 valid:
   - 'char buf[HOST_NAME_MAX + 1]; if (gethostname(buf, sizeof(buf) - 1)) { }'
+  - |-
+    static char host[HOST_NAME_MAX + 1];
+  - |-
+    char name[HOST_NAME_MAX + 1] = {0}; gethostname(name, HOST_NAME_MAX);
 invalid:
   - 'char buf[HOST_NAME_MAX]; if (gethostname(buf, sizeof(buf) - 1)) { }'
+  - |-
+    void f(void) { char host[HOST_NAME_MAX]; if (gethostname(host, sizeof(host)) == 0) puts(host); }
+  - |-
+    void f(void) { char host[HOST_NAME_MAX]; gethostname(host, sizeof(host)); }
