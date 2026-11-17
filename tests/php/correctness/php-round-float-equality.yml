@@ -1,5 +1,11 @@
 id: php-round-float-equality
 valid:
   - '<?php if ( round( $a / $b, 2 ) < round( $c / $d, 2 ) ) { }'
+  - '<?php if ( abs( round( $a, 2 ) - round( $b, 2 ) ) < 0.005 ) { }'
+  - '<?php if ( intval( round( $a ) ) == intval( round( $b ) ) ) { }'
+  - '<?php if ( round( $a, 2 ) > round( $c, 2 ) ) { }'
 invalid:
   - '<?php if ( round( $a / $b, 2 ) == round( $c / $d, 2 ) ) { }'
+  - '<?php $same = round( $a ) == round( $b );'
+  - '<?php function f() { return round( $a, 2, PHP_ROUND_HALF_UP ) == round( $b, 2 ); }'
+  - '<?php if ( round( $x * 100 ) == round( $y * 100 ) && $z ) { }'

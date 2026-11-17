@@ -2,5 +2,11 @@ id: php-return-embedded-assignment
 valid:
   - 'function f() { $terms = array(); return $terms; }'
   - 'function f() { return function () { $x = 1; }; }'
+  - '<?php function f() { return $a === $b; }'
+  - '<?php function f() { return $this->x; }'
+  - '<?php function f() { return array_map( function ( $v ) { $y = $v; return $y; }, $a ); }'
 invalid:
   - 'function f() { return $terms = array(); }'
+  - '<?php function f() { return $this->x = $v; }'
+  - '<?php function f() { return $a = $b = 1; }'
+  - '<?php function f() { return ( $x = foo() ); }'
