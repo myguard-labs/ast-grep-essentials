@@ -10,6 +10,7 @@ valid:
             --h->nApplyCount;
             return;
         }
+        --h->nApplyCount;
     }
   - |-
     static void f(struct ctx *c)
@@ -47,6 +48,7 @@ invalid:
         if (++h->nApplyCount > 1 && h->flags) {
             h->nApplyCount = 0;
         }
+        h->nApplyCount--;
     }
   - |-
     static int f(struct ctx *c)
@@ -56,5 +58,6 @@ invalid:
             c->level = 0;
             return -1;
         }
+        c->level--;
         return 0;
     }

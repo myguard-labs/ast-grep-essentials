@@ -1,6 +1,6 @@
 id: c-recursion-guard-reset-to-zero
 snapshots:
-  "static int f(struct ctx *c)\n{\n    if (++c->level > 3) {\n        log_err(\"too deep\");\n        c->level = 0;\n        return -1;\n    }\n    return 0;\n}":
+  "static int f(struct ctx *c)\n{\n    if (++c->level > 3) {\n        log_err(\"too deep\");\n        c->level = 0;\n        return -1;\n    }\n    c->level--;\n    return 0;\n}":
     labels:
     - source: |-
         if (++c->level > 3) {
@@ -37,7 +37,7 @@ snapshots:
       style: secondary
       start: 65
       end: 77
-  "static void f(struct ht *h)\n{\n    if (++h->nApplyCount > 1 && h->flags) {\n        h->nApplyCount = 0;\n    }\n}":
+  "static void f(struct ht *h)\n{\n    if (++h->nApplyCount > 1 && h->flags) {\n        h->nApplyCount = 0;\n    }\n    h->nApplyCount--;\n}":
     labels:
     - source: |-
         if (++h->nApplyCount > 1 && h->flags) {
