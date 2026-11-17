@@ -10,7 +10,9 @@ note: >-
   Syntactic single-file match on a literal strpos call with the './' needle
   inside an if condition whose body returns; it does not verify that the
   function is a path validator, that the value reaches a file operation, or
-  that no other '..' check exists elsewhere.
+  that no other '..' check exists elsewhere. The '..' check may be a
+  strpos, stripos or str_contains call anywhere in the enclosing function,
+  method or closure; it is not tied to the same variable.
 rule:
   all:
     - pattern: 'strpos($FILE, ''./'')'
@@ -19,10 +21,20 @@ rule:
         stopBy: end
     - not:
         inside:
-          kind: function_definition
+          any:
+            - kind: function_definition
+            - kind: method_declaration
+            - kind: anonymous_function
+            - kind: arrow_function
           stopBy: end
           has:
-            pattern: 'strpos($FILE2, ''..'')'
+            any:
+              - pattern: 'strpos($FILE2, ''..'')'
+              - pattern: 'strpos($FILE2, "..")'
+              - pattern: 'stripos($FILE2, ''..'')'
+              - pattern: 'stripos($FILE2, "..")'
+              - pattern: 'str_contains($FILE2, ''..'')'
+              - pattern: 'str_contains($FILE2, "..")'
             stopBy: end
 metadata:
   rule_modified_at: '2026-10-15'
@@ -37,6 +49,4 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A01:2025'
   todo_cases:
-    - 'FP (str_contains ''..'' check): function v( $f ) { if ( str_contains( $f, ''..'' ) || strpos( $f, ''./'' ) !== false ) { return 1; } } is still matched; only strpos ''..'' counts as the parent-directory check.'
-    - 'FP (class method with ''..'' check): a method_declaration holding strpos( $f, ''..'' ) and strpos( $f, ''./'' ) is still matched; the exclusion only scans function_definition.'
     - 'FN (double-quoted needle): if ( strpos( $f, "./" ) !== false ) { return 1; } is not matched because the pattern needs a single-quoted ''./'' literal.'
