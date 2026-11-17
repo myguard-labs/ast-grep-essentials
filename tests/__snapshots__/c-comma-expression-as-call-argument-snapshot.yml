@@ -1,9 +1,25 @@
 id: c-comma-expression-as-call-argument
 snapshots:
-  ? |-
-    int g(int, int);
-    int f(int dest) { int fd; if ((fd = g((dest, 0777))) == -1) return 1; return fd; }
-  : labels:
+  "int g(int, int);\nint f(int a) { return g((a, 1), 2); }":
+    labels:
+    - source: g((a, 1), 2)
+      style: primary
+      start: 39
+      end: 51
+    - source: a, 1
+      style: secondary
+      start: 42
+      end: 46
+    - source: (a, 1)
+      style: secondary
+      start: 41
+      end: 47
+    - source: ((a, 1), 2)
+      style: secondary
+      start: 40
+      end: 51
+  "int g(int, int);\nint f(int dest) { int fd; if ((fd = g((dest, 0777))) == -1) return 1; return fd; }":
+    labels:
     - source: g((dest, 0777))
       style: primary
       start: 53
@@ -20,3 +36,21 @@ snapshots:
       style: secondary
       start: 54
       end: 68
+  "int p(const char *, int);\nint f(int a, int b) { return p(\"x\", (a = 1, b)); }":
+    labels:
+    - source: p("x", (a = 1, b))
+      style: primary
+      start: 55
+      end: 73
+    - source: a = 1, b
+      style: secondary
+      start: 63
+      end: 71
+    - source: (a = 1, b)
+      style: secondary
+      start: 62
+      end: 72
+    - source: ("x", (a = 1, b))
+      style: secondary
+      start: 56
+      end: 73

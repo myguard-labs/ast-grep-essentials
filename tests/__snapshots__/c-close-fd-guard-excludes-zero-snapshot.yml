@@ -1,8 +1,26 @@
 id: c-close-fd-guard-excludes-zero
 snapshots:
-  ? "static int fd;\nvoid release(void) {\n\tif (fd > 0) {\n\t\tclose(fd);\n\t}\n}"
-  : labels:
-    - source: "if (fd > 0) {\n\t\tclose(fd);\n\t}"
+  "static int fd;\nvoid release(void) {\n\tif (fd > 0) {\n\t\tclose(fd);\n\t}\n}":
+    labels:
+    - source: |-
+        if (fd > 0) {
+        		close(fd);
+        	}
       style: primary
       start: 37
       end: 66
+  "void release(int *fds, int n) {\n\tfor (int i = 0; i < n; i++) {\n\t\tif (fds[i] > 0) {\n\t\t\tclose(fds[i]);\n\t\t}\n\t}\n}":
+    labels:
+    - source: |-
+        if (fds[i] > 0) {
+        			close(fds[i]);
+        		}
+      style: primary
+      start: 65
+      end: 104
+  "void release(struct ctx *c) { if (c->fd > 0) { close(c->fd); } }":
+    labels:
+    - source: if (c->fd > 0) { close(c->fd); }
+      style: primary
+      start: 30
+      end: 62

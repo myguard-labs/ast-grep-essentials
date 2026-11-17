@@ -1,5 +1,10 @@
 id: c-close-fd-guard-excludes-zero
 valid:
   - "static int fd;\nvoid release(void) {\n\tif (fd >= 0) {\n\t\tclose(fd);\n\t}\n}"
+  - "void release(int fd) { if (fd != -1) { close(fd); } }"
+  - "void release(int fd, int n) { if (n > 0) { close(fd); } }"
+  - "void release(int fd) { if (fd > 0) { puts(\"open\"); } close(fd); }"
 invalid:
   - "static int fd;\nvoid release(void) {\n\tif (fd > 0) {\n\t\tclose(fd);\n\t}\n}"
+  - "void release(struct ctx *c) { if (c->fd > 0) { close(c->fd); } }"
+  - "void release(int *fds, int n) {\n\tfor (int i = 0; i < n; i++) {\n\t\tif (fds[i] > 0) {\n\t\t\tclose(fds[i]);\n\t\t}\n\t}\n}"

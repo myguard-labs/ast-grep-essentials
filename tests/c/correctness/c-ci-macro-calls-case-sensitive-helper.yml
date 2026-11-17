@@ -1,5 +1,11 @@
 id: c-ci-macro-calls-case-sensitive-helper
 valid:
   - "#define my_starts_with_literal_ci(str, prefix) \\\n\tmy_starts_with_cstr_ci(str, prefix, strlen(prefix))"
+  - "#define str_eq_ci(a, b) my_eq_ci(a, b)"
+  - "#define lower_ci(c) ((c) | 0x20)"
+  - "#define str_eq(a, b) strcmp(a, b)"
+  - "#define str_eq_ci(a, b) \\\n\tmy_cmp_ci (a, b)"
 invalid:
   - "#define my_starts_with_literal_ci(str, prefix) \\\n\tmy_starts_with_cstr(str, prefix, strlen(prefix))"
+  - "#define str_eq_ci(a, b) strcmp(a, b)"
+  - "#define starts_ci(s, p) \\\n  my_starts(s, p, strlen(p))"
