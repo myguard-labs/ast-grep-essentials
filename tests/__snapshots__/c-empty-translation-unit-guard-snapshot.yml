@@ -1,5 +1,25 @@
 id: c-empty-translation-unit-guard
 snapshots:
+  "#ifdef A\n#define F(x) (x)\n#else\nint b;\n#endif":
+    labels:
+    - source: |-
+        #ifdef A
+        #define F(x) (x)
+        #else
+        int b;
+        #endif
+      style: primary
+      start: 0
+      end: 45
+    - source: |-
+        #ifdef A
+        #define F(x) (x)
+        #else
+        int b;
+        #endif
+      style: secondary
+      start: 0
+      end: 45
   "#ifdef A\n#ifdef B\nint a;\n#endif\n#endif":
     labels:
     - source: |-
@@ -20,6 +40,26 @@ snapshots:
       style: secondary
       start: 0
       end: 38
+  "#ifdef A\nint a;\n#elif defined(B)\nint b;\n#endif":
+    labels:
+    - source: |-
+        #ifdef A
+        int a;
+        #elif defined(B)
+        int b;
+        #endif
+      style: primary
+      start: 0
+      end: 46
+    - source: |-
+        #ifdef A
+        int a;
+        #elif defined(B)
+        int b;
+        #endif
+      style: secondary
+      start: 0
+      end: 46
   "#ifdef FOO\nint a;\nint b;\n#endif":
     labels:
     - source: |-

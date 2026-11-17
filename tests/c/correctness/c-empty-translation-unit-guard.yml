@@ -20,6 +20,17 @@ valid:
     int a;
     #endif
     int g(void) { return 0; }
+  - |-
+    #ifndef FOO_H
+    #define FOO_H
+    int f(void);
+    #endif
+  - |-
+    #ifdef A
+    int a;
+    #else
+    int b;
+    #endif
 invalid:
   - |-
     #ifndef FOO_X
@@ -39,4 +50,16 @@ invalid:
   - |-
     #ifndef FOO
     void f(void) { }
+    #endif
+  - |-
+    #ifdef A
+    #define F(x) (x)
+    #else
+    int b;
+    #endif
+  - |-
+    #ifdef A
+    int a;
+    #elif defined(B)
+    int b;
     #endif
