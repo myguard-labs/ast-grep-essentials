@@ -1,5 +1,11 @@
 id: c-copy-preincrement-both-sides
 valid:
   - 'void f(char *dst, char *src) { *dst++ = *src++; }'
+  - "void f(char *dst, char *src) { *dst = *++src; }"
+  - "void f(char *dst, char *src) { *++dst = *src; }"
+  - "void f(char *dst, char *src) { *dst = *src; dst++; src++; }"
 invalid:
   - 'void f(char *dst, char *src) { *++dst = *++src; }'
+  - "void f(char *d, char *s, int n) { while (n--) *++d = *++s; }"
+  - "void f(struct buf *b) { *++b->out = *++b->in; }"
+  - "void f(char *d, char *s) { if (*s) { *++d = *++s; } }"

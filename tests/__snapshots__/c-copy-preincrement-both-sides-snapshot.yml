@@ -1,8 +1,26 @@
 id: c-copy-preincrement-both-sides
 snapshots:
-  void f(char *dst, char *src) { *++dst = *++src; }:
+  "void f(char *d, char *s) { if (*s) { *++d = *++s; } }":
     labels:
-    - source: '*++dst = *++src'
+    - source: "*++d = *++s"
+      style: primary
+      start: 37
+      end: 48
+  "void f(char *d, char *s, int n) { while (n--) *++d = *++s; }":
+    labels:
+    - source: "*++d = *++s"
+      style: primary
+      start: 46
+      end: 57
+  "void f(char *dst, char *src) { *++dst = *++src; }":
+    labels:
+    - source: "*++dst = *++src"
       style: primary
       start: 31
       end: 46
+  "void f(struct buf *b) { *++b->out = *++b->in; }":
+    labels:
+    - source: "*++b->out = *++b->in"
+      style: primary
+      start: 24
+      end: 44
