@@ -3,7 +3,12 @@ valid:
   - >-
     $expected = gmdate( 'Y-m-d H:i:s', strtotime( '+1 day', current_time(
     'timestamp' ) ) );
+  - "<?php\n$t = strtotime( current_time( 'mysql' ) );"
+  - "<?php\n$t = strtotime( $date_string );"
 invalid:
   - >-
     $expected = gmdate( 'Y-m-d H:i:s', strtotime( current_time( 'timestamp' ) )
     );
+  - "<?php\n$t = strtotime( current_time( 'timestamp' ) );"
+  - "<?php\nif ( strtotime( current_time( 'timestamp' ) ) > $limit ) { $x = 1; }"
+  - "<?php\n$t = strtotime(current_time('timestamp'));"

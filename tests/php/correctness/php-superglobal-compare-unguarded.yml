@@ -3,5 +3,11 @@ valid:
   - >-
     <?php if ( isset( $_POST['n'] ) && wp_create_nonce( 'k' ) != $_POST['n'] ) {
     return; }
+  - "<?php if ( array_key_exists( 'n', $_POST ) && $_POST['n'] === 'y' ) { return; }"
+  - "<?php if ( isset( $_POST['n'], $_POST['m'] ) && $_POST['n'] == $_POST['m'] ) { return; }"
+  - "<?php if ( ( $_POST['n'] ?? '' ) === 'y' ) { return; }"
 invalid:
   - '<?php if ( wp_create_nonce( ''k'' ) != $_POST[''n''] ) { return; }'
+  - "<?php if ( $ok && $_POST['n'] === 'y' ) { return; }"
+  - "<?php if ( 'y' !== $_POST['n'] ) { return; }"
+  - "<?php if ( $_POST['count'] > 5 ) { return; }"
