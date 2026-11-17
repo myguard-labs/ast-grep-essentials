@@ -3,5 +3,11 @@ valid:
   - >-
     $author = get_userdata( $post->post_author ); $author_id = $author ?
     $author->ID : 0;
+  - "<?php $user = get_userdata( $id ); if ( ! $user ) { return; } $name = $user->display_name;"
+  - "<?php $name = get_userdata( $id )?->display_name;"
+  - "<?php $user = get_userdata( $id ); $name = $user instanceof WP_User ? $user->user_login : '';"
 invalid:
   - '$author_id = get_userdata( $post->post_author )->ID;'
+  - "<?php $id = get_userdata()->ID;"
+  - "<?php echo esc_html( get_userdata( $uid )->display_name );"
+  - "<?php if ( get_userdata( $id )->roles[0] === 'admin' ) { $x = 1; }"

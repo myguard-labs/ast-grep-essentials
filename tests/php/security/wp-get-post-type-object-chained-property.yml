@@ -1,5 +1,11 @@
 id: wp-get-post-type-object-chained-property
 valid:
   - '$obj = get_post_type_object( $type );'
+  - "<?php $obj = get_post_type_object( $type ); if ( $obj ) { $p = $obj->public; }"
+  - "<?php $p = get_post_type_object( $type )?->public;"
+  - "<?php $obj = get_post_type_object( $type ); $p = null !== $obj ? $obj->public : false;"
 invalid:
   - '$public = get_post_type_object( $type )->public;'
+  - "<?php echo get_post_type_object( 'post' )->labels->name;"
+  - "<?php $cap = get_post_type_object( $post->post_type )->cap->edit_posts;"
+  - "<?php if ( get_post_type_object( $type )->public ) { $x = 1; }"

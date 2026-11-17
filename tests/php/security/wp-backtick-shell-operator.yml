@@ -1,5 +1,11 @@
 id: wp-backtick-shell-operator
 valid:
   - '<?php $out = shell_exec( ''id'' );'
+  - "<?php $sql = \"SELECT * FROM `$table` WHERE id = 1\";"
+  - "<?php $s = 'run `id` here';"
+  - "<?php $out = shell_exec( escapeshellarg( $x ) );"
 invalid:
   - '<?php $out = `id`;'
+  - "<?php $out = `ls -l $dir`;"
+  - "<?php echo `whoami`;"
+  - "<?php function f( $cmd ) { return `$cmd`; }"
