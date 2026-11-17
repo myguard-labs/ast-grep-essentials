@@ -1,5 +1,11 @@
 id: c-printf-invalid-conversion-literal
 valid:
   - 'php_error_docref(NULL, E_NOTICE, "truncated to %d", MAXPATHLEN);'
+  - 'printf("%lld %hhu", a, b);'
+  - 'snprintf(buf, n, "%5.2f%s", x, s);'
+  - 'puts("100 percent done");'
 invalid:
   - 'php_error_docref(NULL, E_NOTICE, "truncated to %file", MAXPATHLEN);'
+  - 'fprintf(stderr, "cannot open %filename\n");'
+  - 'snprintf(buf, n, "%count items", n);'
+  - 'ngx_log_error(NGX_LOG_ERR, log, 0, "bad %value", v);'

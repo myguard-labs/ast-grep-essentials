@@ -3,7 +3,42 @@ valid:
   - >-
     void set_version(void) { const char *http_version; http_version =
     "HTTP/1.1"; (void) http_version; }
+  - |-
+    void set_version(void) {
+      const char *http_version;
+      http_version = "HTTP/1.0";
+      (void) http_version;
+    }
+  - |-
+    void set_version(void) {
+      const char *version;
+      version = "1.1";
+      (void) version;
+    }
+  - |-
+    void set_version(const char *ver) {
+      const char *http_version;
+      http_version = ver;
+      (void) http_version;
+    }
 invalid:
   - >-
     void set_version(void) { const char *http_version; http_version = "1.1";
     (void) http_version; }
+  - |-
+    void set_version(void) {
+      const char *http_version;
+      http_version = "1";
+      (void) http_version;
+    }
+  - |-
+    void set_version(void) {
+      const char *http_version;
+      http_version = "1.1.0";
+      (void) http_version;
+    }
+  - |-
+    void set_version(void) {
+      const char *http_version;
+      (void) (http_version = "2.0");
+    }
