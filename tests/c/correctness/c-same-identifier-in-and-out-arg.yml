@@ -1,5 +1,13 @@
 id: c-same-identifier-in-and-out-arg
 valid:
   - 'value = sxe_get_value(value, &zval_copy);'
+  - 'void f(char *dst, const char *src, int n) { memcpy(dst, src, n); }'
+  - 'void f(char *buf, int n) { memmove(buf, buf + 1, n); }'
+  - 'int f(const char *a, const char *b) { return strcmp(a, b); }'
 invalid:
   - 'value = sxe_get_value(value, value);'
+  - 'void f(char *buf) { strcat(buf, buf); }'
+  - 'void f(char *s) { strcpy(s, s); }'
+  - |-
+    #include <wchar.h>
+    void f(wchar_t *w) { wcscpy(w, w); }

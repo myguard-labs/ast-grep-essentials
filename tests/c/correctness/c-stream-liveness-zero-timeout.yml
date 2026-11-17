@@ -1,5 +1,11 @@
 id: c-stream-liveness-zero-timeout
 valid:
   - 'php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, -1, NULL);'
+  - 'int f(php_stream *stream) { return php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, 5, NULL); }'
+  - 'int f(php_stream *stream) { return php_stream_set_option(stream, PHP_STREAM_OPTION_BLOCKING, 0, NULL); }'
+  - 'int f(php_stream *stream, int timeout) { return php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, timeout, NULL); }'
 invalid:
   - 'php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, 0, NULL);'
+  - 'int f(php_stream *stream, struct timeval *tv) { return php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, 0, tv); }'
+  - 'int f(zval *zv) { return php_stream_set_option(php_stream_from_zval_no_verify(zv), PHP_STREAM_OPTION_CHECK_LIVENESS, 0, NULL); }'
+  - 'int f(php_stream *stream) { if (php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, 0, NULL) == PHP_STREAM_OPTION_RETURN_OK) { return 1; } return 0; }'

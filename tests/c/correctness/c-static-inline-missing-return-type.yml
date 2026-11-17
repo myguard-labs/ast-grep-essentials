@@ -1,5 +1,11 @@
 id: c-static-inline-missing-return-type
 valid:
   - 'static inline void zend_clean_garbage(ELS_D) { }'
+  - 'static int add(int a, int b) { return a + b; }'
+  - 'static zend_always_inline char *skip(char *s) { return s; }'
+  - 'static int helper(int a) { return a; }'
 invalid:
   - 'static inline zend_clean_garbage(ELS_D) { }'
+  - 'static inline helper(void) { return 1; }'
+  - 'static inline get_count(TSRMLS_D) { return 0; }'
+  - 'static inline reset(void) { }'

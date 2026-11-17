@@ -1,5 +1,11 @@
 id: c-repeated-subscript-conjunct
 valid:
   - 'if (p[0] == ''\\'' && p[1] == ''\\'' && p[2] == ''?'') { }'
+  - 'int f(const char *p) { return p[0] == ''a'' && p[1] == ''a''; }'
+  - 'int f(const char *p, const char *q) { return p[0] == 0 && q[0] == 0; }'
+  - 'int f(const char *s, int i, int j) { return s[i] == '' '' && s[j] == '' ''; }'
 invalid:
   - 'if (p[0] == ''\\'' && p[0] == ''\\'' && p[1] == ''?'') { }'
+  - 'int f(const char *p, int i) { return p[i] == 0 && p[i] == 0; }'
+  - 'int f(const char *s, int n) { while (s[n] == '' '' && s[n] == '' '') n++; return n; }'
+  - 'int f(struct buf *b, int k) { return b->data[k] == 1 && b->data[k] == 1 && b->ok; }'

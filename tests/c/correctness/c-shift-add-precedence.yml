@@ -1,5 +1,11 @@
 id: c-shift-add-precedence
 valid:
   - 'int v = a << (24 + b);'
+  - 'unsigned f(unsigned a, unsigned b) { return a << (24 + (b & 7)); }'
+  - 'unsigned f(unsigned a, unsigned b) { return (a << 24) + (b & 0xff); }'
+  - 'unsigned f(unsigned a, unsigned b) { return (a << 8) | b; }'
 invalid:
   - 'int v = a << 24 + b;'
+  - 'int f(int n) { return 1 << n + 1; }'
+  - 'unsigned f(unsigned a, int i, int j) { return a << i + j; }'
+  - 'unsigned f(unsigned a, unsigned b, int n) { return (a << 8 + n) | b; }'

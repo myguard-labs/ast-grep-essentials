@@ -1,5 +1,11 @@
 id: c-shift-loop-strict-bound-skips-index
 valid:
   - 'for (i = st->num; i >= loc; i--) t[i] = f[i];'
+  - 'void f(int *t, int *f, int n, int loc) { int i; for (i = n; i > loc; i--) t[n - i] = f[i]; }'
+  - 'void f(int *t, int *f, int n, int loc) { int i; for (i = loc; i < n; i++) t[i] = f[i]; }'
+  - 'void f(int *a, int *b, int n, int pos) { int j; for (j = n; j >= pos; j--) a[j] = b[j]; }'
 invalid:
   - 'for (i = st->num; i > loc; i--) t[i] = f[i];'
+  - 'void f(int *a, int *b, int cnt, int pos) { int j; for (j = cnt; j > pos; j--) a[j] = b[j]; }'
+  - 'void f(int *out, int *in, int len, int idx) { int k; for (k = len - 1; k > idx; k--) out[k] = in[k]; }'
+  - 'void f(struct st *s, int *t, int *g, int loc) { int i; for (i = s->num; i > loc; i--) t[i] = g[i]; }'
