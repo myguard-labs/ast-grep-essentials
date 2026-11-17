@@ -8,20 +8,19 @@ message: >-
   database failures.
 note: >-
   Matches a literal $wpdb->query(...) call that is the whole expression
-  statement, optionally under the @ operator or parentheses. Stored, cast, compared or
+  statement, optionally under any nesting of the @ operator and parentheses. Stored, cast, compared or
   or/?:-handled results are not matched. It does not resolve the receiver's runtime type or check whether
   the result is handled elsewhere.
 rule:
   all:
     - kind: expression_statement
     - has:
-        any:
-          - pattern: '$wpdb->query($$$ARGS)'
-          - any:
+        pattern: '$wpdb->query($$$ARGS)'
+        stopBy:
+          not:
+            any:
               - kind: error_suppression_expression
               - kind: parenthesized_expression
-            has:
-              pattern: '$wpdb->query($$$ARGS)'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -36,4 +35,3 @@ metadata:
   owasp: 'A10:2025'
   todo_cases:
     - 'FN: $this->wpdb->query("DELETE FROM t"); and $GLOBALS[''wpdb'']->query(...) as a bare statement are not matched (literal $wpdb receiver only)'
-    - 'FN: (@$wpdb->query("DELETE FROM t")); (nested @ inside parentheses) as a bare statement is not matched (only one wrapper level is accepted)'
