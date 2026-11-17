@@ -1,8 +1,10 @@
 id: php-wpdb-prepare-in-list-percent-s
 snapshots:
-  $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->comments WHERE comment_ID IN(%s)", implode( ',', $ids ) ) );:
+  "$wpdb->query( $wpdb->prepare( \"DELETE FROM $wpdb->comments WHERE comment_ID IN(%s)\", implode( ',', $ids ) ) );":
     labels:
-    - source: $wpdb->prepare( "DELETE FROM $wpdb->comments WHERE comment_ID IN(%s)", implode( ',', $ids ) )
+    - source: >-
+        $wpdb->prepare( "DELETE FROM $wpdb->comments WHERE comment_ID IN(%s)", implode(
+        ',', $ids ) )
       style: primary
       start: 14
       end: 107
@@ -10,3 +12,37 @@ snapshots:
       style: secondary
       start: 28
       end: 107
+  "<?php $rows = $wpdb->get_col( $wpdb->prepare( \"SELECT ID FROM $wpdb->posts WHERE ID IN(%s)\", implode( ',', $ids ) ) );":
+    labels:
+    - source: >-
+        $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE ID IN(%s)", implode( ',',
+        $ids ) )
+      style: primary
+      start: 30
+      end: 115
+    - source: ( "SELECT ID FROM $wpdb->posts WHERE ID IN(%s)", implode( ',', $ids ) )
+      style: secondary
+      start: 44
+      end: 115
+  "<?php $wpdb->prepare( \"SELECT ID FROM $wpdb->posts WHERE ID IN(%s)\", $csv );":
+    labels:
+    - source: $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE ID IN(%s)", $csv )
+      style: primary
+      start: 6
+      end: 75
+    - source: ( "SELECT ID FROM $wpdb->posts WHERE ID IN(%s)", $csv )
+      style: secondary
+      start: 20
+      end: 75
+  "<?php $wpdb->prepare( 'SELECT ID FROM wp_posts WHERE ID IN(%s) AND post_type = %s', $csv, $t );":
+    labels:
+    - source: >-
+        $wpdb->prepare( 'SELECT ID FROM wp_posts WHERE ID IN(%s) AND post_type = %s',
+        $csv, $t )
+      style: primary
+      start: 6
+      end: 94
+    - source: ( 'SELECT ID FROM wp_posts WHERE ID IN(%s) AND post_type = %s', $csv, $t )
+      style: secondary
+      start: 20
+      end: 94

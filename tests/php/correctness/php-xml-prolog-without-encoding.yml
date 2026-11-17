@@ -1,5 +1,11 @@
 id: php-xml-prolog-without-encoding
 valid:
   - '$xml = ''<?xml version="1.0" encoding="UTF-8"?>''."\n".$body;'
+  - '<?php $xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" . $body;'
+  - '<?php $xml = ''<?xml version="1.0" encoding="ISO-8859-1"?>'' . $body;'
+  - '<?php $xml = ''<?xml version="1.1" encoding="UTF-8"?>'' . $body;'
 invalid:
   - '$xml = ''<?xml version="1.0"?>''."\n".$body;'
+  - '<?php echo ''<?xml version="1.0"?>'';'
+  - '<?php return array( ''<?xml version="1.0"?>'', $body );'
+  - '<?php $out = ''<?xml version="1.0"?>'' . "\n" . ''<root/>'';'

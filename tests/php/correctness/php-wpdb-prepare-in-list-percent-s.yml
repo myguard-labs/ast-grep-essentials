@@ -3,7 +3,13 @@ valid:
   - >-
     $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->comments WHERE comment_ID
     = %d", $id ) );
+  - '<?php $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE ID IN(%d,%d)", $a, $b );'
+  - '<?php $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = %s", $t );'
+  - '<?php $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE ID IN(" . $ph . ")", ...$ids );'
 invalid:
   - >-
     $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->comments WHERE comment_ID
     IN(%s)", implode( ',', $ids ) ) );
+  - '<?php $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE ID IN(%s)", $csv );'
+  - '<?php $wpdb->prepare( ''SELECT ID FROM wp_posts WHERE ID IN(%s) AND post_type = %s'', $csv, $t );'
+  - '<?php $rows = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE ID IN(%s)", implode( '','', $ids ) ) );'
