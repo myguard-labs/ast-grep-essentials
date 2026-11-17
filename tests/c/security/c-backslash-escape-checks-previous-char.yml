@@ -1,5 +1,9 @@
 id: c-backslash-escape-checks-previous-char
 valid:
   - 'int f(char *pp, char d) { return *pp == d && pp[-1] != ''x''; }'
+  - 'int f(char *pp) { return pp[-1] != ''/''; }'
+  - 'int f(char *pp) { return pp[0] != ''\\''; }'
 invalid:
   - 'int f(char *pp, char d) { return *pp == d && pp[-1] != ''\\''; }'
+  - 'int f(char *s) { while (*s) { if (s[-1] != ''\\'') return 1; s++; } return 0; }'
+  - 'int f(buf_t *b) { return b->ptr[-1] != ''\\''; }'

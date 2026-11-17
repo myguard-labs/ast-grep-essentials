@@ -1,5 +1,9 @@
 id: c-apr-userdata-get-wrong-pointer-type
 valid:
   - 'void *data; apr_pool_userdata_get(&data, key, pool);'
+  - 'char *data; apr_pool_userdata_set(data, key, NULL, pool);'
+  - 'void *data; char *name; apr_pool_userdata_get(&data, key, pool);'
 invalid:
   - 'char *data; apr_pool_userdata_get(&data, key, pool);'
+  - 'struct foo *ctx; apr_pool_userdata_get(&ctx, key, pool);'
+  - 'int f(void) { apr_table_t *t; apr_pool_userdata_get(&t, k, p); return 0; }'

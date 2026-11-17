@@ -5,9 +5,13 @@ valid:
     if (ret != APR_SUCCESS) {
         return;
     }
+  - 'if (ap_open(&f, name, flags, perm, p) != APR_SUCCESS) { return; }'
+  - 'int g(void) { return ap_open(&f, name, flags, perm, p); }'
 invalid:
   - |-
     ap_open(&tempfile, ap_lock_fname, APR_WRITE, APR_UREAD|APR_UWRITE, p);
     if (!tempfile) {
         return;
     }
+  - 'void g(void) { ap_open(&f, name, flags, perm, p); }'
+  - 'void g(void) { if (x) { ap_open(&f, name, 0, 0, p); } }'

@@ -1,5 +1,25 @@
 id: c-allocator-mismatch-free-estrndup
 snapshots:
+  char *p = emalloc(n); free(p);:
+    labels:
+    - source: free(p);
+      style: primary
+      start: 22
+      end: 30
+    - source: char *p = emalloc(n);
+      style: secondary
+      start: 0
+      end: 21
+  char *p = estrdup(s); use(p); free(p);:
+    labels:
+    - source: free(p);
+      style: primary
+      start: 30
+      end: 38
+    - source: char *p = estrdup(s);
+      style: secondary
+      start: 0
+      end: 21
   "char *p = estrndup(s, n); free(p);":
     labels:
     - source: free(p);

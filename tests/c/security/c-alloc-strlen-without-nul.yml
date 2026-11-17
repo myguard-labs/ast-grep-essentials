@@ -1,5 +1,10 @@
 id: c-alloc-strlen-without-nul
 valid:
   - 'char *b = malloc(strlen(s) + 1); strcpy(b, s);'
+  - 'char *b = malloc(strlen(a) + strlen(c) + 1);'
+  - 'char *b = calloc(strlen(s) + 1, 1);'
 invalid:
   - 'char *b = malloc(strlen(s)); strcpy(b, s);'
+  - 'char *b = malloc(strlen(argv[1]));'
+  - 'char *b = (char *)malloc(strlen(cfg->name));'
+  - 'char *dup(const char *s) { return malloc(strlen(s)); }'

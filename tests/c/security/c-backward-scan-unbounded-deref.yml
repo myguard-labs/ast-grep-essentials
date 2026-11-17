@@ -3,7 +3,12 @@ valid:
   - >-
     void f(char *s, size_t n) { char *end = s + n - 1; while (end > s && *end ==
     ' ') end--; }
+  - 'void f(char *p) { while (*p == '' '') p++; }'
+  - 'void f(char *p, size_t n) { while (n > 0 && *p == '' '') { p--; n--; } }'
 invalid:
   - >-
     void f(char *s, size_t n) { char *end = s + n - 1; while (*end == ' ')
     end--; }
+  - 'void f(char *p) { while (*p == '' '') p--; }'
+  - 'void f(char *p) { while (*p && *p != ''/'') p--; }'
+  - 'void f(char *p) { while (isspace(*p)) p--; }'

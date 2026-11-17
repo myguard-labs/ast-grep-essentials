@@ -3,7 +3,11 @@ valid:
   - >-
     int g(void); int f(void) { int res; if ((res = g()) != 0) { return 1; }
     return 0; }
+  - 'int g(void); int f(void) { int res; if (res == g()) { return 1; } return 0; }'
+  - 'int g(void); int f(void) { int res; res = g() != 0; return res; }'
 invalid:
   - >-
     int g(void); int f(void) { int res; if (res = g() != 0) { return 1; } return
     0; }
+  - 'int f(void) { int n; if (n = read(fd, b, 4) == -1) { return 1; } return 0; }'
+  - 'int f(void) { if (a) { return 0; } else if (rc = strcmp(a, b) == 0) { return 1; } return 2; }'

@@ -1,8 +1,20 @@
 id: c-and-or-precedence-guard-bypass
 snapshots:
-  int f(char *s, size_t n) { return n > 1 && s[n - 1] == 'a' || s[n - 1] == 'b'; }:
+  "int f(char *p) { if (p && p[0] == 'a' || p[1] == 'b') return 1; return 0; }":
+    labels:
+    - source: p && p[0] == 'a' || p[1] == 'b'
+      style: primary
+      start: 21
+      end: 52
+  "int f(char *s, size_t n) { return n > 1 && s[n - 1] == 'a' || s[n - 1] == 'b'; }":
     labels:
     - source: n > 1 && s[n - 1] == 'a' || s[n - 1] == 'b'
       style: primary
       start: 34
       end: 77
+  int r = a && b || c;:
+    labels:
+    - source: a && b || c
+      style: primary
+      start: 8
+      end: 19

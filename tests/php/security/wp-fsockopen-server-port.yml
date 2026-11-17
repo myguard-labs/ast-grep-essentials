@@ -1,7 +1,12 @@
 id: wp-fsockopen-server-port
 valid:
   - '$argyle = @fsockopen( $parts[''host''], $port, $errno, $errstr, 0.01 );'
+  - '$s = fsockopen( $host, absint( $cfg[''port''] ), $errno, $errstr, 5 );'
+  - '$s = fsockopen( ''tls://example.com'', 443, $errno, $errstr, 5 );'
 invalid:
   - >-
     $argyle = @fsockopen( $parts['host'], $_SERVER['SERVER_PORT'], $errno,
     $errstr, 0.01 );
+  - '$s = fsockopen( $host, $_SERVER["SERVER_PORT"], $errno, $errstr, 5 );'
+  - '$s = fsockopen( ''ssl://'' . $h, $_SERVER[''SERVER_PORT''], $e, $s, 5 );'
+  - 'function f() { return fsockopen( $host, $_SERVER[''SERVER_PORT''], $errno, $errstr ); }'
