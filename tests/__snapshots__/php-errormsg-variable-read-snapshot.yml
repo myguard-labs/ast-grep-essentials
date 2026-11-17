@@ -1,6 +1,24 @@
 id: php-errormsg-variable-read
 snapshots:
-  function f($file) { $fp = @fopen($file, 'r'); if (!is_resource($fp)) { return $php_errormsg; } return $fp; }:
+  "<?php $log[] = \"failed: \" . $php_errormsg;":
+    labels:
+    - source: $php_errormsg
+      style: primary
+      start: 28
+      end: 41
+  <?php echo $php_errormsg;:
+    labels:
+    - source: $php_errormsg
+      style: primary
+      start: 11
+      end: 24
+  "<?php if (!$fp) { throw new Exception($php_errormsg); }":
+    labels:
+    - source: $php_errormsg
+      style: primary
+      start: 38
+      end: 51
+  "function f($file) { $fp = @fopen($file, 'r'); if (!is_resource($fp)) { return $php_errormsg; } return $fp; }":
     labels:
     - source: $php_errormsg
       style: primary

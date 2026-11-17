@@ -1,7 +1,13 @@
 id: php-escaper-result-discarded
 valid:
   - '<?php echo esc_url( the_guid() ); ?>'
+  - '<?php $x = esc_html($a);'
+  - '<?php function f($u){ return esc_url($u); }'
+  - '<?php print esc_html($a);'
 invalid:
   - '<?php esc_url( the_guid() ); ?>'
   - '<?php esc_html( $a );'
   - '<?php esc_attr( $a );'
+  - '<?php esc_url($u, array("https"));'
+  - '<?php if ($c) { esc_attr($a); }'
+  - '<?php function f($a){ esc_html($a); return 1; }'

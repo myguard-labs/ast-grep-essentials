@@ -3,7 +3,13 @@ valid:
   - >-
     <?php if ( file_exists( $file ) ) { $styles[] = array( 'css' =>
     file_get_contents( $file ) ); } ?>
+  - '<?php $p = get_theme_file_path("a.css"); if (file_exists($p)) { $c = file_get_contents($p); }'
+  - '<?php $p = get_theme_file_path("a.css"); if (is_readable($p)) { $c = file_get_contents($p); }'
+  - '<?php $c = file_get_contents($url);'
 invalid:
   - >-
     <?php $styles[] = array( 'css' => file_get_contents( get_theme_file_path(
     $style ) ) ); ?>
+  - '<?php $c = file_get_contents(get_theme_file_path("a.css"));'
+  - '<?php function f(){ return file_get_contents(get_theme_file_path()); }'
+  - '<?php echo file_get_contents( get_theme_file_path( "assets/" . $n ) );'

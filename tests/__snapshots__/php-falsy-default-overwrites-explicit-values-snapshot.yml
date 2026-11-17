@@ -1,11 +1,26 @@
 id: php-falsy-default-overwrites-explicit-values
 snapshots:
-  ? |-
-    <?php
-    $r = array();
-    if ( !$r['optionall'] ) $r['optionall'] = 1;
-  : labels:
+  "<?php\n$r = array();\nif ( !$r['optionall'] ) $r['optionall'] = 1;":
+    labels:
     - source: if ( !$r['optionall'] ) $r['optionall'] = 1;
       style: primary
       start: 20
       end: 64
+  "<?php function f($o){ if ( ! $o[\"limit\"] ) $o[\"limit\"] = 20; return $o; }":
+    labels:
+    - source: if ( ! $o["limit"] ) $o["limit"] = 20;
+      style: primary
+      start: 22
+      end: 60
+  "<?php if (!$a[$k]) $a[$k] = 0;":
+    labels:
+    - source: if (!$a[$k]) $a[$k] = 0;
+      style: primary
+      start: 6
+      end: 30
+  "<?php if (!$opts[\"n\"]) $opts[\"n\"] = 10;":
+    labels:
+    - source: if (!$opts["n"]) $opts["n"] = 10;
+      style: primary
+      start: 6
+      end: 39

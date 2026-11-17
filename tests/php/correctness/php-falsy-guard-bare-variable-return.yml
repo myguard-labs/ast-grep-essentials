@@ -1,5 +1,11 @@
 id: php-falsy-guard-bare-variable-return
 valid:
   - '<?php function f( $key ) { if ( '''' === $key ) return false; }'
+  - '<?php function f($k){ if (null === $k) return false; }'
+  - '<?php function f($k){ if ($k === false) return false; }'
+  - '<?php function f($k){ if (!$k) { log_it(); } return 1; }'
 invalid:
   - '<?php function f( $key ) { if ( ! $key ) return false; }'
+  - '<?php function f($k){ if ( ! $k ) return null; }'
+  - '<?php function f($id){ if (!$id) return 0; }'
+  - '<?php function f($n){ if ( ! $n ) return ""; }'

@@ -4,8 +4,14 @@ valid:
     <?php
     $r = array();
     if ( !isset( $r['optionall'] ) ) $r['optionall'] = 1;
+  - '<?php if (!isset($o["n"])) $o["n"] = 10;'
+  - '<?php if (!array_key_exists("n", $o)) $o["n"] = 10;'
+  - '<?php $o["n"] ??= 10;'
 invalid:
   - |-
     <?php
     $r = array();
     if ( !$r['optionall'] ) $r['optionall'] = 1;
+  - '<?php if (!$opts["n"]) $opts["n"] = 10;'
+  - '<?php if (!$a[$k]) $a[$k] = 0;'
+  - '<?php function f($o){ if ( ! $o["limit"] ) $o["limit"] = 20; return $o; }'

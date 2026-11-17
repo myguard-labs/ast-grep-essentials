@@ -3,7 +3,13 @@ valid:
   - |-
     <?php
     $out = Parser::parse( $input );
+  - '<?php $v = @fopen($f, "r");'
+  - '<?php try { $v = Parser::parse($input); } catch (Exception $e) { $v = null; }'
+  - '<?php $v = $obj->parse($input);'
 invalid:
   - |-
     <?php
     $out = @Parser::parse( $input );
+  - '<?php @Parser::parse($a, $b);'
+  - '<?php $v = @\App\Parser::parse($input);'
+  - '<?php if (!@Cache::has($k)) { $x = 1; }'
