@@ -1,7 +1,14 @@
 id: js-jquery-context-ignored-jquery-selector
 valid:
   - '$( ''.main-navigation'', this ).toggleClass( ''toggled-on'' );'
+  - "$( '.a', el.parent() ).hide();"
+  - "$( ctx.find( '.a' ) ).hide();"
+  - "$( el.children() ).show();"
 invalid:
   - >-
     $( siteNavigation.closest( '.main-navigation' ), this ).toggleClass(
     'toggled-on' );
+  - "$( a.b(), c ).hide();"
+  - "$( this.parent(), document ).hide();"
+  - "$( a.find( 'x' ), ctx.b ).show();"
+  - "$( a.b.c( 1, 2 ), ctx );"

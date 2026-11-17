@@ -1,5 +1,12 @@
 id: js-global-regex-test-stateful
 valid:
   - 'const re = /a/; re.test(s);'
+  - "const re = /a/i; re.test(s);"
+  - "const re = new RegExp('a', 'g'); s.replace(re, 'b');"
+  - "/a/g.test(s);"
 invalid:
   - 'const re = /a/g; re.test(s);'
+  - "let re = /a/gi; re.test(s);"
+  - "var re = /a/g; if (re.test(s)) { run(); }"
+  - "const re = /a/g; function f(x) { return re.test(x); }"
+  - "const re = /a/gm; while (re.test(s)) { n++; }"
