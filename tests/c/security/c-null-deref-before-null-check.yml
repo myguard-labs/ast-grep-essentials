@@ -23,6 +23,8 @@ valid:
     int f(struct k *key) { int n; if (!key) goto out; n = key->len; if (key && key->ok) g(); out: return 0; }
   - |-
     int f(struct k *key) { int n; if (!key) { log(); goto out; } n = key->len; if (key && key->ok) g(); out: return 0; }
+  - |-
+    int f(struct k *key) { int n; retry: key = next(); if (!key) goto retry; n = key->len; if (key && key->ok) g(); return n; }
 
 invalid:
   - |-

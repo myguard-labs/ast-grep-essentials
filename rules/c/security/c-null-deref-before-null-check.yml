@@ -62,18 +62,26 @@ rule:
                                   - kind: compound_statement
                                   - has:
                                       pattern: 'goto $L;'
-                        - precedes:
-                            stopBy: end
-                            all:
-                              - kind: labeled_statement
-                              - has:
-                                  field: label
-                                  pattern: '$L'
-                              - follows:
-                                  stopBy: end
-                                  has:
-                                    pattern: '$X->$K'
-                                    stopBy: end
+                        - any:
+                            - precedes:
+                                stopBy: end
+                                all:
+                                  - kind: labeled_statement
+                                  - has:
+                                      field: label
+                                      pattern: '$L'
+                                  - follows:
+                                      stopBy: end
+                                      has:
+                                        pattern: '$X->$K'
+                                        stopBy: end
+                            - follows:
+                                stopBy: end
+                                all:
+                                  - kind: labeled_statement
+                                  - has:
+                                      field: label
+                                      pattern: '$L'
         - follows:
             stopBy: end
             all:
