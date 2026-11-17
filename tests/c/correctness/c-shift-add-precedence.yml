@@ -1,8 +1,8 @@
 id: c-shift-add-precedence
 valid:
   - 'int v = a << (24 + b);'
-  - 'int f(int a, int b) { return a << (24 + b); }'
-  - 'int f(int a, int b) { return (a << 24) + b; }'
+  - 'unsigned f(unsigned a, unsigned b) { return a << (24 + (b & 7)); }'
+  - 'unsigned f(unsigned a, unsigned b) { return (a << 24) + (b & 0xff); }'
   - 'unsigned f(unsigned a, unsigned b) { return (a << 8) | b; }'
 invalid:
   - 'int v = a << 24 + b;'
