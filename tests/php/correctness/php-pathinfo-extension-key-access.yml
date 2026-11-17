@@ -7,6 +7,14 @@ valid:
     <?php $n = pathinfo($f)['filename'];
   - |-
     <?php $ext = $info['extension'];
+  - |-
+    <?php $ext = pathinfo( $f )['extension'] ?? '';
+  - |-
+    <?php $ext = (pathinfo( $f )['extension']) ?? '';
+  - |-
+    <?php $ok = isset( pathinfo( $f )['extension'] );
+  - |-
+    <?php $ok = empty( pathinfo( $f )['extension'] );
 invalid:
   - '<?php $ext = pathinfo($filename)[''extension''];'
   - |-
@@ -15,3 +23,13 @@ invalid:
     <?php $ext = strtolower(pathinfo($name)['extension']);
   - |-
     <?php $ext = pathinfo($f, PATHINFO_DIRNAME)['extension'];
+  - |-
+    <?php $x = $d ?? pathinfo( $f )['extension'];
+  - |-
+    <?php $x = strtolower( pathinfo( $f )['extension'] ) ?? '';
+  - |-
+    <?php $x = pathinfo( $f )['extension'] ?: '';
+  - |-
+    <?php $x = strlen( pathinfo( $f )['extension'] );
+  - |-
+    <?php if ( isset( pathinfo( $f )['extension'] ) ) { $e = pathinfo( $g )['extension']; }
