@@ -19,7 +19,9 @@ rule:
         field: body
         has:
           stopBy: end
-          pattern: '$NAME($$$ARGS)'
+          any:
+            - pattern: '$NAME($$$ARGS)'
+            - pattern: '\$NAME($$$ARGS)'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -29,5 +31,5 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'Observed miss: a leading-backslash call (`\f()`) and a differently-cased call (`F()`) to the checked function are not flagged.'
+    - 'Observed miss: a differently-cased call (`F()`) to the checked function is not flagged (PHP function names are case-insensitive; the match is textual).'
     - 'Observed miss: a brace-less body (`if ( ! is_callable(''f'') ) $m = f();`) and a double-quoted argument (`is_callable("f")`) are not flagged.'
