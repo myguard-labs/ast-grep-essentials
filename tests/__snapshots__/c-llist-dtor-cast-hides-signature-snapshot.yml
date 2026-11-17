@@ -1,10 +1,22 @@
 id: c-llist-dtor-cast-hides-signature
 snapshots:
-  ? |-
-    static void dtor(void *p) { (void)p; }
-    void f(zend_llist *l) { zend_llist_init(l, sizeof(int), (llist_dtor_func_t) dtor, 0); }
-  : labels:
+  "static void dtor(void *p) { (void)p; }\nvoid f(zend_llist *l) { zend_llist_init(l, sizeof(int), (llist_dtor_func_t) dtor, 0); }":
+    labels:
     - source: zend_llist_init(l, sizeof(int), (llist_dtor_func_t) dtor, 0)
       style: primary
       start: 63
       end: 123
+  "void f(zend_llist *l) { zend_llist_init(l, sizeof(zend_string *), (llist_dtor_func_t) zend_string_release, 0); }":
+    labels:
+    - source: >-
+        zend_llist_init(l, sizeof(zend_string *), (llist_dtor_func_t)
+        zend_string_release, 0)
+      style: primary
+      start: 24
+      end: 109
+  "void f(zend_llist *l) { zend_llist_init(l, sizeof(zval *), (llist_dtor_func_t) zval_ptr_dtor, 0); }":
+    labels:
+    - source: zend_llist_init(l, sizeof(zval *), (llist_dtor_func_t) zval_ptr_dtor, 0)
+      style: primary
+      start: 24
+      end: 96

@@ -1,5 +1,55 @@
 id: c-literal-return-bypasses-label-cleanup
 snapshots:
+  "char *dup_upper(const char *s, int bad) {\n    char *b = malloc(strlen(s) + 1);\n    char *tmp = malloc(8);\n    if (bad) { return NULL; }\n    strcpy(b, s);\nout:\n    free(tmp);\n    return b;\n}":
+    labels:
+    - source: return NULL;
+      style: primary
+      start: 121
+      end: 133
+    - source: |-
+        out:
+            free(tmp);
+      style: secondary
+      start: 154
+      end: 173
+    - source: |-
+        char *dup_upper(const char *s, int bad) {
+            char *b = malloc(strlen(s) + 1);
+            char *tmp = malloc(8);
+            if (bad) { return NULL; }
+            strcpy(b, s);
+        out:
+            free(tmp);
+            return b;
+        }
+      style: secondary
+      start: 0
+      end: 189
+  "int read_first(const char *p) {\n    int rc = -1;\n    FILE *f = fopen(p, \"r\");\n    if (f && fgetc(f) < 0) return 0;\n    if (f) rc = 1;\nout:\n    if (f) fclose(f);\n    return rc;\n}":
+    labels:
+    - source: return 0;
+      style: primary
+      start: 105
+      end: 114
+    - source: |-
+        out:
+            if (f) fclose(f);
+      style: secondary
+      start: 134
+      end: 160
+    - source: |-
+        int read_first(const char *p) {
+            int rc = -1;
+            FILE *f = fopen(p, "r");
+            if (f && fgetc(f) < 0) return 0;
+            if (f) rc = 1;
+        out:
+            if (f) fclose(f);
+            return rc;
+        }
+      style: secondary
+      start: 0
+      end: 177
   "static int f(int x) { if (x) { return 0; } err: return 0; }":
     labels:
     - source: return 0;

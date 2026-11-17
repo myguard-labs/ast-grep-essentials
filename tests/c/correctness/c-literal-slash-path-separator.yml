@@ -1,5 +1,9 @@
 id: c-literal-slash-path-separator
 valid:
   - 'buf[len] = PHP_DIR_SEPARATOR;'
+  - 'void join(char *buf, size_t len) { buf[len] = ''\0''; }'
+  - 'void join(char *buf, size_t len) { buf[len] = PHP_DIR_SEPARATOR; buf[len + 1] = 0; }'
 invalid:
   - 'buf[len] = ''/'';'
+  - 'void join(char *path, int n) { path[n++] = ''/''; path[n] = ''\0''; }'
+  - 'void join(char *buf, size_t len) { buf[len - 1] = ''/''; }'

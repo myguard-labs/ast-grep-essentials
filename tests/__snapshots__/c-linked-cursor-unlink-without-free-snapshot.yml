@@ -1,16 +1,20 @@
 id: c-linked-cursor-unlink-without-free
 snapshots:
-  ? |-
-    void scan(bucket **b, int key) {
-     while (*b) {
-     if ((*b)->key == key) {
-     return;
-     }
-     *b = (*b)->next;
-     }
-    }
-  : labels:
-    - source: '*b = (*b)->next;'
+  "void drop_all(node **pp) {\n    while (*pp) {\n        *pp = (*pp)->next;\n    }\n}":
+    labels:
+    - source: "*pp = (*pp)->next;"
+      style: primary
+      start: 53
+      end: 71
+  "void prune(entry **slot) {\n    while (*slot) {\n        if ((*slot)->dead) {\n            *slot = (*slot)->next;\n        } else {\n            slot = &(*slot)->next;\n        }\n    }\n}":
+    labels:
+    - source: "*slot = (*slot)->next;"
+      style: primary
+      start: 88
+      end: 110
+  "void scan(bucket **b, int key) {\n while (*b) {\n if ((*b)->key == key) {\n return;\n }\n *b = (*b)->next;\n }\n}":
+    labels:
+    - source: "*b = (*b)->next;"
       style: primary
       start: 85
       end: 101
