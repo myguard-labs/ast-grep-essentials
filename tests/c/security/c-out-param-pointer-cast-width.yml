@@ -1,5 +1,11 @@
 id: c-out-param-pointer-cast-width
 valid:
   - 'unsigned int siglen; ... EVP_SignFinal(md, sig, &siglen, key);'
+  - 'unsigned int siglen = 0; EVP_SignFinal(md, sig, &siglen, key);'
+  - 'unsigned long outl; process(ctx, (unsigned long *)&outl);'
+  - 'unsigned int siglen; unsigned int *p = &siglen; EVP_SignFinal(md, sig, p, key);'
 invalid:
   - 'size_t siglen; ... EVP_SignFinal(md, sig, (unsigned int *)&siglen, key);'
+  - 'long written; BN_bn2binpad(a, out, len, (unsigned int *)&written);'
+  - 'size_t outl; EVP_EncryptUpdate(ctx, out, (unsigned int *)&outl, in, inl);'
+  - 'size_t n; fill(buf, (unsigned int*) &n);'

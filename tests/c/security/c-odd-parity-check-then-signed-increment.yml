@@ -3,5 +3,11 @@ valid:
   - >-
     int size = read_size(); if ((size & 1) == 1) { if (size == INT_MAX) return
     NULL; size++; }
+  - 'int size = read_size(); if ((size & 1) == 0) { size++; }'
+  - 'int size = read_size(); if ((size & 1) == 1) { size--; }'
+  - 'int size = read_size(); if ((size & 1) == 1) { if (size < INT_MAX) size++; }'
 invalid:
   - 'int size = read_size(); if ((size & 1) == 1) { size++; }'
+  - 'int size = read_size(); if ((size & 1) == 1) size++;'
+  - 'int size = read_size(); if ((size & 1) == 1) { log_size(size); size++; }'
+  - 'struct st *s = get_state(); if ((s->n & 1) == 1) { s->n++; }'

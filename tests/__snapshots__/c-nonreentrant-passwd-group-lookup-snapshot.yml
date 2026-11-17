@@ -1,5 +1,25 @@
 id: c-nonreentrant-passwd-group-lookup
 snapshots:
+  "if (getpwnam(user) == NULL) { return -1; }":
+    labels:
+    - source: getpwnam(user)
+      style: primary
+      start: 4
+      end: 18
+    - source: getpwnam
+      style: secondary
+      start: 4
+      end: 12
+  struct group *gr = getgrnam(name); gid = gr->gr_gid;:
+    labels:
+    - source: getgrnam(name)
+      style: primary
+      start: 19
+      end: 33
+    - source: getgrnam
+      style: secondary
+      start: 19
+      end: 27
   struct passwd *pw = getpwnam(name); uid = pw->pw_uid;:
     labels:
     - source: getpwnam(name)
@@ -10,3 +30,13 @@ snapshots:
       style: secondary
       start: 20
       end: 28
+  uid_t uid = getpwnam("nobody")->pw_uid;:
+    labels:
+    - source: getpwnam("nobody")
+      style: primary
+      start: 12
+      end: 30
+    - source: getpwnam
+      style: secondary
+      start: 12
+      end: 20

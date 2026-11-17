@@ -1,8 +1,26 @@
 id: c-openssl-sslv3-method-unguarded
 snapshots:
+  "#ifdef USE_LEGACY_TLS\nvoid f(void) { SSL_METHOD *m = SSLv3_client_method(); (void)m; }\n#endif":
+    labels:
+    - source: SSLv3_client_method()
+      style: primary
+      start: 53
+      end: 74
+  "void f(void) { SSL_CTX *c = SSL_CTX_new(SSLv3_client_method()); (void)c; }":
+    labels:
+    - source: SSLv3_client_method()
+      style: primary
+      start: 40
+      end: 61
   "void f(void) { SSL_METHOD *m = SSLv3_client_method(); (void)m; }":
     labels:
     - source: SSLv3_client_method()
+      style: primary
+      start: 31
+      end: 52
+  "void f(void) { SSL_METHOD *m = SSLv3_server_method(); (void)m; }":
+    labels:
+    - source: SSLv3_server_method()
       style: primary
       start: 31
       end: 52
