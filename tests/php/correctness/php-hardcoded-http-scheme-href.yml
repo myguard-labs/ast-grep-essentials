@@ -1,5 +1,11 @@
 id: php-hardcoded-http-scheme-href
 valid:
   - '<?php $link = sprintf( ''<a href="https://%1$s">%1$s</a>'', $domain );'
+  - '<?php $l = sprintf( ''<a href="//%1$s">%1$s</a>'', $domain );'
+  - '<?php $l = sprintf( ''<a href="%1$s">x</a>'', esc_url( $url ) );'
+  - '<?php $l = sprintf( ''<a href="/%s">x</a>'', $path );'
 invalid:
   - '<?php $link = sprintf( ''<a href="http://%1$s">%1$s</a>'', $domain );'
+  - '<?php $l = sprintf( ''<a href="http://%1$s/%2$s">%3$s</a>'', $d, $p, $t );'
+  - '<?php function f( $d ) { return sprintf( ''<li><a href="http://%s">x</a></li>'', $d ); }'
+  - '<?php $l = sprintf( ''<a title="x" href="http://%s" rel="nofollow">x</a>'', esc_attr( $d ) );'

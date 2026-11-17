@@ -3,7 +3,13 @@ valid:
   - |-
     <?php
     $url = get_site_url() . '/' . $path;
+  - '<?php $u = ''https://'' . $host;'
+  - '<?php $u = $scheme . ''://'' . $host;'
+  - '<?php if ( str_starts_with( $u, ''http://'' ) ) { $u = substr( $u, 7 ); }'
 invalid:
   - |-
     <?php
     $url = 'http://' . $host . $path;
+  - '<?php $u = ''http://'' . $h . ''/?a='' . $q;'
+  - '<?php $u = ''http://'' . get_option( ''siteurl'' ) . ''/x'';'
+  - '<?php return ''http://'' . $_SERVER[''HTTP_HOST''];'

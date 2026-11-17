@@ -1,5 +1,11 @@
 id: php-home-url-concat-literal
 valid:
   - '$file = home_url( ''/'' );'
+  - '<?php $f = home_url( ''/x'' );'
+  - '<?php $f = wp_parse_url( home_url(), PHP_URL_HOST );'
+  - '<?php $f = home_url( ''/a/'', ''https'' );'
 invalid:
   - '$file = home_url() . ''/'';'
+  - '<?php $f = home_url() . $p;'
+  - '<?php $f = esc_url( home_url() . ''/x'' );'
+  - '<?php $f = home_url() . ''/a'' . $b;'
