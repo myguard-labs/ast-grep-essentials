@@ -1,5 +1,11 @@
 id: c-ossl-param-len-key-utf8-type
 valid:
   - 'OSSL_PARAM_int(OSSL_PKEY_PARAM_DH_PRIV_LEN, NULL)'
+  - 'void f(void) { OSSL_PARAM p = OSSL_PARAM_utf8_string(OSSL_PKEY_PARAM_GROUP_NAME, buf, 0); }'
+  - 'void f(void) { OSSL_PARAM p = OSSL_PARAM_size_t(OSSL_PKEY_PARAM_DH_PRIV_LEN, &len); }'
+  - 'void f(void) { OSSL_PARAM p = OSSL_PARAM_uint(OSSL_PKEY_PARAM_DH_PRIV_LEN, &n); }'
 invalid:
   - 'OSSL_PARAM_utf8_string(OSSL_PKEY_PARAM_DH_PRIV_LEN, NULL, 0)'
+  - 'void f(void) { OSSL_PARAM p = OSSL_PARAM_utf8_string(OSSL_PKEY_PARAM_DH_PRIV_LEN, buf, 0); }'
+  - 'void f(void) { OSSL_PARAM p[2]; p[0] = OSSL_PARAM_utf8_string(OSSL_PKEY_PARAM_RSA_BITS_LEN, buf, sizeof(buf)); p[1] = OSSL_PARAM_END; }'
+  - 'void f(void) { OSSL_PARAM p = OSSL_PARAM_utf8_string(OSSL_KDF_PARAM_PKCS5_LEN, buf, 0); }'

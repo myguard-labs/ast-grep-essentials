@@ -3,7 +3,11 @@ valid:
   - >-
     configfile_t *fp; apr_status_t rv; rv = ap_pcfg_openfile(&fp, p, filename);
     if (rv != APR_SUCCESS) { return NULL; }
+  - 'static int f(apr_pool_t *p, const char *filename) { configfile_t *fp; apr_status_t rv = ap_pcfg_openfile(&fp, p, filename); if (rv != APR_SUCCESS) { return rv; } ap_cfg_closefile(fp); return APR_SUCCESS; }'
+  - 'static int f(struct ctx *c, server_rec *s, const char *filename) { apr_status_t rv; rv = ap_pcfg_openfile(&c->fp, s->process->pool, filename); if (rv != APR_SUCCESS) { ap_log_error(APLOG_MARK, APLOG_ERR, rv, s, "cannot open %s", filename); return rv; } ap_cfg_closefile(c->fp); return APR_SUCCESS; }'
 invalid:
   - >-
     configfile_t *fp; fp = ap_pcfg_openfile(p, filename); if (!fp) { return
     NULL; }
+  - 'static int f(server_rec *s, apr_pool_t *p, const char *filename) { configfile_t *fp; if ((fp = ap_pcfg_openfile(p, filename)) == NULL) { return -1; } ap_cfg_closefile(fp); return 0; }'
+  - 'static int f(struct ctx *c, apr_pool_t *p, const char *filename) { c->fp = ap_pcfg_openfile(p, filename); if (c->fp == NULL) { return -1; } return 0; }'

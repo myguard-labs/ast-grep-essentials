@@ -3,7 +3,27 @@ valid:
   - |-
     #if defined(ALIGNED) && ALIGNED != 1
     #endif
+  - |-
+    #if !defined(ALIGNED) && OTHER != 1
+    #endif
+  - |-
+    #if !defined(ALIGNED) || ALIGNED != 1
+    #endif
+  - |-
+    #if !defined(ALIGNED)
+    #endif
 invalid:
   - |-
     #if !defined(ALIGNED) && ALIGNED != 1
+    #endif
+  - |-
+    #if !defined(ALIGNED) && ALIGNED != 1 && defined(OTHER)
+    #endif
+  - |-
+    #if !defined(ALIGNED) && ALIGNED != 1
+    int x;
+    #endif
+  - |-
+    #if 0
+    #elif !defined(ALIGNED) && ALIGNED != 1
     #endif
