@@ -1,5 +1,11 @@
 id: c-byte-shift-by-one-length-decode
 valid:
   - 'int g(const unsigned char *p) { int len; len = (*(p++) << 8); return len; }'
+  - "int g(const unsigned char *p) { int len; len = (*(p) << 8); len |= *(p + 1); return len; }"
+  - "int g(const unsigned char *p) { int len; len = *(p++); return len; }"
+  - "int g(const unsigned char *p) { int len; len = (p[0] << 8) + p[1]; return len; }"
 invalid:
   - 'int g(const unsigned char *p) { int len; len = (*(p++) << 1); return len; }'
+  - "int g(const unsigned char *p) { int len; len = (*(p) << 1); return len; }"
+  - "int g(const unsigned char *p) { int len; len = (*(p + 2) << 1); return len; }"
+  - "int g(const unsigned char *p) { int len; len = (*(q->buf) << 1); return len; }"

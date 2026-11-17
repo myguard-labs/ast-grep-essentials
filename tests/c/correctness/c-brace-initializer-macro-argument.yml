@@ -1,5 +1,12 @@
 id: c-brace-initializer-macro-argument
 valid:
   - 'add_seeds_stringlist("random-device", DEVRANDOM);'
+  - "void f(void) { int a[] = { 1, 2 }; use(a); }"
+  - "void f(void) { struct pt v = { 1, 2 }; draw(1, v); }"
+  - "void f(void) { log_msg(1, \"{ a, b }\"); }"
+  - "void f(void) { check(1, pair(1, 2)); }"
 invalid:
   - 'add_seeds_stringlist("random-device", { DEVRANDOM, NULL });'
+  - "void f(void) { TEST_ARRAY(name, 3, { 1, 2, 3 }); }"
+  - "void f(void) { REGISTER(tbl, { A, B }); }"
+  - "void f(void) { FILL(x, { 1, 2 }); }"

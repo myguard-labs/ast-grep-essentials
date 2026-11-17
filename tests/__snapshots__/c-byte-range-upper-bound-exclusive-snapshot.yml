@@ -1,8 +1,26 @@
 id: c-byte-range-upper-bound-exclusive
 snapshots:
-  int f(int c) { return c >= 0x80 && c < 0xff; }:
+  "int f(int c) { if (c < 0xff) { return 1; } return 0; }":
+    labels:
+    - source: c < 0xff
+      style: primary
+      start: 19
+      end: 27
+  "int f(int c) { return c >= 0x80 && c < 0xff; }":
     labels:
     - source: c < 0xff
       style: primary
       start: 35
       end: 43
+  "int f(int n) { int i = 0; while (i < 0xff) { i++; } return i; }":
+    labels:
+    - source: i < 0xff
+      style: primary
+      start: 33
+      end: 41
+  "int f(unsigned char *s, int i) { return s[i] < 0xff; }":
+    labels:
+    - source: s[i] < 0xff
+      style: primary
+      start: 40
+      end: 51

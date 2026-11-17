@@ -6,6 +6,9 @@ valid:
         return 0;
     }
     use(n);
+  - "int f(void) { rv = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);\n if (rv != APR_SUCCESS || n == 0) { return 0; }\n use(n); return 1; }"
+  - "int f(void) { rv = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);\n if (!APR_STATUS_IS_SUCCESS(rv) || !n) { return 0; }\n use(n); return 1; }"
+  - "int f(void) { rv = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);\n if (!APR_STATUS_IS_SUCCESS(rv) || n < 1) { return 0; }\n use(n); return 1; }"
 invalid:
   - |-
     rv = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);
@@ -13,3 +16,6 @@ invalid:
         return 0;
     }
     use(n);
+  - "int f(void) { rv = apr_bucket_read(e, &d, &n, APR_NONBLOCK_READ);\n if (!APR_STATUS_IS_SUCCESS(rv)) return rv;\n use(n); return 0; }"
+  - "int f(void) { while (e) { rv = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);\n if (!APR_STATUS_IS_SUCCESS(rv)) { break; }\n use(n); } return 0; }"
+  - "int f(void) { status = apr_bucket_read(e, &d, &n, APR_BLOCK_READ);\n if (!APR_STATUS_IS_SUCCESS(status)) { return status; }\n use(n); return 0; }"

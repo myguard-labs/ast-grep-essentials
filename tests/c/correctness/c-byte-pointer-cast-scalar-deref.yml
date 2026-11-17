@@ -3,5 +3,11 @@ valid:
   - >-
     static double f(u_char *p) { double num; memcpy(&num, p, sizeof(double));
     return num; }
+  - "static int f(u_char *p) { return *(unsigned char *) p; }"
+  - "static double f(u_char *p) { return (double) *p; }"
+  - "static double f(u_char *p) { union { u_char b[8]; double d; } u; memcpy(u.b, p, 8); return u.d; }"
 invalid:
   - 'static double f(u_char *p) { double num; num = *(double *) p; return num; }'
+  - "static double f(u_char *p) { return *(double *) (p + 4); }"
+  - "static void f(u_char *p, double v) { *(double *) p = v; }"
+  - "static double f(u_char *buf) { return *(double*) &buf[8]; }"
