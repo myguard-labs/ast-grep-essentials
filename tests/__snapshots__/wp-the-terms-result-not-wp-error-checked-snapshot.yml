@@ -1,6 +1,6 @@
 id: wp-the-terms-result-not-wp-error-checked
 snapshots:
-  $c = get_the_terms( $id, 'category' ); if ( ! $c ) $c = array();:
+  "$c = get_the_terms( $id, 'category' ); if ( ! $c ) $c = array();":
     labels:
     - source: $c = get_the_terms( $id, 'category' )
       style: primary
@@ -14,3 +14,63 @@ snapshots:
       style: secondary
       start: 0
       end: 64
+  "$c = get_the_terms( $id, 'category' ); if ( ! $c ) { return; } if ( is_wp_error( $other ) ) { return; }":
+    labels:
+    - source: $c = get_the_terms( $id, 'category' )
+      style: primary
+      start: 0
+      end: 37
+    - source: if ( ! $c ) { return; }
+      style: secondary
+      start: 39
+      end: 62
+    - source: >-
+        $c = get_the_terms( $id, 'category' ); if ( ! $c ) { return; } if (
+        is_wp_error( $other ) ) { return; }
+      style: secondary
+      start: 0
+      end: 103
+  "$c = get_the_terms( $id, 'post_tag' ); if ( ! $c ) { return ''; }":
+    labels:
+    - source: $c = get_the_terms( $id, 'post_tag' )
+      style: primary
+      start: 0
+      end: 37
+    - source: if ( ! $c ) { return ''; }
+      style: secondary
+      start: 39
+      end: 65
+    - source: $c = get_the_terms( $id, 'post_tag' ); if ( ! $c ) { return ''; }
+      style: secondary
+      start: 0
+      end: 65
+  "$terms = get_the_terms( get_the_ID(), 'category' ); if ( ! $terms ) echo 'none';":
+    labels:
+    - source: $terms = get_the_terms( get_the_ID(), 'category' )
+      style: primary
+      start: 0
+      end: 50
+    - source: if ( ! $terms ) echo 'none';
+      style: secondary
+      start: 52
+      end: 80
+    - source: $terms = get_the_terms( get_the_ID(), 'category' ); if ( ! $terms ) echo 'none';
+      style: secondary
+      start: 0
+      end: 80
+  "<?php function f( $id ) { $c = get_the_terms( $id, 'category' ); if ( ! $c ) { return; } return $c; }":
+    labels:
+    - source: $c = get_the_terms( $id, 'category' )
+      style: primary
+      start: 26
+      end: 63
+    - source: if ( ! $c ) { return; }
+      style: secondary
+      start: 65
+      end: 88
+    - source: >-
+        <?php function f( $id ) { $c = get_the_terms( $id, 'category' ); if ( ! $c ) {
+        return; } return $c; }
+      style: secondary
+      start: 0
+      end: 101
