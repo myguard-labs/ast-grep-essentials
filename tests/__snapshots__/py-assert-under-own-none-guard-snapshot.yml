@@ -1,9 +1,40 @@
 id: py-assert-under-own-none-guard
 snapshots:
-  ? |-
-    if value is not None:
-        assert value is not None
-  : labels:
+  "def f(v):\n    if v is not None:\n        do()\n        assert v is not None\n":
+    labels:
+    - source: assert v is not None
+      style: primary
+      start: 53
+      end: 73
+    - source: v is not None
+      style: secondary
+      start: 17
+      end: 30
+    - source: |-
+        if v is not None:
+                do()
+                assert v is not None
+      style: secondary
+      start: 14
+      end: 73
+  "if self.x is not None:\n    assert self.x is not None\n":
+    labels:
+    - source: assert self.x is not None
+      style: primary
+      start: 27
+      end: 52
+    - source: self.x is not None
+      style: secondary
+      start: 3
+      end: 21
+    - source: |-
+        if self.x is not None:
+            assert self.x is not None
+      style: secondary
+      start: 0
+      end: 52
+  "if value is not None:\n    assert value is not None":
+    labels:
     - source: assert value is not None
       style: primary
       start: 26
@@ -18,3 +49,20 @@ snapshots:
       style: secondary
       start: 0
       end: 50
+  "if value is not None:\n    for item in rows:\n        assert value is not None\n":
+    labels:
+    - source: assert value is not None
+      style: primary
+      start: 52
+      end: 76
+    - source: value is not None
+      style: secondary
+      start: 3
+      end: 20
+    - source: |-
+        if value is not None:
+            for item in rows:
+                assert value is not None
+      style: secondary
+      start: 0
+      end: 76

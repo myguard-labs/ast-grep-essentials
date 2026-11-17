@@ -8,6 +8,22 @@ valid:
             logger.exception(e)
             raise
         return ''
+  - |
+    try:
+        build()
+    except ValueError as e:
+        logger.error(e)
+  - |
+    try:
+        build()
+    except Exception as e:
+        logger.error(e)
+        raise RuntimeError('x') from e
+  - |
+    try:
+        build()
+    except (KeyError, ValueError) as e:
+        logger.warning(e)
 invalid:
   - |-
     def render():
@@ -16,3 +32,20 @@ invalid:
         except Exception as e:
             logger.exception(e)
         return ''
+  - |
+    try:
+        build()
+    except Exception:
+        logger.warning('failed')
+  - |
+    try:
+        build()
+    except Exception as e:
+        logger.error('a')
+        logger.info(e)
+  - |
+    try:
+        build()
+    except Exception as e:
+        # ignore
+        logger.debug(e, exc_info=True)

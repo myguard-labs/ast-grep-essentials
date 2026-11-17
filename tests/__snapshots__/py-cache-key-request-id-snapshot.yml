@@ -1,9 +1,7 @@
 id: py-cache-key-request-id
 snapshots:
-  ? |-
-    def store(cache, request_id, value):
-        cache[request_id] = value
-  : labels:
+  "def store(cache, request_id, value):\n    cache[request_id] = value":
+    labels:
     - source: cache[request_id] = value
       style: primary
       start: 41
@@ -18,3 +16,51 @@ snapshots:
       style: secondary
       start: 0
       end: 66
+  "def store(cache, request_id: str, value):\n    cache[request_id] = value\n":
+    labels:
+    - source: cache[request_id] = value
+      style: primary
+      start: 46
+      end: 71
+    - source: "(cache, request_id: str, value)"
+      style: secondary
+      start: 9
+      end: 40
+    - source: |-
+        def store(cache, request_id: str, value):
+            cache[request_id] = value
+      style: secondary
+      start: 0
+      end: 71
+  "def store(cache, value, request_id=None):\n    cache[request_id] = value\n":
+    labels:
+    - source: cache[request_id] = value
+      style: primary
+      start: 46
+      end: 71
+    - source: (cache, value, request_id=None)
+      style: secondary
+      start: 9
+      end: 40
+    - source: |-
+        def store(cache, value, request_id=None):
+            cache[request_id] = value
+      style: secondary
+      start: 0
+      end: 71
+  "def store(self, request_id):\n    self.cache[request_id] = compute()\n":
+    labels:
+    - source: self.cache[request_id] = compute()
+      style: primary
+      start: 33
+      end: 67
+    - source: (self, request_id)
+      style: secondary
+      start: 9
+      end: 27
+    - source: |-
+        def store(self, request_id):
+            self.cache[request_id] = compute()
+      style: secondary
+      start: 0
+      end: 67
