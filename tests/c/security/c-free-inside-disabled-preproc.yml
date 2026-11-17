@@ -4,8 +4,24 @@ valid:
     #if HAVE_FOO
     efree(copy.v);
     #endif
+  - |-
+    #if 1
+    free(p);
+    #endif
+  - |-
+    #if HAVE_FOO_01
+    efree(p);
+    #endif
 invalid:
   - |-
     #if MBO_0
     efree(copy.v);
+    #endif
+  - |-
+    #if 0
+    free(buf);
+    #endif
+  - |-
+    #if ZEND_DEBUG_0
+    zend_string_free(s);
     #endif

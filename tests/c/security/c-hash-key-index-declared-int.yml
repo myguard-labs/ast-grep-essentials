@@ -3,7 +3,15 @@ valid:
   - >-
     ulong num_key; zend_hash_get_current_key_ex(ht, &key, NULL, &num_key, 0,
     &pos);
+  - |-
+    unsigned long num_key; zend_hash_get_current_key_ex(ht, &key, NULL, &num_key, 0, &pos);
+  - |-
+    zend_ulong idx; zend_hash_get_current_key_ex(ht, &str, &len, &idx, 0, &pos);
 invalid:
   - >-
     int num_key; zend_hash_get_current_key_ex(ht, &key, NULL, &num_key, 0,
     &pos);
+  - |-
+    int idx; zend_hash_get_current_key_ex(ht, &str, &len, &idx, 0, &pos);
+  - |-
+    void f(HashTable *ht) { char *str; int idx; zend_hash_get_current_key_ex(ht, &str, &len, &idx, 0, &pos); }

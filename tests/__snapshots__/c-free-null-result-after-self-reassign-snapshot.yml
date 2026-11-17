@@ -1,11 +1,25 @@
 id: c-free-null-result-after-self-reassign
 snapshots:
-  ? |-
-    node = xmlAddChild(copy, node);
-    if (node == NULL) {
-        xmlFreeNode(node);
-    }
-  : labels:
+  "ctx->node = xmlAddChild(parent, ctx->node);\nif (ctx->node == NULL) {\n    xmlFreeNode(ctx->node);\n}":
+    labels:
+    - source: |-
+        if (ctx->node == NULL) {
+            xmlFreeNode(ctx->node);
+        }
+      style: primary
+      start: 44
+      end: 98
+  "cur = xmlAddChild(parent, cur);\nif (cur == NULL) {\n    xmlFreeNode(cur);\n}":
+    labels:
+    - source: |-
+        if (cur == NULL) {
+            xmlFreeNode(cur);
+        }
+      style: primary
+      start: 32
+      end: 74
+  "node = xmlAddChild(copy, node);\nif (node == NULL) {\n    xmlFreeNode(node);\n}":
+    labels:
     - source: |-
         if (node == NULL) {
             xmlFreeNode(node);

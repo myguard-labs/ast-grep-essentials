@@ -1,8 +1,20 @@
 id: c-host-name-max-buffer-no-nul
 snapshots:
-  char buf[HOST_NAME_MAX]; if (gethostname(buf, sizeof(buf) - 1)) { }:
+  "char buf[HOST_NAME_MAX]; if (gethostname(buf, sizeof(buf) - 1)) { }":
     labels:
     - source: char buf[HOST_NAME_MAX];
       style: primary
       start: 0
       end: 24
+  "void f(void) { char host[HOST_NAME_MAX]; gethostname(host, sizeof(host)); }":
+    labels:
+    - source: char host[HOST_NAME_MAX];
+      style: primary
+      start: 15
+      end: 40
+  "void f(void) { char host[HOST_NAME_MAX]; if (gethostname(host, sizeof(host)) == 0) puts(host); }":
+    labels:
+    - source: char host[HOST_NAME_MAX];
+      style: primary
+      start: 15
+      end: 40

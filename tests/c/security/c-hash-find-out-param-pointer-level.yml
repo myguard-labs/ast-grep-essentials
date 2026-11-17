@@ -3,7 +3,22 @@ valid:
   - |-
     zval **elem;
     zend_hash_find(ht, "dev", sizeof("dev"), (void **) &elem);
+  - |-
+    zval *other;
+    zval **elem;
+    zend_hash_find(ht, "dev", sizeof("dev"), (void **) &elem);
+  - |-
+    zval *elem;
+    elem = zend_hash_str_find(ht, "dev", 3);
 invalid:
   - |-
     zval *elem;
     zend_hash_find(ht, "dev", sizeof("dev"), (void **) &elem);
+  - |-
+    HashTable *ht;
+    char *name;
+    zval *elem;
+    zend_hash_find(ht, name, strlen(name) + 1, (void **) &elem);
+  - |-
+    zval *data;
+    zend_hash_find(Z_ARRVAL_P(arr), key, klen + 1, (void **) &data);

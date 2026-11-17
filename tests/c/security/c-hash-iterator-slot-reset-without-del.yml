@@ -3,5 +3,14 @@ valid:
   - >-
     void f(spl_array_object *intern) { if (intern->ht_iter != (uint32_t)-1) {
     zend_hash_iterator_del(intern->ht_iter); } intern->ht_iter = (uint32_t)-1; }
+  - |-
+    void f(spl_array_object *intern) { zend_hash_iterator_del(intern->ht_iter); intern->ht_iter = (uint32_t)-1; }
+  - |-
+    void f(spl_array_object *intern, HashTable *ht) { intern->ht_iter = zend_hash_iterator_add(ht, 0); }
 invalid:
   - 'void f(spl_array_object *intern) { intern->ht_iter = (uint32_t)-1; }'
+  - |-
+    void a(spl_array_object *o) { zend_hash_iterator_del(o->ht_iter); }
+    void b(spl_array_object *o) { o->ht_iter = (uint32_t)-1; }
+  - |-
+    void f(spl_array_object *intern) { intern->inner->ht_iter = (uint32_t)-1; }

@@ -3,7 +3,16 @@ valid:
   - >-
     if (zend_hash_find(&EG(symbol_table), str, str_len, (void **) &val) ==
     SUCCESS && val) { use(*val); }
+  - |-
+    if (zend_hash_find(ht, key, len, (void **) &val) != SUCCESS) { return FAILURE; }
+  - |-
+    int rc = zend_hash_find(ht, key, len, (void **) &val);
+    if (rc != SUCCESS) { return rc; }
 invalid:
   - |-
     zend_hash_find(&EG(symbol_table), str, str_len, (void **) &val);
     if (val) { use(*val); }
+  - |-
+    { zend_hash_find(ht, key, len, (void **) &val); use(val); }
+  - |-
+    zend_hash_find(Z_ARRVAL_P(arr), key, klen + 1, (void **) &slot);

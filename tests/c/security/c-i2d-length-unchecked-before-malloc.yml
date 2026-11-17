@@ -3,7 +3,15 @@ valid:
   - >-
     int len; unsigned char *pp; len = i2d_ESS_SIGNING_CERT_V2(sc, NULL); if (len
     <= 0 || (pp = OPENSSL_malloc(len)) == NULL) goto err;
+  - |-
+    int len; unsigned char *pp; len = i2d_X509(x, NULL); if (len <= 0) goto err; pp = OPENSSL_malloc(len);
+  - |-
+    int n; unsigned char *pp; n = strlen(s); if ((pp = OPENSSL_malloc(n)) == NULL) goto err;
 invalid:
   - >-
     int len; unsigned char *pp; len = i2d_ESS_SIGNING_CERT_V2(sc, NULL); if ((pp
     = OPENSSL_malloc(len)) == NULL) goto err;
+  - |-
+    int len; unsigned char *buf; len = i2d_X509(x, NULL); if (!(buf = OPENSSL_malloc(len))) goto err;
+  - |-
+    int n = i2d_X509(x, NULL); if ((buf = OPENSSL_malloc(n)) == NULL) return 0;

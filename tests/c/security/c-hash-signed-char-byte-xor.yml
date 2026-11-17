@@ -1,5 +1,13 @@
 id: c-hash-signed-char-byte-xor
 valid:
   - 'void f(unsigned char *p, unsigned h) { h = h ^ (*p++); }'
+  - |-
+    void f(uint8_t *p, unsigned h) { h = h ^ (*p++); }
+  - |-
+    void f(char *p, unsigned h) { h = h ^ (unsigned char)*p++; }
 invalid:
   - 'void f(char *p, unsigned h) { h = h ^ (*p++); }'
+  - |-
+    unsigned f(const char *s, unsigned h) { while (*s) h = h ^ (*s++); return h; }
+  - |-
+    unsigned f(const char *s) { return 5381 ^ (*s++); }
