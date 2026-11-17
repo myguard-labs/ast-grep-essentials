@@ -8,17 +8,29 @@ message: >-
   reads, which can go past the end of the buffer.
 note: >-
   Syntactic match only. It matches an if-condition of the form *p++ == '\\'
-  whose body reads *p++ again, with no bound check in the same condition. It
-  does not verify buffer bounds, aliasing, or reachability.
+  whose braced body reads *p++ again, unless that read sits under an inner
+  if testing *p or p < end on the same pointer. It does not verify buffer
+  bounds, aliasing, or reachability.
 rule:
   pattern: |
     if (*$P++ == '\\') { $$$BODY }
   has:
-    pattern: '*$P++'
-    stopBy: end
-    inside:
-      kind: compound_statement
+    field: consequence
+    kind: compound_statement
+    has:
+      pattern: '*$P++'
       stopBy: end
+      not:
+        inside:
+          kind: if_statement
+          stopBy: end
+          has:
+            field: condition
+            has:
+              stopBy: end
+              any:
+                - pattern: '*$P'
+                - pattern: '$P < $END'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -31,5 +43,4 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/126.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FP: guarded or non-reading bodies are reported, e.g. if (*p++ == ''\\'') { *dst = 0; } and if (*p++ == ''\\'') { if (*p) { *dst = *p++; } } (the condition itself satisfies the has *P++ clause)'
     - 'FN: unbraced body is missed, e.g. if (*p++ == ''\\'') *dst = *p++;'

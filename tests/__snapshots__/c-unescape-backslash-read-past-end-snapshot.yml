@@ -6,67 +6,95 @@ snapshots:
       style: primary
       start: 0
       end: 38
-    - source: "{ *dst = *src++; }"
-      style: secondary
-      start: 20
-      end: 38
     - source: "*src++"
       style: secondary
       start: 29
       end: 35
+    - source: "{ *dst = *src++; }"
+      style: secondary
+      start: 20
+      end: 38
+  "void f(const char *p, char *dst) { if (*p++ == '\\\\') { *dst = *p++; if (*p) { *dst = 0; } } }":
+    labels:
+    - source: if (*p++ == '\\') { *dst = *p++; if (*p) { *dst = 0; } }
+      style: primary
+      start: 35
+      end: 91
+    - source: "*p++"
+      style: secondary
+      start: 62
+      end: 66
+    - source: "{ *dst = *p++; if (*p) { *dst = 0; } }"
+      style: secondary
+      start: 53
+      end: 91
   "void f(const char *p, char *dst) { if (*p++ == '\\\\') { *dst++ = *p++; } }":
     labels:
     - source: if (*p++ == '\\') { *dst++ = *p++; }
       style: primary
       start: 35
       end: 71
-    - source: "{ if (*p++ == '\\\\') { *dst++ = *p++; } }"
-      style: secondary
-      start: 33
-      end: 73
     - source: "*p++"
       style: secondary
-      start: 39
-      end: 43
+      start: 64
+      end: 68
+    - source: "{ *dst++ = *p++; }"
+      style: secondary
+      start: 53
+      end: 71
   "void f(const char *p, char *dst) { if (*p++ == '\\\\') { c = *p++; } }":
     labels:
     - source: if (*p++ == '\\') { c = *p++; }
       style: primary
       start: 35
       end: 66
-    - source: "{ if (*p++ == '\\\\') { c = *p++; } }"
-      style: secondary
-      start: 33
-      end: 68
     - source: "*p++"
       style: secondary
-      start: 39
-      end: 43
+      start: 59
+      end: 63
+    - source: "{ c = *p++; }"
+      style: secondary
+      start: 53
+      end: 66
   "void f(const char *p, char *dst) { if (*p++ == '\\\\') { switch (*p++) { case 'n': *dst = 10; break; } } }":
     labels:
     - source: "if (*p++ == '\\\\') { switch (*p++) { case 'n': *dst = 10; break; } }"
       style: primary
       start: 35
       end: 102
-    - source: "{ if (*p++ == '\\\\') { switch (*p++) { case 'n': *dst = 10; break; } } }"
-      style: secondary
-      start: 33
-      end: 104
     - source: "*p++"
       style: secondary
-      start: 39
-      end: 43
+      start: 63
+      end: 67
+    - source: "{ switch (*p++) { case 'n': *dst = 10; break; } }"
+      style: secondary
+      start: 53
+      end: 102
   "void f(const char *p, char *dst) { while (*p) { if (*p++ == '\\\\') { *dst++ = *p++; } } }":
     labels:
     - source: if (*p++ == '\\') { *dst++ = *p++; }
       style: primary
       start: 48
       end: 84
-    - source: "{ if (*p++ == '\\\\') { *dst++ = *p++; } }"
-      style: secondary
-      start: 46
-      end: 86
     - source: "*p++"
       style: secondary
-      start: 52
-      end: 56
+      start: 77
+      end: 81
+    - source: "{ *dst++ = *p++; }"
+      style: secondary
+      start: 66
+      end: 84
+  "void f(const char *p, const char *q, char *dst) { if (*p++ == '\\\\') { if (*q) { *dst = *p++; } } }":
+    labels:
+    - source: if (*p++ == '\\') { if (*q) { *dst = *p++; } }
+      style: primary
+      start: 50
+      end: 96
+    - source: "*p++"
+      style: secondary
+      start: 87
+      end: 91
+    - source: "{ if (*q) { *dst = *p++; } }"
+      style: secondary
+      start: 68
+      end: 96

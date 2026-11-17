@@ -5,6 +5,10 @@ valid:
     '=') { } return 0; }
   - 'int f(const char *s, size_t n) { while (n > 0 && s[n - 1] == '' '') { n--; } return 0; }'
   - 'int f(struct b *p) { while (p->n > 0 && p->d[--p->n] == 0) { } return 0; }'
+  - 'int f(const char *s, size_t n) { while (n && s[--n] == '' '') { } return 0; }'
+  - 'int f(const char *s, size_t n) { while (n >= 1 && s[--n] == '' '') { } return 0; }'
+  - 'int f(const char *s, size_t n) { while (n != 0 && s[--n] == '' '') { } return 0; }'
+  - 'int f(const char *s, size_t n) { while (n > 0) { if (s[--n] != '' '') break; } return 0; }'
 invalid:
   - >-
     int f(const char *in, size_t inlen) { while (in[--inlen] == '=') { } return
@@ -13,3 +17,7 @@ invalid:
   - 'int f(const char *s, size_t n) { while (s[--n] == ''\n'' || s[n] == ''\r'') { } return 0; }'
   - 'int f(struct b *p) { while (p->d[--p->n] == 0) { } return 0; }'
   - 'int f(const char *s, size_t n) { int c; while ((c = s[--n]) == '' '') { } return c; }'
+  - 'int f(const char *s, size_t n, size_t i) { while (i > 0 && s[--n] == '' '') { } return 0; }'
+  - 'int f(const char *s, size_t n) { while (s[--n] == '' '' && n > 0) { } return 0; }'
+  - 'int f(const char *s, size_t n, size_t i) { while (i > 0) { if (s[--n] != '' '') break; } return 0; }'
+  - 'int f(const char *s, size_t n, size_t i) { while (i && s[--n] == '' '') { } return 0; }'
