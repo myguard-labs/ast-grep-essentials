@@ -23,6 +23,10 @@ constraints:
   SG:
     regex: '^\$_(GET|POST)$'
 metadata:
+  todo_cases:
+    - 'FP: `if ( ! empty( $_GET[''t''] ) && in_array( $_GET[''t''], $allowed ) )` is reported (only isset() is recognized as a guard).'
+    - 'FN: `if ( isset( $_GET[''u''] ) && in_array( $_GET[''t''], $allowed ) )` is not reported (any isset in the expression suppresses, even for another key).'
+    - 'FN: `if ( in_array( $_REQUEST[''t''], $allowed ) )` is not reported (only $_GET and $_POST are matched).'
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-18'
