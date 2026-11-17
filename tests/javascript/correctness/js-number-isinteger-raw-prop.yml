@@ -5,9 +5,35 @@ valid:
     if (!Number.isInteger(maxResults)) {
       throw new Error("bad");
     }
+  - |-
+    const limit = parseInt(this.limit, 10);
+    if (!Number.isInteger(limit)) {
+      throw new Error('bad');
+    }
+  - |-
+    function check(n) {
+      return Number.isInteger(n);
+    }
+  - |-
+    const limit = this.limit;
+    const ok = limit !== undefined;
 invalid:
   - |-
     const maxResults = this.maxResults;
     if (!Number.isInteger(maxResults)) {
       throw new Error("bad");
+    }
+  - |-
+    const limit = this.limit;
+    return Number.isInteger(limit) && limit > 0;
+  - |-
+    async run() {
+      const page = this.page;
+      const valid = Number.isInteger(page) ? page : 1;
+      return valid;
+    }
+  - |-
+    const size = this.size;
+    while (!Number.isInteger(size)) {
+      break;
     }

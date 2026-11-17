@@ -4,8 +4,39 @@ valid:
     if (lib1.get() != 0) {
         throw new Error('failed!');
     }
+  - |-
+    if (lib1.get() != 0) {
+        console.error('failed!');
+        process.exit(1);
+    }
+  - |-
+    if (lib1.get() != 0) {
+        assert.fail('failed!');
+    }
+  - |-
+    if (lib1.get() == 0) {
+        console.log('passed!');
+    }
 invalid:
   - |-
     if (lib1.get() != 0) {
         console.log('failed!');
+    }
+  - |-
+    if (lib1.get() != 0) {
+        console.log('failed!');
+    console.log('see log');
+    }
+  - |-
+    if (a !== b) {
+        console.log('failed!');
+    } else {
+        done();
+    }
+  - |-
+    function t() {
+      if (a) {
+        cleanup();
+        console.log('failed!');
+      }
     }

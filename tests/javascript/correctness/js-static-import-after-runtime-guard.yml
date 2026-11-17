@@ -5,9 +5,40 @@ valid:
       process.exit(1)
     }
     await import('./dist/app.mjs')
+  - |-
+    import './dist/app.mjs'
+    if (major < 22) {
+      process.exit(1)
+    }
+  - |-
+    import './dist/app.mjs'
+  - |-
+    if (major < 22) {
+      console.error('too old')
+    }
+    import './dist/app.mjs'
 invalid:
   - |-
     if (major < 22) {
       process.exit(1)
+    }
+    import './dist/app.mjs'
+  - |-
+    if (major < 22) {
+      console.error('too old')
+      process.exit(2)
+    }
+    import './dist/app.mjs'
+  - |-
+    if (major < 22) {
+      process.exit(1)
+    }
+    const x = 1
+    import './dist/app.mjs'
+  - |-
+    if (major < 22) {
+      if (strict) {
+        process.exit(1)
+      }
     }
     import './dist/app.mjs'

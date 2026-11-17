@@ -1,5 +1,19 @@
 id: js-script-tag-without-nonce
 valid:
   - 'const s = `<script${nonce} src="${u}"></script>`;'
+  - |-
+    const s = `<script nonce="${n}" src="${u}"></script>`;
+  - |-
+    const s = `<script>run()</script>`;
+  - |-
+    const s = `<script src="${u}" nonce="${n}"></script>`;
 invalid:
   - 'const s = `<script src="${u}"></script>`;'
+  - |-
+    const s = `<script  src='${u}'></script>`;
+  - |-
+    const s = `<div></div>
+    <script
+      src="${u}"></script>`;
+  - |-
+    const s = `<script	src="/static/app.js"></script>`;

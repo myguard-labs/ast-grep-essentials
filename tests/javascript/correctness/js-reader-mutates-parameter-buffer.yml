@@ -6,9 +6,42 @@ valid:
       copy[offset] = copy[offset] ^ 0xff
       return copy.readUInt32BE(offset)
     }
+  - |-
+    function readInt64BE (buf, offset) {
+      const out = []
+      out[offset] = buf[offset]
+      return out
+    }
+  - |-
+    function fill (buf) {
+      buf[0] = 1
+    }
+  - |-
+    function decodeHead (buf) {
+      const b = Buffer.alloc(4)
+      b[0] = buf[0]
+      return b
+    }
 invalid:
   - |-
     function readInt64BE (buf, offset) {
       buf[offset] = buf[offset] ^ 0xff
       return buf.readUInt32BE(offset)
+    }
+  - |-
+    function decodeFoo (data, i) {
+      data[i] = 0
+      return data
+    }
+  - |-
+    function readHeader (a, b) {
+      b[0] = 1
+      return a
+    }
+  - |-
+    function readByte (buf, i) {
+      if (i > 0) {
+        buf[i - 1] = 0
+      }
+      return buf[i]
     }

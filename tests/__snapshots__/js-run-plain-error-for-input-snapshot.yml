@@ -1,14 +1,26 @@
 id: js-run-plain-error-for-input
 snapshots:
-  ? |-
-    async run({ $ }) {
-      if (typeof this.domain !== "string") {
-        throw new Error("Domain must be a valid JSON array.");
-      }
-      return {};
-    }
-  : labels:
+  "async run({ $ }) {\n  if (typeof this.domain !== \"string\") {\n    throw new Error(\"Domain must be a valid JSON array.\");\n  }\n  return {};\n}":
+    labels:
     - source: throw new Error("Domain must be a valid JSON array.");
       style: primary
       start: 64
       end: 118
+  "async run({ $ }) {\n  throw new Error();\n}":
+    labels:
+    - source: throw new Error();
+      style: primary
+      start: 21
+      end: 39
+  "async run({ $ }) {\n  throw new Error(`Invalid domain ${this.domain}`);\n}":
+    labels:
+    - source: throw new Error(`Invalid domain ${this.domain}`);
+      style: primary
+      start: 21
+      end: 70
+  "const fail = () => { throw new Error(\"bad\", { cause: err }); };":
+    labels:
+    - source: "throw new Error(\"bad\", { cause: err });"
+      style: primary
+      start: 21
+      end: 60
