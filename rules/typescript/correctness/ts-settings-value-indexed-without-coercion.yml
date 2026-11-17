@@ -12,10 +12,17 @@ note: >-
   actually a non-object at runtime, and it does not track aliasing,
   reassignment, or type information.
 rule:
-  pattern: 'const $VAR = getSetting($$$ARGS);'
+  all:
+    - pattern: 'const $VAR = getSetting($$$ARGS);'
+    - precedes:
+        stopBy: end
+        has:
+          stopBy: end
+          any:
+            - pattern: '$VAR[$KEY]'
+            - pattern: '$VAR.$PROP'
 metadata:
   todo_cases:
-    - 'False positive: the pattern never checks for the index, so const n = getSetting(''count''); return n + 1; is reported.'
     - 'A generic call is not matched: const s = getSetting<Record<string, string>>(''x''); return s[k];.'
   rule_modified_at: '2026-10-17'
   ast_grep_tested_version: 0.50.0
