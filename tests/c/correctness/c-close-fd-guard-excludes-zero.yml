@@ -2,7 +2,7 @@ id: c-close-fd-guard-excludes-zero
 valid:
   - "static int fd;\nvoid release(void) {\n\tif (fd >= 0) {\n\t\tclose(fd);\n\t}\n}"
   - "void release(int fd) { if (fd != -1) { close(fd); } }"
-  - "void release(int fd) { if (fd > 0) { shutdown(fd, 2); } }"
+  - "void release(int fd, int n) { if (n > 0) { close(fd); } }"
   - "void release(int fd) { if (fd > 0) { puts(\"open\"); } close(fd); }"
 invalid:
   - "static int fd;\nvoid release(void) {\n\tif (fd > 0) {\n\t\tclose(fd);\n\t}\n}"
