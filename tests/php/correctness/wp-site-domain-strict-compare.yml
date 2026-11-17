@@ -1,5 +1,12 @@
 id: wp-site-domain-strict-compare
 valid:
   - 'if ( 0 === strcasecmp( $current_site->domain, $domain ) ) { $x = 1; }'
+  - 'if ( strtolower( $a->domain ) === strtolower( $b ) ) { $x = 1; }'
+  - 'if ( $a->path === ''/'' ) { $x = 1; }'
+  - 'if ( $a->domain_id === 3 ) { $x = 1; }'
+  - '$same = 0 === strcasecmp( $a->domain, $b->domain );'
 invalid:
   - 'if ( $current_site->domain === $domain ) { $x = 1; }'
+  - 'if ( $current_blog->domain === ''example.com'' ) { $x = 1; }'
+  - 'return $a->domain === $b->domain;'
+  - 'if ( $this->site->domain === $host && $ok ) { $x = 1; }'
