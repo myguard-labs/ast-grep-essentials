@@ -1,5 +1,11 @@
 id: php-redundant-inequality-after-equality
 valid:
   - 'if ( ''http'' === $scheme && ''https'' !== $other ) { $x = 1; }'
+  - 'if ( ''http'' === $scheme && $port !== 80 ) { $x = 1; }'
+  - 'if ( ''http'' === $scheme || ''https'' !== $scheme ) { $x = 1; }'
+  - 'if ( ''http'' === $a && ''https'' !== $b ) { $x = 1; }'
 invalid:
   - 'if ( ''http'' === $scheme && ''https'' !== $scheme ) { $x = 1; }'
+  - 'return ''http'' === $scheme && ''https'' !== $scheme;'
+  - '$ok = ''http'' === $scheme && ''https'' !== $scheme && $host;'
+  - 'while ( ( ''http'' === $scheme && ''https'' !== $scheme ) ) { $i++; }'

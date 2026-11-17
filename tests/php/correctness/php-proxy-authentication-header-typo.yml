@@ -3,8 +3,14 @@ valid:
   - >-
     <?php function h() { return 'Proxy-Authorization: Basic ' . base64_encode(
     'x' ); }
+  - '<?php $h = ''Proxy-Authorization: Basic abc'';'
+  - '<?php $h = "Proxy-Authorization: Basic $tok";'
+  - '<?php header(''Proxy-Authenticate: Basic realm="x"'');'
 invalid:
   - >-
     <?php function h() { return 'Proxy-Authentication: Basic ' . base64_encode(
     'x' ); }
   - '<?php $h = "Proxy-Authentication: Basic $tok";'
+  - '<?php $headers[] = ''Proxy-Authentication: Basic abc'';'
+  - '<?php $o = array("Proxy-Authentication: Basic {$tok}");'
+  - '<?php curl_setopt($c, CURLOPT_HTTPHEADER, array(''Proxy-Authentication: '' . $t));'
