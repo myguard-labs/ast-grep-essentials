@@ -1,5 +1,12 @@
 id: wp-get-bloginfo-url-call
 valid:
   - '$ua = ''WordPress/'' . $wp_version . ''; '' . get_bloginfo( ''name'' );'
+  - '<?php $v = get_bloginfo( ''version'' );'
+  - '<?php $cs = get_bloginfo( ''charset'' );'
+  - '<?php $u = home_url( ''/'' );'
 invalid:
   - '$ua = ''WordPress/'' . $wp_version . ''; '' . get_bloginfo( ''url'' );'
+  - '<?php echo get_bloginfo( ''url'' );'
+  - '<?php $feed = esc_url( get_bloginfo( ''url'' ) . ''/feed/'' );'
+  - '<?php function f() { return get_bloginfo(''url''); }'
+  - '<?php if ( get_bloginfo( ''url'' ) !== $current ) { $x = 1; }'

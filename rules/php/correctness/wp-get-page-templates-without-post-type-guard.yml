@@ -22,6 +22,9 @@ rule:
           pattern: '$POST->post_type'
           stopBy: end
 metadata:
+  todo_cases:
+    - 'A `get_post_type() === ''page''` comparison in the same condition is a guard but is reported (only a `->post_type` property access counts).'
+    - 'A `->post_type` read anywhere inside the if statement, including its body (`if ( get_page_templates() ) { echo $post->post_type; }`), suppresses the report even though the condition has no post_type comparison.'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

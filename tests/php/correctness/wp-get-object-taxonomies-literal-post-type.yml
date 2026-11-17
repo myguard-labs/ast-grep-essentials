@@ -1,5 +1,11 @@
 id: wp-get-object-taxonomies-literal-post-type
 valid:
   - "function f( $postid, $post ) {\n\t$tax = get_object_taxonomies( $post->post_type );\n}"
+  - '<?php $t = get_object_taxonomies( ''page'' );'
+  - '<?php $t = get_object_taxonomies( get_post_type( $post_id ) );'
+  - '<?php $t = get_object_taxonomies( $post, ''objects'' );'
 invalid:
   - "function f( $postid, $post ) {\n\t$tax = get_object_taxonomies( 'post' );\n}"
+  - '<?php return get_object_taxonomies( ''post'' );'
+  - '<?php foreach ( get_object_taxonomies( ''post'' ) as $tax ) { echo $tax; }'
+  - '<?php $t = array_diff( get_object_taxonomies( ''post'' ), array( ''post_format'' ) );'

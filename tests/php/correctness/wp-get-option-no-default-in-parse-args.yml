@@ -3,5 +3,13 @@ valid:
   - >-
     <?php $s = wp_parse_args( get_option( 'widget_x', array() ), array( 'id' =>
     'x' ) );
+  - '<?php $s = wp_parse_args( $args, $defaults );'
+  - '<?php $s = wp_parse_args( (array) get_option( ''widget_x'' ), $defaults );'
+  - '<?php $s = wp_parse_args( get_option( ''widget_x'', array() ), $defaults );'
+  - '<?php $s = wp_parse_args( get_option( ''widget_x'' ) ?: array(), $defaults );'
 invalid:
   - '<?php $s = wp_parse_args( get_option( ''widget_x'' ), array( ''id'' => ''x'' ) );'
+  - '<?php $opts = wp_parse_args( get_option( ''my_plugin_opts'' ), $defaults );'
+  - '<?php function f( $name, $d ) { return wp_parse_args( get_option( $name ), $d ); }'
+  - '<?php $s = wp_parse_args( get_option( ''a'' ), array( ''x'' => 1 ), true );'
+  - '<?php $s = wp_parse_args( get_option( "widget_x" ), $d );'
