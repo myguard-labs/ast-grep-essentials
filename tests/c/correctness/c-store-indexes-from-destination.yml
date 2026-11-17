@@ -3,5 +3,11 @@ valid:
   - >-
     void f(char *s, int n) { long v = 0; while (--n >= 0) { *s++ = tab[v &
     0x3f]; v >>= 6; } }
+  - 'void f(char *d, const char *s) { *d++ = tab[*s++ & 0x3f]; }'
+  - 'void f(char *d, int n) { *d = tab[*d & 0x0f]; d++; }'
+  - 'void f(char *d, const char *s) { *d++ = tab[*s & 0x3f]; s++; }'
 invalid:
   - 'void f(char *s, int n) { while (--n >= 0) { *s++ = tab[*s & 0x3f]; } }'
+  - 'void f(char *out, int n) { while (--n >= 0) { *out++ = map[*out & 0xff]; } }'
+  - 'void f(char *p, int mask) { *p++ = tbl[*p & mask]; }'
+  - 'void f(char *q, int n) { int i; for (i = 0; i < n; i++) *q++ = hex[*q & 0x0f]; }'

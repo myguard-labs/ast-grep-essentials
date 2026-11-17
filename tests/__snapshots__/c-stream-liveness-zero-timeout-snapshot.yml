@@ -1,6 +1,26 @@
 id: c-stream-liveness-zero-timeout
 snapshots:
-  php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, 0, NULL);:
+  "int f(php_stream *stream) { if (php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, 0, NULL) == PHP_STREAM_OPTION_RETURN_OK) { return 1; } return 0; }":
+    labels:
+    - source: php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, 0, NULL)
+      style: primary
+      start: 32
+      end: 104
+  "int f(php_stream *stream, struct timeval *tv) { return php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, 0, tv); }":
+    labels:
+    - source: php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, 0, tv)
+      style: primary
+      start: 55
+      end: 125
+  "int f(zval *zv) { return php_stream_set_option(php_stream_from_zval_no_verify(zv), PHP_STREAM_OPTION_CHECK_LIVENESS, 0, NULL); }":
+    labels:
+    - source: >-
+        php_stream_set_option(php_stream_from_zval_no_verify(zv),
+        PHP_STREAM_OPTION_CHECK_LIVENESS, 0, NULL)
+      style: primary
+      start: 25
+      end: 125
+  "php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, 0, NULL);":
     labels:
     - source: php_stream_set_option(stream, PHP_STREAM_OPTION_CHECK_LIVENESS, 0, NULL)
       style: primary

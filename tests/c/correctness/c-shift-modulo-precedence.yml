@@ -1,5 +1,11 @@
 id: c-shift-modulo-precedence
 valid:
   - 'v = (x >> n) % 256;'
+  - 'unsigned f(unsigned x, unsigned n) { return (x >> n) % 256; }'
+  - 'unsigned f(unsigned x, unsigned n) { return x >> (n % 32); }'
+  - 'unsigned f(unsigned x, unsigned n) { return x % 256 >> n; }'
 invalid:
   - 'v = x >> n % 256;'
+  - 'unsigned f(unsigned x, unsigned n) { return x >> n % 32; }'
+  - 'unsigned f(unsigned h, unsigned k) { return (h >> k % 8) & 1; }'
+  - 'void f(unsigned *out, unsigned x, unsigned n) { *out = x >> n % 256; }'

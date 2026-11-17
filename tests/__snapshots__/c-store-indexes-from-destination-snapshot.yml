@@ -1,8 +1,26 @@
 id: c-store-indexes-from-destination
 snapshots:
-  void f(char *s, int n) { while (--n >= 0) { *s++ = tab[*s & 0x3f]; } }:
+  "void f(char *out, int n) { while (--n >= 0) { *out++ = map[*out & 0xff]; } }":
     labels:
-    - source: '*s++ = tab[*s & 0x3f];'
+    - source: "*out++ = map[*out & 0xff];"
+      style: primary
+      start: 46
+      end: 72
+  "void f(char *p, int mask) { *p++ = tbl[*p & mask]; }":
+    labels:
+    - source: "*p++ = tbl[*p & mask];"
+      style: primary
+      start: 28
+      end: 50
+  "void f(char *q, int n) { int i; for (i = 0; i < n; i++) *q++ = hex[*q & 0x0f]; }":
+    labels:
+    - source: "*q++ = hex[*q & 0x0f];"
+      style: primary
+      start: 56
+      end: 78
+  "void f(char *s, int n) { while (--n >= 0) { *s++ = tab[*s & 0x3f]; } }":
+    labels:
+    - source: "*s++ = tab[*s & 0x3f];"
       style: primary
       start: 44
       end: 66
