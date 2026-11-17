@@ -8,10 +8,14 @@ message: >-
   missing option returns false, which compares as 0.
 note: >-
   Single-file syntactic match on a direct call result as the left operand of <
-  or > against time(). It does not resolve the function identity, check for a
-  false guard, or track values through variables.
+  or > against time(). The call name must be get_option or get_site_option
+  (optionally with a leading backslash). It does not resolve the function
+  identity, check for a false guard, or track values through variables.
 rule:
   pattern: '$F($$$ARGS) < time()'
+constraints:
+  F:
+    regex: '^\\?(get_option|get_site_option)$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -22,3 +26,4 @@ metadata:
   license: MyGuard Internal Use License 1.0
   todo_cases:
     - 'FN: reversed time() > get_option( ''k'' ) and get_option( ''k'' ) > time() comparisons are not matched.'
+    - 'FN: a parenthesised left operand ( get_option( ''k'' ) ) < time() and a case variant such as Get_Option( ''k'' ) < time() are not matched.'
