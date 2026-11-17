@@ -19,12 +19,13 @@ rule:
     - not:
         has:
           field: left
-          has:
-            stopBy: end
-            pattern: 'n'
+          any:
+            - pattern: 'n'
+            - has:
+                stopBy: end
+                pattern: 'n'
 metadata:
   todo_cases:
-    - "false positive: a bare-identifier guard if (n && p[n - 1] == 0) is flagged because the left operand has no child node containing n"
     - "p[n - 1] != 'x' (inequality) is not flagged"
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0

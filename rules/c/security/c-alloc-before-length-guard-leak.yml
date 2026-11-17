@@ -17,6 +17,19 @@ rule:
     has:
       stopBy: end
       kind: return_statement
+    not:
+      has:
+        field: consequence
+        any:
+          - pattern: 'efree($P);'
+          - pattern: 'free($P);'
+          - pattern: 'pefree($P, $$$F);'
+          - kind: compound_statement
+            has:
+              any:
+                - pattern: 'efree($P);'
+                - pattern: 'free($P);'
+                - pattern: 'pefree($P, $$$F);'
 metadata:
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
@@ -28,3 +41,5 @@ metadata:
   cwe: 'CWE-401'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/401.html'
   taxonomy_cited_keys: 'cwe'
+  todo_cases:
+    - "false negative: a direct efree in the guard suppresses the finding even when an earlier return in the same guard skips it (if (bad) { if (abort) return -1; efree(b); return 0; })."
