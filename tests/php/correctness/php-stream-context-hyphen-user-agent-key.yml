@@ -1,5 +1,17 @@
 id: php-stream-context-hyphen-user-agent-key
 valid:
   - '$ctx = array(''http'' => array(''user_agent'' => $ua));'
+  - |-
+    $c = array('http' => array('header' => 'User-Agent: x'));
+  - |-
+    $c = array('http' => array('method' => 'GET', 'user_agent' => 'x', 'timeout' => 3));
+  - |-
+    $h = array('user-agent' => $ua);
 invalid:
   - '$ctx = array(''http'' => array(''user-agent'' => $ua));'
+  - |-
+    $c = array('http' => array('method' => 'GET', 'user-agent' => $ua));
+  - |-
+    $c = array('http' => array('user-agent' => $ua, 'method' => 'POST'));
+  - |-
+    $c = stream_context_create(array('http' => array('user-agent' => $ua)));
