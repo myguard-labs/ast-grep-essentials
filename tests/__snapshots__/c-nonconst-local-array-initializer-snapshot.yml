@@ -1,6 +1,60 @@
 id: c-nonconst-local-array-initializer
 snapshots:
-  void f(unsigned state) { unsigned s[2] = { state & 0xffff, 0 }; (void)s; }:
+  "void f(int x) { int a[2] = { 0, x | 4 }; (void)a; }":
+    labels:
+    - source: a[2] = { 0, x | 4 }
+      style: primary
+      start: 20
+      end: 39
+    - source: a[2]
+      style: secondary
+      start: 20
+      end: 24
+    - source: x | 4
+      style: secondary
+      start: 32
+      end: 37
+    - source: "{ 0, x | 4 }"
+      style: secondary
+      start: 27
+      end: 39
+  "void f(int x) { int a[2] = { x + 1, 0 }; (void)a; }":
+    labels:
+    - source: a[2] = { x + 1, 0 }
+      style: primary
+      start: 20
+      end: 39
+    - source: a[2]
+      style: secondary
+      start: 20
+      end: 24
+    - source: x + 1
+      style: secondary
+      start: 29
+      end: 34
+    - source: "{ x + 1, 0 }"
+      style: secondary
+      start: 27
+      end: 39
+  "void f(int x, int y) { long a[3] = { 1, x * y, 2 }; (void)a; }":
+    labels:
+    - source: a[3] = { 1, x * y, 2 }
+      style: primary
+      start: 28
+      end: 50
+    - source: a[3]
+      style: secondary
+      start: 28
+      end: 32
+    - source: x * y
+      style: secondary
+      start: 40
+      end: 45
+    - source: "{ 1, x * y, 2 }"
+      style: secondary
+      start: 35
+      end: 50
+  "void f(unsigned state) { unsigned s[2] = { state & 0xffff, 0 }; (void)s; }":
     labels:
     - source: s[2] = { state & 0xffff, 0 }
       style: primary
@@ -14,7 +68,7 @@ snapshots:
       style: secondary
       start: 43
       end: 57
-    - source: '{ state & 0xffff, 0 }'
+    - source: "{ state & 0xffff, 0 }"
       style: secondary
       start: 41
       end: 62

@@ -1,10 +1,27 @@
 id: c-non-void-function-without-return
 snapshots:
-  ? |-
-    static int get_id(int x) {
-      x++;
-    }
-  : labels:
+  "char *dup_name(const char *s) { strlen(s); }":
+    labels:
+    - source: char *dup_name(const char *s) { strlen(s); }
+      style: primary
+      start: 0
+      end: 44
+    - source: "{ strlen(s); }"
+      style: secondary
+      start: 30
+      end: 44
+  "static int clamp(int x) { if (x > 9) { x = 9; } }":
+    labels:
+    - source: static int clamp(int x) { if (x > 9) { x = 9; } }
+      style: primary
+      start: 0
+      end: 49
+    - source: "{ if (x > 9) { x = 9; } }"
+      style: secondary
+      start: 24
+      end: 49
+  "static int get_id(int x) {\n  x++;\n}":
+    labels:
     - source: |-
         static int get_id(int x) {
           x++;
@@ -19,3 +36,25 @@ snapshots:
       style: secondary
       start: 25
       end: 35
+  "static unsigned long hash_str(const char *s) { unsigned long h = 5381; while (*s) { h = h * 33 + (unsigned char)*s++; } }":
+    labels:
+    - source: >-
+        static unsigned long hash_str(const char *s) { unsigned long h = 5381; while
+        (*s) { h = h * 33 + (unsigned char)*s++; } }
+      style: primary
+      start: 0
+      end: 121
+    - source: "{ unsigned long h = 5381; while (*s) { h = h * 33 + (unsigned char)*s++; } }"
+      style: secondary
+      start: 45
+      end: 121
+  "struct point origin(void) { int zero = 0; (void)zero; }":
+    labels:
+    - source: struct point origin(void) { int zero = 0; (void)zero; }
+      style: primary
+      start: 0
+      end: 55
+    - source: "{ int zero = 0; (void)zero; }"
+      style: secondary
+      start: 26
+      end: 55

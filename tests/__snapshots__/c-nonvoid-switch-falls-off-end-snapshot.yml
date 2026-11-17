@@ -1,5 +1,19 @@
 id: c-nonvoid-switch-falls-off-end
 snapshots:
+  "static const char *f(int k) { switch (k) { case 1: return \"a\"; case 2: return \"b\"; } }":
+    labels:
+    - source: "static const char *f(int k) { switch (k) { case 1: return \"a\"; case 2: return \"b\"; } }"
+      style: primary
+      start: 0
+      end: 86
+    - source: "switch (k) { case 1: return \"a\"; case 2: return \"b\"; }"
+      style: secondary
+      start: 30
+      end: 84
+    - source: "{ switch (k) { case 1: return \"a\"; case 2: return \"b\"; } }"
+      style: secondary
+      start: 28
+      end: 86
   "static int f(int k) {\n  switch (k) {\n    case 1: return 0;\n    case 2: return 1;\n  }\n}":
     labels:
     - source: |-
@@ -30,3 +44,31 @@ snapshots:
       style: secondary
       start: 20
       end: 86
+  "static int f(int k) { int r = 0; switch (k) { case 1: r = 1; break; case 2: r = 2; break; } }":
+    labels:
+    - source: "static int f(int k) { int r = 0; switch (k) { case 1: r = 1; break; case 2: r = 2; break; } }"
+      style: primary
+      start: 0
+      end: 93
+    - source: "switch (k) { case 1: r = 1; break; case 2: r = 2; break; }"
+      style: secondary
+      start: 33
+      end: 91
+    - source: "{ int r = 0; switch (k) { case 1: r = 1; break; case 2: r = 2; break; } }"
+      style: secondary
+      start: 20
+      end: 93
+  "static unsigned long f(int k) { if (k < 0) return 0; switch (k) { case 1: return 2; case 2: return 3; } }":
+    labels:
+    - source: "static unsigned long f(int k) { if (k < 0) return 0; switch (k) { case 1: return 2; case 2: return 3; } }"
+      style: primary
+      start: 0
+      end: 105
+    - source: "switch (k) { case 1: return 2; case 2: return 3; }"
+      style: secondary
+      start: 53
+      end: 103
+    - source: "{ if (k < 0) return 0; switch (k) { case 1: return 2; case 2: return 3; } }"
+      style: secondary
+      start: 30
+      end: 105

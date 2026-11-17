@@ -3,5 +3,19 @@ valid:
   - >-
     void f(unsigned state) { unsigned s[2] = { 0xffff, 0 }; (void)state;
     (void)s; }
+  - |-
+    void f(void) { int a[2] = { 1, 2 }; (void)a; }
+  - |-
+    void f(void) { int a[2] = { -1, 0 }; (void)a; }
+  - |-
+    void f(int x) { int a[2] = { [1] = 5 }; (void)a; (void)x; }
+  - |-
+    void f(void) { int a[2] = { sizeof(int), 0 }; (void)a; }
 invalid:
   - 'void f(unsigned state) { unsigned s[2] = { state & 0xffff, 0 }; (void)s; }'
+  - |-
+    void f(int x) { int a[2] = { x + 1, 0 }; (void)a; }
+  - |-
+    void f(int x) { int a[2] = { 0, x | 4 }; (void)a; }
+  - |-
+    void f(int x, int y) { long a[3] = { 1, x * y, 2 }; (void)a; }
