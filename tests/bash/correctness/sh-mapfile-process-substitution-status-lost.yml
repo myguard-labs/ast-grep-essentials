@@ -4,7 +4,8 @@ valid:
   - |-
       set -e
       out=$(find . -name '*.sh')
-      mapfile -t files <<< "$out"
+      files=()
+      if [ -n "$out" ]; then mapfile -t files <<< "$out"; fi
   - |-
       tmp=$(mktemp) || exit 1
       trap 'rm -f "$tmp"' EXIT
