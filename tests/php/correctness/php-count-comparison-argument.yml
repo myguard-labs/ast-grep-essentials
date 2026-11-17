@@ -3,7 +3,13 @@ valid:
   - >-
     function f($ids) { if ( is_array($ids) && count($ids) > 0 ) { return true; }
     return false; }
+  - '<?php $n = count($a, COUNT_RECURSIVE) > 0;'
+  - '<?php $n = count($a) > count($b);'
+  - '<?php $n = count(array_filter($a, fn($x) => $x > 0));'
 invalid:
   - >-
     function f($ids) { if ( is_array($ids) && count($ids > 0) ) { return true; }
     return false; }
+  - '<?php $n = count($a > $b);'
+  - '<?php $n = count( $obj->items > 0 );'
+  - '<?php $n = count($a[''k''] > 1);'

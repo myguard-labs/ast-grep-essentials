@@ -3,9 +3,15 @@ valid:
   - >-
     <?php $cron_array = _get_cron_array(); unset(
     $cron_array['wp_batch_split_terms'] ); _set_cron_array( $cron_array );
+  - '<?php wp_unschedule_event( $ts, ''my_hook'', $args );'
+  - '<?php foreach ( $hooks as $hook ) { wp_clear_scheduled_hook( $hook ); }'
+  - '<?php foreach ( $events as $ts => $ev ) { echo 1; } wp_unschedule_event( $ts, ''h'' );'
 invalid:
   - >-
     <?php foreach ( $cron_array['wp_batch_split_terms'] as $timestamp_hook =>
     $cron_data ) { foreach ( $cron_data as $key => $args ) {
     wp_unschedule_event( 'wp_batch_split_terms', $timestamp_hook, $args['args']
     ); } }
+  - '<?php foreach ( $events as $ts => $ev ) { wp_unschedule_event( $ts, ''h'' ); }'
+  - '<?php foreach ( $events as $ts => $ev ) { if ( $ev ) { wp_unschedule_event( $ts, ''h'' ); } }'
+  - '<?php function f() { foreach ( $events as $ts => $ev ) { wp_unschedule_event( $ts, ''h'' ); } }'

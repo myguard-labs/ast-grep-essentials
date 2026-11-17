@@ -1,5 +1,11 @@
 id: php-constant-call-without-defined-guard
 valid:
   - '<?php if ( defined( $name ) && constant( $name ) ) { echo 1; }'
+  - '<?php if ( defined( $name ) and constant( $name ) ) { echo 1; }'
+  - '<?php if ( ! defined( $name ) || constant( $name ) ) { echo 1; }'
+  - '<?php if ( ( defined( $name ) ) && constant( $name ) ) { echo 1; }'
 invalid:
   - '<?php if ( constant( $name ) ) { echo 1; }'
+  - '<?php if ( defined( $a ) && constant( $b ) ) { echo 1; }'
+  - '<?php if ( $x && constant( $name ) ) { echo 1; }'
+  - '<?php if ( constant( $name ) === ''x'' ) { echo 1; }'
