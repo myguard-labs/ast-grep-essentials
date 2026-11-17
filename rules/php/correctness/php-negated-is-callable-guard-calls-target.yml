@@ -13,7 +13,13 @@ note: >-
   aliasing.
 rule:
   kind: if_statement
-  pattern: 'if ( ! is_callable( ''$NAME'' ) ) { $$$BODY }'
+  all:
+    - pattern: 'if ( ! is_callable( ''$NAME'' ) ) { $$$BODY }'
+    - has:
+        field: body
+        has:
+          stopBy: end
+          pattern: '$NAME($$$ARGS)'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -23,6 +29,5 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'Observed false positive: a negated is_callable(''f'') guard whose braced body never calls f (e.g. body is `return;` or `$mime = ''none'';`) is flagged; the pattern has no check that the body calls the target.'
-    - 'Observed false positive: `if ( ! is_callable(''f'') ) { $m = ''none''; } else { $m = f(); }` is flagged although f is only called in the else branch.'
+    - 'Observed miss: a leading-backslash call (`\f()`) and a differently-cased call (`F()`) to the checked function are not flagged.'
     - 'Observed miss: a brace-less body (`if ( ! is_callable(''f'') ) $m = f();`) and a double-quoted argument (`is_callable("f")`) are not flagged.'
