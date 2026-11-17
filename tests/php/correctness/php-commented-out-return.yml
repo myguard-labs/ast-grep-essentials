@@ -3,7 +3,11 @@ valid:
   - >-
     <?php function f( $k ) { $cache = wp_cache_get( $k ); if ( $cache ) { return
     $cache; } }
+  - "<?php function f() { return 1; }"
+  - "<?php // returns the cached value"
 invalid:
   - >-
     <?php function f( $k ) { $cache = wp_cache_get( $k ); if ( $cache ) {
     //return $cache; } }
+  - "<?php function f() {\n\t//  return $cache;\n}"
+  - "<?php function f() {\n\t//return false;\n}"
