@@ -1,5 +1,13 @@
 id: php-unreachable-statement-after-return
 valid:
   - '<?php function f($x) { cleanup($x); return $x; }'
+  - '<?php function f($x) { if ($x) { return 1; } cleanup($x); return 2; }'
+  - '<?php function f($x) { switch ($x) { case 1: return 1; default: cleanup(); } }'
+  - '<?php function f($x) { try { return $x; } finally { cleanup(); } }'
+  - '<?php function f($x) { foreach ($x as $i) { if ($i) { return $i; } cleanup($i); } }'
 invalid:
   - '<?php function f($x) { return $x; cleanup($x); }'
+  - '<?php function f($x) { return $x; log_it($x); }'
+  - '<?php function f() { return; cleanup(); }'
+  - '<?php function f($a) { if ($a) { return 1; cleanup(); } return 0; }'
+  - '<?php function f($x) { return 1; $r = compute($x); }'

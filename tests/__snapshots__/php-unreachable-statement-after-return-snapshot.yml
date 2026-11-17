@@ -1,6 +1,20 @@
 id: php-unreachable-statement-after-return
 snapshots:
-  <?php function f($x) { return $x; cleanup($x); }:
+  "<?php function f($a) { if ($a) { return 1; cleanup(); } return 0; }":
+    labels:
+    - source: cleanup();
+      style: primary
+      start: 43
+      end: 53
+    - source: return 1;
+      style: secondary
+      start: 33
+      end: 42
+    - source: cleanup()
+      style: secondary
+      start: 43
+      end: 52
+  "<?php function f($x) { return $x; cleanup($x); }":
     labels:
     - source: cleanup($x);
       style: primary
@@ -14,3 +28,45 @@ snapshots:
       style: secondary
       start: 34
       end: 45
+  "<?php function f($x) { return $x; log_it($x); }":
+    labels:
+    - source: log_it($x);
+      style: primary
+      start: 34
+      end: 45
+    - source: return $x;
+      style: secondary
+      start: 23
+      end: 33
+    - source: log_it($x)
+      style: secondary
+      start: 34
+      end: 44
+  "<?php function f($x) { return 1; $r = compute($x); }":
+    labels:
+    - source: $r = compute($x);
+      style: primary
+      start: 33
+      end: 50
+    - source: return 1;
+      style: secondary
+      start: 23
+      end: 32
+    - source: compute($x)
+      style: secondary
+      start: 38
+      end: 49
+  "<?php function f() { return; cleanup(); }":
+    labels:
+    - source: cleanup();
+      style: primary
+      start: 29
+      end: 39
+    - source: return;
+      style: secondary
+      start: 21
+      end: 28
+    - source: cleanup()
+      style: secondary
+      start: 29
+      end: 38
