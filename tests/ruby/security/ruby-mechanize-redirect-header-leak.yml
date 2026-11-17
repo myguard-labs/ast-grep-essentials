@@ -26,6 +26,18 @@ valid:
       fetch(default_uri, headers)
     end
   end
+- |-
+  def fetch(uri, attempts, headers)
+    if attempts < 300
+      fetch(uri, attempts + 1, headers)
+    end
+  end
+- |-
+  def fetch(uri, timeout, headers)
+    if timeout == 300
+      fetch(uri, timeout, headers)
+    end
+  end
 invalid:
 - |-
   def follow_redirect(uri, headers)
