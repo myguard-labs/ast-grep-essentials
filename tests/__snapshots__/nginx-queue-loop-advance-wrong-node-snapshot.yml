@@ -1,8 +1,10 @@
 id: nginx-queue-loop-advance-wrong-node
 snapshots:
-  ? ngx_queue_t *q; for (q = ngx_queue_head(&h->pushing); q != ngx_queue_sentinel(&h->pushing); q = ngx_queue_next(&h->pushing)) { ; }
-  : labels:
-    - source: for (q = ngx_queue_head(&h->pushing); q != ngx_queue_sentinel(&h->pushing); q = ngx_queue_next(&h->pushing)) { ; }
+  "ngx_queue_t *q; for (q = ngx_queue_head(&h->pushing); q != ngx_queue_sentinel(&h->pushing); q = ngx_queue_next(&h->pushing)) { ; }":
+    labels:
+    - source: >-
+        for (q = ngx_queue_head(&h->pushing); q != ngx_queue_sentinel(&h->pushing); q =
+        ngx_queue_next(&h->pushing)) { ; }
       style: primary
       start: 16
       end: 130
@@ -10,3 +12,39 @@ snapshots:
       style: secondary
       start: 92
       end: 123
+  "void f(ngx_queue_t *h) { ngx_queue_t *q; for (q = ngx_queue_head(&h->pushing); q != ngx_queue_sentinel(&h->pushing); q = ngx_queue_next(&h->pushing)) { if (q == NULL) { break; } } }":
+    labels:
+    - source: >-
+        for (q = ngx_queue_head(&h->pushing); q != ngx_queue_sentinel(&h->pushing); q =
+        ngx_queue_next(&h->pushing)) { if (q == NULL) { break; } }
+      style: primary
+      start: 41
+      end: 179
+    - source: q = ngx_queue_next(&h->pushing)
+      style: secondary
+      start: 117
+      end: 148
+  "void f(ngx_queue_t *h) { ngx_queue_t *q; for (q = ngx_queue_head(&h->pushing); q != ngx_queue_sentinel(&h->pushing); q = ngx_queue_next(&h->pushing)) { ngx_queue_remove(q); } }":
+    labels:
+    - source: >-
+        for (q = ngx_queue_head(&h->pushing); q != ngx_queue_sentinel(&h->pushing); q =
+        ngx_queue_next(&h->pushing)) { ngx_queue_remove(q); }
+      style: primary
+      start: 41
+      end: 174
+    - source: q = ngx_queue_next(&h->pushing)
+      style: secondary
+      start: 117
+      end: 148
+  "void f(ngx_queue_t *h) { ngx_queue_t *q; for (q = ngx_queue_head(&h->pushing); q != ngx_queue_sentinel(&h->pushing); q = ngx_queue_next(&h->pushing)); }":
+    labels:
+    - source: >-
+        for (q = ngx_queue_head(&h->pushing); q != ngx_queue_sentinel(&h->pushing); q =
+        ngx_queue_next(&h->pushing));
+      style: primary
+      start: 41
+      end: 150
+    - source: q = ngx_queue_next(&h->pushing)
+      style: secondary
+      start: 117
+      end: 148

@@ -4,8 +4,37 @@ valid:
     #if (NGX_HTTP_SSL && defined SSL_CTRL_SET_TLSEXT_HOSTNAME)
     int ngx_http_ssl_servername(void);
     #endif
+  - |-
+    #if (NGX_HTTP_SSL) && defined(SSL_CTRL_SET_TLSEXT_HOSTNAME)
+    int ngx_http_ssl_servername(void);
+    #endif
+  - |-
+    #if (NGX_HTTP_SSL)
+    #if defined(SSL_CTRL_SET_TLSEXT_HOSTNAME)
+    int ngx_http_ssl_servername(void);
+    #endif
+    #endif
+  - |-
+    #ifdef NGX_HTTP_SSL
+    int ngx_http_ssl_servername(void);
+    #endif
+
 invalid:
   - |-
     #ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME
     int ngx_http_ssl_servername(void);
+    #endif
+  - |-
+    #ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME
+    int ngx_http_ssl_servername(void);
+    #else
+    int ngx_http_ssl_noserver(void);
+    #endif
+  - |-
+    #ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME
+    #define NGX_HTTP_SSL_SNI 1
+    #endif
+  - |-
+    #ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME
+    static int ngx_ssl_servername_cb(void *s, int *ad, void *arg) { return 0; }
     #endif

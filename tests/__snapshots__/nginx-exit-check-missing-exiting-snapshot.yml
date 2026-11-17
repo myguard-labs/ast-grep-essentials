@@ -1,8 +1,26 @@
 id: nginx-exit-check-missing-exiting
 snapshots:
-  for (;;) { if (ngx_terminate || ngx_quit) { break; } }:
+  "for (;;) { if (ngx_terminate || ngx_quit) { break; } }":
     labels:
     - source: ngx_terminate || ngx_quit
       style: primary
       start: 15
       end: 40
+  "void w(void) { if ((ngx_terminate || ngx_quit)) { return; } }":
+    labels:
+    - source: ngx_terminate || ngx_quit
+      style: primary
+      start: 20
+      end: 45
+  "void w(void) { if (ngx_terminate || ngx_quit || ngx_reopen) { return; } }":
+    labels:
+    - source: ngx_terminate || ngx_quit
+      style: primary
+      start: 19
+      end: 44
+  "void w(void) { int done = ngx_terminate || ngx_quit; if (done) { return; } }":
+    labels:
+    - source: ngx_terminate || ngx_quit
+      style: primary
+      start: 26
+      end: 51

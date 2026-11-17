@@ -3,5 +3,12 @@ valid:
   - >-
     static ngx_int_t worker_id(void) { if (ngx_process != NGX_PROCESS_WORKER) {
     return -1; } return (ngx_int_t) ngx_worker; }
+  - 'static ngx_int_t worker_id(void) { return ngx_process == NGX_PROCESS_WORKER ? (ngx_int_t) ngx_worker : -1; }'
+  - 'static ngx_int_t worker_id(void) { if (ngx_process == NGX_PROCESS_WORKER) { return (ngx_int_t) ngx_worker; } return -1; }'
+  - 'static void log_id(ngx_log_t *log) { if (ngx_process == NGX_PROCESS_WORKER) { ngx_log_error(NGX_LOG_INFO, log, 0, "w=%i", (ngx_int_t) ngx_worker); } }'
+
 invalid:
   - 'static ngx_int_t worker_id(void) { return (ngx_int_t) ngx_worker; }'
+  - 'static void log_id(ngx_log_t *log) { ngx_log_error(NGX_LOG_INFO, log, 0, "w=%i", (ngx_int_t) ngx_worker); }'
+  - 'static ngx_int_t worker_id(void) { ngx_int_t id = (ngx_int_t) ngx_worker; return id; }'
+  - 'static ngx_int_t a(void) { return (ngx_int_t) ngx_worker; } static ngx_int_t b(void) { return ngx_process; }'
