@@ -1,5 +1,9 @@
 id: wp-wpdb-blogid-as-current-blog
 valid:
   - 'global $wpdb; $blog_id = $wpdb->prefix;'
+  - '<?php $blog_id = get_current_blog_id(); ?>'
+  - '<?php $prefix = $wpdb->get_blog_prefix( $blog_id ); ?>'
 invalid:
   - 'global $wpdb; $blog_id = $wpdb->blogid;'
+  - '<?php switch_to_blog( $wpdb->blogid ); ?>'
+  - '<?php if ( $wpdb->blogid == 1 ) { $main = true; } ?>'

@@ -1,6 +1,38 @@
 id: wp-widget-return-instead-of-echo
 snapshots:
-  class W extends WP_Widget { function widget( $args, $instance ) { return $args['x']; } }:
+  "<?php class W extends WP_Widget { function widget( $args, $instance ) { if ( empty( $instance ) ) { return ''; } return '<p>' . $args['x'] . '</p>'; } } ?>":
+    labels:
+    - source: >-
+        function widget( $args, $instance ) { if ( empty( $instance ) ) { return ''; }
+        return '<p>' . $args['x'] . '</p>'; }
+      style: primary
+      start: 34
+      end: 150
+    - source: widget
+      style: secondary
+      start: 43
+      end: 49
+    - source: return '';
+      style: secondary
+      start: 100
+      end: 110
+  "<?php class W extends WP_Widget { public function widget( $args, $instance ) { $out = '<div>'; $out .= $instance['t']; return $out; } } ?>":
+    labels:
+    - source: >-
+        public function widget( $args, $instance ) { $out = '<div>'; $out .=
+        $instance['t']; return $out; }
+      style: primary
+      start: 34
+      end: 133
+    - source: widget
+      style: secondary
+      start: 50
+      end: 56
+    - source: return $out;
+      style: secondary
+      start: 119
+      end: 131
+  "class W extends WP_Widget { function widget( $args, $instance ) { return $args['x']; } }":
     labels:
     - source: function widget( $args, $instance ) { return $args['x']; }
       style: primary

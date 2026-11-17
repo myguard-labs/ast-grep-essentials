@@ -3,7 +3,11 @@ valid:
   - >-
     class W extends WP_Widget { function widget( $args, $instance ) { echo
     $args['x']; return; } }
+  - '<?php class W extends WP_Widget { function widget_title( $instance ) { return $instance[''title'']; } } ?>'
+  - '<?php class W extends WP_Widget { function widget( $args, $instance ) { printf( ''<div>%s</div>'', $instance[''t''] ); return; } } ?>'
 invalid:
   - >-
     class W extends WP_Widget { function widget( $args, $instance ) { return
     $args['x']; } }
+  - '<?php class W extends WP_Widget { public function widget( $args, $instance ) { $out = ''<div>''; $out .= $instance[''t'']; return $out; } } ?>'
+  - '<?php class W extends WP_Widget { function widget( $args, $instance ) { if ( empty( $instance ) ) { return ''''; } return ''<p>'' . $args[''x''] . ''</p>''; } } ?>'
