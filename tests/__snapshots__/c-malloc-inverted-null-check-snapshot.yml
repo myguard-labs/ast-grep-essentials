@@ -1,5 +1,41 @@
 id: c-malloc-inverted-null-check
 snapshots:
+  "p = calloc(n, 1);\nif (p) { return -1; }":
+    labels:
+    - source: if (p) { return -1; }
+      style: primary
+      start: 18
+      end: 39
+    - source: p = calloc(n, 1);
+      style: secondary
+      start: 0
+      end: 17
+    - source: return -1;
+      style: secondary
+      start: 27
+      end: 37
+    - source: return -1;
+      style: secondary
+      start: 27
+      end: 37
+  "p = malloc(n);\nif (p) return NULL;":
+    labels:
+    - source: if (p) return NULL;
+      style: primary
+      start: 15
+      end: 34
+    - source: p = malloc(n);
+      style: secondary
+      start: 0
+      end: 14
+    - source: return
+      style: secondary
+      start: 22
+      end: 28
+    - source: return
+      style: secondary
+      start: 22
+      end: 28
   "p = malloc(n);\nif (p) { return NULL; }":
     labels:
     - source: if (p) { return NULL; }
@@ -18,3 +54,21 @@ snapshots:
       style: secondary
       start: 24
       end: 36
+  "p = realloc(p, n);\nif (p) { goto fail; }":
+    labels:
+    - source: if (p) { goto fail; }
+      style: primary
+      start: 19
+      end: 40
+    - source: p = realloc(p, n);
+      style: secondary
+      start: 0
+      end: 18
+    - source: goto fail;
+      style: secondary
+      start: 28
+      end: 38
+    - source: goto fail;
+      style: secondary
+      start: 28
+      end: 38

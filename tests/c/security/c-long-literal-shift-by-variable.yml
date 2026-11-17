@@ -3,7 +3,13 @@ valid:
   - |-
     unsigned long bm;
     void f(int index) { bm |= (1ULL << index); }
+  - "unsigned long long bm;\nvoid f(int i) { bm |= (1LL << i); }"
+  - "unsigned long long bm;\nvoid f(int i) { bm |= ((unsigned long long)1 << i); }"
+  - "uint64_t bm;\nvoid f(int i) { uint64_t one = 1; bm |= (one << i); }"
 invalid:
   - |-
     unsigned long bm;
     void f(int index) { bm |= (1L << index); }
+  - "long f(int i) { return (1L << (i + 1)); }"
+  - "long f(int i) { return (1L << (i & 31)); }"
+  - "long f(int n) { return g((1L << n)); }"

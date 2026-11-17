@@ -1,5 +1,11 @@
 id: c-macro-param-unparenthesized-subscript
 valid:
   - '#define FIRST(c) ((c)[0])'
+  - "#define FIRST(c) ((c)[(i)])"
+  - "#define FIRST(c) (c)[0]"
+  - "#define FIRST(c) (*(c))"
 invalid:
   - '#define FIRST(c) (c[0])'
+  - "#define FIRST(c, i) (c[i])"
+  - "#define FIRST(c) ( c[0])"
+  - "#define FIRST(c) do { x = (c[0]); } while (0)"

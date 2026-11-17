@@ -1,9 +1,25 @@
 id: c-long-literal-shift-by-variable
 snapshots:
-  ? |-
-    unsigned long bm;
-    void f(int index) { bm |= (1L << index); }
-  : labels:
+  "long f(int i) { return (1L << (i & 31)); }":
+    labels:
+    - source: (1L << (i & 31))
+      style: primary
+      start: 23
+      end: 39
+  "long f(int i) { return (1L << (i + 1)); }":
+    labels:
+    - source: (1L << (i + 1))
+      style: primary
+      start: 23
+      end: 38
+  "long f(int n) { return g((1L << n)); }":
+    labels:
+    - source: (1L << n)
+      style: primary
+      start: 25
+      end: 34
+  "unsigned long bm;\nvoid f(int index) { bm |= (1L << index); }":
+    labels:
     - source: (1L << index)
       style: primary
       start: 44

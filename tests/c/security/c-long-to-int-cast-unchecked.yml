@@ -1,5 +1,11 @@
 id: c-long-to-int-cast-unchecked
 valid:
   - 'int f(long v) { int x; if (v > INT_MAX) return -1; x = (int)v; return x; }'
+  - "int f(long v) { if (v < INT_MIN) v = INT_MIN; else if (v > INT_MAX) v = INT_MAX; return (int)v; }"
+  - "int f(long v) { return (v >= INT_MIN && v <= INT_MAX) ? (int)v : 0; }"
+  - "int f(long v) { if (v > INT_MAX || v < INT_MIN) { return -1; } return (int)v; }"
 invalid:
   - 'int f(long v) { int x; x = (int)v; return x; }'
+  - "int f(long v) { return (int) v; }"
+  - "int f(long v) { return (int)(v + 1); }"
+  - "void f(long v) { g((int)v); }"

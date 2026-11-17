@@ -1,5 +1,11 @@
 id: c-logical-not-before-mask-test
 valid:
   - "if (!(mask & NOFILE)) {\n\tdo_thing();\n}"
+  - "int f(int mask) { return !mask && FLAG; }"
+  - "int f(int mask) { return (mask & FLAG) == 0; }"
+  - "int f(int mask) { if (!(mask & (A | B))) { return 1; } return 0; }"
 invalid:
   - "if (! mask & NOFILE) {\n\tdo_thing();\n}"
+  - "int f(int mask) { return !mask & FLAG; }"
+  - "int f(int mask) { if (!mask & FLAG) { return 1; } return 0; }"
+  - "int f(int mask) { return ! mask & (A | B); }"

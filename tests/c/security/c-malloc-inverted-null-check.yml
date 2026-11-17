@@ -3,7 +3,13 @@ valid:
   - |-
     p = malloc(n);
     if (!p) { return NULL; }
+  - "p = malloc(n);\nif (p == NULL) { return NULL; }"
+  - "p = malloc(n);\nif (!p) { goto out; }"
+  - "p = malloc(n);\nif (p) { use(p); }"
 invalid:
   - |-
     p = malloc(n);
     if (p) { return NULL; }
+  - "p = calloc(n, 1);\nif (p) { return -1; }"
+  - "p = realloc(p, n);\nif (p) { goto fail; }"
+  - "p = malloc(n);\nif (p) return NULL;"

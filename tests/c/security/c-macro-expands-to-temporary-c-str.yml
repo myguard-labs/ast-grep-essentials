@@ -1,5 +1,11 @@
 id: c-macro-expands-to-temporary-c-str
 valid:
   - '#define RAC_ORT_PATH(p) (p)'
+  - "#define P(s) make_str(s)"
+  - "#define P(s) ((s))"
+  - "#define P(s) s.c_str()"
 invalid:
   - '#define RAC_ORT_PATH(p) rac_to_wstring(p).c_str()'
+  - "#define P(s) std::string(s).c_str()"
+  - "#define P(s) a(b(s)).c_str( )"
+  - "#define P(s) do_it(s).c_str() /* tmp */"
