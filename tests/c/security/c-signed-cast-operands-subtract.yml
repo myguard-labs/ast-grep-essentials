@@ -4,8 +4,13 @@ valid:
   - 'size_t f(size_t a, size_t b) { return (size_t)a - (size_t)b; }'
   - 'unsigned f(unsigned a, unsigned b) { return (unsigned)a - (unsigned)b; }'
   - 'int f(int a, int b) { return (long)a < (long)b; }'
+  - 'long f(unsigned long a, unsigned long b) { return (unsigned long)a - (unsigned long)b; }'
+  - 'long f(unsigned long long a, unsigned long long b) { return (unsigned long long)a - (unsigned long long)b; }'
 invalid:
   - 'void f(void) { long d = (long) node->key - (long) current; }'
   - 'long f(int a, int b) { return (long)a - (long)b; }'
   - 'int f(struct n *p, struct n *q) { return (long)p->x - (long)q->x < 0; }'
   - 'long f(long a, long b) { return (long) a - (long) b; }'
+  - 'long f(long long a, long long b) { return (long long)a - (long long)b; }'
+  - 'long f(long a, unsigned long b) { return (long)a - (unsigned long)b; }'
+  - 'long f(unsigned long u, long a, long b) { unsigned long t = (unsigned long)u; return (long)a - (long)b; }'
