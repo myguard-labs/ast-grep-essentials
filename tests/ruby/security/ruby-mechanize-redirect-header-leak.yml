@@ -38,6 +38,24 @@ valid:
       fetch(uri, timeout, headers)
     end
   end
+- |-
+  def fetch(uri, decoded, headers)
+    if decoded.size > 300
+      fetch(uri, decoded, headers)
+    end
+  end
+- |-
+  def fetch(uri, status_count, headers)
+    if status_count < 350
+      fetch(uri, status_count, headers)
+    end
+  end
+- |-
+  def fetch(uri, version, headers)
+    if version.start_with?('3')
+      fetch(uri, version, headers)
+    end
+  end
 invalid:
 - |-
   def follow_redirect(uri, headers)
