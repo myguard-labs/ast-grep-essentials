@@ -1,5 +1,11 @@
 id: js-regex-quantified-overlapping-alternation
 valid:
   - 'var re = /<p>(?:&nbsp;|\s)+<\/p>/gi;'
+  - "var re = /<p>[\\u00a0\\s]+<\\/p>/gi;"
+  - "var re = /<p>\\s+<\\/p>/gi;"
+  - "var re = /<p>(?:a|b)+<\\/p>/gi;"
 invalid:
   - 'var re = /<p>(?:\u00a0|\s)+<\/p>/gi;'
+  - "const out = html.replace(/<p>(?:\\u00a0|\\s)+<\\/p>/gi, '');"
+  - "const re = /<p>(?:\\u00a0|\\s)+<\\/p>/gi;"
+  - "function strip(h) { return /<p>(?:\\u00a0|\\s)+<\\/p>/gi.test(h); }"

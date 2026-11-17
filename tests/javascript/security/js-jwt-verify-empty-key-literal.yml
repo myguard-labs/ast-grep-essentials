@@ -3,5 +3,11 @@ valid:
 - 'jwt.verify(token, secret, { algorithms: [''HS256''] })'
 - '// jwt.verify(token, '''', { algorithms: [''HS256''] })'
 - 'const astgrepFixture = "jwt.verify(token, '''', { algorithms: [''HS256''] })";'
+- "jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] })"
+- "jwt.verify(token, publicKey, { algorithms: ['RS256'] })"
+- "jwt.verify(token, loadKey(), { algorithms: ['HS256'] })"
 invalid:
 - 'jwt.verify(token, '''', { algorithms: [''HS256''] })'
+- "jwt.verify(req.headers.authorization, '', { algorithms: ['HS256'] })"
+- "const claims = jwt.verify(token, '', { algorithms: ['HS256'] })"
+- "jwt.verify(getToken(ctx), '', { allowed: ['HS256'] })"

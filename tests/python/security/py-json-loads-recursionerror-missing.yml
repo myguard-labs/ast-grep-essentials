@@ -11,9 +11,15 @@ valid:
   # except (json.JSONDecodeError, ValueError):
   #     value = body
 - astgrep_fixture = "try:\n    value = json.loads(body)\nexcept (json.JSONDecodeError, ValueError):\n    value = body"
+- "try:\n    value = json.loads(body)\nexcept (json.JSONDecodeError, ValueError, TypeError, RecursionError):\n    value = body"
+- "try:\n    value = json.loads(body)\nexcept (RecursionError, ValueError):\n    value = body"
+- "try:\n    value = json.loads(body)\nexcept Exception:\n    value = body"
 invalid:
 - |-
   try:
       value = json.loads(body)
   except (json.JSONDecodeError, ValueError):
       value = body
+- "try:\n    data = json.loads(raw)\nexcept (json.JSONDecodeError, ValueError):\n    data = raw"
+- "def parse(payload):\n    try:\n        out = json.loads(payload)\n    except (json.JSONDecodeError, ValueError):\n        out = payload\n    return out"
+- "try:\n    cfg = json.loads(text)\nexcept (json.JSONDecodeError, ValueError):\n    cfg = text"
