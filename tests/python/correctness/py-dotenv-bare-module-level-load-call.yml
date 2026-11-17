@@ -6,8 +6,47 @@ valid:
 
     def main():
         load_dotenv()
+  - |-
+    from dotenv import load_dotenv
+
+    if __name__ == "__main__":
+        load_dotenv()
+        main()
+  - |-
+    from dotenv import dotenv_values
+
+    config = dotenv_values(".env")
+  - |-
+    import dotenv
+
+
+    class Settings:
+        def __init__(self):
+            dotenv.load_dotenv()
 invalid:
   - |
     from dotenv import load_dotenv
 
     load_dotenv()
+  - |-
+    import os
+    from dotenv import load_dotenv
+
+    load_dotenv()  # read .env
+    TOKEN = os.getenv("TOKEN")
+  - |-
+    from dotenv import load_dotenv
+
+    DEBUG = False
+    load_dotenv( )
+    PORT = 8080
+  - |-
+    import os
+    from dotenv import load_dotenv
+
+    TOKEN = os.getenv("TOKEN")
+    load_dotenv()
+
+
+    def main():
+        pass

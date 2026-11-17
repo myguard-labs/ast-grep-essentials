@@ -1,9 +1,33 @@
 id: py-ignored-lognos-added-without-remove
 snapshots:
-  ? |
-    def _class_scope(env):
-        env.httpd_error_log.add_ignored_lognos(["AH10045"])
-  : labels:
+  "async def _setup(env):\n    await prepare(env)\n    env.log.add_ignored_lognos([\"AH10045\"])":
+    labels:
+    - source: |-
+        async def _setup(env):
+            await prepare(env)
+            env.log.add_ignored_lognos(["AH10045"])
+      style: primary
+      start: 0
+      end: 89
+    - source: env.log.add_ignored_lognos(["AH10045"])
+      style: secondary
+      start: 50
+      end: 89
+  "class TestX:\n    def test_it(self, env):\n        with env.guard():\n            env.log.add_ignored_lognos(lognos=[\"AH01\"])":
+    labels:
+    - source: |-
+        def test_it(self, env):
+                with env.guard():
+                    env.log.add_ignored_lognos(lognos=["AH01"])
+      style: primary
+      start: 17
+      end: 122
+    - source: env.log.add_ignored_lognos(lognos=["AH01"])
+      style: secondary
+      start: 79
+      end: 122
+  "def _class_scope(env):\n    env.httpd_error_log.add_ignored_lognos([\"AH10045\"])\n":
+    labels:
     - source: |-
         def _class_scope(env):
             env.httpd_error_log.add_ignored_lognos(["AH10045"])
@@ -14,3 +38,16 @@ snapshots:
       style: secondary
       start: 27
       end: 78
+  "def _fixture(env):\n    env.log.add_ignored_lognos(PATTERNS)\n    yield":
+    labels:
+    - source: |-
+        def _fixture(env):
+            env.log.add_ignored_lognos(PATTERNS)
+            yield
+      style: primary
+      start: 0
+      end: 69
+    - source: env.log.add_ignored_lognos(PATTERNS)
+      style: secondary
+      start: 23
+      end: 59

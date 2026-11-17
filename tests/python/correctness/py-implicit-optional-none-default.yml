@@ -3,7 +3,25 @@ valid:
   - |-
     def f(value: str | None = None):
         return value
+  - |-
+    def f(value: Optional[str] = None):
+        return value
+  - |-
+    def f(value: Any = None):
+        return value
+  - |-
+    def f(value: "str | None" = None):
+        return value
 invalid:
   - |-
     def f(value: str = None):
         return value
+  - |-
+    def f(*, key: bytes = None):
+        return key
+  - |-
+    def f(items: List[str] = None):
+        return items
+  - |-
+    async def g(self, cb: Callable[[int], str] = None):
+        return cb

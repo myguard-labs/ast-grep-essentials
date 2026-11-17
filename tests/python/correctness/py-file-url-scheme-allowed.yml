@@ -12,9 +12,25 @@ valid:
   #     if urlparse(url).scheme == 'file':
   #         return None
 - astgrep_fixture = "from urllib.parse import urlparse\ndef block_reason(url):\n    if urlparse(url).scheme == 'file':\n        return None\n"
+- |-
+  def block_reason(url):
+      if urlparse(url).scheme == 'file' and os.path.realpath(path).startswith(BASE):
+          return None
+- |-
+  def block_reason(url):
+      if urlparse(url).scheme == 'http':
+          return None
 invalid:
 - |
   from urllib.parse import urlparse
   def block_reason(url):
       if urlparse(url).scheme == 'file':
+          return None
+- |-
+  def block_reason(url):
+      if urlparse(url).scheme == "file":
+          return None
+- |-
+  def block_reason(parsed):
+      if 'file' == parsed.scheme:
           return None

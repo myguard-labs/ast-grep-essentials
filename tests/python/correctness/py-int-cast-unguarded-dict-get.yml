@@ -5,5 +5,27 @@ valid:
         start = int(str(data.get('start_line', 0)).strip())
     except (TypeError, ValueError):
         start = 0
+  - |-
+    try:
+        port = int(os.environ.get("PORT", "80"))
+    except ValueError:
+        port = 80
+  - |-
+    def parse(cfg):
+        try:
+            return int(cfg.get("n"))
+        except (TypeError, ValueError):
+            return 0
+  - |-
+    n = int("5")
 invalid:
   - 'start = int(str(data.get(''start_line'', 0)).strip())'
+  - |-
+    page = int(request.args.get("page"))
+  - |-
+    port = int(os.environ.get("PORT", "80"))
+  - |-
+    try:
+        mode = int(meta.get("mode"), 8)
+    except KeyError:
+        mode = 0

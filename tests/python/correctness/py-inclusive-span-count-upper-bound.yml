@@ -3,7 +3,23 @@ valid:
   - |-
     if not (start1 <= line_start < start1 + size1):
         skip_hunk = True
+  - |-
+    if start <= pos <= start + count - 1:
+        hit = True
+  - |-
+    if start <= pos <= end:
+        hit = True
+  - |-
+    if start <= pos <= other + count:
+        hit = True
 invalid:
   - |-
     if not (start1 <= line_start <= start1 + size1):
         skip_hunk = True
+  - |-
+    while start <= pos <= start + length:
+        pos += 1
+  - |-
+    ok = self.start <= idx <= self.start + self.count
+  - |-
+    assert first <= n <= first + size
