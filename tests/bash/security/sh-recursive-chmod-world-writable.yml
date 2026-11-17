@@ -1,5 +1,11 @@
 id: sh-recursive-chmod-world-writable
 valid:
   - 'chmod -R 755 "$dir"'
+  - 'chmod -R 750 "$dir"'
+  - 'chmod -R a+rX "$dir"'
+  - 'chmod -R u=rwX,go=rX "$dir"'
 invalid:
   - 'chmod -R 777 "$dir"'
+  - 'chmod -R 777 /var/www /srv'
+  - 'find . -type d && chmod -R 777 .'
+  - 'chmod -R 777 "$dir" || true'

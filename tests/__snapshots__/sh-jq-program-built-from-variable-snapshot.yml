@@ -1,5 +1,47 @@
 id: sh-jq-program-built-from-variable
 snapshots:
+  "echo x | jq \"select(.a == ${v})\"":
+    labels:
+    - source: jq "select(.a == ${v})"
+      style: primary
+      start: 9
+      end: 32
+    - source: jq
+      style: secondary
+      start: 9
+      end: 11
+    - source: "\"select(.a == ${v})\""
+      style: secondary
+      start: 12
+      end: 32
+  "jq \".items[] | select(.id == $id)\" data.json":
+    labels:
+    - source: jq ".items[] | select(.id == $id)" data.json
+      style: primary
+      start: 0
+      end: 44
+    - source: jq
+      style: secondary
+      start: 0
+      end: 2
+    - source: "\".items[] | select(.id == $id)\""
+      style: secondary
+      start: 3
+      end: 34
+  jq --arg a 1 ".$key" file:
+    labels:
+    - source: jq --arg a 1 ".$key" file
+      style: primary
+      start: 0
+      end: 25
+    - source: jq
+      style: secondary
+      start: 0
+      end: 2
+    - source: "\".$key\""
+      style: secondary
+      start: 13
+      end: 20
   jq -e "getpath($jq_array) != null" "$manifest":
     labels:
     - source: jq -e "getpath($jq_array) != null" "$manifest"
@@ -10,7 +52,21 @@ snapshots:
       style: secondary
       start: 0
       end: 2
-    - source: '"getpath($jq_array) != null"'
+    - source: "\"getpath($jq_array) != null\""
       style: secondary
       start: 6
       end: 34
+  "jq -r \".${field}\" \"$file\"":
+    labels:
+    - source: jq -r ".${field}" "$file"
+      style: primary
+      start: 0
+      end: 25
+    - source: jq
+      style: secondary
+      start: 0
+      end: 2
+    - source: "\".${field}\""
+      style: secondary
+      start: 6
+      end: 17
