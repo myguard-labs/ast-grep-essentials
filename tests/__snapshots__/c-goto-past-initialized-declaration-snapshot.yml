@@ -1,5 +1,82 @@
 id: c-goto-past-initialized-declaration
 snapshots:
+  "void f(int x) {\n    if (x) goto done;\n    {\n        int y = 1;\n        (void)y;\n    done:\n        ;\n    }\n}":
+    labels:
+    - source: |-
+        done:
+                ;
+      style: primary
+      start: 84
+      end: 99
+    - source: |-
+        {
+                int y = 1;
+                (void)y;
+            done:
+                ;
+            }
+      style: secondary
+      start: 42
+      end: 105
+    - source: y = 1
+      style: secondary
+      start: 56
+      end: 61
+    - source: int y = 1;
+      style: secondary
+      start: 52
+      end: 62
+  "void f(int x) {\n    if (x) goto out;\n    {\n        const char *s = \"a\";\n        (void)s;\n    out:\n        return;\n    }\n}":
+    labels:
+    - source: |-
+        out:
+                return;
+      style: primary
+      start: 93
+      end: 113
+    - source: |-
+        {
+                const char *s = "a";
+                (void)s;
+            out:
+                return;
+            }
+      style: secondary
+      start: 41
+      end: 119
+    - source: "*s = \"a\""
+      style: secondary
+      start: 62
+      end: 70
+    - source: const char *s = "a";
+      style: secondary
+      start: 51
+      end: 71
+  "void f(int x) {\n    if (x) goto out;\n    {\n        int y = 1, z = 2;\n    out:\n        (void)y;\n    }\n}":
+    labels:
+    - source: |-
+        out:
+                (void)y;
+      style: primary
+      start: 73
+      end: 94
+    - source: |-
+        {
+                int y = 1, z = 2;
+            out:
+                (void)y;
+            }
+      style: secondary
+      start: 41
+      end: 100
+    - source: y = 1
+      style: secondary
+      start: 55
+      end: 60
+    - source: int y = 1, z = 2;
+      style: secondary
+      start: 51
+      end: 68
   "void f(int x) {\n    if (x) goto out;\n    {\n        int y = 1;\n    out:\n        (void)y;\n    }\n}":
     labels:
     - source: |-

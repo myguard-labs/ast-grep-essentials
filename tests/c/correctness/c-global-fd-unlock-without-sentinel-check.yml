@@ -7,10 +7,61 @@ valid:
         if (lock_file == -1) return;
         fcntl(lock_file, F_SETLK, &fl);
     }
+  - |-
+    static int lock_file;
+    static void unlock_all(void) {
+        struct flock fl;
+        if (lock_file != -1) {
+            fcntl(lock_file, F_SETLK, &fl);
+        }
+    }
+  - |-
+    static int lock_file;
+    static void unlock_all(void) {
+        struct flock fl;
+        if (lock_file < 0) {
+            return;
+        }
+        fcntl(lock_file, F_SETLK, &fl);
+        lock_file = -1;
+    }
+  - |-
+    static int lock_file;
+    static void unlock_all(void) {
+        struct flock fl;
+        if (lock_file >= 0 && fcntl(lock_file, F_SETLK, &fl) == 0) {
+            lock_file = -1;
+        }
+    }
 invalid:
   - |-
     static int lock_file;
     static void unlock_all(void) {
         struct flock fl;
         fcntl(lock_file, F_SETLK, &fl);
+    }
+  - |-
+    static int lock_file;
+    static void unlock_all(void) {
+        struct flock fl;
+        fl.l_type = F_UNLCK;
+        fcntl(lock_file, F_SETLK, &fl);
+        close(lock_file);
+    }
+  - |-
+    static int lock_fd;
+    static int other_fd;
+    static void unlock_all(void) {
+        struct flock fl;
+        if (other_fd == -1) return;
+        fcntl(lock_fd, F_SETLK, &fl);
+    }
+  - |-
+    int lock_file;
+    static void unlock_all(void) {
+        struct flock fl;
+        while (1) {
+            fcntl(lock_file, F_SETLKW, &fl);
+            break;
+        }
     }

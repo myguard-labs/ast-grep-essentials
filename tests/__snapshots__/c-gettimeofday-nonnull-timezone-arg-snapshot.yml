@@ -1,6 +1,24 @@
 id: c-gettimeofday-nonnull-timezone-arg
 snapshots:
-  struct timezone tz; gettimeofday(&tp, &tz);:
+  "int f(struct timeval *tv) { struct timezone tz; if (gettimeofday(tv, &tz) != 0) return -1; return 0; }":
+    labels:
+    - source: gettimeofday(tv, &tz)
+      style: primary
+      start: 52
+      end: 73
+  "int f(void) { struct timeval tv; struct timezone tz; return gettimeofday(&tv, &tz); }":
+    labels:
+    - source: gettimeofday(&tv, &tz)
+      style: primary
+      start: 60
+      end: 82
+  "struct timezone gtz; int f(struct timeval *tv) { return gettimeofday(tv, &gtz); }":
+    labels:
+    - source: gettimeofday(tv, &gtz)
+      style: primary
+      start: 56
+      end: 78
+  "struct timezone tz; gettimeofday(&tp, &tz);":
     labels:
     - source: gettimeofday(&tp, &tz)
       style: primary
