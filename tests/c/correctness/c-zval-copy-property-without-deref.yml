@@ -3,7 +3,48 @@ valid:
   - >-
     ZEND_METHOD(exception, getFile) { zval *prop; prop = GET_PROPERTY(getThis(),
     ZEND_STR_FILE); ZVAL_DEREF(prop); ZVAL_COPY(return_value, prop); }
+  - |-
+    ZEND_METHOD(exception, getLine)
+    {
+        zval rv, *prop;
+        prop = GET_PROPERTY(ZEND_THIS, ZEND_STR_LINE);
+        ZVAL_DEREF(prop);
+        ZVAL_COPY(return_value, prop);
+    }
+  - |-
+    ZEND_METHOD(exception, getCode)
+    {
+        zval *prop = GET_PROPERTY(ZEND_THIS, ZEND_STR_CODE);
+        ZVAL_COPY_DEREF(return_value, prop);
+    }
+  - |-
+    ZEND_METHOD(exception, getMessage)
+    {
+        zval *prop;
+        prop = GET_PROPERTY(ZEND_THIS, ZEND_STR_MESSAGE);
+        ZVAL_DEREF(prop);
+        ZVAL_COPY(return_value, prop);
+    }
 invalid:
   - >-
     ZEND_METHOD(exception, getFile) { zval rv; ZVAL_COPY(return_value,
     GET_PROPERTY(getThis(), ZEND_STR_FILE)); }
+  - |-
+    ZEND_METHOD(exception, getLine)
+    {
+        ZVAL_COPY(return_value, GET_PROPERTY(ZEND_THIS, ZEND_STR_LINE));
+    }
+  - |-
+    ZEND_METHOD(exception, getCode)
+    {
+        zval out;
+        ZVAL_COPY(&out, GET_PROPERTY(getThis(), ZEND_STR_CODE));
+        RETURN_COPY_VALUE(&out);
+    }
+  - |-
+    ZEND_METHOD(exception, getMessage)
+    {
+        if (ZEND_NUM_ARGS() == 0) {
+            ZVAL_COPY(return_value, GET_PROPERTY(ZEND_THIS, ZEND_STR_MESSAGE));
+        }
+    }

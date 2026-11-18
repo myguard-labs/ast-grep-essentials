@@ -1,8 +1,26 @@
 id: c-wide-int-store-at-byte-offset
 snapshots:
-  void f(char *buf, unsigned int n) { *(unsigned int *)(buf + n) = 0; }:
+  "unsigned int f(const char *buf, unsigned int n) {\n    return *(unsigned int *)(buf + n);\n}":
     labels:
-    - source: '*(unsigned int *)(buf + n)'
+    - source: "*(unsigned int *)(buf + n)"
+      style: primary
+      start: 61
+      end: 87
+  "unsigned int f(unsigned char *base, unsigned int i) {\n    unsigned int v = *(unsigned int *)(base + i * 2);\n    return v + 1;\n}":
+    labels:
+    - source: "*(unsigned int *)(base + i * 2)"
+      style: primary
+      start: 75
+      end: 106
+  "void f(char *buf) {\n    *(unsigned int *)(buf + 1) = 0xdeadbeefu;\n}":
+    labels:
+    - source: "*(unsigned int *)(buf + 1)"
+      style: primary
+      start: 24
+      end: 50
+  "void f(char *buf, unsigned int n) { *(unsigned int *)(buf + n) = 0; }":
+    labels:
+    - source: "*(unsigned int *)(buf + n)"
       style: primary
       start: 36
       end: 62

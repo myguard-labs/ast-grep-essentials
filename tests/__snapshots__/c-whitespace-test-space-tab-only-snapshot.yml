@@ -1,8 +1,26 @@
 id: c-whitespace-test-space-tab-only
 snapshots:
-  static int f(const char *p) { if (*p != ' ' && *p != '\t') { return 0; } return 1; }:
+  "static const char *find_blank(const char *p) {\n    while (*p != ' ' && *p != '\\t' && *p != '\\0') {\n        p++;\n    }\n    return p;\n}":
     labels:
-    - source: '*p != '' '' && *p != ''\t'''
+    - source: "*p != ' ' && *p != '\\t'"
+      style: primary
+      start: 58
+      end: 81
+  "static int f(const char *p) { if (*p != ' ' && *p != '\\t') { return 0; } return 1; }":
+    labels:
+    - source: "*p != ' ' && *p != '\\t'"
       style: primary
       start: 34
       end: 57
+  "static int first_word_len(const char *s, int n) {\n    int i = 0;\n    while (i < n && (s[i] != ' ' && s[i] != '\\t')) {\n        i++;\n    }\n    return i;\n}":
+    labels:
+    - source: s[i] != ' ' && s[i] != '\t'
+      style: primary
+      start: 86
+      end: 113
+  "static int not_blank(int c) {\n    if (c != ' ' && c != '\\t') {\n        return 1;\n    }\n    return 0;\n}":
+    labels:
+    - source: c != ' ' && c != '\t'
+      style: primary
+      start: 38
+      end: 59

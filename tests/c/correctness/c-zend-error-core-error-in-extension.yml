@@ -4,8 +4,52 @@ valid:
     ZEND_METHOD(exception, __construct) { if (zend_parse_parameters_ex(0, argc
     TSRMLS_CC, "|sl", &m, &l, &c) == FAILURE) { zend_error(E_ERROR, "Wrong
     parameter count"); } }
+  - |-
+    PHP_FUNCTION(ext_check)
+    {
+        if (ZEND_NUM_ARGS() != 0) {
+            zend_error(E_WARNING, "ext_check() takes no arguments");
+            RETURN_FALSE;
+        }
+        RETURN_TRUE;
+    }
+  - |-
+    PHP_FUNCTION(ext_old)
+    {
+        zend_error(E_DEPRECATED, "ext_old() is deprecated, use %s", "ext_new");
+        RETURN_NULL();
+    }
+  - |-
+    static void ext_report(const char *name)
+    {
+        zend_error(E_NOTICE, "Unknown option %s", name);
+    }
 invalid:
   - >-
     ZEND_METHOD(exception, __construct) { if (zend_parse_parameters_ex(0, argc
     TSRMLS_CC, "|sl", &m, &l, &c) == FAILURE) { zend_error(E_CORE_ERROR, "Wrong
     parameter count"); } }
+  - |-
+    PHP_FUNCTION(ext_check)
+    {
+        if (ZEND_NUM_ARGS() != 0) {
+            zend_error(E_CORE_ERROR, "ext_check() takes no arguments");
+            RETURN_FALSE;
+        }
+        RETURN_TRUE;
+    }
+  - |-
+    PHP_FUNCTION(ext_open)
+    {
+        char *name;
+        size_t name_len;
+        if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &name_len) == FAILURE) {
+            RETURN_THROWS();
+        }
+        zend_error(E_CORE_ERROR, "Cannot open %s", name);
+    }
+  - |-
+    static void ext_fail(const char *what, int code)
+    {
+        zend_error(E_CORE_ERROR, "%s failed with code %d", what, code);
+    }

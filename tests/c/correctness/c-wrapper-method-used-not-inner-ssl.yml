@@ -3,7 +3,74 @@ valid:
   - |-
     sc = get_inner(s);
     return sc->ssl.method->enc->export_keying(sc);
+  - |-
+    struct enc { int (*export_keying)(void *s); };
+    struct meth { struct enc *enc; };
+    struct ssl { struct meth *method; };
+    struct conn { struct ssl ssl; };
+    struct conn *get_inner(void *s);
+    int f(void *s) {
+        struct conn *sc = get_inner(s);
+        const struct meth *m = sc->ssl.method;
+        return m->enc->export_keying(sc);
+    }
+  - |-
+    struct enc { int (*export_keying)(void *s); };
+    struct meth { struct enc *enc; };
+    struct ssl { struct meth *method; };
+    struct conn { struct ssl ssl; };
+    struct conn *get_inner(void *s);
+    int f(void *s) {
+        struct conn *sc = get_inner(s);
+        return (*sc).ssl.method->enc->export_keying(sc);
+    }
+  - |-
+    struct enc { int (*export_keying)(void *s); };
+    struct meth { struct enc *enc; };
+    struct ssl { struct meth *method; };
+    struct conn { struct ssl ssl; };
+    struct conn *get_inner(void *s);
+    int f(void *s) {
+        struct conn *sc = get_inner(s);
+        int rc = sc->ssl.method->enc->export_keying(sc);
+        return rc;
+    }
 invalid:
   - |-
     sc = get_inner(s);
     return s->method->enc->export_keying(sc);
+  - |-
+    struct enc { int (*export_keying)(void *s, int n); };
+    struct meth { struct enc *enc; };
+    struct outer { struct meth *method; };
+    struct conn;
+    struct conn *get_inner(struct outer *s);
+    int f(struct outer *s) {
+        struct conn *sc = get_inner(s);
+        int rc = s->method->enc->export_keying(sc, 16);
+        return rc;
+    }
+  - |-
+    struct enc { int (*export_keying)(void *s, int n); };
+    struct meth { struct enc *enc; };
+    struct outer { struct meth *method; };
+    struct wrap { struct outer *handle; };
+    struct conn;
+    struct conn *get_inner(struct wrap *w);
+    int f(struct wrap *w) {
+        struct conn *sc = get_inner(w);
+        return w->handle->method->enc->export_keying(sc, 32);
+    }
+  - |-
+    struct enc { int (*export_keying)(void *s, int n, int m); };
+    struct meth { struct enc *enc; };
+    struct outer { struct meth *method; };
+    struct conn;
+    struct conn *get_inner(struct outer *s);
+    int f(struct outer *ssl, int a) {
+        struct conn *sc = get_inner(ssl);
+        if (ssl->method->enc->export_keying(sc, a, 0) != 1) {
+            return -1;
+        }
+        return 0;
+    }

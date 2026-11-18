@@ -1,8 +1,26 @@
 id: c-zval-copy-property-without-deref
 snapshots:
-  ZEND_METHOD(exception, getFile) { zval rv; ZVAL_COPY(return_value, GET_PROPERTY(getThis(), ZEND_STR_FILE)); }:
+  "ZEND_METHOD(exception, getCode)\n{\n    zval out;\n    ZVAL_COPY(&out, GET_PROPERTY(getThis(), ZEND_STR_CODE));\n    RETURN_COPY_VALUE(&out);\n}":
+    labels:
+    - source: ZVAL_COPY(&out, GET_PROPERTY(getThis(), ZEND_STR_CODE))
+      style: primary
+      start: 52
+      end: 107
+  "ZEND_METHOD(exception, getFile) { zval rv; ZVAL_COPY(return_value, GET_PROPERTY(getThis(), ZEND_STR_FILE)); }":
     labels:
     - source: ZVAL_COPY(return_value, GET_PROPERTY(getThis(), ZEND_STR_FILE))
       style: primary
       start: 43
       end: 106
+  "ZEND_METHOD(exception, getLine)\n{\n    ZVAL_COPY(return_value, GET_PROPERTY(ZEND_THIS, ZEND_STR_LINE));\n}":
+    labels:
+    - source: ZVAL_COPY(return_value, GET_PROPERTY(ZEND_THIS, ZEND_STR_LINE))
+      style: primary
+      start: 38
+      end: 101
+  "ZEND_METHOD(exception, getMessage)\n{\n    if (ZEND_NUM_ARGS() == 0) {\n        ZVAL_COPY(return_value, GET_PROPERTY(ZEND_THIS, ZEND_STR_MESSAGE));\n    }\n}":
+    labels:
+    - source: ZVAL_COPY(return_value, GET_PROPERTY(ZEND_THIS, ZEND_STR_MESSAGE))
+      style: primary
+      start: 77
+      end: 143
