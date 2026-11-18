@@ -7,11 +7,46 @@ message: >-
   PHP_METHOD body is only ZEND_UNREACHABLE(); review it and raise a proper
   error instead.
 note: >-
-  Single-file syntactic match on a PHP_METHOD function whose body contains a
-  ZEND_UNREACHABLE() call. It does not check reflection visibility,
-  reachability, or whether the method is callable from userland.
+  Single-file syntactic match on a ZEND_UNREACHABLE() call that is a direct
+  statement of the compound statement immediately following a PHP_METHOD(...)
+  header, where every other direct statement of that body is a comment,
+  ZEND_PARSE_PARAMETERS_NONE(), zend_parse_parameters_none(), or a
+  ZEND_PARSE_PARAMETERS_START ... Z_PARAM_* ... ZEND_PARSE_PARAMETERS_END
+  block, or a plain local declaration of a scalar, string, zval or object
+  pointer holder (type and name, optional 0/NULL/false/true initializer). A
+  ZEND_UNREACHABLE() nested in a switch or if, in a plain function or in
+  PHP_FUNCTION, and a body with any other statement are not reported. It does
+  not check reflection visibility, reachability, or whether the method is
+  callable from userland.
 rule:
   pattern: 'ZEND_UNREACHABLE()'
+  inside:
+    kind: expression_statement
+    inside:
+      kind: compound_statement
+      follows:
+        kind: expression_statement
+        has:
+          kind: call_expression
+          has:
+            field: function
+            regex: '^PHP_METHOD$'
+      not:
+        has:
+          not:
+            any:
+              - kind: comment
+              - regex: '^[{}]$'
+              - kind: expression_statement
+                has:
+                  kind: call_expression
+                  has:
+                    field: function
+                    regex: '^(ZEND_UNREACHABLE|ZEND_PARSE_PARAMETERS_(NONE|START|END)|zend_parse_parameters_none|Z_PARAM_[A-Z0-9_]+)$'
+              - kind: declaration
+                regex: '^(zend_long|zend_bool|bool|double|size_t|zend_string|zval|HashTable|zend_object|zend_class_entry|char)\s*\**\s*[A-Za-z_][A-Za-z0-9_]*(\s*=\s*(0|0\.0|NULL|false|true))?\s*;$'
+              - kind: declaration
+                regex: '^(\s*Z_PARAM_[A-Z0-9_]+(\([^()]*\))?)+\s*(ZEND_PARSE_PARAMETERS_END\(\))?\s*;?$'
 metadata:
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
@@ -20,5 +55,3 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - 'ZEND_UNREACHABLE() in a switch default of a plain static function (no PHP_METHOD) is reported although the message names a PHP_METHOD body'
