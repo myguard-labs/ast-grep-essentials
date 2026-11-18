@@ -3,7 +3,59 @@ valid:
   - >-
     StringBuilder sb = new StringBuilder(); while (in.available() > 0) {
     sb.append((char) in.read()); if (sb.length() >= limit) { break; } }
+  - |-
+    import java.io.IOException;
+    import java.io.Reader;
+
+    class BoundedReader {
+      static String read(Reader in, int limit) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int c;
+        while (sb.length() < limit && (c = in.read()) != -1) {
+          sb.append((char) c);
+        }
+        return sb.toString();
+      }
+    }
+  - |-
+    import java.util.List;
+
+    class Joiner {
+      static String join(List<String> parts) {
+        StringBuilder sb = new StringBuilder();
+        for (String part : parts) {
+          sb.append(part).append(',');
+        }
+        return sb.toString();
+      }
+    }
 invalid:
   - >-
     StringBuilder sb = new StringBuilder(); while (in.available() > 0) {
     sb.append((char) in.read()); }
+  - |-
+    import java.io.BufferedReader;
+    import java.io.IOException;
+
+    class LineSlurper {
+      static String slurp(BufferedReader reader) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+          sb.append(line).append('\n');
+        }
+        return sb.toString();
+      }
+    }
+  - |-
+    import java.util.Scanner;
+
+    class ScannerSlurper {
+      static String slurp(Scanner sc) {
+        StringBuffer sb = new StringBuffer();
+        while (sc.hasNextLine()) {
+          sb.append(sc.nextLine());
+        }
+        return sb.toString();
+      }
+    }

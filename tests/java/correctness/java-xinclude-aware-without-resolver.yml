@@ -4,8 +4,81 @@ valid:
     DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
     f.setXIncludeAware(true); DocumentBuilder b = f.newDocumentBuilder();
     b.setEntityResolver(deny); return b.parse(in);
+  - |-
+    import java.io.File;
+    import javax.xml.parsers.DocumentBuilder;
+    import javax.xml.parsers.DocumentBuilderFactory;
+    import org.w3c.dom.Document;
+
+    class PlainParser {
+      static Document parse(File in) throws Exception {
+        DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
+        f.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        f.setXIncludeAware(false);
+        DocumentBuilder b = f.newDocumentBuilder();
+        return b.parse(in);
+      }
+    }
+  - |-
+    import java.io.File;
+    import javax.xml.parsers.SAXParser;
+    import javax.xml.parsers.SAXParserFactory;
+    import org.xml.sax.EntityResolver;
+    import org.xml.sax.SAXException;
+    import org.xml.sax.XMLReader;
+    import org.xml.sax.helpers.DefaultHandler;
+
+    class SaxParser {
+      static void parse(File in) throws Exception {
+        EntityResolver deny = (publicId, systemId) -> {
+          throw new SAXException("external entity blocked");
+        };
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        spf.setXIncludeAware(true);
+        SAXParser parser = spf.newSAXParser();
+        XMLReader reader = parser.getXMLReader();
+        reader.setEntityResolver(deny);
+        reader.setContentHandler(new DefaultHandler());
+        reader.parse(in.toURI().toString());
+      }
+    }
 invalid:
   - >-
     DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
     f.setXIncludeAware(true); DocumentBuilder b = f.newDocumentBuilder(); return
     b.parse(in);
+  - |-
+    import java.io.File;
+    import javax.xml.parsers.SAXParser;
+    import javax.xml.parsers.SAXParserFactory;
+    import org.xml.sax.helpers.DefaultHandler;
+
+    class SaxNoResolver {
+      static void parse(File in) throws Exception {
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        spf.setNamespaceAware(true);
+        spf.setXIncludeAware(true);
+        SAXParser parser = spf.newSAXParser();
+        parser.parse(in, new DefaultHandler());
+      }
+    }
+  - |-
+    import java.io.File;
+    import javax.xml.XMLConstants;
+    import javax.xml.parsers.DocumentBuilder;
+    import javax.xml.parsers.DocumentBuilderFactory;
+    import javax.xml.parsers.ParserConfigurationException;
+    import org.w3c.dom.Document;
+
+    class FieldParser {
+      private final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+      Document parse(File in) throws Exception {
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        this.factory.setXIncludeAware(true);
+        DocumentBuilder b = factory.newDocumentBuilder();
+        return b.parse(in);
+      }
+    }

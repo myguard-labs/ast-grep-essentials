@@ -1,16 +1,7 @@
 id: swift-callback-invoked-under-lock
 snapshots:
-  ? |-
-    final class Manager {
-      let modelLock = NSLock()
-      var pressureCallback: (() -> Void)?
-      func register() {
-        modelLock.withLock {
-          pressureCallback?()
-        }
-      }
-    }
-  : labels:
+  "final class Manager {\n  let modelLock = NSLock()\n  var pressureCallback: (() -> Void)?\n  func register() {\n    modelLock.withLock {\n      pressureCallback?()\n    }\n  }\n}":
+    labels:
     - source: pressureCallback?()
       style: primary
       start: 138
@@ -22,3 +13,31 @@ snapshots:
       style: secondary
       start: 111
       end: 163
+  "import Foundation\n\nfinal class Notifier {\n  private let lock = NSLock()\n  private var count = 0\n  var onChange: (() -> Void)?\n\n  func bump() {\n    lock.withLock {\n      count += 1\n      self.onChange?()\n    }\n  }\n}":
+    labels:
+    - source: self.onChange?()
+      style: primary
+      start: 186
+      end: 202
+    - source: |-
+        lock.withLock {
+              count += 1
+              self.onChange?()
+            }
+      style: secondary
+      start: 147
+      end: 208
+  "import Foundation\n\nfinal class Registry {\n  private let guardLock = NSLock()\n  private var names: [String] = []\n  var onUpdate: (() -> Void)?\n\n  func add(_ name: String) {\n    guardLock.withLock {\n      names.append(name)\n      onUpdate?()\n    }\n  }\n}":
+    labels:
+    - source: onUpdate?()
+      style: primary
+      start: 228
+      end: 239
+    - source: |-
+        guardLock.withLock {
+              names.append(name)
+              onUpdate?()
+            }
+      style: secondary
+      start: 176
+      end: 245

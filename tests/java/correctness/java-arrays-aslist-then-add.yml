@@ -3,5 +3,52 @@ valid:
   - >-
     List<String> names = new ArrayList<>(Arrays.asList(first, second));
     names.add(third);
+  - |-
+    import java.util.ArrayList;
+    import java.util.Arrays;
+    import java.util.List;
+
+    class Names {
+      static List<String> extend(String first, String second, String third) {
+        List<String> fixed = Arrays.asList(first, second);
+        List<String> grown = new ArrayList<>(fixed);
+        grown.add(third);
+        return grown;
+      }
+    }
+  - |-
+    import java.util.Arrays;
+    import java.util.List;
+
+    class Swapper {
+      static String swapFirst(String first, String second) {
+        List<String> names = Arrays.asList(first, second);
+        names.set(0, second);
+        return names.get(0);
+      }
+    }
 invalid:
   - 'List<String> names = Arrays.asList(first, second); names.add(third);'
+  - |-
+    import java.util.Arrays;
+    import java.util.List;
+
+    class Ids {
+      static List<Integer> withExtra(int a, int b, int c) {
+        var ids = Arrays.asList(a, b);
+        System.out.println("ids=" + ids);
+        ids.add(c);
+        return ids;
+      }
+    }
+  - |-
+    import java.util.Arrays;
+    import java.util.List;
+
+    class Prepend {
+      static List<String> withFirst(String head, String tail) {
+        List<String> parts = Arrays.asList(tail);
+        parts.add(0, head);
+        return parts;
+      }
+    }

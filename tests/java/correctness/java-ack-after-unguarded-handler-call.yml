@@ -5,3 +5,57 @@ valid:
 - class AstgrepFixture { String value = "while (true) { Delivery d = consumer.nextDelivery(); handle(d); channel.basicAck(d.getEnvelope().getDeliveryTag(), false); }"; }
 invalid:
 - while (true) { Delivery d = consumer.nextDelivery(); handle(d); channel.basicAck(d.getEnvelope().getDeliveryTag(), false); }
+- |-
+  import com.rabbitmq.client.Channel;
+  import com.rabbitmq.client.GetResponse;
+  import java.io.IOException;
+
+  class Drainer {
+    private final Channel channel;
+
+    Drainer(Channel channel) {
+      this.channel = channel;
+    }
+
+    private void handle(GetResponse response) {
+      Integer.parseInt(new String(response.getBody()));
+    }
+
+    void drain(String queue) throws IOException {
+      while (true) {
+        GetResponse response = channel.basicGet(queue, false);
+        if (response == null) {
+          break;
+        }
+        handle(response);
+        channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
+      }
+    }
+  }
+- |-
+  import com.rabbitmq.client.Channel;
+  import com.rabbitmq.client.GetResponse;
+  import java.io.IOException;
+
+  class Worker {
+    private final Channel channel;
+    private volatile boolean running = true;
+
+    Worker(Channel channel) {
+      this.channel = channel;
+    }
+
+    private void handle(byte[] body) {
+      Integer.parseInt(new String(body));
+    }
+
+    void run(String queue) throws IOException {
+      while (running) {
+        GetResponse response = channel.basicGet(queue, false);
+        if (response != null) {
+          handle(response.getBody());
+          channel.basicAck(response.getEnvelope().getDeliveryTag(), true);
+        }
+      }
+    }
+  }

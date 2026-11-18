@@ -4,8 +4,56 @@ valid:
     DispatchQueue.main.async {
       expectation.fulfill()
     }
+  - |-
+    import XCTest
+
+    final class LoaderTests: XCTestCase {
+      func testLoadCompletes() {
+        let expectation = expectation(description: "load finished")
+        func load(completion: @escaping @Sendable () -> Void) {
+          DispatchQueue.global().async { completion() }
+        }
+        load { expectation.fulfill() }
+        wait(for: [expectation], timeout: 2)
+      }
+    }
+  - |-
+    import Foundation
+
+    final class Reminder {
+      func schedule(message: String) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+          print(message)
+        }
+      }
+    }
 invalid:
   - |-
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
       expectation.fulfill()
+    }
+  - |-
+    import XCTest
+
+    final class DelayTests: XCTestCase {
+      func testCallbackEventually() {
+        let expectation = expectation(description: "delayed callback")
+        let delay = 0.5
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+          expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 2)
+      }
+    }
+  - |-
+    import XCTest
+
+    final class IntegerDelayTests: XCTestCase {
+      func testSomethingHappens() {
+        let expectation = expectation(description: "timer based")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+          expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 3)
+      }
     }

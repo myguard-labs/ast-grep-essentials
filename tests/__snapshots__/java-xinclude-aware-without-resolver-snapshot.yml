@@ -1,7 +1,7 @@
 id: java-xinclude-aware-without-resolver
 snapshots:
-  ? DocumentBuilderFactory f = DocumentBuilderFactory.newInstance(); f.setXIncludeAware(true); DocumentBuilder b = f.newDocumentBuilder(); return b.parse(in);
-  : labels:
+  DocumentBuilderFactory f = DocumentBuilderFactory.newInstance(); f.setXIncludeAware(true); DocumentBuilder b = f.newDocumentBuilder(); return b.parse(in);:
+    labels:
     - source: f.setXIncludeAware(true);
       style: primary
       start: 65
@@ -10,3 +10,23 @@ snapshots:
       style: secondary
       start: 65
       end: 89
+  "import java.io.File;\nimport javax.xml.XMLConstants;\nimport javax.xml.parsers.DocumentBuilder;\nimport javax.xml.parsers.DocumentBuilderFactory;\nimport javax.xml.parsers.ParserConfigurationException;\nimport org.w3c.dom.Document;\n\nclass FieldParser {\n  private final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();\n\n  Document parse(File in) throws Exception {\n    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);\n    this.factory.setXIncludeAware(true);\n    DocumentBuilder b = factory.newDocumentBuilder();\n    return b.parse(in);\n  }\n}":
+    labels:
+    - source: this.factory.setXIncludeAware(true);
+      style: primary
+      start: 455
+      end: 491
+    - source: this.factory.setXIncludeAware(true)
+      style: secondary
+      start: 455
+      end: 490
+  "import java.io.File;\nimport javax.xml.parsers.SAXParser;\nimport javax.xml.parsers.SAXParserFactory;\nimport org.xml.sax.helpers.DefaultHandler;\n\nclass SaxNoResolver {\n  static void parse(File in) throws Exception {\n    SAXParserFactory spf = SAXParserFactory.newInstance();\n    spf.setFeature(\"http://apache.org/xml/features/disallow-doctype-decl\", true);\n    spf.setNamespaceAware(true);\n    spf.setXIncludeAware(true);\n    SAXParser parser = spf.newSAXParser();\n    parser.parse(in, new DefaultHandler());\n  }\n}":
+    labels:
+    - source: spf.setXIncludeAware(true);
+      style: primary
+      start: 392
+      end: 419
+    - source: spf.setXIncludeAware(true)
+      style: secondary
+      start: 392
+      end: 418
