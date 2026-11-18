@@ -37,6 +37,45 @@ valid:
         let check = |s: &str| assert!(parse(s) > 0);
         check("x");
     }
+  - |-
+    fn parse(s: &str) -> Result<u32, std::num::ParseIntError> {
+        s.parse::<u32>()
+    }
+    #[test]
+    fn parses_with_question_mark() -> Result<(), std::num::ParseIntError> {
+        let v = parse("1")?;
+        let _ = v;
+        Ok(())
+    }
+  - |-
+    fn parse(s: &str) -> u32 {
+        if s.is_empty() {
+            panic!("empty input");
+        }
+        s.len() as u32
+    }
+    #[should_panic]
+    #[test]
+    fn rejects_empty() {
+        parse("");
+    }
+  - |-
+    fn parse(s: &str) -> u32 {
+        if s.is_empty() {
+            panic!("empty input");
+        }
+        s.len() as u32
+    }
+    #[test]
+    #[should_panic(expected = "empty input")]
+    fn rejects_empty_with_message() {
+        parse("");
+    }
+    #[should_panic(expected = "empty input")]
+    #[test]
+    fn rejects_empty_expected_first() {
+        parse("");
+    }
 invalid:
   - '#[test] fn parses_input() { let _ = parse("x"); }'
   - |-
@@ -74,4 +113,47 @@ invalid:
     fn debug_only() {
         let v = parse("x");
         dbg!(v);
+    }
+  - |-
+    fn parse(s: &str) -> u32 {
+        s.len() as u32
+    }
+    #[test]
+    fn result_without_check() -> Result<(), String> {
+        let _ = parse("x");
+        Ok(())
+    }
+  - |-
+    fn parse(s: &str) -> u32 {
+        if s.is_empty() {
+            panic!("empty input");
+        }
+        s.len() as u32
+    }
+    mod tests {
+        use super::parse;
+
+        #[should_panic]
+        #[test]
+        fn rejects_empty() {
+            parse("");
+        }
+
+        #[test]
+        fn checks_nothing() {
+            let _ = parse("x");
+        }
+    }
+  - |-
+    fn parse(s: &str) -> Result<i32, String> {
+        s.parse::<i32>().map_err(|e| e.to_string())
+    }
+
+    #[test]
+    fn checks_only_inside_closure() -> Result<(), String> {
+        let _ = (|| -> Result<(), String> {
+            parse("1")?;
+            Ok(())
+        })();
+        Ok(())
     }
