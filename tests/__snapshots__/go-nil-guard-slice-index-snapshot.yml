@@ -1,8 +1,11 @@
 id: go-nil-guard-slice-index
 snapshots:
-  ? "if p.Validation.CACertificateRefs != nil {\n\tuse(p.Validation.CACertificateRefs[0].Name)\n}"
-  : labels:
-    - source: "if p.Validation.CACertificateRefs != nil {\n\tuse(p.Validation.CACertificateRefs[0].Name)\n}"
+  "if p.Validation.CACertificateRefs != nil {\n\tuse(p.Validation.CACertificateRefs[0].Name)\n}":
+    labels:
+    - source: |-
+        if p.Validation.CACertificateRefs != nil {
+        	use(p.Validation.CACertificateRefs[0].Name)
+        }
       style: primary
       start: 0
       end: 89
@@ -10,3 +13,44 @@ snapshots:
       style: secondary
       start: 48
       end: 81
+  "package p\n\nfunc f(args []string) string {\n\tx := \"\"\n\tif args != nil {\n\t\tx = args[0]\n\t}\n\treturn x\n}\n":
+    labels:
+    - source: |-
+        if args != nil {
+        		x = args[0]
+        	}
+      style: primary
+      start: 52
+      end: 85
+    - source: args[0]
+      style: secondary
+      start: 75
+      end: 82
+  "package p\n\nfunc f(s []string) string {\n\tif s != nil {\n\t\treturn s[0]\n\t}\n\treturn \"\"\n}\n":
+    labels:
+    - source: |-
+        if s != nil {
+        		return s[0]
+        	}
+      style: primary
+      start: 40
+      end: 70
+    - source: s[0]
+      style: secondary
+      start: 63
+      end: 67
+  "package p\n\ntype T struct{ Refs []string }\n\nfunc f(t T, ok bool) string {\n\tif t.Refs != nil {\n\t\tif ok {\n\t\t\treturn t.Refs[0]\n\t\t}\n\t}\n\treturn \"\"\n}\n":
+    labels:
+    - source: |-
+        if t.Refs != nil {
+        		if ok {
+        			return t.Refs[0]
+        		}
+        	}
+      style: primary
+      start: 74
+      end: 129
+    - source: t.Refs[0]
+      style: secondary
+      start: 113
+      end: 122

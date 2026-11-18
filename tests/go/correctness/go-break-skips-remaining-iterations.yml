@@ -1,5 +1,11 @@
 id: go-break-skips-remaining-iterations
 valid:
   - "package p\n\nfunc f(keys [][]int, xs []int) int {\n\tn := 0\n\tfor i := range xs {\n\t\tif len(keys[i]) == 0 {\n\t\t\tcontinue\n\t\t}\n\t\tn += xs[i]\n\t}\n\treturn n\n}"
+  - "package p\n\nfunc f(batches [][]int) int {\n\tn := 0\n\tfor i := 0; i < len(batches); i++ {\n\t\tif len(batches[i]) == 0 {\n\t\t\tcontinue\n\t\t}\n\t\tn += batches[i][0]\n\t}\n\treturn n\n}"
+  - "package p\n\nfunc f(queue []int) int {\n\tn := 0\n\tfor {\n\t\tn += len(queue)\n\t\tqueue = queue[:len(queue)/2]\n\t\tif len(queue) == 0 {\n\t\t\tbreak\n\t\t}\n\t}\n\treturn n\n}\n"
+  - "package p\n\nfunc f(rows [][]int) []int {\n\tvar first []int\n\tfor _, r := range rows {\n\t\tif len(r) != 0 {\n\t\t\tfirst = r\n\t\t\tbreak\n\t\t}\n\t}\n\treturn first\n}\n"
 invalid:
   - "package p\n\nfunc f(keys [][]int, xs []int) int {\n\tn := 0\n\tfor i := range xs {\n\t\tif len(keys[i]) == 0 {\n\t\t\tbreak\n\t\t}\n\t\tn += xs[i]\n\t}\n\treturn n\n}"
+  - "package p\n\nfunc f(rows [][]int) int {\n\tn := 0\n\tfor i := 0; i < len(rows); i++ {\n\t\tif len(rows[i]) == 0 {\n\t\t\tbreak\n\t\t}\n\t\tn += rows[i][0]\n\t}\n\treturn n\n}\n"
+  - "package p\n\nfunc f(names []string) int {\n\tn := 0\n\tfor _, s := range names {\n\t\tif len(s) == 0 {\n\t\t\tbreak\n\t\t}\n\t\tn += len(s)\n\t}\n\treturn n\n}\n"
+  - "package p\n\nfunc f(rows [][]int, skip bool) int {\n\tn := 0\n\tfor _, r := range rows {\n\t\tif !skip {\n\t\t\tif len(r) == 0 {\n\t\t\t\tbreak\n\t\t\t}\n\t\t\tn += r[0]\n\t\t}\n\t}\n\treturn n\n}\n"

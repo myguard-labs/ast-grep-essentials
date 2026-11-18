@@ -1,5 +1,11 @@
 id: go-getcurrentns-not-closed
 valid:
   - "import \"github.com/containernetworking/plugins/pkg/ns\"\nfunc f() error {\n\tinitns, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer initns.Close()\n\treturn initns.Do(func(_ ns.NetNS) error { return nil })\n}"
+  - "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\nfunc f() error {\n\tcur, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\terr = cur.Do(func(_ ns.NetNS) error { return nil })\n\tif cerr := cur.Close(); err == nil {\n\t\terr = cerr\n\t}\n\treturn err\n}\n"
+  - "package p\n\nimport (\n\t\"log\"\n\n\t\"github.com/containernetworking/plugins/pkg/ns\"\n)\n\nfunc f() error {\n\tcur, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer func() {\n\t\tif cerr := cur.Close(); cerr != nil {\n\t\t\tlog.Print(cerr)\n\t\t}\n\t}()\n\treturn cur.Do(func(_ ns.NetNS) error { return nil })\n}\n"
+  - "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\nfunc f() error {\n\torig, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer orig.Close()\n\treturn orig.Do(func(_ ns.NetNS) error { return nil })\n}\n"
 invalid:
   - "import \"github.com/containernetworking/plugins/pkg/ns\"\nfunc f() error {\n\tinitns, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\treturn initns.Do(func(_ ns.NetNS) error { return nil })\n}"
+  - "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\nfunc f() error {\n\torig, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\treturn orig.Do(func(_ ns.NetNS) error { return nil })\n}\n"
+  - "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\nfunc f(path string) error {\n\tcur, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\ttarget, err := ns.GetNS(path)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer target.Close()\n\treturn target.Do(func(_ ns.NetNS) error { return cur.Set() })\n}"
+  - "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\nfunc f() (string, error) {\n\tcur, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\treturn cur.Path(), nil\n}\n"
