@@ -7,11 +7,83 @@ message: >-
   PHP_METHOD body is only ZEND_UNREACHABLE(); review it and raise a proper
   error instead.
 note: >-
-  Single-file syntactic match on a PHP_METHOD function whose body contains a
-  ZEND_UNREACHABLE() call. It does not check reflection visibility,
-  reachability, or whether the method is callable from userland.
+  Single-file syntactic match on a ZEND_UNREACHABLE() call that is a direct
+  statement of the compound statement immediately following a PHP_METHOD(...)
+  or ZEND_METHOD(...) header, where every other direct statement of that body
+  is a comment, ZEND_PARSE_PARAMETERS_NONE(), a bare zend_parse_parameters(),
+  zend_parse_parameters_none() or zend_parse_parameters_throw() call, a
+  ZEND_PARSE_PARAMETERS_START ... Z_PARAM_* ... ZEND_PARSE_PARAMETERS_END
+  block, an if statement without else whose condition contains a call to
+  zend_parse_parameters_none, zend_parse_parameters or
+  zend_parse_parameters_throw and whose consequence is only RETURN_THROWS()
+  (braced or unbraced; the condition is not checked beyond containing that
+  call), a RETURN_THROWS() statement that comes after the ZEND_UNREACHABLE()
+  call (dead code), or a plain local declaration (one type name with optional
+  const/unsigned/signed/struct, one or more plain or pointer names, optional
+  0/NULL/false/true initializer on each name, no call). A ZEND_UNREACHABLE() nested in a switch or if, in a plain
+  function or in PHP_FUNCTION, and a body with any other statement are not
+  reported. It does not check reflection visibility, reachability, or whether
+  the method is callable from userland.
 rule:
   pattern: 'ZEND_UNREACHABLE()'
+  inside:
+    kind: expression_statement
+    inside:
+      kind: compound_statement
+      follows:
+        kind: expression_statement
+        has:
+          kind: call_expression
+          has:
+            field: function
+            regex: '^(PHP|ZEND)_METHOD$'
+      not:
+        has:
+          not:
+            any:
+              - kind: comment
+              - regex: '^[{}]$'
+              - kind: expression_statement
+                has:
+                  kind: call_expression
+                  has:
+                    field: function
+                    regex: '^(ZEND_UNREACHABLE|ZEND_PARSE_PARAMETERS_(NONE|START|END)|zend_parse_parameters(_none|_throw)?|Z_PARAM_[A-Z0-9_]+)$'
+              - kind: if_statement
+                all:
+                  - has:
+                      field: condition
+                      has:
+                        stopBy: end
+                        kind: call_expression
+                        has:
+                          field: function
+                          regex: '^zend_parse_parameters(_none|_throw)?$'
+                  - has:
+                      field: consequence
+                      regex: '^(\{\s*)?RETURN_THROWS\(\)\s*;\s*(\}\s*)?$'
+                  - not:
+                      has:
+                        field: alternative
+                        regex: '.'
+              - kind: expression_statement
+                has:
+                  kind: call_expression
+                  has:
+                    field: function
+                    regex: '^RETURN_THROWS$'
+                follows:
+                  stopBy: end
+                  kind: expression_statement
+                  has:
+                    kind: call_expression
+                    has:
+                      field: function
+                      regex: '^ZEND_UNREACHABLE$'
+              - kind: declaration
+                regex: '^((const|unsigned|signed|struct)\s+)*[A-Za-z_][A-Za-z0-9_]*\s*\**\s*[A-Za-z_][A-Za-z0-9_]*(\s*=\s*(0|0\.0|NULL|false|true))?(\s*,\s*\**\s*[A-Za-z_][A-Za-z0-9_]*(\s*=\s*(0|0\.0|NULL|false|true))?)*\s*;$'
+              - kind: declaration
+                regex: '^(\s*Z_PARAM_[A-Z0-9_]+(\([^()]*\))?)+\s*(ZEND_PARSE_PARAMETERS_END\(\))?\s*;?$'
 metadata:
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
@@ -20,5 +92,3 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - 'ZEND_UNREACHABLE() in a switch default of a plain static function (no PHP_METHOD) is reported although the message names a PHP_METHOD body'

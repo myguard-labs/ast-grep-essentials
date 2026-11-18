@@ -14,6 +14,47 @@ valid:
     	ZEND_PARSE_PARAMETERS_NONE();
     	RETURN_BOOL(1);
     }
+  - |-
+    static void classify(int kind)
+    {
+    	switch (kind) {
+    	case 1:
+    		return;
+    	default:
+    		ZEND_UNREACHABLE();
+    	}
+    }
+  - |-
+    PHP_METHOD(Dom_Node, kindName)
+    {
+    	zend_long kind = 1;
+
+    	ZEND_PARSE_PARAMETERS_NONE();
+    	switch (kind) {
+    	case 1:
+    		RETURN_STRING("element");
+    	default:
+    		ZEND_UNREACHABLE();
+    	}
+    }
+  - |-
+    PHP_METHOD(Dom_Node, childCount)
+    {
+    	zend_long count = 0;
+
+    	ZEND_PARSE_PARAMETERS_NONE();
+    	RETURN_LONG(count);
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, checkedKind)
+    {
+    	if (zend_parse_parameters_none() == FAILURE) {
+    		zend_throw_error(NULL, "bad call");
+    		RETURN_THROWS();
+    	}
+    	ZEND_UNREACHABLE();
+    }
 invalid:
   - "PHP_METHOD(Dom_Node, __construct)\n{\n\tZEND_UNREACHABLE();\n}"
   - |-
@@ -25,5 +66,101 @@ invalid:
     PHP_METHOD(Dom_Node, normalize)
     {
     	ZEND_PARSE_PARAMETERS_NONE();
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, trim)
+    {
+    	zend_parse_parameters_none();
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, label)
+    {
+    	/* implemented by subclasses */
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, setDepth)
+    {
+    	zend_long depth;
+    	bool strict = 0;
+
+    	ZEND_PARSE_PARAMETERS_START(1, 2)
+    		Z_PARAM_LONG(depth)
+    		Z_PARAM_OPTIONAL
+    		Z_PARAM_BOOL(strict)
+    	ZEND_PARSE_PARAMETERS_END();
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    static void classify(int kind)
+    {
+    	switch (kind) {
+    	case 1:
+    		return;
+    	default:
+    		ZEND_UNREACHABLE();
+    	}
+    }
+
+    PHP_METHOD(Dom_Node, serialize)
+    {
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    ZEND_METHOD(Dom_Node, zendHeader)
+    {
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, checkedNone)
+    {
+    	if (zend_parse_parameters_none() == FAILURE) {
+    		RETURN_THROWS();
+    	}
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, checkedBare)
+    {
+    	if (zend_parse_parameters(ZEND_NUM_ARGS(), "") == FAILURE)
+    		RETURN_THROWS();
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, trailingThrows)
+    {
+    	ZEND_PARSE_PARAMETERS_NONE();
+    	ZEND_UNREACHABLE();
+    	RETURN_THROWS();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, appendAll)
+    {
+    	zval *args;
+    	uint32_t argc;
+
+    	ZEND_PARSE_PARAMETERS_START(0, -1)
+    		Z_PARAM_VARIADIC('*', args, argc)
+    	ZEND_PARSE_PARAMETERS_END();
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, reset)
+    {
+    	zend_parse_parameters(ZEND_NUM_ARGS(), "");
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, setRange)
+    {
+    	zend_long start = 0, end;
+
+    	ZEND_PARSE_PARAMETERS_START(1, 2)
+    		Z_PARAM_LONG(end)
+    		Z_PARAM_OPTIONAL
+    		Z_PARAM_LONG(start)
+    	ZEND_PARSE_PARAMETERS_END();
     	ZEND_UNREACHABLE();
     }
