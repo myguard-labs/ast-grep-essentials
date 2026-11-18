@@ -7,6 +7,12 @@ valid:
     <?php if (is_readable($classfile)) { include_once $classfile; }
   - |-
     <?php require_once $classfile;
+  - |
+    <?php include_once( ABSPATH . 'wp-cron.php' ); ?>
+  - |
+    <?php /* @include_once( ABSPATH . 'wp-cron.php' ); */ $x = 1;
+  - |
+    <?php if ( is_readable( $f ) ) { include $f; }
 invalid:
   - '$ok = @include_once $classfile;'
   - |-
@@ -15,3 +21,9 @@ invalid:
     <?php if (@include_once $classfile) { run(); }
   - |-
     <?php @ include_once __DIR__ . "/a.php";
+  - |
+    <?php @include_once( ABSPATH . 'wp-cron.php' ); ?>
+  - |
+    <?php if ( @include_once( $f ) ) { run(); }
+  - |
+    <?php @include_once( dirname( __FILE__ ) . '/x.php' );
