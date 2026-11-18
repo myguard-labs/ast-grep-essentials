@@ -7,12 +7,35 @@ message: >-
   errno is compared after a POSIX *_r call; these functions return the error
   number directly, so check the return value instead.
 note: >-
-  Single-file syntactic check for a literal errno comparison in an if
-  condition; it does not verify that the compared call is a *_r function or
-  that errno is stale, and does not track the call's result across statements.
+  Single-file syntactic check: an `if (errno == X)` statement that has an
+  earlier sibling statement (same block or translation-unit fragment)
+  containing a call to a *_r function that returns an error number: the _r
+  forms of getpwnam, getpwuid, getpwent, getgrnam, getgrgid, getgrent,
+  getspnam, getspent, readdir, strerror, getlogin, ttyname, gethostbyname,
+  gethostbyname2, gethostbyaddr, getservbyname, getservbyport, getprotobyname,
+  getprotobynumber, getnetbyname and getnetbyaddr. Other *_r functions that
+  report failure through errno, such as localtime_r, and project helpers
+  ending in `_r` do not count. The earlier statement is searched without
+  descending into a compound statement beneath it (a braced if, loop or switch
+  body), so a call in a different function, in the braced body of an earlier
+  if or loop, in an enclosing block only, or after the errno test does not
+  count; a call in an unbraced earlier body or a bare nested block still
+  counts. It does not verify that errno is stale, for example after an
+  intervening `errno = 0;`, or that the call's result is unused.
 rule:
-  pattern: |
-    if (errno == $ERR) $$$BODY
+  all:
+    - pattern: |
+        if (errno == $ERR) $$$BODY
+    - follows:
+        stopBy: end
+        has:
+          stopBy:
+            kind: compound_statement
+          kind: call_expression
+          has:
+            field: function
+            kind: identifier
+            regex: '^(getpwnam|getpwuid|getpwent|getgrnam|getgrgid|getgrent|getspnam|getspent|readdir|strerror|getlogin|ttyname|gethostbyname|gethostbyname2|gethostbyaddr|getservbyname|getservbyport|getprotobyname|getprotobynumber|getnetbyname|getnetbyaddr)_r$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -22,4 +45,5 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FP: every `if (errno == E...)` is reported, also after a call that is not a *_r function (`void f(int fd, char *b) { if (read(fd, b, 1) < 0) { if (errno == EINTR) return; } }`), although the message claims only a preceding *_r call.'
+    - 'FN: an *_r call in an enclosing block only (`getpwnam_r(...); if (k) { ... } else { if (errno == ERANGE) ... }`) or in the braced body of an earlier if or loop is not reported; the errno test needs an earlier *_r statement in its own block.'
+    - 'FN: an *_r call in the same condition (`if (getpwnam_r(...) == 0 && errno == ERANGE)`) and other errno tests (`errno != X`, `X == errno`) are not matched, as on the base rule.'

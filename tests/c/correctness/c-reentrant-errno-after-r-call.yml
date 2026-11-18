@@ -29,6 +29,63 @@ valid:
       if (e) return e;
       return 0;
     }
+  - |-
+    #include <errno.h>
+    #include <unistd.h>
+    int f(int fd, char *b) {
+      if (read(fd, b, 1) < 0) {
+        if (errno == EINTR) return -1;
+      }
+      return 0;
+    }
+  - |-
+    #include <errno.h>
+    #include <pwd.h>
+    #include <stddef.h>
+    #include <unistd.h>
+    int g(int fd, char *b) {
+      if (read(fd, b, 1) < 0) {
+        if (errno == EINTR) return -1;
+      }
+      return 0;
+    }
+    int f(const char *n, char *buf, size_t len) {
+      struct passwd pw, *res;
+      return getpwnam_r(n, &pw, buf, len, &res);
+    }
+  - |-
+    #include <errno.h>
+    #include <pwd.h>
+    #include <stddef.h>
+    #include <stdlib.h>
+    int f(const char *s, const char *n, char *buf, size_t len) {
+      struct passwd pw, *res;
+      errno = 0;
+      long v = strtol(s, NULL, 10);
+      if (errno == ERANGE) return -1;
+      return v > 0 ? getpwnam_r(n, &pw, buf, len, &res) : 0;
+    }
+  - |-
+    #include <errno.h>
+    #include <time.h>
+    int f(const time_t *t, struct tm *out) {
+      struct tm *r;
+      r = localtime_r(t, out);
+      if (r == NULL) {
+        if (errno == EOVERFLOW) return -2;
+        return -1;
+      }
+      return 0;
+    }
+  - |-
+    #include <errno.h>
+    #include <time.h>
+    int f(const time_t *t, struct tm *out) {
+      errno = 0;
+      gmtime_r(t, out);
+      if (errno == EOVERFLOW) return -1;
+      return 0;
+    }
 invalid:
   - 'ret = getpwnam_r(n, &pw, buf, len, &res); if (errno == ERANGE) return;'
   - |-
@@ -61,4 +118,69 @@ invalid:
       } else {
         return 0;
       }
+    }
+  - |-
+    #include <errno.h>
+    #include <pwd.h>
+    #include <stddef.h>
+    int f(const char *n, char *buf, size_t len) {
+      struct passwd pw, *res;
+      int r;
+      r = getpwnam_r(n, &pw, buf, len, &res);
+      if (errno == ERANGE) return r;
+      return 0;
+    }
+  - |-
+    #include <errno.h>
+    #include <pwd.h>
+    #include <stddef.h>
+    int f(const char *n, char *buf, size_t len) {
+      struct passwd pw, *res;
+      int r = getpwnam_r(n, &pw, buf, len, &res);
+      if (errno == ERANGE) return r;
+      return 0;
+    }
+  - |-
+    #include <errno.h>
+    #include <pwd.h>
+    #include <stddef.h>
+    int f(const char *n, char *buf, size_t len) {
+      struct passwd pw, *res;
+      (void) getpwnam_r(n, &pw, buf, len, &res);
+      if (errno == ERANGE) return -1;
+      return 0;
+    }
+  - |-
+    #include <errno.h>
+    #include <pwd.h>
+    #include <stddef.h>
+    int f(const char *n, char *buf, size_t len) {
+      struct passwd pw, *res;
+      {
+        getpwnam_r(n, &pw, buf, len, &res);
+      }
+      if (errno == ERANGE) return -1;
+      return 0;
+    }
+  - |-
+    #include <errno.h>
+    #include <pwd.h>
+    #include <stddef.h>
+    int f(const char *n, char *buf, size_t len) {
+      struct passwd pw, *res;
+      if (getpwnam_r(n, &pw, buf, len, &res) != 0) return 2;
+      if (errno == ERANGE) return 1;
+      return 0;
+    }
+  - |-
+    #include <errno.h>
+    #include <pwd.h>
+    #include <stddef.h>
+    #include <stdlib.h>
+    int f(const char *n, char *buf, size_t len) {
+      struct passwd pw, *res;
+      getpwnam_r(n, &pw, buf, len, &res);
+      getenv("HOME");
+      if (errno == ERANGE) return 1;
+      return 0;
     }

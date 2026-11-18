@@ -11,6 +11,126 @@ snapshots:
       style: primary
       start: 112
       end: 177
+    - source: readdir_r
+      style: secondary
+      start: 84
+      end: 93
+    - source: readdir_r(d, &ent, &res)
+      style: secondary
+      start: 84
+      end: 108
+    - source: readdir_r(d, &ent, &res)
+      style: secondary
+      start: 84
+      end: 108
+  "#include <errno.h>\n#include <pwd.h>\n#include <stddef.h>\n#include <stdlib.h>\nint f(const char *n, char *buf, size_t len) {\n  struct passwd pw, *res;\n  getpwnam_r(n, &pw, buf, len, &res);\n  getenv(\"HOME\");\n  if (errno == ERANGE) return 1;\n  return 0;\n}":
+    labels:
+    - source: if (errno == ERANGE) return 1;
+      style: primary
+      start: 206
+      end: 236
+    - source: getpwnam_r
+      style: secondary
+      start: 150
+      end: 160
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 150
+      end: 184
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 150
+      end: 184
+  "#include <errno.h>\n#include <pwd.h>\n#include <stddef.h>\nint f(const char *n, char *buf, size_t len) {\n  struct passwd pw, *res;\n  (void) getpwnam_r(n, &pw, buf, len, &res);\n  if (errno == ERANGE) return -1;\n  return 0;\n}":
+    labels:
+    - source: if (errno == ERANGE) return -1;
+      style: primary
+      start: 175
+      end: 206
+    - source: getpwnam_r
+      style: secondary
+      start: 137
+      end: 147
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 137
+      end: 171
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 137
+      end: 171
+  "#include <errno.h>\n#include <pwd.h>\n#include <stddef.h>\nint f(const char *n, char *buf, size_t len) {\n  struct passwd pw, *res;\n  if (getpwnam_r(n, &pw, buf, len, &res) != 0) return 2;\n  if (errno == ERANGE) return 1;\n  return 0;\n}":
+    labels:
+    - source: if (errno == ERANGE) return 1;
+      style: primary
+      start: 187
+      end: 217
+    - source: getpwnam_r
+      style: secondary
+      start: 134
+      end: 144
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 134
+      end: 168
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 134
+      end: 168
+  "#include <errno.h>\n#include <pwd.h>\n#include <stddef.h>\nint f(const char *n, char *buf, size_t len) {\n  struct passwd pw, *res;\n  int r = getpwnam_r(n, &pw, buf, len, &res);\n  if (errno == ERANGE) return r;\n  return 0;\n}":
+    labels:
+    - source: if (errno == ERANGE) return r;
+      style: primary
+      start: 176
+      end: 206
+    - source: getpwnam_r
+      style: secondary
+      start: 138
+      end: 148
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 138
+      end: 172
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 138
+      end: 172
+  "#include <errno.h>\n#include <pwd.h>\n#include <stddef.h>\nint f(const char *n, char *buf, size_t len) {\n  struct passwd pw, *res;\n  int r;\n  r = getpwnam_r(n, &pw, buf, len, &res);\n  if (errno == ERANGE) return r;\n  return 0;\n}":
+    labels:
+    - source: if (errno == ERANGE) return r;
+      style: primary
+      start: 181
+      end: 211
+    - source: getpwnam_r
+      style: secondary
+      start: 143
+      end: 153
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 143
+      end: 177
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 143
+      end: 177
+  "#include <errno.h>\n#include <pwd.h>\n#include <stddef.h>\nint f(const char *n, char *buf, size_t len) {\n  struct passwd pw, *res;\n  {\n    getpwnam_r(n, &pw, buf, len, &res);\n  }\n  if (errno == ERANGE) return -1;\n  return 0;\n}":
+    labels:
+    - source: if (errno == ERANGE) return -1;
+      style: primary
+      start: 178
+      end: 209
+    - source: getpwnam_r
+      style: secondary
+      start: 136
+      end: 146
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 136
+      end: 170
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 136
+      end: 170
   "#include <errno.h>\n#include <pwd.h>\nint f(const char *n, char *buf, size_t len) {\n  struct passwd pw, *res;\n  getpwnam_r(n, &pw, buf, len, &res);\n  if (errno == ERANGE) {\n    return -1;\n  }\n  return 0;\n}":
     labels:
     - source: |-
@@ -20,15 +140,51 @@ snapshots:
       style: primary
       start: 148
       end: 189
+    - source: getpwnam_r
+      style: secondary
+      start: 110
+      end: 120
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 110
+      end: 144
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 110
+      end: 144
   "#include <errno.h>\n#include <string.h>\nint f(int err, char *buf, size_t len) {\n  strerror_r(err, buf, len);\n  if (errno == EINVAL) return -1;\n  return 0;\n}":
     labels:
     - source: if (errno == EINVAL) return -1;
       style: primary
       start: 110
       end: 141
+    - source: strerror_r
+      style: secondary
+      start: 81
+      end: 91
+    - source: strerror_r(err, buf, len)
+      style: secondary
+      start: 81
+      end: 106
+    - source: strerror_r(err, buf, len)
+      style: secondary
+      start: 81
+      end: 106
   "ret = getpwnam_r(n, &pw, buf, len, &res); if (errno == ERANGE) return;":
     labels:
     - source: if (errno == ERANGE) return;
       style: primary
       start: 42
       end: 70
+    - source: getpwnam_r
+      style: secondary
+      start: 6
+      end: 16
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 6
+      end: 40
+    - source: getpwnam_r(n, &pw, buf, len, &res)
+      style: secondary
+      start: 6
+      end: 40
