@@ -23,6 +23,23 @@ snapshots:
       style: secondary
       start: 34
       end: 48
+  "fn parse(s: &str) -> Result<i32, String> {\n    s.parse::<i32>().map_err(|e| e.to_string())\n}\n\n#[test]\nfn checks_only_inside_closure() -> Result<(), String> {\n    let _ = (|| -> Result<(), String> {\n        parse(\"1\")?;\n        Ok(())\n    })();\n    Ok(())\n}":
+    labels:
+    - source: |-
+        fn checks_only_inside_closure() -> Result<(), String> {
+            let _ = (|| -> Result<(), String> {
+                parse("1")?;
+                Ok(())
+            })();
+            Ok(())
+        }
+      style: primary
+      start: 102
+      end: 256
+    - source: "#[test]"
+      style: secondary
+      start: 94
+      end: 101
   "fn parse(s: &str) -> u32 {\n    if s.is_empty() {\n        panic!(\"empty input\");\n    }\n    s.len() as u32\n}\nmod tests {\n    use super::parse;\n\n    #[should_panic]\n    #[test]\n    fn rejects_empty() {\n        parse(\"\");\n    }\n\n    #[test]\n    fn checks_nothing() {\n        let _ = parse(\"x\");\n    }\n}":
     labels:
     - source: |-

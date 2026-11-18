@@ -144,3 +144,16 @@ invalid:
             let _ = parse("x");
         }
     }
+  - |-
+    fn parse(s: &str) -> Result<i32, String> {
+        s.parse::<i32>().map_err(|e| e.to_string())
+    }
+
+    #[test]
+    fn checks_only_inside_closure() -> Result<(), String> {
+        let _ = (|| -> Result<(), String> {
+            parse("1")?;
+            Ok(())
+        })();
+        Ok(())
+    }
