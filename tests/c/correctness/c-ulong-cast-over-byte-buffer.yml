@@ -1,5 +1,30 @@
 id: c-ulong-cast-over-byte-buffer
 valid:
   - 'uint32_t *unicode_ptr = (uint32_t*)unicode;'
+  - |-
+    #include <stdint.h>
+    #include <stddef.h>
+    #include <string.h>
+    uint32_t load(const unsigned char *buf) { uint32_t w; memcpy(&w, buf, sizeof w); return w; }
+  - |-
+    #include <stdint.h>
+    #include <stddef.h>
+    #include <string.h>
+    #include <stdlib.h>
+    uint64_t *alloc_words(size_t n) {
+      uint64_t *q;
+      void *buf = calloc(n, sizeof *q);
+      q = (uint64_t *) buf;
+      return q;
+    }
+  - |-
+    unsigned long widen(unsigned x) { unsigned long v; v = (unsigned long) x; return v; }
 invalid:
   - 'unicode_ptr = (unsigned long*)unicode;'
+  - |-
+    void bind(unsigned char *buf) { unsigned long *p; p = (unsigned long *) buf; (void) p; }
+  - |-
+    struct ctx { unsigned long *words; };
+    void bind(struct ctx *x, unsigned char *buf) { x->words = (unsigned long*) buf; }
+  - |-
+    void bind(unsigned char *buf, int off) { unsigned long *p; p = (unsigned long*) (buf + off); (void) p; }

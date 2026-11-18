@@ -1,8 +1,26 @@
 id: c-tsrmls-declaration-macro-as-argument
 snapshots:
-  ? static int f(zval *a, zend_fcall_info *fci, zend_fcall_info_cache *fcc TSRMLS_DC) { return zend_fcall_info_init(a, fci, fcc TSRMLS_DC); }
-  : labels:
+  "static int f(zval *a, zend_fcall_info *fci, zend_fcall_info_cache *fcc TSRMLS_DC) { return zend_fcall_info_init(a, fci, fcc TSRMLS_DC); }":
+    labels:
     - source: zend_fcall_info_init(a, fci, fcc TSRMLS_DC)
       style: primary
       start: 91
       end: 134
+  "void fn(void *a, void *b, void *c);\nvoid two(void *a, void *b);\nvoid one(void *a);\nint ck(void *a, void *b);\nstruct o { void (*cb)(void *, void *); };\nvoid f(struct o *p, void *a) { p->cb(a, a TSRMLS_DC); }":
+    labels:
+    - source: p->cb(a, a TSRMLS_DC)
+      style: primary
+      start: 182
+      end: 203
+  "void fn(void *a, void *b, void *c);\nvoid two(void *a, void *b);\nvoid one(void *a);\nint ck(void *a, void *b);\nstruct o { void (*cb)(void *, void *); };\nvoid f(void *a, void *b) { if (ck(a, b TSRMLS_DC)) { one(a TSRMLS_CC); } }":
+    labels:
+    - source: ck(a, b TSRMLS_DC)
+      style: primary
+      start: 182
+      end: 200
+  "void fn(void *a, void *b, void *c);\nvoid two(void *a, void *b);\nvoid one(void *a);\nint ck(void *a, void *b);\nstruct o { void (*cb)(void *, void *); };\nvoid f(void *a, void *b) { two(a, b TSRMLS_DC); }":
+    labels:
+    - source: two(a, b TSRMLS_DC)
+      style: primary
+      start: 178
+      end: 197

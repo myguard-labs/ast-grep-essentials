@@ -1,6 +1,24 @@
 id: c-uintptr-difference-comparator-result
 snapshots:
-  static int cmp(void *a, void *b) { return (uintptr_t) a - (uintptr_t) b; }:
+  "#include <stdint.h>\n#include <stddef.h>\n#include <string.h>\nint cmp(const void *a, const void *b) { return (uintptr_t)a-(uintptr_t)b; }":
+    labels:
+    - source: return (uintptr_t)a-(uintptr_t)b;
+      style: primary
+      start: 100
+      end: 133
+  "#include <stdint.h>\n#include <stddef.h>\n#include <string.h>\nint cmp(const void *pa, const void *pb) {\n  void *const *a = pa;\n  void *const *b = pb;\n  return (uintptr_t) *a - (uintptr_t) *b;\n}":
+    labels:
+    - source: return (uintptr_t) *a - (uintptr_t) *b;
+      style: primary
+      start: 150
+      end: 189
+  "#include <stdint.h>\n#include <stddef.h>\n#include <string.h>\nstruct item { void *key; };\nint cmp(const void *pa, const void *pb) {\n  const struct item *a = pa;\n  const struct item *b = pb;\n  return (uintptr_t) a->key - (uintptr_t) b->key;\n}":
+    labels:
+    - source: return (uintptr_t) a->key - (uintptr_t) b->key;
+      style: primary
+      start: 190
+      end: 237
+  "static int cmp(void *a, void *b) { return (uintptr_t) a - (uintptr_t) b; }":
     labels:
     - source: return (uintptr_t) a - (uintptr_t) b;
       style: primary

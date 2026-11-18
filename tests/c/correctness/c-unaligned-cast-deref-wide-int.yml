@@ -1,5 +1,38 @@
 id: c-unaligned-cast-deref-wide-int
 valid:
   - 'uint8_t v = *(uint8_t *)(buf + off);'
+  - |-
+    #include <stdint.h>
+    #include <stddef.h>
+    #include <string.h>
+    uint32_t load(const uint8_t *buf, size_t off) { uint32_t v; memcpy(&v, buf + off, sizeof v); return v; }
+  - |-
+    #include <stdint.h>
+    #include <stddef.h>
+    #include <string.h>
+    uint32_t load(const uint8_t *b) {
+      return (uint32_t) b[0] | ((uint32_t) b[1] << 8) | ((uint32_t) b[2] << 16) | ((uint32_t) b[3] << 24);
+    }
+  - |-
+    #include <stdint.h>
+    #include <stddef.h>
+    #include <string.h>
+    uint32_t load(const uint32_t *w, size_t i) { return w[i]; }
 invalid:
   - 'uint32_t v = *(uint32_t *)(buf + off);'
+  - |-
+    #include <stdint.h>
+    #include <stddef.h>
+    #include <string.h>
+    void store(uint8_t *buf, uint32_t v) { *(uint32_t *)(buf + 4) = v; }
+  - |-
+    #include <stdint.h>
+    #include <stddef.h>
+    #include <string.h>
+    uint32_t load(uint8_t *buf) { return *(uint32_t *)(&buf[1]); }
+  - |-
+    #include <stdint.h>
+    #include <stddef.h>
+    #include <string.h>
+    uint32_t g(uint32_t);
+    uint32_t load(const uint8_t *buf) { return g(*(uint32_t *)(buf + 2)); }
