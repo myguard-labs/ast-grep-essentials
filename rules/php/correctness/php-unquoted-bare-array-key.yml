@@ -2,22 +2,20 @@
 
 id: php-unquoted-bare-array-key
 language: php
-severity: warning
+severity: 'off'
 message: >-
-  Array subscript uses a bare identifier as its key; this is a constant
-  lookup, not a string key. Quote the key if a string was intended.
+  Deprecated rule ID; use php-unquoted-array-key-bareword. Array subscript uses
+  a bare identifier as its key; quote it as a string.
 note: >-
-  Syntactic match only on a subscript whose index is a bare name. It cannot
-  tell whether a constant of that name is intentionally defined, and does not
-  resolve types or scope.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use php-unquoted-array-key-bareword and do not emit this rule.
 rule:
-  pattern: '$Q[s]'
+  kind: subscript_expression
+  has:
+    kind: name
 metadata:
-  todo_cases:
-    - 'FN: `$x = $q[ss];` and `$x = $q[S];` (other bare names) are not reported; the pattern only matches the literal key s'
-  rule_modified_at: '2026-10-16'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-16'
+  deprecated_alias_of: php-unquoted-array-key-bareword
+  rule_modified_at: '2026-11-18'
   created_at: '2026-10-16'
   source: 'MyGuard'
   modified_by: MyGuard
