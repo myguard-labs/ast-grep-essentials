@@ -5,11 +5,13 @@ language: php
 severity: warning
 message: >-
   Superglobal element is read without an isset, empty or null-coalescing
-  guard; assignment targets and the left operand of ?? are not reads.
+  guard.
 note: >-
   Purely syntactic; does not detect guards elsewhere in control flow (e.g. a
   prior isset check in an if condition) and cannot know whether the key is
-  always present at runtime.
+  always present at runtime. Assignment targets are writes and are not
+  reported; only the left operand of ?? (also when parenthesized) counts as
+  guarded, so the right operand of `$_X['a'] ?? $_X['b']` is reported.
 rule:
   all:
     - kind: subscript_expression
