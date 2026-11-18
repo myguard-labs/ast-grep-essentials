@@ -9,9 +9,11 @@ message: >-
 note: >-
   Purely syntactic; does not detect guards elsewhere in control flow (e.g. a
   prior isset check in an if condition) and cannot know whether the key is
-  always present at runtime. Assignment targets are writes and are not
-  reported; only the left operand of ?? (also when parenthesized) counts as
-  guarded, so the right operand of `$_X['a'] ?? $_X['b']` is reported.
+  always present at runtime. A direct assignment target is a write and is
+  not reported, but in a nested write such as $_X['a']['b'] = 1 the inner
+  $_X['a'] read still is. Only the left operand of ?? (also inside one pair
+  of parentheses) counts as guarded, so the right operand of
+  $_X['a'] ?? $_X['b'] is reported.
 rule:
   all:
     - kind: subscript_expression
