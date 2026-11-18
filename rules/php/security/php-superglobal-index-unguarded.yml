@@ -9,8 +9,9 @@ message: >-
 note: >-
   Purely syntactic; does not detect guards elsewhere in control flow (e.g. a
   prior isset check in an if condition) and cannot know whether the key is
-  always present at runtime. A direct assignment target is a write and is
-  not reported, but in a nested write such as $_X['a']['b'] = 1 the inner
+  always present at runtime. A direct target of = or ??= is not reported; a
+  compound assignment such as .= or += reads the element first and is
+  reported. In a nested write such as $_X['a']['b'] = 1 the inner
   $_X['a'] read still is. Only the left operand of ?? (also inside one pair
   of parentheses) counts as guarded, so the right operand of
   $_X['a'] ?? $_X['b'] is reported.
@@ -35,6 +36,9 @@ rule:
           any:
             - kind: assignment_expression
             - kind: augmented_assignment_expression
+              has:
+                field: operator
+                regex: '^\?\?=$'
           field: left
     - not:
         inside:
