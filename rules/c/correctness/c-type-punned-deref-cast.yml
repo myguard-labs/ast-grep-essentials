@@ -8,9 +8,39 @@ message: >-
   aliasing; consider memcpy.
 note: >-
   Matches the literal syntax *(T *) expr only. It does not check whether the
-  pointed-to object actually has type T, nor resolve aliases or types.
+  pointed-to object actually has type T, nor resolve aliases or types. A cast
+  to a single-level pointer to the spelled type char, signed char or unsigned
+  char is skipped (character-type access, C11 6.5p7): the cast type must be a
+  primitive_type that is exactly char, or a sized_type_specifier whose base
+  type is char, with a one-level abstract pointer declarator; char **,
+  wchar_t, char16_t and typedefs such as uint8_t are still reported.
 rule:
-  pattern: '*($T *) $E'
+  all:
+    - pattern: '*($T *) $E'
+    - not:
+        has:
+          field: argument
+          kind: cast_expression
+          has:
+            field: type
+            kind: type_descriptor
+            all:
+              - has:
+                  field: declarator
+                  kind: abstract_pointer_declarator
+                  not:
+                    has:
+                      kind: abstract_pointer_declarator
+              - has:
+                  field: type
+                  any:
+                    - kind: primitive_type
+                      regex: '^char$'
+                    - kind: sized_type_specifier
+                      has:
+                        field: type
+                        kind: primitive_type
+                        regex: '^char$'
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -21,4 +51,3 @@ metadata:
   license: MyGuard Internal Use License 1.0
   todo_cases:
     - '`*(const int *) p`, `((struct hdr *) b)->a` and `*((int *) p)` are not reported'
-    - '`*(unsigned char *) p = 0` (character-type access, aliasing-safe) is reported'

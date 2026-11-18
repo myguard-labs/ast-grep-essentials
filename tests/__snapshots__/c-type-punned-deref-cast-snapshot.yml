@@ -6,12 +6,42 @@ snapshots:
       style: primary
       start: 94
       end: 111
+  "#include <uchar.h>\nchar16_t narrow(void) { unsigned int u = 1; return *(char16_t *) &u; }":
+    labels:
+    - source: "*(char16_t *) &u"
+      style: primary
+      start: 70
+      end: 86
+  "#include <wchar.h>\nwchar_t widen(void) { unsigned short s = 1; return *(wchar_t *) &s; }":
+    labels:
+    - source: "*(wchar_t *) &s"
+      style: primary
+      start: 70
+      end: 85
+  "char *as_ptr(void) { long l = 0; return *(char **) &l; }":
+    labels:
+    - source: "*(char **) &l"
+      style: primary
+      start: 40
+      end: 53
   "float to_float(unsigned u) { return *(float *) &u; }":
     labels:
     - source: "*(float *) &u"
       style: primary
       start: 36
       end: 49
+  "int mixed(float f, void *p) {\n  unsigned char c = *(unsigned char *) p;\n  return c + *(int *) &f;\n}":
+    labels:
+    - source: "*(int *) &f"
+      style: primary
+      start: 85
+      end: 96
+  "unsigned bits(float x) { return *(unsigned *) &x; }":
+    labels:
+    - source: "*(unsigned *) &x"
+      style: primary
+      start: 32
+      end: 48
   "void g(char *buf, int fd) { *(int *) buf = fd; }":
     labels:
     - source: "*(int *) buf"
