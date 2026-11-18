@@ -2,20 +2,22 @@
 
 id: sh-unquoted-positional-splat
 language: bash
-severity: warning
+severity: 'off'
 message: >-
-  Unquoted positional parameter expansion as a command argument; quote it as
-  "$@" to keep each argument intact.
+  Deprecated rule ID; use sh-unquoted-star-argument. Unquoted positional
+  parameter expansion as a command argument; quote it as "$@" to keep each
+  argument intact.
 note: >-
-  Syntactic check only. Matches a bare $* word used as a command argument by
-  literal shape; it does not verify runtime argument values or that the
-  surrounding script intends otherwise.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use sh-unquoted-star-argument and do not emit this rule.
 rule:
-  pattern: '$*'
+  kind: simple_expansion
+  regex: '^\$\*$'
   inside:
     kind: command
 metadata:
-  rule_modified_at: '2026-10-15'
+  deprecated_alias_of: sh-unquoted-star-argument
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
   created_at: '2026-10-15'

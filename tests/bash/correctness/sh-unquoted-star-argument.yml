@@ -7,6 +7,10 @@ valid:
   - 'echo "args: $*"'
   - |-
     printf '%s\n' "$*"
+  - 'hugo "$@"'
+  - 'exec "$@"'
+  - 'cp -- "$@" /var/backups/'
+  - 'printf "%s\n" "$@"'
 invalid:
   - |
     #!/usr/bin/env bash
@@ -14,3 +18,7 @@ invalid:
   - 'echo prefix $* suffix'
   - 'if grep -q foo $*; then :; fi'
   - 'x=$(wc -l $*)'
+  - 'hugo $*'
+  - 'exec $*'
+  - 'cp -- $* /var/backups/'
+  - 'printf "%s\n" $*'
