@@ -1,5 +1,17 @@
 id: sh-fallback-after-pipeline-masks-failure
 snapshots:
+  echo "$(ps aux | grep -c nginx || true)":
+    labels:
+    - source: $(ps aux | grep -c nginx || true)
+      style: primary
+      start: 6
+      end: 39
+  exported=$(nm -D --defined-only lib.so | grep -c ' sym_' || true):
+    labels:
+    - source: $(nm -D --defined-only lib.so | grep -c ' sym_' || true)
+      style: primary
+      start: 9
+      end: 65
   id=$(docker ps -q | head -n1 || echo none):
     labels:
     - source: $(docker ps -q | head -n1 || echo none)
@@ -12,6 +24,30 @@ snapshots:
       style: primary
       start: 2
       end: 31
+  n=$(find . -name x | grep -c . || true):
+    labels:
+    - source: $(find . -name x | grep -c . || true)
+      style: primary
+      start: 2
+      end: 39
+  n=$(ls /srv | grep -c '.log' || true):
+    labels:
+    - source: $(ls /srv | grep -c '.log' || true)
+      style: primary
+      start: 2
+      end: 37
+  n=$(ls | grep -c x || true) && echo ok:
+    labels:
+    - source: $(ls | grep -c x || true)
+      style: primary
+      start: 2
+      end: 27
+  n=$(ls | grep -v x || true):
+    labels:
+    - source: $(ls | grep -v x || true)
+      style: primary
+      start: 2
+      end: 27
   v=$(curl -s "$url" | jq -r .version || echo unknown):
     labels:
     - source: $(curl -s "$url" | jq -r .version || echo unknown)
