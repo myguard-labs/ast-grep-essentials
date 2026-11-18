@@ -1,22 +1,75 @@
 id: c-implicit-int-static-function-definition
 valid:
-  - 'static inline void f(int x) { (void)x; }'
+  - 'static int ftp_proxyerror(int x) { return x; }'
   - |-
     static void f(void) { }
   - |-
-    extern int f(int x) { return x; }
+    static const char *f(void) { return 0; }
+  - |-
+    int f(int x) { return x; }
   - |-
     static inline int f(int x) { return x; }
+  - |-
+    static int *f(void) { return 0; }
+  - |-
+    static unsigned long f(void) { return 0; }
+  - |-
+    static struct s *f(void) { return 0; }
+  - |-
+    static long long f(void) { return 0; }
+  - |-
+    static enum e f(void) { return 0; }
+  - |-
+    static union u f(void) { return 0; }
+  - |-
+    static signed f(void) { return 0; }
+  - |-
+    static unsigned f(void) { return 0; }
+  - |-
+    static inline const struct s *f(void) { return 0; }
+  - |-
+    int main(void) { return 0; }
+  - |-
+    static int ok(void) { return 0; }
+  - |-
+    extern int f(int x) { return x; }
+  - |-
+    inline int f(int x) { return x; }
+  - |-
+    typedef int T; static T g(void) { return 0; }
+  - |-
+    typedef int T; static T *g(void) { return 0; }
+  - |-
+    static MY_ALLOC_FUNC(name)
+    {
+      return 0;
+    }
+  - 'static inline void f(int x) { (void)x; }'
   - |-
     static void
     f(void)
     {
     }
 invalid:
-  - 'static inline f(int x) { return x; }'
+  - 'static ftp_proxyerror(int x) { return x; }'
   - |-
-    extern f(int x) { return x; }
+    static inline f(int x) { return x; }
+  - |-
+    static const f(int x) { return x; }
+  - |-
+    inline static f(int x) { return x; }
+  - |-
+    static f(char *s) { return s[0]; }
+  - |-
+    static f(int x)
+    {
+      return x;
+    }
   - |-
     static f(void) { return 0; }
   - |-
-    inline static f(int x) { return x; }
+    extern f(int x) { return x; }
+  - |-
+    inline f(int x) { return x; }
+  - |-
+    static const k(int x) { return x; }
