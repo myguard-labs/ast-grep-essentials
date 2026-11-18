@@ -9,21 +9,27 @@ message: >-
   does not leak.
 note: >-
   This is a syntactic check only. It looks for a Close() call on the bound
-  variable anywhere inside the same function declaration. It does not track
-  whether the handle escapes or is returned (ownership transfer), aliasing, or
-  whether Close runs on every path.
+  variable anywhere inside an enclosing function declaration, method
+  declaration or func literal. It does not track whether the handle escapes or
+  is returned (ownership transfer), aliasing, or whether Close runs on every
+  path.
 rule:
   pattern: '$HANDLE, $ERR := ns.GetCurrentNS()'
   not:
     inside:
-      kind: function_declaration
+      any:
+        - kind: function_declaration
+        - kind: method_declaration
+        - kind: func_literal
       stopBy: end
       has:
         stopBy: end
         pattern: '$HANDLE.Close()'
 metadata:
   todo_cases:
-    - "FP: a method declaration (`func (t *T) f()`) that defers `cur.Close()` is reported because the rule looks inside function_declaration only"
+    - "FN: the Close() search runs over every enclosing function, method and func literal, so a handle opened in a func literal is silenced when the enclosing function closes a variable with the same name"
+    - "FN: a Close() on the same name in a nested func literal or a different branch counts as closing, with no path analysis"
+    - "Known gap: the `h, err = ns.GetCurrentNS()` assignment form is not matched at all"
   rule_modified_at: '2026-10-09'
   ast_grep_tested_version: 0.45.3
   validated_at: '2026-10-09'
