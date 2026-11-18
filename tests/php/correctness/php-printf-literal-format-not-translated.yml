@@ -1,11 +1,30 @@
 id: php-printf-literal-format-not-translated
 valid:
+  - |
+    <?php
+    printf( __('Maximum size: %s'), $size );
+  - '<?php printf( _x( ''Maximum size: %s'', ''context'', ''my-domain'' ), $size );'
+  - '<?php printf( esc_html__( ''Maximum size: %s'', ''my-domain'' ), $size );'
+  - '<?php $this->printf( ''Maximum size: %s'', $size );'
+  - '<?php printf(__(''Edit &#8220%s&#8221; Category''), $name); ?>'
+  - '<?php printf(esc_html__(''Total: %d items'', ''td''), $n); ?>'
+  - '<?php printf($format, $n); ?>'
+  - '<?php printf(_n(''%d item'', ''%d items'', $n, ''td''), $n); ?>'
   - '<?php printf( __( ''Revisions: %s'' ), $count );'
-  - '<?php printf( ''Revisions: 100'', $count );'
   - '<?php printf( _n( ''%s item'', ''%s items'', $n ), $n );'
   - '<?php printf( esc_html__( ''Revisions: %s'' ), $count );'
 invalid:
+  - |
+    <?php
+    printf( 'Maximum size: %s', $size );
+  - '<?php printf( ''Maximum size: %s'', $size, $unit );'
+  - '<?php if ( $x ) { printf( ''Maximum size: %s'', $size ); }'
+  - '<?php printf( ''Maximum size: %s'', ...$args );'
+  - '<?php printf(''Edit &#8220%s&#8221; Category'', $name); ?>'
+  - '<?php printf(''%s: %d items'', $label, count($rows)); ?>'
+  - '<?php if ($ok) { printf(''Deleted %d rows'', $n); } ?>'
   - '<?php printf( ''Revisions: %s'', $count );'
+  - '<?php printf( ''Revisions: 100'', $count );'
   - '<?php printf( ''Done: %d%%'', $pct );'
   - '<?php printf( ''%1$s of %2$s'', $a, $b );'
   - '<?php $n = printf( ''Revisions: %s'', $count );'

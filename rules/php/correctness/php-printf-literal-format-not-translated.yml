@@ -2,27 +2,25 @@
 
 id: php-printf-literal-format-not-translated
 language: php
-severity: warning
+severity: 'off'
 message: >-
-  Untranslated printf format string literal; wrap it in a translation function
-  such as __().
+  Deprecated rule ID; use php-printf-untranslated-format. Untranslated printf
+  format string literal; wrap it in a translation function such as __().
 note: >-
-  Syntactic check only. Matches a direct printf call whose first argument is a
-  string literal containing a % placeholder. Does not resolve whether the call
-  is user-facing, whether printf is the global function, or whether an
-  allowlist applies.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use php-printf-untranslated-format and do not emit this rule.
 rule:
   pattern: 'printf(''$FMT'', $$$ARGS)'
-  regex: '%'
 metadata:
-  rule_modified_at: '2026-10-15'
+  deprecated_alias_of: php-printf-untranslated-format
+  todo_cases:
+    - 'FN: printf( "Revisions: %s", $count ) with a double-quoted format string is not reported'
+    - 'FN: \printf( ''Revisions: %s'', $count ) with a leading namespace separator is not reported'
+    - 'FN: printf( ''Revisions: %s'' . "\n", $count ) with a concatenated literal format is not reported'
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - 'FN: printf( "Revisions: %s", $count ) with a double-quoted format string is not reported'
-    - 'FN: \printf( ''Revisions: %s'', $count ) with a leading namespace separator is not reported'
-    - 'FN: printf( ''Revisions: %s'' . "\n", $count ) with a concatenated literal format is not reported'
