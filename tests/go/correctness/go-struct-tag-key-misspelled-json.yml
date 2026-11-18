@@ -1,5 +1,42 @@
 id: go-struct-tag-key-misspelled-json
 valid:
   - 'type S struct { Sessions4xx uint64 `json:"4xx"` }'
+  - |-
+    package p
+
+    type S struct {
+    	Name string `json:"name" xml:"name"`
+    }
+  - |-
+    package p
+
+    type S struct {
+    	Secret string `json:"-"`
+    }
+  - |-
+    package p
+
+    type S struct {
+    	Kind string `xml:"josn"`
+    }
 invalid:
   - 'type S struct { Sessions4xx uint64 `josn:"4xx"` }'
+  - |-
+    package p
+
+    type S struct {
+    	Name string `josn:"name,omitempty"`
+    }
+  - |-
+    package p
+
+    type S struct {
+    	ID   int    `josn:"id"`
+    	Name string `json:"name"`
+    }
+  - |-
+    package p
+
+    type S struct {
+    	Secret string `josn:"-"`
+    }

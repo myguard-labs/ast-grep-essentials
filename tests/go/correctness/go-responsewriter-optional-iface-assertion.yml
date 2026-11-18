@@ -1,5 +1,80 @@
 id: go-responsewriter-optional-iface-assertion
 valid:
   - "package p\nimport (\n\t\"io\"\n\t\"net/http\"\n)\nfunc f(w http.ResponseWriter) {\n\tif c, ok := w.(io.Closer); ok {\n\t\t_ = c\n\t}\n\t_ = http.NewResponseController(w).Flush()\n}"
+  - |-
+    package p
+
+    import "net/http"
+
+    func f(w http.ResponseWriter) http.ResponseWriter {
+    	if u, ok := w.(interface{ Unwrap() http.ResponseWriter }); ok {
+    		return u.Unwrap()
+    	}
+    	return w
+    }
+  - |-
+    package p
+
+    import (
+    	"errors"
+    	"net/http"
+    )
+
+    func f(w http.ResponseWriter) error {
+    	err := http.NewResponseController(w).Flush()
+    	if err != nil && !errors.Is(err, http.ErrNotSupported) {
+    		return err
+    	}
+    	return nil
+    }
+  - |-
+    package p
+
+    import (
+    	"fmt"
+    	"net/http"
+    )
+
+    func f(w http.ResponseWriter) {
+    	if s, ok := w.(fmt.Stringer); ok {
+    		if _, err := w.Write([]byte(s.String())); err != nil {
+    			return
+    		}
+    	}
+    }
 invalid:
   - "package p\nimport \"net/http\"\nfunc f(w http.ResponseWriter) {\n\tif fl, ok := w.(http.Flusher); ok {\n\t\tfl.Flush()\n\t}\n}"
+  - |-
+    package p
+
+    import "net/http"
+
+    func f(w http.ResponseWriter) bool {
+    	_, ok := w.(http.Flusher)
+    	return ok
+    }
+  - |-
+    package p
+
+    import "net/http"
+
+    func f(w http.ResponseWriter) {
+    	fl, ok := w.(http.Flusher)
+    	if !ok {
+    		http.Error(w, "streaming unsupported", http.StatusInternalServerError)
+    		return
+    	}
+    	fl.Flush()
+    }
+  - |-
+    package p
+
+    import "net/http"
+
+    type wrap struct{ http.ResponseWriter }
+
+    func (s wrap) Flush() {
+    	if fl, ok := s.ResponseWriter.(http.Flusher); ok {
+    		fl.Flush()
+    	}
+    }

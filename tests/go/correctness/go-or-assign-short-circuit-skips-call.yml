@@ -7,6 +7,31 @@ valid:
         attached = bind() || attached
         return attached
     }
+  - |-
+    package p
+
+    func f(attached bool, flag bool) bool {
+    	attached = attached || flag
+    	return attached
+    }
+  - |-
+    package p
+
+    func f(attached bool, bind func() bool) bool {
+    	if bind() {
+    		attached = true
+    	}
+    	return attached
+    }
+  - |-
+    package p
+
+    type state struct{ ok, flag bool }
+
+    func f(s *state) bool {
+    	s.ok = s.ok || s.flag
+    	return s.ok
+    }
 invalid:
   - |-
     package p
@@ -14,4 +39,36 @@ invalid:
     func f(attached bool, bind func() bool) bool {
         attached = attached || bind()
         return attached
+    }
+  - |-
+    package p
+
+    type checker struct{}
+
+    func (checker) bind() bool { return true }
+
+    func f(c checker, ok bool) bool {
+    	ok = ok || c.bind()
+    	return ok
+    }
+  - |-
+    package p
+
+    func f(attached bool, bind func(int, string) bool) bool {
+    	attached = attached || bind(1, "x")
+    	return attached
+    }
+  - |-
+    package p
+
+    import "os"
+
+    func exists(p string) bool {
+    	_, err := os.Stat(p)
+    	return err == nil
+    }
+
+    func f(found bool, p string) bool {
+    	found = found || exists(p)
+    	return found
     }

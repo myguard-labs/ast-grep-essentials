@@ -1,8 +1,26 @@
 id: go-struct-tag-key-misspelled-json
 snapshots:
-  type S struct { Sessions4xx uint64 `josn:"4xx"` }:
+  "package p\n\ntype S struct {\n\tID   int    `josn:\"id\"`\n\tName string `json:\"name\"`\n}":
     labels:
-    - source: '`josn:"4xx"`'
+    - source: "`josn:\"id\"`"
+      style: primary
+      start: 40
+      end: 51
+  "package p\n\ntype S struct {\n\tName string `josn:\"name,omitempty\"`\n}":
+    labels:
+    - source: "`josn:\"name,omitempty\"`"
+      style: primary
+      start: 40
+      end: 63
+  "package p\n\ntype S struct {\n\tSecret string `josn:\"-\"`\n}":
+    labels:
+    - source: "`josn:\"-\"`"
+      style: primary
+      start: 42
+      end: 52
+  "type S struct { Sessions4xx uint64 `josn:\"4xx\"` }":
+    labels:
+    - source: "`josn:\"4xx\"`"
       style: primary
       start: 35
       end: 47

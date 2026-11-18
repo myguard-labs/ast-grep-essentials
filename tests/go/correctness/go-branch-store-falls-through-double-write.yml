@@ -1,5 +1,66 @@
 id: go-branch-store-falls-through-double-write
 valid:
   - "func (c *cache) put(isClass bool, key string, n *entry) {\n\tif isClass {\n\t\tc.classNodes[key] = n\n\t\treturn\n\t}\n\tc.contractNodes[key] = n\n}"
+  - |-
+    package p
+
+    func put(seen map[string]bool, all map[string]bool, keys []string, skip bool) {
+    	for _, key := range keys {
+    		if skip {
+    			seen[key] = true
+    			continue
+    		}
+    		all[key] = true
+    	}
+    }
+  - |-
+    package p
+
+    func put(a, b map[string]int, key string, cond bool) {
+    	if cond {
+    		a[key] = 1
+    	} else {
+    		b[key] = 1
+    	}
+    }
+  - |-
+    package p
+
+    func put(a, b map[string]int, key string, cond bool) {
+    	if cond {
+    		a[key] = 1
+    	}
+    	b[key] = 2
+    }
 invalid:
   - "func (c *cache) put(isClass bool, key string, n *entry) {\n\tif isClass {\n\t\tc.classNodes[key] = n\n\t}\n\tc.contractNodes[key] = n\n}"
+  - |-
+    package p
+
+    func put(a, b map[string]int, key string, cond bool) {
+    	if cond {
+    		a[key] = 1
+    	}
+    	b[key] = 1
+    }
+  - |-
+    package p
+
+    func put(a, b map[string]int, key string, cond bool) {
+    	if cond {
+    		a[key] = 1
+    	}
+    	println(len(a))
+    	b[key] = 1
+    }
+  - |-
+    package p
+
+    func put(a, b map[string]int, keys []string, cond bool) {
+    	for _, key := range keys {
+    		if cond {
+    			a[key] = 1
+    		}
+    		b[key] = 1
+    	}
+    }

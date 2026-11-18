@@ -1,5 +1,52 @@
 id: go-owner-reference-literal-not-controller-ref
 valid:
   - "package main\n\nfunc build(src *Source, svc *Service, scheme *runtime.Scheme) error {\n\treturn controllerutil.SetControllerReference(src, svc, scheme)\n}"
+  - |-
+    package p
+
+    func build(src *Source, svc *Service, gvk schema.GroupVersionKind) {
+    	svc.OwnerReferences = append(svc.OwnerReferences, *metav1.NewControllerRef(src, gvk))
+    }
+  - |-
+    package p
+
+    func clear(svc *Service) {
+    	svc.OwnerReferences = []metav1.OwnerReference{}
+    }
+  - |-
+    package p
+
+    func owner(svc *Service) string {
+    	ref := metav1.GetControllerOf(svc)
+    	if ref == nil {
+    		return ""
+    	}
+    	return ref.Name
+    }
 invalid:
   - "package main\n\nfunc build(src *Source, svc *Service) {\n\tsvc.OwnerReferences = []metav1.OwnerReference{{APIVersion: src.APIVersion, Kind: src.Kind, Name: src.Name, UID: src.UID}}\n}"
+  - |-
+    package p
+
+    func build(src *Source, svc *Service) {
+    	ctrl := true
+    	svc.OwnerReferences = []metav1.OwnerReference{{APIVersion: src.APIVersion, Kind: src.Kind, Name: src.Name, UID: src.UID, Controller: &ctrl}}
+    }
+  - |-
+    package p
+
+    func build(src *Source) []metav1.OwnerReference {
+    	refs := []metav1.OwnerReference{{APIVersion: "v1", Kind: "Pod", Name: src.Name, UID: src.UID}}
+    	return refs
+    }
+  - |-
+    package p
+
+    func build(src *Source, svc *Service) {
+    	svc.OwnerReferences = []metav1.OwnerReference{{
+    		APIVersion: src.APIVersion,
+    		Kind:       src.Kind,
+    		Name:       src.Name,
+    		UID:        src.UID,
+    	}}
+    }

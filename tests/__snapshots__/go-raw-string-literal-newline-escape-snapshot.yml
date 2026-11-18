@@ -1,11 +1,26 @@
 id: go-raw-string-literal-newline-escape
 snapshots:
-  ? |
-    package p
-
-    var defaultResponse = `HTTP/1.1 200 OK\nContent-length: 2\n\nOk`
-  : labels:
-    - source: '`HTTP/1.1 200 OK\nContent-length: 2\n\nOk`'
+  "package p\n\nimport \"fmt\"\n\nfunc hello() {\n\tfmt.Print(`GET / HTTP/1.1\\r\\nHost: example.com\\r\\n\\r\\n`)\n}":
+    labels:
+    - source: "`GET / HTTP/1.1\\r\\nHost: example.com\\r\\n\\r\\n`"
+      style: primary
+      start: 51
+      end: 96
+  "package p\n\nimport \"strings\"\n\nfunc lines(s string) []string {\n\treturn strings.Split(s, `\\n`)\n}":
+    labels:
+    - source: "`\\n`"
+      style: primary
+      start: 86
+      end: 90
+  "package p\n\nimport \"strings\"\n\nfunc norm(s string) string {\n\treturn strings.ReplaceAll(s, `\\r\\n`, \"\\n\")\n}":
+    labels:
+    - source: "`\\r\\n`"
+      style: primary
+      start: 88
+      end: 94
+  "package p\n\nvar defaultResponse = `HTTP/1.1 200 OK\\nContent-length: 2\\n\\nOk`\n":
+    labels:
+    - source: "`HTTP/1.1 200 OK\\nContent-length: 2\\n\\nOk`"
       style: primary
       start: 33
       end: 75
