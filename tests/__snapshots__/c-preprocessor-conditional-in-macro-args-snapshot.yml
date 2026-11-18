@@ -32,6 +32,19 @@ snapshots:
       style: primary
       start: 30
       end: 141
+  "#include <stdio.h>\n#define LOG(...) printf(__VA_ARGS__)\nvoid paren_in_string(int x) {\n    LOG(\"%d)\\n\", x\n#ifdef VERBOSE\n        , 1\n#endif\n        );\n}":
+    labels:
+    - source: |-
+        void paren_in_string(int x) {
+            LOG("%d)\n", x
+        #ifdef VERBOSE
+                , 1
+        #endif
+                );
+        }
+      style: primary
+      start: 56
+      end: 151
   "int add(int a, int b) { return a + b; }\nint clean(int x) {\n    if (x)\n#ifdef FOO\n        x++;\n#endif\n    return x;\n}\nint mixed(int x) {\n    return add(x,\n#ifdef FOO\n               1\n#else\n               2\n#endif\n               );\n}":
     labels:
     - source: |-
