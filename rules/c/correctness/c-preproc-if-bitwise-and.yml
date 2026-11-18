@@ -19,7 +19,16 @@ rule:
         - inside:
             kind: preproc_if
     - all:
+        - has:
+            field: operator
+            regex: '^&$'
         - regex: '^HAVE_\w+\s*&\s*HAVE_\w+'
+        - not:
+            inside:
+              kind: binary_expression
+              has:
+                field: operator
+                regex: '^&$'
         - inside:
             stopBy: end
             field: condition

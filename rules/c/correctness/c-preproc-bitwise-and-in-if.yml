@@ -18,7 +18,16 @@ rule:
         - inside:
             kind: preproc_if
     - all:
+        - has:
+            field: operator
+            regex: '^&$'
         - regex: '^HAVE_\w+\s*&\s*HAVE_\w+'
+        - not:
+            inside:
+              kind: binary_expression
+              has:
+                field: operator
+                regex: '^&$'
         - inside:
             stopBy: end
             field: condition
@@ -34,5 +43,6 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
+    - 'Accepted: (HAVE_X & HAVE_Y) != 0 is reported; HAVE_ macros are treated as boolean feature macros.'
     - 'FN: #elif FOO & BAR with non-HAVE_ operands is not reported (generic branch only sees a direct preproc_if parent).'
     - 'FN: #if (A & B) with non-HAVE_ operands inside parentheses is not reported; the generic branch only sees a direct preproc_if parent so that #if (X & MASK) != 0 stays valid.'
