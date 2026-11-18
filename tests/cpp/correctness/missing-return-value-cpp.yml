@@ -27,6 +27,67 @@ valid:
       int get() const { return count_; }
       int next() { return ++count_; }
     };
+  - |-
+    static int total = 0;
+    void add(int x) {
+      total += x;
+    }
+  - |-
+    struct Box {
+      int v_ = 0;
+      void set(int v) {
+        v_ = v;
+      }
+    };
+  - |-
+    auto reset(int &x) -> void {
+      x = 0;
+    }
+  - |-
+    struct Res {
+      int *p_;
+      Res() : p_(new int(0)) {
+        *p_ = 1;
+      }
+      ~Res() {
+        delete p_;
+      }
+      Res(const Res &) = delete;
+      Res &operator=(const Res &) = delete;
+    };
+  - |-
+    struct Flag {
+      int v_ = 0;
+      explicit Flag(int v) { v_ = v; }
+      operator bool() const {
+        if (v_ > 0) {
+          return true;
+        }
+        return false;
+      }
+    };
+    struct Wrap {
+      int v_ = 0;
+      operator int() const;
+    };
+    Wrap::operator int() const {
+      int copy = v_;
+      return copy;
+    }
+  - |-
+    int main(int argc, char **argv) {
+      argc += 1;
+      argv[0] = nullptr;
+    }
+  - |-
+    auto bump(int &x) {
+      x++;
+    }
+  - |-
+    template <class T>
+    void clear(T &v) {
+      v = T();
+    }
 invalid:
   - |-
     int f(int x) {
@@ -60,3 +121,35 @@ invalid:
       int copy = count_;
       copy++;
     }
+  - |-
+    void *raw(int n) {
+      n++;
+    }
+  - |-
+    template <class T>
+    T first(T a, T b) {
+      a = b;
+    }
+  - |-
+    struct Cfg {
+      int level_ = 0;
+      void set(int v) {
+        level_ = v;
+      }
+      int get() const {
+        int copy = level_;
+        copy++;
+      }
+    };
+  - |-
+    auto width(int x) -> int {
+      x++;
+    }
+  - |-
+    struct Level {
+      int v_ = 0;
+      operator int() const {
+        int copy = v_;
+        copy++;
+      }
+    };

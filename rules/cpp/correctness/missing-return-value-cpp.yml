@@ -8,7 +8,10 @@ note: >-
   Syntactic approximation only. Matches a function definition with a non-void
   return type whose body contains no return_statement node anywhere; it does
   not analyse control flow, so functions that always throw or exit, or that
-  return via nested lambdas, are not distinguished.
+  return via nested lambdas, are not distinguished. Definitions returning
+  void (including a trailing -> void and a plain auto return with no
+  return statement), constructors, destructors and main are skipped; a conversion
+  operator returns a value and is still checked.
 rule:
   all:
     - kind: 'function_definition:has(> compound_statement)'
@@ -17,22 +20,70 @@ rule:
           kind: return_statement
           stopBy: end
     - not:
-        has:
-          pattern: 'void $NAME($$$ARGS) $$$BODY'
-          stopBy: end
+        all:
+          - has:
+              field: type
+              kind: primitive_type
+              regex: '^void$'
+          - has:
+              field: declarator
+              kind: function_declarator
+              not:
+                has:
+                  field: declarator
+                  kind: parenthesized_declarator
     - not:
         has:
-          kind: type_identifier
-          regex: '^void$'
-          stopBy: end
+          field: declarator
+          kind: function_declarator
+          has:
+            kind: trailing_return_type
+            has:
+              kind: type_descriptor
+              regex: '^void$'
+    - not:
+        all:
+          - has:
+              field: type
+              kind: placeholder_type_specifier
+              regex: '^auto$'
+          - has:
+              field: declarator
+              kind: function_declarator
+              not:
+                has:
+                  kind: trailing_return_type
+    - not:
+        all:
+          - not:
+              has:
+                field: type
+                regex: '.'
+          - not:
+              has:
+                field: declarator
+                any:
+                  - kind: operator_cast
+                  - has:
+                      kind: operator_cast
+                      stopBy: end
+    - not:
+        has:
+          field: declarator
+          kind: function_declarator
+          has:
+            field: declarator
+            kind: identifier
+            regex: '^main$'
 metadata:
   todo_cases:
-    - 'Observed false positive (high noise): every void function without a return statement is reported'
-    - 'Observed false positive: constructors and destructors with a body are reported'
-    - 'Observed false positive: int main() { ... } without return (valid C++) is reported'
     - 'Observed false positive: a function whose body only throws or calls std::exit is reported'
-    - 'Observed false positive: trailing-return auto f() -> void { ... } is reported'
+    - 'Observed false positive: a void function spelled through a typedef (typedef void V; V f() {}) is still reported'
+    - 'Observed miss: a main inside a namespace (namespace n { int main() { } }) is skipped like the global main'
+    - 'Observed miss: an in-class member function named main without a return statement is skipped like the free function main'
     - 'Observed miss: int f() { auto l = [] { return 1; }; l(); } is not reported because the nested lambda return counts'
+    - 'Observed false positive: decltype(auto) f(int &x) { x++; } (deduces void) is still reported'
+    - 'Observed false positive: a coroutine whose body uses only co_return or co_yield (task f() { co_return; }) is reported'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
