@@ -9,14 +9,15 @@ message: >-
 note: >-
   Textual heuristic over a function body: an open parenthesis preceded by a
   word character, then text with no semicolon or brace and with every nested
-  parenthesis group closed (up to two levels of nesting; a parenthesis inside
-  a string or character literal does not count), then a conditional
+  parenthesis group closed (up to two levels of nesting; a parenthesis or
+  quote inside a string literal, character literal or comment does not
+  count), then a conditional
   directive line. The directive must therefore sit inside a parenthesis list
   that is still open, so `if (x)` followed by `#ifdef` is not reported. Does
   not confirm the callee is a macro.
 rule:
   kind: function_definition
-  regex: '\w[ \t]*\((?:[^;{}()]|"(?:[^"\\\n]|\\.)*"|''(?:[^''\\\n]|\\.)*''|\((?:[^;{}()]|"(?:[^"\\\n]|\\.)*"|''(?:[^''\\\n]|\\.)*'')*\)|\((?:[^;{}()]|"(?:[^"\\\n]|\\.)*"|''(?:[^''\\\n]|\\.)*''|\((?:[^;{}()]|"(?:[^"\\\n]|\\.)*"|''(?:[^''\\\n]|\\.)*'')*\))*\))*\n[ \t]*#[ \t]*(if|ifdef|ifndef|else|elif)\b'
+  regex: '\w[ \t]*\((?:[^;{}()"'']|"(?:[^"\\\n]|\\.)*"|''(?:[^''\\\n]|\\.)*''|//[^\n]*|/\*(?:[^*]|\*+[^*/])*\*+/|\((?:[^;{}()"'']|"(?:[^"\\\n]|\\.)*"|''(?:[^''\\\n]|\\.)*''|//[^\n]*|/\*(?:[^*]|\*+[^*/])*\*+/|\((?:[^;{}()"'']|"(?:[^"\\\n]|\\.)*"|''(?:[^''\\\n]|\\.)*''|//[^\n]*|/\*(?:[^*]|\*+[^*/])*\*+/)*\))*\))*\n[ \t]*#[ \t]*(if|ifdef|ifndef|else|elif)\b'
 metadata:
   todo_cases:
     - '`f(g(h(i(a))),\n#ifdef X\n 1\n#endif\n)` with three levels of nested parentheses before the directive is not reported (false negative: only two nesting levels are allowed in the span).'
