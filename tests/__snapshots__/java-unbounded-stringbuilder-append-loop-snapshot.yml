@@ -1,6 +1,6 @@
 id: java-unbounded-stringbuilder-append-loop
 snapshots:
-  StringBuilder sb = new StringBuilder(); while (in.available() > 0) { sb.append((char) in.read()); }:
+  "StringBuilder sb = new StringBuilder(); while (in.available() > 0) { sb.append((char) in.read()); }":
     labels:
     - source: while (in.available() > 0) { sb.append((char) in.read()); }
       style: primary
@@ -14,3 +14,37 @@ snapshots:
       style: secondary
       start: 69
       end: 96
+  "import java.io.BufferedReader;\nimport java.io.IOException;\n\nclass LineSlurper {\n  static String slurp(BufferedReader reader) throws IOException {\n    StringBuilder sb = new StringBuilder();\n    String line;\n    while ((line = reader.readLine()) != null) {\n      sb.append(line).append('\\n');\n    }\n    return sb.toString();\n  }\n}":
+    labels:
+    - source: |-
+        while ((line = reader.readLine()) != null) {
+              sb.append(line).append('\n');
+            }
+      style: primary
+      start: 211
+      end: 297
+    - source: append
+      style: secondary
+      start: 278
+      end: 284
+    - source: sb.append(line).append('\n')
+      style: secondary
+      start: 262
+      end: 290
+  "import java.util.Scanner;\n\nclass ScannerSlurper {\n  static String slurp(Scanner sc) {\n    StringBuffer sb = new StringBuffer();\n    while (sc.hasNextLine()) {\n      sb.append(sc.nextLine());\n    }\n    return sb.toString();\n  }\n}":
+    labels:
+    - source: |-
+        while (sc.hasNextLine()) {
+              sb.append(sc.nextLine());
+            }
+      style: primary
+      start: 132
+      end: 196
+    - source: append
+      style: secondary
+      start: 168
+      end: 174
+    - source: sb.append(sc.nextLine())
+      style: secondary
+      start: 165
+      end: 189

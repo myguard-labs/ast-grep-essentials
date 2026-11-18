@@ -1,8 +1,20 @@
 id: reactorkit-xctwaiter-result-discarded-swift
 snapshots:
-  'XCTWaiter().wait(for: [expectation], timeout: 10)':
+  "XCTWaiter().wait(for: [expectation], timeout: 10)":
     labels:
-    - source: 'XCTWaiter().wait(for: [expectation], timeout: 10)'
+    - source: "XCTWaiter().wait(for: [expectation], timeout: 10)"
       style: primary
       start: 0
       end: 49
+  "import XCTest\n\nfinal class DiscardedWaitTests: XCTestCase {\n  func testWaitResultIgnored() {\n    let first = expectation(description: \"first\")\n    let second = expectation(description: \"second\")\n    DispatchQueue.main.async { first.fulfill() }\n    DispatchQueue.main.async { second.fulfill() }\n    XCTWaiter().wait(for: [first, second], timeout: 5)\n  }\n}":
+    labels:
+    - source: "XCTWaiter().wait(for: [first, second], timeout: 5)"
+      style: primary
+      start: 298
+      end: 348
+  "import XCTest\n\nfinal class UnderscoreWaitTests: XCTestCase {\n  func testWaitAssignedToUnderscore() {\n    let expectation = expectation(description: \"done\")\n    DispatchQueue.main.async { expectation.fulfill() }\n    _ = XCTWaiter().wait(for: [expectation], timeout: 5)\n  }\n}":
+    labels:
+    - source: "XCTWaiter().wait(for: [expectation], timeout: 5)"
+      style: primary
+      start: 219
+      end: 267

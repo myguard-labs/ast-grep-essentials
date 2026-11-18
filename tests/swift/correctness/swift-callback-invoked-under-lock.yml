@@ -9,6 +9,37 @@ valid:
         callback?()
       }
     }
+  - |-
+    import Foundation
+
+    final class Notifier {
+      private let lock = NSLock()
+      private var count = 0
+      var onChange: (() -> Void)?
+
+      func bump() {
+        lock.withLock { count += 1 }
+        onChange?()
+      }
+    }
+  - |-
+    import Foundation
+
+    final class Dispatcher {
+      private let lock = NSLock()
+      private var handler: (() -> Void)?
+
+      func set(_ newHandler: (() -> Void)?) {
+        lock.withLock { handler = newHandler }
+      }
+
+      func fire() {
+        let current = lock.withLock { handler }
+        if let current {
+          current()
+        }
+      }
+    }
 invalid:
   - |-
     final class Manager {
@@ -17,6 +48,36 @@ invalid:
       func register() {
         modelLock.withLock {
           pressureCallback?()
+        }
+      }
+    }
+  - |-
+    import Foundation
+
+    final class Notifier {
+      private let lock = NSLock()
+      private var count = 0
+      var onChange: (() -> Void)?
+
+      func bump() {
+        lock.withLock {
+          count += 1
+          self.onChange?()
+        }
+      }
+    }
+  - |-
+    import Foundation
+
+    final class Registry {
+      private let guardLock = NSLock()
+      private var names: [String] = []
+      var onUpdate: (() -> Void)?
+
+      func add(_ name: String) {
+        guardLock.withLock {
+          names.append(name)
+          onUpdate?()
         }
       }
     }

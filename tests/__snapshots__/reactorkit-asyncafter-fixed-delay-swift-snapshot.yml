@@ -1,10 +1,7 @@
 id: reactorkit-asyncafter-fixed-delay-swift
 snapshots:
-  ? |-
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-      expectation.fulfill()
-    }
-  : labels:
+  "DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {\n  expectation.fulfill()\n}":
+    labels:
     - source: |-
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
           expectation.fulfill()
@@ -12,3 +9,21 @@ snapshots:
       style: primary
       start: 0
       end: 81
+  "import XCTest\n\nfinal class DelayTests: XCTestCase {\n  func testCallbackEventually() {\n    let expectation = expectation(description: \"delayed callback\")\n    let delay = 0.5\n    DispatchQueue.main.asyncAfter(deadline: .now() + delay) {\n      expectation.fulfill()\n    }\n    wait(for: [expectation], timeout: 2)\n  }\n}":
+    labels:
+    - source: |-
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+              expectation.fulfill()
+            }
+      style: primary
+      start: 177
+      end: 268
+  "import XCTest\n\nfinal class IntegerDelayTests: XCTestCase {\n  func testSomethingHappens() {\n    let expectation = expectation(description: \"timer based\")\n    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {\n      expectation.fulfill()\n    }\n    wait(for: [expectation], timeout: 3)\n  }\n}":
+    labels:
+    - source: |-
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+              expectation.fulfill()
+            }
+      style: primary
+      start: 157
+      end: 244

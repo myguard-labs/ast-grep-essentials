@@ -1,5 +1,49 @@
 id: reactorkit-xctwaiter-result-discarded-swift
 valid:
   - 'let waitResult = XCTWaiter().wait(for: [expectation], timeout: 10)'
+  - |-
+    import XCTest
+
+    final class WaiterTests: XCTestCase {
+      func testWaitIsAsserted() {
+        let expectation = expectation(description: "done")
+        DispatchQueue.main.async { expectation.fulfill() }
+        let waitResult = XCTWaiter().wait(for: [expectation], timeout: 5)
+        XCTAssertEqual(waitResult, .completed)
+      }
+    }
+  - |-
+    import XCTest
+
+    final class NamedWaiterTests: XCTestCase {
+      func testNamedWaiterResultChecked() {
+        let expectation = expectation(description: "done")
+        DispatchQueue.main.async { expectation.fulfill() }
+        let waiter = XCTWaiter()
+        XCTAssertEqual(waiter.wait(for: [expectation], timeout: 5), .completed)
+      }
+    }
 invalid:
   - 'XCTWaiter().wait(for: [expectation], timeout: 10)'
+  - |-
+    import XCTest
+
+    final class DiscardedWaitTests: XCTestCase {
+      func testWaitResultIgnored() {
+        let first = expectation(description: "first")
+        let second = expectation(description: "second")
+        DispatchQueue.main.async { first.fulfill() }
+        DispatchQueue.main.async { second.fulfill() }
+        XCTWaiter().wait(for: [first, second], timeout: 5)
+      }
+    }
+  - |-
+    import XCTest
+
+    final class UnderscoreWaitTests: XCTestCase {
+      func testWaitAssignedToUnderscore() {
+        let expectation = expectation(description: "done")
+        DispatchQueue.main.async { expectation.fulfill() }
+        _ = XCTWaiter().wait(for: [expectation], timeout: 5)
+      }
+    }
