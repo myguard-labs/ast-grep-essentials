@@ -7,11 +7,35 @@ message: >-
   Taking the address of a range value variable may share one variable across
   loop iterations.
 note: >-
-  Syntactic match on a unary & applied to an identifier inside a for-range
-  body; it does not verify the variable is the range value or the Go version
-  semantics.
+  Syntactic match on a unary & applied to the bare identifier bound as the
+  value of a `for k, v := range` (or `for _, v := range`) loop, anywhere in that
+  loop body including nested blocks and function literals. A direct `v := v`
+  statement in the loop body is treated as the shadow-copy fix and silences the
+  report. The go.mod `go` directive is not visible to the rule: since Go 1.22
+  each iteration has its own variable, so the defect exists only for modules
+  with a `go` directive below 1.22.
 rule:
-  pattern: 'process(&ing)'
+  all:
+    - pattern: '&$V'
+    - inside:
+        stopBy: end
+        kind: block
+        inside:
+          kind: for_statement
+          has:
+            kind: range_clause
+            has:
+              field: left
+              kind: expression_list
+              has:
+                kind: identifier
+                nthChild: 2
+                pattern: $V
+        not:
+          has:
+            kind: statement_list
+            has:
+              pattern: '$V := $V'
 metadata:
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
@@ -21,5 +45,8 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FP: process(&ing) is matched anywhere, including outside any for-range body, and in Go >= 1.22 (per-iteration loop variable) the range-value address is no longer shared; no new invalid case pinned'
-    - 'FN: any other callee or a stored address (ptrs = append(ptrs, &ing)) is not matched, only the literal call process(&ing)'
+    - 'FN: the value of a single-variable range (for v := range ch over a channel) is not matched, the rule needs a second identifier to know v is the value'
+    - 'FN: the address of a field (&v.f), a method value on a pointer receiver and an index-address of the value (&v[0]) are not matched, only &v on the bare identifier'
+    - 'FN: a renamed shadow copy (w := v; use(&w)) is correct code and is not matched; the opposite, &v taken before a v := v statement, is silenced too'
+    - 'FP: a closure parameter or local named like the range value (go func(v T) { use(&v) }(v)) is reported, and a v := v only inside a nested block does not count as the shadow copy'
+    - 'FP: in a module with go >= 1.22 (per-iteration loop variable) the range-value address is not shared; the go directive is not visible to the rule'

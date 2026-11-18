@@ -40,5 +40,131 @@ valid:
     		process(&cp)
     	}
     }
+  - |
+    package p
+
+    type Ing struct{ Name string }
+
+    func process(p *Ing) { _ = p.Name }
+
+    var ptrs []*Ing
+    var byName = map[string]*Ing{}
+
+    func use(p *Ing) { ptrs = append(ptrs, p) }
+
+    func f(ings []Ing) {
+    	for _, v := range ings {
+    		v := v
+    		ptrs = append(ptrs, &v)
+    	}
+    }
+  - |
+    package p
+
+    type Ing struct{ Name string }
+
+    func process(p *Ing) { _ = p.Name }
+
+    var ptrs []*Ing
+    var byName = map[string]*Ing{}
+
+    func use(p *Ing) { ptrs = append(ptrs, p) }
+
+    func f(ing Ing) {
+    	process(&ing)
+    }
 invalid:
   - "package p\n\nfunc f(ings []Ing) {\n\tfor _, ing := range ings {\n\t\tprocess(&ing)\n\t}\n}"
+  - |
+    package p
+
+    type Ing struct{ Name string }
+
+    func process(p *Ing) { _ = p.Name }
+
+    var ptrs []*Ing
+    var byName = map[string]*Ing{}
+
+    func use(p *Ing) { ptrs = append(ptrs, p) }
+
+    func f(ings []Ing) {
+    	for _, v := range ings {
+    		ptrs = append(ptrs, &v)
+    	}
+    }
+  - |
+    package p
+
+    type Ing struct{ Name string }
+
+    func process(p *Ing) { _ = p.Name }
+
+    var ptrs []*Ing
+    var byName = map[string]*Ing{}
+
+    func use(p *Ing) { ptrs = append(ptrs, p) }
+
+    func f(ings []Ing) {
+    	for i, v := range ings {
+    		if v.Name != "" {
+    			byName[ings[i].Name] = &v
+    		}
+    	}
+    }
+  - |
+    package p
+
+    type Ing struct{ Name string }
+
+    func process(p *Ing) { _ = p.Name }
+
+    var ptrs []*Ing
+    var byName = map[string]*Ing{}
+
+    func use(p *Ing) { ptrs = append(ptrs, p) }
+
+    func f(ings []Ing) {
+    	for _, v := range ings {
+    		go func() { use(&v) }()
+    	}
+    }
+  - |
+    package p
+
+    type Ing struct{ Name string }
+
+    func process(p *Ing) { _ = p.Name }
+
+    var ptrs []*Ing
+    var byName = map[string]*Ing{}
+
+    func use(p *Ing) { ptrs = append(ptrs, p) }
+
+    func f(ings []Ing) {
+    	for _, v := range ings {
+    		switch v.Name {
+    		case "keep":
+    			use(&v)
+    		}
+    	}
+    }
+  - |
+    package p
+
+    type Ing struct{ Name string }
+
+    func process(p *Ing) { _ = p.Name }
+
+    var ptrs []*Ing
+    var byName = map[string]*Ing{}
+
+    func use(p *Ing) { ptrs = append(ptrs, p) }
+
+    func f(ings []Ing) {
+    	for _, v := range ings {
+    		ptrs = append(ptrs, &v)
+    	}
+    	for i := range ings {
+    		ptrs = append(ptrs, &ings[i])
+    	}
+    }
