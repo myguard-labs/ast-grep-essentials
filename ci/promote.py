@@ -31,6 +31,7 @@ import hashlib
 import json
 import math
 import os
+import platform
 import re
 import shutil
 import statistics
@@ -494,27 +495,71 @@ def record_test_stage(
         report.summary[key] = int(match.group(1))
 
 
+HOST_TRIPLES = {
+    ("Linux", "x86_64"): "x86_64-unknown-linux-gnu",
+    ("Linux", "aarch64"): "aarch64-unknown-linux-gnu",
+    ("Linux", "arm64"): "aarch64-unknown-linux-gnu",
+    ("Darwin", "x86_64"): "x86_64-apple-darwin",
+    ("Darwin", "arm64"): "aarch64-apple-darwin",
+    ("Windows", "AMD64"): "x86_64-pc-windows-msvc",
+    ("Windows", "ARM64"): "aarch64-pc-windows-msvc",
+}
+
+
+def powershell_parser_path(tree: Path) -> Path | None:
+    """Return the PowerShell parser library path this host would load.
+
+    The path comes from ``libraryPath`` in ``sgconfig.powershell.yml``, keyed
+    by the host target triple. Returns ``None`` when the config or the host
+    triple is unknown, so the caller keeps the stage running and fails closed.
+    """
+    config = tree / "sgconfig.powershell.yml"
+    if not config.is_file():
+        return None
+    triple = HOST_TRIPLES.get((platform.system(), platform.machine()))
+    data = load_yaml(config)
+    if not triple or not isinstance(data, dict):
+        return None
+    custom = data.get("customLanguages")
+    library = (
+        custom.get("powershell", {}).get("libraryPath")
+        if isinstance(custom, dict)
+        else None
+    )
+    if not isinstance(library, dict) or not isinstance(library.get(triple), str):
+        return None
+    return tree / library[triple]
+
+
 def gate_tests(engine: Path, tree: Path, report: Report) -> None:
     with tempfile.TemporaryDirectory(prefix="promote-native-") as staged:
         config = native_test_config(tree, Path(staged))
         native = run([engine, "test", "-c", config], cwd=tree, check=False)
     record_test_stage("ast-grep test", "rule_tests", native, report)
-    # Same invocation as the README; fails closed when the parser is not built.
-    powershell = run(
-        [
-            engine,
-            "test",
-            "-c",
-            "sgconfig.powershell.yml",
-            "--custom-languages",
-            "allow",
-        ],
-        cwd=tree,
-        check=False,
-    )
-    record_test_stage(
-        "PowerShell ast-grep test", "powershell_rule_tests", powershell, report
-    )
+    parser = powershell_parser_path(tree)
+    if parser is not None and not parser.exists():
+        # The parser is a gitignored build product, so an exported tree
+        # normally lacks it. Skip the stage without failing the promotion.
+        report.summary["powershell_rule_tests"] = (
+            f"unavailable: parser not built ({parser.relative_to(tree).as_posix()})"
+        )
+    else:
+        # Same invocation as the README; fails closed when the parser is broken.
+        powershell = run(
+            [
+                engine,
+                "test",
+                "-c",
+                "sgconfig.powershell.yml",
+                "--custom-languages",
+                "allow",
+            ],
+            cwd=tree,
+            check=False,
+        )
+        record_test_stage(
+            "PowerShell ast-grep test", "powershell_rule_tests", powershell, report
+        )
     unit = run(
         [sys.executable, "-m", "unittest", "discover", "-s", "ci/tests"],
         cwd=tree,

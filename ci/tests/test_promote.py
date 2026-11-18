@@ -171,6 +171,35 @@ def fixture() -> Iterator[Fixture]:
         yield Fixture(Path(tmp))
 
 
+PS_CONFIG = textwrap.dedent(
+    """\
+    customLanguages:
+      powershell:
+        libraryPath:
+          x86_64-unknown-linux-gnu: build/powershell/powershell.so
+          aarch64-apple-darwin: build/powershell/powershell.dylib
+    """
+)
+
+
+def ps_tree(tree: Path, *, parser: bool) -> None:
+    """Write the PowerShell config and, optionally, the built parser."""
+    (tree / "sgconfig.powershell.yml").write_text(PS_CONFIG, encoding="utf-8")
+    if parser:
+        (tree / "build" / "powershell").mkdir(parents=True, exist_ok=True)
+        (tree / "build" / "powershell" / "powershell.so").write_bytes(b"")
+
+
+@contextmanager
+def host_linux_x86() -> Iterator[None]:
+    """Pin the host triple so the parser path is deterministic on any runner."""
+    with (
+        patch.object(promote.platform, "system", return_value="Linux"),
+        patch.object(promote.platform, "machine", return_value="x86_64"),
+    ):
+        yield
+
+
 def signed_tag(repo: Path, name: str, rev: str = "HEAD") -> None:
     sh(repo, "git", "tag", "-s", "-m", f"review {name}", name, rev)
 
@@ -583,8 +612,9 @@ class CheckTests(unittest.TestCase):
                 "testConfigs:\n  - testDir: tests\n",
                 encoding="utf-8",
             )
+            ps_tree(tree, parser=True)
             report = promote.Report()
-            with patch.object(promote, "run", fake_run):
+            with patch.object(promote, "run", fake_run), host_linux_x86():
                 promote.gate_tests(Path("/eng/ast-grep"), tree, report)
         self.assertTrue(report.ok, report.failures)
         self.assertEqual(report.summary["rule_tests"], 1)
@@ -621,12 +651,68 @@ class CheckTests(unittest.TestCase):
             tree = Path(raw) / "tree"
             (tree / "tests" / "__snapshots__").mkdir(parents=True)
             (tree / "sgconfig.yml").write_text("ruleDirs: []\n", encoding="utf-8")
+            ps_tree(tree, parser=True)
             report = promote.Report()
-            with patch.object(promote, "run", lambda *_args, **_kw: next(calls)):
+            with (
+                patch.object(promote, "run", lambda *_args, **_kw: next(calls)),
+                host_linux_x86(),
+            ):
                 promote.gate_tests(Path("/eng/ast-grep"), tree, report)
         self.assertFalse(report.ok)
         self.assertIn("PowerShell ast-grep test failed", report.failures[0])
         self.assertNotIn("powershell_rule_tests", report.summary)
+
+    def test_powershell_stage_skipped_when_parser_absent(self) -> None:
+        """Parser not built: no PowerShell run, no failure, summary says so."""
+        seen: list[list[str]] = []
+
+        def fake_run(command, **_options):
+            seen.append([str(part) for part in command])
+            return subprocess.CompletedProcess(
+                command, 0, stdout=GOOD_TEST_OUT, stderr=""
+            )
+
+        with tempfile.TemporaryDirectory() as raw:
+            tree = Path(raw) / "tree"
+            (tree / "tests" / "__snapshots__").mkdir(parents=True)
+            (tree / "sgconfig.yml").write_text("ruleDirs: []\n", encoding="utf-8")
+            ps_tree(tree, parser=False)
+            report = promote.Report()
+            with patch.object(promote, "run", fake_run), host_linux_x86():
+                promote.gate_tests(Path("/eng/ast-grep"), tree, report)
+        self.assertTrue(report.ok, report.failures)
+        self.assertEqual(len(seen), 2)
+        self.assertNotIn("sgconfig.powershell.yml", seen[0] + seen[1])
+        self.assertEqual(
+            report.summary["powershell_rule_tests"],
+            "unavailable: parser not built (build/powershell/powershell.so)",
+        )
+
+    def test_powershell_stage_runs_when_host_triple_unknown(self) -> None:
+        """Boundary: an unmapped host keeps the stage and its fail-closed run."""
+        with tempfile.TemporaryDirectory() as raw:
+            tree = Path(raw) / "tree"
+            (tree / "tests" / "__snapshots__").mkdir(parents=True)
+            (tree / "sgconfig.yml").write_text("ruleDirs: []\n", encoding="utf-8")
+            ps_tree(tree, parser=False)
+            calls = iter(
+                [
+                    subprocess.CompletedProcess([], 0, stdout=GOOD_TEST_OUT, stderr=""),
+                    subprocess.CompletedProcess(
+                        [], 79, stdout="", stderr="Cannot load custom language library"
+                    ),
+                    subprocess.CompletedProcess([], 0, stdout=GOOD_TEST_OUT, stderr=""),
+                ]
+            )
+            report = promote.Report()
+            with (
+                patch.object(promote, "run", lambda *_args, **_kw: next(calls)),
+                patch.object(promote.platform, "system", return_value="Plan9"),
+                patch.object(promote.platform, "machine", return_value="mips"),
+            ):
+                promote.gate_tests(Path("/eng/ast-grep"), tree, report)
+        self.assertFalse(report.ok)
+        self.assertIn("PowerShell ast-grep test failed", report.failures[0])
 
     def test_failing_unit_tests_block(self) -> None:
         with fixture() as fx:
