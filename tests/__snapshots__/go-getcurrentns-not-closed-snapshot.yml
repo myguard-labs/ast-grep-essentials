@@ -18,9 +18,9 @@ snapshots:
       style: primary
       start: 85
       end: 115
-  "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\nfunc f(other ns.NetNS) error {\n\tcur, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer other.Close()\n\treturn cur.Do(func(_ ns.NetNS) error { return nil })\n}\n":
+  "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\nfunc f(path string) error {\n\tcur, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\ttarget, err := ns.GetNS(path)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer target.Close()\n\treturn target.Do(func(_ ns.NetNS) error { return cur.Set() })\n}":
     labels:
     - source: cur, err := ns.GetCurrentNS()
       style: primary
-      start: 99
-      end: 128
+      start: 96
+      end: 125
