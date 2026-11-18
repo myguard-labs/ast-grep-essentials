@@ -1,5 +1,77 @@
 id: rust-test-without-assertion
 valid:
   - '#[test] fn parses_input() { assert_eq!(parse("x"), 1); }'
+  - |-
+    fn parse(s: &str) -> u32 {
+        s.len() as u32
+    }
+    #[test]
+    fn parses_each() {
+        for s in ["a", "bb"] {
+            assert!(parse(s) >= 1);
+        }
+    }
+  - |-
+    fn parse(s: &str) -> u32 {
+        s.len() as u32
+    }
+    #[test]
+    fn parses_differ() {
+        assert_ne!(parse("a"), parse("bb"), "lengths must differ");
+    }
+  - |-
+    async fn fetch() -> u32 {
+        1
+    }
+    #[tokio::test]
+    async fn fetches() {
+        let v = fetch().await;
+        assert_eq!(v, 1);
+    }
+  - |-
+    fn parse(s: &str) -> u32 {
+        s.len() as u32
+    }
+    #[test]
+    fn nested_assert() {
+        let check = |s: &str| assert!(parse(s) > 0);
+        check("x");
+    }
 invalid:
   - '#[test] fn parses_input() { let _ = parse("x"); }'
+  - |-
+    fn parse(s: &str) -> u32 {
+        s.len() as u32
+    }
+    #[test]
+    fn prints_only() {
+        println!("{}", parse("x"));
+    }
+  - |-
+    async fn fetch() -> u32 {
+        1
+    }
+    #[tokio::test]
+    async fn fetches() {
+        let _ = fetch().await;
+    }
+  - |-
+    fn parse(s: &str) -> u32 {
+        s.len() as u32
+    }
+    #[test]
+    fn compares_without_assert() {
+        let v = parse("x");
+        if v != 1 {
+            println!("unexpected {}", v);
+        }
+    }
+  - |-
+    fn parse(s: &str) -> u32 {
+        s.len() as u32
+    }
+    #[test]
+    fn debug_only() {
+        let v = parse("x");
+        dbg!(v);
+    }

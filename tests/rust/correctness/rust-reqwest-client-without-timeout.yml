@@ -4,7 +4,52 @@ valid:
     fn client() -> reqwest::Client {
     reqwest::Client::builder().timeout(std::time::Duration::from_secs(300)).build().unwrap()
     }
+  - |-
+    use std::time::Duration;
+    fn client() -> Result<reqwest::Client, reqwest::Error> {
+        reqwest::Client::builder()
+            .user_agent("svc/1.0")
+            .timeout(Duration::from_secs(30))
+            .build()
+    }
+  - |-
+    use std::time::Duration;
+    fn client() -> Result<reqwest::Client, reqwest::Error> {
+        reqwest::Client::builder()
+            .timeout(Duration::from_secs(30))
+            .gzip(true)
+            .build()
+    }
+  - |-
+    use std::time::Duration;
+    fn client() -> Result<reqwest::Client, reqwest::Error> {
+        reqwest::Client::builder()
+            .timeout(Duration::from_secs(30))
+            .connect_timeout(Duration::from_secs(5))
+            .build()
+    }
 invalid:
   - >-
     fn client() -> reqwest::Client { reqwest::Client::builder().build().unwrap()
+    }
+  - |-
+    fn client() -> Result<reqwest::Client, reqwest::Error> {
+        reqwest::Client::builder().user_agent("svc/1.0").build()
+    }
+  - |-
+    fn client() -> Result<reqwest::Client, reqwest::Error> {
+        reqwest::Client::builder()
+            .gzip(true)
+            .build()
+    }
+  - |-
+    fn client() -> Result<reqwest::Client, Box<dyn std::error::Error>> {
+        let c = reqwest::Client::builder().build()?;
+        Ok(c)
+    }
+  - |-
+    fn client() -> Result<reqwest::Client, reqwest::Error> {
+        reqwest::Client::builder()
+            .connect_timeout(std::time::Duration::from_secs(5))
+            .build()
     }

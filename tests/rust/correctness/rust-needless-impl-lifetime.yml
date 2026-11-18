@@ -3,7 +3,45 @@ valid:
   - |-
     struct Holder<'a>(&'a u8);
     impl<'a> Iterator for Holder<'a> { type Item = &'a u8; }
+  - |-
+    trait Marker {}
+    trait Lend<'a> {
+        fn lend(&self) -> &'a u8;
+    }
+    struct Holder<'a>(&'a u8);
+    impl<'a> Lend<'a> for Holder<'a> {
+        fn lend(&self) -> &'a u8 {
+            self.0
+        }
+    }
+    impl Marker for Holder<'_> {}
+  - |-
+    trait Source {
+        type Item;
+        fn first(&self) -> Option<Self::Item>;
+    }
+    struct Words<'a>(&'a str);
+    impl<'a> Source for Words<'a> {
+        type Item = &'a str;
+        fn first(&self) -> Option<&'a str> {
+            self.0.split_whitespace().next()
+        }
+    }
 invalid:
   - |-
     struct Holder<'a>(&'a u8);
     impl<'a> Iterator for Holder<'a> {}
+  - |-
+    trait Marker {}
+    struct Holder<'a>(&'a str);
+    impl<'a> Marker for Holder<'a> {}
+  - |-
+    trait Marker {}
+    impl<'a> Marker for &'a str {}
+  - |-
+    trait Marker {}
+    impl<'a> Marker for std::borrow::Cow<'a, str> {}
+  - |-
+    trait Marker {}
+    struct Window<'a, T>(&'a [T]);
+    impl<'a> Marker for Window<'a, u8> {}
