@@ -11,7 +11,21 @@ note: >-
   Compatibility alias for consumers that explicitly promote the former ID.
   Normal scans use php-printf-untranslated-format and do not emit this rule.
 rule:
-  pattern: 'printf(''$FMT'', $$$ARGS)'
+  any:
+    - pattern: 'printf(''$FMT'', $$$ARGS)'
+    - pattern: 'printf($DQ, $$$ARGS)'
+constraints:
+  DQ:
+    kind: argument
+    has:
+      kind: encapsed_string
+      not:
+        has:
+          not:
+            any:
+              - kind: string_content
+              - kind: escape_sequence
+              - regex: '^"$'
 metadata:
   deprecated_alias_of: php-printf-untranslated-format
   todo_cases:
