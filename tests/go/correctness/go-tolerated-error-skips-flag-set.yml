@@ -19,6 +19,76 @@ valid:
         }
         return seen, nil
     }
+  - |-
+    package p
+
+    import (
+    	"errors"
+    	"io"
+    )
+
+    type flagSet struct{}
+
+    func (flagSet) Set(string) {}
+
+    func process(err error, flag flagSet) error {
+    	if err != nil {
+    		if errors.Is(err, io.ErrUnexpectedEOF) {
+    			flag.Set("1")
+    		}
+    		return err
+    	}
+    	return nil
+    }
+  - |-
+    package p
+
+    import (
+    	"errors"
+    	"io"
+    )
+
+    type flagSet struct{}
+
+    func (flagSet) Set(string) {}
+
+    func process(err error, flag flagSet) (bool, error) {
+    	seen := false
+    	if err != nil {
+    		if !errors.Is(err, io.ErrUnexpectedEOF) {
+    			return seen, err
+    		}
+    		seen = true
+    	}
+    	return seen, nil
+    }
+  - |-
+    package p
+
+    import (
+    	"errors"
+    	"io"
+    )
+
+    type flagSet struct{}
+
+    func (flagSet) Set(string) {}
+
+    type state struct{ flag flagSet }
+
+    func (s *state) process(err error) (bool, error) {
+    	seen := false
+    	if err != nil {
+    		if !errors.Is(err, io.ErrUnexpectedEOF) {
+    			s.flag.Set("1")
+    			return seen, err
+    		}
+    		seen = true
+    		s.flag.Set("1")
+    	}
+    	return seen, nil
+    }
+
 invalid:
   - |-
     package p
@@ -37,4 +107,68 @@ invalid:
             seen = true
         }
         return seen, nil
+    }
+  - |-
+    package p
+
+    import (
+    	"errors"
+    	"io"
+    )
+
+    type flagSet struct{}
+
+    func (flagSet) Set(string) {}
+
+    type state struct{ flag flagSet }
+
+    func (s *state) process(err error) (bool, error) {
+    	seen := false
+    	if err != nil {
+    		if !errors.Is(err, io.ErrUnexpectedEOF) {
+    			s.flag.Set("1")
+    			return seen, err
+    		}
+    		seen = true
+    	}
+    	return seen, nil
+    }
+  - |-
+    package p
+
+    import (
+    	"errors"
+    	"io"
+    )
+
+    type flagSet struct{}
+
+    func (flagSet) Set(string) {}
+
+    func process(err error, flag flagSet) bool {
+    	if !errors.Is(err, io.EOF) {
+    		flag.Set("bad")
+    		return false
+    	}
+    	return true
+    }
+  - |-
+    package p
+
+    import (
+    	"errors"
+    	"io"
+    )
+
+    type flagSet struct{}
+
+    func (flagSet) Set(string) {}
+
+    func process(err error, flag flagSet, skipped *int) error {
+    	if !errors.Is(err, io.EOF) {
+    		flag.Set("bad")
+    		return err
+    	}
+    	*skipped++
+    	return nil
     }

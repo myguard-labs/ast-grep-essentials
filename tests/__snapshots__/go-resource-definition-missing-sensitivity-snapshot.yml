@@ -1,8 +1,14 @@
 id: go-resource-definition-missing-sensitivity
 snapshots:
-  ? "func (E) ResourceDefinition() meta.ResourceDefinitionSpec {\n\treturn meta.ResourceDefinitionSpec{\n\t\tType: T,\n\t\tDefaultNamespace: NS,\n\t}\n}"
-  : labels:
-    - source: "func (E) ResourceDefinition() meta.ResourceDefinitionSpec {\n\treturn meta.ResourceDefinitionSpec{\n\t\tType: T,\n\t\tDefaultNamespace: NS,\n\t}\n}"
+  "func (E) ResourceDefinition() meta.ResourceDefinitionSpec {\n\treturn meta.ResourceDefinitionSpec{\n\t\tType: T,\n\t\tDefaultNamespace: NS,\n\t}\n}":
+    labels:
+    - source: |-
+        func (E) ResourceDefinition() meta.ResourceDefinitionSpec {
+        	return meta.ResourceDefinitionSpec{
+        		Type: T,
+        		DefaultNamespace: NS,
+        	}
+        }
       style: primary
       start: 0
       end: 136
@@ -10,7 +16,75 @@ snapshots:
       style: secondary
       start: 9
       end: 27
-    - source: "meta.ResourceDefinitionSpec{\n\t\tType: T,\n\t\tDefaultNamespace: NS,\n\t}"
+    - source: |-
+        meta.ResourceDefinitionSpec{
+        		Type: T,
+        		DefaultNamespace: NS,
+        	}
       style: secondary
       start: 68
       end: 134
+  "package p\n\nimport \"example.com/x/meta\"\n\ntype E struct{}\n\nfunc (E) ResourceDefinition() *meta.ResourceDefinitionSpec {\n\treturn &meta.ResourceDefinitionSpec{\n\t\tType: \"queue\",\n\t}\n}":
+    labels:
+    - source: |-
+        func (E) ResourceDefinition() *meta.ResourceDefinitionSpec {
+        	return &meta.ResourceDefinitionSpec{
+        		Type: "queue",
+        	}
+        }
+      style: primary
+      start: 57
+      end: 177
+    - source: ResourceDefinition
+      style: secondary
+      start: 66
+      end: 84
+    - source: |-
+        meta.ResourceDefinitionSpec{
+        		Type: "queue",
+        	}
+      style: secondary
+      start: 127
+      end: 175
+  "package p\n\nimport \"example.com/x/meta\"\n\ntype E struct{}\n\nfunc (E) ResourceDefinition() meta.ResourceDefinitionSpec {\n\tspec := meta.ResourceDefinitionSpec{Type: \"db\"}\n\treturn spec\n}":
+    labels:
+    - source: |-
+        func (E) ResourceDefinition() meta.ResourceDefinitionSpec {
+        	spec := meta.ResourceDefinitionSpec{Type: "db"}
+        	return spec
+        }
+      style: primary
+      start: 57
+      end: 180
+    - source: ResourceDefinition
+      style: secondary
+      start: 66
+      end: 84
+    - source: "meta.ResourceDefinitionSpec{Type: \"db\"}"
+      style: secondary
+      start: 126
+      end: 165
+  "package p\n\nimport \"example.com/x/meta\"\n\ntype E struct{}\n\nfunc (e *E) ResourceDefinition() meta.ResourceDefinitionSpec {\n\treturn meta.ResourceDefinitionSpec{\n\t\tType:             \"db\",\n\t\tDefaultNamespace: \"prod\",\n\t}\n}":
+    labels:
+    - source: |-
+        func (e *E) ResourceDefinition() meta.ResourceDefinitionSpec {
+        	return meta.ResourceDefinitionSpec{
+        		Type:             "db",
+        		DefaultNamespace: "prod",
+        	}
+        }
+      style: primary
+      start: 57
+      end: 215
+    - source: ResourceDefinition
+      style: secondary
+      start: 69
+      end: 87
+    - source: |-
+        meta.ResourceDefinitionSpec{
+        		Type:             "db",
+        		DefaultNamespace: "prod",
+        	}
+      style: secondary
+      start: 128
+      end: 213

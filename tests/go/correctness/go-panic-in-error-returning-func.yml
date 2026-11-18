@@ -1,5 +1,67 @@
 id: go-panic-in-error-returning-func
 valid:
   - "package p\n\nfunc evaluateLine(l string) {\n\tif l == \"\" {\n\t\tpanic(\"invalid line\")\n\t}\n}\n"
+  - |-
+    package p
+
+    import "fmt"
+
+    func parseLine(l string) (int, error) {
+    	if l == "" {
+    		return 0, fmt.Errorf("invalid line")
+    	}
+    	return len(l), nil
+    }
+  - |-
+    package p
+
+    func checkLine(l string) (int, bool) {
+    	if l == "" {
+    		panic("invalid line")
+    	}
+    	return len(l), true
+    }
+  - |-
+    package p
+
+    func lineLabel(l string) string {
+    	switch l {
+    	case "":
+    		panic("invalid line")
+    	}
+    	return "line:" + l
+    }
+
 invalid:
   - "package p\n\nfunc evaluateLine(l string) error {\n\tif l == \"\" {\n\t\tpanic(\"invalid line\")\n\t}\n\treturn nil\n}\n"
+  - |-
+    package p
+
+    func parseLine(l string) (int, error) {
+    	if l == "" {
+    		panic("invalid line")
+    	}
+    	return len(l), nil
+    }
+  - |-
+    package p
+
+    func parseLine(l string) (n int, err error) {
+    	if l == "" {
+    		panic("invalid line")
+    	}
+    	n = len(l)
+    	return n, nil
+    }
+  - |-
+    package p
+
+    func parseLine(l string) error {
+    	switch {
+    	case l == "":
+    		return nil
+    	case l[0] == '#':
+    		panic("invalid line")
+    	}
+    	return nil
+    }

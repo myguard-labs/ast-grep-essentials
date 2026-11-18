@@ -1,5 +1,81 @@
 id: go-resource-definition-missing-sensitivity
 valid:
   - "func (E) ResourceDefinition() meta.ResourceDefinitionSpec {\n\treturn meta.ResourceDefinitionSpec{\n\t\tType: T,\n\t\tDefaultNamespace: NS,\n\t\tSensitivity: meta.Sensitive,\n\t}\n}"
+  - |-
+    package p
+
+    import "example.com/x/meta"
+
+    type E struct{}
+
+    func (E) ResourceDefinition() meta.ResourceDefinitionSpec {
+    	return meta.ResourceDefinitionSpec{
+    		Sensitivity: meta.Sensitive,
+    		Type:        "db",
+    	}
+    }
+  - |-
+    package p
+
+    import "example.com/x/meta"
+
+    type E struct{}
+
+    func (e *E) ResourceDefinition() meta.ResourceDefinitionSpec {
+    	return meta.ResourceDefinitionSpec{
+    		Type:        "db",
+    		Sensitivity : meta.Sensitive,
+    	}
+    }
+  - |-
+    package p
+
+    import "example.com/x/meta"
+
+    type E struct{}
+
+    func (E) ResourceDefinitions() []meta.ResourceDefinitionSpec {
+    	return []meta.ResourceDefinitionSpec{
+    		{Type: "db", Sensitivity: meta.Sensitive},
+    		{Type: "cache", Sensitivity: meta.Public},
+    	}
+    }
+
 invalid:
   - "func (E) ResourceDefinition() meta.ResourceDefinitionSpec {\n\treturn meta.ResourceDefinitionSpec{\n\t\tType: T,\n\t\tDefaultNamespace: NS,\n\t}\n}"
+  - |-
+    package p
+
+    import "example.com/x/meta"
+
+    type E struct{}
+
+    func (e *E) ResourceDefinition() meta.ResourceDefinitionSpec {
+    	return meta.ResourceDefinitionSpec{
+    		Type:             "db",
+    		DefaultNamespace: "prod",
+    	}
+    }
+  - |-
+    package p
+
+    import "example.com/x/meta"
+
+    type E struct{}
+
+    func (E) ResourceDefinition() meta.ResourceDefinitionSpec {
+    	spec := meta.ResourceDefinitionSpec{Type: "db"}
+    	return spec
+    }
+  - |-
+    package p
+
+    import "example.com/x/meta"
+
+    type E struct{}
+
+    func (E) ResourceDefinition() *meta.ResourceDefinitionSpec {
+    	return &meta.ResourceDefinitionSpec{
+    		Type: "queue",
+    	}
+    }
