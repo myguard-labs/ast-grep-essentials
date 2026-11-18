@@ -1,44 +1,64 @@
 id: php-server-superglobal-unguarded-read
 snapshots:
+  "$d = 0 + $_ENV['TEST_PHP_DETAILED'];":
+    labels:
+    - source: $_ENV['TEST_PHP_DETAILED']
+      style: primary
+      start: 9
+      end: 35
+  "<?php $_POST['n'] += 1;":
+    labels:
+    - source: $_POST['n']
+      style: primary
+      start: 6
+      end: 17
+  "<?php $_SERVER['x'] .= 'y';":
+    labels:
+    - source: $_SERVER['x']
+      style: primary
+      start: 6
+      end: 19
+  "<?php $a = $_SERVER['A'] ?? $_SERVER['B'];":
+    labels:
+    - source: $_SERVER['B']
+      style: primary
+      start: 28
+      end: 41
+  "<?php $a = $_SERVER['A'] ?? ($_SERVER['B']);":
+    labels:
+    - source: $_SERVER['B']
+      style: primary
+      start: 29
+      end: 42
   "<?php $a = [ \"h\" => $_SERVER[\"HTTP_HOST\"] ];":
     labels:
     - source: $_SERVER["HTTP_HOST"]
       style: primary
       start: 20
       end: 41
-    - source: $a = [ "h" => $_SERVER["HTTP_HOST"] ]
-      style: secondary
-      start: 6
-      end: 43
+  "<?php $b = $_GET['k'] = $_POST['v'];":
+    labels:
+    - source: $_POST['v']
+      style: primary
+      start: 24
+      end: 35
   "<?php $client_etag = stripslashes($_SERVER['HTTP_IF_NONE_MATCH']);":
     labels:
     - source: $_SERVER['HTTP_IF_NONE_MATCH']
       style: primary
       start: 34
       end: 64
-    - source: $client_etag = stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])
-      style: secondary
-      start: 6
-      end: 65
   "<?php $h = trim( (string) $_SERVER[\"HTTP_HOST\"] );":
     labels:
     - source: $_SERVER["HTTP_HOST"]
       style: primary
       start: 26
       end: 47
-    - source: $h = trim( (string) $_SERVER["HTTP_HOST"] )
-      style: secondary
-      start: 6
-      end: 49
   "<?php $host = $_SERVER[\"HTTP_HOST\"];":
     labels:
     - source: $_SERVER["HTTP_HOST"]
       style: primary
       start: 14
-      end: 35
-    - source: $host = $_SERVER["HTTP_HOST"]
-      style: secondary
-      start: 6
       end: 35
   "<?php $host = strtolower( $_SERVER[\"HTTP_HOST\"] );":
     labels:
@@ -46,19 +66,11 @@ snapshots:
       style: primary
       start: 26
       end: 47
-    - source: $host = strtolower( $_SERVER["HTTP_HOST"] )
-      style: secondary
-      start: 6
-      end: 49
   "<?php $this->ip = $_SERVER['REMOTE_ADDR'];":
     labels:
     - source: $_SERVER['REMOTE_ADDR']
       style: primary
       start: 18
-      end: 41
-    - source: $this->ip = $_SERVER['REMOTE_ADDR']
-      style: secondary
-      start: 6
       end: 41
   "<?php $ua = $_SERVER[\"A\"] ?? $_SERVER[\"B\"];":
     labels:
@@ -66,17 +78,39 @@ snapshots:
       style: primary
       start: 29
       end: 42
-    - source: $ua = $_SERVER["A"] ?? $_SERVER["B"]
-      style: secondary
-      start: 6
-      end: 42
   "<?php $ua = trim($_SERVER[\"A\"]) ?? \"\";":
     labels:
     - source: $_SERVER["A"]
       style: primary
       start: 17
       end: 30
-    - source: $ua = trim($_SERVER["A"]) ?? ""
-      style: secondary
-      start: 6
-      end: 37
+  "<?php $x = $_COOKIE[\"sid\"];":
+    labels:
+    - source: $_COOKIE["sid"]
+      style: primary
+      start: 11
+      end: 26
+  "<?php $x = $_GET[\"a\"];":
+    labels:
+    - source: $_GET["a"]
+      style: primary
+      start: 11
+      end: 21
+  "<?php $y = $_GET['k'] + 1; $_GET['k'] = 2;":
+    labels:
+    - source: $_GET['k']
+      style: primary
+      start: 11
+      end: 21
+  "<?php echo strtolower( $_SERVER[\"HTTP_HOST\"] );":
+    labels:
+    - source: $_SERVER["HTTP_HOST"]
+      style: primary
+      start: 23
+      end: 44
+  "<?php if ( $_GET[\"a\"] ) { die(); }":
+    labels:
+    - source: $_GET["a"]
+      style: primary
+      start: 11
+      end: 21

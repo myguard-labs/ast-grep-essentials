@@ -1,5 +1,15 @@
 id: php-server-superglobal-unguarded-read
 valid:
+  - '$d = 0 + ($_ENV[''TEST_PHP_DETAILED''] ?? 0);'
+  - "<?php $x = $_POST[\"a\"] ?? $_GET[\"a\"] ?? \"\";"
+  - "<?php if ( isset( $_GET[\"a\"], $_GET[\"b\"] ) ) { echo 1; }"
+  - "<?php if ( empty( $_COOKIE[\"a\"] ) ) { die(); }"
+  - "<?php $x = $local[\"a\"];"
+  - "<?php $_SERVER['x'] = 1;"
+  - "<?php $_SERVER['x'] ??= 'y';"
+  - "<?php $ua = ($_SERVER['x']) ?? '';"
+  - "<?php $a = $_SERVER['A'] ?? 'd';"
+  - "<?php $s = isset($_SERVER['x']) ? 1 : 0;"
   - '<?php $client_etag = stripslashes($other[''HTTP_IF_NONE_MATCH'']);'
   - "<?php $h = $headers[\"HTTP_HOST\"];"
   - "<?php $x = filter_input(INPUT_SERVER, \"HTTP_HOST\");"
@@ -8,6 +18,17 @@ valid:
   - "<?php $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';"
   - "<?php $ua = ($_SERVER[\"HTTP_USER_AGENT\"]) ?? \"\";"
 invalid:
+  - '$d = 0 + $_ENV[''TEST_PHP_DETAILED''];'
+  - "<?php $x = $_GET[\"a\"];"
+  - "<?php $x = $_COOKIE[\"sid\"];"
+  - "<?php echo strtolower( $_SERVER[\"HTTP_HOST\"] );"
+  - "<?php if ( $_GET[\"a\"] ) { die(); }"
+  - "<?php $a = $_SERVER['A'] ?? $_SERVER['B'];"
+  - "<?php $a = $_SERVER['A'] ?? ($_SERVER['B']);"
+  - "<?php $y = $_GET['k'] + 1; $_GET['k'] = 2;"
+  - "<?php $b = $_GET['k'] = $_POST['v'];"
+  - "<?php $_SERVER['x'] .= 'y';"
+  - "<?php $_POST['n'] += 1;"
   - '<?php $client_etag = stripslashes($_SERVER[''HTTP_IF_NONE_MATCH'']);'
   - "<?php $host = $_SERVER[\"HTTP_HOST\"];"
   - "<?php $host = strtolower( $_SERVER[\"HTTP_HOST\"] );"
