@@ -1,10 +1,25 @@
 id: nginx-version-macro-strict-greater
 snapshots:
-  ? |-
-    #if defined(nginx_version) && nginx_version > 8036
-    vv = 0;
-    #endif
-  : labels:
+  "#if (NGX_HTTP_SSL) && (nginx_version>1015000)\nstatic int  ssl_api = 1;\n#endif":
+    labels:
+    - source: nginx_version>1015000
+      style: primary
+      start: 23
+      end: 44
+  "#if (nginx_version < 1009000)\nstatic int  legacy_api = 1;\n#elif nginx_version > 1009000\nstatic int  legacy_api = 0;\n#endif":
+    labels:
+    - source: nginx_version > 1009000
+      style: primary
+      start: 64
+      end: 87
+  "#if (nginx_version > 1011005)\nstatic int  have_feature = 1;\n#endif":
+    labels:
+    - source: nginx_version > 1011005
+      style: primary
+      start: 5
+      end: 28
+  "#if defined(nginx_version) && nginx_version > 8036\nvv = 0;\n#endif":
+    labels:
     - source: nginx_version > 8036
       style: primary
       start: 30

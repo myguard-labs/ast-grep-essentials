@@ -3,7 +3,36 @@ valid:
   - |-
     #if defined OPENSSL_SYS_UNIX || defined DJGPP
     #endif
+  - |-
+    #if defined(OPENSSL_SYS_UNIX) && defined(DJGPP)
+    int x;
+    #endif
+  - |-
+    #if defined(A)
+    int x;
+    #elif defined(B) || !defined(C)
+    int x = 1;
+    #endif
+  - |-
+    #if defined(A) && \
+        defined(B)
+    int x;
+    #endif
 invalid:
   - |-
     #if defined OPENSSL_SYS_UNIX defined DJGPP
+    #endif
+  - |-
+    #if defined(OPENSSL_SYS_UNIX) defined(DJGPP)
+    int x;
+    #endif
+  - |-
+    #if defined(A)
+    int x;
+    #elif defined B defined(C)
+    int x = 1;
+    #endif
+  - |-
+    #if !defined(A) defined(B)
+    int x;
     #endif

@@ -1,8 +1,38 @@
 id: nginx-conf-flag-with-non-flag-slot
 snapshots:
-  '{ ngx_string("x"), NGX_CONF_FLAG, ngx_conf_set_enum_slot, 0, 0, NULL }':
+  "{ ngx_string(\"foo_enable\"),\n  NGX_CONF_FLAG,\n  ngx_conf_set_enum_slot,\n  NGX_HTTP_LOC_CONF_OFFSET,\n  offsetof(ngx_http_foo_loc_conf_t, enable),\n  &ngx_http_foo_modes }":
     labels:
-    - source: '{ ngx_string("x"), NGX_CONF_FLAG, ngx_conf_set_enum_slot, 0, 0, NULL }'
+    - source: |-
+        { ngx_string("foo_enable"),
+          NGX_CONF_FLAG,
+          ngx_conf_set_enum_slot,
+          NGX_HTTP_LOC_CONF_OFFSET,
+          offsetof(ngx_http_foo_loc_conf_t, enable),
+          &ngx_http_foo_modes }
+      style: primary
+      start: 0
+      end: 167
+  "{ ngx_string(\"foo_enable\"), NGX_CONF_FLAG, ngx_conf_set_enum_slot, NGX_STREAM_SRV_CONF_OFFSET, offsetof(ngx_stream_foo_srv_conf_t, enable), NULL }":
+    labels:
+    - source: "{ ngx_string(\"foo_enable\"), NGX_CONF_FLAG, ngx_conf_set_enum_slot, NGX_STREAM_SRV_CONF_OFFSET, offsetof(ngx_stream_foo_srv_conf_t, enable), NULL }"
+      style: primary
+      start: 0
+      end: 146
+  "{ ngx_string(\"foo_flag\"),\n  NGX_CONF_FLAG,\n  ngx_conf_set_enum_slot,\n  0,\n  0,\n  NULL }":
+    labels:
+    - source: |-
+        { ngx_string("foo_flag"),
+          NGX_CONF_FLAG,
+          ngx_conf_set_enum_slot,
+          0,
+          0,
+          NULL }
+      style: primary
+      start: 0
+      end: 87
+  "{ ngx_string(\"x\"), NGX_CONF_FLAG, ngx_conf_set_enum_slot, 0, 0, NULL }":
+    labels:
+    - source: "{ ngx_string(\"x\"), NGX_CONF_FLAG, ngx_conf_set_enum_slot, 0, 0, NULL }"
       style: primary
       start: 0
       end: 70

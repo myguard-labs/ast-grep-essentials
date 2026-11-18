@@ -1,5 +1,45 @@
 id: c-zval-dup-into-own-ref-base
 valid:
   - 'ZVAL_DUP(&tmp, Z_REFVAL_P(value));'
+  - |-
+    void f(zval *zv)
+    {
+        zval tmp;
+        if (Z_ISREF_P(zv)) {
+            ZVAL_DUP(&tmp, Z_REFVAL_P(zv));
+            zval_ptr_dtor(zv);
+            ZVAL_COPY_VALUE(zv, &tmp);
+        }
+    }
+  - |-
+    void g(zval *return_value, zval *arg)
+    {
+        if (Z_ISREF_P(arg)) {
+            ZVAL_DUP(return_value, Z_REFVAL_P(arg));
+        }
+    }
+  - |-
+    void h(zend_object *obj, zval *src)
+    {
+        ZVAL_DUP(&obj->properties_table[0], Z_REFVAL_P(src));
+    }
 invalid:
   - 'ZVAL_DUP(value, Z_REFVAL_P(value));'
+  - |-
+    void f(zval *value)
+    {
+        if (Z_ISREF_P(value)) {
+            ZVAL_DUP(value, Z_REFVAL_P(value));
+        }
+    }
+  - |-
+    void g(void)
+    {
+        zval v;
+        ZVAL_DUP(&v, Z_REFVAL_P(&v));
+    }
+  - |-
+    void h(zval *return_value)
+    {
+        ZVAL_DUP(return_value, Z_REFVAL_P(return_value));
+    }

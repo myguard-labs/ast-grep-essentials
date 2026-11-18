@@ -1,5 +1,14 @@
 id: c-preproc-juxtaposed-defined
 snapshots:
+  "#if !defined(A) defined(B)\nint x;\n#endif":
+    labels:
+    - source: |-
+        #if !defined(A) defined(B)
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 40
   "#if defined OPENSSL_SYS_UNIX defined DJGPP\n#endif":
     labels:
     - source: |-
@@ -8,3 +17,23 @@ snapshots:
       style: primary
       start: 0
       end: 49
+  "#if defined(A)\nint x;\n#elif defined B defined(C)\nint x = 1;\n#endif":
+    labels:
+    - source: |-
+        #if defined(A)
+        int x;
+        #elif defined B defined(C)
+        int x = 1;
+        #endif
+      style: primary
+      start: 0
+      end: 66
+  "#if defined(OPENSSL_SYS_UNIX) defined(DJGPP)\nint x;\n#endif":
+    labels:
+    - source: |-
+        #if defined(OPENSSL_SYS_UNIX) defined(DJGPP)
+        int x;
+        #endif
+      style: primary
+      start: 0
+      end: 58
