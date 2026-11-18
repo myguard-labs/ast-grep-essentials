@@ -1,5 +1,39 @@
 id: c-preproc-bitwise-and-in-if
 snapshots:
+  "#if ((HAVE_A & HAVE_B) & X) || Y\nint x;\n#endif":
+    labels:
+    - source: HAVE_A & HAVE_B
+      style: primary
+      start: 6
+      end: 21
+    - source: "&"
+      style: secondary
+      start: 13
+      end: 14
+    - source: |-
+        #if ((HAVE_A & HAVE_B) & X) || Y
+        int x;
+        #endif
+      style: secondary
+      start: 0
+      end: 46
+  "#if ((HAVE_A & HAVE_B)) & HAVE_C\nint x;\n#endif":
+    labels:
+    - source: ((HAVE_A & HAVE_B)) & HAVE_C
+      style: primary
+      start: 4
+      end: 32
+    - source: "&"
+      style: secondary
+      start: 24
+      end: 25
+    - source: |-
+        #if ((HAVE_A & HAVE_B)) & HAVE_C
+        int x;
+        #endif
+      style: secondary
+      start: 0
+      end: 46
   "#if (HAVE_A & HAVE_B)\nint x;\n#endif":
     labels:
     - source: HAVE_A & HAVE_B
@@ -17,6 +51,40 @@ snapshots:
       style: secondary
       start: 0
       end: 35
+  "#if (HAVE_A & HAVE_B) != 0\nint x;\n#endif":
+    labels:
+    - source: HAVE_A & HAVE_B
+      style: primary
+      start: 5
+      end: 20
+    - source: "&"
+      style: secondary
+      start: 12
+      end: 13
+    - source: |-
+        #if (HAVE_A & HAVE_B) != 0
+        int x;
+        #endif
+      style: secondary
+      start: 0
+      end: 40
+  "#if (HAVE_A & HAVE_B) & HAVE_C\nint x;\n#endif":
+    labels:
+    - source: (HAVE_A & HAVE_B) & HAVE_C
+      style: primary
+      start: 4
+      end: 30
+    - source: "&"
+      style: secondary
+      start: 22
+      end: 23
+    - source: |-
+        #if (HAVE_A & HAVE_B) & HAVE_C
+        int x;
+        #endif
+      style: secondary
+      start: 0
+      end: 44
   "#if 0\n#elif HAVE_A & HAVE_B\nint x;\n#endif":
     labels:
     - source: HAVE_A & HAVE_B
@@ -49,6 +117,56 @@ snapshots:
       style: secondary
       start: 6
       end: 44
+  "#if 0\n#elif X & (HAVE_A & HAVE_B)\nint x;\n#endif":
+    labels:
+    - source: HAVE_A & HAVE_B
+      style: primary
+      start: 17
+      end: 32
+    - source: "&"
+      style: secondary
+      start: 24
+      end: 25
+    - source: |-
+        #elif X & (HAVE_A & HAVE_B)
+        int x;
+      style: secondary
+      start: 6
+      end: 40
+  "#if HAVE_A & (HAVE_B & HAVE_C)\nint x;\n#endif":
+    labels:
+    - source: HAVE_A & (HAVE_B & HAVE_C)
+      style: primary
+      start: 4
+      end: 30
+    - source: "&"
+      style: secondary
+      start: 11
+      end: 12
+    - source: |-
+        #if HAVE_A & (HAVE_B & HAVE_C)
+        int x;
+        #endif
+      style: secondary
+      start: 0
+      end: 44
+  "#if HAVE_A & (HAVE_B & HAVE_C) || X\nint x;\n#endif":
+    labels:
+    - source: HAVE_B & HAVE_C
+      style: primary
+      start: 14
+      end: 29
+    - source: "&"
+      style: secondary
+      start: 21
+      end: 22
+    - source: |-
+        #if HAVE_A & (HAVE_B & HAVE_C) || X
+        int x;
+        #endif
+      style: secondary
+      start: 0
+      end: 49
   "#if HAVE_A & HAVE_B\nint x;\n#endif":
     labels:
     - source: HAVE_A & HAVE_B

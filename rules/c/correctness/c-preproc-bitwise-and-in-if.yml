@@ -7,7 +7,9 @@ message: 'Bitwise & used in a preprocessor if condition; did you mean &&?'
 note: >-
   Syntactic check only; it matches a direct & expression in the if directive
   condition, plus HAVE_ macro pairs joined by & anywhere in an if or elif
-  condition (including parenthesized), and does not know the macro values.
+  condition (including parenthesized), and does not know the macro values. A
+  HAVE_ pair nested in an & chain that is itself reported is not reported
+  separately.
 rule:
   kind: binary_expression
   any:
@@ -28,6 +30,10 @@ rule:
               has:
                 field: operator
                 regex: '^&$'
+        - not:
+            inside:
+              stopBy: end
+              matches: c-preproc-and-reported-chain
         - inside:
             stopBy: end
             field: condition
