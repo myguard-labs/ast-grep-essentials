@@ -2,5 +2,38 @@ id: rust-static-mut-item
 valid:
   - 'static MATCHERS: Vec<u32> = Vec::new();'
   - 'static HOOK: Option<&mut u8> = None;'
+  - |-
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    static COUNTER: AtomicUsize = AtomicUsize::new(0);
+    fn bump() -> usize {
+        COUNTER.fetch_add(1, Ordering::SeqCst)
+    }
+  - |-
+    use std::sync::OnceLock;
+    static CONFIG: OnceLock<String> = OnceLock::new();
+    fn config() -> &'static str {
+        CONFIG.get_or_init(|| String::from("default"))
+    }
+  - |-
+    use std::sync::Mutex;
+    static LOG: Mutex<Vec<u32>> = Mutex::new(Vec::new());
+    fn record(v: u32) {
+        if let Ok(mut g) = LOG.lock() {
+            g.push(v);
+        }
+    }
 invalid:
   - 'static mut MATCHERS: Vec<u32> = Vec::new();'
+  - |-
+    static mut COUNTER: u32 = 0;
+  - |-
+    pub static mut BUF: [u8; 16] = [0; 16];
+  - |-
+    static mut HOOK: Option<fn()> = None;
+  - |-
+    fn setup() {
+        static mut READY: bool = false;
+        unsafe {
+            READY = true;
+        }
+    }

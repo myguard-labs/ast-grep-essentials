@@ -1,6 +1,39 @@
 id: rust-self-recursive-method-call
 snapshots:
-  'struct V { x: u16 } impl V { fn scope(&self) -> u16 { self.scope().into() } }':
+  "struct V {\n    x: usize,\n}\nimpl V {\n    fn size(&self) -> usize {\n        self.size()\n    }\n}":
+    labels:
+    - source: |-
+        fn size(&self) -> usize {
+                self.size()
+            }
+      style: primary
+      start: 40
+      end: 91
+    - source: size
+      style: secondary
+      start: 43
+      end: 47
+    - source: self.size()
+      style: secondary
+      start: 74
+      end: 85
+    - source: |-
+        {
+                self.size()
+            }
+      style: secondary
+      start: 64
+      end: 91
+    - source: |-
+        impl V {
+            fn size(&self) -> usize {
+                self.size()
+            }
+        }
+      style: secondary
+      start: 27
+      end: 93
+  "struct V { x: u16 } impl V { fn scope(&self) -> u16 { self.scope().into() } }":
     labels:
     - source: fn scope(&self) -> u16 { self.scope().into() }
       style: primary
@@ -14,7 +47,7 @@ snapshots:
       style: secondary
       start: 54
       end: 66
-    - source: '{ self.scope().into() }'
+    - source: "{ self.scope().into() }"
       style: secondary
       start: 52
       end: 75
@@ -22,3 +55,102 @@ snapshots:
       style: secondary
       start: 20
       end: 77
+  "struct V;\nimpl V {\n    fn flag(&self) -> bool {\n        self.flag()\n    }\n}":
+    labels:
+    - source: |-
+        fn flag(&self) -> bool {
+                self.flag()
+            }
+      style: primary
+      start: 23
+      end: 73
+    - source: flag
+      style: secondary
+      start: 26
+      end: 30
+    - source: self.flag()
+      style: secondary
+      start: 56
+      end: 67
+    - source: |-
+        {
+                self.flag()
+            }
+      style: secondary
+      start: 46
+      end: 73
+    - source: |-
+        impl V {
+            fn flag(&self) -> bool {
+                self.flag()
+            }
+        }
+      style: secondary
+      start: 10
+      end: 75
+  "struct V;\nimpl V {\n    pub fn reset(&mut self) {\n        self.reset()\n    }\n}":
+    labels:
+    - source: |-
+        pub fn reset(&mut self) {
+                self.reset()
+            }
+      style: primary
+      start: 23
+      end: 75
+    - source: reset
+      style: secondary
+      start: 30
+      end: 35
+    - source: self.reset()
+      style: secondary
+      start: 57
+      end: 69
+    - source: |-
+        {
+                self.reset()
+            }
+      style: secondary
+      start: 47
+      end: 75
+    - source: |-
+        impl V {
+            pub fn reset(&mut self) {
+                self.reset()
+            }
+        }
+      style: secondary
+      start: 10
+      end: 77
+  "struct W<T>(T);\nimpl<T> W<T> {\n    pub(crate) fn name(&self) -> String {\n        self.name().into()\n    }\n}":
+    labels:
+    - source: |-
+        pub(crate) fn name(&self) -> String {
+                self.name().into()
+            }
+      style: primary
+      start: 35
+      end: 105
+    - source: name
+      style: secondary
+      start: 49
+      end: 53
+    - source: self.name()
+      style: secondary
+      start: 81
+      end: 92
+    - source: |-
+        {
+                self.name().into()
+            }
+      style: secondary
+      start: 71
+      end: 105
+    - source: |-
+        impl<T> W<T> {
+            pub(crate) fn name(&self) -> String {
+                self.name().into()
+            }
+        }
+      style: secondary
+      start: 16
+      end: 107

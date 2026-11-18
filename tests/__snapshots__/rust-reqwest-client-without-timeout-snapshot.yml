@@ -1,6 +1,52 @@
 id: rust-reqwest-client-without-timeout
 snapshots:
-  fn client() -> reqwest::Client { reqwest::Client::builder().build().unwrap() }:
+  "fn client() -> Result<reqwest::Client, Box<dyn std::error::Error>> {\n    let c = reqwest::Client::builder().build()?;\n    Ok(c)\n}":
+    labels:
+    - source: reqwest::Client::builder().build()
+      style: primary
+      start: 81
+      end: 115
+    - source: reqwest::Client::builder()
+      style: secondary
+      start: 81
+      end: 107
+  "fn client() -> Result<reqwest::Client, reqwest::Error> {\n    reqwest::Client::builder()\n        .connect_timeout(std::time::Duration::from_secs(5))\n        .build()\n}":
+    labels:
+    - source: |-
+        reqwest::Client::builder()
+                .connect_timeout(std::time::Duration::from_secs(5))
+                .build()
+      style: primary
+      start: 61
+      end: 164
+    - source: reqwest::Client::builder()
+      style: secondary
+      start: 61
+      end: 87
+  "fn client() -> Result<reqwest::Client, reqwest::Error> {\n    reqwest::Client::builder()\n        .gzip(true)\n        .build()\n}":
+    labels:
+    - source: |-
+        reqwest::Client::builder()
+                .gzip(true)
+                .build()
+      style: primary
+      start: 61
+      end: 124
+    - source: reqwest::Client::builder()
+      style: secondary
+      start: 61
+      end: 87
+  "fn client() -> Result<reqwest::Client, reqwest::Error> {\n    reqwest::Client::builder().user_agent(\"svc/1.0\").build()\n}":
+    labels:
+    - source: reqwest::Client::builder().user_agent("svc/1.0").build()
+      style: primary
+      start: 61
+      end: 117
+    - source: reqwest::Client::builder()
+      style: secondary
+      start: 61
+      end: 87
+  "fn client() -> reqwest::Client { reqwest::Client::builder().build().unwrap() }":
     labels:
     - source: reqwest::Client::builder().build()
       style: primary

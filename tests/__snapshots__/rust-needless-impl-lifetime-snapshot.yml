@@ -1,10 +1,32 @@
 id: rust-needless-impl-lifetime
 snapshots:
-  ? |-
-    struct Holder<'a>(&'a u8);
-    impl<'a> Iterator for Holder<'a> {}
-  : labels:
+  "struct Holder<'a>(&'a u8);\nimpl<'a> Iterator for Holder<'a> {}":
+    labels:
     - source: impl<'a> Iterator for Holder<'a> {}
       style: primary
       start: 27
       end: 62
+  "trait Marker {}\nimpl<'a> Marker for &'a str {}":
+    labels:
+    - source: impl<'a> Marker for &'a str {}
+      style: primary
+      start: 16
+      end: 46
+  "trait Marker {}\nimpl<'a> Marker for std::borrow::Cow<'a, str> {}":
+    labels:
+    - source: impl<'a> Marker for std::borrow::Cow<'a, str> {}
+      style: primary
+      start: 16
+      end: 64
+  "trait Marker {}\nstruct Holder<'a>(&'a str);\nimpl<'a> Marker for Holder<'a> {}":
+    labels:
+    - source: impl<'a> Marker for Holder<'a> {}
+      style: primary
+      start: 44
+      end: 77
+  "trait Marker {}\nstruct Window<'a, T>(&'a [T]);\nimpl<'a> Marker for Window<'a, u8> {}":
+    labels:
+    - source: impl<'a> Marker for Window<'a, u8> {}
+      style: primary
+      start: 47
+      end: 84

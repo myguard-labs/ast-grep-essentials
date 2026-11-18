@@ -1,12 +1,68 @@
 id: rust-test-without-assertion
 snapshots:
-  '#[test] fn parses_input() { let _ = parse("x"); }':
+  "#[test] fn parses_input() { let _ = parse(\"x\"); }":
     labels:
     - source: fn parses_input() { let _ = parse("x"); }
       style: primary
       start: 8
       end: 49
-    - source: '#[test]'
+    - source: "#[test]"
       style: secondary
       start: 0
       end: 7
+  "async fn fetch() -> u32 {\n    1\n}\n#[tokio::test]\nasync fn fetches() {\n    let _ = fetch().await;\n}":
+    labels:
+    - source: |-
+        async fn fetches() {
+            let _ = fetch().await;
+        }
+      style: primary
+      start: 49
+      end: 98
+    - source: "#[tokio::test]"
+      style: secondary
+      start: 34
+      end: 48
+  "fn parse(s: &str) -> u32 {\n    s.len() as u32\n}\n#[test]\nfn compares_without_assert() {\n    let v = parse(\"x\");\n    if v != 1 {\n        println!(\"unexpected {}\", v);\n    }\n}":
+    labels:
+    - source: |-
+        fn compares_without_assert() {
+            let v = parse("x");
+            if v != 1 {
+                println!("unexpected {}", v);
+            }
+        }
+      style: primary
+      start: 56
+      end: 172
+    - source: "#[test]"
+      style: secondary
+      start: 48
+      end: 55
+  "fn parse(s: &str) -> u32 {\n    s.len() as u32\n}\n#[test]\nfn debug_only() {\n    let v = parse(\"x\");\n    dbg!(v);\n}":
+    labels:
+    - source: |-
+        fn debug_only() {
+            let v = parse("x");
+            dbg!(v);
+        }
+      style: primary
+      start: 56
+      end: 112
+    - source: "#[test]"
+      style: secondary
+      start: 48
+      end: 55
+  "fn parse(s: &str) -> u32 {\n    s.len() as u32\n}\n#[test]\nfn prints_only() {\n    println!(\"{}\", parse(\"x\"));\n}":
+    labels:
+    - source: |-
+        fn prints_only() {
+            println!("{}", parse("x"));
+        }
+      style: primary
+      start: 56
+      end: 108
+    - source: "#[test]"
+      style: secondary
+      start: 48
+      end: 55

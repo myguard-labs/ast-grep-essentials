@@ -3,7 +3,89 @@ valid:
   - >-
     struct V { x: u16 } impl V { fn scope(&self) -> u16 { self.inner().into() }
     }
+  - |-
+    struct V {
+        x: u16,
+    }
+    impl V {
+        fn scope(&self) -> u16 {
+            self.x
+        }
+    }
+    trait Named {
+        fn scope(&self) -> u16;
+    }
+    impl Named for V {
+        fn scope(&self) -> u16 {
+            self.scope()
+        }
+    }
+  - |-
+    struct Counter;
+    impl Counter {
+        fn count_down(&self, n: u32) -> u32 {
+            if n == 0 {
+                0
+            } else {
+                self.count_down(n - 1)
+            }
+        }
+    }
+  - |-
+    struct Node {
+        next: Option<Box<Node>>,
+    }
+    impl Node {
+        fn len(&self) -> usize {
+            match &self.next {
+                Some(n) => 1 + n.len(),
+                None => 1,
+            }
+        }
+    }
+  - |-
+    struct Wrapper {
+        inner: Vec<u8>,
+    }
+    impl Wrapper {
+        fn size(&self) -> usize {
+            self.inner.len()
+        }
+        fn total(&self) -> usize {
+            self.size()
+        }
+    }
 invalid:
   - >-
     struct V { x: u16 } impl V { fn scope(&self) -> u16 { self.scope().into() }
+    }
+  - |-
+    struct V {
+        x: usize,
+    }
+    impl V {
+        fn size(&self) -> usize {
+            self.size()
+        }
+    }
+  - |-
+    struct V;
+    impl V {
+        pub fn reset(&mut self) {
+            self.reset()
+        }
+    }
+  - |-
+    struct W<T>(T);
+    impl<T> W<T> {
+        pub(crate) fn name(&self) -> String {
+            self.name().into()
+        }
+    }
+  - |-
+    struct V;
+    impl V {
+        fn flag(&self) -> bool {
+            self.flag()
+        }
     }
