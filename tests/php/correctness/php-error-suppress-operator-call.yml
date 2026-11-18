@@ -5,9 +5,16 @@ valid:
     $parsed = parse_url( $url );
   - '<?php $fh = fopen( $p, ''r'' ); if ( false === $fh ) { return; }'
   - '<?php $r = parse_url( $u ) ?: [];'
+  - 'function f($m) { error_log($m, 0); }'
+  - '<?php if ( ! error_log( $m, 3, ''/tmp/l'' ) ) { return; }'
 invalid:
   - |
     <?php
     $parsed = @parse_url( $url );
   - '<?php $data = @file_get_contents( $url, false, $ctx );'
   - '<?php if ( @unlink( $f ) ) { log_it(); }'
+  - 'function f($m) { @error_log($m, 0); }'
+  - '<?php @error_log( ''x'', 3, ''/tmp/l'' );'
+  - '<?php $ok = @error_log( $m );'
+  - '<?php @\error_log( $m );'
+  - '<?php @syslog( LOG_ERR, $m );'

@@ -12,9 +12,39 @@ snapshots:
       style: primary
       start: 14
       end: 53
+  <?php $ok = @error_log( $m );:
+    labels:
+    - source: "@error_log( $m )"
+      style: primary
+      start: 12
+      end: 28
+  <?php @\error_log( $m );:
+    labels:
+    - source: "@\\error_log( $m )"
+      style: primary
+      start: 6
+      end: 23
+  "<?php @error_log( 'x', 3, '/tmp/l' );":
+    labels:
+    - source: "@error_log( 'x', 3, '/tmp/l' )"
+      style: primary
+      start: 6
+      end: 36
+  "<?php @syslog( LOG_ERR, $m );":
+    labels:
+    - source: "@syslog( LOG_ERR, $m )"
+      style: primary
+      start: 6
+      end: 28
   "<?php if ( @unlink( $f ) ) { log_it(); }":
     labels:
     - source: "@unlink( $f )"
       style: primary
       start: 11
       end: 24
+  "function f($m) { @error_log($m, 0); }":
+    labels:
+    - source: "@error_log($m, 0)"
+      style: primary
+      start: 17
+      end: 34
