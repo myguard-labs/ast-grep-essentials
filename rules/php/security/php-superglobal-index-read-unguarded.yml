@@ -2,20 +2,29 @@
 
 id: php-superglobal-index-read-unguarded
 language: php
-severity: warning
+severity: 'off'
 message: >-
-  Request superglobal index is read as an operand of a binary expression; the
-  key may be absent.
+  Deprecated rule ID; use php-superglobal-read-unguarded. A request
+  superglobal index is read as an operand of a binary expression; the key may
+  be absent.
 note: >-
-  Syntactic only; matches a GET, POST or REQUEST superglobal subscript that is
-  a direct operand of a binary expression. It does not detect isset or other
-  guards elsewhere and does not check the operator.
+  Compatibility alias, disabled by default. It mirrors the matcher of
+  php-superglobal-read-unguarded, which reports every unguarded GET, POST or
+  REQUEST subscript read, including a binary operand.
 rule:
   all:
     - kind: subscript_expression
-    - regex: '^\$_(GET|POST|REQUEST)\s*\['
-    - inside:
-        kind: binary_expression
+    - regex: '^\$_(GET|POST|REQUEST)\['
+    - not:
+        inside:
+          stopBy: end
+          kind: conditional_expression
+    - not:
+        inside:
+          stopBy: end
+          all:
+            - kind: function_call_expression
+            - regex: '(?i)^(isset|empty)\b'
     - not:
         any:
           - precedes:
@@ -24,7 +33,57 @@ rule:
               kind: parenthesized_expression
               precedes:
                 regex: '^\?\?$'
+    - not:
+        all:
+          - pattern: $R[$K]
+          - inside:
+              kind: compound_statement
+              stopBy: end
+              inside:
+                kind: if_statement
+                has:
+                  field: condition
+                  has:
+                    kind: function_call_expression
+                    regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
+                    has:
+                      stopBy: end
+                      all:
+                        - pattern: $R[$K]
+                        - regex: '^\$_(GET|POST|REQUEST)\['
+    - not:
+        all:
+          - pattern: $R[$K]
+          - inside:
+              stopBy: end
+              kind: binary_expression
+              all:
+                - has:
+                    regex: '(?i)^(&&|and)$'
+                - has:
+                    field: left
+                    any:
+                      - kind: function_call_expression
+                        regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
+                        has:
+                          stopBy: end
+                          all:
+                            - pattern: $R[$K]
+                            - regex: '^\$_(GET|POST|REQUEST)\['
+                      - kind: binary_expression
+                        all:
+                          - has:
+                              regex: '(?i)^(&&|and)$'
+                          - has:
+                              kind: function_call_expression
+                              regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
+                              has:
+                                stopBy: end
+                                all:
+                                  - pattern: $R[$K]
+                                  - regex: '^\$_(GET|POST|REQUEST)\['
 metadata:
+  deprecated_alias_of: php-superglobal-read-unguarded
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-18'

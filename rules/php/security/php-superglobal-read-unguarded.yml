@@ -4,16 +4,17 @@ id: php-superglobal-read-unguarded
 language: php
 severity: warning
 message: >-
-  Superglobal GET or POST subscript is read without an isset(), empty() or
-  ternary guard.
+  Superglobal GET, POST or REQUEST subscript is read without an isset(),
+  empty() or ternary guard.
 note: >-
   Syntactic only; it skips any read inside a ternary or isset()/empty() call
   and does not check for guards elsewhere, such as earlier isset() checks outside
-  a braced if (isset(same key)) block. A null-coalescing left operand is skipped.
+  a braced if (isset(same key)) block. A null-coalescing left operand is skipped, and so is a read to the
+  right of an && (or and) whose left side holds isset() of the same superglobal key.
 rule:
   all:
     - kind: subscript_expression
-    - regex: '^\$_(GET|POST)\['
+    - regex: '^\$_(GET|POST|REQUEST)\['
     - not:
         inside:
           stopBy: end
@@ -44,14 +45,45 @@ rule:
                   field: condition
                   has:
                     kind: function_call_expression
-                    regex: '^isset\(\s*\$_(GET|POST)\['
+                    regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
                     has:
                       stopBy: end
                       all:
                         - pattern: $R[$K]
-                        - regex: '^\$_(GET|POST)\['
+                        - regex: '^\$_(GET|POST|REQUEST)\['
+    - not:
+        all:
+          - pattern: $R[$K]
+          - inside:
+              stopBy: end
+              kind: binary_expression
+              all:
+                - has:
+                    regex: '(?i)^(&&|and)$'
+                - has:
+                    field: left
+                    any:
+                      - kind: function_call_expression
+                        regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
+                        has:
+                          stopBy: end
+                          all:
+                            - pattern: $R[$K]
+                            - regex: '^\$_(GET|POST|REQUEST)\['
+                      - kind: binary_expression
+                        all:
+                          - has:
+                              regex: '(?i)^(&&|and)$'
+                          - has:
+                              kind: function_call_expression
+                              regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
+                              has:
+                                stopBy: end
+                                all:
+                                  - pattern: $R[$K]
+                                  - regex: '^\$_(GET|POST|REQUEST)\['
 metadata:
-  rule_modified_at: '2026-10-18'
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-18'
   created_at: '2026-10-18'
@@ -64,5 +96,8 @@ metadata:
   owasp: 'A05:2025'
   todo_cases:
     - "A spaced subscript ($_GET [ \"a\" ]) is not matched."
+    - "FN: a read evaluated before a same-key isset in the same && chain ($_GET[\"s\"] && isset($_GET[\"s\"]) && $x) is treated as guarded."
+    - "FP: in an && chain of four or more terms, a same-key isset() more than two operands before the read (isset($_GET[\"s\"]) && $a && $b && $_GET[\"s\"]) is not found, so the read is still reported."
+    - "FP: an isset guard written in another case (ISSET(...)) or with the superglobal after the first argument (isset($x, $_GET[\"a\"]) && $_GET[\"a\"]) is not recognised, so the read is still reported."
     - "FP: a read in a braceless if (isset($_GET[\"a\"])) echo $_GET[\"a\"]; body, or under a compound condition (isset(a) || $x, isset(a) && isset(b)), still reports; only a braced if whose condition is a single isset of the same key is recognised."
     - "false negative: a read used only to compute the isset key (if (isset($_GET[$_GET[\"key\"]])) { echo $_GET[\"key\"]; }) is treated as guarded."

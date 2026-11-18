@@ -2,25 +2,88 @@
 
 id: php-superglobal-unguarded-read
 language: php
-severity: warning
+severity: 'off'
 message: >-
-  A request superglobal element is used directly as an if condition without an
-  isset guard.
+  Deprecated rule ID; use php-superglobal-read-unguarded. A request
+  superglobal element is used directly as an if condition without an isset
+  guard.
 note: >-
-  Syntactic only; matches an if condition that is directly a GET superglobal
-  subscript. It does not check for guards elsewhere or runtime values.
+  Compatibility alias, disabled by default. It mirrors the matcher of
+  php-superglobal-read-unguarded, which reports every unguarded GET, POST or
+  REQUEST subscript read, including an if condition.
 rule:
-  kind: subscript_expression
-  regex: '^\$_GET\['
-  inside:
-    kind: parenthesized_expression
-    inside:
-      kind: if_statement
+  all:
+    - kind: subscript_expression
+    - regex: '^\$_(GET|POST|REQUEST)\['
+    - not:
+        inside:
+          stopBy: end
+          kind: conditional_expression
+    - not:
+        inside:
+          stopBy: end
+          all:
+            - kind: function_call_expression
+            - regex: '(?i)^(isset|empty)\b'
+    - not:
+        any:
+          - precedes:
+              regex: '^\?\?=?$'
+          - inside:
+              kind: parenthesized_expression
+              precedes:
+                regex: '^\?\?$'
+    - not:
+        all:
+          - pattern: $R[$K]
+          - inside:
+              kind: compound_statement
+              stopBy: end
+              inside:
+                kind: if_statement
+                has:
+                  field: condition
+                  has:
+                    kind: function_call_expression
+                    regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
+                    has:
+                      stopBy: end
+                      all:
+                        - pattern: $R[$K]
+                        - regex: '^\$_(GET|POST|REQUEST)\['
+    - not:
+        all:
+          - pattern: $R[$K]
+          - inside:
+              stopBy: end
+              kind: binary_expression
+              all:
+                - has:
+                    regex: '(?i)^(&&|and)$'
+                - has:
+                    field: left
+                    any:
+                      - kind: function_call_expression
+                        regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
+                        has:
+                          stopBy: end
+                          all:
+                            - pattern: $R[$K]
+                            - regex: '^\$_(GET|POST|REQUEST)\['
+                      - kind: binary_expression
+                        all:
+                          - has:
+                              regex: '(?i)^(&&|and)$'
+                          - has:
+                              kind: function_call_expression
+                              regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
+                              has:
+                                stopBy: end
+                                all:
+                                  - pattern: $R[$K]
+                                  - regex: '^\$_(GET|POST|REQUEST)\['
 metadata:
-  todo_cases:
-    - 'FN: `if ( $x ) {} elseif ( $_GET[''s''] ) {}` is not reported (elseif condition is not an if_statement parenthesized_expression).'
-    - 'FN: `if ( ! $_GET[''s''] )` and `if ( $_GET[''s''] && $x )` are not reported (subscript is not the direct condition).'
-    - 'FN: `if ( $_POST[''s''] )` and `while ( $_GET[''s''] )` are not reported.'
+  deprecated_alias_of: php-superglobal-read-unguarded
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-18'
