@@ -2,35 +2,30 @@
 
 id: php-superglobal-compare-without-isset
 language: php
-severity: warning
+severity: 'off'
 message: >-
-  Superglobal element is compared directly without an isset() check in the
-  same condition.
+  Deprecated rule ID; use php-superglobal-read-without-isset. A superglobal element is compared directly without an isset() check in the same condition.
 note: >-
-  Syntactic only; it does not verify that the isset() guards the same key or
-  that the key is otherwise guaranteed to exist.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use php-superglobal-read-without-isset and do not emit this rule.
 rule:
   all:
-    - pattern: '$A == $B'
+    - kind: binary_expression
+    - has:
+        field: operator
+        regex: '^(==|!=|===|!==|<>)$'
     - has:
         kind: subscript_expression
-        has:
-          kind: variable_name
-          regex: '^\$_(GET|POST|REQUEST|COOKIE)$'
+        regex: '^\$_(GET|POST|REQUEST|COOKIE)\['
     - not:
         inside:
           stopBy: end
           kind: binary_expression
-          has:
-            stopBy: end
-            pattern: 'isset($$$ARGS)'
+          regex: 'isset\s*\(|empty\s*\(|array_key_exists\s*\('
 metadata:
-  rule_modified_at: '2026-10-18'
-  ast_grep_tested_version: 0.51.0
-  validated_at: '2026-10-18'
+  deprecated_alias_of: php-superglobal-read-without-isset
+  rule_modified_at: '2026-11-18'
   created_at: '2026-10-18'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - "FP: an array_key_exists guard `array_key_exists( 'k', $_POST ) && $_POST['k'] == 'v'` is reported (only isset() counts as a guard)"

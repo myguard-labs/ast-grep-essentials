@@ -2,43 +2,29 @@
 
 id: php-superglobal-index-unguarded-compare
 language: php
-severity: warning
+severity: 'off'
 message: >-
-  Equality comparison reads a GET superglobal index directly without an
-  isset() or empty() guard in the same condition.
+  Deprecated rule ID; use php-superglobal-read-without-isset. An equality comparison reads a GET superglobal index without an isset() or empty() guard.
 note: >-
-  Purely syntactic; a guard performed earlier in the function is not seen, and
-  only isset() or empty() calls inside an enclosing binary expression are
-  recognized.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use php-superglobal-read-without-isset and do not emit this rule.
 rule:
   all:
     - kind: binary_expression
     - has:
         field: operator
-        regex: '^(==|===)$'
+        regex: '^(==|!=|===|!==|<>)$'
     - has:
-        stopBy: end
         kind: subscript_expression
-        has:
-          kind: variable_name
-          regex: '^\$_GET$'
+        regex: '^\$_(GET|POST|REQUEST|COOKIE)\['
     - not:
         inside:
           stopBy: end
           kind: binary_expression
-          has:
-            stopBy: end
-            kind: function_call_expression
-            regex: '^(isset|empty)\s*\('
+          regex: 'isset\s*\(|empty\s*\(|array_key_exists\s*\('
 metadata:
-  todo_cases:
-    - 'FP: `if ( array_key_exists( ''s'', $_GET ) && $_GET[''s''] === ''a'' )` is reported (only isset/empty guards are recognized).'
-    - 'FP: `if ( ( $_GET[''s''] ?? '''' ) === ''a'' )` is reported although the coalesce supplies a default.'
-    - 'FN: `if ( $_GET[''s''] === ''a'' && isset( $_GET[''t''] ) )` is not reported (an isset of another key or after the read suppresses it).'
-    - 'FN: `if ( $_GET[''s''] != ''a'' )` is not reported (only == and === are matched).'
-  rule_modified_at: '2026-10-18'
-  ast_grep_tested_version: 0.51.0
-  validated_at: '2026-10-18'
+  deprecated_alias_of: php-superglobal-read-without-isset
+  rule_modified_at: '2026-11-18'
   created_at: '2026-10-18'
   source: 'MyGuard'
   modified_by: MyGuard
