@@ -19,6 +19,8 @@ valid:
     package p
 
     var homeDir = `C:\Users\admin`
+  - "var s = \"HTTP/1.1 200 OK\\nContent-length: 2\""
+  - "package p\n\ntype S struct {\n\tName string `json:\"name\"`\n}"
 invalid:
   - |
     package p
@@ -48,3 +50,7 @@ invalid:
     func hello() {
     	fmt.Print(`GET / HTTP/1.1\r\nHost: example.com\r\n\r\n`)
     }
+  - "var s = `HTTP/1.1 200 OK\\nContent-length: 2`"
+  - "package p\n\nimport \"strings\"\n\nfunc trim(s string) string {\n\treturn strings.TrimSuffix(s, `\\r`)\n}"
+  - "package p\n\nimport (\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc hello(w io.Writer) {\n\tfmt.Fprint(w, `HTTP/1.1 200 OK\\r\\nContent-Length: 0\\r\\n\\r\\n`)\n}"
+  - "package p\n\nvar defaultResponse = `HTTP/1.1 200 OK\\nContent-length: 2\\n\\nOk`"

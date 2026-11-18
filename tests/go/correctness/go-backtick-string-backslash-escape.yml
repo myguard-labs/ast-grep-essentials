@@ -18,6 +18,8 @@ valid:
     type S struct {
     	Name string `json:"name"`
     }
+  - "package p\n\nvar defaultResponse = \"HTTP/1.1 200 OK\\nContent-length: 2\\n\\nOk\"\n"
+  - "package p\n\nvar homeDir = `C:\\Users\\admin`"
 invalid:
   - 'var s = `HTTP/1.1 200 OK\nContent-length: 2`'
   - |-
@@ -47,3 +49,6 @@ invalid:
     func hello(w io.Writer) {
     	fmt.Fprint(w, `HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n`)
     }
+  - "package p\n\nvar defaultResponse = `HTTP/1.1 200 OK\\nContent-length: 2\\n\\nOk`\n"
+  - "package p\n\nimport \"strings\"\n\nfunc norm(s string) string {\n\treturn strings.ReplaceAll(s, `\\r\\n`, \"\\n\")\n}"
+  - "package p\n\nimport \"fmt\"\n\nfunc hello() {\n\tfmt.Print(`GET / HTTP/1.1\\r\\nHost: example.com\\r\\n\\r\\n`)\n}"
