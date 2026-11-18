@@ -20,6 +20,27 @@ valid:
       #if defined(FOO) && defined(BAR)
       int x;
       #endif
+  - |-
+    #ifdef PHP_WIN32
+    #endif
+  - |-
+    #ifndef FOO
+    int x;
+    #endif
+  - |-
+    #ifdef A
+    int x = a && b;
+    #endif
+  - |-
+    #ifdef A
+    int x;
+    #else
+    int y = a || b;
+    #endif
+  - |-
+    #if defined(A) && defined(B)
+    int x;
+    #endif
 invalid:
   - |-
     #ifdef PHP_WIN32 && ZTS
@@ -46,3 +67,29 @@ invalid:
         g();
       #endif
       }
+  - |-
+    #ifdef FOO&&BAR
+    int x;
+    #endif
+  - |-
+    #ifdef FOO(X)
+    int x;
+    #endif
+  - |-
+    #ifndef FOO || BAR
+    int x;
+    #endif
+  - |-
+    #ifdef A||B
+    int x;
+    #endif
+  - |-
+    #ifdef A
+    #ifndef FOO BAR
+    int x;
+    #endif
+    #endif
+  - |-
+    #  ifdef A && B
+    int x;
+    #endif
