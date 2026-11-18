@@ -8,7 +8,9 @@ message: >-
   loop iterations.
 note: >-
   Syntactic match on a unary & applied to the bare identifier bound as the
-  value of a `for k, v := range` (or `for _, v := range`) loop, anywhere in that
+  last variable of a `for k, v := range`, `for _, v := range` or single-variable
+  `for v := range` loop (the value, or the only variable of a channel, integer
+  or index range), anywhere in that
   loop body including nested blocks and function literals. A direct `v := v`
   statement in the loop body is treated as the shadow-copy fix and silences the
   report. The go.mod `go` directive is not visible to the rule: since Go 1.22
@@ -29,7 +31,9 @@ rule:
               kind: expression_list
               has:
                 kind: identifier
-                nthChild: 2
+                nthChild:
+                  position: 1
+                  reverse: true
                 pattern: $V
         not:
           has:
@@ -45,8 +49,7 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FN: the value of a single-variable range (for v := range ch over a channel) is not matched, the rule needs a second identifier to know v is the value'
     - 'FN: the address of a field (&v.f), a method value on a pointer receiver and an index-address of the value (&v[0]) are not matched, only &v on the bare identifier'
-    - 'FN: a renamed shadow copy (w := v; use(&w)) is correct code and is not matched; the opposite, &v taken before a v := v statement, is silenced too'
+    - 'FN: &v taken before a later v := v statement in the same body is silenced too (the shadow-copy exclusion ignores statement order)'
     - 'FP: a closure parameter or local named like the range value (go func(v T) { use(&v) }(v)) is reported, and a v := v only inside a nested block does not count as the shadow copy'
     - 'FP: in a module with go >= 1.22 (per-iteration loop variable) the range-value address is not shared; the go directive is not visible to the rule'

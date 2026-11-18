@@ -168,3 +168,15 @@ invalid:
     		ptrs = append(ptrs, &ings[i])
     	}
     }
+  - |-
+    package p
+
+    type Ing struct{ Name string }
+
+    var keep []*Ing
+
+    func f(ch chan Ing) {
+    	for ing := range ch {
+    		keep = append(keep, &ing)
+    	}
+    }
