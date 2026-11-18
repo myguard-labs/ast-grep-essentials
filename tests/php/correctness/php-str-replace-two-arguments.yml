@@ -1,5 +1,12 @@
 id: php-str-replace-two-arguments
 valid:
+  - '$h = str_replace(''\r\n'', ''\n'', $h);'
+  - |-
+    $t = str_replace('a', 'b', $t);
+  - |-
+    $t = str_replace('a', 'b', $t, $n);
+  - |-
+    $t = str_replace(['a' => 1], ['b'], $t);
   - |
     <?php
     $headers = str_replace("\r\n", "\n", $headers);
@@ -13,6 +20,13 @@ valid:
     <?php
     $t = str_replace($s, $r, $t, $n);
 invalid:
+  - '$h = str_replace(''\r\n'', ''\n'');'
+  - |-
+    $t = str_replace($s, $r);
+  - |-
+    $t = str_replace(['a', 'b'], '');
+  - |-
+    $t = str_replace(search: 'a', replace: 'b');
   - |
     <?php
     $headers = str_replace("\r\n", "\n");
