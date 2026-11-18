@@ -2,20 +2,18 @@
 
 id: wp-screen-icon-call
 language: php
-severity: warning
-message: 'Call to deprecated screen_icon() with no arguments.'
+severity: 'off'
+message: 'Deprecated rule ID; use wp-screen-icon-deprecated-call. Call to deprecated screen_icon() with no arguments.'
 note: >-
-  Matches the literal unqualified call syntax screen_icon() with zero
-  arguments; does not verify that the function resolves to WordPress core or
-  check for namespaced or aliased definitions.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use wp-screen-icon-deprecated-call and do not emit this rule.
 rule:
-  pattern: 'screen_icon()'
+  pattern: 'screen_icon($$$ARGS)'
 metadata:
+  deprecated_alias_of: wp-screen-icon-deprecated-call
   todo_cases:
     - "Observed miss: `\\screen_icon();` (leading-backslash call) is not reported (probed: no match on 0.51.3 and 0.45.2)."
-  rule_modified_at: '2026-10-15'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-15'
+  rule_modified_at: '2026-11-18'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard
