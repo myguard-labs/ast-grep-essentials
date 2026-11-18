@@ -8,7 +8,10 @@ note: >-
   Syntactic approximation only. Matches a function definition with a non-void
   return type whose body contains no return_statement node anywhere; it does
   not analyse control flow, so functions that always throw or exit, or that
-  return via nested lambdas, are not distinguished.
+  return via nested lambdas, are not distinguished. Definitions returning
+  void (including a trailing -> void and an auto return with no return
+  statement), constructors, destructors and main are skipped; a conversion
+  operator returns a value and is still checked.
 rule:
   all:
     - kind: 'function_definition:has(> compound_statement)'
@@ -51,10 +54,19 @@ rule:
                 has:
                   kind: trailing_return_type
     - not:
-        not:
-          has:
-            field: type
-            regex: '.'
+        all:
+          - not:
+              has:
+                field: type
+                regex: '.'
+          - not:
+              has:
+                field: declarator
+                any:
+                  - kind: operator_cast
+                  - has:
+                      kind: operator_cast
+                      stopBy: end
     - not:
         has:
           field: declarator
