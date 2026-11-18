@@ -10,6 +10,13 @@ valid:
   - "<?php $ua = ($_SERVER['x']) ?? '';"
   - "<?php $a = $_SERVER['A'] ?? 'd';"
   - "<?php $s = isset($_SERVER['x']) ? 1 : 0;"
+  - '<?php $client_etag = stripslashes($other[''HTTP_IF_NONE_MATCH'']);'
+  - "<?php $h = $headers[\"HTTP_HOST\"];"
+  - "<?php $x = filter_input(INPUT_SERVER, \"HTTP_HOST\");"
+  - "<?php $ua = $server[\"HTTP_USER_AGENT\"] ?? \"\";"
+  - "<?php $ua = $_SERVER[\"HTTP_USER_AGENT\"] ?? \"\";"
+  - "<?php $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';"
+  - "<?php $ua = ($_SERVER[\"HTTP_USER_AGENT\"]) ?? \"\";"
 invalid:
   - '$d = 0 + $_ENV[''TEST_PHP_DETAILED''];'
   - "<?php $x = $_GET[\"a\"];"
@@ -22,3 +29,11 @@ invalid:
   - "<?php $b = $_GET['k'] = $_POST['v'];"
   - "<?php $_SERVER['x'] .= 'y';"
   - "<?php $_POST['n'] += 1;"
+  - '<?php $client_etag = stripslashes($_SERVER[''HTTP_IF_NONE_MATCH'']);'
+  - "<?php $host = $_SERVER[\"HTTP_HOST\"];"
+  - "<?php $host = strtolower( $_SERVER[\"HTTP_HOST\"] );"
+  - "<?php $this->ip = $_SERVER['REMOTE_ADDR'];"
+  - "<?php $h = trim( (string) $_SERVER[\"HTTP_HOST\"] );"
+  - "<?php $a = [ \"h\" => $_SERVER[\"HTTP_HOST\"] ];"
+  - "<?php $ua = $_SERVER[\"A\"] ?? $_SERVER[\"B\"];"
+  - "<?php $ua = trim($_SERVER[\"A\"]) ?? \"\";"

@@ -2,30 +2,45 @@
 
 id: php-server-superglobal-unguarded-read
 language: php
-severity: warning
+severity: 'off'
 message: >-
-  Assignment reads a key of the server superglobal by subscript; confirm the
-  key is guarded with isset or empty.
+  Deprecated rule ID; use php-superglobal-index-unguarded. A key of the server
+  superglobal is read by subscript without an isset, empty or ?? guard.
 note: >-
-  Purely syntactic; it does not detect isset or empty guards elsewhere in the
-  function, so guarded reads also match.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use php-superglobal-index-unguarded and do not emit this rule.
 rule:
   all:
     - kind: subscript_expression
-    - regex: '^\$_SERVER\['
-    - inside:
-        kind: assignment_expression
-        stopBy: end
+    - regex: '^\$_(ENV|SERVER|GET|POST|COOKIE|REQUEST)\s*\['
     - not:
-        any:
-          - precedes:
-              regex: '^\?\?=?$'
-          - inside:
-              kind: parenthesized_expression
-              precedes:
-                regex: '^\?\?$'
+        inside:
+          kind: binary_expression
+          regex: '\?\?'
+          field: left
+    - not:
+        inside:
+          kind: parenthesized_expression
+          inside:
+            kind: binary_expression
+            regex: '\?\?'
+            field: left
+    - not:
+        inside:
+          any:
+            - kind: assignment_expression
+            - kind: augmented_assignment_expression
+              has:
+                field: operator
+                regex: '^\?\?=$'
+          field: left
+    - not:
+        inside:
+          regex: '^(isset|empty)\s*\('
+          stopBy: end
 metadata:
-  rule_modified_at: '2026-10-18'
+  deprecated_alias_of: php-superglobal-index-unguarded
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-18'
   created_at: '2026-10-18'
@@ -36,5 +51,3 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/20.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A05:2025'
-  todo_cases:
-    - "A compound assignment ($h .= $_SERVER[\"HTTP_HOST\"]) is not matched."
