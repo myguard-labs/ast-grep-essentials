@@ -10,9 +10,15 @@ note: >-
   Syntactic match on the @ operator applied directly to a function call used
   as a value. It does not confirm the call fails or that the suppressed
   warning matters, and it does not resolve the called function's identity or
-  runtime behavior.
+  runtime behavior. Calls to header, rename, parse_url, closedir, dl,
+  mb_internal_encoding and constant (exact lowercase, unqualified name) are
+  left to their callee-specific rules.
 rule:
   pattern: '@$F($$$ARGS)'
+constraints:
+  F:
+    not:
+      regex: '^(header|rename|parse_url|closedir|dl|mb_internal_encoding|constant)$'
 metadata:
   rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
