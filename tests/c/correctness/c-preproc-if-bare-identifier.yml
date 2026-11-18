@@ -20,6 +20,30 @@ valid:
     #if HAVE_FOO > 0
     int x;
     #endif
+  - |-
+    #ifdef HAVE_FOO
+    int x;
+    #endif
+  - |-
+    #ifndef HAVE_FOO
+    int x;
+    #endif
+  - |-
+    #ifdef HAVE_MMAP
+    int mmap_enabled;
+    #endif
+  - |-
+    #if defined(HAVE_MMAP)
+    int mmap_enabled;
+    #endif
+  - |-
+    #ifndef HAVE_MMAP
+    int mmap_enabled;
+    #endif
+  - |-
+    #if HAVE_MMAP > 0
+    int mmap_enabled;
+    #endif
 invalid:
   - |-
     #if HAVE_LIBXML
@@ -37,3 +61,33 @@ invalid:
     #if HAVE_FOO
     int x;
     #endif
+  - |-
+    #if HAVE_SYS_SELECT_H
+    int x;
+    #endif
+  - |-
+    #if HAVE_LIBGD20
+    int x;
+    #else
+    int y;
+    #endif
+  - |-
+    #if HAVE_MMAP
+    int mmap_enabled;
+    #endif
+  - |-
+    #if HAVE_SYS_MMAN_H
+    int mmap_enabled;
+    #endif
+  - |-
+    #  if HAVE_FORK
+    int can_fork;
+    #endif
+  - |-
+    int f(void) {
+    #if HAVE_POLL
+      return 1;
+    #else
+      return 0;
+    #endif
+    }

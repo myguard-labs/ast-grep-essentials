@@ -2,23 +2,20 @@
 
 id: c-preproc-if-bare-feature-macro
 language: c
-severity: warning
-message: 'Bare HAVE_ identifier in an if directive; use ifdef or defined().'
+severity: 'off'
+message: >-
+  Deprecated rule ID; use c-preproc-if-bare-identifier. Bare HAVE_ identifier used as the whole condition of a preprocessor if; use ifdef or defined().
 note: >-
-  Syntactic only; matches a lone HAVE_ identifier as the whole condition, not
-  compound conditions or macro values.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-preproc-if-bare-identifier and do not emit this rule.
 rule:
-  all:
-    - kind: preproc_if
-    - has:
-        field: condition
-        all:
-          - kind: identifier
-          - regex: '^HAVE_'
+  kind: preproc_if
+  has:
+    field: condition
+    kind: identifier
 metadata:
-  rule_modified_at: '2026-10-20'
-  ast_grep_tested_version: 0.51.0
-  validated_at: '2026-10-20'
+  deprecated_alias_of: c-preproc-if-bare-identifier
+  rule_modified_at: '2026-11-18'
   created_at: '2026-10-20'
   source: 'MyGuard'
   modified_by: MyGuard
