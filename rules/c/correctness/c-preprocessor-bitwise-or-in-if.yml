@@ -2,24 +2,37 @@
 
 id: c-preprocessor-bitwise-or-in-if
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  Preprocessor if condition joins macro identifiers with bitwise | instead of
-  logical ||.
+  Deprecated rule ID; use c-preproc-bitwise-or-in-if. Preprocessor if condition
+  joins macro identifiers with bitwise | instead of logical ||.
 note: >-
-  Matches the directive line text only; it does not evaluate macro definitions
-  or values, or decide whether bitwise OR was intended.
+  Compatibility alias for consumers that explicitly promote the former ID. Normal
+  scans use c-preproc-bitwise-or-in-if, which reports each offending expression
+  rather than the whole directive line, and do not emit this rule.
 rule:
-  kind: translation_unit
-  regex: '(?m)^[ \t]*\x23[ \t]*(?:el)?if\b[^\n]*\w[ \t]*\|[ \t]*\w'
+  kind: binary_expression
+  regex: '[^|]\|[^|]'
+  has:
+    field: operator
+    regex: '^\|$'
+  any:
+    - inside:
+        any:
+          - kind: preproc_if
+          - kind: preproc_elif
+        field: condition
+        stopBy: end
+    - inside:
+        kind: ERROR
+        regex: '^#[ \t]*(el)?if\b[^\n]*[^|]\|[^|]'
+        stopBy: end
 metadata:
-  rule_modified_at: '2026-10-20'
+  deprecated_alias_of: c-preproc-bitwise-or-in-if
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
   created_at: '2026-10-20'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - 'Miss: ''#if defined(A) | defined(B)'' is not reported because the character before | is a closing parenthesis'
-    - 'FP: ''#if (FLAGS & (F_A | F_B))'' (intended bitwise mask test) is reported'
