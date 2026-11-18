@@ -28,6 +28,32 @@ valid:
         return SUM(x,
                    v);
     }
+  - |-
+    int unbraced_if(int x) {
+        if (x)
+    #ifdef FOO
+            x++;
+    #endif
+        return x;
+    }
+  - |-
+    int unbraced_while(int x) {
+        while (x > 0)
+    #if defined(FOO)
+            x--;
+    #else
+            x -= 2;
+    #endif
+        return x;
+    }
+  - |-
+    int double_paren_if(int x) {
+        if ((x))
+    #if defined(FOO)
+            x++;
+    #endif
+        return x;
+    }
 invalid:
   - |-
     void f(void) { REGISTER_LONG_CONSTANT("X",
@@ -59,5 +85,57 @@ invalid:
       #  else
                    3
       #  endif
+                   );
+    }
+  - |-
+    int add(int a, int b) { return a + b; }
+    int neg(int a) { return -a; }
+    int nested_arg(int x) {
+        return add(neg(x),
+    #ifdef BIG
+                   1
+    #else
+                   2
+    #endif
+                   );
+    }
+  - |-
+    int add(int a, int b) { return a + b; }
+    int else_branch(int x) {
+    #ifdef BIG
+        return add(x,
+    #else
+        return add(x + 1,
+    #endif
+                   2);
+    }
+  - |-
+    int add(int a, int b) { return a + b; }
+    int elif_branch(int x) {
+    #ifdef BIG
+        return add(x,
+    #elif defined(SMALL)
+        return add(x + 1,
+    #else
+        return add(x + 2,
+    #endif
+                   2);
+    }
+  - |-
+    int add(int a, int b) { return a + b; }
+    int clean(int x) {
+        if (x)
+    #ifdef FOO
+            x++;
+    #endif
+        return x;
+    }
+    int mixed(int x) {
+        return add(x,
+    #ifdef FOO
+                   1
+    #else
+                   2
+    #endif
                    );
     }
