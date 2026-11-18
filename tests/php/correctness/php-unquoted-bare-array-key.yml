@@ -10,6 +10,24 @@ valid:
   - '<?php $x = $q[$s];'
   - '<?php $x = $q[0];'
   - '<?php $x = $s[1];'
+  - '$referer = urldecode( $_SERVER[''HTTP_REFERER''] );'
+  - '<?php $h = $_SERVER["HTTP_HOST"];'
+  - '<?php $h = $_SERVER[$key];'
+  - '<?php $a = $_SERVER[''argv''][0];'
+  - '<?php $u = $_SERVER[ ''REQUEST_URI'' ];'
+  - '<?php $v = $_POST[''linkcheck''];'
+  - |-
+    <?php
+    $v = $_GET['page'];
+  - |-
+    <?php
+    $v = $_SERVER['REQUEST_METHOD'];
+  - |-
+    <?php
+    $v = $_COOKIE[ $key ];
+  - |-
+    <?php
+    $v = $_GET[0];
 invalid:
   - '<?php $t = $_GET[template];'
   - '<?php $t = $_POST[action];'
@@ -21,3 +39,22 @@ invalid:
   - '<?php $q[s] = 1;'
   - '<?php foo($arr[s], 1);'
   - '<?php echo $a->b[s];'
+  - '$referer = urldecode( $_SERVER[HTTP_REFERER] );'
+  - '<?php $h = $_SERVER[HTTP_HOST];'
+  - '<?php echo $_SERVER[REQUEST_URI];'
+  - '<?php $ip = $_SERVER[REMOTE_ADDR] ?? '''';'
+  - '<?php if ( isset( $_SERVER[HTTPS] ) ) { run(); }'
+  - '<?php $v = $_POST[linkcheck];'
+  - |-
+    <?php
+    $v = $_GET[page];
+  - |-
+    <?php
+    $v = $_SERVER[HTTP_HOST];
+  - |-
+    <?php
+    if ( isset( $_REQUEST[action] ) ) { run(); }
+  - |-
+    <?php
+    $v = $_COOKIE[foo];
+  - '<?php $v = $_FILES[name];'
