@@ -1,5 +1,47 @@
 id: c-postfix-increment-assignment-target
 valid:
   - 'void f(char *q) { *q++ = ''a''; }'
+  - |-
+    void copy(char *dst, const char *src, unsigned n)
+    {
+        while (n--) {
+            *dst++ = *src++;
+        }
+    }
+  - |-
+    int put(char *buf, unsigned cap, unsigned *n, char c)
+    {
+        if (*n >= cap) {
+            return -1;
+        }
+        buf[(*n)++] = c;
+        return 0;
+    }
+  - |-
+    int step(unsigned n, unsigned m)
+    {
+        unsigned i = n;
+        i++;
+        i--;
+        return i++ == m;
+    }
 invalid:
   - 'void f(char *q) { q++ = ''a''; }'
+  - |-
+    void f(char *dst, char c)
+    {
+        *dst = 'x';
+        dst++ = c;
+    }
+  - |-
+    void fill(char *q, unsigned n)
+    {
+        while (n--) {
+            q-- = 0;
+        }
+    }
+  - |-
+    void g(char *p, char c, int n)
+    {
+        if (n) { p ++ = c; }
+    }

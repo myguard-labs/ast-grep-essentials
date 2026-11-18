@@ -4,8 +4,38 @@ valid:
     #if defined(nginx_version) && nginx_version >= 8036
     vv = 0;
     #endif
+  - |-
+    #if (nginx_version >= 1011005)
+    static int  have_feature = 1;
+    #else
+    static int  have_feature = 0;
+    #endif
+  - |-
+    #if (nginx_version < 1011005)
+    static int  legacy_api = 1;
+    #elif (nginx_version >= 1011005)
+    static int  legacy_api = 0;
+    #endif
+  - |-
+    #if (nginx_version >= 1011005 && nginx_version < 1019000)
+    static int  window_api = 1;
+    #endif
 invalid:
   - |-
     #if defined(nginx_version) && nginx_version > 8036
     vv = 0;
+    #endif
+  - |-
+    #if (nginx_version > 1011005)
+    static int  have_feature = 1;
+    #endif
+  - |-
+    #if (nginx_version < 1009000)
+    static int  legacy_api = 1;
+    #elif nginx_version > 1009000
+    static int  legacy_api = 0;
+    #endif
+  - |-
+    #if (NGX_HTTP_SSL) && (nginx_version>1015000)
+    static int  ssl_api = 1;
     #endif

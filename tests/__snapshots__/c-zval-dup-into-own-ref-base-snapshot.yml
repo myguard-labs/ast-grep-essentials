@@ -1,8 +1,26 @@
 id: c-zval-dup-into-own-ref-base
 snapshots:
-  ZVAL_DUP(value, Z_REFVAL_P(value));:
+  "ZVAL_DUP(value, Z_REFVAL_P(value));":
     labels:
     - source: ZVAL_DUP(value, Z_REFVAL_P(value))
       style: primary
       start: 0
       end: 34
+  "void f(zval *value)\n{\n    if (Z_ISREF_P(value)) {\n        ZVAL_DUP(value, Z_REFVAL_P(value));\n    }\n}":
+    labels:
+    - source: ZVAL_DUP(value, Z_REFVAL_P(value))
+      style: primary
+      start: 58
+      end: 92
+  "void g(HashTable *ht)\n{\n    zval *v = zend_hash_index_find(ht, 0);\n    if (v && Z_ISREF_P(v)) {\n        ZVAL_DUP(v, Z_REFVAL_P(v));\n    }\n}":
+    labels:
+    - source: ZVAL_DUP(v, Z_REFVAL_P(v))
+      style: primary
+      start: 104
+      end: 130
+  "void h(zval *return_value)\n{\n    if (Z_ISREF_P(return_value)) {\n        ZVAL_DUP(return_value, Z_REFVAL_P(return_value));\n    }\n}":
+    labels:
+    - source: ZVAL_DUP(return_value, Z_REFVAL_P(return_value))
+      style: primary
+      start: 72
+      end: 120

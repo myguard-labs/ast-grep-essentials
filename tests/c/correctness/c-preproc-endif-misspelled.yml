@@ -1,5 +1,37 @@
 id: c-preproc-endif-misspelled
 valid:
   - '#endif'
+  - |-
+    #ifdef FOO
+    int x;
+    #else
+    int x = 0;
+    #endif
+  - |-
+    #ifdef FOO
+    int x;
+    #endif /* end */
+  - |-
+    void f(void)
+    {
+    #ifdef FOO
+        g();
+    #endif
+    }
 invalid:
   - '#end'
+  - |-
+    #ifdef FOO
+    int x;
+    #end
+  - |-
+    #ifdef FOO
+    int x;
+    # end
+  - |-
+    void f(void)
+    {
+    #ifdef FOO
+        g();
+    #end
+    }

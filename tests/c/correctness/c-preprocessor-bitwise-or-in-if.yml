@@ -1,5 +1,36 @@
 id: c-preprocessor-bitwise-or-in-if
 valid:
   - '#if HAVE_LIBTTF||HAVE_LIBFREETYPE'
+  - |-
+    #if defined(HAVE_A) || defined(HAVE_B)
+    int x;
+    #endif
+  - |-
+    #if HAVE_A || HAVE_B
+    int x;
+    #elif HAVE_C || HAVE_D
+    int x = 1;
+    #endif
+  - |-
+    #define F_A 1
+    #define F_B 2
+    #define FLAGS (F_A | F_B)
+    #if defined(F_A) && defined(F_B)
+    static const int flags = F_A | F_B;
+    #endif
 invalid:
   - '#if HAVE_LIBTTF|HAVE_LIBFREETYPE'
+  - |-
+    #if HAVE_C
+    int x;
+    #elif HAVE_A | HAVE_B
+    int x = 1;
+    #endif
+  - |-
+    #if (HAVE_A|HAVE_B) && HAVE_C
+    int x;
+    #endif
+  - |-
+    #  if  HAVE_A | HAVE_B | HAVE_C
+    int x;
+    #endif
