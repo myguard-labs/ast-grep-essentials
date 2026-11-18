@@ -9,8 +9,8 @@ note: >-
   return type whose body contains no return_statement node anywhere; it does
   not analyse control flow, so functions that always throw or exit, or that
   return via nested lambdas, are not distinguished. Definitions returning
-  void (including a trailing -> void and an auto return with no return
-  statement), constructors, destructors and main are skipped; a conversion
+  void (including a trailing -> void and a plain auto return with no
+  return statement), constructors, destructors and main are skipped; a conversion
   operator returns a value and is still checked.
 rule:
   all:
@@ -82,6 +82,8 @@ metadata:
     - 'Observed miss: a main inside a namespace (namespace n { int main() { } }) is skipped like the global main'
     - 'Observed miss: an in-class member function named main without a return statement is skipped like the free function main'
     - 'Observed miss: int f() { auto l = [] { return 1; }; l(); } is not reported because the nested lambda return counts'
+    - 'Observed false positive: decltype(auto) f(int &x) { x++; } (deduces void) is still reported'
+    - 'Observed false positive: a coroutine whose body uses only co_return or co_yield (task f() { co_return; }) is reported'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
