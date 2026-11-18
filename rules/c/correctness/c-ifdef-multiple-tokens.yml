@@ -4,13 +4,13 @@ id: c-ifdef-multiple-tokens
 language: c
 severity: 'off'
 message: >-
-  Deprecated rule ID; use c-ifdef-compound-condition. #ifdef takes a single
-  macro identifier; extra tokens are ignored. Use #if with defined(...)
-  instead.
+  Deprecated rule ID; use c-ifdef-compound-condition. #ifdef/#ifndef takes a
+  single macro name; extra tokens or operators after it are ignored or
+  rejected. Use #if defined(A) && defined(B) instead.
 note: >-
   Compatibility alias for consumers that explicitly promote the former ID.
   Normal scans use c-ifdef-compound-condition and do not emit this rule. It now
-  reports each offending directive instead of the whole file.
+  reports each offending directive instead of one finding per file.
 rule:
   kind: preproc_ifdef
   regex: '^#[ \t]*ifn?def[ \t]+[A-Za-z_][A-Za-z0-9_]*([ \t]+[^ \t\r\n/]|[^ \t\r\n/A-Za-z0-9_])'
