@@ -1,37 +1,137 @@
 id: c-preprocessor-bitwise-or-in-if
 snapshots:
-  "#  if  HAVE_A | HAVE_B | HAVE_C\nint x;\n#endif":
+  "#  if  HAVE_A | HAVE_B | HAVE_C\nint x;\n#endif\n":
     labels:
+    - source: HAVE_A | HAVE_B | HAVE_C
+      style: primary
+      start: 7
+      end: 31
     - source: |-
         #  if  HAVE_A | HAVE_B | HAVE_C
         int x;
         #endif
-      style: primary
+      style: secondary
       start: 0
       end: 45
-  "#if (HAVE_A|HAVE_B) && HAVE_C\nint x;\n#endif":
+    - source: "|"
+      style: secondary
+      start: 23
+      end: 24
+  "#if (HAVE_A|HAVE_B) && (HAVE_C|HAVE_D)":
     labels:
+    - source: HAVE_A|HAVE_B
+      style: primary
+      start: 5
+      end: 18
+    - source: "#if (HAVE_A|HAVE_B) && (HAVE_C|HAVE_D)"
+      style: secondary
+      start: 0
+      end: 38
+    - source: "|"
+      style: secondary
+      start: 11
+      end: 12
+  "#if (HAVE_A|HAVE_B) && HAVE_C":
+    labels:
+    - source: HAVE_A|HAVE_B
+      style: primary
+      start: 5
+      end: 18
+    - source: "#if (HAVE_A|HAVE_B) && HAVE_C"
+      style: secondary
+      start: 0
+      end: 29
+    - source: "|"
+      style: secondary
+      start: 11
+      end: 12
+  "#if (HAVE_A|HAVE_B) && HAVE_C\nint x;\n#endif\n":
+    labels:
+    - source: HAVE_A|HAVE_B
+      style: primary
+      start: 5
+      end: 18
     - source: |-
         #if (HAVE_A|HAVE_B) && HAVE_C
         int x;
         #endif
-      style: primary
+      style: secondary
       start: 0
       end: 43
-  "#if HAVE_C\nint x;\n#elif HAVE_A | HAVE_B\nint x = 1;\n#endif":
+    - source: "|"
+      style: secondary
+      start: 11
+      end: 12
+  "#if A | (B)":
     labels:
+    - source: A | (B)
+      style: primary
+      start: 4
+      end: 11
+    - source: "#if A | (B)"
+      style: secondary
+      start: 0
+      end: 11
+    - source: "|"
+      style: secondary
+      start: 6
+      end: 7
+  "#if HAVE_C\nint x;\n#elif HAVE_A | HAVE_B\nint x = 1;\n#endif\n":
+    labels:
+    - source: HAVE_A | HAVE_B
+      style: primary
+      start: 24
+      end: 39
     - source: |-
-        #if HAVE_C
-        int x;
         #elif HAVE_A | HAVE_B
         int x = 1;
-        #endif
-      style: primary
-      start: 0
-      end: 57
+      style: secondary
+      start: 18
+      end: 50
+    - source: "|"
+      style: secondary
+      start: 31
+      end: 32
   "#if HAVE_LIBTTF|HAVE_LIBFREETYPE":
     labels:
-    - source: "#if HAVE_LIBTTF|HAVE_LIBFREETYPE"
+    - source: HAVE_LIBTTF|HAVE_LIBFREETYPE
       style: primary
+      start: 4
+      end: 32
+    - source: "#if HAVE_LIBTTF|HAVE_LIBFREETYPE"
+      style: secondary
       start: 0
       end: 32
+    - source: "|"
+      style: secondary
+      start: 15
+      end: 16
+  "#if X\n#elif (P|Q)\n#endif":
+    labels:
+    - source: P|Q
+      style: primary
+      start: 13
+      end: 16
+    - source: |
+        #elif (P|Q)
+      style: secondary
+      start: 6
+      end: 18
+    - source: "|"
+      style: secondary
+      start: 14
+      end: 15
+  "#if defined(A) | defined(B)":
+    labels:
+    - source: defined(A) | defined(B)
+      style: primary
+      start: 4
+      end: 27
+    - source: "#if defined(A) | defined(B)"
+      style: secondary
+      start: 0
+      end: 27
+    - source: "|"
+      style: secondary
+      start: 15
+      end: 16
