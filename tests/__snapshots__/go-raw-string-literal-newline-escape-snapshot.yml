@@ -18,9 +18,27 @@ snapshots:
       style: primary
       start: 88
       end: 94
-  "package p\n\nvar defaultResponse = `HTTP/1.1 200 OK\\nContent-length: 2\\n\\nOk`\n":
+  "package p\n\nimport \"strings\"\n\nfunc trim(s string) string {\n\treturn strings.TrimSuffix(s, `\\r`)\n}":
+    labels:
+    - source: "`\\r`"
+      style: primary
+      start: 88
+      end: 92
+  "package p\n\nimport (\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc hello(w io.Writer) {\n\tfmt.Fprint(w, `HTTP/1.1 200 OK\\r\\nContent-Length: 0\\r\\n\\r\\n`)\n}":
+    labels:
+    - source: "`HTTP/1.1 200 OK\\r\\nContent-Length: 0\\r\\n\\r\\n`"
+      style: primary
+      start: 77
+      end: 123
+  "package p\n\nvar defaultResponse = `HTTP/1.1 200 OK\\nContent-length: 2\\n\\nOk`":
     labels:
     - source: "`HTTP/1.1 200 OK\\nContent-length: 2\\n\\nOk`"
       style: primary
       start: 33
       end: 75
+  "var s = `HTTP/1.1 200 OK\\nContent-length: 2`":
+    labels:
+    - source: "`HTTP/1.1 200 OK\\nContent-length: 2`"
+      style: primary
+      start: 8
+      end: 44
