@@ -70,6 +70,14 @@ invalid:
     int x;
     #endif
   - |-
+    #if (HAVE_A & HAVE_B) & HAVE_C
+    int x;
+    #endif
+  - |-
+    #if (HAVE_A & HAVE_B) != 0
+    int x;
+    #endif
+  - |-
     #if 0
     #elif HAVE_A & HAVE_B
     int x;
@@ -89,5 +97,26 @@ invalid:
   - |-
     #if 0
     #elif HAVE_A & HAVE_B || HAVE_C
+    int x;
+    #endif
+  - |-
+    #if HAVE_A & (HAVE_B & HAVE_C) || X
+    int x;
+    #endif
+  - |-
+    #if HAVE_A & (HAVE_B & HAVE_C)
+    int x;
+    #endif
+  - |-
+    #if ((HAVE_A & HAVE_B)) & HAVE_C
+    int x;
+    #endif
+  - |-
+    #if 0
+    #elif X & (HAVE_A & HAVE_B)
+    int x;
+    #endif
+  - |-
+    #if ((HAVE_A & HAVE_B) & X) || Y
     int x;
     #endif
