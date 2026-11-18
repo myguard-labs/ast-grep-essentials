@@ -12,15 +12,15 @@ snapshots:
       style: primary
       start: 58
       end: 92
-  "void g(void)\n{\n    zval v;\n    ZVAL_DUP(&v, Z_REFVAL_P(&v));\n}":
+  "void g(HashTable *ht)\n{\n    zval *v = zend_hash_index_find(ht, 0);\n    if (v && Z_ISREF_P(v)) {\n        ZVAL_DUP(v, Z_REFVAL_P(v));\n    }\n}":
     labels:
-    - source: ZVAL_DUP(&v, Z_REFVAL_P(&v))
+    - source: ZVAL_DUP(v, Z_REFVAL_P(v))
       style: primary
-      start: 31
-      end: 59
-  "void h(zval *return_value)\n{\n    ZVAL_DUP(return_value, Z_REFVAL_P(return_value));\n}":
+      start: 104
+      end: 130
+  "void h(zval *return_value)\n{\n    if (Z_ISREF_P(return_value)) {\n        ZVAL_DUP(return_value, Z_REFVAL_P(return_value));\n    }\n}":
     labels:
     - source: ZVAL_DUP(return_value, Z_REFVAL_P(return_value))
       style: primary
-      start: 33
-      end: 81
+      start: 72
+      end: 120

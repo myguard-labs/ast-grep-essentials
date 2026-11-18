@@ -21,7 +21,11 @@ valid:
   - |-
     void h(zend_object *obj, zval *src)
     {
-        ZVAL_DUP(&obj->properties_table[0], Z_REFVAL_P(src));
+        zval *slot = &obj->properties_table[0];
+        if (Z_ISREF_P(src)) {
+            zval_ptr_dtor(slot);
+            ZVAL_DUP(slot, Z_REFVAL_P(src));
+        }
     }
 invalid:
   - 'ZVAL_DUP(value, Z_REFVAL_P(value));'
@@ -33,13 +37,17 @@ invalid:
         }
     }
   - |-
-    void g(void)
+    void g(HashTable *ht)
     {
-        zval v;
-        ZVAL_DUP(&v, Z_REFVAL_P(&v));
+        zval *v = zend_hash_index_find(ht, 0);
+        if (v && Z_ISREF_P(v)) {
+            ZVAL_DUP(v, Z_REFVAL_P(v));
+        }
     }
   - |-
     void h(zval *return_value)
     {
-        ZVAL_DUP(return_value, Z_REFVAL_P(return_value));
+        if (Z_ISREF_P(return_value)) {
+            ZVAL_DUP(return_value, Z_REFVAL_P(return_value));
+        }
     }
