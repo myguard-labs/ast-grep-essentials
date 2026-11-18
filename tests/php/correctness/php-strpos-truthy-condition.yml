@@ -1,11 +1,19 @@
 id: php-strpos-truthy-condition
 valid:
+  - 'if (strpos($ua, ''Win'') !== false) { $is_winIE = true; }'
+  - '<?php if (strpos($ua, ''Win'') === 0) { $w = true; }'
+  - '<?php if (str_contains($ua, ''Win'')) { $w = true; }'
   - "<?php\nif ( false !== strpos( $content, '<!--nextpage-->' ) ) {\n\t$pages = explode( '<!--nextpage-->', $content );\n}"
   - "<?php\nif ( strpos( $s, 'x' ) === 0 ) {\n\t$x = 1;\n}"
   - "<?php\nif ( str_contains( $s, 'x' ) ) {\n\t$x = 1;\n}"
   - "<?php\nif ( strpos( $s, 'x' ) !== false && $ok ) {\n\t$x = 1;\n}"
 invalid:
+  - 'if (strpos($ua, ''Win'')) { $is_winIE = true; }'
+  - '<?php if (strpos($path, ''/'')) { $a = 1; } else { $a = 2; }'
+  - '<?php if (strpos($path, ''/'')) return;'
   - "<?php\nif ( strpos( $content, '<!--nextpage-->' ) ) {\n\t$pages = explode( '<!--nextpage-->', $content );\n}"
   - "<?php\nif ( strpos( $path, '/admin', 1 ) ) {\n\t$x = 1;\n}"
   - "<?php\nif ( strpos( $s, $needle ) ) {\n\t$x = 1;\n} else {\n\t$x = 2;\n}"
   - "<?php\nfunction f( $s ) {\n\tif ( strpos( strtolower( $s ), 'bot' ) ) {\n\t\treturn true;\n\t}\n}"
+  - "<?php\nif ( strpos( $s, 'x' ) ) x();"
+  - "<?php\nif ( strpos( $s, 'x' ) ):\n\t$x = 1;\nendif;"
