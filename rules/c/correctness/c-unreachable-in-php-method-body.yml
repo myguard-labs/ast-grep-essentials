@@ -10,16 +10,17 @@ note: >-
   Single-file syntactic match on a ZEND_UNREACHABLE() call that is a direct
   statement of the compound statement immediately following a PHP_METHOD(...)
   or ZEND_METHOD(...) header, where every other direct statement of that body
-  is a comment, ZEND_PARSE_PARAMETERS_NONE(), zend_parse_parameters_none(), a
+  is a comment, ZEND_PARSE_PARAMETERS_NONE(), a bare zend_parse_parameters(),
+  zend_parse_parameters_none() or zend_parse_parameters_throw() call, a
   ZEND_PARSE_PARAMETERS_START ... Z_PARAM_* ... ZEND_PARSE_PARAMETERS_END
   block, an if statement without else whose condition contains a call to
   zend_parse_parameters_none, zend_parse_parameters or
   zend_parse_parameters_throw and whose consequence is only RETURN_THROWS()
   (braced or unbraced; the condition is not checked beyond containing that
   call), a RETURN_THROWS() statement that comes after the ZEND_UNREACHABLE()
-  call (dead code), or a plain local declaration of a scalar, string, zval or
-  object pointer holder (type and name, optional 0/NULL/false/true
-  initializer). A ZEND_UNREACHABLE() nested in a switch or if, in a plain
+  call (dead code), or a plain local declaration (one type name with optional
+  const/unsigned/signed/struct, one or more plain or pointer names, optional
+  0/NULL/false/true initializer, no call). A ZEND_UNREACHABLE() nested in a switch or if, in a plain
   function or in PHP_FUNCTION, and a body with any other statement are not
   reported. It does not check reflection visibility, reachability, or whether
   the method is callable from userland.
@@ -47,7 +48,7 @@ rule:
                   kind: call_expression
                   has:
                     field: function
-                    regex: '^(ZEND_UNREACHABLE|ZEND_PARSE_PARAMETERS_(NONE|START|END)|zend_parse_parameters_none|Z_PARAM_[A-Z0-9_]+)$'
+                    regex: '^(ZEND_UNREACHABLE|ZEND_PARSE_PARAMETERS_(NONE|START|END)|zend_parse_parameters(_none|_throw)?|Z_PARAM_[A-Z0-9_]+)$'
               - kind: if_statement
                 all:
                   - has:
@@ -80,7 +81,7 @@ rule:
                       field: function
                       regex: '^ZEND_UNREACHABLE$'
               - kind: declaration
-                regex: '^(zend_long|zend_bool|bool|double|size_t|zend_string|zval|HashTable|zend_object|zend_class_entry|char)\s*\**\s*[A-Za-z_][A-Za-z0-9_]*(\s*=\s*(0|0\.0|NULL|false|true))?\s*;$'
+                regex: '^((const|unsigned|signed|struct)\s+)*[A-Za-z_][A-Za-z0-9_]*\s*\**\s*[A-Za-z_][A-Za-z0-9_]*(\s*,\s*\**\s*[A-Za-z_][A-Za-z0-9_]*)*(\s*=\s*(0|0\.0|NULL|false|true))?\s*;$'
               - kind: declaration
                 regex: '^(\s*Z_PARAM_[A-Z0-9_]+(\([^()]*\))?)+\s*(ZEND_PARSE_PARAMETERS_END\(\))?\s*;?$'
 metadata:
