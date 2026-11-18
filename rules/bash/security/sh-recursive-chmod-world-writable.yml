@@ -2,18 +2,45 @@
 
 id: sh-recursive-chmod-world-writable
 language: bash
-severity: warning
+severity: 'off'
 message: >-
-  Recursive chmod grants world-writable permissions; other local accounts can
-  modify every file under the tree.
+  Deprecated rule ID; use sh-world-writable-permissions. Recursive chmod grants
+  world-writable permissions; other local accounts can modify every file under
+  the tree.
 note: >-
-  Matches only the literal chmod command with -R and a literal 777 mode in the
-  same command. It does not resolve variables, symbolic modes, or whether the
-  target path is sensitive.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use sh-world-writable-permissions and do not emit this rule.
 rule:
-  pattern: 'chmod -R 777 $$$ARGS'
+  kind: command
+  any:
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?chmod["'']?$'}
+        - has: {matches: wide-mode}
+    - all:
+        - has: {field: name, kind: command_name, regex: '^["'']?umask["'']?$'}
+        - has: {matches: wide-umask}
+utils:
+  argument-token:
+    any:
+      - kind: word
+      - kind: number
+      - kind: string
+      - kind: raw_string
+  chmod-value-option:
+    matches: argument-token
+    regex: '^["'']?--reference["'']?$'
+  wide-mode:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?(0?(777|666|646|622|707|766|676)|[ugoa]*[ao][ugoa]*[-+=][rwxXst]*w[rwxXst]*|o[-+=][rwxXst]*w[rwxXst]*)["'']?$'
+      - not: {follows: {matches: chmod-value-option}}
+  wide-umask:
+    all:
+      - matches: argument-token
+      - regex: '^["'']?0{1,4}["'']?$'
 metadata:
-  rule_modified_at: '2026-10-15'
+  deprecated_alias_of: sh-world-writable-permissions
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
   created_at: '2026-10-15'
@@ -24,7 +51,3 @@ metadata:
   owasp: 'A01:2025'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/732.html'
   taxonomy_cited_keys: 'cwe'
-  todo_cases:
-    - 'sudo chmod -R 777 /opt/app: not flagged (command nested under sudo)'
-    - 'chmod 777 -R /srv: not flagged when -R follows the mode word'
-    - 'chmod -R a+w /srv: symbolic world-writable mode not flagged'

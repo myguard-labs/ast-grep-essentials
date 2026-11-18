@@ -12,6 +12,10 @@ valid:
 - setfacl -m o::rwx /var/lib/app
 - echo "chmod 777 /var/www"
 - '# chmod 777 /var/www'
+- 'chmod -R 755 "$dir"'
+- 'chmod -R 750 "$dir"'
+- 'chmod -R a+rX "$dir"'
+- 'chmod -R u=rwX,go=rX "$dir"'
 invalid:
 - chmod -R 777 /var/www
 - chmod 666 /etc/app.conf
@@ -23,3 +27,7 @@ invalid:
 - chmod "777" /var/www
 - chmod "-R" 777 /var/www
 - chmod 0777 /var/www
+- 'chmod -R 777 "$dir"'
+- 'chmod -R 777 /var/www /srv'
+- 'find . -type d && chmod -R 777 .'
+- 'chmod -R 777 "$dir" || true'
