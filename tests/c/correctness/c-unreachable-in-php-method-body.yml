@@ -1,5 +1,29 @@
 id: c-unreachable-in-php-method-body
 valid:
   - "PHP_METHOD(Dom_Node, __construct)\n{\n\tZEND_PARSE_PARAMETERS_NONE();\n}"
+  - |-
+    PHP_METHOD(Dom_Node, isConnected)
+    {
+    	ZEND_PARSE_PARAMETERS_NONE();
+    	zend_throw_error(NULL, "Cannot call isConnected() on an abstract node");
+    	RETURN_THROWS();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, hasChildNodes)
+    {
+    	ZEND_PARSE_PARAMETERS_NONE();
+    	RETURN_BOOL(1);
+    }
 invalid:
   - "PHP_METHOD(Dom_Node, __construct)\n{\n\tZEND_UNREACHABLE();\n}"
+  - |-
+    PHP_METHOD(Dom_Element, remove)
+    {
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, normalize)
+    {
+    	ZEND_PARSE_PARAMETERS_NONE();
+    	ZEND_UNREACHABLE();
+    }

@@ -1,8 +1,26 @@
 id: c-unaligned-wide-load-through-byte-pointer
 snapshots:
-  unsigned long long f(const unsigned char *p) { return *(unsigned long long *)p; }:
+  "int f(const unsigned char *p, unsigned long long key) { return *(unsigned long long *)p == key; }":
     labels:
-    - source: '*(unsigned long long *)p'
+    - source: "*(unsigned long long *)p"
+      style: primary
+      start: 63
+      end: 87
+  "unsigned long long f(const unsigned char *p) { return *(unsigned long long *)p; }":
+    labels:
+    - source: "*(unsigned long long *)p"
       style: primary
       start: 54
       end: 78
+  "unsigned long long f(const unsigned char *p, int n) { unsigned long long x = 0; while (n >= 8) { x ^= *(unsigned long long *)p; p += 8; n -= 8; } return x; }":
+    labels:
+    - source: "*(unsigned long long *)p"
+      style: primary
+      start: 102
+      end: 126
+  "unsigned long long f(const unsigned char *p, int off) { return *(unsigned long long *)(p + off); }":
+    labels:
+    - source: "*(unsigned long long *)(p + off)"
+      style: primary
+      start: 63
+      end: 95

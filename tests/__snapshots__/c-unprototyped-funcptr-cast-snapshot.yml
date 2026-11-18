@@ -1,12 +1,26 @@
 id: c-unprototyped-funcptr-cast
 snapshots:
-  ? |-
-    char *g(void);
-    void *f(void) {
-        return (void *)(char *(*)())g;
-    }
-  : labels:
+  "char *g(void);\nstruct ops { char *(*fn)(void); };\nstruct ops o = { (char *(*)())g };":
+    labels:
+    - source: (char *(*)())g
+      style: primary
+      start: 67
+      end: 81
+  "char *g(void);\nvoid *f(void) {\n    return (void *)(char *(*)())g;\n}":
+    labels:
     - source: (char *(*)())g
       style: primary
       start: 50
       end: 64
+  "char *g(void);\nvoid f(void) { char *(*p)(void); p = (char *(*)())g; (void)p; }":
+    labels:
+    - source: (char *(*)())g
+      style: primary
+      start: 52
+      end: 66
+  "void use(void *);\nchar *g(void);\nvoid f(void) { use((char *(*)())g); }":
+    labels:
+    - source: (char *(*)())g
+      style: primary
+      start: 52
+      end: 66

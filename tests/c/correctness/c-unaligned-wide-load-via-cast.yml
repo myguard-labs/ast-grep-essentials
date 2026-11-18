@@ -1,5 +1,19 @@
 id: c-unaligned-wide-load-via-cast
 valid:
   - 'unsigned char w = *((unsigned char *)&p[i]);'
+  - |-
+    unsigned short f(const unsigned char *p, int i) { return (unsigned short)((p[i] << 8) | p[i + 1]); }
+  - |-
+    #include <string.h>
+    unsigned short f(const unsigned char *p, int i) { unsigned short w; memcpy(&w, &p[i], sizeof w); return w; }
+  - |-
+    unsigned short f(const unsigned short *p, int i) { return *(&p[i]); }
 invalid:
   - 'unsigned short w = *((unsigned short *)&p[i]);'
+  - |-
+    unsigned short f(const unsigned char *buf, int i) { return *((unsigned short *)&buf[i + 1]); }
+  - |-
+    unsigned short f(const unsigned char *p) { return *((unsigned short *)&p[0]); }
+  - |-
+    struct hdr { unsigned char raw[8]; };
+    int f(const struct hdr *h, unsigned short want) { return *((unsigned short *)&h->raw[2]) == want; }
