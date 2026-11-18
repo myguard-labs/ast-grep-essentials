@@ -82,6 +82,10 @@ class Fixture:
         self.write(
             "package.json", json.dumps({"devDependencies": {"@ast-grep/cli": "0.45.3"}})
         )
+        self.write(
+            "sgconfig.yml",
+            "ruleDirs:\n  - rules/python\nutilDirs: []\ntestConfigs:\n  - testDir: tests\n",
+        )
         self.rule("py-one")
         self.write("ci/corpus/sample.py", "print('hello')\n")
         self.write(
@@ -551,6 +555,78 @@ class CheckTests(unittest.TestCase):
                 fx.set(**values)
                 report = promote.run_checks(fx.repo, fx.repo, fx.engine, None, 1)
                 self.assertIn(reason, report.failures[0])
+
+    def test_powershell_tests_run_with_their_parser_config(self) -> None:
+        """Pin the two test-stage commands and the PowerShell exclusion."""
+        seen: list[tuple[list[str], str]] = []
+
+        def fake_run(command, **_options):
+            argv = [str(part) for part in command]
+            native_config = ""
+            if argv[1:2] == ["test"] and argv[2:3] == ["-c"] and len(argv) == 4:
+                native_config = Path(argv[3]).read_text(encoding="utf-8")
+                staged_tests = Path(argv[3]).parent / "tests"
+                self.assertTrue((staged_tests / "__snapshots__").is_dir())
+                self.assertFalse((staged_tests / "powershell").exists())
+            seen.append((argv, native_config))
+            return subprocess.CompletedProcess(argv, 0, stdout=GOOD_TEST_OUT, stderr="")
+
+        with tempfile.TemporaryDirectory() as raw:
+            tree = Path(raw) / "tree"
+            (tree / "tests" / "bash").mkdir(parents=True)
+            (tree / "tests" / "powershell").mkdir(parents=True)
+            (tree / "tests" / "__snapshots__").mkdir(parents=True)
+            (tree / "tests" / "bash" / "b.yml").write_text("id: b\n", encoding="utf-8")
+            (tree / "tests" / "powershell" / "p.yml").write_text("id: p\n")
+            (tree / "sgconfig.yml").write_text(
+                "ruleDirs:\n  - rules/bash\nutilDirs:\n  - utils\n"
+                "testConfigs:\n  - testDir: tests\n",
+                encoding="utf-8",
+            )
+            report = promote.Report()
+            with patch.object(promote, "run", fake_run):
+                promote.gate_tests(Path("/eng/ast-grep"), tree, report)
+        self.assertTrue(report.ok, report.failures)
+        self.assertEqual(report.summary["rule_tests"], 1)
+        self.assertEqual(report.summary["powershell_rule_tests"], 1)
+        self.assertEqual(len(seen), 3)
+        native_argv, native_config = seen[0]
+        self.assertEqual(native_argv[:3], ["/eng/ast-grep", "test", "-c"])
+        self.assertIn(str(tree / "rules" / "bash"), native_config)
+        self.assertNotIn("powershell", native_config.replace(str(tree), ""))
+        self.assertEqual(
+            seen[1][0],
+            [
+                "/eng/ast-grep",
+                "test",
+                "-c",
+                "sgconfig.powershell.yml",
+                "--custom-languages",
+                "allow",
+            ],
+        )
+
+    def test_powershell_test_failure_blocks(self) -> None:
+        """Negative control: a failing PowerShell stage must block the check."""
+        calls = iter(
+            [
+                subprocess.CompletedProcess([], 0, stdout=GOOD_TEST_OUT, stderr=""),
+                subprocess.CompletedProcess(
+                    [], 79, stdout="", stderr="Cannot load custom language library"
+                ),
+                subprocess.CompletedProcess([], 0, stdout=GOOD_TEST_OUT, stderr=""),
+            ]
+        )
+        with tempfile.TemporaryDirectory() as raw:
+            tree = Path(raw) / "tree"
+            (tree / "tests" / "__snapshots__").mkdir(parents=True)
+            (tree / "sgconfig.yml").write_text("ruleDirs: []\n", encoding="utf-8")
+            report = promote.Report()
+            with patch.object(promote, "run", lambda *_args, **_kw: next(calls)):
+                promote.gate_tests(Path("/eng/ast-grep"), tree, report)
+        self.assertFalse(report.ok)
+        self.assertIn("PowerShell ast-grep test failed", report.failures[0])
+        self.assertNotIn("powershell_rule_tests", report.summary)
 
     def test_failing_unit_tests_block(self) -> None:
         with fixture() as fx:

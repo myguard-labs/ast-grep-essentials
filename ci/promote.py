@@ -455,13 +455,66 @@ class Report:
         return not self.failures
 
 
-def gate_tests(engine: Path, tree: Path, report: Report) -> None:
-    result = run([engine, "test"], cwd=tree, check=False)
+def native_test_config(tree: Path, staged: Path) -> Path:
+    """Write a native-only ast-grep config for ``tree`` under ``staged``.
+
+    PowerShell rule tests need a custom-language parser, so they run in their
+    own stage through ``sgconfig.powershell.yml``. The native stage cannot just
+    list the subdirectories of ``tests/``: ast-grep keys snapshots to the
+    configured test dir, and the shared ``tests/__snapshots__`` must stay
+    reachable. The whole ``tests`` tree is therefore copied minus
+    ``tests/powershell``, and the rule and util dirs of ``sgconfig.yml`` are
+    kept, made absolute so the config can live outside the tree.
+    """
+    shutil.copytree(
+        tree / "tests",
+        staged / "tests",
+        ignore=lambda directory, names: (
+            ["powershell"] if Path(directory) == tree / "tests" else []
+        ),
+    )
+    data = load_yaml(tree / "sgconfig.yml")
+    if not isinstance(data, dict):
+        raise PromotionError("sgconfig.yml is not a mapping")
+    data["ruleDirs"] = [str(tree / entry) for entry in data.get("ruleDirs", [])]
+    data["utilDirs"] = [str(tree / entry) for entry in data.get("utilDirs", [])]
+    data["testConfigs"] = [{"testDir": str(staged / "tests")}]
+    config = staged / "sgconfig.yml"
+    config.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    return config
+
+
+def record_test_stage(
+    label: str, key: str, result: subprocess.CompletedProcess[str], report: Report
+) -> None:
     match = TEST_RESULT.search(result.stdout)
     if result.returncode or not match or not int(match.group(1)):
-        report.failures.append(f"ast-grep test failed: {tail(result, 800)}")
+        report.failures.append(f"{label} failed: {tail(result, 800)}")
     else:
-        report.summary["rule_tests"] = int(match.group(1))
+        report.summary[key] = int(match.group(1))
+
+
+def gate_tests(engine: Path, tree: Path, report: Report) -> None:
+    with tempfile.TemporaryDirectory(prefix="promote-native-") as staged:
+        config = native_test_config(tree, Path(staged))
+        native = run([engine, "test", "-c", config], cwd=tree, check=False)
+    record_test_stage("ast-grep test", "rule_tests", native, report)
+    # Same invocation as the README; fails closed when the parser is not built.
+    powershell = run(
+        [
+            engine,
+            "test",
+            "-c",
+            "sgconfig.powershell.yml",
+            "--custom-languages",
+            "allow",
+        ],
+        cwd=tree,
+        check=False,
+    )
+    record_test_stage(
+        "PowerShell ast-grep test", "powershell_rule_tests", powershell, report
+    )
     unit = run(
         [sys.executable, "-m", "unittest", "discover", "-s", "ci/tests"],
         cwd=tree,
