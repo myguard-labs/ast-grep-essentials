@@ -1,5 +1,17 @@
 id: php-error-suppressed-include
 snapshots:
+  $ok = @include_once $classfile;:
+    labels:
+    - source: "@include_once $classfile"
+      style: primary
+      start: 6
+      end: 30
+  "<?php @ include_once __DIR__ . \"/a.php\";\n":
+    labels:
+    - source: "@ include_once __DIR__ . \"/a.php\""
+      style: primary
+      start: 6
+      end: 39
   <?php @include_once( ABSPATH . 'wp-cron.php' ); ?>:
     labels:
     - source: "@include_once( ABSPATH . 'wp-cron.php' )"
@@ -12,9 +24,21 @@ snapshots:
       style: primary
       start: 6
       end: 53
+  <?php @include_once("a.php");:
+    labels:
+    - source: "@include_once(\"a.php\")"
+      style: primary
+      start: 6
+      end: 28
   "<?php if ( @include_once( $f ) ) { run(); }":
     labels:
     - source: "@include_once( $f )"
       style: primary
       start: 11
       end: 30
+  "<?php if (@include_once $classfile) { run(); }":
+    labels:
+    - source: "@include_once $classfile"
+      style: primary
+      start: 10
+      end: 34

@@ -2,27 +2,19 @@
 
 id: php-error-suppressed-include
 language: php
-severity: warning
+severity: 'off'
 message: >-
-  This include is prefixed with the @ error-suppression operator, which hides
-  errors from the included file.
+  Deprecated rule ID; use php-include-error-suppressed. An @ prefix on an
+  include hides errors from the included file.
 note: >-
-  Matches the literal syntax of an @ prefix directly on an include or
-  include_once expression. It does not check whether the suppression is
-  intentional, nor resolve included paths or runtime error handling.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use php-include-error-suppressed and do not emit this rule.
 rule:
-  pattern:
-    context: '<?php @include_once($$$ARGS);'
-    selector: error_suppression_expression
+  pattern: '@include_once $ARG'
 metadata:
-  rule_modified_at: '2026-10-15'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-15'
+  deprecated_alias_of: php-include-error-suppressed
+  rule_modified_at: '2026-11-18'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - '@include and @require_once with parentheses (@include( $f ); @require_once( $f );) are not flagged although the note covers include expressions'
-    - '@include_once $file; without parentheses is not flagged'
-    - '@include_once( $f ) or die(); is not flagged'
