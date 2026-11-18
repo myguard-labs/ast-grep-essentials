@@ -1,5 +1,29 @@
 id: rust-mojibake-latin1-string-literal
 valid:
   - 'const ERRORS_NOTE_NAME: &str = "⚠️ Errors";'
+  - |-
+    const GREETING: &str = "café, Zoë and Æsir";
+    const NOTE: &str = "日本語 and ⚠️ together";
+  - |-
+    fn describe(n: u32) -> String {
+        format!("{} items found in the cache", n)
+    }
+    const BYTES: &[u8] = b"plain ascii";
+    const ESCAPED: &str = "\u{e9}t\u{e9}";
+  - |-
+    const RAW: &str = r"C:\temp\cafe";
+    const QUOTED: &str = r#"quote "ok" und über"#;
 invalid:
   - 'const ERRORS_NOTE_NAME: &str = "âš ï¸ Errors";'
+  - |-
+    const APOSTROPHE: &str = "itâ€™s fine";
+  - |-
+    fn label() -> &'static str {
+        "CafÃ©"
+    }
+  - |-
+    const BOM_PREFIX: &str = "ï»¿name";
+  - |-
+    fn main() {
+        println!("Ã¼ber {}", 1);
+    }

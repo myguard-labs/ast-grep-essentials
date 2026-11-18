@@ -1,14 +1,31 @@
 id: rust-write-str-within-capacity-delegation
 snapshots:
-  ? |-
-    use core::fmt;
-    struct W(Vec<u8>);
-    impl fmt::Write for W {
-        fn write_str(&mut self, s: &str) -> fmt::Result {
-            self.append_within_capacity(s).map_err(|_| fmt::Error)
-        }
-    }
-  : labels:
+  "use core::fmt;\n\nstruct W(Vec<u8>);\n\nimpl W {\n    fn append_within_capacity(&mut self, s: &[u8]) -> Result<(), ()> {\n        if self.0.capacity() - self.0.len() < s.len() {\n            return Err(());\n        }\n        self.0.extend_from_slice(s);\n        Ok(())\n    }\n}\n\nimpl fmt::Write for W {\n    fn write_str(&mut self, s: &str) -> fmt::Result {\n        let r = self.append_within_capacity(s.as_bytes());\n        r.map_err(|_| fmt::Error)\n    }\n}":
+    labels:
+    - source: self.append_within_capacity(s.as_bytes())
+      style: primary
+      start: 365
+      end: 406
+  "use core::fmt;\n\nstruct W(Vec<u8>);\n\nimpl W {\n    fn append_within_capacity(&mut self, s: &[u8]) -> Result<(), ()> {\n        if self.0.capacity() - self.0.len() < s.len() {\n            return Err(());\n        }\n        self.0.extend_from_slice(s);\n        Ok(())\n    }\n}\n\nimpl fmt::Write for W {\n    fn write_str(&mut self, s: &str) -> fmt::Result {\n        match self.append_within_capacity(s.as_bytes()) {\n            Ok(()) => Ok(()),\n            Err(()) => Err(fmt::Error),\n        }\n    }\n}":
+    labels:
+    - source: self.append_within_capacity(s.as_bytes())
+      style: primary
+      start: 363
+      end: 404
+  "use core::fmt;\n\nstruct W(Vec<u8>);\n\nimpl W {\n    fn append_within_capacity(&mut self, s: &[u8]) -> Result<(), ()> {\n        if self.0.capacity() - self.0.len() < s.len() {\n            return Err(());\n        }\n        self.0.extend_from_slice(s);\n        Ok(())\n    }\n}\n\nimpl fmt::Write for W {\n    fn write_str(&mut self, s: &str) -> fmt::Result {\n        self.append_within_capacity(s.as_bytes()).map_err(|_| fmt::Error)\n    }\n}":
+    labels:
+    - source: self.append_within_capacity(s.as_bytes())
+      style: primary
+      start: 357
+      end: 398
+  "use core::fmt;\n\nstruct W(Vec<u8>);\n\nimpl W {\n    fn append_within_capacity(&mut self, s: &[u8]) -> Result<(), ()> {\n        if self.0.capacity() - self.0.len() < s.len() {\n            return Err(());\n        }\n        self.0.extend_from_slice(s);\n        Ok(())\n    }\n}\n\nimpl fmt::Write for W {\n    fn write_str(&mut self, s: &str) -> fmt::Result {\n        self.append_within_capacity(s.as_bytes()).map_err(|_| fmt::Error)?;\n        Ok(())\n    }\n}":
+    labels:
+    - source: self.append_within_capacity(s.as_bytes())
+      style: primary
+      start: 357
+      end: 398
+  "use core::fmt;\nstruct W(Vec<u8>);\nimpl fmt::Write for W {\n    fn write_str(&mut self, s: &str) -> fmt::Result {\n        self.append_within_capacity(s).map_err(|_| fmt::Error)\n    }\n}":
+    labels:
     - source: self.append_within_capacity(s)
       style: primary
       start: 120

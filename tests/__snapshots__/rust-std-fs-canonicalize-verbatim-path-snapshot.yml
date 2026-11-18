@@ -1,7 +1,25 @@
 id: rust-std-fs-canonicalize-verbatim-path
 snapshots:
-  ? 'use std::fs; use std::path::Path; fn store(pkg_root: &Path) -> std::path::PathBuf { let Ok(p) = fs::canonicalize(pkg_root) else { return pkg_root.to_path_buf(); }; p }'
-  : labels:
+  "use std::fs;\nuse std::io;\nuse std::path::PathBuf;\n\nfn resolve_all(inputs: &[String]) -> io::Result<Vec<PathBuf>> {\n    inputs.iter().map(|s| fs::canonicalize(s)).collect()\n}":
+    labels:
+    - source: fs::canonicalize(s)
+      style: primary
+      start: 141
+      end: 160
+  "use std::fs;\nuse std::io;\nuse std::path::{Path, PathBuf};\n\nfn resolve(base: &Path, name: &str) -> io::Result<PathBuf> {\n    fs::canonicalize(base.join(name)).map_err(|e| io::Error::new(e.kind(), format!(\"{}: {}\", name, e)))\n}":
+    labels:
+    - source: fs::canonicalize(base.join(name))
+      style: primary
+      start: 124
+      end: 157
+  "use std::fs;\nuse std::path::{Path, PathBuf};\n\nfn try_resolve(p: &Path) -> Option<PathBuf> {\n    match fs::canonicalize(p) {\n        Ok(c) => Some(c),\n        Err(_) => None,\n    }\n}":
+    labels:
+    - source: fs::canonicalize(p)
+      style: primary
+      start: 102
+      end: 121
+  "use std::fs; use std::path::Path; fn store(pkg_root: &Path) -> std::path::PathBuf { let Ok(p) = fs::canonicalize(pkg_root) else { return pkg_root.to_path_buf(); }; p }":
+    labels:
     - source: fs::canonicalize(pkg_root)
       style: primary
       start: 96

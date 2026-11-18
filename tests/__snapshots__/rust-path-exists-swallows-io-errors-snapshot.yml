@@ -1,12 +1,26 @@
 id: rust-path-exists-swallows-io-errors
 snapshots:
-  ? |-
-    use std::path::Path;
-    fn present(p: &Path) -> bool {
-        p.exists()
-    }
-  : labels:
+  "use std::path::Path;\n\nfn first_present<'a>(a: &'a Path, b: &'a Path) -> Option<&'a Path> {\n    if (a).exists() {\n        Some(a)\n    } else if b.to_path_buf().exists() {\n        Some(b)\n    } else {\n        None\n    }\n}":
+    labels:
+    - source: (a).exists()
+      style: primary
+      start: 98
+      end: 110
+  "use std::path::Path;\nfn present(p: &Path) -> bool {\n    p.exists()\n}":
+    labels:
     - source: p.exists()
       style: primary
       start: 56
       end: 66
+  "use std::path::PathBuf;\n\nfn existing(paths: Vec<PathBuf>) -> Vec<PathBuf> {\n    paths.into_iter().filter(|p| p.exists()).collect()\n}":
+    labels:
+    - source: p.exists()
+      style: primary
+      start: 109
+      end: 119
+  "use std::path::PathBuf;\n\nfn missing(base: &PathBuf) -> bool {\n    !base.join(\"config\").join(\"app.toml\").exists()\n}":
+    labels:
+    - source: base.join("config").join("app.toml").exists()
+      style: primary
+      start: 67
+      end: 112

@@ -1,5 +1,53 @@
 id: rust-bool-literal-comparison
 valid:
   - 'fn f(r: u8) -> bool { r == 1 }'
+  - |-
+    fn same(a: bool, b: bool) -> bool {
+        a == b
+    }
+    fn differ(a: bool, b: bool) -> bool {
+        a != b
+    }
+  - |-
+    fn is_enabled(opt: Option<bool>) -> bool {
+        opt == Some(true)
+    }
+    fn is_flag_set(flags: u8) -> bool {
+        (flags & 1) != 0
+    }
+  - |-
+    fn all_clear(ready: bool, items: &[u32]) -> bool {
+        !ready && items.is_empty() || matches!(items.first(), Some(&0))
+    }
+    fn count_is(n: usize, want: usize) -> bool {
+        n == want
+    }
 invalid:
   - 'fn f(r: bool) -> bool { r == true }'
+  - |-
+    fn off(r: bool) -> bool {
+        r != false
+    }
+  - |-
+    fn check(items: &[u32]) -> &'static str {
+        if (items.is_empty() == true) {
+            "empty"
+        } else {
+            "full"
+        }
+    }
+  - |-
+    fn both(a: bool, b: bool) -> bool {
+        (a == b) == false
+    }
+  - |-
+    fn ready(ok: bool, n: u32) -> bool {
+        n > 3 && ok == false
+    }
+  - |-
+    fn pick(r: Result<u32, ()>) -> u32 {
+        match r {
+            Ok(v) if r.is_ok() == true => v,
+            _ => 0,
+        }
+    }

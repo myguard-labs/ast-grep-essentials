@@ -5,9 +5,65 @@ valid:
     fn present(p: &Path) -> std::io::Result<bool> {
         p.try_exists()
     }
+  - |-
+    use std::io;
+    use std::path::Path;
+
+    fn present(p: &Path) -> io::Result<bool> {
+        match p.try_exists() {
+            Ok(found) => Ok(found),
+            Err(e) => Err(e),
+        }
+    }
+  - |-
+    use std::fs;
+    use std::io;
+    use std::path::Path;
+
+    fn present(p: &Path) -> io::Result<bool> {
+        match fs::metadata(p) {
+            Ok(_) => Ok(true),
+            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(false),
+            Err(e) => Err(e),
+        }
+    }
+  - |-
+    use std::io;
+    use std::path::PathBuf;
+
+    fn needs_create(dir: &PathBuf) -> io::Result<bool> {
+        if dir.try_exists()? {
+            return Ok(false);
+        }
+        Ok(true)
+    }
 invalid:
   - |-
     use std::path::Path;
     fn present(p: &Path) -> bool {
         p.exists()
+    }
+  - |-
+    use std::path::PathBuf;
+
+    fn missing(base: &PathBuf) -> bool {
+        !base.join("config").join("app.toml").exists()
+    }
+  - |-
+    use std::path::PathBuf;
+
+    fn existing(paths: Vec<PathBuf>) -> Vec<PathBuf> {
+        paths.into_iter().filter(|p| p.exists()).collect()
+    }
+  - |-
+    use std::path::Path;
+
+    fn first_present<'a>(a: &'a Path, b: &'a Path) -> Option<&'a Path> {
+        if (a).exists() {
+            Some(a)
+        } else if b.to_path_buf().exists() {
+            Some(b)
+        } else {
+            None
+        }
     }
