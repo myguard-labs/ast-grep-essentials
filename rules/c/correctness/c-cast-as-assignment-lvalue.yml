@@ -2,15 +2,22 @@
 
 id: c-cast-as-assignment-lvalue
 language: c
-severity: warning
-message: Compound assignment to a cast expression is not a valid lvalue.
+severity: 'off'
+message: >-
+  Deprecated rule ID; use c-cast-as-assignment-target. A cast is applied to the
+  target of a compound assignment, which is not an lvalue in standard C.
 note: >-
-  Matches syntax only; it does not check whether the code is compiled or
-  disabled by the preprocessor.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-cast-as-assignment-target and do not emit this rule.
 rule:
-  pattern: '($T)$X ^= $Y'
+  kind: cast_expression
+  has:
+    field: value
+    kind: assignment_expression
+    regex: '^[^=]*([-+*/%&|^]|<<|>>)='
 metadata:
-  rule_modified_at: '2026-10-19'
+  deprecated_alias_of: c-cast-as-assignment-target
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-19'
   created_at: '2026-10-19'
