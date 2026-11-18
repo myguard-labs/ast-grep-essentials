@@ -7,10 +7,14 @@ valid:
   - '<?php $r = parse_url( $u ) ?: [];'
   - 'function f($m) { error_log($m, 0); }'
   - '<?php if ( ! error_log( $m, 3, ''/tmp/l'' ) ) { return; }'
-invalid:
+  - "<?php @header('X');"
+  - "<?php @rename($a, $b);"
   - |
     <?php
     $parsed = @parse_url( $url );
+  - "<?php @closedir($d); @dl($x); @constant($n); @mb_internal_encoding('UTF-8');"
+  - "<?php @parse_url($u, PHP_URL_HOST);"
+invalid:
   - '<?php $data = @file_get_contents( $url, false, $ctx );'
   - '<?php if ( @unlink( $f ) ) { log_it(); }'
   - 'function f($m) { @error_log($m, 0); }'
@@ -18,3 +22,12 @@ invalid:
   - '<?php $ok = @error_log( $m );'
   - '<?php @\error_log( $m );'
   - '<?php @syslog( LOG_ERR, $m );'
+  - "<?php @HEADER('X');"
+  - "<?php @\\header('X');"
+  - "<?php @unlink($f);"
+  - "<?php @error_log($m);"
+  - "<?php @syslog(LOG_ERR, $m);"
+  - "<?php @header_remove('X');"
+  - "<?php @renamed($a, $b);"
+  - "<?php @Constant($n);"
+  - "<?php @\\App\\header('X');"
