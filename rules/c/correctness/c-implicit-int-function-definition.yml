@@ -4,29 +4,47 @@ id: c-implicit-int-function-definition
 language: c
 severity: warning
 message: >-
-  Function definition has a storage class but no return type, so it relies on
-  implicit int.
+  Function definition has a static, extern or inline specifier but no return
+  type, so it relies on implicit int.
 note: >-
-  Purely syntactic match on a file-scope static definition with no visible
-  return type; it does not check types, macros, or whether the declaration is
-  in a header or a call site.
+  Purely syntactic match on a file-scope static, extern or inline definition
+  with no visible return type; a lone identifier before a parenthesized
+  declarator, as in 'static f(void)', is read as the function name unless it is an
+  all-caps macro name such as 'static MACRO(name) { ... }', while a
+  type identifier before a function declarator is read as a typedef return
+  type. It does not check types, macros, or whether the declaration is in a
+  header or a call site.
 rule:
   kind: function_definition
   all:
     - has:
         kind: storage_class_specifier
-        regex: '^static$'
+        regex: '^(static|extern|inline)$'
     - not:
         has:
           any:
             - kind: primitive_type
-            - kind: type_identifier
             - kind: sized_type_specifier
             - kind: struct_specifier
             - kind: union_specifier
             - kind: enum_specifier
+    - not:
+        all:
+          - has:
+              field: type
+              kind: type_identifier
+          - not:
+              all:
+                - has:
+                    field: declarator
+                    kind: parenthesized_declarator
+                - has:
+                    field: type
+                    kind: type_identifier
+                    not:
+                      regex: '^[A-Z][A-Z0-9_]*$'
 metadata:
-  rule_modified_at: '2026-10-15'
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
   created_at: '2026-10-15'
@@ -35,5 +53,6 @@ metadata:
   license: MyGuard Internal Use License 1.0
   todo_cases:
     - "False positive: 'static MACRO(int) f(void) { return 0; }' is reported; macro_type_specifier cannot be excluded because implicit-int definitions such as 'static f(int x)' also parse as macro_type_specifier."
-    - "Miss: 'static f(void) { return 0; }' is not reported."
+    - "Miss: 'static F(void) { return 0; }' and other all-caps names before a parenthesized declarator are not reported, to keep 'static LIBSSH2_ALLOC_FUNC(name) { ... }' macro definitions quiet."
     - "Miss: 'static f(int x, int y) { return x + y; }' is not reported."
+    - "False positive: a function-like macro definition with a lowercase or mixed-case name, such as 'static alloc_func(name) { ... }', is reported; only all-caps names are read as macros."

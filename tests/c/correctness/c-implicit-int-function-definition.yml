@@ -27,6 +27,23 @@ valid:
     static unsigned f(void) { return 0; }
   - |-
     static inline const struct s *f(void) { return 0; }
+  - |-
+    int main(void) { return 0; }
+  - |-
+    static int ok(void) { return 0; }
+  - |-
+    extern int f(int x) { return x; }
+  - |-
+    inline int f(int x) { return x; }
+  - |-
+    typedef int T; static T g(void) { return 0; }
+  - |-
+    typedef int T; static T *g(void) { return 0; }
+  - |-
+    static MY_ALLOC_FUNC(name)
+    {
+      return 0;
+    }
 invalid:
   - 'static ftp_proxyerror(int x) { return x; }'
   - |-
@@ -42,3 +59,11 @@ invalid:
     {
       return x;
     }
+  - |-
+    static f(void) { return 0; }
+  - |-
+    extern f(int x) { return x; }
+  - |-
+    inline f(int x) { return x; }
+  - |-
+    static const k(int x) { return x; }
