@@ -23,10 +23,10 @@ rule:
         inside:
           stopBy: end
           kind: binary_expression
-          regex: 'isset\s*\(|empty\s*\(|array_key_exists\s*\('
+          regex: '\b(isset|empty|array_key_exists)\s*\('
 metadata:
   todo_cases:
-    - 'FN: `if ( isset( $_GET[''b''] ) && $_GET[''a''] == ''x'' )` is not reported (an isset of another key suppresses it).'
+    - 'FN: `if ( isset( $_GET[''b''] ) && $_GET[''a''] == ''x'' )` is not reported (an isset of another key, or one after the read, suppresses it).'
   rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-18'
