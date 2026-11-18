@@ -6,6 +6,13 @@ valid:
   - "$x = esc_sql( $name );"
   - "$x = $wpdb->prepare( 'SELECT ID FROM t WHERE n LIKE %s', '%' . $wpdb->esc_like( $name ) . '%' );"
   - "$x = $wpdb->get_var( $wpdb->prepare( 'SELECT ID FROM t WHERE n = %s', $name ) );"
+  - '$name = $db->escape( $raw_name );'
+  - '<?php $name = $wpdb->prepare( ''%s'', $category->name );'
+  - '<?php $s = esc_sql( $input );'
+  - '<?php $s = $wpdb->esc_like( $term );'
+  - '<?php $s = $other->escape( $input );'
+  - '<?php $s = $wpdb->prepare( ''x = %s'', $input );'
+  - '$x = $wpdb->prepare( ''%s'', $name );'
 invalid:
   - |-
     <?php
@@ -14,3 +21,13 @@ invalid:
   - "function f( $n ) { global $wpdb; return $wpdb->escape( $n ); }"
   - "$clean = array_map( 'trim', array( $wpdb->escape( $a ), $b ) );"
   - "$wpdb->escape( $name );"
+  - '$name = $wpdb->escape( $raw_name );'
+  - '$x = $wpdb->escape( $a, $b );'
+  - '<?php $name = $wpdb->escape( $category->name );'
+  - '<?php $s = $wpdb->escape( $_POST[''name''] );'
+  - '<?php $q = "x" . $wpdb->escape( $input );'
+  - '<?php function f( $v ) { global $wpdb; return $wpdb->escape( $v ); }'
+  - '<?php $s = $wpdb->escape( $input );'
+  - '<?php $s = $wpdb->escape();'
+  - '<?php $wpdb->escape( $a, $b );'
+  - '$x = $wpdb->escape( $name );'
