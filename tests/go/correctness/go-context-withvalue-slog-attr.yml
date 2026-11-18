@@ -1,5 +1,86 @@
 id: go-context-withvalue-slog-attr
 valid:
   - "package p\n\nimport (\n\t\"context\"\n\t\"log/slog\"\n)\n\nfunc f(ctx context.Context, id string) context.Context {\n\treturn context.WithValue(ctx, correlationKey, id)\n}\n"
+  - |
+    package p
+
+    import "context"
+
+    type ctxKey struct{}
+
+    func f(ctx context.Context, id string) context.Context {
+    	return context.WithValue(ctx, ctxKey{}, id)
+    }
+  - |
+    package p
+
+    import (
+    	"context"
+    	"log/slog"
+    )
+
+    type levelKey struct{}
+
+    func f(ctx context.Context) context.Context {
+    	return context.WithValue(ctx, levelKey{}, slog.LevelDebug)
+    }
+  - |
+    package p
+
+    import (
+    	"context"
+    	"log/slog"
+    )
+
+    type ctxKey struct{}
+
+    func f(ctx context.Context, l *slog.Logger, id string) {
+    	ctx = context.WithValue(ctx, ctxKey{}, id)
+    	l.InfoContext(ctx, "handled", slog.String("id", id))
+    }
 invalid:
   - "package p\n\nimport (\n\t\"context\"\n\t\"log/slog\"\n)\n\nfunc f(ctx context.Context, id string) context.Context {\n\treturn context.WithValue(ctx, correlationKey, slog.Any(\"correlation_id\", id))\n}\n"
+  - |
+    package p
+
+    import (
+    	"context"
+    	"log/slog"
+    )
+
+    type ctxKey struct{}
+
+    func f(ctx context.Context, n int) context.Context {
+    	return context.WithValue(ctx, ctxKey{}, slog.Int("attempt", n))
+    }
+  - |
+    package p
+
+    import (
+    	"context"
+    	"log/slog"
+    )
+
+    type ctxKey struct{}
+
+    func f(ctx context.Context, id string) context.Context {
+    	ctx = context.WithValue(ctx, ctxKey{}, slog.String("request_id", id))
+    	return ctx
+    }
+  - |
+    package p
+
+    import (
+    	"context"
+    	"log/slog"
+    )
+
+    type ctxKey struct{}
+
+    func f(ctx context.Context, id string, n int) context.Context {
+    	return context.WithValue(
+    		ctx,
+    		ctxKey{},
+    		slog.Group("req", slog.String("id", id), slog.Int("n", n)),
+    	)
+    }

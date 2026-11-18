@@ -1,13 +1,26 @@
 id: go-jsonrpc-err-wraps-fmt-errorf
 snapshots:
-  ? |
-    package p
-
-    func f(err error) any {
-        return jsonrpc.Err(jsonrpc.InternalError, fmt.Errorf("failed: %v", err))
-    }
-  : labels:
-    - source: 'jsonrpc.Err(jsonrpc.InternalError, fmt.Errorf("failed: %v", err))'
+  "package p\n\nfunc f(err error) any {\n    return jsonrpc.Err(jsonrpc.InternalError, fmt.Errorf(\"failed: %v\", err))\n}\n":
+    labels:
+    - source: "jsonrpc.Err(jsonrpc.InternalError, fmt.Errorf(\"failed: %v\", err))"
       style: primary
       start: 46
       end: 111
+  "package p\n\nimport \"fmt\"\n\nfunc f(err error, code int) any {\n    return jsonrpc.Err(code, fmt.Errorf(\"handler failed: %w\", err))\n}\n":
+    labels:
+    - source: "jsonrpc.Err(code, fmt.Errorf(\"handler failed: %w\", err))"
+      style: primary
+      start: 70
+      end: 126
+  "package p\n\nimport \"fmt\"\n\nfunc f(name string) any {\n    return jsonrpc.Err(jsonrpc.InvalidParams, fmt.Errorf(\"bad param %s\", name))\n}\n":
+    labels:
+    - source: jsonrpc.Err(jsonrpc.InvalidParams, fmt.Errorf("bad param %s", name))
+      style: primary
+      start: 62
+      end: 130
+  "package p\n\nimport \"fmt\"\n\ntype srv struct{}\n\nfunc (srv) fail() any {\n    return jsonrpc.Err(jsonrpc.MethodNotFound, fmt.Errorf(\"method not found\"))\n}\n":
+    labels:
+    - source: jsonrpc.Err(jsonrpc.MethodNotFound, fmt.Errorf("method not found"))
+      style: primary
+      start: 79
+      end: 146

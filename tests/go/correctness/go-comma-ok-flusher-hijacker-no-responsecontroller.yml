@@ -1,5 +1,90 @@
 id: go-comma-ok-flusher-hijacker-no-responsecontroller
 valid:
   - "package p\n\nimport \"net/http\"\n\nfunc flush(w http.ResponseWriter) {\n\t_ = http.NewResponseController(w).Flush()\n}"
+  - |
+    package p
+
+    import (
+    	"errors"
+    	"net/http"
+    )
+
+    func flush(w http.ResponseWriter) error {
+    	err := http.NewResponseController(w).Flush()
+    	if err != nil && !errors.Is(err, http.ErrNotSupported) {
+    		return err
+    	}
+    	return nil
+    }
+  - |
+    package p
+
+    import (
+    	"io"
+    	"net/http"
+    )
+
+    func write(w http.ResponseWriter, s string) error {
+    	if sw, ok := w.(io.StringWriter); ok {
+    		_, err := sw.WriteString(s)
+    		return err
+    	}
+    	_, err := io.WriteString(w, s)
+    	return err
+    }
+  - |
+    package p
+
+    import (
+    	"fmt"
+    	"net/http"
+    )
+
+    func name(w http.ResponseWriter) string {
+    	if st, ok := w.(fmt.Stringer); ok {
+    		return st.String()
+    	}
+    	return "unknown"
+    }
 invalid:
   - "package p\n\nimport \"net/http\"\n\nfunc flush(w http.ResponseWriter) {\n\tif fl, ok := w.(http.Flusher); ok {\n\t\tfl.Flush()\n\t}\n}"
+  - |
+    package p
+
+    import nethttp "net/http"
+
+    func flush(w nethttp.ResponseWriter) {
+    	fl, ok := w.(nethttp.Flusher)
+    	if !ok {
+    		return
+    	}
+    	fl.Flush()
+    }
+  - |
+    package p
+
+    import "net/http"
+
+    type handler struct{ w http.ResponseWriter }
+
+    func (h *handler) flush() {
+    	fl, ok := h.w.(http.Flusher)
+    	if ok {
+    		fl.Flush()
+    	}
+    }
+  - |
+    package p
+
+    import "net/http"
+
+    func stream(w http.ResponseWriter, chunks []string) {
+    	for _, c := range chunks {
+    		if _, err := w.Write([]byte(c)); err != nil {
+    			return
+    		}
+    		if fl, ok := w.(http.Flusher); ok {
+    			fl.Flush()
+    		}
+    	}
+    }

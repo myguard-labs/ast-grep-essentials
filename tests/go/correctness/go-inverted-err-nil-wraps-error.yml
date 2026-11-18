@@ -1,5 +1,104 @@
 id: go-inverted-err-nil-wraps-error
 valid:
   - "if err != nil {\n\treturn fmt.Errorf(\"write header: %w\", err)\n}"
+  - |
+    package p
+
+    import (
+    	"fmt"
+    	"strconv"
+    )
+
+    func parse(s string) (int, error) {
+    	n, err := strconv.Atoi(s)
+    	if err != nil {
+    		return 0, fmt.Errorf("parse %q: %w", s, err)
+    	}
+    	return n, nil
+    }
+  - |
+    package p
+
+    import (
+    	"errors"
+    	"fmt"
+    )
+
+    func mustFail(run func() error) error {
+    	err := run()
+    	if err == nil {
+    		return fmt.Errorf("expected failure, got success")
+    	}
+    	if !errors.Is(err, errBoom) {
+    		return fmt.Errorf("unexpected error: %w", err)
+    	}
+    	return nil
+    }
+
+    var errBoom = errors.New("boom")
+  - |
+    package p
+
+    import (
+    	"fmt"
+    	"strconv"
+    )
+
+    func parse(s string) error {
+    	_, err := strconv.Atoi(s)
+    	if err == nil {
+    		return nil
+    	}
+    	return fmt.Errorf("parse %q: %w", s, err)
+    }
 invalid:
   - "if err == nil {\n\treturn fmt.Errorf(\"write header: %w\", err)\n}"
+  - |
+    package p
+
+    import (
+    	"fmt"
+    	"strconv"
+    )
+
+    func parse(s string) error {
+    	_, err := strconv.Atoi(s)
+    	if err == nil {
+    		return fmt.Errorf("parse: %w", err)
+    	}
+    	return nil
+    }
+  - |
+    package p
+
+    import (
+    	"encoding/json"
+    	"fmt"
+    )
+
+    func decode(b []byte, v any) error {
+    	err := json.Unmarshal(b, v)
+    	if err == nil {
+    		return fmt.Errorf("decode: %v", err)
+    	}
+    	return nil
+    }
+  - |
+    package p
+
+    import (
+    	"fmt"
+    	"strconv"
+    )
+
+    const msg = "convert: %w"
+
+    type conv struct{}
+
+    func (conv) run(s string) error {
+    	_, err := strconv.ParseBool(s)
+    	if err == nil {
+    		return fmt.Errorf(msg, err)
+    	}
+    	return err
+    }

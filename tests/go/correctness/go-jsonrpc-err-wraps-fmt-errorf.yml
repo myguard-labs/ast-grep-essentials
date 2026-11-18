@@ -6,10 +6,64 @@ valid:
     func f(err error) any {
         return jsonrpc.Err(jsonrpc.InternalError, fmt.Sprintf("failed: %v", err))
     }
+  - |
+    package p
+
+    func f(err error) any {
+        return jsonrpc.Err(jsonrpc.InternalError, err.Error())
+    }
+  - |
+    package p
+
+    func f(name string) any {
+        if name == "" {
+            return jsonrpc.Err(jsonrpc.InvalidParams, "missing name")
+        }
+        return nil
+    }
+  - |
+    package p
+
+    import (
+        "fmt"
+        "log"
+    )
+
+    func f(err error) any {
+        wrapped := fmt.Errorf("handler failed: %w", err)
+        log.Print(wrapped)
+        return jsonrpc.Err(jsonrpc.InternalError, wrapped.Error())
+    }
 invalid:
   - |
     package p
 
     func f(err error) any {
         return jsonrpc.Err(jsonrpc.InternalError, fmt.Errorf("failed: %v", err))
+    }
+  - |
+    package p
+
+    import "fmt"
+
+    func f(name string) any {
+        return jsonrpc.Err(jsonrpc.InvalidParams, fmt.Errorf("bad param %s", name))
+    }
+  - |
+    package p
+
+    import "fmt"
+
+    func f(err error, code int) any {
+        return jsonrpc.Err(code, fmt.Errorf("handler failed: %w", err))
+    }
+  - |
+    package p
+
+    import "fmt"
+
+    type srv struct{}
+
+    func (srv) fail() any {
+        return jsonrpc.Err(jsonrpc.MethodNotFound, fmt.Errorf("method not found"))
     }
