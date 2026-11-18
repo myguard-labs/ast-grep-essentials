@@ -26,6 +26,13 @@ rule:
           regex: '^void$'
           stopBy: end
 metadata:
+  todo_cases:
+    - 'Observed false positive (high noise): every void function without a return statement is reported'
+    - 'Observed false positive: constructors and destructors with a body are reported'
+    - 'Observed false positive: int main() { ... } without return (valid C++) is reported'
+    - 'Observed false positive: a function whose body only throws or calls std::exit is reported'
+    - 'Observed false positive: trailing-return auto f() -> void { ... } is reported'
+    - 'Observed miss: int f() { auto l = [] { return 1; }; l(); } is not reported because the nested lambda return counts'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

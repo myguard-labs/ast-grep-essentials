@@ -1,11 +1,27 @@
 id: php-kinvariant-utf8-cpp
 snapshots:
-  ? |-
-    #include <unicode/unistr.h>
-    UnicodeString make(const char *buf, int32_t len) {
-      return UnicodeString(buf, len, UnicodeString::kInvariant);
-    }
-  : labels:
+  "#include <cstdint>\n#include <string>\n#include <unicode/unistr.h>\nusing icu::UnicodeString;\nUnicodeString from_std(const std::string &utf8) {\n  return UnicodeString(utf8.c_str(), static_cast<int32_t>(utf8.size()), UnicodeString::kInvariant);\n}":
+    labels:
+    - source: >-
+        UnicodeString(utf8.c_str(), static_cast<int32_t>(utf8.size()),
+        UnicodeString::kInvariant)
+      style: primary
+      start: 150
+      end: 239
+  "#include <cstdint>\n#include <unicode/unistr.h>\nusing icu::UnicodeString;\nint32_t length_of(const char *utf8_buf, int32_t len) {\n  UnicodeString text = UnicodeString(utf8_buf, len, UnicodeString::kInvariant);\n  return text.length();\n}":
+    labels:
+    - source: UnicodeString(utf8_buf, len, UnicodeString::kInvariant)
+      style: primary
+      start: 151
+      end: 206
+  "#include <cstdint>\n#include <unicode/unistr.h>\nusing icu::UnicodeString;\nvoid append_text(UnicodeString &out, const char *utf8_buf, int32_t len) {\n  out.append(UnicodeString(utf8_buf, len, UnicodeString::kInvariant));\n}":
+    labels:
+    - source: UnicodeString(utf8_buf, len, UnicodeString::kInvariant)
+      style: primary
+      start: 160
+      end: 215
+  "#include <unicode/unistr.h>\nUnicodeString make(const char *buf, int32_t len) {\n  return UnicodeString(buf, len, UnicodeString::kInvariant);\n}":
+    labels:
     - source: UnicodeString(buf, len, UnicodeString::kInvariant)
       style: primary
       start: 88

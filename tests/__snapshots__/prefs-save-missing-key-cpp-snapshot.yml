@@ -1,8 +1,52 @@
 id: prefs-save-missing-key-cpp
 snapshots:
-  void SaveLastPreferences() { base::DictValue dict; dict.Set(options::kNodeIntegration, node_integration_); }:
+  "namespace options {\nconstexpr const char kNodeIntegration[] = \"nodeIntegration\";\nconstexpr const char kNodeIntegrationInWorker[] = \"nodeIntegrationInWorker\";\nconstexpr const char kSandbox[] = \"sandbox\";\n}\nstruct DictValue {\n  void Set(const char *key, bool value) {\n    (void)key;\n    (void)value;\n  }\n};\nstruct Window {\n  bool node_integration_ = false;\n  void SaveLastPreferences(DictValue &dict) const;\n};\nvoid Window::SaveLastPreferences(DictValue &dict) const {\n  dict.Set(options::kNodeIntegration, node_integration_);\n}":
     labels:
-    - source: void SaveLastPreferences() { base::DictValue dict; dict.Set(options::kNodeIntegration, node_integration_); }
+    - source: |-
+        void Window::SaveLastPreferences(DictValue &dict) const {
+          dict.Set(options::kNodeIntegration, node_integration_);
+        }
+      style: primary
+      start: 409
+      end: 526
+    - source: dict.Set(options::kNodeIntegration, node_integration_)
+      style: secondary
+      start: 469
+      end: 523
+  "namespace options {\nconstexpr const char kNodeIntegration[] = \"nodeIntegration\";\nconstexpr const char kNodeIntegrationInWorker[] = \"nodeIntegrationInWorker\";\nconstexpr const char kSandbox[] = \"sandbox\";\n}\nstruct DictValue {\n  void Set(const char *key, bool value) {\n    (void)key;\n    (void)value;\n  }\n};\nvoid SaveLastPreferences(DictValue &dict, bool persist, bool node_integration) {\n  if (persist) {\n    dict.Set(options::kNodeIntegration, node_integration);\n  }\n}":
+    labels:
+    - source: |-
+        void SaveLastPreferences(DictValue &dict, bool persist, bool node_integration) {
+          if (persist) {
+            dict.Set(options::kNodeIntegration, node_integration);
+          }
+        }
+      style: primary
+      start: 305
+      end: 467
+    - source: dict.Set(options::kNodeIntegration, node_integration)
+      style: secondary
+      start: 407
+      end: 460
+  "namespace options {\nconstexpr const char kNodeIntegration[] = \"nodeIntegration\";\nconstexpr const char kNodeIntegrationInWorker[] = \"nodeIntegrationInWorker\";\nconstexpr const char kSandbox[] = \"sandbox\";\n}\nstruct DictValue {\n  void Set(const char *key, bool value) {\n    (void)key;\n    (void)value;\n  }\n};\nvoid SaveLastPreferences(DictValue &prefs, bool node_integration, bool sandbox) {\n  prefs.Set(options::kNodeIntegration, node_integration);\n  prefs.Set(options::kSandbox, sandbox);\n}":
+    labels:
+    - source: |-
+        void SaveLastPreferences(DictValue &prefs, bool node_integration, bool sandbox) {
+          prefs.Set(options::kNodeIntegration, node_integration);
+          prefs.Set(options::kSandbox, sandbox);
+        }
+      style: primary
+      start: 305
+      end: 487
+    - source: prefs.Set(options::kNodeIntegration, node_integration)
+      style: secondary
+      start: 389
+      end: 443
+  "void SaveLastPreferences() { base::DictValue dict; dict.Set(options::kNodeIntegration, node_integration_); }":
+    labels:
+    - source: >-
+        void SaveLastPreferences() { base::DictValue dict;
+        dict.Set(options::kNodeIntegration, node_integration_); }
       style: primary
       start: 0
       end: 108

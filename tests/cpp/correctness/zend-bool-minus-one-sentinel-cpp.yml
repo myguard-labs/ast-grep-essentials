@@ -1,5 +1,48 @@
 id: zend-bool-minus-one-sentinel-cpp
 valid:
   - 'zend_bool bool_variant_val = (zend_bool)0;'
+  - |-
+    typedef unsigned char zend_bool;
+    zend_bool pick(void) {
+      zend_bool variant = (zend_bool)1;
+      return variant;
+    }
+  - |-
+    int variant_or_unset(int set) {
+      int variant = -1;
+      if (set) {
+        variant = 1;
+      }
+      return variant;
+    }
+  - |-
+    signed char variant_state(int set) {
+      signed char variant = (signed char)-1;
+      if (set) {
+        variant = 1;
+      }
+      return variant;
+    }
 invalid:
   - 'zend_bool bool_variant_val = (zend_bool)-1;'
+  - |-
+    typedef unsigned char zend_bool;
+    zend_bool unset_variant(void) {
+      zend_bool variant = (zend_bool)-1;
+      return variant;
+    }
+  - |-
+    typedef unsigned char zend_bool;
+    zend_bool global_variant = (zend_bool)-1;
+    zend_bool get_variant(void) {
+      return global_variant;
+    }
+  - |-
+    typedef unsigned char zend_bool;
+    zend_bool pick_variant(int have) {
+      if (have) {
+        zend_bool variant = (zend_bool) -1;
+        return variant;
+      }
+      return 0;
+    }
