@@ -1,5 +1,11 @@
 id: go-method-name-collides-with-field
 valid:
   - "package p\n\ntype Tx struct {\n\tCaptured bool\n}\n\nfunc (t *Tx) Capture(i int, v string) {}\n"
+  - "package p\n\ntype Tx struct {\n\tcapture bool\n\tdone    bool\n}\n\nfunc (t *Tx) Capture() bool { return t.capture }\n"
+  - "package p\n\ntype Tx struct {\n\tCapture bool\n}\n\ntype Span struct{}\n\nfunc (s *Span) Capture() bool { return false }\n"
+  - "package p\n\ntype Tx struct {\n\tName string\n\tID   int\n}\n\nfunc (t *Tx) SetName(n string) { t.Name = n }\n\nfunc (t *Tx) GetID() int { return t.ID }\n"
 invalid:
   - "package p\n\ntype Tx struct {\n\tCapture bool\n}\n\nfunc (t *Tx) Capture(i int, v string) {}\n"
+  - "package p\n\ntype Tx struct {\n\tCapture bool\n\tID      int\n}\n\nfunc (t *Tx) Capture() bool { return t.ID > 0 }\n"
+  - "package p\n\nfunc (t *Tx) Name() string { return \"tx\" }\n\ntype Tx struct {\n\tName string `json:\"name\"`\n\tID   int\n}\n"
+  - "package p\n\ntype Tx struct {\n\tCapture bool\n}\n\nfunc (t *Tx) Reset() {}\n\nfunc (t *Tx) Capture() (int, error) { return 0, nil }\n"

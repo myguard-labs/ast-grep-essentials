@@ -1,8 +1,63 @@
 id: go-method-name-collides-with-field
 snapshots:
-  ? "package p\n\ntype Tx struct {\n\tCapture bool\n}\n\nfunc (t *Tx) Capture(i int, v string) {}\n"
-  : labels:
-    - source: "type Tx struct {\n\tCapture bool\n}"
+  "package p\n\nfunc (t *Tx) Name() string { return \"tx\" }\n\ntype Tx struct {\n\tName string `json:\"name\"`\n\tID   int\n}\n":
+    labels:
+    - source: |-
+        type Tx struct {
+        	Name string `json:"name"`
+        	ID   int
+        }
+      style: primary
+      start: 55
+      end: 110
+    - source: func (t *Tx) Name() string { return "tx" }
+      style: secondary
+      start: 11
+      end: 53
+    - source: |
+        package p
+
+        func (t *Tx) Name() string { return "tx" }
+
+        type Tx struct {
+        	Name string `json:"name"`
+        	ID   int
+        }
+      style: secondary
+      start: 0
+      end: 111
+  "package p\n\ntype Tx struct {\n\tCapture bool\n\tID      int\n}\n\nfunc (t *Tx) Capture() bool { return t.ID > 0 }\n":
+    labels:
+    - source: |-
+        type Tx struct {
+        	Capture bool
+        	ID      int
+        }
+      style: primary
+      start: 11
+      end: 56
+    - source: func (t *Tx) Capture() bool { return t.ID > 0 }
+      style: secondary
+      start: 58
+      end: 105
+    - source: |
+        package p
+
+        type Tx struct {
+        	Capture bool
+        	ID      int
+        }
+
+        func (t *Tx) Capture() bool { return t.ID > 0 }
+      style: secondary
+      start: 0
+      end: 106
+  "package p\n\ntype Tx struct {\n\tCapture bool\n}\n\nfunc (t *Tx) Capture(i int, v string) {}\n":
+    labels:
+    - source: |-
+        type Tx struct {
+        	Capture bool
+        }
       style: primary
       start: 11
       end: 43
@@ -10,7 +65,40 @@ snapshots:
       style: secondary
       start: 45
       end: 85
-    - source: "package p\n\ntype Tx struct {\n\tCapture bool\n}\n\nfunc (t *Tx) Capture(i int, v string) {}\n"
+    - source: |
+        package p
+
+        type Tx struct {
+        	Capture bool
+        }
+
+        func (t *Tx) Capture(i int, v string) {}
       style: secondary
       start: 0
       end: 86
+  "package p\n\ntype Tx struct {\n\tCapture bool\n}\n\nfunc (t *Tx) Reset() {}\n\nfunc (t *Tx) Capture() (int, error) { return 0, nil }\n":
+    labels:
+    - source: |-
+        type Tx struct {
+        	Capture bool
+        }
+      style: primary
+      start: 11
+      end: 43
+    - source: func (t *Tx) Capture() (int, error) { return 0, nil }
+      style: secondary
+      start: 70
+      end: 123
+    - source: |
+        package p
+
+        type Tx struct {
+        	Capture bool
+        }
+
+        func (t *Tx) Reset() {}
+
+        func (t *Tx) Capture() (int, error) { return 0, nil }
+      style: secondary
+      start: 0
+      end: 124

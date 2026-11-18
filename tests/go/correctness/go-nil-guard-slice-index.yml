@@ -1,5 +1,11 @@
 id: go-nil-guard-slice-index
 valid:
   - "if len(p.Validation.CACertificateRefs) > 0 {\n\tuse(p.Validation.CACertificateRefs[0].Name)\n}"
+  - "package p\n\nfunc f(s []string) string {\n\tif s != nil && len(s) > 0 {\n\t\treturn s[0]\n\t}\n\treturn \"\"\n}\n"
+  - "package p\n\nfunc f(s []string) string {\n\tif len(s) != 0 {\n\t\treturn s[0]\n\t}\n\treturn \"\"\n}\n"
+  - "package p\n\nfunc f(s []string) int {\n\tn := 0\n\tif s != nil {\n\t\tfor _, v := range s {\n\t\t\tn += len(v)\n\t\t}\n\t}\n\treturn n\n}\n"
 invalid:
   - "if p.Validation.CACertificateRefs != nil {\n\tuse(p.Validation.CACertificateRefs[0].Name)\n}"
+  - "package p\n\nfunc f(s []string) string {\n\tif s != nil {\n\t\treturn s[0]\n\t}\n\treturn \"\"\n}\n"
+  - "package p\n\nfunc f(args []string) string {\n\tx := \"\"\n\tif args != nil {\n\t\tx = args[0]\n\t}\n\treturn x\n}\n"
+  - "package p\n\ntype T struct{ Refs []string }\n\nfunc f(t T, ok bool) string {\n\tif t.Refs != nil {\n\t\tif ok {\n\t\t\treturn t.Refs[0]\n\t\t}\n\t}\n\treturn \"\"\n}\n"

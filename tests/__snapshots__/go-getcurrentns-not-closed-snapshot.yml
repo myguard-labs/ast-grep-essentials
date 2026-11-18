@@ -1,8 +1,26 @@
 id: go-getcurrentns-not-closed
 snapshots:
-  ? "import \"github.com/containernetworking/plugins/pkg/ns\"\nfunc f() error {\n\tinitns, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\treturn initns.Do(func(_ ns.NetNS) error { return nil })\n}"
-  : labels:
+  "import \"github.com/containernetworking/plugins/pkg/ns\"\nfunc f() error {\n\tinitns, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\treturn initns.Do(func(_ ns.NetNS) error { return nil })\n}":
+    labels:
     - source: initns, err := ns.GetCurrentNS()
       style: primary
       start: 73
       end: 105
+  "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\nfunc f() (string, error) {\n\tcur, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\treturn cur.Path(), nil\n}\n":
+    labels:
+    - source: cur, err := ns.GetCurrentNS()
+      style: primary
+      start: 95
+      end: 124
+  "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\nfunc f() error {\n\torig, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\treturn orig.Do(func(_ ns.NetNS) error { return nil })\n}\n":
+    labels:
+    - source: orig, err := ns.GetCurrentNS()
+      style: primary
+      start: 85
+      end: 115
+  "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\nfunc f(other ns.NetNS) error {\n\tcur, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer other.Close()\n\treturn cur.Do(func(_ ns.NetNS) error { return nil })\n}\n":
+    labels:
+    - source: cur, err := ns.GetCurrentNS()
+      style: primary
+      start: 99
+      end: 128

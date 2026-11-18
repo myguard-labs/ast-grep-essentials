@@ -1,8 +1,11 @@
 id: go-log-only-err-branch-falls-through
 snapshots:
-  ? "func load(path string) []byte {\n\tdata, err := os.ReadFile(path)\n\tif err != nil {\n\t\tlog.Printf(\"read: %v\", err)\n\t}\n\treturn data\n}"
-  : labels:
-    - source: "if err != nil {\n\t\tlog.Printf(\"read: %v\", err)\n\t}"
+  "func load(path string) []byte {\n\tdata, err := os.ReadFile(path)\n\tif err != nil {\n\t\tlog.Printf(\"read: %v\", err)\n\t}\n\treturn data\n}":
+    labels:
+    - source: |-
+        if err != nil {
+        		log.Printf("read: %v", err)
+        	}
       style: primary
       start: 65
       end: 113
@@ -10,3 +13,42 @@ snapshots:
       style: secondary
       start: 115
       end: 126
+  "package p\n\nimport (\n\t\"log\"\n\t\"os\"\n)\n\nfunc load(path string) []byte {\n\tdata, err := os.ReadFile(path)\n\tif err != nil {\n\t\tlog.Print(err)\n\t}\n\treturn data\n}\n":
+    labels:
+    - source: |-
+        if err != nil {
+        		log.Print(err)
+        	}
+      style: primary
+      start: 101
+      end: 136
+    - source: return data
+      style: secondary
+      start: 138
+      end: 149
+  "package p\n\nimport (\n\t\"log\"\n\t\"os\"\n)\n\nfunc load(path string) []byte {\n\tdata, err := os.ReadFile(path)\n\tif err != nil {\n\t\tlog.Println(\"read:\", err)\n\t}\n\treturn data\n}\n":
+    labels:
+    - source: |-
+        if err != nil {
+        		log.Println("read:", err)
+        	}
+      style: primary
+      start: 101
+      end: 147
+    - source: return data
+      style: secondary
+      start: 149
+      end: 160
+  "package p\n\nimport (\n\t\"log\"\n\t\"os\"\n)\n\nfunc loadAll(paths []string) [][]byte {\n\tvar out [][]byte\n\tfor _, p := range paths {\n\t\tdata, err := os.ReadFile(p)\n\t\tif err != nil {\n\t\t\tlog.Printf(\"read %s: %v\", p, err)\n\t\t}\n\t\tout = append(out, data)\n\t}\n\treturn out\n}\n":
+    labels:
+    - source: |-
+        if err != nil {
+        			log.Printf("read %s: %v", p, err)
+        		}
+      style: primary
+      start: 153
+      end: 209
+    - source: out = append(out, data)
+      style: secondary
+      start: 212
+      end: 235

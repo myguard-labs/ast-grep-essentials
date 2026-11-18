@@ -1,12 +1,18 @@
 id: go-break-skips-remaining-iterations
 snapshots:
-  ? "package p\n\nfunc f(keys [][]int, xs []int) int {\n\tn := 0\n\tfor i := range xs {\n\t\tif len(keys[i]) == 0 {\n\t\t\tbreak\n\t\t}\n\t\tn += xs[i]\n\t}\n\treturn n\n}"
-  : labels:
+  "package p\n\nfunc f(keys [][]int, xs []int) int {\n\tn := 0\n\tfor i := range xs {\n\t\tif len(keys[i]) == 0 {\n\t\t\tbreak\n\t\t}\n\t\tn += xs[i]\n\t}\n\treturn n\n}":
+    labels:
     - source: break
       style: primary
       start: 105
       end: 110
-    - source: "for i := range xs {\n\t\tif len(keys[i]) == 0 {\n\t\t\tbreak\n\t\t}\n\t\tn += xs[i]\n\t}"
+    - source: |-
+        for i := range xs {
+        		if len(keys[i]) == 0 {
+        			break
+        		}
+        		n += xs[i]
+        	}
       style: secondary
       start: 57
       end: 130
@@ -18,7 +24,105 @@ snapshots:
       style: secondary
       start: 117
       end: 127
-    - source: "if len(keys[i]) == 0 {\n\t\t\tbreak\n\t\t}"
+    - source: |-
+        if len(keys[i]) == 0 {
+        			break
+        		}
       style: secondary
       start: 79
       end: 114
+  "package p\n\nfunc f(names []string) int {\n\tn := 0\n\tfor _, s := range names {\n\t\tif len(s) == 0 {\n\t\t\tbreak\n\t\t}\n\t\tn += len(s)\n\t}\n\treturn n\n}\n":
+    labels:
+    - source: break
+      style: primary
+      start: 97
+      end: 102
+    - source: |-
+        for _, s := range names {
+        		if len(s) == 0 {
+        			break
+        		}
+        		n += len(s)
+        	}
+      style: secondary
+      start: 49
+      end: 123
+    - source: len(s) == 0
+      style: secondary
+      start: 80
+      end: 91
+    - source: n += len(s)
+      style: secondary
+      start: 109
+      end: 120
+    - source: |-
+        if len(s) == 0 {
+        			break
+        		}
+      style: secondary
+      start: 77
+      end: 106
+  "package p\n\nfunc f(rows [][]int) int {\n\tn := 0\n\tfor i := 0; i < len(rows); i++ {\n\t\tif len(rows[i]) == 0 {\n\t\t\tbreak\n\t\t}\n\t\tn += rows[i][0]\n\t}\n\treturn n\n}\n":
+    labels:
+    - source: break
+      style: primary
+      start: 108
+      end: 113
+    - source: |-
+        for i := 0; i < len(rows); i++ {
+        		if len(rows[i]) == 0 {
+        			break
+        		}
+        		n += rows[i][0]
+        	}
+      style: secondary
+      start: 47
+      end: 138
+    - source: len(rows[i]) == 0
+      style: secondary
+      start: 85
+      end: 102
+    - source: n += rows[i][0]
+      style: secondary
+      start: 120
+      end: 135
+    - source: |-
+        if len(rows[i]) == 0 {
+        			break
+        		}
+      style: secondary
+      start: 82
+      end: 117
+  "package p\n\nfunc f(rows [][]int, skip bool) int {\n\tn := 0\n\tfor _, r := range rows {\n\t\tif !skip {\n\t\t\tif len(r) == 0 {\n\t\t\t\tbreak\n\t\t\t}\n\t\t\tn += r[0]\n\t\t}\n\t}\n\treturn n\n}\n":
+    labels:
+    - source: break
+      style: primary
+      start: 120
+      end: 125
+    - source: |-
+        for _, r := range rows {
+        		if !skip {
+        			if len(r) == 0 {
+        				break
+        			}
+        			n += r[0]
+        		}
+        	}
+      style: secondary
+      start: 58
+      end: 150
+    - source: len(r) == 0
+      style: secondary
+      start: 102
+      end: 113
+    - source: n += r[0]
+      style: secondary
+      start: 134
+      end: 143
+    - source: |-
+        if len(r) == 0 {
+        				break
+        			}
+      style: secondary
+      start: 99
+      end: 130
