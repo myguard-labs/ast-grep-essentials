@@ -7,12 +7,76 @@ message: >-
   Switch on a masked bitfield without a right shift; case labels are compared
   against the field's position value.
 note: >-
-  Single-file syntactic match on a switch whose condition is a literal bitwise
-  AND with a hex mask; it does not resolve types, values, or whether the mask
-  is a bitfield, and it does not check case label semantics beyond the literal
-  shape.
+  Single-file syntactic match on a switch whose condition is `x & mask` (mask
+  on either side) with a compound body. The mask operand must be an even
+  nonzero integer literal (lowest set bit above bit 0; hex, octal, decimal or
+  binary, any u/l suffix), a parenthesised such literal, or an all-uppercase
+  macro name; the other operand must not itself be a right shift. A mask with
+  bit 0 set (`v & 0x3`) and a pre-shifted operand (`(v >> 8) & 0xf`) are not
+  reported. It does not resolve types or macro values, and it does not check
+  case label semantics beyond the literal shape.
+utils:
+  field-mask:
+    any:
+      - all:
+          - kind: number_literal
+          - regex: '^(0[xX][0-9a-fA-F]*[02468aAcCeE]|0[bB][01]*0|[0-9]*[02468])[uUlL]*$'
+          - not:
+              regex: '^(0[xXbB])?0*[uUlL]*$'
+      - all:
+          - kind: parenthesized_expression
+          - has:
+              kind: number_literal
+              regex: '^(0[xX][0-9a-fA-F]*[02468aAcCeE]|0[bB][01]*0|[0-9]*[02468])[uUlL]*$'
+              not:
+                regex: '^(0[xXbB])?0*[uUlL]*$'
+      - all:
+          - kind: identifier
+          - regex: '^[A-Z_][A-Z0-9_]*$'
+  right-shifted:
+    any:
+      - kind: binary_expression
+        has:
+          field: operator
+          regex: '^>>$'
+      - kind: parenthesized_expression
+        has:
+          kind: binary_expression
+          has:
+            field: operator
+            regex: '^>>$'
 rule:
-  pattern: 'switch ($V & $MASK) { $$$BODY }'
+  kind: switch_statement
+  has:
+    field: body
+    kind: compound_statement
+  all:
+    - has:
+        field: condition
+        kind: parenthesized_expression
+        has:
+          kind: binary_expression
+          all:
+            - has:
+                field: operator
+                regex: '^&$'
+            - any:
+                - all:
+                    - has:
+                        field: right
+                        matches: field-mask
+                    - not:
+                        has:
+                          field: left
+                          matches: right-shifted
+                - all:
+                    - has:
+                        field: left
+                        matches: field-mask
+                    - not:
+                        has:
+                          field: right
+                          matches: right-shifted
 metadata:
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
@@ -22,4 +86,4 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'switch (v & 0x3) { case 2: ... } (low-bit mask, labels are field values) and switch ((v >> 8) & 0xf) (shift applied before the mask) are reported although correct'
+    - 'switch (v & MASK) { ... } where the macro MASK has bit 0 set is still reported; macro values are not resolved'
