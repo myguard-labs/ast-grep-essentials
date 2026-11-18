@@ -4,16 +4,26 @@ id: php-strpos-truthy-condition
 language: php
 severity: 'off'
 message: >-
-  Deprecated rule ID; use php-strpos-bare-truthy-condition. strpos() used as a
+  Deprecated rule ID; use php-strpos-truthiness-as-boolean. strpos() used as a
   bare if-condition treats a match at offset 0 as false; compare explicitly
   with false.
 note: >-
   Compatibility alias for consumers that explicitly promote the former ID.
-  Normal scans use php-strpos-bare-truthy-condition and do not emit this rule.
+  Normal scans use php-strpos-truthiness-as-boolean and do not emit this rule.
 rule:
-  pattern: 'if (strpos($$$ARGS)) $$$BODY'
+  all:
+    - pattern: 'strpos($$$ARGS)'
+    - inside:
+        kind: parenthesized_expression
+        inside:
+          kind: if_statement
+          stopBy: end
+    - not:
+        inside:
+          kind: binary_expression
+          stopBy: end
 metadata:
-  deprecated_alias_of: php-strpos-bare-truthy-condition
+  deprecated_alias_of: php-strpos-truthiness-as-boolean
   rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-16'

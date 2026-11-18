@@ -2,23 +2,30 @@
 
 id: php-strpos-bare-truthy-condition
 language: php
-severity: warning
+severity: 'off'
 message: >-
-  strpos() used as a bare truthy condition; a match at offset 0 is treated as
-  no match. Compare with !== false instead.
+  Deprecated rule ID; use php-strpos-truthiness-as-boolean. strpos() used as a
+  bare truthy condition treats a match at offset 0 as no match; compare with
+  !== false instead.
 note: >-
-  Syntactic match only. Flags an if condition whose whole expression is a
-  strpos() call with no comparison. It does not check the function's
-  namespace, resolve aliases, or verify the result is used as a presence test.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use php-strpos-truthiness-as-boolean and do not emit this rule.
 rule:
-  pattern: 'if (strpos($$$ARGS)) $$$BODY'
+  all:
+    - pattern: 'strpos($$$ARGS)'
+    - inside:
+        kind: parenthesized_expression
+        inside:
+          kind: if_statement
+          stopBy: end
+    - not:
+        inside:
+          kind: binary_expression
+          stopBy: end
 metadata:
+  deprecated_alias_of: php-strpos-truthiness-as-boolean
   rule_modified_at: '2026-11-18'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-16'
   created_at: '2026-10-16'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - "FN: negated `if ( !strpos( $s, 'x' ) ) {}` is not reported (0 matches on 0.51.3)"
