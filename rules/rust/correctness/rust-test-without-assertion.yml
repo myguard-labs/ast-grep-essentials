@@ -55,6 +55,7 @@ metadata:
     - '#[should_panic] then a line comment then #[test] is still flagged: the attribute walk passes only through attribute_item siblings and a comment ends it (1 match)'
     - 'a Result test inside an enclosing fn (a test fn nested in another fn body) is still flagged even with a ? in its own body, since a ? counts only when no outer function_item encloses the test (1 match)'
     - '#[test] fn t() -> TestResult { parse("1")?; Ok(()) } with a type alias for Result is still flagged, since the return type must be spelled Result<..> (1 match)'
+    - '#[test] fn t() -> Result<(), String> { let v = vec![parse("1")?]; Ok(()) } whose only ? sits inside a macro argument is still flagged (1 match)'
   rule_modified_at: '2026-10-09'
   ast_grep_tested_version: 0.45.3
   validated_at: '2026-10-09'
