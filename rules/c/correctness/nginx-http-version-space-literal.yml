@@ -7,16 +7,18 @@ message: >-
   This string literal names an HTTP version with a space instead of a slash
   (for example "HTTP 1.1" instead of "HTTP/1.1").
 note: >-
-  Matches only string literals whose text begins with HTTP followed by a space
-  and a digit. It is a purely syntactic check and does not verify how the
-  string is used at runtime.
+  Matches only string literals whose text begins with HTTP, a space, one digit
+  and an optional dot with one digit (a version token), and where that token is
+  followed by a space, the closing quote or a backslash escape. A longer number
+  such as "HTTP 404 Not Found" or "HTTP 10 retries" is not reported. It is a
+  purely syntactic check and does not verify how the string is used at runtime.
 rule:
   kind: string_literal
-  regex: '^"HTTP [0-9]'
+  regex: '^"HTTP [0-9](\.[0-9])?([ "\\]|$)'
 metadata:
   todo_cases:
-    - '`const char *s = "HTTP 404 returned";` is reported although it names a status code, not a version (false positive).'
     - '`const char *s = "protocol HTTP 1.1";` is not reported (false negative: the regex is anchored at the start of the literal).'
+    - '`const char *s = L"HTTP 1.1";` and `u8"HTTP 1.1"` are not reported (false negative: the string_literal kind does not match wide or UTF-8 prefixed literals).'
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-16'
