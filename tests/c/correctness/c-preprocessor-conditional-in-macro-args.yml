@@ -62,6 +62,35 @@ valid:
     #endif
         return c;
     }
+  - |
+    #ifdef FOO
+    int f(int a, int b) { return g(a, b); }
+    #endif
+  - |
+    int f(unsigned a)
+    {
+        unsigned r = a;
+    #ifdef FOO
+        r += 1;
+    #endif
+        return (int) r;
+    }
+  - |
+    int g(int);
+    int h(int);
+    #if defined(FOO)
+    int f(int a) { return g(a); }
+    #else
+    int f(int a) { return h(a); }
+    #endif
+  - |
+    #define CALL(a, b) ((a) + (b))
+    #ifdef FOO
+    #define EXTRA 1
+    #else
+    #define EXTRA 0
+    #endif
+    int f(int a) { return CALL(a, EXTRA); }
 invalid:
   - |-
     void f(void) { REGISTER_LONG_CONSTANT("X",
@@ -166,4 +195,46 @@ invalid:
             , 1
     #endif
             );
+    }
+  - |
+    int f(int a, int b) { return g(a,
+    #ifdef FOO
+     b
+    #endif
+     ); }
+  - |
+    #define CALL(a, b) ((a) + (b))
+    int f(int a)
+    {
+        return CALL(a,
+    #ifndef FOO
+            1
+    #else
+            2
+    #endif
+        );
+    }
+  - |
+    #define CALL(a, b) ((a) + (b))
+    int f(int a)
+    {
+        return CALL(a,
+    # if defined(FOO)
+            1
+    # else
+            2
+    # endif
+        );
+    }
+  - |
+    #define CALL(a, b) ((a) + (b))
+    int f(int a, int b)
+    {
+        return CALL(
+    #ifdef FOO
+            a,
+    #else
+            0,
+    #endif
+            b);
     }
