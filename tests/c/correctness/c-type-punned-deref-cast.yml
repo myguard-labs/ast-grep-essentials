@@ -17,6 +17,10 @@ valid:
     }
   - |-
     int next(int *p) { return *(p + 1); }
+  - 'void clear(void *p) { *(unsigned char *) p = 0; }'
+  - 'unsigned char first(const void *p) { return *(const unsigned char *) p; }'
+  - 'char peek(void *p) { return *(char *) p; }'
+  - 'signed char peek_signed(void *p) { return *(signed char *) p; }'
 invalid:
   - 'void g(char *buf, int fd) { *(int *) buf = fd; }'
   - |-
@@ -28,3 +32,16 @@ invalid:
     uint64_t load(char *buf) { return *(uint64_t *) buf; }
   - |-
     void store(char *p) { *(short *) p = 1; }
+  - |-
+    #include <wchar.h>
+    wchar_t widen(void) { unsigned short s = 1; return *(wchar_t *) &s; }
+  - |-
+    #include <uchar.h>
+    char16_t narrow(void) { unsigned int u = 1; return *(char16_t *) &u; }
+  - 'char *as_ptr(void) { long l = 0; return *(char **) &l; }'
+  - 'unsigned bits(float x) { return *(unsigned *) &x; }'
+  - |-
+    int mixed(float f, void *p) {
+      unsigned char c = *(unsigned char *) p;
+      return c + *(int *) &f;
+    }
