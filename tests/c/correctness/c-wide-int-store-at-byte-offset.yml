@@ -1,5 +1,35 @@
 id: c-wide-int-store-at-byte-offset
 valid:
   - 'void f(char *buf, unsigned int n) { *(unsigned char *)(buf + n) = 0; }'
+  - |-
+    #include <string.h>
+    void f(char *buf, unsigned int n) {
+        unsigned int v = 0;
+        memcpy(&v, buf + n, sizeof v);
+        v += 1;
+        memcpy(buf + n, &v, sizeof v);
+    }
+  - |-
+    unsigned int f(const unsigned char *buf, unsigned int n) {
+        return ((unsigned int) buf[n] << 24) | ((unsigned int) buf[n + 1] << 16)
+            | ((unsigned int) buf[n + 2] << 8) | (unsigned int) buf[n + 3];
+    }
+  - |-
+    unsigned int f(const unsigned int *words, unsigned int i) {
+        return words[i];
+    }
 invalid:
   - 'void f(char *buf, unsigned int n) { *(unsigned int *)(buf + n) = 0; }'
+  - |-
+    unsigned int f(const char *buf, unsigned int n) {
+        return *(unsigned int *)(buf + n);
+    }
+  - |-
+    void f(char *buf) {
+        *(unsigned int *)(buf + 1) = 0xdeadbeefu;
+    }
+  - |-
+    unsigned int f(unsigned char *base, unsigned int i) {
+        unsigned int v = *(unsigned int *)(base + i * 2);
+        return v + 1;
+    }

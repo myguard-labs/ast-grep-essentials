@@ -1,8 +1,26 @@
 id: c-zend-error-core-error-in-extension
 snapshots:
-  ? ZEND_METHOD(exception, __construct) { if (zend_parse_parameters_ex(0, argc TSRMLS_CC, "|sl", &m, &l, &c) == FAILURE) { zend_error(E_CORE_ERROR, "Wrong parameter count"); } }
-  : labels:
+  "PHP_FUNCTION(ext_check)\n{\n    if (ZEND_NUM_ARGS() != 0) {\n        zend_error(E_CORE_ERROR, \"ext_check() takes no arguments\");\n        RETURN_FALSE;\n    }\n    RETURN_TRUE;\n}":
+    labels:
+    - source: zend_error(E_CORE_ERROR, "ext_check() takes no arguments")
+      style: primary
+      start: 66
+      end: 124
+  "PHP_FUNCTION(ext_open)\n{\n    char *name;\n    size_t name_len;\n    if (zend_parse_parameters(ZEND_NUM_ARGS(), \"s\", &name, &name_len) == FAILURE) {\n        RETURN_THROWS();\n    }\n    zend_error(E_CORE_ERROR, \"Cannot open %s\", name);\n}":
+    labels:
+    - source: zend_error(E_CORE_ERROR, "Cannot open %s", name)
+      style: primary
+      start: 181
+      end: 229
+  "ZEND_METHOD(exception, __construct) { if (zend_parse_parameters_ex(0, argc TSRMLS_CC, \"|sl\", &m, &l, &c) == FAILURE) { zend_error(E_CORE_ERROR, \"Wrong parameter count\"); } }":
+    labels:
     - source: zend_error(E_CORE_ERROR, "Wrong parameter count")
       style: primary
       start: 119
       end: 168
+  "static void ext_fail(const char *what, int code)\n{\n    zend_error(E_CORE_ERROR, \"%s failed with code %d\", what, code);\n}":
+    labels:
+    - source: zend_error(E_CORE_ERROR, "%s failed with code %d", what, code)
+      style: primary
+      start: 55
+      end: 117

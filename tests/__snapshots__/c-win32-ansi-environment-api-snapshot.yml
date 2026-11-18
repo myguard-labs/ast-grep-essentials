@@ -1,5 +1,23 @@
 id: c-win32-ansi-environment-api
 snapshots:
+  "#include <stddef.h>\n#include <string.h>\nchar *GetEnvironmentStringsA(void);\nint FreeEnvironmentStringsA(char *);\nint count_vars(void) {\n    char *block = GetEnvironmentStringsA();\n    char *p;\n    int n = 0;\n    if (block == NULL) {\n        return -1;\n    }\n    for (p = block; *p != '\\0'; p += strlen(p) + 1) {\n        n++;\n    }\n    FreeEnvironmentStringsA(block);\n    return n;\n}":
+    labels:
+    - source: GetEnvironmentStringsA()
+      style: primary
+      start: 154
+      end: 178
+  "#include <stddef.h>\nchar *GetEnvironmentStringsA(void);\nint FreeEnvironmentStringsA(char *);\nint env_available(void) {\n    if (GetEnvironmentStringsA() == NULL) {\n        return 0;\n    }\n    return 1;\n}":
+    labels:
+    - source: GetEnvironmentStringsA()
+      style: primary
+      start: 127
+      end: 151
+  "#include <stddef.h>\nchar *GetEnvironmentStringsA(void);\nint FreeEnvironmentStringsA(char *);\nint has_block(void) {\n    char *block = GetEnvironmentStringsA();\n    int ok = block != NULL;\n    if (ok) {\n        FreeEnvironmentStringsA(block);\n    }\n    return ok;\n}":
+    labels:
+    - source: GetEnvironmentStringsA()
+      style: primary
+      start: 133
+      end: 157
   char *environment = GetEnvironmentStringsA();:
     labels:
     - source: GetEnvironmentStringsA()

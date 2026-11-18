@@ -1,5 +1,49 @@
 id: c-void-ptr-member-implicit-cast
 valid:
   - 'void f(struct s *o) { struct t *p = (struct t *) o->_private; (void) p; }'
+  - |-
+    struct s { void *_private; };
+    struct t { int v; };
+    struct t *lookup(struct s *o);
+    int f(struct s *o) {
+        struct t *p = lookup(o);
+        return p->v;
+    }
+  - |-
+    struct s { void *_private; struct t *typed; };
+    struct t { int v; };
+    int f(struct s *o) {
+        struct t *p = o->typed;
+        return p->v;
+    }
+  - |-
+    struct s { void *_private; };
+    struct t { int v; };
+    int f(struct s *o) {
+        struct t *p = (struct t *) (o->_private);
+        return p->v;
+    }
 invalid:
   - 'void f(struct s *o) { struct t *p = o->_private; (void) p; }'
+  - |-
+    struct s { void *_private; };
+    struct t { int v; };
+    int f(struct s *o) {
+        struct t *p = o->_private;
+        return p->v;
+    }
+  - |-
+    struct outer { struct s *inner; };
+    struct s { void *_private; };
+    struct t { int v; };
+    int f(struct outer *w) {
+        struct t *p = w->inner->_private;
+        return p->v;
+    }
+  - |-
+    struct s { void *_private; };
+    struct t { int v; };
+    int f(struct s **list, int i) {
+        struct t *p = list[i]->_private;
+        return p->v;
+    }

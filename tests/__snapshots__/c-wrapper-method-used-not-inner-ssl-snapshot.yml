@@ -1,10 +1,26 @@
 id: c-wrapper-method-used-not-inner-ssl
 snapshots:
-  ? |-
-    sc = get_inner(s);
-    return s->method->enc->export_keying(sc);
-  : labels:
+  "sc = get_inner(s);\nreturn s->method->enc->export_keying(sc);":
+    labels:
     - source: s->method->enc->export_keying(sc)
       style: primary
       start: 26
       end: 59
+  "struct enc { int (*export_keying)(void *s, int n); };\nstruct meth { struct enc *enc; };\nstruct outer { struct meth *method; };\nstruct conn;\nstruct conn *get_inner(struct outer *s);\nint f(struct outer *s) {\n    struct conn *sc = get_inner(s);\n    int rc = s->method->enc->export_keying(sc, 16);\n    return rc;\n}":
+    labels:
+    - source: s->method->enc->export_keying(sc, 16)
+      style: primary
+      start: 255
+      end: 292
+  "struct enc { int (*export_keying)(void *s, int n); };\nstruct meth { struct enc *enc; };\nstruct outer { struct meth *method; };\nstruct wrap { struct outer *handle; };\nstruct conn;\nstruct conn *get_inner(struct wrap *w);\nint f(struct wrap *w) {\n    struct conn *sc = get_inner(w);\n    return w->handle->method->enc->export_keying(sc, 32);\n}":
+    labels:
+    - source: w->handle->method->enc->export_keying(sc, 32)
+      style: primary
+      start: 290
+      end: 335
+  "struct enc { int (*export_keying)(void *s, int n, int m); };\nstruct meth { struct enc *enc; };\nstruct outer { struct meth *method; };\nstruct conn;\nstruct conn *get_inner(struct outer *s);\nint f(struct outer *ssl, int a) {\n    struct conn *sc = get_inner(ssl);\n    if (ssl->method->enc->export_keying(sc, a, 0) != 1) {\n        return -1;\n    }\n    return 0;\n}":
+    labels:
+    - source: ssl->method->enc->export_keying(sc, a, 0)
+      style: primary
+      start: 268
+      end: 309

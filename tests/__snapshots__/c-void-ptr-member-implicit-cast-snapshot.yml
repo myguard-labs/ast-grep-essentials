@@ -1,8 +1,26 @@
 id: c-void-ptr-member-implicit-cast
 snapshots:
-  void f(struct s *o) { struct t *p = o->_private; (void) p; }:
+  "struct outer { struct s *inner; };\nstruct s { void *_private; };\nstruct t { int v; };\nint f(struct outer *w) {\n    struct t *p = w->inner->_private;\n    return p->v;\n}":
     labels:
-    - source: '*p = o->_private'
+    - source: "*p = w->inner->_private"
+      style: primary
+      start: 124
+      end: 147
+  "struct s { void *_private; };\nstruct t { int v; };\nint f(struct s **list, int i) {\n    struct t *p = list[i]->_private;\n    return p->v;\n}":
+    labels:
+    - source: "*p = list[i]->_private"
+      style: primary
+      start: 96
+      end: 118
+  "struct s { void *_private; };\nstruct t { int v; };\nint f(struct s *o) {\n    struct t *p = o->_private;\n    return p->v;\n}":
+    labels:
+    - source: "*p = o->_private"
+      style: primary
+      start: 85
+      end: 101
+  "void f(struct s *o) { struct t *p = o->_private; (void) p; }":
+    labels:
+    - source: "*p = o->_private"
       style: primary
       start: 31
       end: 47

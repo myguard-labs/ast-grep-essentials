@@ -1,5 +1,86 @@
 id: c-win32-ansi-environment-api
 valid:
   - 'wchar_t *environment = GetEnvironmentStringsW();'
+  - |-
+    #include <stddef.h>
+    #include <wchar.h>
+    wchar_t *GetEnvironmentStringsW(void);
+    int FreeEnvironmentStringsW(wchar_t *);
+    int count_vars(void) {
+        wchar_t *block = GetEnvironmentStringsW();
+        wchar_t *p;
+        int n = 0;
+        if (block == NULL) {
+            return -1;
+        }
+        for (p = block; *p != L'\0'; p += wcslen(p) + 1) {
+            n++;
+        }
+        FreeEnvironmentStringsW(block);
+        return n;
+    }
+  - |-
+    #include <stddef.h>
+    #include <wchar.h>
+    wchar_t *GetEnvironmentStringsW(void);
+    int FreeEnvironmentStringsW(wchar_t *);
+    int has_block(void) {
+        wchar_t *block = GetEnvironmentStringsW();
+        int ok = block != NULL;
+        if (ok) {
+            FreeEnvironmentStringsW(block);
+        }
+        return ok;
+    }
+  - |-
+    #include <stddef.h>
+    #include <stdlib.h>
+    char *GetEnvironmentStringsA_copy(void);
+    int use_copy(void) {
+        char *env = GetEnvironmentStringsA_copy();
+        int ok = env != NULL;
+        free(env);
+        return ok;
+    }
 invalid:
   - 'char *environment = GetEnvironmentStringsA();'
+  - |-
+    #include <stddef.h>
+    char *GetEnvironmentStringsA(void);
+    int FreeEnvironmentStringsA(char *);
+    int has_block(void) {
+        char *block = GetEnvironmentStringsA();
+        int ok = block != NULL;
+        if (ok) {
+            FreeEnvironmentStringsA(block);
+        }
+        return ok;
+    }
+  - |-
+    #include <stddef.h>
+    #include <string.h>
+    char *GetEnvironmentStringsA(void);
+    int FreeEnvironmentStringsA(char *);
+    int count_vars(void) {
+        char *block = GetEnvironmentStringsA();
+        char *p;
+        int n = 0;
+        if (block == NULL) {
+            return -1;
+        }
+        for (p = block; *p != '\0'; p += strlen(p) + 1) {
+            n++;
+        }
+        FreeEnvironmentStringsA(block);
+        return n;
+    }
+  - |-
+    #include <stddef.h>
+    char *GetEnvironmentStringsA(void);
+    int FreeEnvironmentStringsA(char *);
+    int env_available(void) {
+        if (GetEnvironmentStringsA() == NULL) {
+            return 0;
+        }
+        return 1;
+    }
