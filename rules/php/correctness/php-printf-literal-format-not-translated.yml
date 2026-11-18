@@ -10,11 +10,24 @@ note: >-
   Compatibility alias for consumers that explicitly promote the former ID.
   Normal scans use php-printf-untranslated-format and do not emit this rule.
 rule:
-  pattern: 'printf(''$FMT'', $$$ARGS)'
+  any:
+    - pattern: 'printf(''$FMT'', $$$ARGS)'
+    - pattern: 'printf($DQ, $$$ARGS)'
+constraints:
+  DQ:
+    kind: argument
+    has:
+      kind: encapsed_string
+      not:
+        has:
+          not:
+            any:
+              - kind: string_content
+              - kind: escape_sequence
+              - regex: '^"$'
 metadata:
   deprecated_alias_of: php-printf-untranslated-format
   todo_cases:
-    - 'FN: printf( "Revisions: %s", $count ) with a double-quoted format string is not reported'
     - 'FN: \printf( ''Revisions: %s'', $count ) with a leading namespace separator is not reported'
     - 'FN: printf( ''Revisions: %s'' . "\n", $count ) with a concatenated literal format is not reported'
   rule_modified_at: '2026-11-18'

@@ -6,10 +6,26 @@ severity: warning
 message: 'Format string passed to printf() is not wrapped in a translation function.'
 note: >-
   Syntactic check only. Matches a direct printf call whose first argument is a
-  literal string; it does not verify the callee resolves to PHP's built-in
+  literal string, single-quoted or double-quoted without variable
+  interpolation; a double-quoted format that interpolates a variable is not
+  reported. It does not verify the callee resolves to PHP's built-in
   printf or check the string's content beyond the literal shape.
 rule:
-  pattern: 'printf(''$FMT'', $$$ARGS)'
+  any:
+    - pattern: 'printf(''$FMT'', $$$ARGS)'
+    - pattern: 'printf($DQ, $$$ARGS)'
+constraints:
+  DQ:
+    kind: argument
+    has:
+      kind: encapsed_string
+      not:
+        has:
+          not:
+            any:
+              - kind: string_content
+              - kind: escape_sequence
+              - regex: '^"$'
 metadata:
   rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
@@ -19,5 +35,5 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FN: printf( "Maximum size: %s", $size ) with a double-quoted format and printf( ''Maximum size: %s'' . ''!'', $size ) with a concatenated format are not reported'
+    - 'FN: printf( "Hi $name: %s", $size ) with an interpolating double-quoted format and printf( ''Maximum size: %s'' . ''!'', $size ) with a concatenated format are not reported'
     - 'FN: printf( ''Maximum size: 10MB'' ) with a one-argument literal format is not reported (pattern requires a comma and further arguments)'
