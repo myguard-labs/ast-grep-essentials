@@ -2,20 +2,21 @@
 
 id: php-legacy-http-vars-superglobal
 language: php
-severity: warning
+severity: 'off'
 message: >-
-  Legacy HTTP_*_VARS arrays were removed in PHP 5.4; use the modern
-  superglobal instead.
+  Deprecated rule ID; use php-http-vars-legacy-superglobal. The PHP 4
+  HTTP_*_VARS arrays and HTTP_POST_FILES were removed in PHP 5.4; use the
+  matching _GET, _POST, _COOKIE, _SERVER, _ENV, _SESSION or _FILES
+  superglobal.
 note: >-
-  Matches the variable names syntactically; it does not distinguish reads from
-  writes or resolve scope.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use php-http-vars-legacy-superglobal and do not emit this rule.
 rule:
   kind: variable_name
-  has:
-    kind: name
-    regex: '^HTTP_(GET|POST|SERVER|COOKIE|ENV)_VARS$'
+  regex: '^\$?HTTP_((GET|POST|COOKIE|SERVER|ENV|SESSION)_VARS|POST_FILES)$'
 metadata:
-  rule_modified_at: '2026-10-18'
+  deprecated_alias_of: php-http-vars-legacy-superglobal
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-18'
   created_at: '2026-10-18'
