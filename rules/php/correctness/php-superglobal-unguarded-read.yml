@@ -70,21 +70,20 @@ rule:
                           all:
                             - pattern: $R[$K]
                             - regex: '^\$_(GET|POST|REQUEST)\['
-                      - has:
-                          stopBy: end
-                          kind: function_call_expression
-                          regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
-                          has:
-                            stopBy: end
-                            all:
-                              - pattern: $R[$K]
-                              - regex: '^\$_(GET|POST|REQUEST)\['
+                      - kind: binary_expression
+                        all:
+                          - has:
+                              regex: '(?i)^(&&|and)$'
+                          - has:
+                              kind: function_call_expression
+                              regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
+                              has:
+                                stopBy: end
+                                all:
+                                  - pattern: $R[$K]
+                                  - regex: '^\$_(GET|POST|REQUEST)\['
 metadata:
   deprecated_alias_of: php-superglobal-read-unguarded
-  todo_cases:
-    - 'FN: `if ( $x ) {} elseif ( $_GET[''s''] ) {}` is not reported (elseif condition is not an if_statement parenthesized_expression).'
-    - 'FN: `if ( ! $_GET[''s''] )` and `if ( $_GET[''s''] && $x )` are not reported (subscript is not the direct condition).'
-    - 'FN: `if ( $_POST[''s''] )` and `while ( $_GET[''s''] )` are not reported.'
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-18'

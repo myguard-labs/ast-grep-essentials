@@ -70,15 +70,18 @@ rule:
                           all:
                             - pattern: $R[$K]
                             - regex: '^\$_(GET|POST|REQUEST)\['
-                      - has:
-                          stopBy: end
-                          kind: function_call_expression
-                          regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
-                          has:
-                            stopBy: end
-                            all:
-                              - pattern: $R[$K]
-                              - regex: '^\$_(GET|POST|REQUEST)\['
+                      - kind: binary_expression
+                        all:
+                          - has:
+                              regex: '(?i)^(&&|and)$'
+                          - has:
+                              kind: function_call_expression
+                              regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
+                              has:
+                                stopBy: end
+                                all:
+                                  - pattern: $R[$K]
+                                  - regex: '^\$_(GET|POST|REQUEST)\['
 metadata:
   rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
@@ -93,5 +96,6 @@ metadata:
   owasp: 'A05:2025'
   todo_cases:
     - "A spaced subscript ($_GET [ \"a\" ]) is not matched."
+    - "FP: an isset guard written in another case (ISSET(...)) or with the superglobal after the first argument (isset($x, $_GET[\"a\"]) && $_GET[\"a\"]) is not recognised, so the read is still reported."
     - "FP: a read in a braceless if (isset($_GET[\"a\"])) echo $_GET[\"a\"]; body, or under a compound condition (isset(a) || $x, isset(a) && isset(b)), still reports; only a braced if whose condition is a single isset of the same key is recognised."
     - "false negative: a read used only to compute the isset key (if (isset($_GET[$_GET[\"key\"]])) { echo $_GET[\"key\"]; }) is treated as guarded."

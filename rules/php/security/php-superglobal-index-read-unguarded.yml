@@ -70,15 +70,18 @@ rule:
                           all:
                             - pattern: $R[$K]
                             - regex: '^\$_(GET|POST|REQUEST)\['
-                      - has:
-                          stopBy: end
-                          kind: function_call_expression
-                          regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
-                          has:
-                            stopBy: end
-                            all:
-                              - pattern: $R[$K]
-                              - regex: '^\$_(GET|POST|REQUEST)\['
+                      - kind: binary_expression
+                        all:
+                          - has:
+                              regex: '(?i)^(&&|and)$'
+                          - has:
+                              kind: function_call_expression
+                              regex: '^isset\(\s*\$_(GET|POST|REQUEST)\['
+                              has:
+                                stopBy: end
+                                all:
+                                  - pattern: $R[$K]
+                                  - regex: '^\$_(GET|POST|REQUEST)\['
 metadata:
   deprecated_alias_of: php-superglobal-read-unguarded
   rule_modified_at: '2026-10-18'
