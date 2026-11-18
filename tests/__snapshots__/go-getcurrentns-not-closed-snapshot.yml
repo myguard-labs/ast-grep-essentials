@@ -24,3 +24,21 @@ snapshots:
       style: primary
       start: 96
       end: 125
+  "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\nfunc f(path string) error {\n\tother, err := ns.GetNS(path)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer other.Close()\n\tg := func() error {\n\t\tcur, err := ns.GetCurrentNS()\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn cur.Set()\n\t}\n\treturn g()\n}\n":
+    labels:
+    - source: cur, err := ns.GetCurrentNS()
+      style: primary
+      start: 202
+      end: 231
+  "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\ntype T struct{}\n\nfunc (t *T) a() error {\n\tcur, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer cur.Close()\n\treturn cur.Set()\n}\n\nfunc (t *T) b() error {\n\tcur, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\treturn cur.Set()\n}\n":
+    labels:
+    - source: cur, err := ns.GetCurrentNS()
+      style: primary
+      start: 237
+      end: 266
+  "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\ntype T struct{}\n\nfunc (t *T) f() error {\n\tcur, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\treturn cur.Set()\n}\n":
+    labels:
+    - source: cur, err := ns.GetCurrentNS()
+      style: primary
+      start: 109
+      end: 138
