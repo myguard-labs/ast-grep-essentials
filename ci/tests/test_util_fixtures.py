@@ -32,6 +32,19 @@ class Mutants:
 
 
 MUTANTS: dict[str, Mutants] = {
+    "c/c-preproc-and-reported-chain.yml": Mutants(
+        over_accepting=(
+            "        kind: preproc_if\n    - all:\n",
+            (
+                "        any:\n"
+                "          - kind: preproc_if\n"
+                "          - kind: preproc_elif\n"
+                "    - all:\n"
+            ),
+        ),
+        match_nothing=("kind: binary_expression\n", "kind: comment\n"),
+        malformed=("rule:\n", "rule:\n  kind: [\n"),
+    ),
     "java/java-imported-name.yml": Mutants(
         over_accepting=(
             "    kind: import_declaration\n",

@@ -1,0 +1,30 @@
+id: probe-c-preproc-and-reported-chain
+valid:
+  - |
+    #if (X & M) != 0
+    #endif
+  - |
+    #if defined(X)
+    #elif (X & M) != 0
+    #endif
+  - |
+    #if defined(X)
+    #elif X & M || HAVE_A
+    #endif
+  - |
+    int f(int a, int b) { return a & b; }
+invalid:
+  - |
+    #if A & B
+    #endif
+  - |
+    #if defined(X)
+    #elif HAVE_A & HAVE_B
+    #endif
+  - |
+    #if X || (HAVE_A & HAVE_B)
+    #endif
+  - |
+    #if defined(X)
+    #elif X & (HAVE_A & HAVE_B)
+    #endif
