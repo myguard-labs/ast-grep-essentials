@@ -1,6 +1,32 @@
 id: c-strlen-eq-one-first-char
 snapshots:
-  char *s; size_t n; char sep; void g(void) { if (n == 1) { sep = s[0]; } else if (n == 0) { sep = 0; } }:
+  "#include <stddef.h>\nint pick(const int *v, size_t len) {\n  int first;\n  if (len == 1) { first = v[0]; } else if (len == 0) { first = -1; }\n  return first;\n}":
+    labels:
+    - source: if (len == 1) { first = v[0]; } else if (len == 0) { first = -1; }
+      style: primary
+      start: 72
+      end: 138
+  "#include <stddef.h>\nstruct out { unsigned char c; unsigned char seen; };\nvoid pick(struct out *o, const unsigned char *in, size_t n) {\n  if (n == 1) { o->c = in[0]; } else if (n == 0) { o->c = 0; o->seen = 0; }\n}":
+    labels:
+    - source: if (n == 1) { o->c = in[0]; } else if (n == 0) { o->c = 0; o->seen = 0; }
+      style: primary
+      start: 137
+      end: 210
+  "#include <stddef.h>\nstruct pkt { char buf[8]; char first; };\nvoid pick(struct pkt *p, size_t n) {\n  if (n == 1)\n  {\n    p->first = p->buf[0];\n  }\n  else if (n == 0)\n  {\n    p->first = 0;\n  }\n}":
+    labels:
+    - source: |-
+        if (n == 1)
+          {
+            p->first = p->buf[0];
+          }
+          else if (n == 0)
+          {
+            p->first = 0;
+          }
+      style: primary
+      start: 100
+      end: 190
+  "char *s; size_t n; char sep; void g(void) { if (n == 1) { sep = s[0]; } else if (n == 0) { sep = 0; } }":
     labels:
     - source: if (n == 1) { sep = s[0]; } else if (n == 0) { sep = 0; }
       style: primary

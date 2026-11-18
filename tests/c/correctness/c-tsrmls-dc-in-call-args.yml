@@ -1,5 +1,36 @@
 id: c-tsrmls-dc-in-call-args
 valid:
   - 'void f(void) { php_filter_url(value, flags, charset TSRMLS_CC); }'
+  - |-
+    #include "php.h"
+    static void setn(zend_class_entry *ce, zval *obj TSRMLS_DC) {
+      zend_update_property_long(ce, obj, "n", 1, 5 TSRMLS_CC);
+    }
+  - |-
+    #include "php.h"
+    static void fail(int code TSRMLS_DC) { zend_throw_exception(NULL, "bad", code TSRMLS_CC); }
+  - |-
+    #include "php.h"
+    static void note(const char *msg TSRMLS_DC) {
+      php_error_docref(NULL TSRMLS_CC, E_NOTICE, "%s", msg);
+    }
 invalid:
   - 'void f(void) { php_filter_url(value, flags, charset TSRMLS_DC); }'
+  - |-
+    #include "php.h"
+    static void note(const char *msg TSRMLS_DC) {
+      php_error_docref(NULL, E_NOTICE, "%s", msg, TSRMLS_DC);
+    }
+  - |-
+    #include "php.h"
+    static int fail(int code TSRMLS_DC) {
+      zend_throw_exception(NULL, "bad", code, TSRMLS_DC);
+      return 0;
+    }
+  - |-
+    #include "php.h"
+    static void reg(int module_number TSRMLS_DC) {
+      if (module_number) {
+        zend_register_long_constant("OTHER", sizeof("OTHER"), 2, CONST_CS, module_number, TSRMLS_DC);
+      }
+    }

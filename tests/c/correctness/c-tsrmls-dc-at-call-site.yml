@@ -1,5 +1,30 @@
 id: c-tsrmls-dc-at-call-site
 valid:
   - 'static void f(int a TSRMLS_DC) { g(a, TSRMLS_CC); }'
+  - |-
+    #include "php.h"
+    static void fail(TSRMLS_D) { zend_throw_exception(NULL, "bad", 0 TSRMLS_CC); }
+  - |-
+    #include "php.h"
+    static void warn(int level TSRMLS_DC);
+    static void warn(int level TSRMLS_DC) { php_error_docref(NULL TSRMLS_CC, E_WARNING, "level %d", level); }
+  - |-
+    #include "php.h"
+    static void reg(int module_number TSRMLS_DC) {
+      zend_register_long_constant("MY_CONST", sizeof("MY_CONST"), 1, CONST_CS, module_number TSRMLS_CC);
+    }
 invalid:
   - 'static void f(int a TSRMLS_DC) { g(a, TSRMLS_DC); }'
+  - |-
+    #include "php.h"
+    static void fail(TSRMLS_D) { zend_throw_exception(NULL, "bad", 0, TSRMLS_DC); }
+  - |-
+    #include "php.h"
+    static void reg(int module_number TSRMLS_DC) {
+      zend_register_long_constant("MY_CONST", sizeof("MY_CONST"), 1, CONST_CS, module_number, TSRMLS_DC);
+    }
+  - |-
+    #include "php.h"
+    static void setn(zend_class_entry *ce, zval *obj TSRMLS_DC) {
+      zend_update_property_long(ce, obj, "n", 1, 5, TSRMLS_DC);
+    }

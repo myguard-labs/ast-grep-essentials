@@ -1,10 +1,26 @@
 id: c-times-error-check-lt-zero
 snapshots:
-  ? |-
-    #include <sys/times.h>
-    long f(struct tms *t) { long ticks; if ((ticks = times(t)) < 0) return -1; return ticks; }
-  : labels:
+  "#include <stdio.h>\n#include <sys/times.h>\nlong f(void) {\n  struct tms tb;\n  clock_t start;\n  if ((start = times(&tb)) < 0) { perror(\"times\"); return -1; }\n  return (long)start;\n}":
+    labels:
+    - source: (start = times(&tb)) < 0
+      style: primary
+      start: 97
+      end: 121
+  "#include <sys/times.h>\nint f(void) {\n  struct tms tb;\n  unsigned long ticks;\n  while ((ticks = times(&tb)) < 0) { }\n  return (int)ticks;\n}":
+    labels:
+    - source: (ticks = times(&tb)) < 0
+      style: primary
+      start: 86
+      end: 110
+  "#include <sys/times.h>\nlong f(struct tms *t) { long ticks; if ((ticks = times(t)) < 0) return -1; return ticks; }":
+    labels:
     - source: (ticks = times(t)) < 0
       style: primary
       start: 63
       end: 85
+  "#include <sys/times.h>\nlong f(void) {\n  struct tms tb;\n  clock_t t;\n  return (t = times(&tb)) < 0 ? -1 : (long)t;\n}":
+    labels:
+    - source: (t = times(&tb)) < 0
+      style: primary
+      start: 77
+      end: 97
