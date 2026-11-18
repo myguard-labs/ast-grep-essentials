@@ -4,14 +4,18 @@ id: php-printf-result-as-argument
 language: php
 severity: warning
 message: >-
-  printf() is nested as an argument to another call, so its echoed output and
-  integer return value are passed along as the message. Use sprintf() instead.
+  printf() is passed directly as an argument (in any position) to another call,
+  so its echoed output and integer return value are passed along as the
+  value. Use sprintf() instead.
 note: >-
-  Single-file syntactic match on a literal printf call directly inside another
-  call's argument list. It does not resolve whether the outer function is
-  wp_die or whether the output is otherwise unsafe.
+  Single-file syntactic match on a literal printf call that is itself one
+  argument of another call (any position, one finding per printf argument). It
+  does not resolve whether the outer function is wp_die or whether the output
+  is otherwise unsafe.
 rule:
-  pattern: '$FUNC(printf($$$ARGS))'
+  pattern: 'printf($$$ARGS)'
+  inside:
+    kind: argument
 metadata:
   rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
@@ -21,6 +25,5 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FN: wp_die( printf( ''%s'', $msg ), ''Title'' ) with printf as the first of several arguments, or as a later argument, is not reported (pattern needs printf as the only argument)'
-    - 'FN: $o->handle( printf( ''%s'', $msg ) ), Util::fail( printf( ''%s'', $msg ) ) and wp_die( ''x'' . printf( ''%s'', $msg ) ) are not reported (only a plain function call with printf as its sole argument)'
+    - 'FN: wp_die( ''x'' . printf( ''%s'', $msg ) ) is not reported (printf must be a direct argument, not an operand of another expression)'
     - 'FN: echo printf( ''%s'', $msg ); prints the integer return value of printf and is not reported'
