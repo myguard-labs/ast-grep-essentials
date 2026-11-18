@@ -46,6 +46,15 @@ valid:
     	RETURN_LONG(count);
     	ZEND_UNREACHABLE();
     }
+  - |-
+    PHP_METHOD(Dom_Node, checkedKind)
+    {
+    	if (zend_parse_parameters_none() == FAILURE) {
+    		zend_throw_error(NULL, "bad call");
+    		RETURN_THROWS();
+    	}
+    	ZEND_UNREACHABLE();
+    }
 invalid:
   - "PHP_METHOD(Dom_Node, __construct)\n{\n\tZEND_UNREACHABLE();\n}"
   - |-
@@ -98,4 +107,31 @@ invalid:
     PHP_METHOD(Dom_Node, serialize)
     {
     	ZEND_UNREACHABLE();
+    }
+  - |-
+    ZEND_METHOD(Dom_Node, zendHeader)
+    {
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, checkedNone)
+    {
+    	if (zend_parse_parameters_none() == FAILURE) {
+    		RETURN_THROWS();
+    	}
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, checkedBare)
+    {
+    	if (zend_parse_parameters(ZEND_NUM_ARGS(), "") == FAILURE)
+    		RETURN_THROWS();
+    	ZEND_UNREACHABLE();
+    }
+  - |-
+    PHP_METHOD(Dom_Node, trailingThrows)
+    {
+    	ZEND_PARSE_PARAMETERS_NONE();
+    	ZEND_UNREACHABLE();
+    	RETURN_THROWS();
     }
