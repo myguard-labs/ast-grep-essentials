@@ -1,10 +1,45 @@
 id: missing-return-value-cpp
 snapshots:
-  ? |-
-    int f(int x) {
-      x++;
-    }
-  : labels:
+  "#include <string>\nstd::string label(int x) {\n  std::string s = \"n\";\n  s += std::to_string(x);\n}":
+    labels:
+    - source: |-
+        std::string label(int x) {
+          std::string s = "n";
+          s += std::to_string(x);
+        }
+      style: primary
+      start: 18
+      end: 95
+    - source: |-
+        {
+          std::string s = "n";
+          s += std::to_string(x);
+        }
+      style: secondary
+      start: 43
+      end: 95
+  "bool is_positive(int x) {\n  if (x > 0) {\n    x--;\n  }\n}":
+    labels:
+    - source: |-
+        bool is_positive(int x) {
+          if (x > 0) {
+            x--;
+          }
+        }
+      style: primary
+      start: 0
+      end: 55
+    - source: |-
+        {
+          if (x > 0) {
+            x--;
+          }
+        }
+      style: secondary
+      start: 24
+      end: 55
+  "int f(int x) {\n  x++;\n}":
+    labels:
     - source: |-
         int f(int x) {
           x++;
@@ -19,3 +54,37 @@ snapshots:
       style: secondary
       start: 13
       end: 23
+  "struct Counter {\n  int count_ = 0;\n  int bump() {\n    count_++;\n  }\n};":
+    labels:
+    - source: |-
+        int bump() {
+            count_++;
+          }
+      style: primary
+      start: 37
+      end: 67
+    - source: |-
+        {
+            count_++;
+          }
+      style: secondary
+      start: 48
+      end: 67
+  "struct Counter {\n  int count_ = 0;\n  int get() const;\n};\nint Counter::get() const {\n  int copy = count_;\n  copy++;\n}":
+    labels:
+    - source: |-
+        int Counter::get() const {
+          int copy = count_;
+          copy++;
+        }
+      style: primary
+      start: 57
+      end: 116
+    - source: |-
+        {
+          int copy = count_;
+          copy++;
+        }
+      style: secondary
+      start: 82
+      end: 116

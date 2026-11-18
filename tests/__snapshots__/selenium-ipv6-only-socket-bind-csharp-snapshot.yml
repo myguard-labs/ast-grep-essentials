@@ -1,6 +1,26 @@
 id: selenium-ipv6-only-socket-bind-csharp
 snapshots:
-  using var socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);:
+  "using System.Net.Sockets;\n\npublic sealed class Server\n{\n    private readonly Socket socket = new Socket(\n        AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);\n\n    public Socket Socket => socket;\n}":
+    labels:
+    - source: |-
+        new Socket(
+                AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp)
+      style: primary
+      start: 93
+      end: 179
+  "using System.Net.Sockets;\n\npublic static class Datagram\n{\n    public static Socket Create()\n    {\n        return new Socket(AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp);\n    }\n}":
+    labels:
+    - source: new Socket(AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp)
+      style: primary
+      start: 113
+      end: 189
+  "using System.Net;\nusing System.Net.Sockets;\n\npublic static class Listener\n{\n    public static Socket Bind(int port)\n    {\n        var socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);\n        socket.Bind(new IPEndPoint(IPAddress.IPv6Any, port));\n        return socket;\n    }\n}":
+    labels:
+    - source: new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp)
+      style: primary
+      start: 143
+      end: 220
+  "using var socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);":
     labels:
     - source: new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp)
       style: primary

@@ -3,5 +3,73 @@ valid:
 - void SaveLastPreferences() { base::DictValue dict; dict.Set(options::kNodeIntegration, node_integration_); dict.Set(options::kNodeIntegrationInWorker, node_integration_in_worker_); }
 - // void SaveLastPreferences() { base::DictValue dict; dict.Set(options::kNodeIntegration, node_integration_); }
 - const char *astgrep_fixture = "void SaveLastPreferences() { base::DictValue dict; dict.Set(options::kNodeIntegration, node_integration_); }";
+- |-
+  namespace options {
+  constexpr const char kNodeIntegration[] = "nodeIntegration";
+  constexpr const char kNodeIntegrationInWorker[] = "nodeIntegrationInWorker";
+  constexpr const char kSandbox[] = "sandbox";
+  }
+  struct DictValue {
+    void Set(const char *key, bool value) {
+      (void)key;
+      (void)value;
+    }
+  };
+  void SaveLastPreferences(DictValue &prefs, bool node_integration, bool in_worker) {
+    prefs.Set(options::kNodeIntegrationInWorker, in_worker);
+    prefs.Set(options::kNodeIntegration, node_integration);
+  }
 invalid:
 - void SaveLastPreferences() { base::DictValue dict; dict.Set(options::kNodeIntegration, node_integration_); }
+- |-
+  namespace options {
+  constexpr const char kNodeIntegration[] = "nodeIntegration";
+  constexpr const char kNodeIntegrationInWorker[] = "nodeIntegrationInWorker";
+  constexpr const char kSandbox[] = "sandbox";
+  }
+  struct DictValue {
+    void Set(const char *key, bool value) {
+      (void)key;
+      (void)value;
+    }
+  };
+  void SaveLastPreferences(DictValue &prefs, bool node_integration, bool sandbox) {
+    prefs.Set(options::kNodeIntegration, node_integration);
+    prefs.Set(options::kSandbox, sandbox);
+  }
+- |-
+  namespace options {
+  constexpr const char kNodeIntegration[] = "nodeIntegration";
+  constexpr const char kNodeIntegrationInWorker[] = "nodeIntegrationInWorker";
+  constexpr const char kSandbox[] = "sandbox";
+  }
+  struct DictValue {
+    void Set(const char *key, bool value) {
+      (void)key;
+      (void)value;
+    }
+  };
+  struct Window {
+    bool node_integration_ = false;
+    void SaveLastPreferences(DictValue &dict) const;
+  };
+  void Window::SaveLastPreferences(DictValue &dict) const {
+    dict.Set(options::kNodeIntegration, node_integration_);
+  }
+- |-
+  namespace options {
+  constexpr const char kNodeIntegration[] = "nodeIntegration";
+  constexpr const char kNodeIntegrationInWorker[] = "nodeIntegrationInWorker";
+  constexpr const char kSandbox[] = "sandbox";
+  }
+  struct DictValue {
+    void Set(const char *key, bool value) {
+      (void)key;
+      (void)value;
+    }
+  };
+  void SaveLastPreferences(DictValue &dict, bool node_integration) {
+    if (node_integration) {
+      dict.Set(options::kNodeIntegration, true);
+    }
+  }

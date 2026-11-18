@@ -5,9 +5,56 @@ valid:
     UnicodeString make(const char *buf, int32_t len) {
       return UnicodeString::fromUTF8(StringPiece(buf, len));
     }
+  - |-
+    #include <cstdint>
+    #include <string>
+    #include <unicode/stringpiece.h>
+    #include <unicode/unistr.h>
+    using icu::StringPiece;
+    using icu::UnicodeString;
+    UnicodeString make(const std::string &utf8) {
+      return UnicodeString::fromUTF8(StringPiece(utf8));
+    }
+  - |-
+    #include <cstdint>
+    #include <unicode/unistr.h>
+    using icu::UnicodeString;
+    UnicodeString make(const char *buf, int32_t len) {
+      return UnicodeString(buf, len, "UTF-8");
+    }
+  - |-
+    #include <cstdint>
+    #include <unicode/unistr.h>
+    using icu::UnicodeString;
+    UnicodeString make(const char16_t *buf, int32_t len) {
+      return UnicodeString(buf, len);
+    }
 invalid:
   - |-
     #include <unicode/unistr.h>
     UnicodeString make(const char *buf, int32_t len) {
       return UnicodeString(buf, len, UnicodeString::kInvariant);
+    }
+  - |-
+    #include <cstdint>
+    #include <unicode/unistr.h>
+    using icu::UnicodeString;
+    int32_t length_of(const char *utf8_buf, int32_t len) {
+      UnicodeString text = UnicodeString(utf8_buf, len, UnicodeString::kInvariant);
+      return text.length();
+    }
+  - |-
+    #include <cstdint>
+    #include <string>
+    #include <unicode/unistr.h>
+    using icu::UnicodeString;
+    UnicodeString from_std(const std::string &utf8) {
+      return UnicodeString(utf8.c_str(), static_cast<int32_t>(utf8.size()), UnicodeString::kInvariant);
+    }
+  - |-
+    #include <cstdint>
+    #include <unicode/unistr.h>
+    using icu::UnicodeString;
+    void append_text(UnicodeString &out, const char *utf8_buf, int32_t len) {
+      out.append(UnicodeString(utf8_buf, len, UnicodeString::kInvariant));
     }

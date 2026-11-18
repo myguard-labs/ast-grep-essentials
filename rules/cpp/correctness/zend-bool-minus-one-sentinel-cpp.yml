@@ -13,6 +13,11 @@ note: >-
 rule:
   pattern: 'zend_bool $VAR = (zend_bool)-1;'
 metadata:
+  todo_cases:
+    - 'Observed miss: static zend_bool v = (zend_bool)-1; at namespace scope is not reported'
+    - 'Observed miss: const zend_bool v = (zend_bool)-1; is not reported'
+    - 'Observed miss: spellings (zend_bool)(-1) and static_cast<zend_bool>(-1) are not reported'
+    - 'Observed miss: a second declarator (zend_bool a = (zend_bool)-1, b = (zend_bool)-1;) is not reported'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
