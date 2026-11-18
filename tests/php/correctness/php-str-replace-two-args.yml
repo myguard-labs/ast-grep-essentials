@@ -7,6 +7,18 @@ valid:
     $t = str_replace('a', 'b', $t, $n);
   - |-
     $t = str_replace(['a' => 1], ['b'], $t);
+  - |
+    <?php
+    $headers = str_replace("\r\n", "\n", $headers);
+  - |-
+    <?php
+    $t = str_replace('a', 'b', $t);
+  - |-
+    <?php
+    $t = str_replace(["a", "b"], "", $t);
+  - |-
+    <?php
+    $t = str_replace($s, $r, $t, $n);
 invalid:
   - '$h = str_replace(''\r\n'', ''\n'');'
   - |-
@@ -15,3 +27,15 @@ invalid:
     $t = str_replace(['a', 'b'], '');
   - |-
     $t = str_replace(search: 'a', replace: 'b');
+  - |
+    <?php
+    $headers = str_replace("\r\n", "\n");
+  - |-
+    <?php
+    $t = str_replace("a", "b");
+  - |-
+    <?php
+    $t = str_replace($s, $r);
+  - |-
+    <?php
+    $t = str_replace(["a", "b"], "");
