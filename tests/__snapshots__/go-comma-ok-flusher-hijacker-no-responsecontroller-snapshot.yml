@@ -1,8 +1,26 @@
 id: go-comma-ok-flusher-hijacker-no-responsecontroller
 snapshots:
-  ? "package p\n\nimport \"net/http\"\n\nfunc flush(w http.ResponseWriter) {\n\tif fl, ok := w.(http.Flusher); ok {\n\t\tfl.Flush()\n\t}\n}"
-  : labels:
+  "package p\n\nimport \"net/http\"\n\nfunc flush(w http.ResponseWriter) {\n\tif fl, ok := w.(http.Flusher); ok {\n\t\tfl.Flush()\n\t}\n}":
+    labels:
     - source: fl, ok := w.(http.Flusher)
       style: primary
       start: 70
       end: 96
+  "package p\n\nimport \"net/http\"\n\nfunc stream(w http.ResponseWriter, chunks []string) {\n\tfor _, c := range chunks {\n\t\tif _, err := w.Write([]byte(c)); err != nil {\n\t\t\treturn\n\t\t}\n\t\tif fl, ok := w.(http.Flusher); ok {\n\t\t\tfl.Flush()\n\t\t}\n\t}\n}\n":
+    labels:
+    - source: fl, ok := w.(http.Flusher)
+      style: primary
+      start: 179
+      end: 205
+  "package p\n\nimport \"net/http\"\n\ntype handler struct{ w http.ResponseWriter }\n\nfunc (h *handler) flush() {\n\tfl, ok := h.w.(http.Flusher)\n\tif ok {\n\t\tfl.Flush()\n\t}\n}\n":
+    labels:
+    - source: fl, ok := h.w.(http.Flusher)
+      style: primary
+      start: 105
+      end: 133
+  "package p\n\nimport nethttp \"net/http\"\n\nfunc flush(w nethttp.ResponseWriter) {\n\tfl, ok := w.(nethttp.Flusher)\n\tif !ok {\n\t\treturn\n\t}\n\tfl.Flush()\n}\n":
+    labels:
+    - source: fl, ok := w.(nethttp.Flusher)
+      style: primary
+      start: 78
+      end: 107

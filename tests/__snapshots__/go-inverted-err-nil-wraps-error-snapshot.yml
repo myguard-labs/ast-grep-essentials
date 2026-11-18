@@ -1,8 +1,38 @@
 id: go-inverted-err-nil-wraps-error
 snapshots:
-  ? "if err == nil {\n\treturn fmt.Errorf(\"write header: %w\", err)\n}"
-  : labels:
-    - source: "if err == nil {\n\treturn fmt.Errorf(\"write header: %w\", err)\n}"
+  "if err == nil {\n\treturn fmt.Errorf(\"write header: %w\", err)\n}":
+    labels:
+    - source: |-
+        if err == nil {
+        	return fmt.Errorf("write header: %w", err)
+        }
       style: primary
       start: 0
       end: 61
+  "package p\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\nfunc decode(b []byte, v any) error {\n\terr := json.Unmarshal(b, v)\n\tif err == nil {\n\t\treturn fmt.Errorf(\"decode: %v\", err)\n\t}\n\treturn nil\n}\n":
+    labels:
+    - source: |-
+        if err == nil {
+        		return fmt.Errorf("decode: %v", err)
+        	}
+      style: primary
+      start: 114
+      end: 171
+  "package p\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nconst msg = \"convert: %w\"\n\ntype conv struct{}\n\nfunc (conv) run(s string) error {\n\t_, err := strconv.ParseBool(s)\n\tif err == nil {\n\t\treturn fmt.Errorf(msg, err)\n\t}\n\treturn err\n}\n":
+    labels:
+    - source: |-
+        if err == nil {
+        		return fmt.Errorf(msg, err)
+        	}
+      style: primary
+      start: 155
+      end: 203
+  "package p\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nfunc parse(s string) error {\n\t_, err := strconv.Atoi(s)\n\tif err == nil {\n\t\treturn fmt.Errorf(\"parse: %w\", err)\n\t}\n\treturn nil\n}\n":
+    labels:
+    - source: |-
+        if err == nil {
+        		return fmt.Errorf("parse: %w", err)
+        	}
+      style: primary
+      start: 98
+      end: 154

@@ -1,5 +1,106 @@
 id: go-health-check-time-unconverted
 valid:
   - 'hc.Interval = generateTime(upstream.HealthCheck.Interval)'
+  - |
+    package p
+
+    type HealthCheckConfig struct {
+    	Interval int64
+    	Timeout  int64
+    }
+
+    type Upstream struct{ HealthCheck HealthCheckConfig }
+
+    type HC struct{ Interval, Timeout int64 }
+
+    func generateTime(n int64) int64 { return n * 1000 }
+
+    func conv(upstream *Upstream, hc *HC) {
+    	hc.Interval = generateTime(upstream.HealthCheck.Interval)
+    	hc.Timeout = generateTime(upstream.HealthCheck.Timeout)
+    }
+  - |
+    package p
+
+    type HealthCheckConfig struct{ StartPeriod int64 }
+
+    type Upstream struct{ HealthCheck HealthCheckConfig }
+
+    type Spec struct{ StartPeriod int64 }
+
+    type Out struct{ Spec Spec }
+
+    func generateTime(n int64) int64 { return n * 1000 }
+
+    func conv(upstream *Upstream, out *Out) {
+    	out.Spec.StartPeriod = generateTime(upstream.HealthCheck.StartPeriod)
+    }
+  - |
+    package p
+
+    type HealthCheckConfig struct{ Interval int64 }
+
+    type Upstream struct {
+    	HealthCheck HealthCheckConfig
+    	Retries     int
+    }
+
+    type HC struct {
+    	Interval int64
+    	Retries  int
+    }
+
+    func generateTime(n int64) int64 { return n * 1000 }
+
+    func conv(upstream *Upstream, hc *HC) {
+    	hc.Interval = generateTime(upstream.HealthCheck.Interval)
+    	hc.Retries = upstream.Retries
+    }
 invalid:
   - 'hc.Interval = upstream.HealthCheck.Interval'
+  - |
+    package p
+
+    type HealthCheckConfig struct {
+    	Interval int64
+    	Timeout  int64
+    }
+
+    type Upstream struct{ HealthCheck HealthCheckConfig }
+
+    type HC struct{ Interval, Timeout int64 }
+
+    func generateTime(n int64) int64 { return n * 1000 }
+
+    func conv(upstream *Upstream, hc *HC) {
+    	hc.Interval = generateTime(upstream.HealthCheck.Interval)
+    	hc.Timeout = upstream.HealthCheck.Timeout
+    }
+  - |
+    package p
+
+    type HealthCheckConfig struct{ StartPeriod int64 }
+
+    type Upstream struct{ HealthCheck HealthCheckConfig }
+
+    type Spec struct{ StartPeriod int64 }
+
+    type Out struct{ Spec Spec }
+
+    func conv(upstream *Upstream, out *Out) {
+    	out.Spec.StartPeriod = upstream.HealthCheck.StartPeriod
+    }
+  - |
+    package p
+
+    type HealthCheckConfig struct{ Interval int64 }
+
+    type Upstream struct{ HealthCheck HealthCheckConfig }
+
+    type HC struct{ Interval int64 }
+
+    func conv(upstream *Upstream) *HC {
+    	hc := &HC{}
+    	hc.Interval = upstream.HealthCheck.Interval
+    	return hc
+    }

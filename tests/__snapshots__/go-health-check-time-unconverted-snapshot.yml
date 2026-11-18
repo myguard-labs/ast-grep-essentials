@@ -6,3 +6,21 @@ snapshots:
       style: primary
       start: 0
       end: 43
+  "package p\n\ntype HealthCheckConfig struct {\n\tInterval int64\n\tTimeout  int64\n}\n\ntype Upstream struct{ HealthCheck HealthCheckConfig }\n\ntype HC struct{ Interval, Timeout int64 }\n\nfunc generateTime(n int64) int64 { return n * 1000 }\n\nfunc conv(upstream *Upstream, hc *HC) {\n\thc.Interval = generateTime(upstream.HealthCheck.Interval)\n\thc.Timeout = upstream.HealthCheck.Timeout\n}\n":
+    labels:
+    - source: hc.Timeout = upstream.HealthCheck.Timeout
+      style: primary
+      start: 330
+      end: 371
+  "package p\n\ntype HealthCheckConfig struct{ Interval int64 }\n\ntype Upstream struct{ HealthCheck HealthCheckConfig }\n\ntype HC struct{ Interval int64 }\n\nfunc conv(upstream *Upstream) *HC {\n\thc := &HC{}\n\thc.Interval = upstream.HealthCheck.Interval\n\treturn hc\n}\n":
+    labels:
+    - source: hc.Interval = upstream.HealthCheck.Interval
+      style: primary
+      start: 199
+      end: 242
+  "package p\n\ntype HealthCheckConfig struct{ StartPeriod int64 }\n\ntype Upstream struct{ HealthCheck HealthCheckConfig }\n\ntype Spec struct{ StartPeriod int64 }\n\ntype Out struct{ Spec Spec }\n\nfunc conv(upstream *Upstream, out *Out) {\n\tout.Spec.StartPeriod = upstream.HealthCheck.StartPeriod\n}\n":
+    labels:
+    - source: out.Spec.StartPeriod = upstream.HealthCheck.StartPeriod
+      style: primary
+      start: 230
+      end: 285

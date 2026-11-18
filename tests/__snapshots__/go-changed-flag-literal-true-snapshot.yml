@@ -1,8 +1,26 @@
 id: go-changed-flag-literal-true
 snapshots:
-  func norm(data string) (string, bool, error) { r := data + "/"; return r, true, nil }:
+  "func norm(data string) (string, bool, error) { r := data + \"/\"; return r, true, nil }":
     labels:
     - source: return r, true, nil
       style: primary
       start: 64
       end: 83
+  "package p\n\nfunc clamp(v, hi int) (int, bool, error) {\n\tif v > hi {\n\t\tv = hi\n\t}\n\treturn v, true, nil\n}\n":
+    labels:
+    - source: return v, true, nil
+      style: primary
+      start: 80
+      end: 99
+  "package p\n\nimport \"strings\"\n\nfunc slash(data string) (string, bool, error) {\n\tif !strings.HasSuffix(data, \"/\") {\n\t\tdata += \"/\"\n\t}\n\treturn data, true, nil\n}\n":
+    labels:
+    - source: return data, true, nil
+      style: primary
+      start: 131
+      end: 153
+  "package p\n\nimport \"strings\"\n\nfunc trim(data string) (string, bool, error) {\n\treturn strings.TrimSpace(data), true, nil\n}\n":
+    labels:
+    - source: return strings.TrimSpace(data), true, nil
+      style: primary
+      start: 77
+      end: 118

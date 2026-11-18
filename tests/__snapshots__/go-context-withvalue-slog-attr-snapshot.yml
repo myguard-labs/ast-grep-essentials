@@ -1,8 +1,31 @@
 id: go-context-withvalue-slog-attr
 snapshots:
-  ? "package p\n\nimport (\n\t\"context\"\n\t\"log/slog\"\n)\n\nfunc f(ctx context.Context, id string) context.Context {\n\treturn context.WithValue(ctx, correlationKey, slog.Any(\"correlation_id\", id))\n}\n"
-  : labels:
+  "package p\n\nimport (\n\t\"context\"\n\t\"log/slog\"\n)\n\nfunc f(ctx context.Context, id string) context.Context {\n\treturn context.WithValue(ctx, correlationKey, slog.Any(\"correlation_id\", id))\n}\n":
+    labels:
     - source: context.WithValue(ctx, correlationKey, slog.Any("correlation_id", id))
       style: primary
       start: 111
       end: 181
+  "package p\n\nimport (\n\t\"context\"\n\t\"log/slog\"\n)\n\ntype ctxKey struct{}\n\nfunc f(ctx context.Context, id string) context.Context {\n\tctx = context.WithValue(ctx, ctxKey{}, slog.String(\"request_id\", id))\n\treturn ctx\n}\n":
+    labels:
+    - source: context.WithValue(ctx, ctxKey{}, slog.String("request_id", id))
+      style: primary
+      start: 132
+      end: 195
+  "package p\n\nimport (\n\t\"context\"\n\t\"log/slog\"\n)\n\ntype ctxKey struct{}\n\nfunc f(ctx context.Context, id string, n int) context.Context {\n\treturn context.WithValue(\n\t\tctx,\n\t\tctxKey{},\n\t\tslog.Group(\"req\", slog.String(\"id\", id), slog.Int(\"n\", n)),\n\t)\n}\n":
+    labels:
+    - source: |-
+        context.WithValue(
+        		ctx,
+        		ctxKey{},
+        		slog.Group("req", slog.String("id", id), slog.Int("n", n)),
+        	)
+      style: primary
+      start: 140
+      end: 242
+  "package p\n\nimport (\n\t\"context\"\n\t\"log/slog\"\n)\n\ntype ctxKey struct{}\n\nfunc f(ctx context.Context, n int) context.Context {\n\treturn context.WithValue(ctx, ctxKey{}, slog.Int(\"attempt\", n))\n}\n":
+    labels:
+    - source: context.WithValue(ctx, ctxKey{}, slog.Int("attempt", n))
+      style: primary
+      start: 129
+      end: 185

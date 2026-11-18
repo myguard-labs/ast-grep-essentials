@@ -3,7 +3,64 @@ valid:
   - >-
     func norm(data string) (string, bool, error) { r := data + "/"; return r, r
     != data, nil }
+  - |
+    package p
+
+    func norm(data string) (string, bool, error) {
+    	r := data + "/"
+    	changed := r != data
+    	return r, changed, nil
+    }
+  - |
+    package p
+
+    import "errors"
+
+    func clamp(v, hi int) (int, bool, error) {
+    	if hi < 0 {
+    		return 0, false, errors.New("negative bound")
+    	}
+    	out := min(v, hi)
+    	return out, out != v, nil
+    }
+  - |
+    package p
+
+    import "bytes"
+
+    func trim(b []byte) ([]byte, bool, error) {
+    	out := bytes.TrimSpace(b)
+    	return out, !bytes.Equal(out, b), nil
+    }
 invalid:
   - >-
     func norm(data string) (string, bool, error) { r := data + "/"; return r,
     true, nil }
+  - |
+    package p
+
+    import "strings"
+
+    func trim(data string) (string, bool, error) {
+    	return strings.TrimSpace(data), true, nil
+    }
+  - |
+    package p
+
+    import "strings"
+
+    func slash(data string) (string, bool, error) {
+    	if !strings.HasSuffix(data, "/") {
+    		data += "/"
+    	}
+    	return data, true, nil
+    }
+  - |
+    package p
+
+    func clamp(v, hi int) (int, bool, error) {
+    	if v > hi {
+    		v = hi
+    	}
+    	return v, true, nil
+    }

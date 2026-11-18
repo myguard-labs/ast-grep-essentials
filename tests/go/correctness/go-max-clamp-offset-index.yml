@@ -1,5 +1,62 @@
 id: go-max-clamp-offset-index
 valid:
   - "package p\n\nfunc f(s string, abs, start int) byte {\n\treturn s[abs-start]\n}"
+  - |
+    package p
+
+    import "errors"
+
+    func at(s string, off int) (byte, error) {
+    	if off < 0 || off >= len(s) {
+    		return 0, errors.New("offset out of range")
+    	}
+    	return s[off], nil
+    }
+  - |
+    package p
+
+    func tail(s string, k int) string {
+    	return s[max(0, len(s)-k):]
+    }
+  - |
+    package p
+
+    func buf(n int) []byte {
+    	return make([]byte, max(1, n))
+    }
 invalid:
   - "package p\n\nfunc f(s string, abs, start int) byte {\n\treturn s[max(0, abs-start)]\n}"
+  - |
+    package p
+
+    func prev(xs []int, i int) int {
+    	if i >= len(xs) {
+    		return 0
+    	}
+    	return xs[max(0, i-1)]
+    }
+  - |
+    package p
+
+    type reader struct {
+    	buf []byte
+    	pos int
+    }
+
+    func (r *reader) back(delta int) byte {
+    	if r.pos > len(r.buf) || len(r.buf) == 0 {
+    		return 0
+    	}
+    	return r.buf[max(0, r.pos-delta)]
+    }
+  - |
+    package p
+
+    import "strings"
+
+    func firstSep(data string, sep string) byte {
+    	if len(data) == 0 {
+    		return 0
+    	}
+    	return data[max(0, strings.Index(data, sep))]
+    }
