@@ -4,8 +4,40 @@ valid:
     struct handlers {
         FILE *err;
     };
+  - |-
+    struct io {
+        int in_fd;
+        int out_fd;
+    };
+  - |-
+    #include <stdio.h>
+    void f(void) { fputs("x", stderr); }
+  - |-
+    #include <stdio.h>
+    struct handlers {
+        FILE *err;
+    };
+    void f(struct handlers *h) { fputs("x", h->err); }
 invalid:
   - |-
     struct handlers {
         FILE *stderr;
+    };
+  - |-
+    #include <stdio.h>
+    struct io {
+        FILE *stdout;
+        int fd;
+    };
+  - |-
+    #include <stdio.h>
+    struct io {
+        char *name;
+        FILE *stdin;
+    };
+  - |-
+    #include <stdio.h>
+    union out {
+        FILE *stderr;
+        int fd;
     };

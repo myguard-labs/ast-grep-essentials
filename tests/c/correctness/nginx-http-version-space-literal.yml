@@ -1,5 +1,17 @@
 id: nginx-http-version-space-literal
 valid:
   - 'http_response_ver = "HTTP/1.1";'
+  - |-
+    const char *v = "HTTP/1.0 200 OK";
+  - |-
+    const char *v = "HTTP/2";
+  - |-
+    const char *v = "HTTP version mismatch";
 invalid:
   - 'http_response_ver = "HTTP 1.1";'
+  - |-
+    const char *v = "HTTP 1.0";
+  - |-
+    const char *v = "HTTP 2";
+  - |-
+    const char *v = "HTTP 1.1 200 OK";

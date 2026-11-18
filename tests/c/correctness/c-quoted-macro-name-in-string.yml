@@ -1,5 +1,27 @@
 id: c-quoted-macro-name-in-string
 valid:
   - 'printf("in " BASE_SECTION "\n");'
+  - |-
+    #include <stdio.h>
+    #define SECTION "main"
+    void f(void) { printf("in \"" SECTION "\"\n"); }
+  - |-
+    #include <stdio.h>
+    void f(const char *name) { printf("name is \"%s\"\n", name); }
+  - |-
+    #include <stdio.h>
+    void f(void) { puts("file \"Makefile\" is missing"); }
 invalid:
   - 'printf("in \" BASE_SECTION \"\n");'
+  - |-
+    #include <stdio.h>
+    #define DATADIR "/usr/share/app"
+    void f(void) { fprintf(stderr, "path is \"DATADIR\"\n"); }
+  - |-
+    #include <stdio.h>
+    #define VERSION "1.2"
+    void f(void) { puts("\"VERSION\""); }
+  - |-
+    #include <stdio.h>
+    #define MAX_LEN 64
+    void f(void) { puts("limit \" MAX_LEN \" exceeded"); }

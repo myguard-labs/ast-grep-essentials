@@ -2,5 +2,18 @@ id: c-raw-inline-keyword
 valid:
   - 'static ossl_inline int f(void) { return 0; }'
   - 'int f(void) { static inline int g(void); return 0; }'
+  - |-
+    static int f(void) { return 0; }
+  - |-
+    int f(void) {
+        int inline_calls = 0;
+        return inline_calls;
+    }
 invalid:
   - 'static inline int f(void) { return 0; }'
+  - |-
+    inline int twice(int x) { return x * 2; }
+  - |-
+    inline static int g(void) { return 1; }
+  - |-
+    static inline const char *name(void) { return "n"; }

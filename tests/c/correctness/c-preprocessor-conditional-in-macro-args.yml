@@ -8,6 +8,26 @@ valid:
      REGISTER_LONG_CONSTANT("X", 0, CONST_CS);
     #endif
     }
+  - |-
+    #define SUM(a, b) ((a) + (b))
+    int g(int x) {
+        int r = SUM(x, 1);
+    #ifdef FOO
+        r += 1;
+    #endif
+        return r;
+    }
+  - |-
+    #define SUM(a, b) ((a) + (b))
+    int g(int x) {
+    #ifdef FOO
+        int v = 1;
+    #else
+        int v = 0;
+    #endif
+        return SUM(x,
+                   v);
+    }
 invalid:
   - |-
     void f(void) { REGISTER_LONG_CONSTANT("X",
@@ -17,3 +37,27 @@ invalid:
      0
     #endif
     , CONST_CS); }
+  - |-
+    #define SUM(a, b) ((a) + (b))
+    int g(int x) {
+        return SUM(x,
+    #ifndef BIG
+                   1
+    #else
+                   2
+    #endif
+                   );
+    }
+  - |-
+    #define SUM(a, b) ((a) + (b))
+    int g(int x) {
+        return SUM(x,
+      #  if defined(FOO)
+                   1
+      #  elif defined(BAR)
+                   2
+      #  else
+                   3
+      #  endif
+                   );
+    }

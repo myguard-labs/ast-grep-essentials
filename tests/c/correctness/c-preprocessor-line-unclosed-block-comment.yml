@@ -4,8 +4,27 @@ valid:
     #if 0 /* was: #ifdef RSAref */
     #else
     #endif
+  - |-
+    #include <stddef.h> /* size_t */
+    size_t n = 4;
+  - |-
+    /* header comment
+       spanning two lines */
+    #define LIMIT 10
+  - |-
+    #define A 1 /* first */ /* second */
+    int x = A;
 invalid:
   - |-
     #if 0 /* was: #ifdef RSAref
     #else
     #endif
+  - |-
+    #define LIMIT 10 /* maximum items
+    int x = LIMIT;
+  - |-
+    #  include <stddef.h> /* for size_t
+    size_t n = 4;
+  - |-
+    #undef LIMIT /* drop the limit *
+    int y;
