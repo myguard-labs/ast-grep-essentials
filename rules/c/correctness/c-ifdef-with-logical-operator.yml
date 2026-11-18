@@ -2,23 +2,22 @@
 
 id: c-ifdef-with-logical-operator
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  #ifdef/#ifndef takes a single identifier; use #if defined(A) && defined(B)
-  instead.
+  Deprecated rule ID; use c-ifdef-compound-condition. #ifdef/#ifndef takes a
+  single identifier; use #if defined(A) && defined(B) instead.
 note: >-
-  Matches only the directive's first line textually; it does not check macro
-  definitions or preprocessor semantics.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-ifdef-compound-condition and do not emit this rule.
 rule:
   kind: preproc_ifdef
-  regex: '^\s*#\s*if(n)?def[^\n]*(&&|\|\|)'
+  regex: '^#[ \t]*ifn?def[ \t]+[A-Za-z_][A-Za-z0-9_]*([ \t]+[^ \t\r\n/]|[^ \t\r\n/A-Za-z0-9_])'
 metadata:
-  rule_modified_at: '2026-10-20'
+  deprecated_alias_of: c-ifdef-compound-condition
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
   created_at: '2026-10-20'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - "False positive: '#ifdef A // a || b' (a || inside a trailing comment) is reported."

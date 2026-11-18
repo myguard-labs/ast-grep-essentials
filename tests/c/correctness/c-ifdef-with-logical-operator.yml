@@ -1,6 +1,26 @@
 id: c-ifdef-with-logical-operator
 valid:
   - |-
+    #if PHP_WIN32 && ZTS
+    #endif
+  - |-
+      #ifndef FOO_H
+      #define FOO_H
+      int x;
+      #endif
+  - |-
+      #ifdef FOO /* why */
+      int x;
+      #endif
+  - |-
+      #ifdef FOO // why
+      int x;
+      #endif
+  - |-
+      #if defined(FOO) && defined(BAR)
+      int x;
+      #endif
+  - |-
     #ifdef PHP_WIN32
     #endif
   - |-
@@ -30,8 +50,48 @@ invalid:
     int x;
     #endif
   - |-
+      #ifndef FOO && BAR
+      int x;
+      #endif
+  - |-
+      #ifdef FOO BAR
+      int x;
+      #endif
+  - |-
+      #  ifdef FOO || BAR
+      int x;
+      #endif
+  - |-
+      #ifdef FOO == 1
+      int x;
+      #endif
+  - |-
+      void f(void) {
+      #ifdef FOO && BAR
+        g();
+      #endif
+      }
+  - |-
+    #ifdef FOO&&BAR
+    int x;
+    #endif
+  - |-
+    #ifdef FOO(X)
+    int x;
+    #endif
+  - |-
+    #ifndef FOO || BAR
+    int x;
+    #endif
+  - |-
     #ifdef A||B
     int x;
+    #endif
+  - |-
+    #ifdef A
+    #ifndef FOO BAR
+    int x;
+    #endif
     #endif
   - |-
     #  ifdef A && B

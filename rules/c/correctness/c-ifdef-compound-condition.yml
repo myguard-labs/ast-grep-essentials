@@ -5,21 +5,20 @@ language: c
 severity: warning
 message: >-
   #ifdef/#ifndef accepts a single identifier; extra tokens or operators on
-  this line are ignored or rejected. Use #if defined(A) && defined(B) instead.
+  this line (with or without a blank before them) are ignored or rejected.
+  Use #if defined(A) && defined(B) instead.
 note: >-
-  Matches only the directive line's text, looking for a second token after the
-  first macro name. It does not evaluate macros or check how the preprocessor
+  Matches only the directive line's text, looking for extra text after the
+  first macro name, including operators or parentheses with no blank before them. It does not evaluate macros or check how the preprocessor
   handles the extra tokens.
 rule:
   kind: preproc_ifdef
-  regex: '^#[ \t]*ifn?def[ \t]+\w+[ \t]+[^ \t\r\n/]'
+  regex: '^#[ \t]*ifn?def[ \t]+[A-Za-z_][A-Za-z0-9_]*([ \t]+[^ \t\r\n/]|[^ \t\r\n/A-Za-z0-9_])'
 metadata:
-  rule_modified_at: '2026-10-20'
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
   created_at: '2026-10-20'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - "FN: '#ifdef FOO&&BAR' (no blank before the operator) is not matched"
