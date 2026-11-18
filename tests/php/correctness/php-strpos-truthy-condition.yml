@@ -7,6 +7,11 @@ valid:
   - "<?php\nif ( strpos( $s, 'x' ) === 0 ) {\n\t$x = 1;\n}"
   - "<?php\nif ( str_contains( $s, 'x' ) ) {\n\t$x = 1;\n}"
   - "<?php\nif ( strpos( $s, 'x' ) !== false && $ok ) {\n\t$x = 1;\n}"
+  - >-
+    <?php function f($url) { if ( false !== strpos($url, 'attachment_id') ) {
+    return true; } return false; }
+  - '<?php function f($u) { if (strpos($u, ''id'') === 0) { return true; } return false; }'
+  - '<?php function f($u) { if (str_contains($u, ''id'')) { return true; } return false; }'
 invalid:
   - 'if (strpos($ua, ''Win'')) { $is_winIE = true; }'
   - '<?php if (strpos($path, ''/'')) { $a = 1; } else { $a = 2; }'
@@ -17,3 +22,8 @@ invalid:
   - "<?php\nfunction f( $s ) {\n\tif ( strpos( strtolower( $s ), 'bot' ) ) {\n\t\treturn true;\n\t}\n}"
   - "<?php\nif ( strpos( $s, 'x' ) ) x();"
   - "<?php\nif ( strpos( $s, 'x' ) ):\n\t$x = 1;\nendif;"
+  - >-
+    <?php function f($url) { if ( strpos($url, 'attachment_id') ) { return true;
+    } return false; }
+  - '<?php function f($u) { if (strpos($u, ''id'')) { return 1; } else { return 0; } }'
+  - '<?php function f($u) { if ($u === '''') { return 0; } elseif (strpos($u, ''id'')) { return 1; } return 2; }'
