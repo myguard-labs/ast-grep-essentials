@@ -43,11 +43,14 @@ invalid:
   - |-
     package p
 
-    type checker struct{}
+    type checker struct{ bound int }
 
-    func (checker) bind() bool { return true }
+    func (c *checker) bind() bool {
+    	c.bound++
+    	return true
+    }
 
-    func f(c checker, ok bool) bool {
+    func f(c *checker, ok bool) bool {
     	ok = ok || c.bind()
     	return ok
     }
@@ -61,14 +64,13 @@ invalid:
   - |-
     package p
 
-    import "os"
+    import "bufio"
 
-    func exists(p string) bool {
-    	_, err := os.Stat(p)
-    	return err == nil
+    func flush(w *bufio.Writer) bool {
+    	return w.Flush() == nil
     }
 
-    func f(found bool, p string) bool {
-    	found = found || exists(p)
-    	return found
+    func f(done bool, w *bufio.Writer) bool {
+    	done = done || flush(w)
+    	return done
     }

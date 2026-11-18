@@ -12,15 +12,15 @@ snapshots:
       style: primary
       start: 70
       end: 105
-  "package p\n\nimport \"os\"\n\nfunc exists(p string) bool {\n\t_, err := os.Stat(p)\n\treturn err == nil\n}\n\nfunc f(found bool, p string) bool {\n\tfound = found || exists(p)\n\treturn found\n}":
+  "package p\n\nimport \"bufio\"\n\nfunc flush(w *bufio.Writer) bool {\n\treturn w.Flush() == nil\n}\n\nfunc f(done bool, w *bufio.Writer) bool {\n\tdone = done || flush(w)\n\treturn done\n}":
     labels:
-    - source: found = found || exists(p)
+    - source: done = done || flush(w)
       style: primary
-      start: 134
-      end: 160
-  "package p\n\ntype checker struct{}\n\nfunc (checker) bind() bool { return true }\n\nfunc f(c checker, ok bool) bool {\n\tok = ok || c.bind()\n\treturn ok\n}":
+      start: 133
+      end: 156
+  "package p\n\ntype checker struct{ bound int }\n\nfunc (c *checker) bind() bool {\n\tc.bound++\n\treturn true\n}\n\nfunc f(c *checker, ok bool) bool {\n\tok = ok || c.bind()\n\treturn ok\n}":
     labels:
     - source: ok = ok || c.bind()
       style: primary
-      start: 113
-      end: 132
+      start: 140
+      end: 159
