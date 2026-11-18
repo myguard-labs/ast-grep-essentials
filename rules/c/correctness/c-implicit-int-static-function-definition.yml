@@ -2,20 +2,47 @@
 
 id: c-implicit-int-static-function-definition
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  Function definition has storage-class specifiers but no return type, relying
-  on implicit int.
+  Deprecated rule ID; use c-implicit-int-function-definition. Function
+  definition has storage-class specifiers but no return type, relying on
+  implicit int.
 note: >-
-  Purely textual check on the translation unit; it matches storage-class
-  keywords followed directly by a name and parameter list then a body. It does
-  not detect macro-provided types or resolve typedefs.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-implicit-int-function-definition and do not emit this
+  rule. Findings are per function definition, not one per file.
 rule:
-  kind: translation_unit
-  regex: >-
-    (?m)^\s*(static|inline|extern)(\s+(static|inline|extern))*\s+[A-Za-z_][A-Za-z0-9_]*\s*\([^)]*\)\s*\{
+  kind: function_definition
+  all:
+    - has:
+        kind: storage_class_specifier
+        regex: '^(static|extern|inline)$'
+    - not:
+        has:
+          any:
+            - kind: primitive_type
+            - kind: sized_type_specifier
+            - kind: struct_specifier
+            - kind: union_specifier
+            - kind: enum_specifier
+    - not:
+        all:
+          - has:
+              field: type
+              kind: type_identifier
+          - not:
+              all:
+                - has:
+                    field: declarator
+                    kind: parenthesized_declarator
+                - has:
+                    field: type
+                    kind: type_identifier
+                    not:
+                      regex: '^[A-Z][A-Z0-9_]*$'
 metadata:
-  rule_modified_at: '2026-10-20'
+  deprecated_alias_of: c-implicit-int-function-definition
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
   created_at: '2026-10-20'
