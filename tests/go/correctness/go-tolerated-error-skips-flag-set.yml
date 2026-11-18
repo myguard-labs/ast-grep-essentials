@@ -145,12 +145,15 @@ invalid:
 
     func (flagSet) Set(string) {}
 
-    func process(err error, flag flagSet) bool {
-    	if !errors.Is(err, io.EOF) {
-    		flag.Set("bad")
-    		return false
+    func drain(err error, sawErr flagSet) error {
+    	if err == nil {
+    		return nil
     	}
-    	return true
+    	if !errors.Is(err, io.ErrUnexpectedEOF) {
+    		sawErr.Set("1")
+    		return err
+    	}
+    	return nil
     }
   - |-
     package p
@@ -164,9 +167,12 @@ invalid:
 
     func (flagSet) Set(string) {}
 
-    func process(err error, flag flagSet, skipped *int) error {
-    	if !errors.Is(err, io.EOF) {
-    		flag.Set("bad")
+    func step(err error, sawErr flagSet, skipped *int) error {
+    	if err == nil {
+    		return nil
+    	}
+    	if !errors.Is(err, io.ErrUnexpectedEOF) {
+    		sawErr.Set("1")
     		return err
     	}
     	*skipped++
