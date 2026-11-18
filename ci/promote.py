@@ -31,6 +31,7 @@ import hashlib
 import json
 import math
 import os
+import platform
 import re
 import shutil
 import statistics
@@ -455,13 +456,110 @@ class Report:
         return not self.failures
 
 
-def gate_tests(engine: Path, tree: Path, report: Report) -> None:
-    result = run([engine, "test"], cwd=tree, check=False)
+def native_test_config(tree: Path, staged: Path) -> Path:
+    """Write a native-only ast-grep config for ``tree`` under ``staged``.
+
+    PowerShell rule tests need a custom-language parser, so they run in their
+    own stage through ``sgconfig.powershell.yml``. The native stage cannot just
+    list the subdirectories of ``tests/``: ast-grep keys snapshots to the
+    configured test dir, and the shared ``tests/__snapshots__`` must stay
+    reachable. The whole ``tests`` tree is therefore copied minus
+    ``tests/powershell``, and the rule and util dirs of ``sgconfig.yml`` are
+    kept, made absolute so the config can live outside the tree.
+    """
+    shutil.copytree(
+        tree / "tests",
+        staged / "tests",
+        ignore=lambda directory, names: (
+            ["powershell"] if Path(directory) == tree / "tests" else []
+        ),
+    )
+    data = load_yaml(tree / "sgconfig.yml")
+    if not isinstance(data, dict):
+        raise PromotionError("sgconfig.yml is not a mapping")
+    data["ruleDirs"] = [str(tree / entry) for entry in data.get("ruleDirs", [])]
+    data["utilDirs"] = [str(tree / entry) for entry in data.get("utilDirs", [])]
+    data["testConfigs"] = [{"testDir": str(staged / "tests")}]
+    config = staged / "sgconfig.yml"
+    config.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    return config
+
+
+def record_test_stage(
+    label: str, key: str, result: subprocess.CompletedProcess[str], report: Report
+) -> None:
     match = TEST_RESULT.search(result.stdout)
     if result.returncode or not match or not int(match.group(1)):
-        report.failures.append(f"ast-grep test failed: {tail(result, 800)}")
+        report.failures.append(f"{label} failed: {tail(result, 800)}")
     else:
-        report.summary["rule_tests"] = int(match.group(1))
+        report.summary[key] = int(match.group(1))
+
+
+HOST_TRIPLES = {
+    ("Linux", "x86_64"): "x86_64-unknown-linux-gnu",
+    ("Linux", "aarch64"): "aarch64-unknown-linux-gnu",
+    ("Linux", "arm64"): "aarch64-unknown-linux-gnu",
+    ("Darwin", "x86_64"): "x86_64-apple-darwin",
+    ("Darwin", "arm64"): "aarch64-apple-darwin",
+    ("Windows", "AMD64"): "x86_64-pc-windows-msvc",
+    ("Windows", "ARM64"): "aarch64-pc-windows-msvc",
+}
+
+
+def powershell_parser_path(tree: Path) -> Path | None:
+    """Return the PowerShell parser library path this host would load.
+
+    The path comes from ``libraryPath`` in ``sgconfig.powershell.yml``, keyed
+    by the host target triple. Returns ``None`` when the config or the host
+    triple is unknown, so the caller keeps the stage running and fails closed.
+    """
+    config = tree / "sgconfig.powershell.yml"
+    if not config.is_file():
+        return None
+    triple = HOST_TRIPLES.get((platform.system(), platform.machine()))
+    data = load_yaml(config)
+    if not triple or not isinstance(data, dict):
+        return None
+    custom = data.get("customLanguages")
+    library = (
+        custom.get("powershell", {}).get("libraryPath")
+        if isinstance(custom, dict)
+        else None
+    )
+    if not isinstance(library, dict) or not isinstance(library.get(triple), str):
+        return None
+    return tree / library[triple]
+
+
+def gate_tests(engine: Path, tree: Path, report: Report) -> None:
+    with tempfile.TemporaryDirectory(prefix="promote-native-") as staged:
+        config = native_test_config(tree, Path(staged))
+        native = run([engine, "test", "-c", config], cwd=tree, check=False)
+    record_test_stage("ast-grep test", "rule_tests", native, report)
+    parser = powershell_parser_path(tree)
+    if parser is not None and not parser.exists():
+        # The parser is a gitignored build product, so an exported tree
+        # normally lacks it. Skip the stage without failing the promotion.
+        report.summary["powershell_rule_tests"] = (
+            f"unavailable: parser not built ({parser.relative_to(tree).as_posix()})"
+        )
+    else:
+        # Same invocation as the README; fails closed when the parser is broken.
+        powershell = run(
+            [
+                engine,
+                "test",
+                "-c",
+                "sgconfig.powershell.yml",
+                "--custom-languages",
+                "allow",
+            ],
+            cwd=tree,
+            check=False,
+        )
+        record_test_stage(
+            "PowerShell ast-grep test", "powershell_rule_tests", powershell, report
+        )
     unit = run(
         [sys.executable, "-m", "unittest", "discover", "-s", "ci/tests"],
         cwd=tree,
