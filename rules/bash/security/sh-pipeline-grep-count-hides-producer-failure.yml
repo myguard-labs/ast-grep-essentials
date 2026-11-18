@@ -2,18 +2,20 @@
 
 id: sh-pipeline-grep-count-hides-producer-failure
 language: bash
-severity: warning
+severity: 'off'
 message: >-
-  This command substitution pipes a producer into grep -c and ends with ||
-  true, so a failing producer is silently treated as a count of 0.
+  Deprecated rule ID; use sh-fallback-after-pipeline-masks-failure. A producer
+  piped into grep -c that ends with || true treats a failing producer as a
+  count of 0.
 note: >-
-  Syntactic match only. It flags a command substitution whose pipeline has a
-  producer piped into grep -c and ends with || true. It does not verify that
-  the producer can fail or resolve which tool is invoked.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use sh-fallback-after-pipeline-masks-failure and do not emit
+  this rule.
 rule:
-  pattern: '$($A | grep -c $$$ARGS || true)'
+  pattern: '$($A | $B || $C)'
 metadata:
-  rule_modified_at: '2026-10-15'
+  deprecated_alias_of: sh-fallback-after-pipeline-masks-failure
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
   created_at: '2026-10-15'

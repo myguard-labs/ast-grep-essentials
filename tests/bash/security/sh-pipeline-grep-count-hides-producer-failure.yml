@@ -1,12 +1,28 @@
 id: sh-pipeline-grep-count-hides-producer-failure
 valid:
-  - 'exported=$(grep -c '' sym_'' syms.txt || true)'
+  - 'v=$(git describe --tags 2>/dev/null || echo "")'
+  - |-
+      set -o pipefail
+      v=$(git describe --tags | sed 's/^v//') || v=""
+  - |-
+      v=$(set -o pipefail; git describe --tags | sed 's/^v//' || echo "")
+  - |-
+      set -euo pipefail
+      out=$(git describe --tags | sed 's/^v//')
   - 'n=$(ls | grep -c x)'
-  - 'n=$(ls | grep -v x || true)'
   - 'n=$(grep -c x file || echo 0)'
+  - 'exported=$(grep -c '' sym_'' syms.txt || true)'
 invalid:
+  - 'v=$(git describe --tags 2>/dev/null | sed ''s/^v//'' || echo "")'
+  - |-
+      v=$(curl -s "$url" | jq -r .version || echo unknown)
+  - |-
+      n=$(cat "$f" | wc -l || echo 0)
+  - |-
+      id=$(docker ps -q | head -n1 || echo none)
   - 'exported=$(nm -D --defined-only lib.so | grep -c '' sym_'' || true)'
   - 'n=$(ls /srv | grep -c ''.log'' || true)'
   - 'n=$(find . -name x | grep -c . || true)'
   - 'echo "$(ps aux | grep -c nginx || true)"'
   - 'n=$(ls | grep -c x || true) && echo ok'
+  - 'n=$(ls | grep -v x || true)'
