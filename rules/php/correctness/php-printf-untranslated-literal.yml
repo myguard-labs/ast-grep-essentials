@@ -2,21 +2,21 @@
 
 id: php-printf-untranslated-literal
 language: php
-severity: warning
+severity: 'off'
 message: >-
-  Untranslated format string passed directly to printf; wrap user-visible
-  prose in a translation function.
+  Deprecated rule ID; use php-printf-untranslated-format. Untranslated format
+  string passed directly to printf; wrap user-visible prose in a translation
+  function.
 note: >-
-  Matches a printf call whose first argument is a literal single-quoted string
-  node. It does not resolve runtime values, imports, or whether the output is
-  user-visible, so review non-UI formatting matches.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use php-printf-untranslated-format and do not emit this rule.
 rule:
-  kind: function_call_expression
   pattern: 'printf(''$FMT'', $$$ARGS)'
 metadata:
+  deprecated_alias_of: php-printf-untranslated-format
   todo_cases:
     - 'FN: a namespace-qualified call `\printf(''Hello %s'', $name);` is not reported (observed 0 matches on 0.51.3 and 0.45.2).'
-  rule_modified_at: '2026-10-15'
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
   created_at: '2026-10-15'
