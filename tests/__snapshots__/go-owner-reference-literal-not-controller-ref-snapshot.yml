@@ -1,8 +1,32 @@
 id: go-owner-reference-literal-not-controller-ref
 snapshots:
-  ? "package main\n\nfunc build(src *Source, svc *Service) {\n\tsvc.OwnerReferences = []metav1.OwnerReference{{APIVersion: src.APIVersion, Kind: src.Kind, Name: src.Name, UID: src.UID}}\n}"
-  : labels:
-    - source: '[]metav1.OwnerReference{{APIVersion: src.APIVersion, Kind: src.Kind, Name: src.Name, UID: src.UID}}'
+  "package main\n\nfunc build(src *Source, svc *Service) {\n\tsvc.OwnerReferences = []metav1.OwnerReference{{APIVersion: src.APIVersion, Kind: src.Kind, Name: src.Name, UID: src.UID}}\n}":
+    labels:
+    - source: "[]metav1.OwnerReference{{APIVersion: src.APIVersion, Kind: src.Kind, Name: src.Name, UID: src.UID}}"
       style: primary
       start: 77
       end: 176
+  "package p\n\nfunc build(src *Source) []metav1.OwnerReference {\n\trefs := []metav1.OwnerReference{{APIVersion: \"v1\", Kind: \"Pod\", Name: src.Name, UID: src.UID}}\n\treturn refs\n}":
+    labels:
+    - source: "[]metav1.OwnerReference{{APIVersion: \"v1\", Kind: \"Pod\", Name: src.Name, UID: src.UID}}"
+      style: primary
+      start: 70
+      end: 156
+  "package p\n\nfunc build(src *Source, svc *Service) {\n\tctrl := true\n\tsvc.OwnerReferences = []metav1.OwnerReference{{APIVersion: src.APIVersion, Kind: src.Kind, Name: src.Name, UID: src.UID, Controller: &ctrl}}\n}":
+    labels:
+    - source: "[]metav1.OwnerReference{{APIVersion: src.APIVersion, Kind: src.Kind, Name: src.Name, UID: src.UID, Controller: &ctrl}}"
+      style: primary
+      start: 88
+      end: 206
+  "package p\n\nfunc build(src *Source, svc *Service) {\n\tsvc.OwnerReferences = []metav1.OwnerReference{{\n\t\tAPIVersion: src.APIVersion,\n\t\tKind:       src.Kind,\n\t\tName:       src.Name,\n\t\tUID:        src.UID,\n\t}}\n}":
+    labels:
+    - source: |-
+        []metav1.OwnerReference{{
+        		APIVersion: src.APIVersion,
+        		Kind:       src.Kind,
+        		Name:       src.Name,
+        		UID:        src.UID,
+        	}}
+      style: primary
+      start: 74
+      end: 204

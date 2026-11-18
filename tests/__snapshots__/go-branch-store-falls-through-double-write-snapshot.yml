@@ -1,8 +1,11 @@
 id: go-branch-store-falls-through-double-write
 snapshots:
-  ? "func (c *cache) put(isClass bool, key string, n *entry) {\n\tif isClass {\n\t\tc.classNodes[key] = n\n\t}\n\tc.contractNodes[key] = n\n}"
-  : labels:
-    - source: "if isClass {\n\t\tc.classNodes[key] = n\n\t}"
+  "func (c *cache) put(isClass bool, key string, n *entry) {\n\tif isClass {\n\t\tc.classNodes[key] = n\n\t}\n\tc.contractNodes[key] = n\n}":
+    labels:
+    - source: |-
+        if isClass {
+        		c.classNodes[key] = n
+        	}
       style: primary
       start: 59
       end: 98
@@ -10,7 +13,10 @@ snapshots:
       style: secondary
       start: 74
       end: 95
-    - source: "{\n\t\tc.classNodes[key] = n\n\t}"
+    - source: |-
+        {
+        		c.classNodes[key] = n
+        	}
       style: secondary
       start: 70
       end: 98
@@ -18,3 +24,75 @@ snapshots:
       style: secondary
       start: 100
       end: 124
+  "package p\n\nfunc put(a, b map[string]int, key string, cond bool) {\n\tif cond {\n\t\ta[key] = 1\n\t}\n\tb[key] = 1\n}":
+    labels:
+    - source: |-
+        if cond {
+        		a[key] = 1
+        	}
+      style: primary
+      start: 67
+      end: 92
+    - source: a[key] = 1
+      style: secondary
+      start: 79
+      end: 89
+    - source: |-
+        {
+        		a[key] = 1
+        	}
+      style: secondary
+      start: 75
+      end: 92
+    - source: b[key] = 1
+      style: secondary
+      start: 94
+      end: 104
+  "package p\n\nfunc put(a, b map[string]int, key string, cond bool) {\n\tif cond {\n\t\ta[key] = 1\n\t}\n\tprintln(len(a))\n\tb[key] = 1\n}":
+    labels:
+    - source: |-
+        if cond {
+        		a[key] = 1
+        	}
+      style: primary
+      start: 67
+      end: 92
+    - source: a[key] = 1
+      style: secondary
+      start: 79
+      end: 89
+    - source: |-
+        {
+        		a[key] = 1
+        	}
+      style: secondary
+      start: 75
+      end: 92
+    - source: b[key] = 1
+      style: secondary
+      start: 111
+      end: 121
+  "package p\n\nfunc put(a, b map[string]int, keys []string, cond bool) {\n\tfor _, key := range keys {\n\t\tif cond {\n\t\t\ta[key] = 1\n\t\t}\n\t\tb[key] = 1\n\t}\n}":
+    labels:
+    - source: |-
+        if cond {
+        			a[key] = 1
+        		}
+      style: primary
+      start: 99
+      end: 126
+    - source: a[key] = 1
+      style: secondary
+      start: 112
+      end: 122
+    - source: |-
+        {
+        			a[key] = 1
+        		}
+      style: secondary
+      start: 107
+      end: 126
+    - source: b[key] = 1
+      style: secondary
+      start: 129
+      end: 139

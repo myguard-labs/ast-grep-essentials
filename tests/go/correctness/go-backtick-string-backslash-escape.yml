@@ -1,5 +1,49 @@
 id: go-backtick-string-backslash-escape
 valid:
   - 'var s = "HTTP/1.1 200 OK\nContent-length: 2"'
+  - |-
+    package p
+
+    import "regexp"
+
+    var version = regexp.MustCompile(`^\d+\.\d+$`)
+  - |-
+    package p
+
+    var banner = `line1
+    line2`
+  - |-
+    package p
+
+    type S struct {
+    	Name string `json:"name"`
+    }
 invalid:
   - 'var s = `HTTP/1.1 200 OK\nContent-length: 2`'
+  - |-
+    package p
+
+    import "strings"
+
+    func lines(s string) []string {
+    	return strings.Split(s, `\n`)
+    }
+  - |-
+    package p
+
+    import "strings"
+
+    func trim(s string) string {
+    	return strings.TrimSuffix(s, `\r`)
+    }
+  - |-
+    package p
+
+    import (
+    	"fmt"
+    	"io"
+    )
+
+    func hello(w io.Writer) {
+    	fmt.Fprint(w, `HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n`)
+    }

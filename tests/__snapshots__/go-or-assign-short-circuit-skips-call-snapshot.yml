@@ -1,14 +1,26 @@
 id: go-or-assign-short-circuit-skips-call
 snapshots:
-  ? |-
-    package p
-
-    func f(attached bool, bind func() bool) bool {
-        attached = attached || bind()
-        return attached
-    }
-  : labels:
+  "package p\n\nfunc f(attached bool, bind func() bool) bool {\n    attached = attached || bind()\n    return attached\n}":
+    labels:
     - source: attached = attached || bind()
       style: primary
       start: 62
       end: 91
+  "package p\n\nfunc f(attached bool, bind func(int, string) bool) bool {\n\tattached = attached || bind(1, \"x\")\n\treturn attached\n}":
+    labels:
+    - source: attached = attached || bind(1, "x")
+      style: primary
+      start: 70
+      end: 105
+  "package p\n\nimport \"bufio\"\n\nfunc flush(w *bufio.Writer) bool {\n\treturn w.Flush() == nil\n}\n\nfunc f(done bool, w *bufio.Writer) bool {\n\tdone = done || flush(w)\n\treturn done\n}":
+    labels:
+    - source: done = done || flush(w)
+      style: primary
+      start: 133
+      end: 156
+  "package p\n\ntype checker struct{ bound int }\n\nfunc (c *checker) bind() bool {\n\tc.bound++\n\treturn true\n}\n\nfunc f(c *checker, ok bool) bool {\n\tok = ok || c.bind()\n\treturn ok\n}":
+    labels:
+    - source: ok = ok || c.bind()
+      style: primary
+      start: 140
+      end: 159

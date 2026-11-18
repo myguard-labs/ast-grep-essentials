@@ -1,8 +1,26 @@
 id: go-pod-exec-hardcoded-container-name
 snapshots:
-  ? "package main\n\nfunc run(dc *Collector, ns string, pod Pod, cmd []string, ctx context.Context) {\n\tdc.PodExecutor(ns, pod.Name, \"nginx-ingress\", cmd, ctx)\n}"
-  : labels:
+  "package main\n\nfunc run(dc *Collector, ns string, pod Pod, cmd []string, ctx context.Context) {\n\tdc.PodExecutor(ns, pod.Name, \"nginx-ingress\", cmd, ctx)\n}":
+    labels:
     - source: dc.PodExecutor(ns, pod.Name, "nginx-ingress", cmd, ctx)
       style: primary
       start: 96
       end: 151
+  "package p\n\nfunc run(dc *Collector, cmd []string, ctx context.Context) {\n\tdc.PodExecutor(\"default\", \"web-0\", \"nginx\", cmd, ctx)\n}":
+    labels:
+    - source: dc.PodExecutor("default", "web-0", "nginx", cmd, ctx)
+      style: primary
+      start: 73
+      end: 126
+  "package p\n\nfunc run(dc *Collector, ns string, pod Pod, cmd []string, ctx context.Context) error {\n\terr := dc.PodExecutor(ns, pod.Name, \"nginx\", cmd, ctx)\n\treturn err\n}":
+    labels:
+    - source: dc.PodExecutor(ns, pod.Name, "nginx", cmd, ctx)
+      style: primary
+      start: 106
+      end: 153
+  "package p\n\nfunc run(dc *Collector, ns string, pod Pod, cmd []string, ctx context.Context) {\n\tdc.exec.PodExecutor(ns, pod.Name, \"sidecar\", cmd, ctx)\n}":
+    labels:
+    - source: dc.exec.PodExecutor(ns, pod.Name, "sidecar", cmd, ctx)
+      style: primary
+      start: 93
+      end: 147

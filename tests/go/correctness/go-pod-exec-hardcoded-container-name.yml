@@ -1,5 +1,47 @@
 id: go-pod-exec-hardcoded-container-name
 valid:
   - "package main\n\nfunc run(dc *Collector, ns string, pod Pod, container Container, cmd []string, ctx context.Context) {\n\tdc.PodExecutor(ns, pod.Name, container.Name, cmd, ctx)\n}"
+  - |-
+    package p
+
+    func run(dc *Collector, ns string, pod Pod, cmd []string, ctx context.Context) {
+    	for _, c := range pod.Spec.Containers {
+    		dc.PodExecutor(ns, pod.Name, c.Name, cmd, ctx)
+    	}
+    }
+  - |-
+    package p
+
+    func run(dc *Collector, ns string, pod Pod, ctx context.Context) {
+    	dc.PodExecutor(ns, pod.Name, defaultContainer(pod), []string{"sh", "-c", "true"}, ctx)
+    }
+  - |-
+    package p
+
+    func run(dc *Collector, ns string, pod Pod, ctx context.Context) {
+    	if len(pod.Spec.Containers) == 0 {
+    		return
+    	}
+    	dc.PodExecutor(ns, pod.Name, pod.Spec.Containers[0].Name, []string{"nginx", "-t"}, ctx)
+    }
 invalid:
   - "package main\n\nfunc run(dc *Collector, ns string, pod Pod, cmd []string, ctx context.Context) {\n\tdc.PodExecutor(ns, pod.Name, \"nginx-ingress\", cmd, ctx)\n}"
+  - |-
+    package p
+
+    func run(dc *Collector, ns string, pod Pod, cmd []string, ctx context.Context) {
+    	dc.exec.PodExecutor(ns, pod.Name, "sidecar", cmd, ctx)
+    }
+  - |-
+    package p
+
+    func run(dc *Collector, cmd []string, ctx context.Context) {
+    	dc.PodExecutor("default", "web-0", "nginx", cmd, ctx)
+    }
+  - |-
+    package p
+
+    func run(dc *Collector, ns string, pod Pod, cmd []string, ctx context.Context) error {
+    	err := dc.PodExecutor(ns, pod.Name, "nginx", cmd, ctx)
+    	return err
+    }

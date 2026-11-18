@@ -4,8 +4,47 @@ valid:
     package p
 
     var defaultResponse = "HTTP/1.1 200 OK\nContent-length: 2\n\nOk"
+  - |-
+    package p
+
+    import "regexp"
+
+    var version = regexp.MustCompile(`^\d+\.\d+$`)
+  - |-
+    package p
+
+    var banner = `line1
+    line2`
+  - |-
+    package p
+
+    var homeDir = `C:\Users\admin`
 invalid:
   - |
     package p
 
     var defaultResponse = `HTTP/1.1 200 OK\nContent-length: 2\n\nOk`
+  - |-
+    package p
+
+    import "strings"
+
+    func lines(s string) []string {
+    	return strings.Split(s, `\n`)
+    }
+  - |-
+    package p
+
+    import "strings"
+
+    func norm(s string) string {
+    	return strings.ReplaceAll(s, `\r\n`, "\n")
+    }
+  - |-
+    package p
+
+    import "fmt"
+
+    func hello() {
+    	fmt.Print(`GET / HTTP/1.1\r\nHost: example.com\r\n\r\n`)
+    }

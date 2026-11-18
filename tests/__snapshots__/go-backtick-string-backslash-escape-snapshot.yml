@@ -1,8 +1,26 @@
 id: go-backtick-string-backslash-escape
 snapshots:
-  'var s = `HTTP/1.1 200 OK\nContent-length: 2`':
+  "package p\n\nimport \"strings\"\n\nfunc lines(s string) []string {\n\treturn strings.Split(s, `\\n`)\n}":
     labels:
-    - source: '`HTTP/1.1 200 OK\nContent-length: 2`'
+    - source: "`\\n`"
+      style: primary
+      start: 86
+      end: 90
+  "package p\n\nimport \"strings\"\n\nfunc trim(s string) string {\n\treturn strings.TrimSuffix(s, `\\r`)\n}":
+    labels:
+    - source: "`\\r`"
+      style: primary
+      start: 88
+      end: 92
+  "package p\n\nimport (\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc hello(w io.Writer) {\n\tfmt.Fprint(w, `HTTP/1.1 200 OK\\r\\nContent-Length: 0\\r\\n\\r\\n`)\n}":
+    labels:
+    - source: "`HTTP/1.1 200 OK\\r\\nContent-Length: 0\\r\\n\\r\\n`"
+      style: primary
+      start: 77
+      end: 123
+  "var s = `HTTP/1.1 200 OK\\nContent-length: 2`":
+    labels:
+    - source: "`HTTP/1.1 200 OK\\nContent-length: 2`"
       style: primary
       start: 8
       end: 44

@@ -1,7 +1,25 @@
 id: go-responsewriter-optional-iface-assertion
 snapshots:
-  ? "package p\nimport \"net/http\"\nfunc f(w http.ResponseWriter) {\n\tif fl, ok := w.(http.Flusher); ok {\n\t\tfl.Flush()\n\t}\n}"
-  : labels:
+  "package p\n\nimport \"net/http\"\n\nfunc f(w http.ResponseWriter) bool {\n\t_, ok := w.(http.Flusher)\n\treturn ok\n}":
+    labels:
+    - source: w.(http.Flusher)
+      style: primary
+      start: 77
+      end: 93
+  "package p\n\nimport \"net/http\"\n\nfunc f(w http.ResponseWriter) {\n\tfl, ok := w.(http.Flusher)\n\tif !ok {\n\t\thttp.Error(w, \"streaming unsupported\", http.StatusInternalServerError)\n\t\treturn\n\t}\n\tfl.Flush()\n}":
+    labels:
+    - source: w.(http.Flusher)
+      style: primary
+      start: 73
+      end: 89
+  "package p\n\nimport \"net/http\"\n\ntype wrap struct{ http.ResponseWriter }\n\nfunc (s wrap) Flush() {\n\tif fl, ok := s.ResponseWriter.(http.Flusher); ok {\n\t\tfl.Flush()\n\t}\n}":
+    labels:
+    - source: s.ResponseWriter.(http.Flusher)
+      style: primary
+      start: 109
+      end: 140
+  "package p\nimport \"net/http\"\nfunc f(w http.ResponseWriter) {\n\tif fl, ok := w.(http.Flusher); ok {\n\t\tfl.Flush()\n\t}\n}":
+    labels:
     - source: w.(http.Flusher)
       style: primary
       start: 74
