@@ -2,19 +2,20 @@
 
 id: c-ifdef-compound-expression
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  #ifdef/#ifndef takes a single macro name; trailing operators or defined()
-  are ignored. Use #if instead.
+  Deprecated rule ID; use c-ifdef-compound-condition. #ifdef/#ifndef takes a
+  single macro name; trailing operators or defined() are ignored.
 note: >-
-  Textual line match on the translation unit text. It does not check macro
-  definitions or preprocessor semantics, and it may match a directive-looking
-  line inside a comment or string.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-ifdef-compound-condition and do not emit this rule. It now
+  reports each offending directive instead of the whole file.
 rule:
-  kind: translation_unit
-  regex: '(?m)^[ \t]*#[ \t]*ifn?def[ \t]+\w+[ \t]*(\|\||&&|defined\b|[(!=<>+*-])'
+  kind: preproc_ifdef
+  regex: '^#[ \t]*ifn?def[ \t]+[A-Za-z_][A-Za-z0-9_]*([ \t]+[^ \t\r\n/]|[^ \t\r\n/A-Za-z0-9_])'
 metadata:
-  rule_modified_at: '2026-10-20'
+  deprecated_alias_of: c-ifdef-compound-condition
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
   created_at: '2026-10-20'

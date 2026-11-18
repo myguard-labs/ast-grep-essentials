@@ -2,24 +2,24 @@
 
 id: c-ifdef-multiple-tokens
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  #ifdef takes a single macro identifier; extra tokens are ignored. Use #if
-  with defined(...) instead.
+  Deprecated rule ID; use c-ifdef-compound-condition. #ifdef takes a single
+  macro identifier; extra tokens are ignored. Use #if with defined(...)
+  instead.
 note: >-
-  Textual line match over the translation unit; it does not resolve macros or
-  preprocessor behavior, and reports the whole file node.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-ifdef-compound-condition and do not emit this rule. It now
+  reports each offending directive instead of the whole file.
 rule:
-  kind: translation_unit
-  regex: '(?m)^[ \t]*#[ \t]*ifdef[ \t]+\w+[ \t]+[^\s/]'
+  kind: preproc_ifdef
+  regex: '^#[ \t]*ifn?def[ \t]+[A-Za-z_][A-Za-z0-9_]*([ \t]+[^ \t\r\n/]|[^ \t\r\n/A-Za-z0-9_])'
 metadata:
-  rule_modified_at: '2026-10-20'
+  deprecated_alias_of: c-ifdef-compound-condition
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
   created_at: '2026-10-20'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - "FN: '#ifdef FOO&&BAR' (no blank before the operator) is not matched"
-    - "Range: inside a function body or after an enclosing #ifdef the reported range covers the whole enclosing node (tree-sitter error recovery), not only the offending directive"

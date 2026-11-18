@@ -2,19 +2,20 @@
 
 id: c-ifndef-extra-tokens-ignored
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  #ifdef/#ifndef tests only the first identifier; extra tokens after it are
-  ignored. Use #if with defined(...) for compound conditions.
+  Deprecated rule ID; use c-ifdef-compound-condition. #ifdef/#ifndef tests
+  only the first identifier; extra tokens after it are ignored.
 note: >-
-  Purely textual line match inside the file; it does not verify how the
-  preprocessor or parser treats the trailing tokens, and it reports once per
-  file.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-ifdef-compound-condition and do not emit this rule. It now
+  reports each offending directive instead of the whole file.
 rule:
-  kind: translation_unit
-  regex: '(?m)^[ \t]*#[ \t]*ifn?def[ \t]+[A-Za-z_][A-Za-z0-9_]*[ \t]+[^\s/]'
+  kind: preproc_ifdef
+  regex: '^#[ \t]*ifn?def[ \t]+[A-Za-z_][A-Za-z0-9_]*([ \t]+[^ \t\r\n/]|[^ \t\r\n/A-Za-z0-9_])'
 metadata:
-  rule_modified_at: '2026-10-20'
+  deprecated_alias_of: c-ifdef-compound-condition
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
   created_at: '2026-10-20'
