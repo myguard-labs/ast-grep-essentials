@@ -1,6 +1,34 @@
 id: rust-bool-literal-comparison
 snapshots:
-  'fn f(r: bool) -> bool { r == true }':
+  "fn both(a: bool, b: bool) -> bool {\n    (a == b) == false\n}":
+    labels:
+    - source: (a == b) == false
+      style: primary
+      start: 40
+      end: 57
+    - source: ==
+      style: secondary
+      start: 49
+      end: 51
+    - source: "false"
+      style: secondary
+      start: 52
+      end: 57
+  "fn check(items: &[u32]) -> &'static str {\n    if (items.is_empty() == true) {\n        \"empty\"\n    } else {\n        \"full\"\n    }\n}":
+    labels:
+    - source: items.is_empty() == true
+      style: primary
+      start: 50
+      end: 74
+    - source: ==
+      style: secondary
+      start: 67
+      end: 69
+    - source: "true"
+      style: secondary
+      start: 70
+      end: 74
+  "fn f(r: bool) -> bool { r == true }":
     labels:
     - source: r == true
       style: primary
@@ -10,7 +38,49 @@ snapshots:
       style: secondary
       start: 26
       end: 28
-    - source: 'true'
+    - source: "true"
       style: secondary
       start: 29
       end: 33
+  "fn off(r: bool) -> bool {\n    r != false\n}":
+    labels:
+    - source: r != false
+      style: primary
+      start: 30
+      end: 40
+    - source: "!="
+      style: secondary
+      start: 32
+      end: 34
+    - source: "false"
+      style: secondary
+      start: 35
+      end: 40
+  "fn pick(r: Result<u32, ()>) -> u32 {\n    match r {\n        Ok(v) if r.is_ok() == true => v,\n        _ => 0,\n    }\n}":
+    labels:
+    - source: r.is_ok() == true
+      style: primary
+      start: 68
+      end: 85
+    - source: ==
+      style: secondary
+      start: 78
+      end: 80
+    - source: "true"
+      style: secondary
+      start: 81
+      end: 85
+  "fn ready(ok: bool, n: u32) -> bool {\n    n > 3 && ok == false\n}":
+    labels:
+    - source: ok == false
+      style: primary
+      start: 50
+      end: 61
+    - source: ==
+      style: secondary
+      start: 53
+      end: 55
+    - source: "false"
+      style: secondary
+      start: 56
+      end: 61

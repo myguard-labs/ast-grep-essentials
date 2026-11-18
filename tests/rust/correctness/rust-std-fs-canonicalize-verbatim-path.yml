@@ -4,8 +4,56 @@ valid:
     use std::path::Path; fn store(pkg_root: &Path) -> std::path::PathBuf { let
     Ok(p) = dunce::canonicalize(pkg_root) else { return pkg_root.to_path_buf();
     }; p }
+  - |-
+    use std::io;
+    use std::path::{Path, PathBuf};
+
+    fn absolute_for_display(p: &Path) -> io::Result<PathBuf> {
+        std::path::absolute(p)
+    }
+  - |-
+    use std::io;
+    use std::path::{Path, PathBuf};
+
+    fn store(pkg_root: &Path) -> io::Result<PathBuf> {
+        let p = dunce::canonicalize(pkg_root)?;
+        Ok(p)
+    }
+  - |-
+    use std::io;
+    use std::path::Path;
+
+    fn same_dir(a: &Path, b: &Path) -> io::Result<bool> {
+        Ok(dunce::canonicalize(a)? == dunce::canonicalize(b)?)
+    }
 invalid:
   - >-
     use std::fs; use std::path::Path; fn store(pkg_root: &Path) ->
     std::path::PathBuf { let Ok(p) = fs::canonicalize(pkg_root) else { return
     pkg_root.to_path_buf(); }; p }
+  - |-
+    use std::fs;
+    use std::io;
+    use std::path::{Path, PathBuf};
+
+    fn resolve(base: &Path, name: &str) -> io::Result<PathBuf> {
+        fs::canonicalize(base.join(name)).map_err(|e| io::Error::new(e.kind(), format!("{}: {}", name, e)))
+    }
+  - |-
+    use std::fs;
+    use std::io;
+    use std::path::PathBuf;
+
+    fn resolve_all(inputs: &[String]) -> io::Result<Vec<PathBuf>> {
+        inputs.iter().map(|s| fs::canonicalize(s)).collect()
+    }
+  - |-
+    use std::fs;
+    use std::path::{Path, PathBuf};
+
+    fn try_resolve(p: &Path) -> Option<PathBuf> {
+        match fs::canonicalize(p) {
+            Ok(c) => Some(c),
+            Err(_) => None,
+        }
+    }

@@ -8,6 +8,48 @@ valid:
             self.try_append(s).map_err(|_| fmt::Error)
         }
     }
+  - |-
+    use core::fmt;
+
+    struct W(Vec<u8>);
+
+    impl fmt::Write for W {
+        fn write_str(&mut self, s: &str) -> fmt::Result {
+            self.0.try_reserve(s.len()).map_err(|_| fmt::Error)?;
+            self.0.extend_from_slice(s.as_bytes());
+            Ok(())
+        }
+    }
+  - |-
+    use core::fmt;
+
+    struct W(String);
+
+    impl fmt::Write for W {
+        fn write_str(&mut self, s: &str) -> fmt::Result {
+            self.0.push_str(s);
+            Ok(())
+        }
+    }
+  - |-
+    use core::fmt;
+
+    struct Fixed {
+        buf: [u8; 16],
+        len: usize,
+    }
+
+    impl fmt::Write for Fixed {
+        fn write_str(&mut self, s: &str) -> fmt::Result {
+            let end = self.len.checked_add(s.len()).ok_or(fmt::Error)?;
+            if end > self.buf.len() {
+                return Err(fmt::Error);
+            }
+            self.buf[self.len..end].copy_from_slice(s.as_bytes());
+            self.len = end;
+            Ok(())
+        }
+    }
 invalid:
   - |-
     use core::fmt;
@@ -15,5 +57,90 @@ invalid:
     impl fmt::Write for W {
         fn write_str(&mut self, s: &str) -> fmt::Result {
             self.append_within_capacity(s).map_err(|_| fmt::Error)
+        }
+    }
+  - |-
+    use core::fmt;
+
+    struct W(Vec<u8>);
+
+    impl W {
+        fn append_within_capacity(&mut self, s: &[u8]) -> Result<(), ()> {
+            if self.0.capacity() - self.0.len() < s.len() {
+                return Err(());
+            }
+            self.0.extend_from_slice(s);
+            Ok(())
+        }
+    }
+
+    impl fmt::Write for W {
+        fn write_str(&mut self, s: &str) -> fmt::Result {
+            self.append_within_capacity(s.as_bytes()).map_err(|_| fmt::Error)
+        }
+    }
+  - |-
+    use core::fmt;
+
+    struct W(Vec<u8>);
+
+    impl W {
+        fn append_within_capacity(&mut self, s: &[u8]) -> Result<(), ()> {
+            if self.0.capacity() - self.0.len() < s.len() {
+                return Err(());
+            }
+            self.0.extend_from_slice(s);
+            Ok(())
+        }
+    }
+
+    impl fmt::Write for W {
+        fn write_str(&mut self, s: &str) -> fmt::Result {
+            let r = self.append_within_capacity(s.as_bytes());
+            r.map_err(|_| fmt::Error)
+        }
+    }
+  - |-
+    use core::fmt;
+
+    struct W(Vec<u8>);
+
+    impl W {
+        fn append_within_capacity(&mut self, s: &[u8]) -> Result<(), ()> {
+            if self.0.capacity() - self.0.len() < s.len() {
+                return Err(());
+            }
+            self.0.extend_from_slice(s);
+            Ok(())
+        }
+    }
+
+    impl fmt::Write for W {
+        fn write_str(&mut self, s: &str) -> fmt::Result {
+            self.append_within_capacity(s.as_bytes()).map_err(|_| fmt::Error)?;
+            Ok(())
+        }
+    }
+  - |-
+    use core::fmt;
+
+    struct W(Vec<u8>);
+
+    impl W {
+        fn append_within_capacity(&mut self, s: &[u8]) -> Result<(), ()> {
+            if self.0.capacity() - self.0.len() < s.len() {
+                return Err(());
+            }
+            self.0.extend_from_slice(s);
+            Ok(())
+        }
+    }
+
+    impl fmt::Write for W {
+        fn write_str(&mut self, s: &str) -> fmt::Result {
+            match self.append_within_capacity(s.as_bytes()) {
+                Ok(()) => Ok(()),
+                Err(()) => Err(fmt::Error),
+            }
         }
     }
