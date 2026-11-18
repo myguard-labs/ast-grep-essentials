@@ -2,22 +2,32 @@
 
 id: c-preproc-if-bitwise-and
 language: c
-severity: warning
+severity: 'off'
 message: >-
-  Preprocessor conditional joins HAVE_ macros with bitwise & instead of
-  logical &&.
+  Deprecated rule ID; use c-preproc-bitwise-and-in-if. A preprocessor
+  conditional joins HAVE_ macros with bitwise & instead of logical &&.
 note: >-
-  Purely syntactic; matches the literal HAVE_ identifier shape inside an #if
-  and does not check macro values.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use c-preproc-bitwise-and-in-if and do not emit this rule.
 rule:
-  all:
-    - kind: binary_expression
-    - regex: '^HAVE_\w+\s*&\s*HAVE_\w+'
-    - inside:
-        stopBy: end
-        kind: preproc_if
+  kind: binary_expression
+  any:
+    - all:
+        - has:
+            field: operator
+            regex: '^&$'
+        - inside:
+            kind: preproc_if
+    - all:
+        - regex: '^HAVE_\w+\s*&\s*HAVE_\w+'
+        - inside:
+            stopBy: end
+            any:
+              - kind: preproc_if
+              - kind: preproc_elif
 metadata:
-  rule_modified_at: '2026-10-20'
+  deprecated_alias_of: c-preproc-bitwise-and-in-if
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
   created_at: '2026-10-20'
