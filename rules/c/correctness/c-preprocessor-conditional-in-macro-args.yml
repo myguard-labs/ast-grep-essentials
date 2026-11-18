@@ -5,7 +5,8 @@ language: c
 severity: warning
 message: >-
   Preprocessor conditional directive inside call or macro arguments is
-  undefined behavior; split into separate calls.
+  undefined behavior when the callee is a function-like macro (C11 6.10.3p11),
+  and hard to read otherwise; split into separate calls.
 note: >-
   Textual heuristic over a function body: an open parenthesis preceded by a
   word character, then text with no semicolon or brace and with every nested
@@ -22,7 +23,7 @@ metadata:
   todo_cases:
     - '`f(g(h(i(a))),\n#ifdef X\n 1\n#endif\n)` with three levels of nested parentheses before the directive is not reported (false negative: only two nesting levels are allowed in the span).'
     - '`/* see f(x */` or `// see f(x` on the line right before a conditional directive is reported (false positive: the opening `word(` anchor is not checked against comments; only the text after it is).'
-  rule_modified_at: '2026-10-20'
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
   created_at: '2026-10-20'

@@ -1,5 +1,53 @@
 id: c-preprocessor-conditional-in-macro-args
 snapshots:
+  "#define CALL(a, b) ((a) + (b))\nint f(int a)\n{\n    return CALL(a,\n# if defined(FOO)\n        1\n# else\n        2\n# endif\n    );\n}\n":
+    labels:
+    - source: |-
+        int f(int a)
+        {
+            return CALL(a,
+        # if defined(FOO)
+                1
+        # else
+                2
+        # endif
+            );
+        }
+      style: primary
+      start: 31
+      end: 126
+  "#define CALL(a, b) ((a) + (b))\nint f(int a)\n{\n    return CALL(a,\n#ifndef FOO\n        1\n#else\n        2\n#endif\n    );\n}\n":
+    labels:
+    - source: |-
+        int f(int a)
+        {
+            return CALL(a,
+        #ifndef FOO
+                1
+        #else
+                2
+        #endif
+            );
+        }
+      style: primary
+      start: 31
+      end: 118
+  "#define CALL(a, b) ((a) + (b))\nint f(int a, int b)\n{\n    return CALL(\n#ifdef FOO\n        a,\n#else\n        0,\n#endif\n        b);\n}\n":
+    labels:
+    - source: |-
+        int f(int a, int b)
+        {
+            return CALL(
+        #ifdef FOO
+                a,
+        #else
+                0,
+        #endif
+                b);
+        }
+      style: primary
+      start: 31
+      end: 129
   "#define SUM(a, b) ((a) + (b))\nint g(int x) {\n    return SUM(x,\n  #  if defined(FOO)\n               1\n  #  elif defined(BAR)\n               2\n  #  else\n               3\n  #  endif\n               );\n}":
     labels:
     - source: |-
@@ -118,6 +166,17 @@ snapshots:
       style: primary
       start: 70
       end: 194
+  "int f(int a, int b) { return g(a,\n#ifdef FOO\n b\n#endif\n ); }\n":
+    labels:
+    - source: |-
+        int f(int a, int b) { return g(a,
+        #ifdef FOO
+         b
+        #endif
+         ); }
+      style: primary
+      start: 0
+      end: 60
   "void f(void) { REGISTER_LONG_CONSTANT(\"X\",\n#ifdef FOO\n 1\n#else\n 0\n#endif\n, CONST_CS); }":
     labels:
     - source: |-
