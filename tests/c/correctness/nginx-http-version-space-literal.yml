@@ -7,6 +7,12 @@ valid:
     const char *v = "HTTP/2";
   - |-
     const char *v = "HTTP version mismatch";
+  - |-
+    const char *v = "HTTP 404 Not Found";
+  - |-
+    const char *v = "HTTP 500";
+  - |-
+    const char *v = "HTTP 10 retries";
 invalid:
   - 'http_response_ver = "HTTP 1.1";'
   - |-
@@ -15,3 +21,18 @@ invalid:
     const char *v = "HTTP 2";
   - |-
     const char *v = "HTTP 1.1 200 OK";
+  - |-
+    const char *v = "HTTP 3";
+  - |-
+    const char *v = "HTTP 1.1";
+  - |-
+    const char *v = "HTTP 1.1\r\n";
+  - |-
+    const char *v = "HTTP 2\r\n";
+  - |-
+    #include <stdio.h>
+
+    void show(void) {
+        puts("HTTP 404 Not Found");
+        puts("HTTP 1.1 200 OK");
+    }
