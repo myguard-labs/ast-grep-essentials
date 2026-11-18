@@ -6,13 +6,13 @@ severity: warning
 message: 'Format string contains a bare %l not followed by an integer conversion.'
 note: >-
   Regex over the literal text only; does not check that the string is used as
-  a printf format.
+  a printf format. After `l` the accepted conversions are d i u o x X n (and
+  a second l) plus f F e E g G a A (l has no effect) and c s (wide char and
+  string); any other letter, a space or the end of the string is reported.
 rule:
   kind: string_literal
-  regex: '(^|[^%])(%%)*%[-+ #0-9.*]*l([^ldiuoxXn]|$)'
+  regex: '(^|[^%])(%%)*%[-+ #0-9.*]*l([^ldiuoxXnfFeEgGaAcs]|$)'
 metadata:
-  todo_cases:
-    - '`printf("%lf\n", d);` is reported although `%lf` is valid C99 (the `l` has no effect on f); `%lc` and `%ls` are reported too (false positive: only d i u o x X n and l are accepted after `l`).'
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
