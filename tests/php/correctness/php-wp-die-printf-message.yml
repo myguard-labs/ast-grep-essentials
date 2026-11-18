@@ -1,10 +1,22 @@
 id: php-wp-die-printf-message
 valid:
+  - |-
+    <?php
+    wp_die( sprintf( '%s', $msg ) );
+  - '<?php wp_die( sprintf( ''%s'', $msg ), ''Error'' );'
+  - '<?php wp_die( print_r( $msg, true ) );'
+  - '<?php printf( ''%s'', wp_kses_post( $msg ) );'
   - '<?php wp_die( sprintf( ''could not move to %s.'', $dir ) ); ?>'
   - '<?php wp_die( ''plain'' );'
   - '<?php $msg = sprintf( ''x %s'', $a ); wp_die( $msg );'
   - '<?php wp_die( esc_html( sprintf( ''x %s'', $a ) ) );'
 invalid:
+  - |-
+    <?php
+    wp_die( printf( '%s', $msg ) );
+  - '<?php error_log( printf( ''%s'', $msg ) );'
+  - '<?php trigger_error( printf( ''%s'', $msg ) );'
+  - '<?php \wp_die( printf( ''%s'', $msg ) );'
   - '<?php wp_die( printf( ''could not move to %s.'', $dir ) ); ?>'
   - '<?php wp_die( printf( ''x'' ) );'
   - '<?php function f() { if ( ! $ok ) { wp_die( printf( ''bad %s'', $x ) ); } }'
