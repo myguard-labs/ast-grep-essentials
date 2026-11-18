@@ -1,5 +1,35 @@
 id: c-switch-masked-bitfield-no-shift
 snapshots:
+  "#define FIELD_MASK 0xf0u\nint f(unsigned v) {\n  switch (v & FIELD_MASK) {\n    case 2: return 1;\n    default: return 0;\n  }\n}":
+    labels:
+    - source: |-
+        switch (v & FIELD_MASK) {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: primary
+      start: 47
+      end: 121
+    - source: "&"
+      style: secondary
+      start: 57
+      end: 58
+    - source: v & FIELD_MASK
+      style: secondary
+      start: 55
+      end: 69
+    - source: (v & FIELD_MASK)
+      style: secondary
+      start: 54
+      end: 70
+    - source: |-
+        {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: secondary
+      start: 71
+      end: 121
   "int f(unsigned flags) {\n  switch (flags & 0xf0) {\n    case 2: return 1;\n    default: return 0;\n  }\n}":
     labels:
     - source: |-
@@ -10,6 +40,176 @@ snapshots:
       style: primary
       start: 26
       end: 98
+    - source: "&"
+      style: secondary
+      start: 40
+      end: 41
+    - source: flags & 0xf0
+      style: secondary
+      start: 34
+      end: 46
+    - source: (flags & 0xf0)
+      style: secondary
+      start: 33
+      end: 47
+    - source: |-
+        {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: secondary
+      start: 48
+      end: 98
+  "int f(unsigned v) {\n  switch (0xf0 & v) {\n    case 2: return 1;\n    default: return 0;\n  }\n}":
+    labels:
+    - source: |-
+        switch (0xf0 & v) {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: primary
+      start: 22
+      end: 90
+    - source: "&"
+      style: secondary
+      start: 35
+      end: 36
+    - source: 0xf0 & v
+      style: secondary
+      start: 30
+      end: 38
+    - source: (0xf0 & v)
+      style: secondary
+      start: 29
+      end: 39
+    - source: |-
+        {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: secondary
+      start: 40
+      end: 90
+  "int f(unsigned v) {\n  switch (v & (0xf0)) {\n    case 2: return 1;\n    default: return 0;\n  }\n}":
+    labels:
+    - source: |-
+        switch (v & (0xf0)) {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: primary
+      start: 22
+      end: 92
+    - source: "&"
+      style: secondary
+      start: 32
+      end: 33
+    - source: v & (0xf0)
+      style: secondary
+      start: 30
+      end: 40
+    - source: (v & (0xf0))
+      style: secondary
+      start: 29
+      end: 41
+    - source: |-
+        {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: secondary
+      start: 42
+      end: 92
+  "int f(unsigned v) {\n  switch (v & (unsigned)0xf0) {\n    case 2: return 1;\n    default: return 0;\n  }\n}":
+    labels:
+    - source: |-
+        switch (v & (unsigned)0xf0) {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: primary
+      start: 22
+      end: 100
+    - source: "&"
+      style: secondary
+      start: 32
+      end: 33
+    - source: v & (unsigned)0xf0
+      style: secondary
+      start: 30
+      end: 48
+    - source: (v & (unsigned)0xf0)
+      style: secondary
+      start: 29
+      end: 49
+    - source: |-
+        {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: secondary
+      start: 50
+      end: 100
+  "int f(unsigned v) {\n  switch (v & 0b1100) {\n    case 1: return 1;\n    default: return 0;\n  }\n}":
+    labels:
+    - source: |-
+        switch (v & 0b1100) {
+            case 1: return 1;
+            default: return 0;
+          }
+      style: primary
+      start: 22
+      end: 92
+    - source: "&"
+      style: secondary
+      start: 32
+      end: 33
+    - source: v & 0b1100
+      style: secondary
+      start: 30
+      end: 40
+    - source: (v & 0b1100)
+      style: secondary
+      start: 29
+      end: 41
+    - source: |-
+        {
+            case 1: return 1;
+            default: return 0;
+          }
+      style: secondary
+      start: 42
+      end: 92
+  "int f(unsigned v) {\n  switch (v & 0x3) {\n    case 2: return 1;\n    default: break;\n  }\n  switch (v & 0xf00) {\n    case 6: return 2;\n    default: return 0;\n  }\n  return 3;\n}":
+    labels:
+    - source: |-
+        switch (v & 0xf00) {
+            case 6: return 2;
+            default: return 0;
+          }
+      style: primary
+      start: 89
+      end: 158
+    - source: "&"
+      style: secondary
+      start: 99
+      end: 100
+    - source: v & 0xf00
+      style: secondary
+      start: 97
+      end: 106
+    - source: (v & 0xf00)
+      style: secondary
+      start: 96
+      end: 107
+    - source: |-
+        {
+            case 6: return 2;
+            default: return 0;
+          }
+      style: secondary
+      start: 108
+      end: 158
   "int f(unsigned v) {\n  switch (v & 0xF000) {\n    case 3: return 1;\n    case 4: return 2;\n  }\n  return 0;\n}":
     labels:
     - source: |-
@@ -20,12 +220,138 @@ snapshots:
       style: primary
       start: 22
       end: 91
+    - source: "&"
+      style: secondary
+      start: 32
+      end: 33
+    - source: v & 0xF000
+      style: secondary
+      start: 30
+      end: 40
+    - source: (v & 0xF000)
+      style: secondary
+      start: 29
+      end: 41
+    - source: |-
+        {
+            case 3: return 1;
+            case 4: return 2;
+          }
+      style: secondary
+      start: 42
+      end: 91
+  "int f(unsigned v) {\n  switch (v & 0xF0u) {\n    case 2: return 1;\n    default: return 0;\n  }\n}":
+    labels:
+    - source: |-
+        switch (v & 0xF0u) {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: primary
+      start: 22
+      end: 91
+    - source: "&"
+      style: secondary
+      start: 32
+      end: 33
+    - source: v & 0xF0u
+      style: secondary
+      start: 30
+      end: 39
+    - source: (v & 0xF0u)
+      style: secondary
+      start: 29
+      end: 40
+    - source: |-
+        {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: secondary
+      start: 41
+      end: 91
+  "int f(unsigned v) {\n  switch (v & 240) {\n    case 1: return 1;\n    default: return 0;\n  }\n}":
+    labels:
+    - source: |-
+        switch (v & 240) {
+            case 1: return 1;
+            default: return 0;
+          }
+      style: primary
+      start: 22
+      end: 89
+    - source: "&"
+      style: secondary
+      start: 32
+      end: 33
+    - source: v & 240
+      style: secondary
+      start: 30
+      end: 37
+    - source: (v & 240)
+      style: secondary
+      start: 29
+      end: 38
+    - source: |-
+        {
+            case 1: return 1;
+            default: return 0;
+          }
+      style: secondary
+      start: 39
+      end: 89
   "int f(unsigned v) { switch (v & 0xf00) { case 6: return 1; } return 0; }":
     labels:
     - source: "switch (v & 0xf00) { case 6: return 1; }"
       style: primary
       start: 20
       end: 60
+    - source: "&"
+      style: secondary
+      start: 30
+      end: 31
+    - source: v & 0xf00
+      style: secondary
+      start: 28
+      end: 37
+    - source: (v & 0xf00)
+      style: secondary
+      start: 27
+      end: 38
+    - source: "{ case 6: return 1; }"
+      style: secondary
+      start: 39
+      end: 60
+  "int f(unsigned v, unsigned m) {\n  switch (v & m) {\n    case 2: return 1;\n    default: return 0;\n  }\n}":
+    labels:
+    - source: |-
+        switch (v & m) {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: primary
+      start: 34
+      end: 99
+    - source: "&"
+      style: secondary
+      start: 44
+      end: 45
+    - source: v & m
+      style: secondary
+      start: 42
+      end: 47
+    - source: (v & m)
+      style: secondary
+      start: 41
+      end: 48
+    - source: |-
+        {
+            case 2: return 1;
+            default: return 0;
+          }
+      style: secondary
+      start: 49
+      end: 99
   "struct hdr { unsigned type; };\nint f(const struct hdr *h) {\n  switch (h->type & 0xff00) {\n    case 1: return 1;\n    default: return 0;\n  }\n}":
     labels:
     - source: |-
@@ -35,4 +361,24 @@ snapshots:
           }
       style: primary
       start: 62
+      end: 138
+    - source: "&"
+      style: secondary
+      start: 78
+      end: 79
+    - source: h->type & 0xff00
+      style: secondary
+      start: 70
+      end: 86
+    - source: (h->type & 0xff00)
+      style: secondary
+      start: 69
+      end: 87
+    - source: |-
+        {
+            case 1: return 1;
+            default: return 0;
+          }
+      style: secondary
+      start: 88
       end: 138
