@@ -11,6 +11,8 @@ rule:
   kind: string_literal
   regex: '(^|[^%])(%%)*%[-+ #0-9.*]*l([^ldiuoxXn]|$)'
 metadata:
+  todo_cases:
+    - '`printf("%lf\n", d);` is reported although `%lf` is valid C99 (the `l` has no effect on f); `%lc` and `%ls` are reported too (false positive: only d i u o x X n and l are accepted after `l`).'
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'

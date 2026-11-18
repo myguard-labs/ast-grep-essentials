@@ -1,5 +1,23 @@
 id: c-printf-bare-l-length-modifier
 valid:
   - 'char *m = "%ld: failed";'
+  - |-
+    #include <stdio.h>
+    void f(unsigned long n) { printf("%lu bytes\n", n); }
+  - |-
+    #include <stdio.h>
+    void f(int pct) { printf("%d%%lines\n", pct); }
+  - |-
+    #include <stdio.h>
+    void f(unsigned long n) { printf("%-10lX|%lo\n", n, n); }
 invalid:
   - 'char *m = "%l: failed";'
+  - |-
+    #include <stdio.h>
+    void f(long n) { printf("count=%l\n", n); }
+  - |-
+    #include <stdio.h>
+    void f(long n) { printf("%5l|\n", n); }
+  - |-
+    #include <stdio.h>
+    void f(long n) { printf("100%%, %-8l|\n", n); }

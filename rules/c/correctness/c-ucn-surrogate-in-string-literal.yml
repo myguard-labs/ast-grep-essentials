@@ -14,6 +14,9 @@ rule:
   kind: string_literal
   regex: '\\u[dD][89a-fA-F][0-9a-fA-F]{2}'
 metadata:
+  todo_cases:
+    - '`const char *s = "\\ud800";` is reported although the escaped backslash makes `ud800` plain text (false positive).'
+    - '`const char *s = "\U0000d800";` is not reported (false negative: only the lowercase `\u` form is matched).'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

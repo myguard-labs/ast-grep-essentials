@@ -1,5 +1,37 @@
 id: c-preprocessor-conditional-in-macro-args
 snapshots:
+  "#define SUM(a, b) ((a) + (b))\nint g(int x) {\n    return SUM(x,\n  #  if defined(FOO)\n               1\n  #  elif defined(BAR)\n               2\n  #  else\n               3\n  #  endif\n               );\n}":
+    labels:
+    - source: |-
+        int g(int x) {
+            return SUM(x,
+          #  if defined(FOO)
+                       1
+          #  elif defined(BAR)
+                       2
+          #  else
+                       3
+          #  endif
+                       );
+        }
+      style: primary
+      start: 30
+      end: 198
+  "#define SUM(a, b) ((a) + (b))\nint g(int x) {\n    return SUM(x,\n#ifndef BIG\n               1\n#else\n               2\n#endif\n               );\n}":
+    labels:
+    - source: |-
+        int g(int x) {
+            return SUM(x,
+        #ifndef BIG
+                       1
+        #else
+                       2
+        #endif
+                       );
+        }
+      style: primary
+      start: 30
+      end: 141
   "void f(void) { REGISTER_LONG_CONSTANT(\"X\",\n#ifdef FOO\n 1\n#else\n 0\n#endif\n, CONST_CS); }":
     labels:
     - source: |-

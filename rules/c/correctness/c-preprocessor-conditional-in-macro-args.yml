@@ -14,6 +14,8 @@ rule:
   kind: function_definition
   regex: '\w[ \t]*\([^;{}]*\n[ \t]*#[ \t]*(if|ifdef|ifndef|else|elif)\b'
 metadata:
+  todo_cases:
+    - '`int f(int x) { if (x)\n#ifdef FOO\n x++;\n#endif\n return x; }` is reported although the directive follows the `if (x)` condition, not a macro argument list (false positive: any `(` ... newline `#if` without `;{}` between matches).'
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
