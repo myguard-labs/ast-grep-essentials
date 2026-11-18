@@ -46,6 +46,27 @@ valid:
         default: return 0;
       }
     }
+  - |-
+    int f(unsigned v) {
+      switch (v & (0x3)) {
+        case 2: return 1;
+        default: return 0;
+      }
+    }
+  - |-
+    int f(unsigned v) {
+      switch (v & (unsigned)0x3) {
+        case 2: return 1;
+        default: return 0;
+      }
+    }
+  - |-
+    int f(unsigned v) {
+      switch (0xf & (v >> 8)) {
+        case 6: return 1;
+        default: return 0;
+      }
+    }
 invalid:
   - 'int f(unsigned v) { switch (v & 0xf00) { case 6: return 1; } return 0; }'
   - |-
@@ -74,35 +95,35 @@ invalid:
   - |-
     int f(unsigned v) {
       switch (v & 240) {
-        case 16: return 1;
+        case 1: return 1;
         default: return 0;
       }
     }
   - |-
     int f(unsigned v) {
       switch (v & 0xF0u) {
-        case 32: return 1;
+        case 2: return 1;
         default: return 0;
       }
     }
   - |-
     int f(unsigned v) {
       switch (v & 0b1100) {
-        case 4: return 1;
+        case 1: return 1;
         default: return 0;
       }
     }
   - |-
     int f(unsigned v) {
       switch (0xf0 & v) {
-        case 32: return 1;
+        case 2: return 1;
         default: return 0;
       }
     }
   - |-
     int f(unsigned v) {
       switch (v & (0xf0)) {
-        case 32: return 1;
+        case 2: return 1;
         default: return 0;
       }
     }
@@ -110,7 +131,7 @@ invalid:
     #define FIELD_MASK 0xf0u
     int f(unsigned v) {
       switch (v & FIELD_MASK) {
-        case 32: return 1;
+        case 2: return 1;
         default: return 0;
       }
     }
