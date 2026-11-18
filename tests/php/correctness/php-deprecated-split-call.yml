@@ -5,9 +5,33 @@ valid:
   - '$parts = mb_split( '','', $s );'
   - '$parts = $this->split( '','', $s );'
   - '$parts = str_split( $s, 2 );'
+  - "<?php $parts = explode(' ', $line);"
+  - "<?php $p = preg_split('/,/', $s);"
+  - "<?php $p = str_split($s);"
+  - "<?php $p = $obj->split(',');"
+  - "$encdata = explode(',', $enc);\n"
+  - "$parts = preg_split( '/[,;]/', $s );\n"
+  - "$parts = mb_split( ',', $s );\n"
+  - "$parts = $this->split( ',', $s );\n"
+  - "$parts = str_split( $s, 2 );\n"
+  - "<?php $parts = explode(' ', $argv);\n"
+  - "<?php $p = mb_split(',', $s);\n"
+  - "<?php $p = Foo::split(',');\n"
 invalid:
   - '$encdata = split('','', $enc);'
   - '$parts = split( ''[,;]'', $s, 2 );'
   - '$parts = split( "\n", $text );'
   - 'list( $k, $v ) = split( ''='', $line, 2 );'
   - 'foreach ( split( '','', $s ) as $p ) { $x = $p; }'
+  - "<?php $parts = split(' ', $line);"
+  - "<?php $p = split(',', $s);"
+  - "<?php foreach (split(',', $s) as $x) {}"
+  - "<?php list($a, $b) = split('=', $s);"
+  - "$encdata = split(',', $enc);\n"
+  - "$parts = split( '[,;]', $s, 2 );\n"
+  - "$parts = split( \"\\n\", $text );\n"
+  - "list( $k, $v ) = split( '=', $line, 2 );\n"
+  - "foreach ( split( ',', $s ) as $p ) { $x = $p; }\n"
+  - "<?php $parts = split(' ', $argv);\n"
+  - "<?php $p = split(\"\\n\", $x, 2);\n"
+  - "<?php echo count(split(',', $s));\n"
