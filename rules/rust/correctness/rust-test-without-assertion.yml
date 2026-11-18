@@ -14,15 +14,33 @@ rule:
   follows:
     kind: attribute_item
     regex: '^#\[(tokio::)?test\]$'
-  not:
-    has:
-      kind: macro_invocation
-      regex: '^assert(_eq|_ne)?!'
-      stopBy: end
+  all:
+    - not:
+        has:
+          kind: macro_invocation
+          regex: '^assert(_eq|_ne)?!'
+          stopBy: end
+    - not:
+        all:
+          - has:
+              field: return_type
+              kind: generic_type
+              regex: '^([A-Za-z_][A-Za-z_0-9]*::)*Result\s*<'
+          - has:
+              kind: try_expression
+              stopBy: end
+    - not:
+        follows:
+          kind: attribute_item
+          regex: '^#\[should_panic([(\s=]|\]$)'
+          stopBy:
+            not:
+              kind: attribute_item
 metadata:
   todo_cases:
-    - '#[should_panic(expected = "x")] placed before #[test] on a test whose body panics by design is flagged, since the test attribute is the preceding sibling and the panic is the check (1 match)'
-    - '#[test] fn smoke() -> Result<(), E> { parse("1")?; Ok(()) } (a Result-returning test where ? is the check) is flagged (1 match)'
+    - '#[should_panic] then a line comment then #[test] is still flagged: the attribute walk passes only through attribute_item siblings and a comment ends it (1 match)'
+    - '#[test] fn t() -> Result<(), E> { let _ = parse("1"); Ok(()) } whose only ? sits inside a nested closure is not flagged, since any ? in the body counts as the check (0 matches)'
+    - '#[test] fn t() -> TestResult { parse("1")?; Ok(()) } with a type alias for Result is still flagged, since the return type must be spelled Result<..> (1 match)'
   rule_modified_at: '2026-10-09'
   ast_grep_tested_version: 0.45.3
   validated_at: '2026-10-09'

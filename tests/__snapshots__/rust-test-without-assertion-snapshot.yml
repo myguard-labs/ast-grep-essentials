@@ -23,6 +23,19 @@ snapshots:
       style: secondary
       start: 34
       end: 48
+  "fn parse(s: &str) -> u32 {\n    if s.is_empty() {\n        panic!(\"empty input\");\n    }\n    s.len() as u32\n}\nmod tests {\n    use super::parse;\n\n    #[should_panic]\n    #[test]\n    fn rejects_empty() {\n        parse(\"\");\n    }\n\n    #[test]\n    fn checks_nothing() {\n        let _ = parse(\"x\");\n    }\n}":
+    labels:
+    - source: |-
+        fn checks_nothing() {
+                let _ = parse("x");
+            }
+      style: primary
+      start: 241
+      end: 296
+    - source: "#[test]"
+      style: secondary
+      start: 229
+      end: 236
   "fn parse(s: &str) -> u32 {\n    s.len() as u32\n}\n#[test]\nfn compares_without_assert() {\n    let v = parse(\"x\");\n    if v != 1 {\n        println!(\"unexpected {}\", v);\n    }\n}":
     labels:
     - source: |-
@@ -62,6 +75,20 @@ snapshots:
       style: primary
       start: 56
       end: 108
+    - source: "#[test]"
+      style: secondary
+      start: 48
+      end: 55
+  "fn parse(s: &str) -> u32 {\n    s.len() as u32\n}\n#[test]\nfn result_without_check() -> Result<(), String> {\n    let _ = parse(\"x\");\n    Ok(())\n}":
+    labels:
+    - source: |-
+        fn result_without_check() -> Result<(), String> {
+            let _ = parse("x");
+            Ok(())
+        }
+      style: primary
+      start: 56
+      end: 142
     - source: "#[test]"
       style: secondary
       start: 48
