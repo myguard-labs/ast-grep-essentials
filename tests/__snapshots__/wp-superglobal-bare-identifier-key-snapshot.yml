@@ -1,15 +1,21 @@
 id: wp-superglobal-bare-identifier-key
 snapshots:
+  "$referer = urldecode( $_SERVER[HTTP_REFERER] );":
+    labels:
+    - source: $_SERVER[HTTP_REFERER]
+      style: primary
+      start: 22
+      end: 44
+    - source: HTTP_REFERER
+      style: secondary
+      start: 31
+      end: 43
   "<?php\n$v = $_COOKIE[foo];":
     labels:
     - source: $_COOKIE[foo]
       style: primary
       start: 11
       end: 24
-    - source: $_COOKIE
-      style: secondary
-      start: 11
-      end: 19
     - source: foo
       style: secondary
       start: 20
@@ -20,10 +26,6 @@ snapshots:
       style: primary
       start: 11
       end: 22
-    - source: $_GET
-      style: secondary
-      start: 11
-      end: 16
     - source: page
       style: secondary
       start: 17
@@ -34,10 +36,6 @@ snapshots:
       style: primary
       start: 11
       end: 30
-    - source: $_SERVER
-      style: secondary
-      start: 11
-      end: 19
     - source: HTTP_HOST
       style: secondary
       start: 20
@@ -48,25 +46,167 @@ snapshots:
       style: primary
       start: 18
       end: 35
-    - source: $_REQUEST
-      style: secondary
-      start: 18
-      end: 27
     - source: action
       style: secondary
       start: 28
       end: 34
+  "<?php $a[key] = 1;":
+    labels:
+    - source: $a[key]
+      style: primary
+      start: 6
+      end: 13
+    - source: key
+      style: secondary
+      start: 9
+      end: 12
+  "<?php $h = $_SERVER[HTTP_HOST];":
+    labels:
+    - source: $_SERVER[HTTP_HOST]
+      style: primary
+      start: 11
+      end: 30
+    - source: HTTP_HOST
+      style: secondary
+      start: 20
+      end: 29
+  "<?php $ip = $_SERVER[REMOTE_ADDR] ?? '';":
+    labels:
+    - source: $_SERVER[REMOTE_ADDR]
+      style: primary
+      start: 12
+      end: 33
+    - source: REMOTE_ADDR
+      style: secondary
+      start: 21
+      end: 32
+  "<?php $q[s] = 1;":
+    labels:
+    - source: $q[s]
+      style: primary
+      start: 6
+      end: 11
+    - source: s
+      style: secondary
+      start: 9
+      end: 10
+  "<?php $t = $_GET[template];":
+    labels:
+    - source: $_GET[template]
+      style: primary
+      start: 11
+      end: 26
+    - source: template
+      style: secondary
+      start: 17
+      end: 25
+  "<?php $t = $_POST[action];":
+    labels:
+    - source: $_POST[action]
+      style: primary
+      start: 11
+      end: 25
+    - source: action
+      style: secondary
+      start: 18
+      end: 24
+  "<?php $t = $a->b[c];":
+    labels:
+    - source: $a->b[c]
+      style: primary
+      start: 11
+      end: 19
+    - source: c
+      style: secondary
+      start: 17
+      end: 18
+  "<?php $t = $a['x'][id];":
+    labels:
+    - source: $a['x'][id]
+      style: primary
+      start: 11
+      end: 22
+    - source: id
+      style: secondary
+      start: 19
+      end: 21
+  "<?php $v = $_FILES[name];":
+    labels:
+    - source: $_FILES[name]
+      style: primary
+      start: 11
+      end: 24
+    - source: name
+      style: secondary
+      start: 19
+      end: 23
   "<?php $v = $_POST[linkcheck];":
     labels:
     - source: $_POST[linkcheck]
       style: primary
       start: 11
       end: 28
-    - source: $_POST
-      style: secondary
-      start: 11
-      end: 17
     - source: linkcheck
       style: secondary
       start: 18
       end: 27
+  "<?php $x = $_GET[s];":
+    labels:
+    - source: $_GET[s]
+      style: primary
+      start: 11
+      end: 19
+    - source: s
+      style: secondary
+      start: 17
+      end: 18
+  "<?php $x = $q[s]; ?>":
+    labels:
+    - source: $q[s]
+      style: primary
+      start: 11
+      end: 16
+    - source: s
+      style: secondary
+      start: 14
+      end: 15
+  "<?php echo $_SERVER[REQUEST_URI];":
+    labels:
+    - source: $_SERVER[REQUEST_URI]
+      style: primary
+      start: 11
+      end: 32
+    - source: REQUEST_URI
+      style: secondary
+      start: 20
+      end: 31
+  "<?php echo $a->b[s];":
+    labels:
+    - source: $a->b[s]
+      style: primary
+      start: 11
+      end: 19
+    - source: s
+      style: secondary
+      start: 17
+      end: 18
+  "<?php foo($arr[s], 1);":
+    labels:
+    - source: $arr[s]
+      style: primary
+      start: 10
+      end: 17
+    - source: s
+      style: secondary
+      start: 15
+      end: 16
+  "<?php if ( isset( $_SERVER[HTTPS] ) ) { run(); }":
+    labels:
+    - source: $_SERVER[HTTPS]
+      style: primary
+      start: 18
+      end: 33
+    - source: HTTPS
+      style: secondary
+      start: 27
+      end: 32
