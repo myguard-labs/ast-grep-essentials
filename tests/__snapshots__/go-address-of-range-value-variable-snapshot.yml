@@ -1,8 +1,236 @@
 id: go-address-of-range-value-variable
 snapshots:
-  ? "package p\n\nfunc f(ings []Ing) {\n\tfor _, ing := range ings {\n\t\tprocess(&ing)\n\t}\n}"
-  : labels:
-    - source: process(&ing)
+  "package p\n\nfunc f(ings []Ing) {\n\tfor _, ing := range ings {\n\t\tprocess(&ing)\n\t}\n}":
+    labels:
+    - source: "&ing"
       style: primary
-      start: 62
-      end: 75
+      start: 70
+      end: 74
+    - source: ing
+      style: secondary
+      start: 40
+      end: 43
+    - source: _, ing
+      style: secondary
+      start: 37
+      end: 43
+    - source: _, ing := range ings
+      style: secondary
+      start: 37
+      end: 57
+    - source: |-
+        for _, ing := range ings {
+        		process(&ing)
+        	}
+      style: secondary
+      start: 33
+      end: 78
+    - source: |-
+        {
+        		process(&ing)
+        	}
+      style: secondary
+      start: 58
+      end: 78
+  "package p\n\ntype Ing struct{ Name string }\n\nfunc process(p *Ing) { _ = p.Name }\n\nvar ptrs []*Ing\nvar byName = map[string]*Ing{}\n\nfunc use(p *Ing) { ptrs = append(ptrs, p) }\n\nfunc f(ings []Ing) {\n\tfor _, v := range ings {\n\t\tgo func() { use(&v) }()\n\t}\n}\n":
+    labels:
+    - source: "&v"
+      style: primary
+      start: 238
+      end: 240
+    - source: v
+      style: secondary
+      start: 202
+      end: 203
+    - source: _, v
+      style: secondary
+      start: 199
+      end: 203
+    - source: _, v := range ings
+      style: secondary
+      start: 199
+      end: 217
+    - source: |-
+        for _, v := range ings {
+        		go func() { use(&v) }()
+        	}
+      style: secondary
+      start: 195
+      end: 248
+    - source: |-
+        {
+        		go func() { use(&v) }()
+        	}
+      style: secondary
+      start: 218
+      end: 248
+  "package p\n\ntype Ing struct{ Name string }\n\nfunc process(p *Ing) { _ = p.Name }\n\nvar ptrs []*Ing\nvar byName = map[string]*Ing{}\n\nfunc use(p *Ing) { ptrs = append(ptrs, p) }\n\nfunc f(ings []Ing) {\n\tfor _, v := range ings {\n\t\tptrs = append(ptrs, &v)\n\t}\n\tfor i := range ings {\n\t\tptrs = append(ptrs, &ings[i])\n\t}\n}\n":
+    labels:
+    - source: "&v"
+      style: primary
+      start: 242
+      end: 244
+    - source: v
+      style: secondary
+      start: 202
+      end: 203
+    - source: _, v
+      style: secondary
+      start: 199
+      end: 203
+    - source: _, v := range ings
+      style: secondary
+      start: 199
+      end: 217
+    - source: |-
+        for _, v := range ings {
+        		ptrs = append(ptrs, &v)
+        	}
+      style: secondary
+      start: 195
+      end: 248
+    - source: |-
+        {
+        		ptrs = append(ptrs, &v)
+        	}
+      style: secondary
+      start: 218
+      end: 248
+  "package p\n\ntype Ing struct{ Name string }\n\nfunc process(p *Ing) { _ = p.Name }\n\nvar ptrs []*Ing\nvar byName = map[string]*Ing{}\n\nfunc use(p *Ing) { ptrs = append(ptrs, p) }\n\nfunc f(ings []Ing) {\n\tfor _, v := range ings {\n\t\tptrs = append(ptrs, &v)\n\t}\n}\n":
+    labels:
+    - source: "&v"
+      style: primary
+      start: 242
+      end: 244
+    - source: v
+      style: secondary
+      start: 202
+      end: 203
+    - source: _, v
+      style: secondary
+      start: 199
+      end: 203
+    - source: _, v := range ings
+      style: secondary
+      start: 199
+      end: 217
+    - source: |-
+        for _, v := range ings {
+        		ptrs = append(ptrs, &v)
+        	}
+      style: secondary
+      start: 195
+      end: 248
+    - source: |-
+        {
+        		ptrs = append(ptrs, &v)
+        	}
+      style: secondary
+      start: 218
+      end: 248
+  "package p\n\ntype Ing struct{ Name string }\n\nfunc process(p *Ing) { _ = p.Name }\n\nvar ptrs []*Ing\nvar byName = map[string]*Ing{}\n\nfunc use(p *Ing) { ptrs = append(ptrs, p) }\n\nfunc f(ings []Ing) {\n\tfor _, v := range ings {\n\t\tswitch v.Name {\n\t\tcase \"keep\":\n\t\t\tuse(&v)\n\t\t}\n\t}\n}\n":
+    labels:
+    - source: "&v"
+      style: primary
+      start: 260
+      end: 262
+    - source: v
+      style: secondary
+      start: 202
+      end: 203
+    - source: _, v
+      style: secondary
+      start: 199
+      end: 203
+    - source: _, v := range ings
+      style: secondary
+      start: 199
+      end: 217
+    - source: |-
+        for _, v := range ings {
+        		switch v.Name {
+        		case "keep":
+        			use(&v)
+        		}
+        	}
+      style: secondary
+      start: 195
+      end: 270
+    - source: |-
+        {
+        		switch v.Name {
+        		case "keep":
+        			use(&v)
+        		}
+        	}
+      style: secondary
+      start: 218
+      end: 270
+  "package p\n\ntype Ing struct{ Name string }\n\nfunc process(p *Ing) { _ = p.Name }\n\nvar ptrs []*Ing\nvar byName = map[string]*Ing{}\n\nfunc use(p *Ing) { ptrs = append(ptrs, p) }\n\nfunc f(ings []Ing) {\n\tfor i, v := range ings {\n\t\tif v.Name != \"\" {\n\t\t\tbyName[ings[i].Name] = &v\n\t\t}\n\t}\n}\n":
+    labels:
+    - source: "&v"
+      style: primary
+      start: 266
+      end: 268
+    - source: v
+      style: secondary
+      start: 202
+      end: 203
+    - source: i, v
+      style: secondary
+      start: 199
+      end: 203
+    - source: i, v := range ings
+      style: secondary
+      start: 199
+      end: 217
+    - source: |-
+        for i, v := range ings {
+        		if v.Name != "" {
+        			byName[ings[i].Name] = &v
+        		}
+        	}
+      style: secondary
+      start: 195
+      end: 275
+    - source: |-
+        {
+        		if v.Name != "" {
+        			byName[ings[i].Name] = &v
+        		}
+        	}
+      style: secondary
+      start: 218
+      end: 275
+  "package p\n\ntype Ing struct{ Name string }\n\nvar keep []*Ing\n\nfunc f(ch chan Ing) {\n\tfor ing := range ch {\n\t\tkeep = append(keep, &ing)\n\t}\n}":
+    labels:
+    - source: "&ing"
+      style: primary
+      start: 127
+      end: 131
+    - source: ing
+      style: secondary
+      start: 87
+      end: 90
+    - source: ing
+      style: secondary
+      start: 87
+      end: 90
+    - source: ing := range ch
+      style: secondary
+      start: 87
+      end: 102
+    - source: |-
+        for ing := range ch {
+        		keep = append(keep, &ing)
+        	}
+      style: secondary
+      start: 83
+      end: 135
+    - source: |-
+        {
+        		keep = append(keep, &ing)
+        	}
+      style: secondary
+      start: 103
+      end: 135
