@@ -4,11 +4,11 @@ id: sh-grep-quiet-pipe-under-pipefail
 language: bash
 severity: warning
 message: >-
-  Piping printf or echo output into grep -q can cause SIGPIPE failures under
-  pipefail; use a here-string instead.
+  Piping a producer such as printf or echo into grep -q can cause SIGPIPE
+  failures under pipefail; use a here-string instead.
 note: >-
-  Purely syntactic match on a pipeline whose left side is printf or echo and
-  whose right side is grep with a -q flag. It does not verify that pipefail is
+  Purely syntactic match on a pipeline whose right side is grep with a -q flag;
+  the left side can be any producer. It does not verify that pipefail is
   set, that the input is large, or the runtime behavior of grep.
 rule:
   pattern: '$LEFT | grep $$$FLAGS'
@@ -21,10 +21,12 @@ rule:
     kind: word
     stopBy: end
 metadata:
-  rule_modified_at: '2026-10-16'
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-16'
   created_at: '2026-10-16'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  todo_cases:
+    - 'FP: a -q option on the producer (ssh -q host cmd | grep foo) is reported; the -q check searches the whole pipeline, not only the grep command.'

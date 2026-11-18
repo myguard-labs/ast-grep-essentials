@@ -10,6 +10,28 @@ valid:
   - |-
     set -o pipefail
     printf "%s\n" "$text" | grep -E "foo|bar" >/dev/null && echo found
+  - 'printf ''%s\n'' "$text" | grep foo'
+  - 'printf ''%s\n'' "$text" | grep -c foo'
+  - 'if grep -q ''^1..'' <<< "$out"; then :; fi'
+  - |-
+    set -o pipefail
+    if grep -q -- "$pat" "$file"; then :; fi
+  - |-
+    set -o pipefail
+    n=$(printf '%s\n' "$out" | grep -c '^1..')
+  - |-
+    set -o pipefail
+    if grep -qF -- "$needle" <(printf '%s\n' "$haystack"); then :; fi
+  - |-
+    set -o pipefail
+    grep -qvE '^//' <<< "$changed"
+  - '[[ $changed =~ ^// ]]'
+  - |-
+    set -o pipefail
+    n=$(printf '%s\n' "$changed" | wc -l)
+  - |-
+    set -o pipefail
+    if grep -qE -- "$re" <(printf '%s\n' "$changed"); then :; fi
 invalid:
   - 'printf ''%s\n'' "$changed" | grep -qvE ''^#'''
   - |-
@@ -23,3 +45,25 @@ invalid:
     while read -r l; do
       printf "%s\n" "$l" | grep -qF -- "$pat" && echo "$l"
     done < "$file"
+  - 'if printf ''%s'' "$out" | grep -q ''^1..''; then :; fi'
+  - |-
+    set -o pipefail
+    printf '%s\n' "$out" | grep -q -- "$pat"
+  - |-
+    set -o pipefail
+    if printf '%s' "$out" | grep -q -E 'a|b'; then echo match; fi
+  - |-
+    set -o pipefail
+    printf '%s\n' "$list" | grep -q -F "$item" && echo found
+  - |-
+    set -o pipefail
+    printf "%s" "$changed" | grep -qvE '^//'
+  - |-
+    set -o pipefail
+    printf '%s\n' "$changed" | grep -q -- "$re"
+  - |-
+    set -o pipefail
+    printf %s "$out" | grep -qE 'a|b'
+  - |-
+    set -o pipefail
+    printf '%s\n' "$list" | grep -qxF "$item"

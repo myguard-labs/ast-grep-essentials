@@ -2,23 +2,30 @@
 
 id: sh-pipe-printf-into-grep-q
 language: bash
-severity: warning
+severity: 'off'
 message: >-
-  Piping printf output into grep -q can fail under pipefail when grep exits
-  early and SIGPIPE hits the producer; use a here-string or file instead.
+  Deprecated rule ID; use sh-grep-quiet-pipe-under-pipefail. Piping printf
+  output into grep -q can fail under pipefail when grep exits early and SIGPIPE
+  hits the producer.
 note: >-
-  Syntactic match only: flags a literal printf of a variable piped directly
-  into a grep command with a -q-style flag. Does not verify pipefail is set,
-  grep's exact flag semantics, or input size.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use sh-grep-quiet-pipe-under-pipefail and do not emit this rule.
 rule:
-  pattern: 'printf $FMT $VAR | grep $$$ARGS'
+  pattern: '$LEFT | grep $$$FLAGS'
+  inside:
+    kind: program
+    stopBy: end
+  has:
+    pattern: '$FLAG'
+    regex: '^-[A-Za-z]*q[A-Za-z]*$'
+    kind: word
+    stopBy: end
 metadata:
-  rule_modified_at: '2026-10-15'
+  deprecated_alias_of: sh-grep-quiet-pipe-under-pipefail
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - 'FP: `printf ''%s\n'' "$c" | grep -c x` is reported although grep reads all input (no -q, no early exit).'

@@ -2,25 +2,30 @@
 
 id: sh-grep-q-pipeline-early-exit
 language: bash
-severity: warning
+severity: 'off'
 message: >-
-  Piping printf or echo output into grep -q can SIGPIPE the writer; under
-  pipefail this may report a false failure. Consider a here-string.
+  Deprecated rule ID; use sh-grep-quiet-pipe-under-pipefail. Piping printf or
+  echo output into grep -q can SIGPIPE the writer; under pipefail this may
+  report a false failure.
 note: >-
-  Matches only the literal syntactic shape of a printf or echo command piped
-  directly into grep -q. It does not verify pipefail is set, the output size,
-  or runtime SIGPIPE behavior.
+  Compatibility alias for consumers that explicitly promote the former ID.
+  Normal scans use sh-grep-quiet-pipe-under-pipefail and do not emit this rule.
 rule:
-  pattern: 'printf $$$A | grep -q $$$ARGS'
+  pattern: '$LEFT | grep $$$FLAGS'
+  inside:
+    kind: program
+    stopBy: end
+  has:
+    pattern: '$FLAG'
+    regex: '^-[A-Za-z]*q[A-Za-z]*$'
+    kind: word
+    stopBy: end
 metadata:
-  rule_modified_at: '2026-10-15'
+  deprecated_alias_of: sh-grep-quiet-pipe-under-pipefail
+  rule_modified_at: '2026-11-18'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - 'FN: `printf ''%s'' "$o" | grep -qx x` and `printf ''%s'' "$o" | grep -E -q x` are not reported (only a literal `-q` as the first grep argument matches).'
-    - 'FN: `echo "$o" | grep -q x` is not reported although the message names echo.'
-    - 'FN: `if ! printf ''%s'' "$o" | grep -q x; then :; fi` is not reported (negated pipeline).'
