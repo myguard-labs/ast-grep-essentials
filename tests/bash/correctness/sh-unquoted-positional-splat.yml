@@ -4,8 +4,21 @@ valid:
   - 'exec "$@"'
   - 'cp -- "$@" /var/backups/'
   - 'printf "%s\n" "$@"'
+  - |
+    #!/usr/bin/env bash
+    run "$*"
+  - 'logger -- "$*"'
+  - 'echo "args: $*"'
+  - |-
+    printf '%s\n' "$*"
 invalid:
   - 'hugo $*'
   - 'exec $*'
   - 'cp -- $* /var/backups/'
   - 'printf "%s\n" $*'
+  - |
+    #!/usr/bin/env bash
+    run $*
+  - 'echo prefix $* suffix'
+  - 'if grep -q foo $*; then :; fi'
+  - 'x=$(wc -l $*)'

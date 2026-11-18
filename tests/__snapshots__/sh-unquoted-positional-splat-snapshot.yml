@@ -1,5 +1,15 @@
 id: sh-unquoted-positional-splat
 snapshots:
+  "#!/usr/bin/env bash\nrun $*\n":
+    labels:
+    - source: $*
+      style: primary
+      start: 24
+      end: 26
+    - source: run $*
+      style: secondary
+      start: 20
+      end: 26
   cp -- $* /var/backups/:
     labels:
     - source: $*
@@ -10,6 +20,16 @@ snapshots:
       style: secondary
       start: 0
       end: 22
+  echo prefix $* suffix:
+    labels:
+    - source: $*
+      style: primary
+      start: 12
+      end: 14
+    - source: echo prefix $* suffix
+      style: secondary
+      start: 0
+      end: 21
   exec $*:
     labels:
     - source: $*
@@ -30,6 +50,16 @@ snapshots:
       style: secondary
       start: 0
       end: 7
+  "if grep -q foo $*; then :; fi":
+    labels:
+    - source: $*
+      style: primary
+      start: 15
+      end: 17
+    - source: grep -q foo $*
+      style: secondary
+      start: 3
+      end: 17
   printf "%s\n" $*:
     labels:
     - source: $*
@@ -40,3 +70,13 @@ snapshots:
       style: secondary
       start: 0
       end: 16
+  x=$(wc -l $*):
+    labels:
+    - source: $*
+      style: primary
+      start: 10
+      end: 12
+    - source: wc -l $*
+      style: secondary
+      start: 4
+      end: 12
