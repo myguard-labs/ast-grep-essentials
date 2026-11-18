@@ -1,24 +1,97 @@
 id: go-tolerated-error-skips-flag-set
 snapshots:
-  ? |-
-    package p
-
-    type flagSet struct{}
-
-    func (flagSet) Set(string) {}
-
-    func process(err error, flag flagSet) (bool, error) {
-        seen := false
-        if err != nil {
-            if !errors.Is(err, io.ErrUnexpectedEOF) {
-                flag.Set("1")
-                return seen, err
-            }
-            seen = true
-        }
-        return seen, nil
-    }
-  : labels:
+  "package p\n\nimport (\n\t\"errors\"\n\t\"io\"\n)\n\ntype flagSet struct{}\n\nfunc (flagSet) Set(string) {}\n\nfunc drain(err error, sawErr flagSet) error {\n\tif err == nil {\n\t\treturn nil\n\t}\n\tif !errors.Is(err, io.ErrUnexpectedEOF) {\n\t\tsawErr.Set(\"1\")\n\t\treturn err\n\t}\n\treturn nil\n}":
+    labels:
+    - source: |-
+        if !errors.Is(err, io.ErrUnexpectedEOF) {
+        		sawErr.Set("1")
+        		return err
+        	}
+      style: primary
+      start: 173
+      end: 248
+    - source: "!errors.Is(err, io.ErrUnexpectedEOF)"
+      style: secondary
+      start: 176
+      end: 212
+    - source: Set
+      style: secondary
+      start: 224
+      end: 227
+    - source: sawErr.Set
+      style: secondary
+      start: 217
+      end: 227
+    - source: sawErr.Set("1")
+      style: secondary
+      start: 217
+      end: 232
+    - source: sawErr.Set("1")
+      style: secondary
+      start: 217
+      end: 232
+  "package p\n\nimport (\n\t\"errors\"\n\t\"io\"\n)\n\ntype flagSet struct{}\n\nfunc (flagSet) Set(string) {}\n\nfunc step(err error, sawErr flagSet, skipped *int) error {\n\tif err == nil {\n\t\treturn nil\n\t}\n\tif !errors.Is(err, io.ErrUnexpectedEOF) {\n\t\tsawErr.Set(\"1\")\n\t\treturn err\n\t}\n\t*skipped++\n\treturn nil\n}":
+    labels:
+    - source: |-
+        if !errors.Is(err, io.ErrUnexpectedEOF) {
+        		sawErr.Set("1")
+        		return err
+        	}
+      style: primary
+      start: 186
+      end: 261
+    - source: "!errors.Is(err, io.ErrUnexpectedEOF)"
+      style: secondary
+      start: 189
+      end: 225
+    - source: Set
+      style: secondary
+      start: 237
+      end: 240
+    - source: sawErr.Set
+      style: secondary
+      start: 230
+      end: 240
+    - source: sawErr.Set("1")
+      style: secondary
+      start: 230
+      end: 245
+    - source: sawErr.Set("1")
+      style: secondary
+      start: 230
+      end: 245
+  "package p\n\nimport (\n\t\"errors\"\n\t\"io\"\n)\n\ntype flagSet struct{}\n\nfunc (flagSet) Set(string) {}\n\ntype state struct{ flag flagSet }\n\nfunc (s *state) process(err error) (bool, error) {\n\tseen := false\n\tif err != nil {\n\t\tif !errors.Is(err, io.ErrUnexpectedEOF) {\n\t\t\ts.flag.Set(\"1\")\n\t\t\treturn seen, err\n\t\t}\n\t\tseen = true\n\t}\n\treturn seen, nil\n}":
+    labels:
+    - source: |-
+        if !errors.Is(err, io.ErrUnexpectedEOF) {
+        			s.flag.Set("1")
+        			return seen, err
+        		}
+      style: primary
+      start: 213
+      end: 297
+    - source: "!errors.Is(err, io.ErrUnexpectedEOF)"
+      style: secondary
+      start: 216
+      end: 252
+    - source: Set
+      style: secondary
+      start: 265
+      end: 268
+    - source: s.flag.Set
+      style: secondary
+      start: 258
+      end: 268
+    - source: s.flag.Set("1")
+      style: secondary
+      start: 258
+      end: 273
+    - source: s.flag.Set("1")
+      style: secondary
+      start: 258
+      end: 273
+  "package p\n\ntype flagSet struct{}\n\nfunc (flagSet) Set(string) {}\n\nfunc process(err error, flag flagSet) (bool, error) {\n    seen := false\n    if err != nil {\n        if !errors.Is(err, io.ErrUnexpectedEOF) {\n            flag.Set(\"1\")\n            return seen, err\n        }\n        seen = true\n    }\n    return seen, nil\n}":
+    labels:
     - source: |-
         if !errors.Is(err, io.ErrUnexpectedEOF) {
                     flag.Set("1")
@@ -27,7 +100,7 @@ snapshots:
       style: primary
       start: 165
       end: 271
-    - source: '!errors.Is(err, io.ErrUnexpectedEOF)'
+    - source: "!errors.Is(err, io.ErrUnexpectedEOF)"
       style: secondary
       start: 168
       end: 204

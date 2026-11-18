@@ -1,5 +1,73 @@
 id: go-wei-field-from-strk-or-infri
 valid:
   - '_ = Header{L1GasPriceWEI: b.L1GasPriceETH}'
+  - |-
+    package p
+
+    type Header struct{ L1GasPriceWEI uint64 }
+
+    type block struct{ L1GasPriceWEI uint64 }
+
+    func f(b block) Header {
+    	return Header{L1GasPriceWEI: b.L1GasPriceWEI}
+    }
+  - |-
+    package p
+
+    type Header struct{ L1GasPriceWEI uint64 }
+
+    func f(weiPrice uint64) Header {
+    	return Header{L1GasPriceWEI: weiPrice}
+    }
+  - |-
+    package p
+
+    type Header struct{ L1GasPriceSTRK uint64 }
+
+    type block struct{ L1GasPriceSTRK uint64 }
+
+    func f(b block) Header {
+    	return Header{L1GasPriceSTRK: b.L1GasPriceSTRK}
+    }
+
 invalid:
   - '_ = Header{L1GasPriceWEI: b.L1GasPriceSTRK}'
+  - |-
+    package p
+
+    type Header struct{ L2GasPriceWEI uint64 }
+
+    type block struct{ L2GasPriceSTRK uint64 }
+
+    func f(b block) Header {
+    	return Header{L2GasPriceWEI: b.L2GasPriceSTRK}
+    }
+  - |-
+    package p
+
+    type Header struct {
+    	Number         uint64
+    	DataGasPriceWEI uint64
+    }
+
+    type block struct {
+    	Number    uint64
+    	PriceInFri uint64
+    }
+
+    func f(b block) Header {
+    	return Header{
+    		Number:         b.Number,
+    		DataGasPriceWEI: b.PriceInFri,
+    	}
+    }
+  - |-
+    package p
+
+    type Header struct{ WEIPerGas uint64 }
+
+    type block struct{ STRKPerGas uint64 }
+
+    func f(b block) *Header {
+    	return &Header{WEIPerGas: b.STRKPerGas}
+    }

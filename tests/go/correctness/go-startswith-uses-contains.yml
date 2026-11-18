@@ -1,5 +1,63 @@
 id: go-startswith-uses-contains
 valid:
   - "package p\n\nimport \"strings\"\n\nfunc htmlEncodeHasSubstring(a, b string) bool {\n\treturn strings.Contains(b, a)\n}\n"
+  - |-
+    package p
+
+    import "strings"
+
+    func pathStartsWith(path, prefix string) bool {
+    	return strings.HasPrefix(path, prefix)
+    }
+  - |-
+    package p
+
+    import "strings"
+
+    func pathStartsWith(path, prefix string) bool {
+    	return strings.Index(path, prefix) == 0
+    }
+  - |-
+    package p
+
+    import "strings"
+
+    func containsDot(s string) bool {
+    	return strings.Contains(s, ".")
+    }
+
 invalid:
   - "package p\n\nimport \"strings\"\n\nfunc htmlEncodeStartsWith(a, b string) bool {\n\treturn strings.Contains(b, a)\n}\n"
+  - |-
+    package p
+
+    import "strings"
+
+    func StartsWith(s, prefix string) bool {
+    	return strings.Contains(s, prefix)
+    }
+  - |-
+    package p
+
+    import "strings"
+
+    func nameStartsWith(s, p string) bool {
+    	if p == "" {
+    		return true
+    	}
+    	return strings.Contains(strings.ToLower(s), strings.ToLower(p))
+    }
+  - |-
+    package p
+
+    import "strings"
+
+    func hostStartsWith(host, p string) bool {
+    	if len(host) < len(p) {
+    		return false
+    	}
+    	if p != "" {
+    		return strings.Contains(host, p)
+    	}
+    	return true
+    }

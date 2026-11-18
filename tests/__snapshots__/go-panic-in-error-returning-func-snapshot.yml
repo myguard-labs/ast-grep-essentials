@@ -1,7 +1,7 @@
 id: go-panic-in-error-returning-func
 snapshots:
-  ? "package p\n\nfunc evaluateLine(l string) error {\n\tif l == \"\" {\n\t\tpanic(\"invalid line\")\n\t}\n\treturn nil\n}\n"
-  : labels:
+  "package p\n\nfunc evaluateLine(l string) error {\n\tif l == \"\" {\n\t\tpanic(\"invalid line\")\n\t}\n\treturn nil\n}\n":
+    labels:
     - source: panic("invalid line")
       style: primary
       start: 63
@@ -10,7 +10,77 @@ snapshots:
       style: secondary
       start: 39
       end: 44
-    - source: "func evaluateLine(l string) error {\n\tif l == \"\" {\n\t\tpanic(\"invalid line\")\n\t}\n\treturn nil\n}"
+    - source: |-
+        func evaluateLine(l string) error {
+        	if l == "" {
+        		panic("invalid line")
+        	}
+        	return nil
+        }
       style: secondary
       start: 11
       end: 101
+  "package p\n\nfunc parseLine(l string) (int, error) {\n\tif l == \"\" {\n\t\tpanic(\"invalid line\")\n\t}\n\treturn len(l), nil\n}":
+    labels:
+    - source: panic("invalid line")
+      style: primary
+      start: 67
+      end: 88
+    - source: (int, error)
+      style: secondary
+      start: 36
+      end: 48
+    - source: |-
+        func parseLine(l string) (int, error) {
+        	if l == "" {
+        		panic("invalid line")
+        	}
+        	return len(l), nil
+        }
+      style: secondary
+      start: 11
+      end: 113
+  "package p\n\nfunc parseLine(l string) (n int, err error) {\n\tif l == \"\" {\n\t\tpanic(\"invalid line\")\n\t}\n\tn = len(l)\n\treturn n, nil\n}":
+    labels:
+    - source: panic("invalid line")
+      style: primary
+      start: 73
+      end: 94
+    - source: (n int, err error)
+      style: secondary
+      start: 36
+      end: 54
+    - source: |-
+        func parseLine(l string) (n int, err error) {
+        	if l == "" {
+        		panic("invalid line")
+        	}
+        	n = len(l)
+        	return n, nil
+        }
+      style: secondary
+      start: 11
+      end: 126
+  "package p\n\nfunc parseLine(l string) error {\n\tswitch {\n\tcase l == \"\":\n\t\treturn nil\n\tcase l[0] == '#':\n\t\tpanic(\"invalid line\")\n\t}\n\treturn nil\n}":
+    labels:
+    - source: panic("invalid line")
+      style: primary
+      start: 103
+      end: 124
+    - source: error
+      style: secondary
+      start: 36
+      end: 41
+    - source: |-
+        func parseLine(l string) error {
+        	switch {
+        	case l == "":
+        		return nil
+        	case l[0] == '#':
+        		panic("invalid line")
+        	}
+        	return nil
+        }
+      style: secondary
+      start: 11
+      end: 141

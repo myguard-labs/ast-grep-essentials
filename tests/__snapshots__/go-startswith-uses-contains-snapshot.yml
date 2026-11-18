@@ -1,8 +1,51 @@
 id: go-startswith-uses-contains
 snapshots:
-  ? "package p\n\nimport \"strings\"\n\nfunc htmlEncodeStartsWith(a, b string) bool {\n\treturn strings.Contains(b, a)\n}\n"
-  : labels:
-    - source: "func htmlEncodeStartsWith(a, b string) bool {\n\treturn strings.Contains(b, a)\n}"
+  "package p\n\nimport \"strings\"\n\nfunc StartsWith(s, prefix string) bool {\n\treturn strings.Contains(s, prefix)\n}":
+    labels:
+    - source: |-
+        func StartsWith(s, prefix string) bool {
+        	return strings.Contains(s, prefix)
+        }
+      style: primary
+      start: 29
+      end: 107
+    - source: StartsWith
+      style: secondary
+      start: 34
+      end: 44
+    - source: return strings.Contains(s, prefix)
+      style: secondary
+      start: 71
+      end: 105
+  "package p\n\nimport \"strings\"\n\nfunc hostStartsWith(host, p string) bool {\n\tif len(host) < len(p) {\n\t\treturn false\n\t}\n\tif p != \"\" {\n\t\treturn strings.Contains(host, p)\n\t}\n\treturn true\n}":
+    labels:
+    - source: |-
+        func hostStartsWith(host, p string) bool {
+        	if len(host) < len(p) {
+        		return false
+        	}
+        	if p != "" {
+        		return strings.Contains(host, p)
+        	}
+        	return true
+        }
+      style: primary
+      start: 29
+      end: 181
+    - source: hostStartsWith
+      style: secondary
+      start: 34
+      end: 48
+    - source: return strings.Contains(host, p)
+      style: secondary
+      start: 131
+      end: 163
+  "package p\n\nimport \"strings\"\n\nfunc htmlEncodeStartsWith(a, b string) bool {\n\treturn strings.Contains(b, a)\n}\n":
+    labels:
+    - source: |-
+        func htmlEncodeStartsWith(a, b string) bool {
+        	return strings.Contains(b, a)
+        }
       style: primary
       start: 29
       end: 107
@@ -14,3 +57,23 @@ snapshots:
       style: secondary
       start: 76
       end: 105
+  "package p\n\nimport \"strings\"\n\nfunc nameStartsWith(s, p string) bool {\n\tif p == \"\" {\n\t\treturn true\n\t}\n\treturn strings.Contains(strings.ToLower(s), strings.ToLower(p))\n}":
+    labels:
+    - source: |-
+        func nameStartsWith(s, p string) bool {
+        	if p == "" {
+        		return true
+        	}
+        	return strings.Contains(strings.ToLower(s), strings.ToLower(p))
+        }
+      style: primary
+      start: 29
+      end: 166
+    - source: nameStartsWith
+      style: secondary
+      start: 34
+      end: 48
+    - source: return strings.Contains(strings.ToLower(s), strings.ToLower(p))
+      style: secondary
+      start: 101
+      end: 164

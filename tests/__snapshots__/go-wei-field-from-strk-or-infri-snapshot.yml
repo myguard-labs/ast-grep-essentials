@@ -1,8 +1,8 @@
 id: go-wei-field-from-strk-or-infri
 snapshots:
-  '_ = Header{L1GasPriceWEI: b.L1GasPriceSTRK}':
+  "_ = Header{L1GasPriceWEI: b.L1GasPriceSTRK}":
     labels:
-    - source: 'L1GasPriceWEI: b.L1GasPriceSTRK'
+    - source: "L1GasPriceWEI: b.L1GasPriceSTRK"
       style: primary
       start: 11
       end: 42
@@ -14,3 +14,45 @@ snapshots:
       style: secondary
       start: 26
       end: 42
+  "package p\n\ntype Header struct {\n\tNumber         uint64\n\tDataGasPriceWEI uint64\n}\n\ntype block struct {\n\tNumber    uint64\n\tPriceInFri uint64\n}\n\nfunc f(b block) Header {\n\treturn Header{\n\t\tNumber:         b.Number,\n\t\tDataGasPriceWEI: b.PriceInFri,\n\t}\n}":
+    labels:
+    - source: "DataGasPriceWEI: b.PriceInFri"
+      style: primary
+      start: 213
+      end: 242
+    - source: DataGasPriceWEI
+      style: secondary
+      start: 213
+      end: 228
+    - source: b.PriceInFri
+      style: secondary
+      start: 230
+      end: 242
+  "package p\n\ntype Header struct{ L2GasPriceWEI uint64 }\n\ntype block struct{ L2GasPriceSTRK uint64 }\n\nfunc f(b block) Header {\n\treturn Header{L2GasPriceWEI: b.L2GasPriceSTRK}\n}":
+    labels:
+    - source: "L2GasPriceWEI: b.L2GasPriceSTRK"
+      style: primary
+      start: 139
+      end: 170
+    - source: L2GasPriceWEI
+      style: secondary
+      start: 139
+      end: 152
+    - source: b.L2GasPriceSTRK
+      style: secondary
+      start: 154
+      end: 170
+  "package p\n\ntype Header struct{ WEIPerGas uint64 }\n\ntype block struct{ STRKPerGas uint64 }\n\nfunc f(b block) *Header {\n\treturn &Header{WEIPerGas: b.STRKPerGas}\n}":
+    labels:
+    - source: "WEIPerGas: b.STRKPerGas"
+      style: primary
+      start: 133
+      end: 156
+    - source: WEIPerGas
+      style: secondary
+      start: 133
+      end: 142
+    - source: b.STRKPerGas
+      style: secondary
+      start: 144
+      end: 156
