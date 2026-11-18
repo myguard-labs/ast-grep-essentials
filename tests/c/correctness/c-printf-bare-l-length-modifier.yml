@@ -10,6 +10,23 @@ valid:
   - |-
     #include <stdio.h>
     void f(unsigned long n) { printf("%-10lX|%lo\n", n, n); }
+  - |-
+    #include <stdio.h>
+    void f(double d) { printf("%lf|%10.3lf\n", d, d); }
+  - |-
+    #include <stdio.h>
+    void f(double d) { printf("%le %lg %-12.4lE\n", d, d, d); }
+  - |-
+    #include <stdio.h>
+    void f(double d) { printf("%la %lA %*.*lf\n", d, d, 8, 2, d); }
+  - |-
+    #include <stdio.h>
+    #include <wchar.h>
+    void f(wint_t c) { wprintf(L"%lc\n", c); }
+  - |-
+    #include <stdio.h>
+    #include <wchar.h>
+    void f(const wchar_t *w) { printf("%-8ls|\n", w); }
 invalid:
   - 'char *m = "%l: failed";'
   - |-
@@ -21,3 +38,12 @@ invalid:
   - |-
     #include <stdio.h>
     void f(long n) { printf("100%%, %-8l|\n", n); }
+  - |-
+    #include <stdio.h>
+    void f(void *p) { printf("%lp\n", p); }
+  - |-
+    #include <stdio.h>
+    void f(long n) { printf("%lk\n", n); }
+  - |-
+    #include <stdio.h>
+    void f(double d, long n) { printf("%lf and %l end\n", d, n); }
