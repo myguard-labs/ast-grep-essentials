@@ -1,6 +1,15 @@
 id: c-preproc-if-bitwise-and
 valid:
   - |-
+    #if HAVE_LIBGD20 && HAVE_LIBFREETYPE
+    #endif
+  - |-
+    #if defined(HAVE_LIBGD20) && defined(HAVE_LIBFREETYPE)
+    #endif
+  - |-
+    #if HAVE_LIBGD20 || HAVE_LIBFREETYPE
+    #endif
+  - |-
     #if HAVE_A && HAVE_B
     int x;
     #endif
@@ -16,7 +25,38 @@ valid:
     #if HAVE_A
     int x;
     #endif
+  - |-
+    #if (X & M) != 0
+    int x;
+    #endif
+  - |-
+    #if X
+    int m = HAVE_A & HAVE_B;
+    #endif
+  - |-
+    #if 0
+    #elif X
+    int m = HAVE_A & HAVE_B;
+    #endif
+  - |-
+    #if X
+    #ifdef Y
+    int m = HAVE_A & HAVE_B;
+    #endif
+    #endif
 invalid:
+  - |-
+    #if HAVE_LIBGD20 & HAVE_LIBFREETYPE
+    #endif
+  - |-
+    #if defined(HAVE_LIBGD20) & defined(HAVE_LIBFREETYPE)
+    #endif
+  - |-
+    #if HAVE_LIBGD20 & HAVE_LIBFREETYPE
+    int x;
+    #else
+    int y;
+    #endif
   - |-
     #if HAVE_A & HAVE_B
     int x;
@@ -32,5 +72,22 @@ invalid:
   - |-
     #if 0
     #elif HAVE_A & HAVE_B
+    int x;
+    #endif
+  - |-
+    #if (HAVE_A & HAVE_B)
+    int x;
+    #endif
+  - |-
+    #if HAVE_A & HAVE_B || HAVE_C
+    int x;
+    #endif
+  - |-
+    #if HAVE_A & HAVE_B && HAVE_C
+    int x;
+    #endif
+  - |-
+    #if 0
+    #elif HAVE_A & HAVE_B || HAVE_C
     int x;
     #endif
