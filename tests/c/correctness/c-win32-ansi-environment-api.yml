@@ -34,10 +34,13 @@ valid:
     }
   - |-
     #include <stddef.h>
+    #include <stdlib.h>
     char *GetEnvironmentStringsA_copy(void);
     int use_copy(void) {
         char *env = GetEnvironmentStringsA_copy();
-        return env != NULL;
+        int ok = env != NULL;
+        free(env);
+        return ok;
     }
 invalid:
   - 'char *environment = GetEnvironmentStringsA();'
