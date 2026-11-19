@@ -28,9 +28,17 @@ valid:
     <?php error_log("INSERT IGNORE skipped 3 duplicate rows");
   - |
     <?php $log->warning('INSERT IGNORE offset mismatch');
+  - |
+    <?php $db->query('\nINSERT IGNORE INTO t (a) VALUES (1)');
+  - |
+    <?php $db->query("\\nINSERT IGNORE INTO t (a) VALUES (1)");
 invalid:
   - |
     <?php $db->query("INSERT IGNORE INTO t (a) VALUES (1)");
+  - |
+    <?php $db->query("\nINSERT IGNORE INTO t (a) VALUES (1)");
+  - |
+    <?php $db->query("\r\n\tINSERT IGNORE INTO t (a) VALUES (1)");
   - |
     <?php $db->exec('insert   ignore into t (a) VALUES (1)');
   - |
