@@ -30,9 +30,9 @@ rule:
           pattern: TSRMLS_FETCH
           stopBy: end
 metadata:
+  known_false_positives: '`int g(int x TSRMLS_CC) { return h(x TSRMLS_CC); }` matches although the signature has a context parameter (spelled CC rather than DC)'
   todo_cases:
-    - "FP: `int g(int x TSRMLS_CC) { return h(x TSRMLS_CC); }` matches although the signature has a context parameter (spelled CC rather than DC)."
-    - "FN: a function with two calls both passing TSRMLS_CC and no context, `int g(int x) { h(x TSRMLS_CC); k(x TSRMLS_CC); return 0; }`, is not matched."
+    - 'int g(int x) { h(x TSRMLS_CC); k(x TSRMLS_CC); return 0; }'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

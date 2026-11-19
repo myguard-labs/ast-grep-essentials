@@ -17,8 +17,8 @@ rule:
     pattern: 'q = ngx_queue_next(&h->pushing)'
 metadata:
   todo_cases:
-    - 'FN: a for-loop step ''q = ngx_queue_next(o)'' with another variable o is not reported; only the literal &h->pushing argument matches.'
-    - 'FN: ''for (...; q = ngx_queue_next(&h->waiting))'' on a list member other than pushing is not reported.'
+    - 'void f(struct h *h, ngx_queue_t *q, ngx_queue_t *o) { for (q = ngx_queue_head(&h->pushing); q != ngx_queue_sentinel(&h->pushing); q = ngx_queue_next(o)) { use(q); } }'
+    - 'void g(struct h *h, ngx_queue_t *q) { for (q = ngx_queue_head(&h->waiting); q != ngx_queue_sentinel(&h->waiting); q = ngx_queue_next(&h->waiting)) { use(q); } }'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

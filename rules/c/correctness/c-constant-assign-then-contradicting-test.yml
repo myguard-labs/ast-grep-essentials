@@ -33,6 +33,7 @@ metadata:
   cwe: 'CWE-570'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/570.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: '`ret = 1; if (x || !ret) { ... }` is reported although the branch still depends on x, so it is not dead'
   todo_cases:
-    - 'FP: `ret = 1; if (x || !ret) { ... }` is reported although the branch still depends on x, so it is not dead.'
-    - 'FN: an initialised declaration `int ret = 1; if (!ret) { ... }` and a negative constant `ret = -1; if (!ret) { ... }` are not reported.'
+    - 'void f(void) { int ret = 1; if (!ret) { g(); } }'
+    - 'void h(void) { int ret; ret = -1; if (!ret) { g(); } }'

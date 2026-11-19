@@ -20,9 +20,9 @@ rule:
         kind: if_statement
         stopBy: end
 metadata:
+  known_false_positives: 'a break in both arms (`#ifdef X ... break; #else ... break; #endif`) inside the error branch is reported though every configuration leaves the loop'
   todo_cases:
-    - 'FP: a break in both arms (#ifdef X ... break; #else ... break; #endif) inside the error branch is reported though every configuration leaves the loop; not pinned.'
-    - 'FN: a break inside the #else arm of an #ifdef (ifdef with preproc_else, break only in the else arm) inside an if body is not reported; the break is a child of preproc_else, not of preproc_ifdef.'
+    - "void f(int n) { while (n) { if (n < 0) {\n#ifdef X\nlog_it();\n#else\nbreak;\n#endif\n} n--; } }"
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-19'

@@ -40,7 +40,8 @@ rule:
                   regex: '^!\s*defined\b[\s(]*OPENSSL_NO_EC[\s)]*$'
 metadata:
   todo_cases:
-    - 'FN: an EC call inside `#ifdef OPENSSL_NO_EC` (compiled only when EC is absent) is not reported because any OPENSSL_NO_EC name suppresses it, whether ifdef or ifndef side; the same holds for an EC call in the `#else` branch of `#if !defined(OPENSSL_NO_EC)`'
+    - "#ifdef OPENSSL_NO_EC\nvoid f(void) { EC_KEY_new(); }\n#endif"
+    - "#if !defined(OPENSSL_NO_EC)\nint a;\n#else\nvoid g(void) { EC_KEY_new(); }\n#endif"
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'

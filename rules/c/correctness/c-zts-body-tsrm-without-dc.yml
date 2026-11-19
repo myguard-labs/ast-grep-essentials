@@ -22,9 +22,9 @@ rule:
           pattern: TSRMLS_DC
           stopBy: end
 metadata:
+  known_false_positives: '`int f(void) { TSRMLS_FETCH(); return g(1 TSRMLS_CC); }` is reported although the body declares its own TSRM context with TSRMLS_FETCH'
   todo_cases:
-    - 'FP: ''int f(void) { TSRMLS_FETCH(); return g(1 TSRMLS_CC); }'' is reported although the body declares its own TSRM context with TSRMLS_FETCH.'
-    - 'FN: ''int f(void) { return TSRMLS_C != 0; }'' (TSRMLS_C, named in the message) is not reported; only TSRMLS_CC is matched.'
+    - 'int f(void) { return TSRMLS_C != 0; }'
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-16'

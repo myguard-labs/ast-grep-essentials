@@ -22,5 +22,5 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'False negative: a statement between the check and the fold, `if (ast->child[1]->kind != ZEND_AST_ZVAL) return; if (n) n++; zend_eval_const_expr(&ast->child[1]);`, is not reported (the guard is not the immediate previous sibling).'
-    - 'False negative: another fold between the check and the fold, `if (ast->child[1]->kind != ZEND_AST_ZVAL) return; zend_eval_const_expr(&ast->child[0]); zend_eval_const_expr(&ast->child[1]);`, is not reported.'
+    - 'void f(zend_ast *ast, int n) { if (ast->child[1]->kind != ZEND_AST_ZVAL) return; if (n) n++; zend_eval_const_expr(&ast->child[1]); }'
+    - 'void g(zend_ast *ast) { if (ast->child[1]->kind != ZEND_AST_ZVAL) return; zend_eval_const_expr(&ast->child[0]); zend_eval_const_expr(&ast->child[1]); }'

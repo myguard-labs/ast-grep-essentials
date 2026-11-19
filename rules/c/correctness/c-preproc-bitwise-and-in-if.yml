@@ -49,8 +49,7 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: '`(HAVE_X & HAVE_Y) != 0` is reported; HAVE_ macros are treated as boolean feature macros'
   todo_cases:
-    - 'Accepted: (HAVE_X & HAVE_Y) != 0 is reported; HAVE_ macros are treated as boolean feature macros.'
-    - 'FN: #elif FOO & BAR with non-HAVE_ operands is not reported (generic branch only sees a direct preproc_if parent).'
-    - 'FN: #if (A & B) with non-HAVE_ operands inside parentheses is not reported; the generic branch only sees a direct preproc_if parent so that #if (X & MASK) != 0 stays valid.'
-    - 'FN: #if HAVE_A & (X | Y) is not reported; the HAVE_ branch needs a HAVE_ macro right after the operator and optional opening parentheses, so #elif HAVE_A & (HAVE_B | X) is reported while #elif HAVE_A & (X | HAVE_B) is not.'
+    - "#if A\nint a;\n#elif FOO & BAR\nint b;\n#endif"
+    - "#if (A & B)\nint a;\n#endif"

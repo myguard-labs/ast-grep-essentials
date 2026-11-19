@@ -22,7 +22,6 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: '`#ifdef FOO$BAR` (GCC extension, `$` in a name) is reported; a trailing line continuation `#ifdef FOO \` is reported'
   todo_cases:
-    - "FN: '#ifdef FOO/2' (slash directly after the name) is not reported; the regex treats '/' as a comment start"
-    - "FP risk: a name with '$' (GCC extension, '#ifdef FOO$BAR') is reported"
-    - "FP risk: a trailing line continuation '#ifdef FOO \\' is reported"
+    - "#ifdef FOO/2\nint a;\n#endif"

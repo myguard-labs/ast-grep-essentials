@@ -37,6 +37,6 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: 'an advance through a helper call (`p = next_of(p);`) or a three-deep member chain (`p = p->a->b->c;`) is still reported after a read of p; only `p = p->f;`, `p = p->a->f;` and a pointer cast of `p->f` are treated as cursor advances'
   todo_cases:
-    - 'Known limitation: an advance through a helper call (`p = next_of(p);`) or a three-deep member chain (`p = p->a->b->c;`) is still reported after a read of p; only `p = p->f;`, `p = p->a->f;` and a pointer cast of `p->f` are treated as cursor advances.'
-    - 'Known limitation: rule scope is for loops only; the same read-then-reassign shape in a while loop is not reported.'
+    - 'void h(struct n *p) { while (p) { use(p->v); p = p->next; } }'

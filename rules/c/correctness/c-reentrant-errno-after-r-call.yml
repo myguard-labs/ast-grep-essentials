@@ -45,5 +45,5 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FN: an *_r call in an enclosing block only (`getpwnam_r(...); if (k) { ... } else { if (errno == ERANGE) ... }`) or in the braced body of an earlier if or loop is not reported; the errno test needs an earlier *_r statement in its own block.'
-    - 'FN: an *_r call in the same condition (`if (getpwnam_r(...) == 0 && errno == ERANGE)`) and other errno tests (`errno != X`, `X == errno`) are not matched, as on the base rule.'
+    - 'void f(int k) { getpwnam_r(a, b, c, d, e); if (k) { g(); } else { if (errno == ERANGE) { h(); } } }'
+    - 'void g2(void) { if (getpwnam_r(a, b, c, d, e) == 0 && errno == ERANGE) { h(); } }'

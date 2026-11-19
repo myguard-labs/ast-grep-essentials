@@ -18,10 +18,9 @@ rule:
     has:
       kind: cast_expression
 metadata:
+  known_false_positives: '`static ngx_str_t m[] = { { 4, (u_char *) "GET " }, { 5, (u_char *) "POST " } };` is reported once (outer initializer_list has no direct cast_expression child); `static ngx_str_t s = { .len = 4, .data = (u_char *) "GET " };` is reported although the literal is cast'
   todo_cases:
-    - 'FP: ''static ngx_str_t m[] = { { 4, (u_char *) "GET " }, { 5, (u_char *) "POST " } };'' is reported once (outer initializer_list has no direct cast_expression child).'
-    - 'FP: ''static ngx_str_t s = { .len = 4, .data = (u_char *) "GET " };'' is reported although the literal is cast.'
-    - 'FN: ''static ngx_str_t s = { 4, "HEAD" };'' is not reported; only literals starting with "GET " match.'
+    - 'static ngx_str_t s = { 4, "HEAD" };'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

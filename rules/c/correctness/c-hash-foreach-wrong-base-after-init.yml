@@ -19,7 +19,7 @@ rule:
         pattern: 'zend_hash_init($H, $$$REST)'
 metadata:
   todo_cases:
-    - 'A foreach on the freshly initialised table nested inside an if block, after zend_hash_init on the same table, is not reported.'
+    - 'void f(HashTable *t, int c) { zend_string *k; void *v; zend_hash_init(t, 8, NULL, NULL, 0); if (c) { ZEND_HASH_FOREACH_STR_KEY_PTR(t, k, v) { use(v); } ZEND_HASH_FOREACH_END(); } }'
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-19'

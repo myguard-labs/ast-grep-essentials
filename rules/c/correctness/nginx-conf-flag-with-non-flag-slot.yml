@@ -20,6 +20,6 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'Miss: the same entry inside a static ngx_command_t array (one line or multi-line) is not reported; only a bare braced fragment matches'
-    - 'Miss: NGX_HTTP_LOC_CONF|NGX_CONF_FLAG (flag combined with other bits) with ngx_conf_set_enum_slot is not reported'
-    - 'Miss: NGX_CONF_FLAG with ngx_conf_set_str_slot or another non-flag slot handler is not reported; only ngx_conf_set_enum_slot is matched'
+    - "static ngx_command_t cmds[] = {\n  { ngx_string(\"x\"), NGX_HTTP_LOC_CONF|NGX_CONF_FLAG, ngx_conf_set_enum_slot, NGX_HTTP_LOC_CONF_OFFSET, 0, NULL },\n  ngx_null_command\n};"
+    - 'static ngx_command_t cmds2[] = { { ngx_string("y"), NGX_CONF_FLAG, ngx_conf_set_str_slot, NGX_HTTP_LOC_CONF_OFFSET, 0, NULL } };'
+    - 'static ngx_command_t cmds3[] = { { ngx_string("z"), NGX_HTTP_LOC_CONF|NGX_CONF_FLAG, ngx_conf_set_enum_slot, 0, 0, NULL } };'
