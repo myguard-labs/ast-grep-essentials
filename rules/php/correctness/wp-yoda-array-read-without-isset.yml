@@ -131,7 +131,6 @@ rule:
                             - kind: binary_expression
                             - kind: unary_op_expression
                             - kind: if_statement
-                            - kind: else_if_clause
                   - not:
                       inside:
                         stopBy: end
@@ -160,4 +159,4 @@ metadata:
     - "FP: a guard in an `elseif` condition whose body holds the read is not recognised as an enclosing guard; only an if condition counts"
     - "FN: `$ok = 'publish' == $c['post_status'];` outside an if condition and `if ( 'publish' === $c['post_status'] )` (identical comparison) are not reported"
     - "FN: `if ( $c['post_status'] == 'publish' )` (literal on the right) is not reported"
-    - "FN: an isset guard inside a closure in an enclosing if condition (`if ( array_filter( $c, function ( $x ) use ( $c ) { ... elseif ( isset( $c['post_status'] ) ) ... } ) ) { if ( 'publish' == $c['post_status'] ) { ... } }`) is treated as protecting the outer read although it cannot: the guard walk does not stop at closure boundaries"
+    - "FN: an isset guard in an if condition inside a closure in an enclosing if condition (`if ( array_filter( $c, function ( $x ) use ( $c ) { if ( isset( $c['post_status'] ) ) ... } ) ) { if ( 'publish' == $c['post_status'] ) { ... } }`) is treated as protecting the outer read although it cannot: the guard walk does not stop at closure boundaries (the same guard in an elseif condition is reported)"

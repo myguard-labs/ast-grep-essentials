@@ -1080,6 +1080,167 @@ snapshots:
       style: secondary
       start: 137
       end: 227
+  "object A {\n  def bad(in: java.io.InputStream, in2: java.io.InputStream, x: Any) =\n    Using(new ObjectInputStream(in)) { o =>\n      x match {\n        case _: o.type => {\n          val p = new ObjectInputStream(in2)\n          o.readObject()\n          p.readObject()\n        }\n      }\n    }\n}\n":
+    labels:
+    - source: o.readObject()
+      style: primary
+      start: 225
+      end: 239
+    - source: readObject
+      style: secondary
+      start: 227
+      end: 237
+    - source: o
+      style: secondary
+      start: 225
+      end: 226
+    - source: o.readObject
+      style: secondary
+      start: 225
+      end: 237
+    - source: o
+      style: secondary
+      start: 121
+      end: 122
+    - source: readObject
+      style: secondary
+      start: 227
+      end: 237
+    - source: o
+      style: secondary
+      start: 225
+      end: 226
+    - source: o.readObject
+      style: secondary
+      start: 225
+      end: 237
+    - source: o.readObject()
+      style: secondary
+      start: 225
+      end: 239
+    - source: Using
+      style: secondary
+      start: 86
+      end: 91
+    - source: ObjectInputStream
+      style: secondary
+      start: 96
+      end: 113
+    - source: new ObjectInputStream(in)
+      style: secondary
+      start: 92
+      end: 117
+    - source: new ObjectInputStream(in)
+      style: secondary
+      start: 92
+      end: 117
+    - source: Using(new ObjectInputStream(in))
+      style: secondary
+      start: 86
+      end: 118
+    - source: |-
+        Using(new ObjectInputStream(in)) { o =>
+              x match {
+                case _: o.type => {
+                  val p = new ObjectInputStream(in2)
+                  o.readObject()
+                  p.readObject()
+                }
+              }
+            }
+      style: secondary
+      start: 86
+      end: 288
+    - source: |-
+        { o =>
+              x match {
+                case _: o.type => {
+                  val p = new ObjectInputStream(in2)
+                  o.readObject()
+                  p.readObject()
+                }
+              }
+            }
+      style: secondary
+      start: 119
+      end: 288
+    - source: |-
+        o =>
+              x match {
+                case _: o.type => {
+                  val p = new ObjectInputStream(in2)
+                  o.readObject()
+                  p.readObject()
+                }
+              }
+            
+      style: secondary
+      start: 121
+      end: 287
+  "object A {\n  def bad(in: java.io.InputStream, in2: java.io.InputStream, x: Any) = {\n    val o = new ObjectInputStream(in)\n    x match {\n      case _: o.type =>\n        Using(new ObjectInputStream(in2)) { p =>\n          o.readObject()\n          p.readObject()\n        }\n    }\n  }\n}\n":
+    labels:
+    - source: o.readObject()
+      style: primary
+      start: 219
+      end: 233
+    - source: readObject
+      style: secondary
+      start: 221
+      end: 231
+    - source: o
+      style: secondary
+      start: 219
+      end: 220
+    - source: o.readObject
+      style: secondary
+      start: 219
+      end: 231
+    - source: o
+      style: secondary
+      start: 92
+      end: 93
+    - source: ObjectInputStream
+      style: secondary
+      start: 100
+      end: 117
+    - source: new ObjectInputStream(in)
+      style: secondary
+      start: 96
+      end: 121
+    - source: val o = new ObjectInputStream(in)
+      style: secondary
+      start: 88
+      end: 121
+    - source: readObject
+      style: secondary
+      start: 221
+      end: 231
+    - source: o
+      style: secondary
+      start: 219
+      end: 220
+    - source: o.readObject
+      style: secondary
+      start: 219
+      end: 231
+    - source: o.readObject()
+      style: secondary
+      start: 219
+      end: 233
+    - source: |-
+        {
+            val o = new ObjectInputStream(in)
+            x match {
+              case _: o.type =>
+                Using(new ObjectInputStream(in2)) { p =>
+                  o.readObject()
+                  p.readObject()
+                }
+            }
+          }
+      style: secondary
+      start: 82
+      end: 278
   "object A {\n  def bad(in: java.io.InputStream, j: Json) = {\n    val s = new ObjectInputStream(in)\n    locally {\n      val t = j.reader()\n      t.close()\n    }\n    s.readObject()\n  }\n}\n":
     labels:
     - source: s.readObject()
