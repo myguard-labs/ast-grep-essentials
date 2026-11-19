@@ -1,0 +1,59 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-urllib-opener-default-proxy
+language: python
+severity: warning
+message: >-
+  build_opener() keeps the default ProxyHandler, which reads the HTTP_PROXY,
+  HTTPS_PROXY and ALL_PROXY environment variables, so this opener sends its
+  requests, and any credentials or tokens on them, through whatever proxy the
+  environment names. An attacker who controls the environment can read or alter
+  the traffic or steer it past an SSRF guard. Pass ProxyHandler({}) as one of
+  the handlers to disable proxy discovery, or an explicit
+  ProxyHandler({'https': PROXY_URL}) to pin a trusted proxy.
+note: >-
+  Fires on build_opener(...), urllib.request.build_opener(...) and
+  request.build_opener(...) whose arguments hold no call to a ProxyHandler
+  anywhere, whether the empty mapping or an explicit one and in any position.
+  Any argument list containing a *handlers splat is not reported because its
+  contents are unknown. A method called build_opener on any other object is not
+  reported; a bare build_opener is assumed to be the urllib function, as an
+  import cannot be checked here. Code that honours the proxy environment on
+  purpose, such as a client for a corporate network, is the routine dismissal.
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        any:
+          - kind: identifier
+            regex: '^build_opener$'
+          - kind: attribute
+            all:
+              - has: {field: attribute, regex: '^build_opener$'}
+              - has: {field: object, regex: '^(urllib\.request|request)$'}
+    - not:
+        has:
+          field: arguments
+          has:
+            stopBy: end
+            any:
+              - kind: list_splat
+              - kind: call
+                has:
+                  field: function
+                  regex: 'ProxyHandler$'
+metadata:
+  cwe: 'CWE-441|CWE-200'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/441.html|https://cwe.mitre.org/data/definitions/200.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A01:2025'
+  known_false_positives: 'A ProxyHandler built earlier and passed by variable, a ProxyHandler subclass whose name does not end in ProxyHandler, and an opener that deliberately honours the proxy environment are reported'
+  known_false_negatives: 'A build_opener bound to another name, a method on another object, and any call carrying a *handlers splat are not reported'
+  rule_modified_at: '2026-11-19'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-19'
+  created_at: '2026-11-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
