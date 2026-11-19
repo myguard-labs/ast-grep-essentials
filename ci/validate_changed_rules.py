@@ -197,8 +197,8 @@ def _expand(node: Any, budget: list[int], active: set[int]) -> object:
 
     ``budget`` is the remaining node-visit allowance; ``active`` holds the ids
     of the nodes on the current path so a self-referential alias is refused
-    instead of recursing forever. A mapping with a duplicate or ``<<`` key
-    raises ``ValueError``.
+    instead of recursing forever. A mapping with a duplicate, ``<<`` or
+    non-scalar (sequence or mapping) key raises ``ValueError``.
     """
     import yaml  # pylint: disable=import-outside-toplevel
 
@@ -219,12 +219,13 @@ def _expand(node: Any, budget: list[int], active: set[int]) -> object:
             keys: set[str] = set()
             for key_node, value_node in node.value:
                 key = _expand(key_node, budget, active)
-                if key == "<<" or str(key) in keys:
+                if not isinstance(key, str):
+                    # A sequence or mapping key has no unambiguous string form.
+                    raise ValueError("non-scalar mapping key")
+                if key == "<<" or key in keys:
                     raise ValueError("duplicate or merge mapping key")
-                keys.add(str(key))
-                result[key if isinstance(key, str) else str(key)] = _expand(
-                    value_node, budget, active
-                )
+                keys.add(key)
+                result[key] = _expand(value_node, budget, active)
             return result
         raise ValueError("unsupported YAML node")
     finally:

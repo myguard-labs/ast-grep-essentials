@@ -351,6 +351,11 @@ class ValidateChangedRulesTests(unittest.TestCase):
                 self.BASE + "metadata:\n  base: &a {x: 1}\n  <<: *a\n"
             ),
             "recursive alias": self.BASE + "metadata:\n  a: &a [*a]\n",
+            "sequence key in rule": (
+                "id: py-one\nlanguage: python\nmessage: m\n"
+                "rule:\n  ? [kind]\n  : call\n" + extra
+            ),
+            "mapping key under metadata": self.BASE + "metadata:\n  ? {a: 1}\n  : x\n",
         }
         for label, text in cases.items():
             with self.subTest(label):
