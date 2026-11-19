@@ -1,0 +1,178 @@
+id: cpp-jni-critical-array-unchecked
+snapshots:
+  "int f(JNIEnv *env, jintArray arr) { jint *p = (jint *)env->GetPrimitiveArrayCritical(arr, nullptr); int v = *p; env->ReleasePrimitiveArrayCritical(arr, p, 0); return v; }":
+    labels:
+    - source: jint *p = (jint *)env->GetPrimitiveArrayCritical(arr, nullptr);
+      style: primary
+      start: 36
+      end: 99
+    - source: "*p"
+      style: secondary
+      start: 108
+      end: 110
+    - source: "*p"
+      style: secondary
+      start: 108
+      end: 110
+  "void f(JNIEnv *env, jbyteArray arr) { auto p = (jbyte *)env->GetPrimitiveArrayCritical(arr, nullptr); p[0] = 1; }":
+    labels:
+    - source: auto p = (jbyte *)env->GetPrimitiveArrayCritical(arr, nullptr);
+      style: primary
+      start: 38
+      end: 101
+    - source: p[0]
+      style: secondary
+      start: 102
+      end: 106
+    - source: p[0]
+      style: secondary
+      start: 102
+      end: 106
+  "void f(JNIEnv *env, jbyteArray arr) { auto p = env->GetPrimitiveArrayCritical(arr, nullptr); p[0] = 1; }":
+    labels:
+    - source: auto p = env->GetPrimitiveArrayCritical(arr, nullptr);
+      style: primary
+      start: 38
+      end: 92
+    - source: p[0]
+      style: secondary
+      start: 93
+      end: 97
+    - source: p[0]
+      style: secondary
+      start: 93
+      end: 97
+  "void f(JNIEnv *env, jbyteArray arr) { auto p = static_cast<jbyte *>(env->GetPrimitiveArrayCritical(arr, nullptr)); p[0] = 1; }":
+    labels:
+    - source: auto p = static_cast<jbyte *>(env->GetPrimitiveArrayCritical(arr, nullptr));
+      style: primary
+      start: 38
+      end: 114
+    - source: p[0]
+      style: secondary
+      start: 115
+      end: 119
+    - source: p[0]
+      style: secondary
+      start: 115
+      end: 119
+  "void f(JNIEnv *env, jbyteArray arr) { jbyte *p = (jbyte *)env->GetPrimitiveArrayCritical(arr, 0); p[0] = 1; env->ReleasePrimitiveArrayCritical(arr, p, 0); }":
+    labels:
+    - source: jbyte *p = (jbyte *)env->GetPrimitiveArrayCritical(arr, 0);
+      style: primary
+      start: 38
+      end: 97
+    - source: p[0]
+      style: secondary
+      start: 98
+      end: 102
+    - source: p[0]
+      style: secondary
+      start: 98
+      end: 102
+  "void f(JNIEnv *env, jbyteArray arr) { jbyte *p = static_cast<jbyte *>(env->GetPrimitiveArrayCritical(arr, nullptr)); p[0] = 1; }":
+    labels:
+    - source: jbyte *p = static_cast<jbyte *>(env->GetPrimitiveArrayCritical(arr, nullptr));
+      style: primary
+      start: 38
+      end: 116
+    - source: p[0]
+      style: secondary
+      start: 117
+      end: 121
+    - source: p[0]
+      style: secondary
+      start: 117
+      end: 121
+  "void f(JNIEnv *env, jbyteArray arr) { jbyte *p; p = (jbyte *)env->GetPrimitiveArrayCritical(arr, nullptr); p[0] = 1; }":
+    labels:
+    - source: p = (jbyte *)env->GetPrimitiveArrayCritical(arr, nullptr);
+      style: primary
+      start: 48
+      end: 106
+    - source: p[0]
+      style: secondary
+      start: 107
+      end: 111
+    - source: p[0]
+      style: secondary
+      start: 107
+      end: 111
+  "void f(JNIEnv *env, jbyteArray arr) { jbyte *p; p = env->GetPrimitiveArrayCritical(arr, nullptr); p[0] = 1; }":
+    labels:
+    - source: p = env->GetPrimitiveArrayCritical(arr, nullptr);
+      style: primary
+      start: 48
+      end: 97
+    - source: p[0]
+      style: secondary
+      start: 98
+      end: 102
+    - source: p[0]
+      style: secondary
+      start: 98
+      end: 102
+  "void f(JNIEnv *env, jbyteArray arr) { jbyte *p; p = static_cast<jbyte *>(env->GetPrimitiveArrayCritical(arr, nullptr)); *p = 1; env->ReleasePrimitiveArrayCritical(arr, p, 0); }":
+    labels:
+    - source: p = static_cast<jbyte *>(env->GetPrimitiveArrayCritical(arr, nullptr));
+      style: primary
+      start: 48
+      end: 119
+    - source: "*p"
+      style: secondary
+      start: 120
+      end: 122
+    - source: "*p"
+      style: secondary
+      start: 120
+      end: 122
+  "void f(JNIEnv *env, jbyteArray arr, int n) { jbyte *p = env->GetPrimitiveArrayCritical(arr, nullptr); if (n > 0) { p[0] = 1; } env->ReleasePrimitiveArrayCritical(arr, p, 0); }":
+    labels:
+    - source: jbyte *p = env->GetPrimitiveArrayCritical(arr, nullptr);
+      style: primary
+      start: 45
+      end: 101
+    - source: p[0]
+      style: secondary
+      start: 115
+      end: 119
+    - source: p[0]
+      style: secondary
+      start: 115
+      end: 119
+  "void f(JNIEnv *env, jbyteArray arr, int n) { jbyte *p = env->GetPrimitiveArrayCritical(arr, nullptr); memcpy(buf, p, n); env->ReleasePrimitiveArrayCritical(arr, p, 0); }":
+    labels:
+    - source: jbyte *p = env->GetPrimitiveArrayCritical(arr, nullptr);
+      style: primary
+      start: 45
+      end: 101
+    - source: p
+      style: secondary
+      start: 114
+      end: 115
+    - source: p
+      style: secondary
+      start: 114
+      end: 115
+    - source: memcpy(buf, p, n)
+      style: secondary
+      start: 102
+      end: 119
+    - source: memcpy(buf, p, n)
+      style: secondary
+      start: 102
+      end: 119
+  "void f(JNIEnv *env, jobject o) { Ctx *p = (Ctx *)env->GetPrimitiveArrayCritical(o, nullptr); p->len = 1; }":
+    labels:
+    - source: Ctx *p = (Ctx *)env->GetPrimitiveArrayCritical(o, nullptr);
+      style: primary
+      start: 33
+      end: 92
+    - source: p->len
+      style: secondary
+      start: 93
+      end: 99
+    - source: p->len
+      style: secondary
+      start: 93
+      end: 99

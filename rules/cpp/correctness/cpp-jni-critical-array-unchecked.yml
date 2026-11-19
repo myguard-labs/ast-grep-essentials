@@ -1,0 +1,96 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: cpp-jni-critical-array-unchecked
+language: cpp
+severity: warning
+message: >-
+  GetPrimitiveArrayCritical returns NULL when the array cannot be pinned or
+  memory runs out, and the result is used here without a NULL test. Check the
+  pointer before use and return early on failure; ReleasePrimitiveArrayCritical
+  must still pair only with a successful pin.
+note: >-
+  Syntactic approximation for the JNI C++ call form env->GetPrimitiveArrayCritical.
+  Flags a declaration or assignment of the call result to a variable that is
+  later dereferenced, indexed or passed to a call other than Release*, when no
+  later sibling statement tests the variable in an if condition or a ternary.
+  A use that precedes the test in the same block is not distinguished, and the
+  C form (*env)->GetPrimitiveArrayCritical is not covered.
+rule:
+  all:
+    - any:
+        - pattern:
+            context: 'void f() { $T *$P = $E->GetPrimitiveArrayCritical($$$A); }'
+            selector: declaration
+        - pattern:
+            context: 'void f() { $T $P = $E->GetPrimitiveArrayCritical($$$A); }'
+            selector: declaration
+        - pattern:
+            context: 'void f() { $T *$P = ($C)$E->GetPrimitiveArrayCritical($$$A); }'
+            selector: declaration
+        - pattern:
+            context: 'void f() { $T $P = ($C)$E->GetPrimitiveArrayCritical($$$A); }'
+            selector: declaration
+        - pattern:
+            context: 'void f() { $T *$P = static_cast<$C>($E->GetPrimitiveArrayCritical($$$A)); }'
+            selector: declaration
+        - pattern:
+            context: 'void f() { $T $P = static_cast<$C>($E->GetPrimitiveArrayCritical($$$A)); }'
+            selector: declaration
+        - pattern:
+            context: 'void f() { $P = $E->GetPrimitiveArrayCritical($$$A); }'
+            selector: expression_statement
+        - pattern:
+            context: 'void f() { $P = ($C)$E->GetPrimitiveArrayCritical($$$A); }'
+            selector: expression_statement
+        - pattern:
+            context: 'void f() { $P = static_cast<$C>($E->GetPrimitiveArrayCritical($$$A)); }'
+            selector: expression_statement
+    - precedes:
+        stopBy: end
+        has:
+          stopBy: end
+          any:
+            - pattern: '$P[$$$]'
+            - pattern:
+                context: 'void f() { x = *$P; }'
+                selector: pointer_expression
+            - pattern: '$P->$_'
+            - kind: call_expression
+              not:
+                has:
+                  field: function
+                  regex: 'Release'
+              has:
+                field: arguments
+                has:
+                  pattern: $P
+    - not:
+        precedes:
+          stopBy: end
+          any:
+            - kind: if_statement
+              has:
+                field: condition
+                has:
+                  stopBy: end
+                  pattern: $P
+            - has:
+                stopBy: end
+                kind: conditional_expression
+                has:
+                  field: condition
+                  any:
+                    - pattern: $P
+                    - has:
+                        stopBy: end
+                        pattern: $P
+metadata:
+  cwe: 'CWE-476'
+  known_false_positives: 'A NULL test expressed only through a loop condition, an assert or a logical && operand is not recognised and the use is reported; a null check that follows the first use in the same block is accepted'
+  rule_modified_at: '2026-11-19'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-19'
+  created_at: '2026-11-19'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
