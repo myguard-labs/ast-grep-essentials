@@ -50,9 +50,9 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: 'when an inner range loop rebinds the same name and holds the v := v copy (for _, v := range xs { for _, v := range ys { v := v; use(&v) } }), the outer loop still reports it'
   todo_cases:
     - 'FN: the address of a field (&v.f), a method value on a pointer receiver and an index-address of the value (&v[0]) are not matched, only &v on the bare identifier'
     - 'FN: &v taken before a later v := v statement in the same body is silenced too (the shadow-copy exclusion ignores statement order)'
     - 'FP: a closure parameter or local named like the range value (go func(v T) { use(&v) }(v)) is reported, and a v := v only inside a nested block does not count as the shadow copy'
-    - 'FP: when an inner range loop rebinds the same name and holds the v := v copy (for _, v := range xs { for _, v := range ys { v := v; use(&v) } }), the outer loop still reports it'
     - 'FP: in a module with go >= 1.22 (per-iteration loop variable) the range-value address is not shared; the go directive is not visible to the rule'

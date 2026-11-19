@@ -26,9 +26,9 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: 'new DateTime( ''now'' ) with a literal argument is reported'
   todo_cases:
     - 'new \DateTime( $s ) with a leading backslash is not reported.'
     - 'new DateTime( $s, $tz ) with a timezone second argument is not reported.'
     - 'new DateTimeImmutable( $s ) is not reported.'
-    - 'new DateTime( $s ) inside a catch block is not reported (nested in a try_statement).'
-    - 'new DateTime( ''now'' ) with a literal argument is reported (false positive; the literal cannot be malformed input).'
+    - '<?php try { risky(); } catch (Exception $e) { new DateTime( $s ); }'

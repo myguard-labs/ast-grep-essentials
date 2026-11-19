@@ -76,13 +76,13 @@ rule:
             kind: identifier
             regex: '^main$'
 metadata:
+  known_false_positives: 'decltype(auto) f(int &x) { x++; } (deduces void) is still reported'
   todo_cases:
     - 'Observed false positive: a function whose body only throws or calls std::exit is reported'
     - 'Observed false positive: a void function spelled through a typedef (typedef void V; V f() {}) is still reported'
     - 'Observed miss: a main inside a namespace (namespace n { int main() { } }) is skipped like the global main'
     - 'Observed miss: an in-class member function named main without a return statement is skipped like the free function main'
     - 'Observed miss: int f() { auto l = [] { return 1; }; l(); } is not reported because the nested lambda return counts'
-    - 'Observed false positive: decltype(auto) f(int &x) { x++; } (deduces void) is still reported'
     - 'Observed false positive: a coroutine whose body uses only co_return or co_yield (task f() { co_return; }) is reported'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
