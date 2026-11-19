@@ -14,9 +14,9 @@ rule:
   kind: encapsed_string
   regex: '\\u[0-9a-fA-F]{4}'
 metadata:
+  known_false_positives: '`"\\u00e4"` (escaped backslash followed by u00e4, a literal backslash-u text) is reported'
   todo_cases:
-    - 'FP: `"\\u00e4"` (escaped backslash followed by u00e4, a literal backslash-u text) is reported'
-    - 'FN: heredoc body containing `\u00e4` is not reported (heredoc is not an encapsed_string)'
+    - "<?php $s = <<<EOT\n\\u00e4\nEOT;\n"
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

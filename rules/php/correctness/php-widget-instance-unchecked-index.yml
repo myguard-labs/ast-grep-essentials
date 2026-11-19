@@ -32,7 +32,7 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: 'form() reading $instance[''title''] only after an array_key_exists( ''title'', $instance ) ternary is still reported (only isset is recognised as a guard)'
   todo_cases:
-    - 'FP: form() reading $instance[''title''] only after an array_key_exists( ''title'', $instance ) ternary is still reported (only isset is recognised as a guard).'
-    - 'FN: a widget form() declared as a class method (method_declaration, not function_definition) with an unguarded $instance[''title''] read is not reported.'
-    - 'FN: form() that guards one key with isset( $instance[''a''] ) but reads $instance[''b''] unguarded is not reported (any isset anywhere in the function suppresses the match).'
+    - "<?php class W { function form( $instance ) { echo $instance[\"title\"]; } }"
+    - "<?php function form( $instance ) { if ( isset( $instance['a'] ) ) { } echo $instance['b']; }"

@@ -26,10 +26,10 @@ rule:
             regex: '^isset\s*\('
             stopBy: end
 metadata:
+  known_false_positives: '`if ( isset( $_SERVER[''A''] ) ) { f( $_SERVER[''A''] ); }` is reported twice (guard in an enclosing if is not recognised; only a conditional_expression guard counts)'
   todo_cases:
-    - 'FP: `if ( isset( $_SERVER[''A''] ) ) { f( $_SERVER[''A''] ); }` is reported twice (guard in an enclosing if is not recognised; only a conditional_expression guard counts)'
-    - 'FN: `f( isset( $_SERVER[''A''] ) ? $_SERVER[''B''] : '''' );` is not reported although the isset guards a different key'
-    - 'FN: `f( $_SERVER[''argv''][1] );` is not reported because the $_SERVER subscript is not directly an argument'
+    - "<?php f( isset( $_SERVER['A'] ) ? $_SERVER['B'] : '' );"
+    - "<?php f( $_SERVER['argv'][1] );"
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-18'

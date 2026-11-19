@@ -25,7 +25,9 @@ rule:
             kind: static_modifier
 metadata:
   todo_cases:
-    - "FN: self::$cache[$k] = $v; self::$n .= 'a'; and self::$c++; inside an instance method are not reported; only plain assignment to a self::/static:: property is matched."
+    - "<?php class A { private static $c = array(); public function set($k, $v) { self::$c[$k] = $v; } }"
+    - "<?php class A { private static $c = array(); public function set($k, $v) { self::$c .= 'a'; } }"
+    - "<?php class A { private static $c = array(); public function set($k, $v) { self::$c++; } }"
   rule_modified_at: '2026-10-18'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-18'

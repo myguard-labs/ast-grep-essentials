@@ -55,5 +55,9 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   todo_cases:
-    - 'FN: concatenation forms get_var( "SELECT COUNT(*) FROM t " . $limit ) are a real defect of the same kind but are not matched; a limit name reached through a subscript ($opts[limit]) is also not matched; the same interpolated COUNT string passed to get_results, get_row or get_col is not matched.'
+    - "<?php $total = $wpdb->get_var( \"SELECT COUNT(*) FROM t \" . $limit );"
+    - "<?php $total = $wpdb->get_var( \"SELECT COUNT(*) FROM $wpdb->users $opts[limit]\" );"
+    - "<?php $total = $wpdb->get_results( \"SELECT COUNT(*) FROM $wpdb->users $this->query_limit\" );"
+    - "<?php $total = $wpdb->get_row( \"SELECT COUNT(*) FROM $wpdb->users $this->query_limit\" );"
+    - "<?php $total = $wpdb->get_col( \"SELECT COUNT(*) FROM $wpdb->users $this->query_limit\" );"
   license: MyGuard Internal Use License 1.0

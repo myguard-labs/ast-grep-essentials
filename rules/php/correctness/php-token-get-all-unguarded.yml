@@ -29,8 +29,8 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: 'a double-quoted guard `if (function_exists("token_get_all")) { return token_get_all($c); }` is still reported (guard pattern is single-quoted); an `extension_loaded(''tokenizer'')` guard `if (extension_loaded(''tokenizer'')) { return token_get_all($c); }` is still reported although token_get_all() is part of that extension'
   todo_cases:
-    - "FP: a double-quoted guard `if (function_exists(\"token_get_all\")) { return token_get_all($c); }` is still reported (guard pattern is single-quoted)."
-    - "FN: guard after the call `$t = token_get_all($c); if (function_exists('token_get_all')) {...}` is not reported (guard need not be earlier)."
-    - "FN: `\\token_get_all($c)` and a call inside a class method are not reported."
-    - "FP: an `extension_loaded('tokenizer')` guard `if (extension_loaded('tokenizer')) { return token_get_all($c); }` is still reported, although token_get_all() is part of that extension."
+    - "<?php function a($c) { $t = token_get_all($c); if (function_exists('token_get_all')) { return $t; } }"
+    - "<?php function a($c) { return \\token_get_all($c); }"
+    - "<?php class A { function m($c) { return token_get_all($c); } }"

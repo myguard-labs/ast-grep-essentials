@@ -16,9 +16,9 @@ rule:
   has:
     regex: 'COUNT\(.*FROM \{\$wpdb->(users|blogs)\}'
 metadata:
+  known_false_positives: '`$wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->comments} WHERE user_id IN (SELECT ID FROM {$wpdb->users})" )` is reported although it counts comments, not users (the regex accepts any later FROM {$wpdb->users})'
   todo_cases:
-    - "wp-direct-user-blog-count-query: false positive, `$wpdb->get_var( \"SELECT COUNT(*) FROM {$wpdb->comments} WHERE user_id IN (SELECT ID FROM {$wpdb->users})\" )` is reported (probed) although it counts comments, not users; the regex accepts any later FROM {$wpdb->users}."
-    - "wp-direct-user-blog-count-query: `$wpdb->get_results( \"SELECT COUNT(*) FROM {$wpdb->users}\" )` is not reported (probed: no match), the pattern is get_var only."
+    - "<?php $n = $wpdb->get_results( \"SELECT COUNT(*) FROM {$wpdb->users}\" );"
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
