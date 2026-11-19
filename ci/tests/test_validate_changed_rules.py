@@ -334,6 +334,36 @@ class ValidateChangedRulesTests(unittest.TestCase):
                     text = head + f"{key}:\n  pattern: {new}\n" + "note: x\n"
                     self.assertEqual(self.non_matching(base, text)[0], frozenset())
 
+    def test_scalar_type_change_with_metadata_edit_is_not_exempt(self) -> None:
+        for old, new in (("null", '"null"'), ("1", '"1"'), ("true", '"true"')):
+            with self.subTest(old=old, new=new):
+                base = self.BASE + f"fix: {old}\n"
+                text = self.BASE + f"fix: {new}\nmetadata: {{a: 1}}\n"
+                self.assertEqual(self.non_matching(base, text)[0], frozenset())
+
+    def test_scalar_quoting_style_with_same_tag_and_text_stays_exempt(self) -> None:
+        for old, new in (("'abc'", '"abc"'), ("'abc'", "abc"), ('"1"', "'1'")):
+            with self.subTest(old=old, new=new):
+                base = self.BASE + f"fix: {old}\n"
+                text = self.BASE + f"fix: {new}\nmetadata: {{a: 1}}\n"
+                self.assertEqual(
+                    self.non_matching(base, text)[0], frozenset({self.PATH})
+                )
+
+    def test_unchanged_quoted_and_plain_fix_stay_exempt(self) -> None:
+        for fix in ("null", '"null"', "1", '"1"'):
+            with self.subTest(fix=fix):
+                base = self.BASE + f"fix: {fix}\n"
+                self.assertEqual(
+                    self.non_matching(base, base + "metadata: {a: 1}\n")[0],
+                    frozenset({self.PATH}),
+                )
+
+    def test_tagged_mapping_key_type_change_is_not_exempt(self) -> None:
+        base = self.BASE + "constraints:\n  1: {regex: a}\n"
+        text = self.BASE + 'constraints:\n  "1": {regex: a}\nnote: x\n'
+        self.assertEqual(self.non_matching(base, text)[0], frozenset())
+
     def test_identical_coercible_matchers_stay_exempt(self) -> None:
         base = self.BASE + "constraints:\n  X: {regex: yes}\n"
         exempt, _ = self.non_matching(base, base + "metadata: {a: 1}\n")
