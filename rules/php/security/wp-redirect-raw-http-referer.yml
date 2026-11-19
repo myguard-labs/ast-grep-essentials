@@ -21,9 +21,9 @@ rule:
           regex: '^\$_SERVER\[[''"]HTTP_REFERER[''"]\]$'
 metadata:
   todo_cases:
-    - 'Not reported: referer copied to a variable first, $r = $_SERVER[''HTTP_REFERER'']; wp_redirect($r);'
-    - 'Not reported: referer concatenated into the target, wp_redirect($_SERVER[''HTTP_REFERER''] . ''?a=1'');'
-    - 'Not reported: a leading-backslash call, \wp_redirect($_SERVER[''HTTP_REFERER'']);'
+    - "<?php $r = $_SERVER['HTTP_REFERER']; wp_redirect($r);"
+    - "<?php wp_redirect($_SERVER['HTTP_REFERER'] . '?a=1');"
+    - "<?php \\wp_redirect($_SERVER['HTTP_REFERER']);"
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-19'

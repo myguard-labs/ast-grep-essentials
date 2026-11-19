@@ -66,6 +66,7 @@ metadata:
   cwe: 'CWE-134'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/134.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_negatives: 'printf(__(''Hello'')) is skipped as a constant format, although the translation, or any user-defined function named __, can supply a different format; the skip matches any function named __, not only the WordPress translation helper'
   todo_cases:
-    - 'A translated literal `__(''Hello'')` is treated as a constant format and skipped; this matches any function named `__`, not only the WordPress translation helper.'
-    - 'Not matched: variable format with arguments `printf($fmt, $a)` and leading-backslash `\printf($fmt)`.'
+    - "<?php printf($fmt, $a);"
+    - "<?php \\printf($fmt);"

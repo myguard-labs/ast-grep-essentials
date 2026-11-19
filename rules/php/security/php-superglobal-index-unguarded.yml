@@ -56,9 +56,8 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/20.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A05:2025'
-  known_false_positives: 'a nested read ($_GET["a"]["b"]) is reported twice, once per subscript level'
+  known_false_positives: 'a nested read ($_GET["a"]["b"]) is reported twice, once per subscript level; an isset ternary guard (isset($_GET["a"]) ? $_GET["a"] : "") still reports the second read'
   todo_cases:
-    - "FP: an isset ternary guard (isset($_GET[\"a\"]) ? $_GET[\"a\"] : \"\") still reports the second read."
-    - "FN: any isset/empty ancestor exempts the read, even for another key (isset($_GET[\"a\"]) ? $_GET[\"b\"] : \"\")."
-    - "FN: an isset/empty call earlier in the same expression exempts a later read (isset($x) && $y = $_POST[\"k\"])."
-    - "FN: a ?? anywhere in the enclosing binary expression exempts its left operand ($_GET[\"a\"] + ($b ?? 0))."
+    - "<?php $v = isset($_GET[\"a\"]) ? $_GET[\"b\"] : \"\";"
+    - "<?php isset($x) && $y = $_POST[\"k\"];"
+    - "<?php $v = $_GET[\"a\"] + ($b ?? 0);"

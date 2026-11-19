@@ -24,7 +24,7 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/252.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
+  known_false_positives: 'parse_url($u)[''host''] ?? null is reported although the read is null-coalesced'
   todo_cases:
-    - 'Not matched: leading-backslash call `\parse_url($u)[''host'']`.'
-    - 'Not matched: parenthesised call `(parse_url($u))[''host'']`.'
-    - 'Matched although the read is null-coalesced: `parse_url($u)[''host''] ?? null`.'
+    - "<?php function host( $u ) { $h = \\parse_url( $u )['host']; return $h; }"
+    - "<?php function host( $u ) { $h = ( parse_url( $u ) )['host']; return $h; }"

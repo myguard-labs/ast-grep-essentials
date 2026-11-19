@@ -25,6 +25,6 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/183.html|https://cwe.mitre.org/data/definitions/346.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A06:2025|A07:2025'
+  known_false_positives: 'a bare ''*'' search after preg_quote() is reported (str_replace( ''*'', ''.+'', preg_quote( $host, ''#'' ) )), although preg_quote already turned * into \* so the result is \.+ (literal dots)'
   todo_cases:
-    - 'Observed miss: a double-quoted replacement is not reported (str_replace( ''\*'', ".+", preg_quote( $host, ''/'' ) )).'
-    - 'FP: a bare ''*'' search after preg_quote() is reported (str_replace( ''*'', ''.+'', preg_quote( $host, ''#'' ) )), although preg_quote already turned * into \* so the result is \.+ (literal dots).'
+    - "<?php $wildcard_regex[] = str_replace( '\\*', \".+\", preg_quote( $host, '/' ) );"
