@@ -16,9 +16,9 @@ rule:
     field: name
     regex: '^SSL_CTRL_SET_TLSEXT_HOSTNAME$'
 metadata:
+  known_false_positives: '`#if (NGX_HTTP_SSL)` enclosing `#ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME` is reported although the outer block tests NGX_HTTP_SSL'
   todo_cases:
-    - 'FN: ''#if defined SSL_CTRL_SET_TLSEXT_HOSTNAME'' with no NGX_HTTP_SSL test is not reported; only preproc_ifdef nodes match.'
-    - 'FP: ''#if (NGX_HTTP_SSL)'' enclosing ''#ifdef SSL_CTRL_SET_TLSEXT_HOSTNAME'' is reported although the outer block tests NGX_HTTP_SSL.'
+    - "#if defined SSL_CTRL_SET_TLSEXT_HOSTNAME\nint a;\n#endif"
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

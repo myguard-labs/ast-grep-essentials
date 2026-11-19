@@ -30,7 +30,7 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: '`if (a) { int t = 0; } if (a > 1) { int t = 2; (void)t; }` is flagged although the second block declares its own t'
   todo_cases:
-    - 'FN: pointer declaration in the earlier block is missed, e.g. if (a) { char *p = NULL; } if (p != NULL) { }'
-    - 'FN: an intervening statement between the two ifs defeats follows, e.g. if (a) { int t = 0; } puts("x"); if (t) { }'
-    - 'FP: a second block that declares its own t is flagged, e.g. if (a) { int t = 0; } if (a > 1) { int t = 2; (void)t; }'
+    - 'void f(int a) { if (a) { char *p = NULL; } if (p != NULL) { } }'
+    - 'void g(int a) { if (a) { int t = 0; } puts("x"); if (t) { } }'

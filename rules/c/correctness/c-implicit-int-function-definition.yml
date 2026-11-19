@@ -51,8 +51,7 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: '`static MACRO(int) f(void) { return 0; }` is reported; macro_type_specifier cannot be excluded because implicit-int definitions such as `static f(int x)` also parse as macro_type_specifier; a function-like macro definition with a lowercase or mixed-case name, such as `static alloc_func(name) { ... }`, is reported; only all-caps names are read as macros'
   todo_cases:
-    - "False positive: 'static MACRO(int) f(void) { return 0; }' is reported; macro_type_specifier cannot be excluded because implicit-int definitions such as 'static f(int x)' also parse as macro_type_specifier."
-    - "Miss: 'static F(void) { return 0; }' and other all-caps names before a parenthesized declarator are not reported, to keep 'static LIBSSH2_ALLOC_FUNC(name) { ... }' macro definitions quiet."
-    - "Miss: 'static f(int x, int y) { return x + y; }' is not reported."
-    - "False positive: a function-like macro definition with a lowercase or mixed-case name, such as 'static alloc_func(name) { ... }', is reported; only all-caps names are read as macros."
+    - 'static F(void) { return 0; }'
+    - 'static f(int x, int y) { return x + y; }'

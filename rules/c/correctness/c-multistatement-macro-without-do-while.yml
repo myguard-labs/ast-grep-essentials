@@ -22,9 +22,9 @@ rule:
           kind: preproc_arg
           regex: '^\s*do\b'
 metadata:
+  known_false_positives: '`#define LOOP(n) for (int i = 0; i < (n); i++) foo(i)` (single statement, two semicolons in the for header) is reported'
   todo_cases:
-    - 'Observed miss: ''#define TWICE(p) a(p); b(p)'' (two statements, one semicolon) is not reported.'
-    - 'Observed false positive: ''#define LOOP(n) for (int i = 0; i < (n); i++) foo(i)'' (single statement, two semicolons in the for header) is reported.'
+    - '#define TWICE(p) a(p); b(p)'
   rule_modified_at: '2026-10-20'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
