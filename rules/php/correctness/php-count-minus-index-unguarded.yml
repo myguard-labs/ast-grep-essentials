@@ -13,10 +13,12 @@ note: >-
 rule:
   pattern: '$ARR[count($X) - $N]'
 metadata:
+  known_false_positives: '$last = $stack[count($stack) - 1] ?? null; (null-coalescing suppresses the notice) is reported; if ( $stack ) { $last = $stack[count($stack) - 1]; } (non-empty guard) is reported'
   todo_cases:
-    - 'FP: `$last = $stack[count($stack) - 1] ?? null;` (null-coalescing suppresses the notice) is reported'
-    - 'FP: `if ( $stack ) { $last = $stack[count($stack) - 1]; }` (non-empty guard) is reported (documented in note)'
-    - 'FN: `$stack[(count($stack) - 1)]`, `$stack[sizeof($stack) - 1]`, `$stack[\count($stack) - 1]` and `$stack[count($stack) - 1 - $k]` are not reported'
+    - "<?php $x = $stack[(count($stack) - 1)];"
+    - "<?php $x = $stack[sizeof($stack) - 1];"
+    - "<?php $x = $stack[\\count($stack) - 1];"
+    - "<?php $x = $stack[count($stack) - 1 - $k];"
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-16'

@@ -18,9 +18,10 @@ rule:
         stopBy: end
 metadata:
   todo_cases:
-    - 'FN: `foreach ( $events as $ev ) { wp_unschedule_event( $ev, ''h'' ); }` (no key variable) is not reported'
-    - 'FN: alternative syntax `foreach (...): wp_unschedule_event(...); endforeach;` and braceless `foreach (...) wp_unschedule_event(...);` are not reported'
-    - 'FN: `\wp_unschedule_event( $ts, ''h'' )` inside a foreach loop is not reported'
+    - "<?php foreach ( $events as $ev ) { wp_unschedule_event( $ev, 'h' ); }"
+    - "<?php foreach ( $events as $k => $ev ): wp_unschedule_event( $ev, 'h' ); endforeach;"
+    - "<?php foreach ( $events as $k => $ev ) wp_unschedule_event( $ev, 'h' );"
+    - "<?php foreach ( $events as $k => $ts ) { \\wp_unschedule_event( $ts, 'h' ); }"
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
