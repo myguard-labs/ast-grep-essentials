@@ -7,7 +7,8 @@ message: 'Bitwise & used in a preprocessor if condition; did you mean &&?'
 note: >-
   Syntactic check only; it matches a direct & expression in the if directive
   condition, plus HAVE_ macro pairs joined by & anywhere in an if or elif
-  condition (including parenthesized), and does not know the macro values. A
+  condition (including parenthesized, and a pair whose right operand is
+  parenthesized such as HAVE_A & (HAVE_B)), and does not know the macro values. A
   HAVE_ pair nested in an & chain that is itself reported is not reported
   separately.
 rule:
@@ -23,7 +24,7 @@ rule:
         - has:
             field: operator
             regex: '^&$'
-        - regex: '^HAVE_\w+\s*&\s*HAVE_\w+'
+        - regex: '^HAVE_\w+\s*&\s*(?:\(\s*)*HAVE_\w+'
         - not:
             inside:
               kind: binary_expression
@@ -41,7 +42,7 @@ rule:
               - kind: preproc_if
               - kind: preproc_elif
 metadata:
-  rule_modified_at: '2026-11-18'
+  rule_modified_at: '2026-11-19'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-20'
   created_at: '2026-10-20'
@@ -52,3 +53,4 @@ metadata:
     - 'Accepted: (HAVE_X & HAVE_Y) != 0 is reported; HAVE_ macros are treated as boolean feature macros.'
     - 'FN: #elif FOO & BAR with non-HAVE_ operands is not reported (generic branch only sees a direct preproc_if parent).'
     - 'FN: #if (A & B) with non-HAVE_ operands inside parentheses is not reported; the generic branch only sees a direct preproc_if parent so that #if (X & MASK) != 0 stays valid.'
+    - 'FN: #if HAVE_A & (X | Y) is not reported; the HAVE_ branch needs a HAVE_ macro right after the operator and optional opening parentheses, so #elif HAVE_A & (HAVE_B | X) is reported while #elif HAVE_A & (X | HAVE_B) is not.'

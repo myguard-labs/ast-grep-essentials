@@ -2,7 +2,7 @@
 # c-preproc-if-bitwise-and): an & expression that the rule reports itself,
 # either through its generic branch (the whole if directive condition) or
 # through its HAVE_ pair branch (a HAVE_ pair joined by & in an if or elif
-# condition). The rule uses it to skip a nested HAVE_ pair when an enclosing
+# condition, the right operand may be parenthesized). The rule uses it to skip a nested HAVE_ pair when an enclosing
 # & chain is already reported, so one chain is reported once while a pair
 # whose enclosing chain is not reported (an #elif or || wrapped condition)
 # keeps its own report.
@@ -17,7 +17,7 @@ rule:
     - inside:
         kind: preproc_if
     - all:
-        - regex: '^HAVE_\w+\s*&\s*HAVE_\w+'
+        - regex: '^HAVE_\w+\s*&\s*(?:\(\s*)*HAVE_\w+'
         - inside:
             stopBy: end
             field: condition
