@@ -6,6 +6,12 @@ valid:
   - "void f(zval *v) { printf(\"n=%ld\", Z_LVAL_P(v)); }"
   - "void f(zval *v) { printf(\"n=%d\", (int)Z_LVAL_P(v)); }"
   - "void f(int n) { printf(\"n=%d\", n); }"
+  - "void f(zval *v) { long n = Z_LVAL(*v); printf(\"n=%ld\", n); }"
+  - |-
+    void f(zval *v) {
+        /* printf("n=%d", Z_LVAL(*v)); */
+        printf("n=%ld", Z_LVAL_P(v));
+    }
 invalid:
   - >-
     void f(void *w, int o, zval **v) { php_stream_wrapper_log_error(w, o

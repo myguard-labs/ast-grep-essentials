@@ -6,6 +6,16 @@ valid:
     PQntuples(res);
   - "PGresult *res; res = PQexec(conn, q); if (res == NULL || PQresultStatus(res) != PGRES_TUPLES_OK) { return NULL; } n = PQntuples(res);"
   - "PGresult *res; if ((res = PQexec(conn, q)) == NULL || PQresultStatus(res) != PGRES_COMMAND_OK) { PQclear(res); return NULL; }"
+  - |-
+    PGresult *res;
+    /* if ((res = PQexec(conn, q)) == NULL) {
+        return NULL;
+    } */
+    res = PQexec(conn, q);
+    if (res == NULL || PQresultStatus(res) != PGRES_TUPLES_OK) {
+        return NULL;
+    }
+    n = PQntuples(res);
 invalid:
   - >-
     PGresult *res; if ((res = PQexec(conn, "select oid,typname from pg_type"))
