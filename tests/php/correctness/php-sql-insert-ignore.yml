@@ -32,6 +32,10 @@ valid:
     <?php $db->query('\nINSERT IGNORE INTO t (a) VALUES (1)');
   - |
     <?php $db->query("\\nINSERT IGNORE INTO t (a) VALUES (1)");
+  - |
+    <?php $db->query(<<<'SQL'
+    \nINSERT IGNORE INTO t (a) VALUES (1)
+    SQL);
 invalid:
   - |
     <?php $db->query("INSERT IGNORE INTO t (a) VALUES (1)");
@@ -39,6 +43,10 @@ invalid:
     <?php $db->query("\nINSERT IGNORE INTO t (a) VALUES (1)");
   - |
     <?php $db->query("\r\n\tINSERT IGNORE INTO t (a) VALUES (1)");
+  - |
+    <?php $db->query(<<<SQL
+    \tINSERT IGNORE INTO t (a) VALUES (1)
+    SQL);
   - |
     <?php $db->exec('insert   ignore into t (a) VALUES (1)');
   - |
