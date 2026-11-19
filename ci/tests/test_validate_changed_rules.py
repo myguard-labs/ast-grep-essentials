@@ -339,7 +339,7 @@ class ValidateChangedRulesTests(unittest.TestCase):
         exempt, _ = self.non_matching(base, base + "metadata: {a: 1}\n")
         self.assertEqual(exempt, frozenset({self.PATH}))
 
-    def test_duplicate_merge_and_alias_documents_are_not_exempt(self) -> None:
+    def test_duplicate_merge_and_recursive_documents_are_not_exempt(self) -> None:
         extra = "metadata: {a: 1}\n"
         cases = {
             "duplicate rule": self.BASE + "rule: {kind: other}\n" + extra,
@@ -350,13 +350,109 @@ class ValidateChangedRulesTests(unittest.TestCase):
             "merge under metadata": (
                 self.BASE + "metadata:\n  base: &a {x: 1}\n  <<: *a\n"
             ),
-            "plain alias": self.BASE + "metadata:\n  a: &a 1\n  b: *a\n",
-            "anchor only": self.BASE + "metadata:\n  a: &a 1\n",
+            "recursive alias": self.BASE + "metadata:\n  a: &a [*a]\n",
         }
         for label, text in cases.items():
             with self.subTest(label):
                 self.assertEqual(self.non_matching(text, text)[0], frozenset())
                 self.assertEqual(self.non_matching(self.BASE, text)[0], frozenset())
+
+    ANCHORED = (
+        "id: py-one\nlanguage: python\nmessage: m\n"
+        "rule:\n  kind: call\n  inside:\n    kind: function\n"
+        "    stopBy: &chain {kind: block}\n  has:\n    stopBy: *chain\n"
+    )
+
+    def test_anchored_rule_metadata_only_change_is_exempt(self) -> None:
+        text = self.ANCHORED + "metadata:\n  todo_cases: [a]\n"
+        exempt, count = self.non_matching(self.ANCHORED, text)
+        self.assertEqual(exempt, frozenset({self.PATH}))
+        self.assertEqual(count, 1)
+        exempt, _ = self.non_matching(text, text + "  extra: 1\n")
+        self.assertEqual(exempt, frozenset({self.PATH}))
+
+    def test_anchor_rename_only_is_exempt(self) -> None:
+        renamed = self.ANCHORED.replace("&chain", "&other").replace("*chain", "*other")
+        self.assertEqual(
+            self.non_matching(self.ANCHORED, renamed)[0], frozenset({self.PATH})
+        )
+        # Inlining the alias is the same expanded document.
+        inlined = self.ANCHORED.replace("&chain ", "").replace(
+            "*chain", "{kind: block}"
+        )
+        self.assertEqual(
+            self.non_matching(self.ANCHORED, inlined)[0], frozenset({self.PATH})
+        )
+
+    def test_anchored_matcher_value_change_is_not_exempt(self) -> None:
+        changed = self.ANCHORED.replace("{kind: block}", "{kind: other}")
+        self.assertEqual(self.non_matching(self.ANCHORED, changed)[0], frozenset())
+        # Metadata edit plus a matcher change through the anchor is refused too.
+        both = changed + "metadata: {a: 1}\n"
+        self.assertEqual(self.non_matching(self.ANCHORED, both)[0], frozenset())
+
+    def test_alias_into_metadata_is_compared_by_expanded_value(self) -> None:
+        base = (
+            "id: py-one\nlanguage: python\nmessage: m\n"
+            "metadata:\n  shared: &s {kind: block}\n"
+            "rule:\n  kind: call\n  has: *s\n"
+        )
+        self.assertEqual(self.non_matching(base, base)[0], frozenset({self.PATH}))
+        changed = base.replace("{kind: block}", "{kind: other}")
+        self.assertEqual(self.non_matching(base, changed)[0], frozenset())
+
+    def test_alias_bomb_is_refused_promptly(self) -> None:
+        import time
+
+        lines = ["a: &a0 [x, x, x, x, x, x, x, x, x, x]"]
+        for i in range(1, 10):
+            refs = ", ".join([f"*a{i - 1}"] * 10)
+            lines.append(f"b{i}: &a{i} [{refs}]")
+        bomb = self.BASE + "metadata:\n" + "".join(f"  {line}\n" for line in lines)
+        started = time.monotonic()
+        self.assertIsNone(gate._matcher_document(bomb.encode()))
+        self.assertEqual(self.non_matching(self.BASE, bomb)[0], frozenset())
+        self.assertLess(time.monotonic() - started, 5)
+
+    def test_deep_recursive_aliases_are_refused(self) -> None:
+        for text in (
+            self.BASE + "metadata: &m\n  self: *m\n",
+            self.BASE + "metadata: &m [*m]\n",
+            self.BASE + "metadata: &a {x: &b [*a]}\n",
+        ):
+            with self.subTest(text):
+                self.assertIsNone(gate._matcher_document(text.encode()))
+                self.assertEqual(self.non_matching(text, text)[0], frozenset())
+
+    def test_alias_bounds_accept_exactly_at_limit(self) -> None:
+        two = self.BASE + "metadata: {a: &a 1, b: *a, c: *a}\n"
+        with patch.object(gate, "MAX_ALIASES", 2):
+            self.assertIsNotNone(gate._matcher_document(two.encode()))
+        with patch.object(gate, "MAX_ALIASES", 1):
+            self.assertIsNone(gate._matcher_document(two.encode()))
+        # Plain document: count visits (root + keys + values) to find the bound.
+        doc = self.BASE + "metadata: {a: &a 1, b: *a}\n"
+        visits = None
+        for limit in range(1, 200):
+            with patch.object(gate, "MAX_EXPANDED_NODES", limit):
+                if gate._matcher_document(doc.encode(), frozenset()) is not None:
+                    visits = limit
+                    break
+        assert visits is not None
+        with patch.object(gate, "MAX_EXPANDED_NODES", visits):
+            self.assertIsNotNone(gate._matcher_document(doc.encode(), frozenset()))
+        with patch.object(gate, "MAX_EXPANDED_NODES", visits - 1):
+            self.assertIsNone(gate._matcher_document(doc.encode(), frozenset()))
+
+    def test_powershell_anchored_metadata_only_change_is_accepted(self) -> None:
+        base = self.PS_BASE + "metadata:\n  a: &a [x]\n  b: *a\n"
+        text = base.replace("[x]", "[y]")
+        self.assertEqual(self.ps_change(base, text), 0)
+        body = self.PS_BASE.replace("kind: command}", "kind: &k command}")
+        with self.assertRaisesRegex(gate.ValidationError, self.PS_REFUSED):
+            self.ps_change(
+                body + "x: *k\n", body.replace("command", "other") + "x: *k\n"
+            )
 
     def test_hash_line_inside_block_scalar_is_not_exempt(self) -> None:
         base = self.BASE.replace("kind: call}", "pattern: x}") + "fix: |\n  a\n"
