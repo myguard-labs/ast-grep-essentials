@@ -21,9 +21,9 @@ rule:
       regex: '::"regtype"::text'
 metadata:
   todo_cases:
-    - 'A template literal cast is not matched (kind string only): const sql = `SELECT ("a")::"regtype" AS t`.'
-    - 'An unquoted cast is not matched: const sql = ''SELECT a::regtype AS t''.'
-    - 'One string holding both a ::"regtype"::text cast and a bare ::"regtype" cast is not reported because the text cast suppresses the match.'
+    - 'const sql = `SELECT ("a")::"regtype" AS t`; // template literal'
+    - 'const sql = ''SELECT a::regtype AS t''; // unquoted cast'
+    - 'const sql = ''SELECT ("a")::"regtype"::text AS t, ("b")::"regtype" AS u''; // text cast plus a bare regtype cast'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

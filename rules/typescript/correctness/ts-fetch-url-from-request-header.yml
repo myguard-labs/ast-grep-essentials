@@ -29,11 +29,12 @@ rule:
           pattern: '$B'
 metadata:
   todo_cases:
-    - "fetch(`https://${h}/x`, { method: 'GET' }) with a second argument is not reported (pattern is fetch($URL) with one argument)"
-    - "const base = req.headers?.get('host') (optional chaining) is not recognised as a header read"
-    - "const base = req.headers.get('host')! or `as string` initialiser is not recognised as a header read"
-    - "fetch(base) with the header value passed directly (non-template) is not reported"
-    - "window.fetch(`https://${base}/x`) is not reported"
+    - "function f(req) {\n  const base = req.headers.get('host');\n  fetch(`https://${base}/x`, { method: 'GET' }); // second argument\n}"
+    - "function f(req) {\n  const base = req.headers?.get('host');\n  fetch(`https://${base}/x`); // optional chaining header read\n}"
+    - "function f(req) {\n  const base = req.headers.get('host')!;\n  fetch(`https://${base}/x`); // non-null assertion initialiser\n}"
+    - "function f(req) {\n  const base2 = req.headers.get('host') as string;\n  fetch(`https://${base2}/x`); // as-cast initialiser\n}"
+    - "function f(req) {\n  const base = req.headers.get('host');\n  fetch(base); // header value passed directly\n}"
+    - "function f(req) {\n  const base = req.headers.get('host');\n  window.fetch(`https://${base}/x`); // window.fetch\n}"
   rule_modified_at: '2026-10-09'
   ast_grep_tested_version: 0.45.3
   validated_at: '2026-10-09'
