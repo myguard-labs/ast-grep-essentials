@@ -6,6 +6,7 @@ valid:
   - 'static void obj_free(void *o) { my_obj *intern = o; zend_object_std_dtor(&intern->zo); efree(intern); }'
   - 'static int count_items(my_obj *o) { return o->n; }'
   - 'static void obj_free(void *o) { my_obj *intern = o; efree(intern->buf); zend_object_std_dtor(&intern->zo); efree(intern); }'
+  - 'static void obj_free(void *o) { my_obj *intern = o; /* efree(intern); */ }'
 invalid:
   - >-
     static void obj_free(void *o TSRMLS_DC) { my_obj *intern = o; efree(intern);
