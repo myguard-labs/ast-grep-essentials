@@ -15,10 +15,10 @@ note: >-
 rule:
   pattern: 'http_build_query($DATA)'
 metadata:
+  known_false_positives: 'http_build_query(...$args); is reported although the argument count is unknown'
   todo_cases:
-    - 'Observed miss: `http_build_query($d, "p");` (numeric_prefix only, still uses the ini separator) is not flagged.'
-    - 'Observed miss: `\http_build_query($d);` (fully qualified call) is not flagged.'
-    - 'Observed match: `http_build_query(...$args);` is flagged although the argument count is unknown.'
+    - "<?php http_build_query($d, \"p\");"
+    - "<?php \\http_build_query($d);"
   rule_modified_at: '2026-10-10'
   ast_grep_tested_version: 0.45.3
   validated_at: '2026-10-10'

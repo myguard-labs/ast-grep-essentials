@@ -20,6 +20,8 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: 'list($k, $v) = explode(''='', $line . ''=''); is reported although the appended delimiter guarantees two elements'
   todo_cases:
-    - "FN: `[$k, $v] = explode('=', $line);`, three targets `list($a, $b, $c) = explode(':', $s);` and `list(, $v) = explode('=', $line);` are not reported (pattern is exactly list($A, $B))."
-    - "FP: `list($k, $v) = explode('=', $line . '=');` is reported although the appended delimiter guarantees two elements."
+    - "<?php [$k, $v] = explode('=', $line);"
+    - "<?php list($a, $b, $c) = explode(':', $s);"
+    - "<?php list(, $v) = explode('=', $line);"

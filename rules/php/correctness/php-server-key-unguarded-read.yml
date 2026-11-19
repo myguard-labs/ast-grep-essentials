@@ -41,6 +41,6 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: 'strlen($_SERVER[''argv''][0] ?? '''') is reported on the inner $_SERVER[''argv''] read although the null-coalescing default covers the whole chain'
   todo_cases:
-    - "`isset($_SERVER['A']) ? 1 : strlen($_SERVER['B'])` is not reported: the ternary guard text-match accepts an isset of any key, even in the unguarded branch, so the unguarded read is a false negative."
-    - "`strlen($_SERVER['argv'][0] ?? '')` is reported on the inner `$_SERVER['argv']` read although the null-coalescing default covers the whole chain (false positive)."
+    - "<?php $n = isset( $_SERVER['A'] ) ? 1 : strlen( $_SERVER['B'] );"

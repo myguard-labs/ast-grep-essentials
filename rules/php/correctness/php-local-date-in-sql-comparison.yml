@@ -25,5 +25,7 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FN: `$wpdb->get_var(...)`, `$wpdb->query(...)` and `$this->wpdb->get_results(...)` with a date() concatenation are not reported; only `$wpdb->get_results` matches.'
-    - "FN: `$now = date('Y-m-d'); $wpdb->get_results(\"... '$now'\");` is not reported (date() outside the call)."
+    - "<?php $wpdb->get_var( \"SELECT 1 WHERE d < '\" . date( 'Y-m-d' ) . \"'\" );"
+    - "<?php $wpdb->query( \"SELECT 1 WHERE d < '\" . date( 'Y-m-d' ) . \"'\" );"
+    - "<?php $this->wpdb->get_results( \"SELECT 1 WHERE d < '\" . date( 'Y-m-d' ) . \"'\" );"
+    - "<?php $now = date( 'Y-m-d' ); $wpdb->get_results( \"SELECT 1 WHERE d < '$now'\" );"
