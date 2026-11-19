@@ -1,5 +1,19 @@
 id: php-move-uploaded-file-no-type-check
 snapshots:
+  "<?php\n$h = fn($t) => move_uploaded_file($t, $dest);\n":
+    labels:
+    - source: move_uploaded_file($t, $dest)
+      style: primary
+      start: 21
+      end: 50
+    - source: move_uploaded_file
+      style: secondary
+      start: 21
+      end: 39
+    - source: fn($t) => move_uploaded_file($t, $dest)
+      style: secondary
+      start: 11
+      end: 50
   "<?php\n$h = function () use ($dest) {\n    move_uploaded_file($_FILES['f']['tmp_name'], $dest);\n};\n":
     labels:
     - source: move_uploaded_file($_FILES['f']['tmp_name'], $dest)
@@ -72,6 +86,62 @@ snapshots:
       style: secondary
       start: 6
       end: 153
+  "<?php\nfunction save() {\n    $g = fn($p) => mime_content_type($p);\n    move_uploaded_file($_FILES['f']['tmp_name'], $dest);\n}\n":
+    labels:
+    - source: move_uploaded_file($_FILES['f']['tmp_name'], $dest)
+      style: primary
+      start: 70
+      end: 121
+    - source: move_uploaded_file
+      style: secondary
+      start: 70
+      end: 88
+    - source: |-
+        function save() {
+            $g = fn($p) => mime_content_type($p);
+            move_uploaded_file($_FILES['f']['tmp_name'], $dest);
+        }
+      style: secondary
+      start: 6
+      end: 124
+  "<?php\nfunction save() {\n    $o = new class {\n        function m($p) { return mime_content_type($p); }\n    };\n    move_uploaded_file($_FILES['f']['tmp_name'], $dest);\n}\n":
+    labels:
+    - source: move_uploaded_file($_FILES['f']['tmp_name'], $dest)
+      style: primary
+      start: 113
+      end: 164
+    - source: move_uploaded_file
+      style: secondary
+      start: 113
+      end: 131
+    - source: |-
+        function save() {
+            $o = new class {
+                function m($p) { return mime_content_type($p); }
+            };
+            move_uploaded_file($_FILES['f']['tmp_name'], $dest);
+        }
+      style: secondary
+      start: 6
+      end: 167
+  "<?php\nfunction save() {\n    function inner($p) { return mime_content_type($p); }\n    move_uploaded_file($_FILES['f']['tmp_name'], $dest);\n}\n":
+    labels:
+    - source: move_uploaded_file($_FILES['f']['tmp_name'], $dest)
+      style: primary
+      start: 85
+      end: 136
+    - source: move_uploaded_file
+      style: secondary
+      start: 85
+      end: 103
+    - source: |-
+        function save() {
+            function inner($p) { return mime_content_type($p); }
+            move_uploaded_file($_FILES['f']['tmp_name'], $dest);
+        }
+      style: secondary
+      start: 6
+      end: 139
   "<?php\nfunction save() {\n    move_uploaded_file($_FILES['f']['tmp_name'], $dest);\n}\n":
     labels:
     - source: move_uploaded_file($_FILES['f']['tmp_name'], $dest)

@@ -33,6 +33,10 @@ valid:
         if ($f->file($_FILES['f']['tmp_name']) !== 'image/png') { return; }
         move_uploaded_file($_FILES['f']['tmp_name'], $dest);
     }
+  - "<?php\nfunction outer() {\n    function inner() {\n        mime_content_type($a);\n        move_uploaded_file($_FILES['f']['tmp_name'], $dest);\n    }\n}\n"
+  - "<?php\nfunction outer() {\n    $o = new class {\n        function m() {\n            mime_content_type($a);\n            move_uploaded_file($_FILES['f']['tmp_name'], $dest);\n        }\n    };\n}\n"
+  - "<?php\nfunction outer() {\n    $g = function () {\n        mime_content_type($a);\n        move_uploaded_file($_FILES['f']['tmp_name'], $dest);\n    };\n}\n"
+  - "<?php\nfunction outer() {\n    $g = fn($t) => mime_content_type($t) && move_uploaded_file($t, $dest);\n}\n"
 invalid:
   - |
     <?php
@@ -65,3 +69,7 @@ invalid:
         };
         move_uploaded_file($_FILES['f']['tmp_name'], $dest);
     }
+  - "<?php\n$h = fn($t) => move_uploaded_file($t, $dest);\n"
+  - "<?php\nfunction save() {\n    function inner($p) { return mime_content_type($p); }\n    move_uploaded_file($_FILES['f']['tmp_name'], $dest);\n}\n"
+  - "<?php\nfunction save() {\n    $o = new class {\n        function m($p) { return mime_content_type($p); }\n    };\n    move_uploaded_file($_FILES['f']['tmp_name'], $dest);\n}\n"
+  - "<?php\nfunction save() {\n    $g = fn($p) => mime_content_type($p);\n    move_uploaded_file($_FILES['f']['tmp_name'], $dest);\n}\n"

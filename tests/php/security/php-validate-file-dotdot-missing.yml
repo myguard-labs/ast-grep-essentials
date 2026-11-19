@@ -9,6 +9,9 @@ valid:
   - "<?php\nfunction v($f) {\n if (str_contains($f, '..')) return 1;\n if (false !== strpos($f, './')) return 1;\n return 0; }\n"
   - "<?php\nfunction v($f) {\n if (false !== strpos($f, \"..\")) return 1;\n if (false !== strpos($f, './')) return 1;\n return 0; }\n"
   - "<?php\nfunction v($f) {\n if (false !== stripos($f, '..')) return 1;\n if (false !== strpos($f, './')) return 1;\n return 0; }\n"
+  - "<?php\nif ($x) {\n $g = fn($f) => strpos($f, '..') !== false || strpos($f, './') !== false;\n}\n"
+  - "<?php\nfunction v($f) {\n if (false !== stripos($f, \"..\")) return 1;\n if (false !== strpos($f, './')) return 1;\n return 0; }\n"
+  - "<?php\nfunction v($f) {\n if (str_contains($f, \"..\")) return 1;\n if (false !== strpos($f, './')) return 1;\n return 0; }\n"
 invalid:
   - "<?php\nfunction validate_file( $file, $allowed_files = '' ) {\n\tif ( false !== strpos( $file, './' ) )\n\t\treturn 1;\n\treturn 0;\n}\n"
   - "<?php\nfunction validate_path( $path ) {\n\tif ( strpos( $path, './' ) !== false ) {\n\t\treturn false;\n\t}\n\treturn true;\n}\n"
