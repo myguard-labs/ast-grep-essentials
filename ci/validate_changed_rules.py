@@ -184,37 +184,80 @@ NON_MATCHING_KEYS = frozenset({"metadata", "note"})
 REMOVABLE_KEYS = frozenset({"ast-grep-essentials"})
 
 
-def _strict_documents(data: bytes) -> list[object]:
-    """Parse ``data`` with no implicit typing, aliasing or key ambiguity.
+# Bounds on YAML alias use while comparing rule documents (billion-laughs guard).
+# A file with more than MAX_ALIASES alias events, or whose alias-expanded tree
+# visits more than MAX_EXPANDED_NODES nodes (a shared node counts once per
+# visit), is refused and never exempt. Exactly at either bound is accepted.
+MAX_ALIASES = 64
+MAX_EXPANDED_NODES = 20000
 
-    ``yaml.BaseLoader`` keeps every scalar a string, so distinct matcher text
-    such as ``1.0``/``1.00``, ``0x10``/``16``, ``yes``/``true`` or ``~``/``null``
-    never compares equal. Any anchor, alias, ``<<`` merge key or duplicate
-    mapping key (at any depth) raises ``ValueError``.
+
+def _expand(node: Any, budget: list[int], active: set[int]) -> object:
+    """Resolve ``node`` to plain str/list/dict values with aliases expanded.
+
+    ``budget`` is the remaining node-visit allowance; ``active`` holds the ids
+    of the nodes on the current path so a self-referential alias is refused
+    instead of recursing forever. A mapping with a duplicate, ``<<`` or
+    non-scalar (sequence or mapping) key raises ``ValueError``.
     """
     import yaml  # pylint: disable=import-outside-toplevel
 
-    for event in yaml.parse(data, Loader=yaml.BaseLoader):
-        if isinstance(event, yaml.AliasEvent) or getattr(event, "anchor", None):
-            raise ValueError("anchors and aliases are not compared")
-
-    class StrictLoader(yaml.BaseLoader):
-        """BaseLoader that refuses duplicate and merge keys."""
-
-        def construct_mapping(self, node: Any, deep: bool = False) -> Any:
-            keys = [
-                self.construct_object(key_node, deep=True)  # type: ignore[no-untyped-call]
-                for key_node, _ in node.value
-            ]
-            if "<<" in keys or len(set(map(str, keys))) != len(keys):
-                raise ValueError("duplicate or merge mapping key")
-            return super().construct_mapping(node, deep)
-
-    loader = StrictLoader(data)
+    budget[0] -= 1
+    if budget[0] < 0:
+        raise ValueError("alias expansion exceeds the node bound")
+    if isinstance(node, yaml.ScalarNode):
+        return node.value
+    marker = id(node)
+    if marker in active:
+        raise ValueError("recursive alias")
+    active.add(marker)
     try:
-        documents = []
-        while loader.check_data():  # type: ignore[no-untyped-call]
-            documents.append(loader.get_data())  # type: ignore[no-untyped-call]
+        if isinstance(node, yaml.SequenceNode):
+            return [_expand(item, budget, active) for item in node.value]
+        if isinstance(node, yaml.MappingNode):
+            result: dict[object, object] = {}
+            keys: set[str] = set()
+            for key_node, value_node in node.value:
+                key = _expand(key_node, budget, active)
+                if not isinstance(key, str):
+                    # A sequence or mapping key has no unambiguous string form.
+                    raise ValueError("non-scalar mapping key")
+                if key == "<<" or key in keys:
+                    raise ValueError("duplicate or merge mapping key")
+                keys.add(key)
+                result[key] = _expand(value_node, budget, active)
+            return result
+        raise ValueError("unsupported YAML node")
+    finally:
+        active.discard(marker)
+
+
+def _strict_documents(data: bytes) -> list[object]:
+    """Parse ``data`` with no implicit typing or key ambiguity.
+
+    ``yaml.BaseLoader`` keeps every scalar a string, so distinct matcher text
+    such as ``1.0``/``1.00``, ``0x10``/``16``, ``yes``/``true`` or ``~``/``null``
+    never compares equal. Anchors and aliases are accepted and compared by
+    their EXPANDED value (anchor names and placement are irrelevant), bounded
+    by ``MAX_ALIASES`` and ``MAX_EXPANDED_NODES``; a recursive alias, a ``<<``
+    merge key or a duplicate mapping key (at any depth) raises ``ValueError``.
+    """
+    import yaml  # pylint: disable=import-outside-toplevel
+
+    aliases = 0
+    for event in yaml.parse(data, Loader=yaml.BaseLoader):
+        if isinstance(event, yaml.AliasEvent):
+            aliases += 1
+            if aliases > MAX_ALIASES:
+                raise ValueError("too many aliases")
+
+    loader = yaml.BaseLoader(data)
+    try:
+        budget = [MAX_EXPANDED_NODES]
+        documents: list[object] = []
+        while loader.check_node():  # type: ignore[no-untyped-call]
+            node = loader.get_node()  # type: ignore[no-untyped-call]
+            documents.append(_expand(node, budget, set()))
         return documents
     finally:
         loader.dispose()  # type: ignore[no-untyped-call]
@@ -229,7 +272,7 @@ def _matcher_document(
     cannot test them. The comparison is string-only (no YAML 1.1 coercion).
     Anything that is not exactly one plain mapping document (a parse failure,
     an empty or scalar document, a multi-document file, a duplicate or merge
-    key, an anchor or alias, or a missing PyYAML) returns ``None`` and is
+    key, a recursive or over-bound alias expansion, or a missing PyYAML) returns ``None`` and is
     therefore never exempt.
     """
     try:
