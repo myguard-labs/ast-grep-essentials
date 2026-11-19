@@ -1,5 +1,12 @@
 id: py-urllib-opener-default-proxy
 valid:
+- 'opener = build_opener(ProxyHandler({k: v for k, v in pinned.items()}))'
+- 'opener = build_opener(ProxyHandler(settings.PROXIES))'
+- 'opener = build_opener(ProxyHandler(cfg["proxies"]))'
+- 'opener = build_opener(ProxyHandler(dict(https=PROXY_URL)))'
+- 'opener = build_opener(wrap(ProxyHandler({})))'
+- 'opener = build_opener(ProxyHandler(proxies={}))'
+- 'opener = six.moves.urllib.request.build_opener(ProxyHandler({}))'
 - 'opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))'
 - 'opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), RedirectHandler())'
 - 'opener = urllib.request.build_opener(RedirectHandler(), ProxyHandler({}))'
@@ -14,6 +21,11 @@ valid:
 - '# opener = urllib.request.build_opener(RedirectHandler())'
 - 'note = "urllib.request.build_opener(RedirectHandler())"'
 invalid:
+- 'opener = urllib.request.build_opener(urllib.request.ProxyHandler())'
+- 'opener = build_opener(ProxyHandler(None))'
+- 'opener = build_opener(ProxyHandler(proxies=None))'
+- 'opener = build_opener(make_handler(*args))'
+- 'opener = six.moves.urllib.request.build_opener(RedirectHandler())'
 - 'opener = urllib.request.build_opener()'
 - 'opener = urllib.request.build_opener(RedirectHandler())'
 - 'opener = urllib.request.build_opener(HTTPSHandler(context=ctx), RedirectHandler())'
