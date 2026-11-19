@@ -80,7 +80,10 @@ rule:
                         regex: '^(''\s+''|"\s+")$'
 metadata:
   todo_cases:
-    - "wp-echo-attribute-comma-args: false negative, an attribute value with leading text (`<div class=\"row <?php echo $a, $b; ?>\">`), `value=\"<?php echo $a, $b; ?>\"` after an `<input` tag, `href=\"http://<?php echo $a, $b; ?>\"` and `class = \"<?php ...` with spaces around `=` are not reported (also on the previous matcher) because the PHP-only grammar's error recovery swallows the echo; the attribute context is read from the ERROR node before the php tag."
+    - "<div class=\"row <?php echo $a, $b; ?>\">"
+    - "<input value=\"<?php echo $a, $b; ?>\">"
+    - "<a href=\"http://<?php echo $a, $b; ?>\">x</a>"
+    - "<div class = \"<?php echo $a, $b; ?>\">"
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

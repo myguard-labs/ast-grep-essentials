@@ -150,13 +150,10 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: 'array_key_exists( ''post_status'', $c ) && ''publish'' == $c[''post_status''] (also as an enclosing if guard) is reported; early-return guard if ( ! isset( $c[''post_status''] ) ) { return; } before the read is reported; empty( $c[''post_status''] ) || ''publish'' == $c[''post_status''] and the else body of if ( ! isset( $c[''post_status''] ) ) { } else { read } are reported; guards joined with uppercase AND / OR are not recognised; a guard in an elseif condition enclosing the read is not recognised'
   todo_cases:
-    - "FP: `if ( array_key_exists( 'post_status', $c ) && 'publish' == $c['post_status'] )` (also as an enclosing if guard) is reported although the key is checked: the argument metavariables bind `argument` nodes and cannot be unified with the subscript operands on 0.45.2 and 0.51.3"
-    - "Known limitation: an early-return guard (`if ( ! isset( $c['post_status'] ) ) { return; } if ( 'publish' == $c['post_status'] ) { ... }`) is reported; only a guard in the same condition or an enclosing if is recognised"
-    - "FP: `if ( empty( $c['post_status'] ) || 'publish' == $c['post_status'] )` and an else body of `if ( ! isset( $c['post_status'] ) ) { } else { if ( read ) }` are reported although the read cannot run with the key absent: only isset and ! empty are recognised as guards"
-    - "FN: `if ( ! ( ! isset( $c['post_status'] ) ) || 'publish' == $c['post_status'] )` is not reported: negation parity is not counted, so a doubly negated guard under || counts as protecting"
-    - "FP: guards joined with uppercase `AND` / `OR` are not recognised (the operator checks match lowercase `and` / `or` only), so the guarded read is still reported"
-    - "FP: a guard in an `elseif` condition whose body holds the read is not recognised as an enclosing guard; only an if condition counts"
-    - "FN: `$ok = 'publish' == $c['post_status'];` outside an if condition and `if ( 'publish' === $c['post_status'] )` (identical comparison) are not reported"
-    - "FN: `if ( $c['post_status'] == 'publish' )` (literal on the right) is not reported"
-    - "FN: an isset guard in an if condition inside a closure in an enclosing if condition (`if ( array_filter( $c, function ( $x ) use ( $c ) { if ( isset( $c['post_status'] ) ) ... } ) ) { if ( 'publish' == $c['post_status'] ) { ... } }`) is treated as protecting the outer read although it cannot: the guard walk does not stop at closure boundaries (the same guard in an elseif condition is reported)"
+    - "<?php if ( ! ( ! isset( $c['post_status'] ) ) || 'publish' == $c['post_status'] ) { }"
+    - "<?php $ok = 'publish' == $c['post_status'];"
+    - "<?php if ( 'publish' === $c['post_status'] ) { }"
+    - "<?php if ( $c['post_status'] == 'publish' ) { }"
+    - "<?php if ( array_filter( $c, function ( $x ) use ( $c ) { if ( isset( $c['post_status'] ) ) { return true; } return false; } ) ) { if ( 'publish' == $c['post_status'] ) { } }"
