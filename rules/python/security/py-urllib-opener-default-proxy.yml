@@ -15,9 +15,11 @@ note: >-
   Fires on build_opener(...), urllib.request.build_opener(...) and
   request.build_opener(...) (also through a dotted prefix such as
   six.moves.urllib.request) unless an argument holds a ProxyHandler call given a
-  mapping, in any position or wrapped in another call (including one branch of a
-  conditional expression, a known false negative). ProxyHandler() and
-  ProxyHandler(None) still read the environment, so they are reported. A direct
+  mapping, a name, an attribute, a subscript, another call or a keyword value
+  other than None, but not a getproxies() call, in any position or wrapped in
+  another call (including one branch of a conditional expression, a known false
+  negative). ProxyHandler(), ProxyHandler(None) and ProxyHandler(getproxies())
+  still read the environment, so they are reported. A direct
   *handlers splat argument is not reported because its contents are unknown. A
   method called build_opener on any other object is not reported; a bare
   build_opener is assumed to be the urllib function, as an import cannot be
@@ -60,11 +62,22 @@ rule:
                       - kind: attribute
                       - kind: subscript
                       - kind: call
+                        not:
+                          has:
+                            field: function
+                            regex: '(^|\.)getproxies$'
                       - kind: keyword_argument
                         has:
                           field: value
                           not:
                             kind: none
+                        not:
+                          has:
+                            field: value
+                            kind: call
+                            has:
+                              field: function
+                              regex: '(^|\.)getproxies$'
 metadata:
   cwe: 'CWE-441|CWE-200'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/441.html|https://cwe.mitre.org/data/definitions/200.html'
