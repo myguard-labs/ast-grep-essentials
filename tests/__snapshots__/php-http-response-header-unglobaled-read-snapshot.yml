@@ -28,6 +28,20 @@ snapshots:
       style: secondary
       start: 85
       end: 106
+  "<?php\nfunction f() {\n\t$o = new class { function m() { file_get_contents( 'http://x' ); } };\n\treturn $http_response_header;\n}":
+    labels:
+    - source: |-
+        function f() {
+        	$o = new class { function m() { file_get_contents( 'http://x' ); } };
+        	return $http_response_header;
+        }
+      style: primary
+      start: 6
+      end: 124
+    - source: $http_response_header
+      style: secondary
+      start: 100
+      end: 121
   "<?php\nfunction f() {\n\tfunction inner() { file_get_contents( 'http://x' ); }\n\treturn $http_response_header;\n}":
     labels:
     - source: |-

@@ -8,3 +8,8 @@ invalid:
   - '<?php function f( $id ) { echo $post->ID; }'
   - '<?php function f() { echo $post->ID; function g() { $post = 1; } }'
   - '<?php function f() { echo $post->ID; $c = function() { $post = get_post(); }; }'
+  - "<?php function f() { echo $post->ID; function g() { global $post; } }"
+  - "<?php function f() { echo $post->ID; $c = function() { global $post; }; }"
+  - "<?php function f() { echo $post->ID; $o = new class { function m() { global $post; } }; }"
+  - "<?php function f() { echo $post->ID; $c = fn() => $post = 1; }"
+  - "<?php function f() { echo $post->ID; $o = new class { function m() { $post = 1; } }; }"
