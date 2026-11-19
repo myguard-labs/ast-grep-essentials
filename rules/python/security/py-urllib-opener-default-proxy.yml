@@ -84,8 +84,8 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/441.html|https://cwe.mitre.org/data/definitions/200.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A01:2025'
-  known_false_positives: 'A ProxyHandler built earlier and passed by variable, a ProxyHandler subclass whose name does not end in ProxyHandler, and an opener that deliberately honours the proxy environment are reported'
-  known_false_negatives: 'A build_opener bound to another name or reached through an aliased module (import urllib.request as ur), a method on another object, any call carrying a direct *handlers splat, an argument that only holds a ProxyHandler mapping in one branch of a conditional expression, and a getproxies() result passed through another call, an expression or a variable (dict(getproxies()), getproxies() or {}, p = getproxies() then ProxyHandler(p)) are not reported'
+  known_false_positives: 'A ProxyHandler built earlier and passed by variable, a ProxyHandler subclass whose name does not end in ProxyHandler, and an opener that deliberately honours the proxy environment are reported, and a method named getproxies on an unrelated object (ProxyHandler(self.getproxies())) is treated like urllib getproxies() and reported'
+  known_false_negatives: 'A build_opener bound to another name or reached through an aliased module (import urllib.request as ur), a method on another object, any call carrying a direct *handlers splat, an argument that only holds a ProxyHandler mapping in one branch of a conditional expression, and a getproxies() result passed through another call, an expression or a variable (dict(getproxies()), getproxies() or {}, p = getproxies() then ProxyHandler(p)) are not reported, and a ProxyHandler given a getproxies_registry() or getproxies_macosx_sysconf() call (system proxy settings rather than the proxy environment) still suppresses the finding and is not reported'
   rule_modified_at: '2026-11-19'
   ast_grep_tested_version: 0.51.3
   validated_at: '2026-11-19'
