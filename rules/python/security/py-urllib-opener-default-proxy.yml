@@ -14,15 +14,18 @@ message: >-
 note: >-
   Fires on build_opener(...), urllib.request.build_opener(...) and
   request.build_opener(...) (also through a dotted prefix such as
-  six.moves.urllib.request) unless an argument holds a ProxyHandler call given a
-  mapping, in any position or wrapped in another call (including one branch of a
-  conditional expression, a known false negative). ProxyHandler() and
-  ProxyHandler(None) still read the environment, so they are reported. A direct
-  *handlers splat argument is not reported because its contents are unknown. A
-  method called build_opener on any other object is not reported; a bare
-  build_opener is assumed to be the urllib function, as an import cannot be
-  checked here. Code that honours the proxy environment on purpose, such as a
-  client for a corporate network, is the routine dismissal.
+  six.moves.urllib.request) unless an argument holds a ProxyHandler call given
+  a mapping, a name, an attribute, a subscript, another call or a keyword
+  value other than None, but not a getproxies() or getproxies_environment()
+  call, in any position or wrapped in another call (including one branch of a
+  conditional expression, a known false negative). ProxyHandler(),
+  ProxyHandler(None), ProxyHandler(getproxies()) and
+  ProxyHandler(getproxies_environment()) still read the environment, so they
+  are reported. A direct *handlers splat argument is not reported because its
+  contents are unknown. A method called build_opener on any other object is
+  not reported; a bare build_opener is assumed to be the urllib function, as
+  an import cannot be checked here. Code that honours the proxy environment on
+  purpose, such as a client for a corporate network, is the routine dismissal.
 rule:
   kind: call
   all:
@@ -60,18 +63,29 @@ rule:
                       - kind: attribute
                       - kind: subscript
                       - kind: call
+                        not:
+                          has:
+                            field: function
+                            regex: '(^|\.)getproxies(_environment)?$'
                       - kind: keyword_argument
                         has:
                           field: value
                           not:
                             kind: none
+                        not:
+                          has:
+                            field: value
+                            kind: call
+                            has:
+                              field: function
+                              regex: '(^|\.)getproxies(_environment)?$'
 metadata:
   cwe: 'CWE-441|CWE-200'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/441.html|https://cwe.mitre.org/data/definitions/200.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A01:2025'
   known_false_positives: 'A ProxyHandler built earlier and passed by variable, a ProxyHandler subclass whose name does not end in ProxyHandler, and an opener that deliberately honours the proxy environment are reported'
-  known_false_negatives: 'A build_opener bound to another name or reached through an aliased module (import urllib.request as ur), a method on another object, any call carrying a direct *handlers splat, and an argument that only holds a ProxyHandler mapping in one branch of a conditional expression are not reported'
+  known_false_negatives: 'A build_opener bound to another name or reached through an aliased module (import urllib.request as ur), a method on another object, any call carrying a direct *handlers splat, an argument that only holds a ProxyHandler mapping in one branch of a conditional expression, and a getproxies() result passed through another call, an expression or a variable (dict(getproxies()), getproxies() or {}, p = getproxies() then ProxyHandler(p)) are not reported'
   rule_modified_at: '2026-11-19'
   ast_grep_tested_version: 0.51.3
   validated_at: '2026-11-19'
