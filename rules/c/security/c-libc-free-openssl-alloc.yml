@@ -30,4 +30,6 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/762.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - "FN: OPENSSL_realloc and OPENSSL_memdup (and CRYPTO_malloc) allocations released with libc free() are not matched; the constraint lists only OPENSSL_malloc/strdup/zalloc"
+    - "void f(char *q, size_t n) { char *p = OPENSSL_realloc(q, n); free(p); }"
+    - "void f(char *q, size_t n) { char *p = OPENSSL_memdup(q, n); free(p); }"
+    - "void f(size_t n) { char *p = CRYPTO_malloc(n, \"f.c\", 1); free(p); }"

@@ -30,6 +30,9 @@ metadata:
   cwe: 'CWE-681'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/681.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'pointer out-parameters such as int *s_len are reported'
   todo_cases:
-    - 'FN: `unsigned buf_size`, `uint32_t s_len` and names such as `len`/`nbytes` are not matched.'
-    - 'FP: pointer out-parameters such as `int *s_len` are reported.'
+    - "int f(unsigned buf_size) { return 0; }"
+    - "int f(uint32_t s_len) { return 0; }"
+    - "int f(int len) { return 0; }"
+    - "int f(int nbytes) { return 0; }"

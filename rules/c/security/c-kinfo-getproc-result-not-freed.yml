@@ -57,5 +57,7 @@ metadata:
   cwe: 'CWE-401'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/401.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'if (c) { free(kp); } else { free(kp); } is reported although both branches free'
   todo_cases:
-    - "FP: a free in both branches of an unrelated condition (if (c) { free(kp); } else { free(kp); }) is reported; FN: a condition that merely mentions the variable (if (c && kp) { free(kp); }) is accepted, and a nested return of the variable under any condition counts as ownership transfer"
+    - "void f(int pid, int c) { struct kinfo_proc *kp = kinfo_getproc(pid); if (c && kp) { free(kp); } }"
+    - "void *f(int pid, int c) { struct kinfo_proc *kp = kinfo_getproc(pid); if (c) { return kp; } return 0; }"

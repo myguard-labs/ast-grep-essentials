@@ -28,6 +28,9 @@ metadata:
   cwe: 'CWE-197'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/197.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'a cast after an if (name_len > INT_MAX) return -1; range guard is still reported'
   todo_cases:
-    - 'FN: `(int)name_length`, `(int)p->name_len`, `(int)(name_len)` and `(unsigned int)name_len` (still 32-bit) are not matched.'
-    - 'FP: a cast after an `if (name_len > INT_MAX) return -1;` range guard is still reported.'
+    - "int f(size_t name_length) { return (int) name_length; }"
+    - "int f(struct s *p) { return (int) p->name_len; }"
+    - "int f(size_t name_len) { return (int) (name_len); }"
+    - "int f(size_t name_len) { return (unsigned int) name_len; }"

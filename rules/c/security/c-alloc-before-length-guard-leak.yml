@@ -42,4 +42,4 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/401.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - "false negative: a direct efree in the guard suppresses the finding even when an earlier return in the same guard skips it (if (bad) { if (abort) return -1; efree(b); return 0; })."
+    - "void f(int bad, int abort_it, size_t n) { char *b = emalloc(n); if (bad) { if (abort_it) return; efree(b); return; } use(b); }"

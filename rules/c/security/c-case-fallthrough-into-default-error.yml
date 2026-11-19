@@ -64,7 +64,7 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/484.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
+  known_false_positives: 'case 1: default: goto err; (stacked labels) is reported'
   todo_cases:
-    - 'FP: case 1: default: goto err; (stacked labels, not shown as invalid; also flagged)'
-    - 'FN: case 1: a(); default: if (x) goto err; (goto nested in default if)'
-    - 'FN: case 1: { goto L; } L: a(); default: goto err; (goto in a braced case skips the same-case label check)'
+    - "int f(int x) { switch (x) { case 1: a(); default: if (x) goto err; } return 0; err: return -1; }"
+    - "int f(int x) { switch (x) { case 1: { goto L; } L: a(); default: goto err; } return 0; err: return -1; }"

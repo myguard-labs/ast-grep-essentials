@@ -30,7 +30,8 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/681.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - "atof as the parser (double d = atof(buf); long l = (long)d;) is not matched (FN)"
-    - "(long)strtod(buf, NULL) cast directly with no double variable is not matched (FN)"
-    - "assignment form long l; l = (long)d; and (long)(d) with parenthesized operand are not matched (FN)"
-    - "const long l = (long)d; is not matched (FN)"
+    - "void f(const char *buf) { double d = atof(buf); long l = (long)d; }"
+    - "void f(const char *buf) { long l = (long)strtod(buf, NULL); }"
+    - "void f(const char *buf) { double d = strtod(buf, NULL); long l; l = (long)d; }"
+    - "void f(const char *buf) { double d = strtod(buf, NULL); long l = (long)(d); }"
+    - "void f(const char *buf) { double d = strtod(buf, NULL); const long l = (long)d; }"

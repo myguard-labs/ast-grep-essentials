@@ -37,5 +37,5 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/401.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FN: buf = calloc(n, 1); if (bad) return -1; use(buf); (calloc is not in the allocator set)'
-    - 'FN: buf = emalloc(n); if (bad) { log_it(buf); return FAILURE; } use(buf); (any reference to buf in the if-block suppresses, not only free functions)'
+    - "int f(size_t n, int bad) { char *buf; buf = calloc(n, 1); if (bad) return -1; use(buf); return 0; }"
+    - "int f(size_t n, int bad) { char *buf; buf = emalloc(n); if (bad) { log_it(buf); return FAILURE; } use(buf); return 0; }"

@@ -34,6 +34,9 @@ metadata:
   cwe: 'CWE-401'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/401.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'if (!cmd) { return NULL; } free(cmd); is reported although cmd is NULL on that path'
   todo_cases:
-    - "if (!cmd) { return NULL; } free(cmd); is matched although cmd is NULL on that path (FP)"
-    - "braceless if, goto early exit, a block with statements before return and calloc as the allocator are not matched (FN)"
+    - "char *f(size_t n) { char *cmd = malloc(n); if (!run(cmd)) return NULL; free(cmd); return 0; }"
+    - "char *f(size_t n) { char *cmd = malloc(n); if (!run(cmd)) { goto out; } free(cmd); out: return 0; }"
+    - "char *f(size_t n) { char *cmd = malloc(n); if (!run(cmd)) { log_it(); return NULL; } free(cmd); return 0; }"
+    - "char *f(size_t n) { char *cmd = calloc(1, n); if (!run(cmd)) { return NULL; } free(cmd); return 0; }"

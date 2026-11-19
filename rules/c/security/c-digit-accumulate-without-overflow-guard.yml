@@ -62,8 +62,8 @@ metadata:
   cwe: 'CWE-190'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/190.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'an unsigned pointee accumulator (*x = *x * b + d with unsigned *x) is still reported'
   todo_cases:
-    - "FN: a same-named unsigned declaration in another scope of the function suppresses a signed accumulator"
-    - "FN (subtract-digit form): while (*p) { x = x * 10 + *p++ - 48; } is not matched because the top-level operator is minus."
-    - "FN (fixed bound, variable multiplier): if (*x > 0x7ffffff) return; *x = *x * b + d; is accepted as a guard although a large b still overflows."
-    - "FP: an unsigned pointee accumulator (*x with unsigned *x) is still reported"
+    - "void f(int d) { { unsigned x; (void) x; } int x = 0; while (d) { x = x * 10 + d; d--; } }"
+    - "void f(const char *p) { int x = 0; while (*p) { x = x * 10 + *p++ - 48; } }"
+    - "void f(int *x, int d, int b) { while (d) { if (*x > 0x7ffffff) return; *x = *x * b + d; d--; } }"

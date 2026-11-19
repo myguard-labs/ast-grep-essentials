@@ -49,6 +49,7 @@ metadata:
   cwe: 'CWE-681'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/681.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'a comparison return a > 0.5; is reported, and pointer-returning functions declared int *f() are also matched'
   todo_cases:
-    - 'FN: `unsigned int f()` and exponent literals (`1e3`) are not matched.'
-    - 'FP: a comparison `return a > 0.5;` is reported; pointer-returning functions with `int *` type are also matched.'
+    - "unsigned int f(int a) { return a / 1000.0; }"
+    - "int f(int a) { return a * 1e3; }"
