@@ -7,6 +7,9 @@ valid:
   - 'void f(zval *retval) { if (!MyG(error_msg)) { return; } ZVAL_STRING(retval, MyG(error_msg), 1); }'
   - 'void f(zval *retval) { if (!MyG(error_msg)) { return; } MyG(other) = NULL; ZVAL_STRING(retval, MyG(error_msg), 1); if (x) { MyG(error_msg) = NULL; } }'
   - 'void f(zval *retval) { if (!MyG(error_msg)) return; MyG(error_msg) = fetch_message(); if (!MyG(error_msg)) return; ZVAL_STRING(retval, MyG(error_msg), 1); }'
+  - 'void f(zval *retval) { if (MyG(error_msg) == NULL) { return; } ZVAL_STRING(retval, MyG(error_msg), 1); }'
+  - 'void f(zval *retval) { if (!MyG(error_msg)) return; MyG(error_msg) = fetch_message(); if (MyG(error_msg) == NULL) return; ZVAL_STRING(retval, MyG(error_msg), 1); }'
+  - 'void f(zval *retval) { if (!MyG(error_msg)) return; MyG(error_msg) = fetch_message(); if (!MyG(error_msg)) { return; } ZVAL_STRING(retval, MyG(error_msg), 1); }'
 invalid:
   - 'ZVAL_STRING(retval, MyG(error_msg), 1);'
   - 'void f(zval *retval) { ZVAL_STRING(retval, MyG(error_msg) /* c */, 1); }'

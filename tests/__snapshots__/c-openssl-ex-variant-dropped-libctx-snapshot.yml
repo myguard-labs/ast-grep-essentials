@@ -62,6 +62,26 @@ snapshots:
       style: secondary
       start: 26
       end: 167
+  "#include <openssl/x509.h>\nX509 *f(void *libctx)\n{\n    X509 *x = X509_new();\n    (void)libctx;\n    return x;\n}":
+    labels:
+    - source: X509_new()
+      style: primary
+      start: 64
+      end: 74
+    - source: libctx
+      style: secondary
+      start: 40
+      end: 46
+    - source: |-
+        X509 *f(void *libctx)
+        {
+            X509 *x = X509_new();
+            (void)libctx;
+            return x;
+        }
+      style: secondary
+      start: 26
+      end: 109
   "#include <openssl/x509.h>\nstruct c { OSSL_LIB_CTX *libctx; };\nint f(struct c *k)\n{\n    X509 *x;\n    if (k->libctx == NULL) return 0;\n    x = X509_new();\n    if (x == NULL) return 0;\n    X509_free(x);\n    return 1;\n}":
     labels:
     - source: X509_new()

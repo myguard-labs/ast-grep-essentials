@@ -148,3 +148,39 @@ invalid:
             psi.Arguments += o.Extra;
         }
     }
+  - |-
+    class Example {
+        void Run(string x) {
+            var psi = new ProcessStartInfo(arguments: "-c " + x, fileName: "sh");
+        }
+    }
+  - |-
+    class Example {
+        void Run(Process p, string x) {
+            p.StartInfo.Arguments = "-c " + x;
+        }
+    }
+  - |-
+    class Example {
+        Example(string x) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments = "-c " + x;
+        }
+    }
+  - |-
+    class Example {
+        Example(string x) {
+            var psi = new ProcessStartInfo("sh");
+            psi.Arguments += x;
+        }
+    }
+  - |-
+    void Local(string x) {
+        var psi = new ProcessStartInfo("sh");
+        psi.Arguments = "-c " + x;
+    }
+  - |-
+    void Local(string x) {
+        var psi = new ProcessStartInfo("sh");
+        psi.Arguments += x;
+    }

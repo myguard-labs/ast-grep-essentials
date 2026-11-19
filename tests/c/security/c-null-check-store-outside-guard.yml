@@ -20,6 +20,20 @@ valid:
     void f(struct s *ctx) { if (ctx != NULL) { ctx = ctx; } else { return; } ctx->b = 1; }
   - |-
     void f(struct s *ctx) { struct s l; if (ctx != NULL) { ctx = &l; } else { return; } ctx->b = 1; }
+  - |-
+    void f(struct s *ctx) { if (ctx != NULL) { run(); } else return; ctx->b = 1; }
+  - |-
+    void f(struct s *ctx) { if (ctx != NULL) { run(); } else goto out; ctx->b = 1; out: return; }
+  - |-
+    void f(struct s *ctx) { while (1) { if (ctx != NULL) { run(); } else break; ctx->b = 1; } }
+  - |-
+    void f(struct s *ctx) { while (1) { if (ctx != NULL) { run(); } else continue; ctx->b = 1; } }
+  - |-
+    void f(struct s *ctx) { if (ctx != NULL) { run(); } else { goto out; } ctx->b = 1; out: return; }
+  - |-
+    void f(struct s *ctx) { while (1) { if (ctx != NULL) { run(); } else { break; } ctx->b = 1; } }
+  - |-
+    void f(struct s *ctx) { while (1) { if (ctx != NULL) { run(); } else { continue; } ctx->b = 1; } }
 
 invalid:
   - |-
