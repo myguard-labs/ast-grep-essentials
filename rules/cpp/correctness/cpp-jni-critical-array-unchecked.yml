@@ -74,6 +74,12 @@ rule:
                 has:
                   stopBy: end
                   pattern: $P
+                  not:
+                    inside:
+                      any:
+                        - kind: subscript_expression
+                        - kind: pointer_expression
+                        - kind: field_expression
             - has:
                 stopBy: end
                 kind: conditional_expression
@@ -84,6 +90,12 @@ rule:
                     - has:
                         stopBy: end
                         pattern: $P
+                        not:
+                          inside:
+                            any:
+                              - kind: subscript_expression
+                              - kind: pointer_expression
+                              - kind: field_expression
 metadata:
   cwe: 'CWE-476'
   known_false_positives: 'A NULL test expressed only through a loop condition, an assert or a logical && operand is not recognised and the use is reported; a null check that follows the first use in the same block is accepted'

@@ -1,5 +1,33 @@
 id: cpp-jni-critical-array-unchecked
 snapshots:
+  "int f(JNIEnv *env, jbyteArray arr) { jbyte *p = (jbyte *)env->GetPrimitiveArrayCritical(arr, nullptr); return *p ? 1 : 0; }":
+    labels:
+    - source: jbyte *p = (jbyte *)env->GetPrimitiveArrayCritical(arr, nullptr);
+      style: primary
+      start: 37
+      end: 102
+    - source: "*p"
+      style: secondary
+      start: 110
+      end: 112
+    - source: "*p"
+      style: secondary
+      start: 110
+      end: 112
+  "int f(JNIEnv *env, jbyteArray arr) { jbyte *p = (jbyte *)env->GetPrimitiveArrayCritical(arr, nullptr); return p[0] ? 1 : 0; }":
+    labels:
+    - source: jbyte *p = (jbyte *)env->GetPrimitiveArrayCritical(arr, nullptr);
+      style: primary
+      start: 37
+      end: 102
+    - source: p[0]
+      style: secondary
+      start: 110
+      end: 114
+    - source: p[0]
+      style: secondary
+      start: 110
+      end: 114
   "int f(JNIEnv *env, jintArray arr) { jint *p = (jint *)env->GetPrimitiveArrayCritical(arr, nullptr); int v = *p; env->ReleasePrimitiveArrayCritical(arr, p, 0); return v; }":
     labels:
     - source: jint *p = (jint *)env->GetPrimitiveArrayCritical(arr, nullptr);
@@ -14,6 +42,20 @@ snapshots:
       style: secondary
       start: 108
       end: 110
+  "int f(JNIEnv *env, jobject o) { Ctx *p = (Ctx *)env->GetPrimitiveArrayCritical(o, nullptr); return p->len ? p->len : 0; }":
+    labels:
+    - source: Ctx *p = (Ctx *)env->GetPrimitiveArrayCritical(o, nullptr);
+      style: primary
+      start: 32
+      end: 91
+    - source: p->len
+      style: secondary
+      start: 99
+      end: 105
+    - source: p->len
+      style: secondary
+      start: 99
+      end: 105
   "void f(JNIEnv *env, jbyteArray arr) { auto p = (jbyte *)env->GetPrimitiveArrayCritical(arr, nullptr); p[0] = 1; }":
     labels:
     - source: auto p = (jbyte *)env->GetPrimitiveArrayCritical(arr, nullptr);
@@ -28,6 +70,20 @@ snapshots:
       style: secondary
       start: 102
       end: 106
+  "void f(JNIEnv *env, jbyteArray arr) { auto p = env->GetPrimitiveArrayCritical(arr, nullptr); if (p[0]) { work(); } }":
+    labels:
+    - source: auto p = env->GetPrimitiveArrayCritical(arr, nullptr);
+      style: primary
+      start: 38
+      end: 92
+    - source: p[0]
+      style: secondary
+      start: 97
+      end: 101
+    - source: p[0]
+      style: secondary
+      start: 97
+      end: 101
   "void f(JNIEnv *env, jbyteArray arr) { auto p = env->GetPrimitiveArrayCritical(arr, nullptr); p[0] = 1; }":
     labels:
     - source: auto p = env->GetPrimitiveArrayCritical(arr, nullptr);
@@ -70,6 +126,20 @@ snapshots:
       style: secondary
       start: 98
       end: 102
+  "void f(JNIEnv *env, jbyteArray arr) { jbyte *p = (jbyte *)env->GetPrimitiveArrayCritical(arr, nullptr); if (*p) { work(); } }":
+    labels:
+    - source: jbyte *p = (jbyte *)env->GetPrimitiveArrayCritical(arr, nullptr);
+      style: primary
+      start: 38
+      end: 103
+    - source: "*p"
+      style: secondary
+      start: 108
+      end: 110
+    - source: "*p"
+      style: secondary
+      start: 108
+      end: 110
   "void f(JNIEnv *env, jbyteArray arr) { jbyte *p = static_cast<jbyte *>(env->GetPrimitiveArrayCritical(arr, nullptr)); p[0] = 1; }":
     labels:
     - source: jbyte *p = static_cast<jbyte *>(env->GetPrimitiveArrayCritical(arr, nullptr));
@@ -162,6 +232,20 @@ snapshots:
       style: secondary
       start: 102
       end: 119
+  "void f(JNIEnv *env, jobject o) { Ctx *p = (Ctx *)env->GetPrimitiveArrayCritical(o, nullptr); if (p->len) { work(); } }":
+    labels:
+    - source: Ctx *p = (Ctx *)env->GetPrimitiveArrayCritical(o, nullptr);
+      style: primary
+      start: 33
+      end: 92
+    - source: p->len
+      style: secondary
+      start: 97
+      end: 103
+    - source: p->len
+      style: secondary
+      start: 97
+      end: 103
   "void f(JNIEnv *env, jobject o) { Ctx *p = (Ctx *)env->GetPrimitiveArrayCritical(o, nullptr); p->len = 1; }":
     labels:
     - source: Ctx *p = (Ctx *)env->GetPrimitiveArrayCritical(o, nullptr);
