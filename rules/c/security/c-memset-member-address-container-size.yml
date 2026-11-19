@@ -27,7 +27,7 @@ metadata:
   cwe: 'CWE-131'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/131.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: '''memset(&p->zo, 0, sizeof(struct z))'' where struct z is the member''s own type is reported although the size is correct'
   todo_cases:
-    - "FP: 'memset(&p->zo, 0, sizeof(struct z))' where struct z is the member's own type is reported although the size is correct"
-    - "FN: 'memset((&p->zo), 0, sizeof(struct s))' (parenthesised address) is not reported"
-    - "FN: 'memset(&p.zo, 0, sizeof(struct s))' (dot access on a struct value) is not reported"
+    - "struct s { int a; struct z zo; }; void f(struct s *p) { memset((&p->zo), 0, sizeof(struct s)); }"
+    - "struct s { int a; struct z zo; }; void f(struct s p) { memset(&p.zo, 0, sizeof(struct s)); }"

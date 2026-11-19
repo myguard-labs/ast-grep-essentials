@@ -350,6 +350,8 @@ metadata:
   category: 'security'
   subcategory: 'race-condition'
   references: 'https://wiki.sei.cmu.edu/confluence/display/c/FIO45-C.+Avoid+TOCTOU+race+conditions+while+accessing+files'
+  known_false_positives: '''fstatat(d, p, &st, 0) == 0'' then ''unlink(p)'' is reported even though the directory fd differs from the cwd lookup'
   todo_cases:
-    - 'FN: early-return forms `if (stat(p, &st) != 0) { return; } fopen(p, "r");` and `if (stat(p, &st) < 0)` and the reversed `0 == stat(p, &st)` are not matched'
-    - 'FP-ish: `fstatat(d, p, &st, 0) == 0` then `unlink(p)` is reported even though the directory fd differs from the cwd lookup'
+    - "void f(const char *p) { struct stat st; if (stat(p, &st) != 0) { return; } fopen(p, \"r\"); }"
+    - "void f(const char *p) { struct stat st; if (stat(p, &st) < 0) { return; } fopen(p, \"r\"); }"
+    - "void f(const char *p) { struct stat st; if (0 == stat(p, &st)) { fopen(p, \"r\"); } }"

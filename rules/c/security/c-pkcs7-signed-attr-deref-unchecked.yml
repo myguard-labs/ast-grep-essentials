@@ -187,7 +187,7 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/476.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FN: if (!so) return 0; if (y) { so = NULL; } if (so->type == 16) return 1; (nested reassignment between guard and dereference is not seen)'
-    - 'FN: ASN1_TYPE *so = PKCS7_get_signed_attribute(si, 1); if (so->type == 16) return 1; (declaration initialiser form)'
-    - 'FN: `!V ||` / `V == NULL ||` found anywhere in the condition, e.g. if ((!so || a) && so->type == 16)'
-    - 'FN: `t = so->type;` (a plain statement dereference between the goto guard and its label) is not counted as the dereference the label must follow'
+    - "ASN1_TYPE *so; so = PKCS7_get_signed_attribute(si, 1); if (!so) return 0; if (y) { so = NULL; } if (so->type == 16) return 1;"
+    - "ASN1_TYPE *so = PKCS7_get_signed_attribute(si, 1); if (so->type == 16) return 1;"
+    - "ASN1_TYPE *so; so = PKCS7_get_signed_attribute(si, 1); if ((!so || a) && so->type == 16) return 1;"
+    - "ASN1_TYPE *so; so = PKCS7_get_signed_attribute(si, 1); if (!so) goto out; t = so->type; out: if (so->type == 16) return 1;"

@@ -200,5 +200,7 @@ metadata:
   subcategory: 'race-condition'
   references: 'https://wiki.sei.cmu.edu/confluence/display/c/FIO45-C.+Avoid+TOCTOU+race+conditions+while+accessing+files'
   todo_cases:
-    - 'FN: `faccessat(dfd, p, R_OK, 0) == 0` followed by `open(p, ...)` is not matched because the path is the third argument'
-    - 'FN: `if (access(p, R_OK) != 0) { return; } fopen(p, "r");`, `0 == access(...)` and `access(p, R_OK) < 0` early-return forms are not matched'
+    - "void f(int dfd, const char *p) { if (faccessat(dfd, p, R_OK, 0) == 0) { fopen(p, \"r\"); } }"
+    - "void f(const char *p) { if (access(p, R_OK) != 0) { return; } fopen(p, \"r\"); }"
+    - "void f(const char *p) { if (0 == access(p, R_OK)) { fopen(p, \"r\"); } }"
+    - "void f(const char *p) { if (access(p, R_OK) < 0) { return; } fopen(p, \"r\"); }"

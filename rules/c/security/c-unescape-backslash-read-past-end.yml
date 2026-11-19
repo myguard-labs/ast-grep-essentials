@@ -43,5 +43,7 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/126.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FN: unbraced body is missed, e.g. if (*p++ == ''\\'') *dst = *p++;'
-    - 'FN: the guard search is unbounded, so an if (*p) or if (p < end) that encloses the whole backslash check, or an else branch of an inner if (*p), counts as a guard'
+    - "void f(char *p, char *dst) { if (*p++ == '\\\\') *dst = *p++; }"
+    - "void f(char *p, char *dst) { if (*p) { if (*p++ == '\\\\') { *dst = *p++; } } }"
+    - "void f(char *p, char *end, char *dst) { if (p < end) { if (*p++ == '\\\\') { *dst = *p++; } } }"
+    - "void f(char *p, char *dst) { if (*p) { } else { if (*p++ == '\\\\') { *dst = *p++; } } }"

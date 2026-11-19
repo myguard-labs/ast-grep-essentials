@@ -53,5 +53,6 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   known_false_positives: '`if (Z_TYPE_PP(p) == IS_OBJECT && 1 && instanceof_function(Z_OBJCE_PP(p), ce))` is reported because the check sits two binary levels up'
   todo_cases:
-    - 'FN: wrong order `instanceof_function(Z_OBJCE_PP(p), ce) && Z_TYPE_PP(p) == IS_OBJECT` and `Z_TYPE_PP(p) == IS_OBJECT || instanceof_function(Z_OBJCE_PP(p), ce)` are not matched'
-    - 'FN: use inside a while condition is not matched, only if statements'
+    - "int f(zval **p, zend_class_entry *ce) { if (instanceof_function(Z_OBJCE_PP(p), ce) && Z_TYPE_PP(p) == IS_OBJECT) { return 1; } return 0; }"
+    - "int f(zval **p, zend_class_entry *ce) { if (Z_TYPE_PP(p) == IS_OBJECT || instanceof_function(Z_OBJCE_PP(p), ce)) { return 1; } return 0; }"
+    - "int f(zval **p, zend_class_entry *ce) { while (instanceof_function(Z_OBJCE_PP(p), ce)) { } return 0; }"

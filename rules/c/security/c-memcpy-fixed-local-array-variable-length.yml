@@ -103,10 +103,8 @@ metadata:
   cwe: 'CWE-120'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/120.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'guards ''if (n < sizeof(buf)) memcpy(buf, src, n);'' and ''if ((n <= sizeof(buf)))'' still match (only a single-parenthesis <= or >= guard is recognised); ''if (n <= sizeof(buf) && a && b && c) memcpy(buf, src, n);'' still matches (the && guard is searched two levels deep); cast guard ''if ((size_t)n <= sizeof(buf)) memcpy(buf, src, n);'' still matches'
   todo_cases:
-    - "FN: constant N * sizeof(T) length that exceeds the array 'int buf[2]; memcpy(buf, src, 8 * sizeof(int));' is not matched (not variable-length)"
-    - "FN: global array destination used inside a function 'char g[4]; void f(size_t n){ memcpy(g, src, n); }' is not matched"
-    - "FN: member destination 'memcpy(s->buf, src, n)' with unchecked n is not matched (rule requires identifier destination)"
-    - "FP: strictly smaller guard 'if (n < sizeof(buf)) memcpy(buf, src, n);' and a doubly parenthesised guard 'if ((n <= sizeof(buf)))' still match (only <= / >= with a single parenthesis level are recognised)"
-    - "FP: && guard unrolled two levels 'if (n <= sizeof(buf) && a && b && c) memcpy(buf, src, n);' still matches (the guard operand is only searched two && levels deep)"
-    - "FP: cast guard 'if ((size_t)n <= sizeof(buf)) memcpy(buf, src, n);' still matches (a cast on the length is not recognised)"
+    - "int buf[2]; memcpy(buf, src, 8 * sizeof(int));"
+    - "int g[4]; void f(int *src, size_t n) { memcpy(g, src, n); }"
+    - "struct s { int buf[4]; }; void f(struct s *p, int *src, size_t n) { memcpy(p->buf, src, n); }"

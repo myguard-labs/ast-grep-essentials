@@ -24,4 +24,9 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/704.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FN: `*(unsigned int *)(buf + 4) = v`, `*(uint32_t *)(buf + 4) = v`, `*(long *)(buf + 4) = v`, a compound `+=` store, a doubly parenthesised `*((int *)(buf + 4)) = v` and a cast pointer held in a local before the store are not matched.'
+    - "static void f(unsigned char *buf, unsigned v) { *(unsigned int *)(buf + 4) = v; }"
+    - "static void f(unsigned char *buf, unsigned v) { *(uint32_t *)(buf + 4) = v; }"
+    - "static void f(unsigned char *buf, long v) { *(long *)(buf + 4) = v; }"
+    - "static void f(unsigned char *buf, int v) { *(int *)(buf + 4) += v; }"
+    - "static void f(unsigned char *buf, int v) { *((int *)(buf + 4)) = v; }"
+    - "static void f(unsigned char *buf, int v) { int *q = (int *)(buf + 4); *q = v; }"
