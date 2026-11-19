@@ -193,7 +193,15 @@ MAX_EXPANDED_NODES = 20000
 
 
 def _expand(node: Any, budget: list[int], active: set[int]) -> object:
-    """Resolve ``node`` to plain str/list/dict values with aliases expanded.
+    """Resolve ``node`` to tagged scalars, lists and dicts, aliases expanded.
+
+    A scalar becomes ``(resolved tag, exact source text)`` so ``null`` and
+    ``"null"`` (or ``1`` and ``"1"``) differ while distinct text with one tag
+    (``1.0``/``1.00``, ``yes``/``true``) still never compares equal. A mapping
+    key is compared the same way, but a ``str``-tagged key is stored as its
+    plain text so the ``NON_MATCHING_KEYS``/``REMOVABLE_KEYS`` lookups keep
+    working; any other tag stores the ``(tag, text)`` pair, so key ``1`` and
+    ``"1"`` stay distinct. Duplicate detection stays on the key text.
 
     ``budget`` is the remaining node-visit allowance; ``active`` holds the ids
     of the nodes on the current path so a self-referential alias is refused
@@ -206,7 +214,7 @@ def _expand(node: Any, budget: list[int], active: set[int]) -> object:
     if budget[0] < 0:
         raise ValueError("alias expansion exceeds the node bound")
     if isinstance(node, yaml.ScalarNode):
-        return node.value
+        return (node.tag, node.value)
     marker = id(node)
     if marker in active:
         raise ValueError("recursive alias")
@@ -219,13 +227,17 @@ def _expand(node: Any, budget: list[int], active: set[int]) -> object:
             keys: set[str] = set()
             for key_node, value_node in node.value:
                 key = _expand(key_node, budget, active)
-                if not isinstance(key, str):
+                if not isinstance(key, tuple):
                     # A sequence or mapping key has no unambiguous string form.
                     raise ValueError("non-scalar mapping key")
-                if key == "<<" or key in keys:
+                tag, text = key
+                if text == "<<" or text in keys:
                     raise ValueError("duplicate or merge mapping key")
-                keys.add(key)
-                result[key] = _expand(value_node, budget, active)
+                keys.add(text)
+                str_tag = "tag:yaml.org,2002:str"
+                result[text if tag == str_tag else key] = _expand(
+                    value_node, budget, active
+                )
             return result
         raise ValueError("unsupported YAML node")
     finally:
@@ -233,11 +245,13 @@ def _expand(node: Any, budget: list[int], active: set[int]) -> object:
 
 
 def _strict_documents(data: bytes) -> list[object]:
-    """Parse ``data`` with no implicit typing or key ambiguity.
+    """Parse ``data`` with no value coercion or key ambiguity.
 
-    ``yaml.BaseLoader`` keeps every scalar a string, so distinct matcher text
-    such as ``1.0``/``1.00``, ``0x10``/``16``, ``yes``/``true`` or ``~``/``null``
-    never compares equal. Anchors and aliases are accepted and compared by
+    Nodes are only composed with ``yaml.SafeLoader`` (no Python object is
+    constructed); each scalar is kept as ``(resolved tag, exact text)``, so
+    ``null``/``"null"`` and ``1``/``"1"`` differ, and distinct text such as
+    ``1.0``/``1.00``, ``0x10``/``16``, ``yes``/``true`` or ``~``/``null`` never
+    compares equal. Anchors and aliases are accepted and compared by
     their EXPANDED value (anchor names and placement are irrelevant), bounded
     by ``MAX_ALIASES`` and ``MAX_EXPANDED_NODES``; a recursive alias, a ``<<``
     merge key or a duplicate mapping key (at any depth) raises ``ValueError``.
@@ -245,13 +259,13 @@ def _strict_documents(data: bytes) -> list[object]:
     import yaml  # pylint: disable=import-outside-toplevel
 
     aliases = 0
-    for event in yaml.parse(data, Loader=yaml.BaseLoader):
+    for event in yaml.parse(data, Loader=yaml.SafeLoader):
         if isinstance(event, yaml.AliasEvent):
             aliases += 1
             if aliases > MAX_ALIASES:
                 raise ValueError("too many aliases")
 
-    loader = yaml.BaseLoader(data)
+    loader = yaml.SafeLoader(data)
     try:
         budget = [MAX_EXPANDED_NODES]
         documents: list[object] = []
@@ -269,7 +283,8 @@ def _matcher_document(
     """The single YAML mapping in ``data`` minus the non-matching keys.
 
     ``metadata`` and ``note`` are ignored by the ast-grep matcher, so a fixture
-    cannot test them. The comparison is string-only (no YAML 1.1 coercion).
+    cannot test them. Scalars compare by resolved tag plus exact text (no value
+    coercion).
     Anything that is not exactly one plain mapping document (a parse failure,
     an empty or scalar document, a multi-document file, a duplicate or merge
     key, a recursive or over-bound alias expansion, or a missing PyYAML) returns ``None`` and is
