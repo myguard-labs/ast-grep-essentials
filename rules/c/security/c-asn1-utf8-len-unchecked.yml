@@ -21,9 +21,9 @@ rule:
           pattern: '$F($$$B, $LEN, $$$C)'
 metadata:
   todo_cases:
-    - "when the length variable is the last call argument and has a preceding argument (memcpy(dst, buf, n)) the call is not flagged"
-    - "a comment between the assignment and the call hides it"
-    - "int len = ASN1_STRING_to_UTF8(...) as a declaration initializer is not flagged"
+    - "void f(unsigned char *buf, unsigned char *dst, ASN1_STRING *s) { int n; n = ASN1_STRING_to_UTF8(&buf, s); memcpy(dst, buf, n); }"
+    - "void f(unsigned char *buf, ASN1_STRING *s) { int n; n = ASN1_STRING_to_UTF8(&buf, s); /* hidden */ use(buf, n, 1); }"
+    - "void f(unsigned char *buf, ASN1_STRING *s) { int len = ASN1_STRING_to_UTF8(&buf, s); use(buf, len, 1); }"
   rule_modified_at: '2026-10-19'
   ast_grep_tested_version: 0.51.0
   validated_at: '2026-10-19'

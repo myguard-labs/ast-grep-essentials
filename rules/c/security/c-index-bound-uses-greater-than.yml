@@ -51,6 +51,9 @@ metadata:
   cwe: 'CWE-193'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/193.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'a doubly parenthesized bound i > ((N - 1)) is still reported'
   todo_cases:
-    - 'FN: braced `if (i > N) { return -1; }`, `goto out;` and `abort();` consequents are not matched.'
-    - 'FN: `if (i > len & mask - 1)` parses as `(i > len) & (mask - 1)` and is never matched. FP: a doubly parenthesized bound `i > ((N - 1))` is still reported.'
+    - "int f(const int *t, int i) { if (i > N) { return -1; } return t[i]; }"
+    - "int f(const int *t, int i) { if (i > N) goto out; return t[i]; out: return -1; }"
+    - "int f(const int *t, int i) { if (i > N) abort(); return t[i]; }"
+    - "int f(const int *t, int i, int len, int mask) { if (i > len & mask - 1) return -1; return t[i]; }"

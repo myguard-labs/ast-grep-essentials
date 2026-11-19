@@ -31,6 +31,6 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/125.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - "FN: parenthesised first operand '(src[i] != 0) && i < len' in a for condition is not matched"
-    - "FN: extra && operand between the deref and the bound ('src[i] != 0 && flag && i < len') is not matched"
-    - "FN: deref before bound 'while (src[i] != 0 && i < len)' (reads src[i] before the i < len check) is not matched"
+    - "void f(char *src, char *tgt, int i, int len) { for (i = 0; (src[i] != '\\0') && i < len; i++) tgt[i] = src[i]; }"
+    - "void f(char *src, char *tgt, int i, int len, int flag) { for (i = 0; src[i] != '\\0' && flag && i < len; i++) tgt[i] = src[i]; }"
+    - "void f(char *src, char *tgt, int i, int len) { i = 0; while (src[i] != '\\0' && i < len) { tgt[i] = src[i]; i++; } }"

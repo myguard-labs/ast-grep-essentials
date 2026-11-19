@@ -27,6 +27,9 @@ metadata:
   cwe: 'CWE-190'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/190.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'a parenthesised constant count such as m |= 1 << (3); is still reported'
   todo_cases:
-    - 'FN: `m = m | 1 << n`, `m ^= 1 << n`, parenthesised `|= (1 << n)` and `|= 1 << n << 1` are not matched.'
-    - 'FP: a parenthesised constant count such as `m |= 1 << (3);` is still reported.'
+    - "void f(unsigned *m, int n) { *m = *m | 1 << n; }"
+    - "void f(unsigned *m, int n) { *m ^= 1 << n; }"
+    - "void f(unsigned *m, int n) { *m |= (1 << n); }"
+    - "void f(unsigned *m, int n) { *m |= 1 << n << 1; }"

@@ -51,8 +51,8 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/194.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FN: const int c = s[0]; (const-qualified declaration)'
-    - 'FN: int a = s[0], b = s[1]; (multiple declarators)'
-    - 'FN: long c = s[0]; (long instead of int)'
-    - 'FN: int low = *s; (dereference widens a plain char the same way as s[0])'
-    - 'FN: a same-named unsigned char declaration in another scope of the function suppresses the report (no scope resolution)'
+    - "void f(const char *s) { const int c = s[0]; (void) c; }"
+    - "void f(const char *s) { int a = s[0], b = s[1]; (void) a; (void) b; }"
+    - "void f(const char *s) { long c = s[0]; (void) c; }"
+    - "void f(const char *s) { int low = *s; (void) low; }"
+    - "void f(const char *s) { { unsigned char s[4]; (void) s; } int low = s[0]; (void) low; }"

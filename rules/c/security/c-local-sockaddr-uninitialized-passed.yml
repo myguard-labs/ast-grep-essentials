@@ -96,7 +96,8 @@ metadata:
   cwe: 'CWE-457'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/457.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'if (x) { memset(&sa, 0, sizeof sa); } connect(...) with a memset/bzero/getsockname initialiser nested in a branch is still reported'
   todo_cases:
-    - "FN: struct sockaddr_un and struct sockaddr_storage locals are not matched; the constraint accepts only sockaddr, sockaddr_in and sockaddr_in6"
-    - "FP: a memset/bzero/getsockname-style initialiser nested in a branch (if (x) { memset(&sa, 0, sizeof sa); } connect(...)) is not a sibling statement and is still reported; the initialiser must be a sibling statement that precedes a later statement using the variable"
-    - "FN: memset(&sa, 0, sizeof(&sa)) clears only a pointer-sized prefix but still counts as initialisation; the byte count is not checked"
+    - "static void f(int fd) { struct sockaddr_un sa; connect(fd, (struct sockaddr *)&sa, sizeof sa); }"
+    - "static void f(int fd) { struct sockaddr_storage sa; connect(fd, (struct sockaddr *)&sa, sizeof sa); }"
+    - "static void f(int fd) { struct sockaddr_in sa; memset(&sa, 0, sizeof(&sa)); connect(fd, (struct sockaddr *)&sa, sizeof sa); }"

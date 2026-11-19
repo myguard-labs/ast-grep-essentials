@@ -26,4 +26,7 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/193.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'FN: `t < 0 || t > 7` (literal bound), a lower-case constant, `(t > N)` parenthesised and `bad(t) || t < 0 || t > N` (nested left operand) are not matched.'
+    - "void f(int t) { if (t < 0 || t > 7) return; locks[t] = 0; }"
+    - "void f(int t) { if (t < 0 || t > num_locks) return; locks[t] = 0; }"
+    - "void f(int t) { if (t < 0 || (t > NUM_LOCKS)) return; locks[t] = 0; }"
+    - "void f(int t) { if (bad(t) || t < 0 || t > NUM_LOCKS) return; locks[t] = 0; }"

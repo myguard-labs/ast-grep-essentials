@@ -25,6 +25,9 @@ metadata:
   cwe: 'CWE-783'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/783.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: '#define M(x) (x->m) is reported because the identifier-then-minus regex reads the ->'
   todo_cases:
-    - "(x->m) is matched because the identifier-then-minus regex reads the -> (FP, low)"
-    - "operators & | % ^ are missing from the regex, so (m & 1) and (m % 2) are not matched (FN)"
+    - "#define M(m) (m & 1)"
+    - "#define M(m) (m | 1)"
+    - "#define M(m) (m % 2)"
+    - "#define M(m) (m ^ 1)"

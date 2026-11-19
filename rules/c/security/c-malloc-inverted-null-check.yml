@@ -35,5 +35,6 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
   todo_cases:
-    - "if (p != NULL) { return NULL; } after malloc is not matched (FN)"
-    - "declaration form char *p = malloc(n); and cast form p = (char *)malloc(n); followed by if (p) return are not matched (FN)"
+    - "void *f(size_t n) { char *p; p = malloc(n); if (p != NULL) { return NULL; } return p; }"
+    - "void *f(size_t n) { char *p = malloc(n); if (p) { return NULL; } return p; }"
+    - "void *f(size_t n) { char *p; p = (char *)malloc(n); if (p) { return NULL; } return p; }"

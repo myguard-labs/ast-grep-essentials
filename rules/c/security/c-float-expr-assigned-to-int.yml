@@ -38,6 +38,6 @@ metadata:
   cwe: 'CWE-681'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/681.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'int n = (int)(x * 0.5) + 1; and int n = ((int)(x * 0.5)); are reported although the float part is cast'
   todo_cases:
-    - 'An initialiser cast to an integer type that is nested inside a larger expression, or a cast hidden behind parentheses, is not recognised as the outermost expression (kept as a report).'
-    - 'A multi-declarator `int a = (int)(x * 0.5), b = x * 0.5;` is suppressed as a whole because the cast on a hides the uncast b (kept as a known limitation).'
+    - "void f(double x) { int a = (int)(x * 0.5), b = x * 0.5; }"

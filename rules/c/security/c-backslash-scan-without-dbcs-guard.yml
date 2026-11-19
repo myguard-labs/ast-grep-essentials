@@ -45,8 +45,9 @@ rule:
                         - kind: goto_statement
 metadata:
   todo_cases:
-    - "an if with a wrong guard (p[i] == '\\\\' && !IsDBCSLeadByte(p[i])) or any && condition is not flagged"
-    - "false negative: a negated earlier guard (if (!IsDBCSLeadByte(p[i - 1])) return;) is accepted as the DBCS guard although it exits on the safe path."
+    - "void f(char *p, int i) { if (p[i] == '\\\\' && !IsDBCSLeadByte(p[i])) { p[i] = '/'; } }"
+    - "void f(char *p, int i, int flag) { if (p[i] == '\\\\' && flag) { p[i] = '/'; } }"
+    - "void f(char *p, int i) { if (!IsDBCSLeadByte(p[i - 1])) return; if (p[i] == '\\\\') { p[i] = '/'; } }"
   rule_modified_at: '2026-10-14'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-14'

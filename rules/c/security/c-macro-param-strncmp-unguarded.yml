@@ -29,6 +29,7 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
   todo_cases:
-    - "FN: '(other) && strncmp(uri, PFX, 4)' and '(a) && strncmp(a, b, n)' are treated as guarded because the regex cannot tie the tested name to the compared pointers"
-    - "FN: guard on a different identifier, '((b) && strcmp(a, PFX))', is suppressed because the regex cannot tie the tested name to the compared pointer (no backreference; macro body is raw text)"
-    - "FN: partial NULL guard '(!(a) ? 0 : strcmp(a, b) == 0)' leaves b unchecked and is treated as safe by the regex exclusion"
+    - "#define IS_HTTP(uri, other) ((other) && strncmp(uri, PFX, 4) == 0)"
+    - "#define SAME(a, b, n) ((a) && strncmp(a, b, n) == 0)"
+    - "#define SAME(a, b) ((b) && strcmp(a, \"x\"))"
+    - "#define SAME(a, b) (!(a) ? 0 : strcmp(a, b) == 0)"
