@@ -28,4 +28,5 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/704.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - "FN: only '(long *)' casts of '->data' are matched; '(int *) (n->data + off)' and a dot-access '(long *) (n.data + off)' are not reported"
+    - "struct node { unsigned short key_len; unsigned char data[1]; }; int *ring(struct node *n) { return (int *) (n->data + n->key_len); }"
+    - "struct node { unsigned short key_len; unsigned char data[1]; }; long *ring(struct node n) { return (long *) (n.data + n.key_len); }"

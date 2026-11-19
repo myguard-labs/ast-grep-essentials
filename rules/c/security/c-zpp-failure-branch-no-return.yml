@@ -47,9 +47,9 @@ metadata:
   cwe: 'CWE-457'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/457.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'terminating branches that are not a literal return, a direct RETURN_*/ZEND_WRONG_PARAM_COUNT statement or goto (''abort();'', ''zend_error_noreturn(...)'') are reported; ''if (zpp(...) == FAILURE) { warn(); } else { use(r, s); }'' is reported although the use only runs on success'
   todo_cases:
-    - 'FP: terminating branches that are not a literal return or a direct `RETURN_*`/`ZEND_WRONG_PARAM_COUNT` statement or `goto` (`abort();`, `zend_error_noreturn(...)`) are reported'
-    - 'FP: `if (zpp(...) == FAILURE) { warn(); } else { use(r, s); }` is reported although the use only runs on success'
-    - 'FN: unbraced consequence (`if (zpp(...) == FAILURE) warn(); use(r, s);`) and reversed comparison (`FAILURE == zpp(...)`) are not matched'
-    - 'FN: a goto whose label precedes the later use of the parsed outputs (`goto resume; } resume: use(r, s);`) is treated as an exit'
-    - 'FN: a conditional return inside the branch (`{ if (x) { return; } }`) suppresses the report'
+    - "if (zend_parse_parameters(argc, \"rs\", &r, &s) == FAILURE) warn_bad_args(); use(r, s);"
+    - "if (FAILURE == zend_parse_parameters(argc, \"rs\", &r, &s)) { warn_bad_args(); } use(r, s);"
+    - "if (zend_parse_parameters(argc, \"rs\", &r, &s) == FAILURE) { goto resume; } resume: use(r, s);"
+    - "if (zend_parse_parameters(argc, \"rs\", &r, &s) == FAILURE) { if (x) { return; } } use(r, s);"

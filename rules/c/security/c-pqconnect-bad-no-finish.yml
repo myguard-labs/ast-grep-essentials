@@ -30,6 +30,9 @@ metadata:
   cwe: 'CWE-772'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/772.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'an ''if'' that logs and exits through a cleanup helper ''cleanup(c); return -1;'' is reported even when the helper calls PQfinish'
   todo_cases:
-    - 'FN: `if (PQstatus(c) != CONNECTION_OK) return -1;`, `if ((PQstatus(c) == CONNECTION_BAD))`, the reversed `CONNECTION_BAD == PQstatus(c)` and a failure branch that only conditionally calls PQfinish (`if (x) { PQfinish(c); } return -1;`) are not reported.'
-    - 'FP: an `if` that logs and exits through a cleanup helper `cleanup(c); return -1;` is reported even when the helper calls PQfinish.'
+    - "PGconn *conn = PQconnectdb(s); if (PQstatus(conn) != CONNECTION_OK) return -1;"
+    - "PGconn *conn = PQconnectdb(s); if ((PQstatus(conn) == CONNECTION_BAD)) { return -1; }"
+    - "PGconn *conn = PQconnectdb(s); if (CONNECTION_BAD == PQstatus(conn)) { return -1; }"
+    - "PGconn *conn = PQconnectdb(s); if (PQstatus(conn) == CONNECTION_BAD) { if (x) { PQfinish(conn); } return -1; }"

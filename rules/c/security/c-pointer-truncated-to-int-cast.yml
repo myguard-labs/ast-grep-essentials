@@ -25,6 +25,7 @@ metadata:
   cwe: 'CWE-681'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/681.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: '''(int)n'' on an integer operand, such as a long loop count, is reported (the rule cannot see that the operand is not a pointer)'
   todo_cases:
-    - 'FN: a bare `(unsigned)p` cast is not matched (type regex needs `int`, `unsigned int`, `int32_t` or `uint32_t`), nor is `(signed int)p`.'
-    - 'FP: `(int)n` on an integer operand, such as a long loop count, is reported; the rule cannot see that the operand is not a pointer.'
+    - "int f(void *p) { return (unsigned)p; }"
+    - "int f(void *p) { return (signed int)p; }"

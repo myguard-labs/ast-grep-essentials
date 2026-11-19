@@ -27,6 +27,10 @@ metadata:
   cwe: 'CWE-685'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/685.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_negatives: 'a call with a TSRMLS_CC macro argument, e.g. ''php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s");'', parses as an ERROR shape and is not matched'
   todo_cases:
-    - 'FN: `php_error_docref(NULL, E_WARNING, "%%%s");` (escaped percent followed by a real conversion), a format built from adjacent literals (`"a" "%s"`), `php_error_docref0` and a call with a `TSRMLS_CC` macro argument (parses as an ERROR shape) are not matched.'
-    - 'FN: only php_error_docref with exactly three arguments is matched; other printf wrappers and four-argument calls with too few arguments for the conversions (`"%s %d", x`) are not.'
+    - "php_error_docref(NULL, E_WARNING, \"%%%s\");"
+    - "php_error_docref(NULL, E_WARNING, \"a\" \"%s\");"
+    - "php_error_docref0(NULL, E_WARNING, \"Value is %d\");"
+    - "php_error_docref(NULL, E_WARNING, \"%s %d\", x);"
+    - "zend_error(E_WARNING, \"Value is %d\");"

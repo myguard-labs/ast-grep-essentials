@@ -23,6 +23,9 @@ metadata:
   cwe: 'CWE-193'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/193.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'any identifier compared with 65536, such as a buffer size ''len > 65536'', is reported because $PORT is not constrained to a port name'
   todo_cases:
-    - 'FN: the same off-by-one spelled `port > 65536L`, `port > 0x10000`, `port > 1 << 16` or `port <= 65536` is not matched (only the literal `$PORT > 65536` pattern is).'
-    - 'FP: any identifier compared with 65536, such as a buffer size `len > 65536`, is reported because the `$PORT` metavariable is not constrained to a port name.'
+    - "int f(long port) { return port > 65536L ? -1 : 0; }"
+    - "int f(long port) { return port > 0x10000 ? -1 : 0; }"
+    - "int f(long port) { return port > 1 << 16 ? -1 : 0; }"
+    - "int f(long port) { return port <= 65536 ? 0 : -1; }"

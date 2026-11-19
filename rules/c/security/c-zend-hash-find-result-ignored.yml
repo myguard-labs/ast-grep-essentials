@@ -28,7 +28,7 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/252.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
+  known_false_positives: 'result ignored but out-pointer then tested before deref (''zend_hash_index_find(...); if (!brake) { return; } v = *brake;'', brake initialised NULL) is still reported'
   todo_cases:
-    - 'FP: result ignored but out-pointer then tested before deref (`zend_hash_index_find(...); if (!brake) { return; } v = *brake;`, brake initialised NULL) is still reported'
-    - 'FN: dereference as a declaration initialiser (`zend_hash_index_find(...); int x = *brake;`) is not matched, only `v = *p;` assignment statements'
-    - 'FN: explicit `(void) zend_hash_index_find(...);` discard is not matched'
+    - "void f(void) { zend_hash_index_find(ht, idx, (void **) &brake); int x = *brake; }"
+    - "void f(void) { (void) zend_hash_index_find(ht, idx, (void **) &brake); x = *brake; }"

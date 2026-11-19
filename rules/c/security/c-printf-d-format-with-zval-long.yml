@@ -32,6 +32,8 @@ metadata:
   cwe: 'CWE-197'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/197.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'an escaped ''"%%d"'' literal with a Z_LVAL argument is reported although ''%%d'' is not a conversion'
   todo_cases:
-    - 'FP: an escaped `"%%d"` literal with a Z_LVAL argument is reported although `%%d` is not a conversion.'
-    - 'FN: `Z_LVAL_P(v) + 1` as the argument, a `%u` conversion, and a Z_LVAL value hidden behind a local variable are not matched.'
+    - "void f(zval *v) { printf(\"n=%d\", Z_LVAL_P(v) + 1); }"
+    - "void f(zval *v) { printf(\"n=%u\", Z_LVAL_P(v)); }"
+    - "void f(zval *v) { long n = Z_LVAL_P(v); printf(\"n=%d\", n); }"

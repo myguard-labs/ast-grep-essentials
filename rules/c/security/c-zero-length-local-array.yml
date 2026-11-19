@@ -28,6 +28,7 @@ metadata:
   cwe: 'CWE-131'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/131.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_negatives: 'a zero-length struct member ''struct s { int n; char data[0]; };'' outside a function body is not matched; the rule scope is local arrays'
   todo_cases:
-    - 'FN: octal/hex spellings of zero (`char buf[00];`, `char buf[0x0];`) are not matched, only the literal `0`'
-    - 'FN: zero-length struct member `char data[0];` outside a function body is not matched (rule scope is local arrays)'
+    - "void g(void) { char buf[00]; (void)buf; }"
+    - "void g(void) { char buf[0x0]; (void)buf; }"

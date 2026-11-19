@@ -35,5 +35,5 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   known_false_positives: 'return (unsigned int)a > (unsigned int)b; has no sum but is reported; any > with two unsigned int casts under a return matches'
   todo_cases:
-    - "FN: the same sum in an if condition instead of a return is not matched; the rule requires an enclosing return statement."
-    - "FN: (unsigned int)a + (unsigned int)b >= n is not matched; the pattern only has >."
+    - "int f(unsigned int a, unsigned int b, unsigned int lim) { if ((unsigned int)a + (unsigned int)b > lim) { return 0; } return 1; }"
+    - "int f(unsigned int a, unsigned int b, unsigned int lim) { return (unsigned int)a + (unsigned int)b >= lim; }"
