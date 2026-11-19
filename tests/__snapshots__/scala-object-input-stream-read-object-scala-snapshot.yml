@@ -256,6 +256,64 @@ snapshots:
       style: secondary
       start: 135
       end: 204
+  "object A {\n  def bad(in1: java.io.InputStream, in2: java.io.InputStream, j: Json) = {\n    val o = new ObjectInputStream(in1)\n    locally {\n      val o = j.reader()\n      locally {\n        val o = new ObjectInputStream(in2)\n        o.readObject()\n      }\n    }\n  }\n}\n":
+    labels:
+    - source: o.readObject()
+      style: primary
+      start: 231
+      end: 245
+    - source: readObject
+      style: secondary
+      start: 233
+      end: 243
+    - source: o
+      style: secondary
+      start: 231
+      end: 232
+    - source: o.readObject
+      style: secondary
+      start: 231
+      end: 243
+    - source: o
+      style: secondary
+      start: 192
+      end: 193
+    - source: ObjectInputStream
+      style: secondary
+      start: 200
+      end: 217
+    - source: new ObjectInputStream(in2)
+      style: secondary
+      start: 196
+      end: 222
+    - source: val o = new ObjectInputStream(in2)
+      style: secondary
+      start: 188
+      end: 222
+    - source: readObject
+      style: secondary
+      start: 233
+      end: 243
+    - source: o
+      style: secondary
+      start: 231
+      end: 232
+    - source: o.readObject
+      style: secondary
+      start: 231
+      end: 243
+    - source: o.readObject()
+      style: secondary
+      start: 231
+      end: 245
+    - source: |-
+        {
+                val o = new ObjectInputStream(in2)
+                o.readObject()
+              }
+      style: secondary
+      start: 178
+      end: 253
   "object A {\n  def bad(in: java.io.InputStream) =\n    Using(/* untrusted stream */ new ObjectInputStream(in)) { o => o.readObject() }\n}\n":
     labels:
     - source: o.readObject()
@@ -1084,52 +1142,6 @@ snapshots:
       style: secondary
       start: 57
       end: 180
-  "object A {\n  def bad(in: java.io.InputStream, j: Json) = {\n    val s = new ObjectInputStream(in)\n    {\n      val t = j.reader()\n      t.close()\n    }\n    s.readObject()\n  }\n}\n":
-    labels:
-    - source: s.readObject()
-      style: primary
-      start: 154
-      end: 168
-    - source: readObject
-      style: secondary
-      start: 156
-      end: 166
-    - source: s
-      style: secondary
-      start: 154
-      end: 155
-    - source: s.readObject
-      style: secondary
-      start: 154
-      end: 166
-    - source: s
-      style: secondary
-      start: 67
-      end: 68
-    - source: ObjectInputStream
-      style: secondary
-      start: 75
-      end: 92
-    - source: new ObjectInputStream(in)
-      style: secondary
-      start: 71
-      end: 96
-    - source: val s = new ObjectInputStream(in)
-      style: secondary
-      start: 63
-      end: 96
-    - source: |-
-        {
-            val s = new ObjectInputStream(in)
-            {
-              val t = j.reader()
-              t.close()
-            }
-            s.readObject()
-          }
-      style: secondary
-      start: 57
-      end: 172
   "object A {\n  def bad(in: java.io.InputStream, o2: Json) =\n    Using(new ObjectInputStream(in)) { o => { val other = o2.reader(); o.readObject() } }\n}\n":
     labels:
     - source: o.readObject()

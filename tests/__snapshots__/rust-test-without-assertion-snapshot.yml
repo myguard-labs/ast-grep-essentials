@@ -23,6 +23,23 @@ snapshots:
       style: secondary
       start: 34
       end: 48
+  "fn parse(s: &str) -> Result<i32, String> {\n    s.parse::<i32>().map_err(|e| e.to_string())\n}\n\n#[test]\nfn checks_only_inside_async_block() -> Result<(), String> {\n    let _ = async {\n        parse(\"1\")?;\n        Ok::<(), String>(())\n    };\n    Ok(())\n}":
+    labels:
+    - source: |-
+        fn checks_only_inside_async_block() -> Result<(), String> {
+            let _ = async {
+                parse("1")?;
+                Ok::<(), String>(())
+            };
+            Ok(())
+        }
+      style: primary
+      start: 102
+      end: 251
+    - source: "#[test]"
+      style: secondary
+      start: 94
+      end: 101
   "fn parse(s: &str) -> Result<i32, String> {\n    s.parse::<i32>().map_err(|e| e.to_string())\n}\n\n#[test]\nfn checks_only_inside_closure() -> Result<(), String> {\n    let _ = (|| -> Result<(), String> {\n        parse(\"1\")?;\n        Ok(())\n    })();\n    Ok(())\n}":
     labels:
     - source: |-
@@ -36,6 +53,24 @@ snapshots:
       style: primary
       start: 102
       end: 256
+    - source: "#[test]"
+      style: secondary
+      start: 94
+      end: 101
+  "fn parse(s: &str) -> Result<i32, String> {\n    s.parse::<i32>().map_err(|e| e.to_string())\n}\n\n#[test]\nfn checks_only_inside_nested_fn() -> Result<(), String> {\n    fn helper() -> Result<(), String> {\n        parse(\"1\")?;\n        Ok(())\n    }\n    let _ = helper();\n    Ok(())\n}":
+    labels:
+    - source: |-
+        fn checks_only_inside_nested_fn() -> Result<(), String> {
+            fn helper() -> Result<(), String> {
+                parse("1")?;
+                Ok(())
+            }
+            let _ = helper();
+            Ok(())
+        }
+      style: primary
+      start: 102
+      end: 276
     - source: "#[test]"
       style: secondary
       start: 94

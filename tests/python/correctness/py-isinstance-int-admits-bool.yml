@@ -63,6 +63,22 @@ valid:
               raise TypeError(m)
           return m
       return inner
+- |
+  if flag:
+      raise TypeError(n)
+  elif not isinstance(n, int):
+      log(n)
+- |
+  if (lambda: not isinstance(n, int))():
+      raise TypeError(n)
+- |
+  if not isinstance(n, int) or type(n) is bool:
+      raise TypeError(n)
+- |
+  def check(n):
+      kind = type(n)
+      if not isinstance(n, int):
+          raise TypeError(n)
 invalid:
 - |
   if not isinstance(n, int):
@@ -95,3 +111,8 @@ invalid:
 - |
   if not isinstance(record.get("count"), int):
       raise ValueError(record)
+- |
+  if isinstance(n, bool):
+      log(n)
+  elif not isinstance(n, int):
+      raise TypeError(n)

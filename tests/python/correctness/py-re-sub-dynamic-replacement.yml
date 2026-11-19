@@ -23,6 +23,12 @@ valid:
     def render(pattern, word):
         value = "owned-run"
         return re.sub(pattern, value, word)
+  - |-
+    import re
+
+    def render(pattern, word):
+        value = "owned-run"
+        assert re.sub(pattern, value, word)
 invalid:
   - |-
     import re
@@ -117,3 +123,21 @@ invalid:
 
     def render(text, diagram):
         return re.sub(r'<!--\s*marker\s*-->', diagram, text)
+  - |-
+    import re
+
+    def render(pattern, words):
+        value = "owned-run"
+        return {re.sub(pattern, value, w) for w in words}
+  - |-
+    import re
+
+    def render(pattern, words):
+        value = "owned-run"
+        return {w: re.sub(pattern, value, w) for w in words}
+  - |-
+    import re
+
+    def render(pattern, words):
+        value = "owned-run"
+        return (re.sub(pattern, value, w) for w in words)

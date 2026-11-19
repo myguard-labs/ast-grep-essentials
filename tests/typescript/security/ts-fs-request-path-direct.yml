@@ -20,6 +20,28 @@ valid:
     res.sendFile(req.params.name, { "root": "/srv/pub" })
   - |
     res.sendFile(req.params.name, { root })
+  - |
+    function h(req: Request, res: Response): void {
+      const p = path.normalize(req.query.file);
+      fs.readFile(req.query.file, cb);
+    }
+  - |
+    const h = (req, res) => {
+      const p = path.normalize(req.query.file);
+      fs.readFile(req.query.file, cb);
+    }
+  - |
+    const h = function (req, res) {
+      const p = path.normalize(req.query.file);
+      fs.readFile(req.query.file, cb);
+    }
+  - |
+    class C {
+      h(req, res) {
+        const p = path.normalize(req.query.file);
+        fs.readFile(req.query.file, cb);
+      }
+    }
 invalid:
   - |
     fs.readFile(req.query.file, cb)
