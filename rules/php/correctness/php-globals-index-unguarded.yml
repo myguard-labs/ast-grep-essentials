@@ -81,7 +81,6 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  known_false_positives: 'a guard that is not the direct left operand of && (if ( $a && array_key_exists( ''x'', $GLOBALS ) && $GLOBALS[''x''] ) { }) or a namespace-qualified \array_key_exists is not recognised; a guarded read wrapped in a comparison or negation (array_key_exists( ''x'', $GLOBALS ) && $GLOBALS[''x''] === 1, or && !$GLOBALS[''x'']) is still reported; a nested read (empty( $GLOBALS[''x''][''y''] ) or $GLOBALS[''x''][''y''] ?? 0) is reported once; guards cover only the outer subscript'
+  known_false_positives: 'a guard that is not the left && operand (if ( $a && array_key_exists( ''x'', $GLOBALS ) && $GLOBALS[''x''] ) { }) or \array_key_exists is not recognised; a guarded read in a comparison or negation (array_key_exists( ''x'', $GLOBALS ) && $GLOBALS[''x''] === 1, or && !$GLOBALS[''x'']) is still reported; a nested read (empty( $GLOBALS[''x''][''y''] ) or $GLOBALS[''x''][''y''] ?? 0) is reported once; guards cover only the outer subscript; array_key_exists( "x", $GLOBALS ) && $GLOBALS[''x''] (key quoted differently) is reported'
   todo_cases:
-    - "Observed miss: if ( isset( $GLOBALS['x'] ) || $GLOBALS['y'] ) { } is not reported although the right operand is unguarded."
-    - "Known limitation: the guard key must match textually, so array_key_exists( \"x\", $GLOBALS ) && $GLOBALS['x'] (different quoting of the same key) is still reported."
+    - "<?php if ( isset( $GLOBALS['x'] ) || $GLOBALS['y'] ) { }"

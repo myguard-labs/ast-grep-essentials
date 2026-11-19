@@ -28,5 +28,5 @@ metadata:
   license: MyGuard Internal Use License 1.0
   known_false_positives: 'a ternary guard ($a = function_exists( "ini_get_all" ) ? ini_get_all() : array();) is reported; an early-return guard (if ( ! function_exists( "ini_get_all" ) ) { return array(); } return ini_get_all();) is reported'
   todo_cases:
-    - 'False negative: any enclosing if suppresses the report, so if ( $debug ) { $a = ini_get_all(); } is not matched although it has no function_exists guard.'
-    - 'A leading-backslash call ($a = \ini_get_all();) is not matched.'
+    - "<?php if ( $debug ) { $a = ini_get_all(); }"
+    - "<?php $a = \\ini_get_all();"
