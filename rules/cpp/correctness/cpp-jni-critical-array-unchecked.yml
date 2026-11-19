@@ -13,8 +13,11 @@ note: >-
   Flags a declaration or assignment of the call result to a variable that is
   later dereferenced, indexed or passed to a call other than Release*, when no
   later sibling statement tests the variable in an if condition or a ternary.
-  A use that precedes the test in the same block is not distinguished, and the
-  C form (*env)->GetPrimitiveArrayCritical is not covered.
+  An operand inside a subscript, pointer or field expression is a use, not a
+  test; any other mention, including a call argument such as if (process(p)),
+  counts as a test. Only a bare argument counts as a call use, so a cast or
+  offset argument such as memcpy(buf, (char *)p, n) is not reported. The C
+  form (*env)->GetPrimitiveArrayCritical is not covered.
 rule:
   all:
     - any:
@@ -98,7 +101,8 @@ rule:
                               - kind: field_expression
 metadata:
   cwe: 'CWE-476'
-  known_false_positives: 'A NULL test expressed only through a loop condition, an assert or a logical && operand is not recognised and the use is reported; a null check that follows the first use in the same block is accepted'
+  known_false_positives: 'A NULL test expressed only through a loop condition, an assert or a logical && operand is not recognised and the use is reported'
+  known_false_negatives: 'A use that precedes the NULL test in the same block, a later if condition that only passes the pointer to a call, and a cast or offset call argument are not reported'
   rule_modified_at: '2026-11-19'
   ast_grep_tested_version: 0.51.3
   validated_at: '2026-11-19'
