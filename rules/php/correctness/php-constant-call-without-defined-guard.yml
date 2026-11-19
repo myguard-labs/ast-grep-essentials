@@ -23,10 +23,9 @@ rule:
         pattern: 'defined($NAME)'
         stopBy: end
 metadata:
+  known_false_positives: 'if ( defined( $name ) && constant( $name ) === ''x'' ) {}: a guarded comparison on the constant is reported; if ( defined( $name ) ) { echo constant( $name ); }: a guard in the if condition with the call in the body is reported'
   todo_cases:
-    - 'FP: `if ( defined( $name ) && constant( $name ) === ''x'' ) {}` (guarded, comparison on the constant) is reported'
-    - 'FP: `if ( defined( $name ) ) { echo constant( $name ); }` (guard in the if condition, call in the body) is reported'
-    - 'FN: `$v = constant( $name );` outside any if statement is not reported'
+    - "<?php $v = constant( $name );"
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

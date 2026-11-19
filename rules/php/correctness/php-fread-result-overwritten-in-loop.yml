@@ -29,7 +29,7 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: 'while (!feof($fp)) { $parts[] = fread($fp, 8192); } is reported although the array append accumulates the chunks'
   todo_cases:
-    - "FP: `while (!feof($fp)) { $parts[] = fread($fp, 8192); }` is reported although array append accumulates the chunks"
-    - "FN: `while (!feof($fp)) { $c = \\fread($fp, 10); }` (leading backslash) is not reported"
-    - "FN: same overwrite inside `for ($i = 0; $i < 3; $i++) { $c = fread($fp, 10); }` is not reported"
+    - "<?php while (!feof($fp)) { $c = \\fread($fp, 10); }"
+    - "<?php for ($i = 0; $i < 3; $i++) { $c = fread($fp, 10); }"
