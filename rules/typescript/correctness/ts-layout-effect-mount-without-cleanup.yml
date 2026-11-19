@@ -21,10 +21,10 @@ rule:
     }, $$$DEPS)
 metadata:
   todo_cases:
-    - "useLayoutEffect(() => {...}) without a dependency array is not reported"
-    - "useLayoutEffect(function () {...}, deps) with a function expression callback is not reported"
-    - "React.useLayoutEffect(...) member call is not reported"
-    - "braceless `if (x) logic.mount()` is not reported"
+    - 'useLayoutEffect(() => { if (x) { logic.mount(); } }); // no dependency array'
+    - 'useLayoutEffect(function () { if (x) { logic.mount(); } }, deps); // function expression callback'
+    - 'React.useLayoutEffect(() => { if (x) { logic.mount(); } }, deps); // member call'
+    - 'useLayoutEffect(() => { if (x) logic.mount() }, deps); // braceless if'
   rule_modified_at: '2026-10-17'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-17'

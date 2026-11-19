@@ -35,9 +35,9 @@ rule:
           field: property
           regex: '^handler$'
 metadata:
+  known_false_positives: '{ ...opts, ''interactive'': false } (quoted key) and { interactive, ...opts } (shorthand property) are reported although interactive is set'
   todo_cases:
-    - 'False positives: a quoted key ({ ...opts, ''interactive'': false }) and a shorthand property ({ interactive, ...opts }) are reported although interactive is set.'
-    - 'A spread of a member expression ({ ...opts.inner }) is not matched (only identifier spreads).'
+    - 'app.handler({ ...opts.inner }); // spread of a member expression'
   rule_modified_at: '2026-10-09'
   ast_grep_tested_version: 0.45.3
   validated_at: '2026-10-09'

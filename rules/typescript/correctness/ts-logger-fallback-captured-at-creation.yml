@@ -14,10 +14,11 @@ rule:
   pattern: 'const $T = $LOGGER ?? this.$GLOBAL;'
 metadata:
   todo_cases:
-    - "const t: Logger = logger ?? this.globalLogger; (type annotation) is not reported"
-    - "const t = logger ?? this.globalLogger without a trailing semicolon is not reported"
-    - "let t = ... and `logger || this.globalLogger` forms are not reported"
-    - "this.config.globalLogger (nested member) is not reported"
+    - 'const t: Logger = logger ?? this.globalLogger; // type annotation'
+    - 'const t = logger ?? this.globalLogger // no trailing semicolon'
+    - 'let t = logger ?? this.globalLogger; // let declaration'
+    - 'const u = logger || this.globalLogger; // || operator'
+    - 'const t = logger ?? this.config.globalLogger; // nested member'
   rule_modified_at: '2026-10-17'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-17'
