@@ -4,6 +4,7 @@ valid:
   - 'if (EG(exception)) { saved = EG(exception); EG(exception) = NULL; }'
   - 'if (EG(exception)) { return; }'
   - 'zend_exception_save(); run(); zend_exception_restore();'
+  - 'if (EG(exception)) { log_msg("EG(exception) pending"); return; }'
 invalid:
   - 'if (EG(exception)) { zval_ptr_dtor(&EG(exception)); EG(exception) = NULL; }'
   - |-
