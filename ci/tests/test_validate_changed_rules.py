@@ -414,6 +414,22 @@ class ValidateChangedRulesTests(unittest.TestCase):
         self.assertEqual(self.non_matching(self.BASE, bomb)[0], frozenset())
         self.assertLess(time.monotonic() - started, 5)
 
+    def test_alias_bomb_under_alias_cap_hits_node_budget(self) -> None:
+        import time
+
+        lines = ["a: &a0 [x, x, x, x, x, x, x, x, x, x]"]
+        for i in range(1, 6):
+            refs = ", ".join([f"*a{i - 1}"] * 10)
+            lines.append(f"b{i}: &a{i} [{refs}]")
+        bomb = self.BASE + "metadata:\n" + "".join(f"  {line}\n" for line in lines)
+        # 50 alias events stay under the default MAX_ALIASES, so only the
+        # default MAX_EXPANDED_NODES budget can refuse the 10**6-node expansion.
+        self.assertLessEqual(bomb.count("*a"), gate.MAX_ALIASES)
+        started = time.monotonic()
+        self.assertIsNone(gate._matcher_document(bomb.encode()))
+        self.assertEqual(self.non_matching(self.BASE, bomb)[0], frozenset())
+        self.assertLess(time.monotonic() - started, 5)
+
     def test_deep_recursive_aliases_are_refused(self) -> None:
         for text in (
             self.BASE + "metadata: &m\n  self: *m\n",
