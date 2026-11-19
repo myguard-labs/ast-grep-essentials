@@ -8,7 +8,7 @@ valid:
     fs.readFile(path.join(base, name), cb)
   - |
     function h(req, res) {
-      const p = path.normalize(req.query.file);
+      req.query.file = path.basename(req.query.file);
       fs.readFile(req.query.file, cb);
     }
   - |
@@ -22,18 +22,18 @@ valid:
     res.sendFile(req.params.name, { root })
   - |
     const h = (req, res) => {
-      const p = path.normalize(req.query.file);
+      req.query.file = path.basename(req.query.file);
       fs.readFile(req.query.file, cb);
     }
   - |
     const h = function (req, res) {
-      const p = path.normalize(req.query.file);
+      req.query.file = path.basename(req.query.file);
       fs.readFile(req.query.file, cb);
     }
   - |
     class C {
       h(req, res) {
-        const p = path.normalize(req.query.file);
+        req.query.file = path.basename(req.query.file);
         fs.readFile(req.query.file, cb);
       }
     }

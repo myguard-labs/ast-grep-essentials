@@ -19,16 +19,16 @@ valid:
     Other.read(params[:file])
   - |
     def self.show
-      File.basename(params[:file])
+      params[:file] = File.basename(params[:file])
       File.read(params[:file])
     end
   - |
     items.each do |x|
-      File.basename(x)
+      params[:file] = File.basename(params[:file])
       File.read(params[:file])
     end
   - |
-    items.each { |x| File.basename(x); File.read(params[:file]) }
+    items.each { |x| params[:file] = File.basename(params[:file]); File.read(params[:file]) }
 invalid:
   - |
     File.read(params[:file])
