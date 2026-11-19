@@ -312,3 +312,32 @@ invalid:
         }
       }
     }
+  # A type pattern that names the stream counts as a rebinding, but the
+  # nearer Using source of another name stops the search before it.
+  - |
+    object A {
+      def bad(in: java.io.InputStream, in2: java.io.InputStream, x: Any) = {
+        val o = new ObjectInputStream(in)
+        x match {
+          case _: o.type =>
+            Using(new ObjectInputStream(in2)) { p =>
+              o.readObject()
+              p.readObject()
+            }
+        }
+      }
+    }
+  # The same with a Using source and a nearer val source of another name.
+  - |
+    object A {
+      def bad(in: java.io.InputStream, in2: java.io.InputStream, x: Any) =
+        Using(new ObjectInputStream(in)) { o =>
+          x match {
+            case _: o.type => {
+              val p = new ObjectInputStream(in2)
+              o.readObject()
+              p.readObject()
+            }
+          }
+        }
+    }
