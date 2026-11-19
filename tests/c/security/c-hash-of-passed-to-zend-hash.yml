@@ -18,6 +18,10 @@ valid:
   - 'void f(zval *obj, int enabled) { if (enabled || !HASH_OF(obj)) return; zend_hash_clean(HASH_OF(obj)); }'
   - 'void f(zval *obj, int a, int b) { if (a) { if (b) { if (HASH_OF(obj)) { zend_hash_clean(HASH_OF(obj)); } } } }'
   - 'void f(zval *obj, int a) { if (a) { if (!HASH_OF(obj)) return; zend_hash_clean(HASH_OF(obj)); } }'
+  - 'void f(zval *obj) { for (;;) { if (!HASH_OF(obj)) continue; zend_hash_clean(HASH_OF(obj)); } }'
+  - 'void f(zval *obj) { for (;;) { if (!HASH_OF(obj)) break; zend_hash_clean(HASH_OF(obj)); } }'
+  - 'void f(zval *obj) { for (;;) { if (!HASH_OF(obj)) { log(); continue; } zend_hash_clean(HASH_OF(obj)); } }'
+  - 'void f(zval *obj) { for (;;) { if (!HASH_OF(obj)) { log(); break; } zend_hash_clean(HASH_OF(obj)); } }'
 invalid:
   - 'zend_hash_internal_pointer_reset(HASH_OF(obj));'
   - |-

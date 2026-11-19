@@ -6,6 +6,9 @@ valid:
   - 'char *b = emalloc(n); if (len > max) { efree(b); return -1; } use(b);'
   - 'char *b = emalloc(n); if (len > max) { pefree(b, 0); return -1; } use(b);'
   - 'char *b = emalloc(n); if (len > max) { log(); free(b); return -1; } use(b);'
+  - 'char *b = emalloc(n); if (bad) efree(b); else { efree(b); return -1; } use(b);'
+  - 'char *b = emalloc(n); if (bad) free(b); else { free(b); return -1; } use(b);'
+  - 'char *b = emalloc(n); if (bad) pefree(b, 0); else { pefree(b, 0); return -1; } use(b);'
 invalid:
   - 'char *norm = emalloc(len+1); if (len <= 0) { return 0; } use(norm);'
   - 'char *b = emalloc(n); use(b); if (bad) return -1;'
