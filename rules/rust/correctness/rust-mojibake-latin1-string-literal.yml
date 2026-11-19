@@ -21,6 +21,9 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: 'legitimate text with a diaeresis i, such as the Dutch word naïef in a plain string literal, is reported (the lead character ï is also valid text)'
   todo_cases:
-    - 'FN: a raw string literal (`r"cafÃ© menu"`) is not matched because the rule reads only kind string_literal'
-    - 'FP: legitimate text with a diaeresis i, such as the Dutch word naïef in a plain string literal, is reported (the lead character ï is also valid text)'
+    - |-
+      fn f() {
+          let s = r"cafÃ© menu";
+      }

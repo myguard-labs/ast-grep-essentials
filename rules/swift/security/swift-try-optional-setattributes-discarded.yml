@@ -24,6 +24,8 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/252.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
+  known_false_positives: '`let ok = try? FileManager.default.setAttributes(...); if ok == nil { warn() }` and `if (try? ...) == nil { handle() }` check the result yet are flagged (1 match each)'
   todo_cases:
-    - 'let fm = FileManager.default; try? fm.setAttributes(attrs, ofItemAtPath: p) (aliased receiver) is not flagged (0 matches)'
-    - 'False positive: `let ok = try? FileManager.default.setAttributes(...); if ok == nil { warn() }` and `if (try? ...) == nil { handle() }` check the result yet are flagged (1 match each)'
+    - |-
+      let fm = FileManager.default
+      try? fm.setAttributes(attrs, ofItemAtPath: p)

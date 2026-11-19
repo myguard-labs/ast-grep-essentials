@@ -38,9 +38,17 @@ constraints:
   F:
     regex: '^Print'
 metadata:
+  known_false_positives: '`if err != nil { log.Printf(...); os.Exit(1) }` followed by a return statement is still reported (os.Exit exclusion does not fire, observed on 0.45.2 and 0.51.3)'
   todo_cases:
-    - "FP: `if err != nil { log.Printf(...); os.Exit(1) }` followed by a return statement is still reported (os.Exit exclusion does not fire, observed on 0.45.2 and 0.51.3)"
-    - "FN: renamed error variable (`_, e := g(); if e != nil { log.Print(e) }`) is not reported; the pattern spells err literally"
+    - |-
+      package p
+      func f() {
+      	_, e := g()
+      	if e != nil {
+      		log.Print(e)
+      	}
+      	next()
+      }
   rule_modified_at: '2026-10-10'
   ast_grep_tested_version: 0.45.3
   validated_at: '2026-10-10'

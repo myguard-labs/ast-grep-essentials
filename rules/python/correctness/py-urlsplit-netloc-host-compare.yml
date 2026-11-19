@@ -15,7 +15,11 @@ rule:
   pattern: 'urlsplit($A).netloc == urlsplit($B).netloc'
 metadata:
   todo_cases:
-    - 'FN: urlparse(a).netloc == urlparse(b).netloc and the != operator are not matched'
+    - |-
+      from urllib.parse import urlparse, urlsplit
+
+      same = urlparse(a).netloc == urlparse(b).netloc
+      diff = urlsplit(a).netloc != urlsplit(b).netloc
   rule_modified_at: '2026-10-17'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-17'

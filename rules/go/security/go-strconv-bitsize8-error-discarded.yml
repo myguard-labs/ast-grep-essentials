@@ -15,8 +15,30 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
   todo_cases:
-    - "Single-line func f(s string) byte { b, _ := strconv.ParseUint(s, 8, 8); return byte(b) } is not reported; the pattern is a multi-line function"
-    - "strconv.ParseInt(s, 8, 8) with the error discarded is not reported"
-    - "A method with a receiver, func (d *dec) f(s string) byte, is not reported"
-    - "A trailing line comment after the ParseUint statement stops the match"
-    - "An aliased import calling str.ParseUint(in, 8, 8) with the error discarded is not reported"
+    - |-
+      package p
+      func f(s string) byte { b, _ := strconv.ParseUint(s, 8, 8); return byte(b) }
+    - |-
+      package p
+      func f(s string) byte {
+      	b, _ := strconv.ParseInt(s, 8, 8)
+      	return byte(b)
+      }
+    - |-
+      package p
+      func (d *dec) f(s string) byte {
+      	b, _ := strconv.ParseUint(s, 8, 8)
+      	return byte(b)
+      }
+    - |-
+      package p
+      func f(s string) byte {
+      	b, _ := strconv.ParseUint(s, 8, 8) // lenient
+      	return byte(b)
+      }
+    - |-
+      package p
+      func f(in string) byte {
+      	b, _ := str.ParseUint(in, 8, 8)
+      	return byte(b)
+      }

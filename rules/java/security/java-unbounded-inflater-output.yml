@@ -14,4 +14,17 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/409.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'Not matched: an assignment to an already declared variable (`n = inf.inflate(buf);`) instead of an int declaration, and a three-argument `inf.inflate(buf, 0, buf.length)` call with no output cap.'
+    - |-
+      class A {
+          void f() throws Exception {
+              int n;
+              while (!inf.finished()) {
+                  n = inf.inflate(buf);
+                  out.write(buf, 0, n);
+              }
+              while (!inf.finished()) {
+                  int m = inf.inflate(buf, 0, buf.length);
+                  out.write(buf, 0, m);
+              }
+          }
+      }

@@ -14,6 +14,12 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   known_false_positives: 'func r(h Header) []byte { if h.Size > 4096 { return nil }; return make([]byte, h.Size) } is still reported although an upper bound check precedes the make'
   todo_cases:
-    - "make([]int, h.Size) is not reported; the pattern fixes the element type to byte"
-    - "make([]byte, 0, h.Size) is not reported; the pattern only matches the two-argument length form"
-    - "make([]byte, h.Size()) with a method call as the length is not reported"
+    - |-
+      package p
+      func f(h Header) { _ = make([]int, h.Size) }
+    - |-
+      package p
+      func f(h Header) { _ = make([]byte, 0, h.Size) }
+    - |-
+      package p
+      func f(h Header) { _ = make([]byte, h.Size()) }

@@ -25,4 +25,14 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - "FN: `asyncAfter(deadline: .now() + .seconds(1))`, a renamed expectation (`done.fulfill()`) and a closure with a statement before `expectation.fulfill()` are not reported (observed on 0.51.3 and 0.45.2)."
+    - |-
+      DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+          expectation.fulfill()
+      }
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+          done.fulfill()
+      }
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+          log()
+          expectation.fulfill()
+      }

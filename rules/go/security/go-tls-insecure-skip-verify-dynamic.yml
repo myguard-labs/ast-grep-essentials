@@ -36,6 +36,12 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A07:2025'
   todo_cases:
-    - "InsecureSkipVerify: !strict() with a negated call is not reported"
-    - "InsecureSkipVerify: os.Getenv(\"X\") == \"1\" with a comparison expression is not reported"
-    - "InsecureSkipVerify: skip == true with a comparison expression is not reported"
+    - |-
+      package p
+      var cfg = &tls.Config{InsecureSkipVerify: !strict()}
+    - |-
+      package p
+      var cfg = &tls.Config{InsecureSkipVerify: os.Getenv("X") == "1"}
+    - |-
+      package p
+      var cfg = &tls.Config{InsecureSkipVerify: skip == true}

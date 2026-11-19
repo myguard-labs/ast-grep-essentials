@@ -27,9 +27,34 @@ rule:
         pattern: '$HANDLE.Close()'
 metadata:
   todo_cases:
-    - "FN: the Close() search runs over every enclosing function, method and func literal, so a handle opened in a func literal is silenced when the enclosing function closes a variable with the same name"
-    - "FN: a Close() on the same name in a nested func literal or a different branch counts as closing, with no path analysis"
-    - "Known gap: the `h, err = ns.GetCurrentNS()` assignment form is not matched at all"
+    - |-
+      package p
+      func f(ns NS) {
+      	h, _ := ns.GetCurrentNS()
+      	_ = h
+      	go func() {
+      		h, _ := ns.GetCurrentNS()
+      		_ = h
+      	}()
+      	h.Close()
+      }
+    - |-
+      package p
+      func f(ns NS, ok bool) {
+      	h, err := ns.GetCurrentNS()
+      	_ = err
+      	if ok {
+      		h.Close()
+      	}
+      }
+    - |-
+      package p
+      func f(ns NS) {
+      	var h NS
+      	var err error
+      	h, err = ns.GetCurrentNS()
+      	_, _ = h, err
+      }
   rule_modified_at: '2026-10-09'
   ast_grep_tested_version: 0.45.3
   validated_at: '2026-10-09'

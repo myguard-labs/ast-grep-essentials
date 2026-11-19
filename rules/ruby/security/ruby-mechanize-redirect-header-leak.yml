@@ -33,8 +33,17 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/200.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A01:2025'
+  known_false_positives: 'a non-status include?(3xx) condition (retry_codes.include?(300)) is still matched; a non-redirect status test next to an unrelated 3xx number (if response.status == 200 && attempts < 300) still reports; narrowing the condition regex lost real redirect forms (c94), so the loose match stays'
   todo_cases:
-    - 'A non-status include?(3xx) condition (retry_codes.include?(300)) is still matched.'
-    - 'Unusual spacing inside the status operand (include?(response . code)) is not matched.'
-    - 'Receiver-qualified recursion (self.follow_redirect(uri, headers)) is not matched.'
-    - 'FP: a non-redirect status test next to an unrelated 3xx number (if response.status == 200 && attempts < 300) still reports; narrowing the condition regex lost real redirect forms (c94), so the loose match stays'
+    - |-
+      def follow_redirect(uri, headers)
+        if response . code . start_with?('3')
+          follow_redirect(uri, headers)
+        end
+      end
+    - |-
+      def follow_redirect(uri, headers)
+        if response.code.start_with?('3')
+          self.follow_redirect(uri, headers)
+        end
+      end

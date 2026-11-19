@@ -23,4 +23,9 @@ metadata:
   license: MyGuard Internal Use License 1.0
   known_false_positives: 'a `self.append_within_capacity(..)` call outside any `write_str` body (a `try_push` helper returning `.is_ok()`) is reported although the message is about fmt::Write::write_str'
   todo_cases:
-    - 'FN: a delegation through another receiver (`self.w.append_within_capacity(s.as_bytes())` inside write_str) is not matched, the pattern needs the literal receiver `self`'
+    - |-
+      impl fmt::Write for W {
+          fn write_str(&mut self, s: &str) -> fmt::Result {
+              self.w.append_within_capacity(s.as_bytes())
+          }
+      }

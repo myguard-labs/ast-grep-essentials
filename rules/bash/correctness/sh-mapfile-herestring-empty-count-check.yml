@@ -26,6 +26,13 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'readarray -t FILES <<<"$FILES_LIST" then [ "${#FILES[@]}" -gt 0 ]: readarray alias is not flagged'
-    - 'mapfile -t FILES <<<"$FILES_LIST" then (( ${#FILES[@]} > 0 )) || exit 0: arithmetic-command count check is not flagged (test_command only)'
-    - 'mapfile -t FILES <<<"$FILES_LIST", an echo, then the count test: an intervening statement hides the check (follows is immediate sibling)'
+    - |-
+      readarray -t FILES <<<"$FILES_LIST"
+      [ "${#FILES[@]}" -gt 0 ]
+    - |-
+      mapfile -t FILES <<<"$FILES_LIST"
+      (( ${#FILES[@]} > 0 )) || exit 0
+    - |-
+      mapfile -t FILES <<<"$FILES_LIST"
+      echo "read"
+      [ "${#FILES[@]}" -gt 0 ]

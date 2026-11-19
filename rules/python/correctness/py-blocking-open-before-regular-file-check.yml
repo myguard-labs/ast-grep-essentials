@@ -14,7 +14,11 @@ rule:
   pattern: 'os.open($PATH, os.O_RDONLY)'
 metadata:
   todo_cases:
-    - 'os.open with a mode third argument or keyword arguments (flags=os.O_RDONLY) is not flagged.'
+    - |-
+      import os
+
+      fd = os.open(path, os.O_RDONLY, 0o644)
+      fd2 = os.open(path, flags=os.O_RDONLY)
   rule_modified_at: '2026-09-22'
   ast_grep_tested_version: 0.45.3
   validated_at: '2026-09-22'

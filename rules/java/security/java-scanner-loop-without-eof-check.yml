@@ -36,5 +36,30 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/835.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'Not matched: a condition that combines the comparison with another test (`c != x && ...`), including an index bound, and a char read through a call or field (`s.charAt(i) != x`), a doubly parenthesised condition `((c != x))`; only a plain identifier compared with a character literal is reported. A loop mentioning DONE anywhere (also in the body) is skipped.'
-    - 'Not matched: the read-in-condition idiom `while ((c = in.read()) != ''\n'')` (left operand is a parenthesised assignment) and `do { ... } while (c != x);`; only a `while_statement` with a plain identifier operand is reported.'
+    - |-
+      class A {
+          void f() throws Exception {
+              char c = (char) in.read();
+              while (c != 'x' && i < n) {
+                  c = (char) in.read();
+              }
+              while (s.charAt(i) != 'x') {
+                  i++;
+              }
+              while (((c != 'x'))) {
+                  c = (char) in.read();
+              }
+          }
+      }
+    - |-
+      class A {
+          void f() throws Exception {
+              int c;
+              while ((c = in.read()) != '\n') {
+                  sb.append((char) c);
+              }
+              do {
+                  c = in.read();
+              } while (c != 'x');
+          }
+      }

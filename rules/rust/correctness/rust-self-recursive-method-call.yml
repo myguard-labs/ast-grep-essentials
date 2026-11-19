@@ -31,8 +31,16 @@ rule:
             regex: '\S'
 metadata:
   todo_cases:
-    - 'fn size(&self) -> usize { return self.size(); } (explicit return) is not flagged because the body regex allows only self.name() with optional .into() (0 matches)'
-    - 'fn size(&self) -> usize { Self::size(self) } (path-call spelling of the same recursion) is not flagged (0 matches)'
+    - |-
+      struct S;
+      impl S {
+          fn size(&self) -> usize { return self.size(); }
+      }
+    - |-
+      struct S;
+      impl S {
+          fn size(&self) -> usize { Self::size(self) }
+      }
   rule_modified_at: '2026-10-09'
   ast_grep_tested_version: 0.45.3
   validated_at: '2026-10-09'

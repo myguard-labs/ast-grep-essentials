@@ -26,9 +26,25 @@ rule:
           stopBy: end
 metadata:
   todo_cases:
-    - "FN: a struct whose colliding field is not the first field (`ID int; Capture bool` with `func (t *Tx) Capture()`) is not reported (observed)"
-    - "FN: value receiver `func (t Tx) Capture()` with a field Capture is a compile error but is not reported (pattern needs a pointer receiver)"
-    - "FN: grouped field names (`A, Capture bool`) with a colliding method are not reported"
+    - |-
+      package p
+      type Tx struct {
+      	ID int
+      	Capture bool
+      }
+      func (t *Tx) Capture() {}
+    - |-
+      package p
+      type Tx struct {
+      	Capture bool
+      }
+      func (t Tx) Capture() {}
+    - |-
+      package p
+      type Tx struct {
+      	A, Capture bool
+      }
+      func (t *Tx) Capture() {}
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-16'

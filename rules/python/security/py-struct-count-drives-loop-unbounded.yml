@@ -37,6 +37,13 @@ metadata:
   cwe: 'CWE-1284'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/1284.html'
   taxonomy_cited_keys: 'cwe'
+  known_false_positives: 'range(min(n, 100)) clamps the count but is flagged because no comparison operator is present'
   todo_cases:
-    - 'FN: from struct import unpack (aliased/bare unpack) is not flagged'
-    - 'FP: range(min(n, 100)) clamps the count but is flagged because no comparison operator is present'
+    - |-
+      from struct import unpack
+
+
+      def parse(buf):
+          (n,) = unpack('<I', buf)
+          for i in range(n):
+              read(i)
