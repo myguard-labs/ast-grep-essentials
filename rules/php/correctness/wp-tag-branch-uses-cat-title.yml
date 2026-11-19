@@ -15,9 +15,10 @@ rule:
     if (is_tag()) { single_cat_title(); }
 metadata:
   todo_cases:
-    - "Observed miss: the braceless form if (is_tag()) single_cat_title(); is not reported (0 matches on both CLIs)."
-    - "Observed miss: single_cat_title( '', false ) with arguments, and echo single_cat_title(); inside an is_tag() branch, are not reported (0 matches)."
-    - "Observed miss: a branch that has another statement before the call, if (is_tag()) { prep(); single_cat_title(); }, is not reported (0 matches)."
+    - "<?php if ( is_tag() ) single_cat_title();"
+    - "<?php if ( is_tag() ) { single_cat_title( '', false ); }"
+    - "<?php if ( is_tag() ) { echo single_cat_title(); }"
+    - "<?php if ( is_tag() ) { prep(); single_cat_title(); }"
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'
