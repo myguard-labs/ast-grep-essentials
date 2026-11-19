@@ -24,6 +24,10 @@ valid:
     <?php $db->insert('t', ['a' => 1]); $db->insertIgnore = false;
   - |
     <?php $db->query(Mode::INSERT); $db->query(Mode::IGNORE);
+  - |
+    <?php error_log("INSERT IGNORE skipped 3 duplicate rows");
+  - |
+    <?php $log->warning('INSERT IGNORE offset mismatch');
 invalid:
   - |
     <?php $db->query("INSERT IGNORE INTO t (a) VALUES (1)");
@@ -45,3 +49,9 @@ invalid:
     <?php run_sql("INSERT IGNORE INTO t (a) VALUES (1)");
   - |
     <?php $db?->query("INSERT IGNORE INTO t (a) VALUES (1)");
+  - |
+    <?php $db->query("INSERT IGNORE t (a) VALUES (1)");
+  - |
+    <?php $db->exec('INSERT IGNORE `t` SET a = 1');
+  - |
+    <?php $db->query(b"INSERT IGNORE INTO t (a) VALUES (1)");

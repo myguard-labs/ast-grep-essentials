@@ -11,8 +11,8 @@ message: >-
 note: >-
   Fires on a single-quoted, double-quoted, heredoc or nowdoc string that is
   passed directly as a call argument (query, exec, prepare and similar) and
-  whose SQL starts with INSERT [LOW_PRIORITY|HIGH_PRIORITY|DELAYED] IGNORE INTO,
-  in any letter case and with any whitespace. A statement held in a variable
+  whose SQL starts with INSERT [LOW_PRIORITY|HIGH_PRIORITY|DELAYED] IGNORE [INTO] <table>,
+  including a b-prefixed binary literal, in any letter case and with any whitespace. A statement held in a variable
   first and passed later, a concatenated statement, and a string that does not
   start with the statement (a log message, a comment) are not matched. A
   deliberate idempotent insert into a table with no other constraint that can
@@ -30,7 +30,7 @@ rule:
     - kind: encapsed_string
     - kind: heredoc
     - kind: nowdoc
-  regex: '(?is)\A(?:["'']|<<<[ \t]*["'']?\w+["'']?\r?\n)\s*INSERT\s+(?:(?:LOW_PRIORITY|HIGH_PRIORITY|DELAYED)\s+)?IGNORE\s+INTO\b'
+  regex: '(?is)\A[bB]?(?:["'']|<<<[ \t]*["'']?\w+["'']?\r?\n)\s*INSERT\s+(?:(?:LOW_PRIORITY|HIGH_PRIORITY|DELAYED)\s+)?IGNORE\s+(?:INTO\b|[`\w.]+(?:\s*\(|\s+(?:VALUES?|SET|SELECT|PARTITION)\b))'
   inside:
     kind: argument
     inside:
