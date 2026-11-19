@@ -94,10 +94,8 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/20.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A05:2025'
+  known_false_positives: 'in an && chain of four or more terms a same-key isset() more than two operands before the read (isset($_GET["s"]) && $a && $b && $_GET["s"]) is not found; an isset guard in another case (ISSET(...)) or with the superglobal after the first argument (isset($x, $_GET["a"]) && $_GET["a"]) is not recognised; a braceless if (isset($_GET["a"])) echo $_GET["a"]; or a compound condition (isset(a) || $x, isset(a) && isset(b)) still reports; only a braced single same-key isset is recognised'
   todo_cases:
     - "A spaced subscript ($_GET [ \"a\" ]) is not matched."
     - "FN: a read evaluated before a same-key isset in the same && chain ($_GET[\"s\"] && isset($_GET[\"s\"]) && $x) is treated as guarded."
-    - "FP: in an && chain of four or more terms, a same-key isset() more than two operands before the read (isset($_GET[\"s\"]) && $a && $b && $_GET[\"s\"]) is not found, so the read is still reported."
-    - "FP: an isset guard written in another case (ISSET(...)) or with the superglobal after the first argument (isset($x, $_GET[\"a\"]) && $_GET[\"a\"]) is not recognised, so the read is still reported."
-    - "FP: a read in a braceless if (isset($_GET[\"a\"])) echo $_GET[\"a\"]; body, or under a compound condition (isset(a) || $x, isset(a) && isset(b)), still reports; only a braced if whose condition is a single isset of the same key is recognised."
-    - "false negative: a read used only to compute the isset key (if (isset($_GET[$_GET[\"key\"]])) { echo $_GET[\"key\"]; }) is treated as guarded."
+    - '<?php if (isset($_GET[$_GET["key"]])) { echo $_GET["key"]; }'

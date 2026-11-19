@@ -21,9 +21,9 @@ rule:
         pattern: 'preg_match($$$X)'
         stopBy: end
 metadata:
+  known_false_positives: 'if ( preg_match( ''/a/'', $s ) | $flags ) { } is reported although only one operand is a preg_match call'
   todo_cases:
     - "if ( ( preg_match( '/a/', $s ) ) | ( preg_match( '/b/', $s ) ) ) { } with parenthesised operands is not reported"
-    - "false positive: if ( preg_match( '/a/', $s ) | $flags ) { } is reported although only one operand is a preg_match call"
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

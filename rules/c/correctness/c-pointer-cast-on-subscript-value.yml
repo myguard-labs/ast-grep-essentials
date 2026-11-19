@@ -45,7 +45,7 @@ metadata:
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
+  known_false_positives: 'a pointer-element base declared outside the function or through a typedef is still reported: static char **g_argv; static void f(void) { char *p = (char *)g_argv[0]; g(p); } and typedef char *str; static void f(str *x) { char *p = (char *)x[0]; g(p); }'
   todo_cases:
-    - 'FN: the exclusion ignores scope within the function: static void f(char **argv) { char *argv2; { char *argv; argv2 = (char *)argv[0]; } } is not reported when a same-named pointer-to-pointer is declared elsewhere in the function.'
+    - 'static void f(char **argv) { char *argv2; { char *argv; argv2 = (char *)argv[0]; } }'
     - 'FN: static void f(const char *s) { const char *p; p = (const char *)s[0]; } is not reported (const-qualified pointer type in the cast).'
-    - 'FP: a pointer-element base declared outside the function or through a typedef is still reported: static char **g_argv; static void f(void) { char *p = (char *)g_argv[0]; g(p); } and typedef char *str; static void f(str *x) { char *p = (char *)x[0]; g(p); }.'

@@ -16,10 +16,10 @@ rule:
   kind: string_literal
   regex: '^"HTTP [0-9]([^0-9]|$)'
 metadata:
+  known_false_positives: '`const char *s = "HTTP 4xx error";` is reported although it names a status class, not a version'
   todo_cases:
     - '`const char *s = "protocol HTTP 1.1";` is not reported (false negative: the regex is anchored at the start of the literal).'
     - '`const char *s = L"HTTP 1.1";` and `u8"HTTP 1.1"` are not reported (false negative: the string_literal node text starts with the L or u8 prefix, so the regex anchored on `^"` does not match it).'
-    - '`const char *s = "HTTP 4xx error";` is reported although it names a status class, not a version (false positive: only a second digit after the first is excluded, so `HTTP 1.x` stays reported).'
   rule_modified_at: '2026-10-16'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-16'
