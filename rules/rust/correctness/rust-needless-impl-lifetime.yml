@@ -16,8 +16,11 @@ rule:
 metadata:
   known_false_positives: 'impl<T> Marker for Pair<T> {} (a type parameter, no lifetime) is flagged because $LT binds any single generic parameter; impl<''a> Link<''a> for Holder<''a> {} (the lifetime also ties the trait argument to the self type, so ''_ would change meaning) is flagged'
   todo_cases:
-    - 'impl<''a> Marker for Holder<''a> { const X: u8 = 0; } (needless lifetime, non-empty body) is not flagged because the pattern needs an empty {} body (0 matches)'
-    - 'impl<''a, T> Marker for (Holder<''a>, T) {} (needless lifetime next to a second generic parameter) is not flagged (0 matches)'
+    - |-
+      struct Holder<'a>(&'a u8);
+      trait Marker { const X: u8; }
+      impl<'a> Marker for Holder<'a> { const X: u8 = 0; }
+    - 'impl<''a, T> Marker for (Holder<''a>, T) {}'
   rule_modified_at: '2026-10-15'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-15'

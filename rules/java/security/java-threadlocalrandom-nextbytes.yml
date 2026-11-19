@@ -16,4 +16,11 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A04:2025'
   todo_cases:
-    - 'Not matched: a parenthesised receiver `(ThreadLocalRandom.current()).nextBytes(b)` or a generator held in a local variable first (`Random r = ThreadLocalRandom.current(); r.nextBytes(b)`); the pattern needs the literal call chain.'
+    - |-
+      class A {
+          void f() throws Exception {
+              (ThreadLocalRandom.current()).nextBytes(b);
+              Random r = ThreadLocalRandom.current();
+              r.nextBytes(b);
+          }
+      }

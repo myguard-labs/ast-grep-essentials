@@ -32,5 +32,15 @@ metadata:
   subcategory: 'cryptography'
   references: 'https://capec.mitre.org/data/definitions/463.html'
   todo_cases:
-    - "Cipher.getInstance(\"AES/CBC/PKCS5Padding\", \"BC\") with a provider argument is not reported (pattern takes one argument)"
-    - "javax.crypto.Cipher.getInstance(\"AES/CBC/PKCS5Padding\") with a qualified receiver is not reported"
+    - |-
+      class A {
+          void f() throws Exception {
+              Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
+          }
+      }
+    - |-
+      class A {
+          void f() throws Exception {
+              Cipher c = javax.crypto.Cipher.getInstance("AES/CBC/PKCS5Padding");
+          }
+      }

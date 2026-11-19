@@ -22,5 +22,15 @@ metadata:
   license: MyGuard Internal Use License 1.0
   todo_cases:
     - 'fn f(root: &Path) { let p = std::fs::canonicalize(root); }'
-    - 'FN: the method form `p.canonicalize()` (Path::canonicalize, same verbatim-path behaviour on Windows) is not matched'
-    - 'FN: an imported bare call `use std::fs::canonicalize; canonicalize(p)` and an aliased module (`use std::fs as filesystem; filesystem::canonicalize(p)`) are not matched'
+    - |-
+      fn f(p: &Path) {
+          let c = p.canonicalize();
+      }
+    - |-
+      use std::fs as filesystem;
+      use std::fs::canonicalize;
+
+      fn f(p: &Path) {
+          canonicalize(p);
+          filesystem::canonicalize(p);
+      }

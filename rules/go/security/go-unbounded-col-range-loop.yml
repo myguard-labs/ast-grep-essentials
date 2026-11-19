@@ -14,5 +14,9 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/606.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - "for i := c.Min; i < c.Max; i++ with a strict upper bound is not reported"
-    - "for i := c.Max; i >= c.Min; i-- counting down over the same fields is not reported"
+    - |-
+      package p
+      func f(c C) { for i := c.Min; i < c.Max; i++ { use(i) } }
+    - |-
+      package p
+      func f(c C) { for i := c.Max; i >= c.Min; i-- { use(i) } }

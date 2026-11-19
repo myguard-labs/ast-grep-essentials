@@ -36,4 +36,16 @@ metadata:
   license: MyGuard Internal Use License 1.0
   known_false_positives: 'a counter-bounded loop `while (n < 10 && it.hasNext()) { sb.append(it.next()); n++; }` is reported although its size is bounded'
   todo_cases:
-    - "FN: a do-while loop `do { c = in.read(); if (c != -1) { sb.append((char) c); } } while (c != -1);` appending without a length check is not reported (only while_statement matches)."
+    - |-
+      class A {
+          void f() throws Exception {
+              int c;
+              StringBuilder sb = new StringBuilder();
+              do {
+                  c = in.read();
+                  if (c != -1) {
+                      sb.append((char) c);
+                  }
+              } while (c != -1);
+          }
+      }

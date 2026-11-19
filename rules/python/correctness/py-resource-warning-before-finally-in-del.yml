@@ -27,7 +27,18 @@ rule:
               kind: finally_clause
 metadata:
   todo_cases:
-    - 'FN: warnings.warn(msg, ResourceWarning, stacklevel=2) and a warn nested inside an if block in __del__ are not matched'
+    - |-
+      import warnings
+
+
+      class R:
+          def __del__(self):
+              if self.f:
+                  warnings.warn("leak", ResourceWarning, stacklevel=2)
+              try:
+                  self.close()
+              finally:
+                  pass
   rule_modified_at: '2026-09-22'
   ast_grep_tested_version: 0.45.3
   validated_at: '2026-09-22'

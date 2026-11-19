@@ -49,6 +49,21 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A04:2025'
   todo_cases:
-    - "nonce != null ? AuthScheme.DIGEST : AuthScheme.BASIC (null test instead of isNonEmpty) is not reported"
-    - "(isNonEmpty(nonce)) ? ... with a parenthesised condition is not reported"
-    - "isNonEmpty(nonce) && ok ? AuthScheme.DIGEST : AuthScheme.BASIC is not reported"
+    - |-
+      class A {
+          void f() throws Exception {
+              AuthScheme s = nonce != null ? AuthScheme.DIGEST : AuthScheme.BASIC;
+          }
+      }
+    - |-
+      class A {
+          void f() throws Exception {
+              AuthScheme s = (isNonEmpty(nonce)) ? AuthScheme.DIGEST : AuthScheme.BASIC;
+          }
+      }
+    - |-
+      class A {
+          void f() throws Exception {
+              AuthScheme s = isNonEmpty(nonce) && ok ? AuthScheme.DIGEST : AuthScheme.BASIC;
+          }
+      }

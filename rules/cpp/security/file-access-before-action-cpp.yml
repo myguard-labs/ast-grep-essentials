@@ -288,5 +288,12 @@ metadata:
   subcategory: 'race-condition'
   references: 'https://wiki.sei.cmu.edu/confluence/display/c/FIO45-C.+Avoid+TOCTOU+race+conditions+while+accessing+files'
   todo_cases:
-    - 'FN: if (access(p, F_OK) != 0) { return; } FILE *fp = fopen(p, "r"); (negated access check followed by a later use is not matched)'
-    - 'FN: if (0 == access(p, W_OK)) { chdir(p); } (access call on the right side of the comparison is not matched)'
+    - |-
+      void f(const char *p) {
+        if (access(p, F_OK) != 0) { return; }
+        FILE *fp = fopen(p, "r");
+      }
+    - |-
+      void f(const char *p) {
+        if (0 == access(p, W_OK)) { chdir(p); }
+      }

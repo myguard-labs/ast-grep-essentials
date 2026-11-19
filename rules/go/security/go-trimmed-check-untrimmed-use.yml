@@ -15,5 +15,14 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A05:2025'
   todo_cases:
-    - 'FN: the same function written over several lines with newlines instead of semicolons is not matched'
-    - 'FN: func run(q string) error { if strings.TrimSpace(q) != "" { return exec(q) }; return err }'
+    - |-
+      package p
+      func run(q string) error {
+      	if strings.TrimSpace(q) == "" {
+      		return err
+      	}
+      	return exec(q)
+      }
+    - |-
+      package p
+      func run(q string) error { if strings.TrimSpace(q) != "" { return exec(q) }; return err }

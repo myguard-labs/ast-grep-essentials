@@ -29,4 +29,18 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/674.html'
   taxonomy_cited_keys: 'cwe'
   todo_cases:
-    - 'Not matched: the recursive call in the else branch, as in `void refill() { if (readBlock() > 0) { consume(); } else { refill(); } }`, and a receiver-qualified recursive call such as `this.refill()` in the consequence.'
+    - |-
+      class A {
+          void refill() {
+              if (readBlock() > 0) {
+                  consume();
+              } else {
+                  refill();
+              }
+          }
+          void again() {
+              if (readBlock() > 0) {
+                  this.again();
+              }
+          }
+      }

@@ -23,8 +23,21 @@ rule:
             $$$BODY
 metadata:
   todo_cases:
-    - 'Bare decorator @pytest.mark.asyncio (no call parentheses) on a sync def is not flagged.'
-    - 'Sync def with @pytest.mark.asyncio() stacked with another decorator is not flagged.'
+    - |-
+      import pytest
+
+
+      @pytest.mark.asyncio
+      def test_x():
+          pass
+    - |-
+      import pytest
+
+
+      @pytest.mark.slow
+      @pytest.mark.asyncio()
+      def test_x():
+          pass
   rule_modified_at: '2026-10-17'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-17'

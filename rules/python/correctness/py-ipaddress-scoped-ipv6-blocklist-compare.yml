@@ -23,5 +23,13 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'FN: from-import `ip_address(x) in BLOCKED` and aliased `import ipaddress as ipa` forms are not matched (pattern needs the literal `ipaddress.` receiver).'
-    - 'FN: `ipaddress.ip_address(x) not in BLOCKED` negated membership is not matched.'
+    - |-
+      from ipaddress import ip_address
+      import ipaddress as ipa
+
+      a = ip_address(x) in BLOCKED
+      b = ipa.ip_address(x) in BLOCKED
+    - |-
+      import ipaddress
+
+      blocked = ipaddress.ip_address(x) not in BLOCKED

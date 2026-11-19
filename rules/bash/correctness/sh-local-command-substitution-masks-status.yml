@@ -30,9 +30,18 @@ metadata:
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
   todo_cases:
-    - 'local -r out="$(git rev-parse HEAD)": quoted command substitution masks the status the same way but is not flagged'
-    - 'local out="prefix-$(date +%s)": substitution inside a concatenated string is not flagged'
-    - 'declare out=$(date +%s): declare inside a function masks the status like local but is not flagged'
+    - |-
+      f() {
+        local -r out="$(git rev-parse HEAD)"
+      }
+    - |-
+      f() {
+        local out="prefix-$(date +%s)"
+      }
+    - |-
+      f() {
+        declare out=$(date +%s)
+      }
   cwe: 'CWE-252'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/252.html'
   taxonomy_cited_keys: 'cwe'

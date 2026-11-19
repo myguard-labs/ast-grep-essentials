@@ -15,7 +15,12 @@ rule:
   pattern: 'tarfile.open($$$ARGS, mode=''w:gz'')'
 metadata:
   todo_cases:
-    - 'FN: positional mode tarfile.open(path, ''w:gz''), double-quoted mode="w:gz", and mode=''w:gz'' followed by another keyword such as compresslevel=9 are not matched'
+    - |-
+      import tarfile
+
+      tarfile.open(path, 'w:gz')
+      tarfile.open(path, mode="w:gz")
+      tarfile.open(path, mode='w:gz', compresslevel=9)
   rule_modified_at: '2026-10-17'
   ast_grep_tested_version: 0.50.0
   validated_at: '2026-10-17'

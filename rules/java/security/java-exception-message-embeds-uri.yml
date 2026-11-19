@@ -27,6 +27,11 @@ metadata:
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/209.html'
   taxonomy_cited_keys: 'cwe'
   owasp: 'A10:2025'
+  known_false_positives: '"bad uri " + uri.length() and "count " + n are reported although they embed no URI text'
   todo_cases:
-    - "throw new IllegalStateException(String.format(\"bad uri %s\", uri)) is not reported"
-    - "false positive (low noise): \"bad uri \" + uri.length() and \"count \" + n are reported although they embed no URI text"
+    - |-
+      class A {
+          void f() throws Exception {
+              throw new IllegalStateException(String.format("bad uri %s", uri));
+          }
+      }
