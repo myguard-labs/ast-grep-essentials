@@ -37,6 +37,14 @@ valid:
             completionHandler(.cancelAuthenticationChallenge, nil)
         }
     }
+  - |
+    func urlSession(_ s: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        guard let trust = challenge.protectionSpace.serverTrust else { return }
+        guard SecTrustEvaluateWithError(trust, nil) else { return }
+        if flag {
+            completionHandler(.useCredential, URLCredential(trust: trust))
+        }
+    }
 invalid:
   - |
     func urlSession(_ s: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {

@@ -35,6 +35,19 @@ valid:
     	}
     	return g()
     }
+  - |
+    package p
+
+    import "github.com/containernetworking/plugins/pkg/ns"
+
+    var g = func() error {
+    	cur, err := ns.GetCurrentNS()
+    	if err != nil {
+    		return err
+    	}
+    	defer cur.Close()
+    	return cur.Set()
+    }
 invalid:
   - "import \"github.com/containernetworking/plugins/pkg/ns\"\nfunc f() error {\n\tinitns, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\treturn initns.Do(func(_ ns.NetNS) error { return nil })\n}"
   - "package p\n\nimport \"github.com/containernetworking/plugins/pkg/ns\"\n\nfunc f() error {\n\torig, err := ns.GetCurrentNS()\n\tif err != nil {\n\t\treturn err\n\t}\n\treturn orig.Do(func(_ ns.NetNS) error { return nil })\n}\n"

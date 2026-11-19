@@ -29,14 +29,14 @@ rule:
   all:
     - pattern: isinstance($X, int)
     - inside:
+        stopBy: end
+        kind: not_operator
+    - inside:
         stopBy: &guard-scope
           any:
             - kind: block
             - kind: lambda
             - matches: guard-if
-        kind: not_operator
-    - inside:
-        stopBy: *guard-scope
         matches: guard-if
         has:
           field: consequence
@@ -44,7 +44,8 @@ rule:
             kind: raise_statement
     - not:
         inside:
-          stopBy: *guard-scope
+          stopBy:
+            matches: guard-if
           matches: guard-if
           has:
             field: condition

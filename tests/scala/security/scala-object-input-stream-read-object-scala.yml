@@ -299,3 +299,16 @@ invalid:
         run(null)
       }
     }
+  - |
+    object A {
+      def bad(in1: java.io.InputStream, in2: java.io.InputStream, j: Json) = {
+        val o = new ObjectInputStream(in1)
+        locally {
+          val o = j.reader()
+          locally {
+            val o = new ObjectInputStream(in2)
+            o.readObject()
+          }
+        }
+      }
+    }

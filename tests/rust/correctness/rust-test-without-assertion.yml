@@ -157,3 +157,30 @@ invalid:
         })();
         Ok(())
     }
+  - |-
+    fn parse(s: &str) -> Result<i32, String> {
+        s.parse::<i32>().map_err(|e| e.to_string())
+    }
+
+    #[test]
+    fn checks_only_inside_async_block() -> Result<(), String> {
+        let _ = async {
+            parse("1")?;
+            Ok::<(), String>(())
+        };
+        Ok(())
+    }
+  - |-
+    fn parse(s: &str) -> Result<i32, String> {
+        s.parse::<i32>().map_err(|e| e.to_string())
+    }
+
+    #[test]
+    fn checks_only_inside_nested_fn() -> Result<(), String> {
+        fn helper() -> Result<(), String> {
+            parse("1")?;
+            Ok(())
+        }
+        let _ = helper();
+        Ok(())
+    }
