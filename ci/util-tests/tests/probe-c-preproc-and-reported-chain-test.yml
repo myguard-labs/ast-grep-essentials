@@ -19,6 +19,9 @@ valid:
     int f(int a, int b) { return a & b; }
 invalid:
   - |
+    #if X || HAVE_A & (HAVE_B)
+    #endif
+  - |
     #if A & B
     #endif
   - |
@@ -31,4 +34,8 @@ invalid:
   - |
     #if defined(X)
     #elif X & (HAVE_A & HAVE_B)
+    #endif
+  - |
+    #if defined(X)
+    #elif HAVE_A & (HAVE_B & HAVE_C)
     #endif
