@@ -288,6 +288,42 @@ snapshots:
       style: secondary
       start: 191
       end: 199
+  "int f(PKCS7_SIGNER_INFO *si, int x) { ASN1_TYPE *so; so = PKCS7_get_signed_attribute(si, 1); if (!so) goto err; so = PKCS7_get_signed_attribute(si, 2); if (so->type == 5) return 1; err: log_error(); return 0; }":
+    labels:
+    - source: if (so->type == 5) return 1;
+      style: primary
+      start: 152
+      end: 180
+    - source: so = PKCS7_get_signed_attribute(si, 2);
+      style: secondary
+      start: 112
+      end: 151
+    - source: so->type
+      style: secondary
+      start: 156
+      end: 164
+    - source: so->type
+      style: secondary
+      start: 156
+      end: 164
+  "int f(PKCS7_SIGNER_INFO *si, int x) { ASN1_TYPE *so; so = PKCS7_get_signed_attribute(si, 1); if (!so) return 0; if (so->type == 4) return 1; so = PKCS7_get_signed_attribute(si, 2); if (so == NULL) goto err; err: log_error(); if (so->type == 5) return 1; return 0; }":
+    labels:
+    - source: if (so->type == 5) return 1;
+      style: primary
+      start: 225
+      end: 253
+    - source: so = PKCS7_get_signed_attribute(si, 2);
+      style: secondary
+      start: 141
+      end: 180
+    - source: so->type
+      style: secondary
+      start: 229
+      end: 237
+    - source: so->type
+      style: secondary
+      start: 229
+      end: 237
   "int f(PKCS7_SIGNER_INFO *si, int x) { ASN1_TYPE *so; so = PKCS7_get_signed_attribute(si, 1); if (!so) { if (x) goto err; } if (so->type == 16) return 1; err: return 0; }":
     labels:
     - source: if (so->type == 16) return 1;
@@ -306,3 +342,39 @@ snapshots:
       style: secondary
       start: 127
       end: 135
+  "int f(PKCS7_SIGNER_INFO *si, int x) { ASN1_TYPE *so; so = PKCS7_get_signed_attribute(si, 1); if (so == NULL) goto err; so = PKCS7_get_signed_attribute(si, 2); if (so->type == 5) return 1; err: log_error(); return 0; }":
+    labels:
+    - source: if (so->type == 5) return 1;
+      style: primary
+      start: 159
+      end: 187
+    - source: so = PKCS7_get_signed_attribute(si, 2);
+      style: secondary
+      start: 119
+      end: 158
+    - source: so->type
+      style: secondary
+      start: 163
+      end: 171
+    - source: so->type
+      style: secondary
+      start: 163
+      end: 171
+  "int f(PKCS7_SIGNER_INFO *si, int x) { ASN1_TYPE *so; so = PKCS7_get_signed_attribute(si, 1); if (so == NULL) return 0; if (so->type == 4) return 1; so = PKCS7_get_signed_attribute(si, 2); if (!so) goto err; err: log_error(); if (so->type == 5) return 1; return 0; }":
+    labels:
+    - source: if (so->type == 5) return 1;
+      style: primary
+      start: 225
+      end: 253
+    - source: so = PKCS7_get_signed_attribute(si, 2);
+      style: secondary
+      start: 148
+      end: 187
+    - source: so->type
+      style: secondary
+      start: 229
+      end: 237
+    - source: so->type
+      style: secondary
+      start: 229
+      end: 237

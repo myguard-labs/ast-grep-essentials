@@ -3,6 +3,9 @@ valid:
   - 'int f(int x) { if (x) { return 0; } return 1; }'
   - 'int f(int x) { if (x) { return 0; } cleanup(); return 1; }'
   - 'int f(int x) { return x; out: cleanup(); return 1; }'
+  - 'int f(void) { return 1; /* done */ }'
+  - 'int f(int x) { switch (x) { case 0: return 1; case 1: return 2; } return 3; }'
+  - 'int f(int x) { switch (x) { return 0; case 1: x++; } return x; }'
 invalid:
   - 'int f(int x) { if (x) { return 0; return 1; } return 2; }'
   - 'int f(void) { return 1; cleanup(); }'
