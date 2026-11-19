@@ -1,0 +1,47 @@
+id: php-sql-insert-ignore
+valid:
+  - |
+    <?php $db->query("INSERT INTO t (a) VALUES (1)");
+  - |
+    <?php $db->query("INSERT INTO t (a) VALUES (1) ON DUPLICATE KEY UPDATE a = a");
+  - |
+    <?php $db->exec('REPLACE INTO t (a) VALUES (1)');
+  - |
+    <?php $db->exec('UPDATE IGNORE t SET a = 1 WHERE id = 2');
+  - |
+    <?php $db->exec('DELETE IGNORE FROM t WHERE id = 2');
+  - |
+    <?php
+    // $db->query("INSERT IGNORE INTO t (a) VALUES (1)");
+    $db->query("INSERT INTO t (a) VALUES (1)");
+  - |
+    <?php error_log("INSERT IGNORE failed for user");
+  - |
+    <?php $log->info("migration used INSERT IGNORE INTO but is now removed");
+  - |
+    <?php $sql = "INSERT IGNORE INTO t (a) VALUES (1)"; $note = $sql;
+  - |
+    <?php $db->insert('t', ['a' => 1]); $db->insertIgnore = false;
+  - |
+    <?php $db->query(Mode::INSERT); $db->query(Mode::IGNORE);
+invalid:
+  - |
+    <?php $db->query("INSERT IGNORE INTO t (a) VALUES (1)");
+  - |
+    <?php $db->exec('insert   ignore into t (a) VALUES (1)');
+  - |
+    <?php $stmt = $pdo->prepare("INSERT IGNORE INTO settings (name, value) VALUES (:n, :v)");
+  - |
+    <?php Db::run('INSERT LOW_PRIORITY IGNORE INTO t (a) VALUES (1)');
+  - |
+    <?php $db->query(<<<SQL
+    INSERT IGNORE INTO t (a) VALUES (1)
+    SQL);
+  - |
+    <?php $db->query(<<<'SQL'
+    INSERT IGNORE INTO t (a) VALUES (1)
+    SQL);
+  - |
+    <?php run_sql("INSERT IGNORE INTO t (a) VALUES (1)");
+  - |
+    <?php $db?->query("INSERT IGNORE INTO t (a) VALUES (1)");

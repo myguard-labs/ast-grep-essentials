@@ -1,0 +1,51 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: php-sql-insert-ignore
+language: php
+severity: warning
+message: >-
+  INSERT IGNORE downgrades every error of the statement to a warning, not only a
+  duplicate key: data truncation, an invalid value, NULL into a NOT NULL column
+  and a foreign key failure are swallowed silently. Use INSERT ... ON DUPLICATE
+  KEY UPDATE, or catch the duplicate-key error and handle it explicitly.
+note: >-
+  Fires on a single-quoted, double-quoted, heredoc or nowdoc string that is
+  passed directly as a call argument (query, exec, prepare and similar) and
+  whose SQL starts with INSERT [LOW_PRIORITY|HIGH_PRIORITY|DELAYED] IGNORE INTO,
+  in any letter case and with any whitespace. A statement held in a variable
+  first and passed later, a concatenated statement, and a string that does not
+  start with the statement (a log message, a comment) are not matched. A
+  deliberate idempotent insert into a table with no other constraint that can
+  fail is a false positive; the routine dismissal is a short comment naming the
+  accepted duplicate-only intent.
+
+  [CWE-754]
+
+  [REFERENCES]
+      - https://dev.mysql.com/doc/refman/8.4/en/sql-mode.html#ignore-effect-on-execution
+      - https://cwe.mitre.org/data/definitions/754.html
+rule:
+  any:
+    - kind: string
+    - kind: encapsed_string
+    - kind: heredoc
+    - kind: nowdoc
+  regex: '(?is)\A(?:["'']|<<<[ \t]*["'']?\w+["'']?\r?\n)\s*INSERT\s+(?:(?:LOW_PRIORITY|HIGH_PRIORITY|DELAYED)\s+)?IGNORE\s+INTO\b'
+  inside:
+    kind: argument
+    inside:
+      kind: arguments
+      inside:
+        any:
+          - kind: function_call_expression
+          - kind: member_call_expression
+          - kind: nullsafe_member_call_expression
+          - kind: scoped_call_expression
+metadata:
+  created_at: '2026-11-19'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-754'
+  category: 'correctness'
+  references: 'https://dev.mysql.com/doc/refman/8.4/en/sql-mode.html#ignore-effect-on-execution'
