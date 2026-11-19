@@ -7,6 +7,11 @@ valid:
   - 'void f(const char *s) { int low = (unsigned char) *s; (void) low; }'
   - 'void f(const unsigned char *s) { int c = s[0]; (void) c; }'
   - 'void f(void) { const uint8_t *s = g(); int c = s[1]; (void) c; }'
+  - 'void f(unsigned char s) { int c = s[0]; (void) c; }'
+  - 'void f(void) { uint8_t s; int c = s[0]; (void) c; }'
+  - 'void f(void) { uint8_t s = g(); int c = s[0]; (void) c; }'
+  - 'void f(void) { uint8_t s[4]; int c = s[0]; (void) c; }'
+  - 'void f(unsigned char s[]) { int c = s[0]; (void) c; }'
 invalid:
   - 'void f(const char *s) { int low = s[0]; (void) low; }'
   - 'void f(const char *s, int i) { int c = s[i]; (void) c; }'

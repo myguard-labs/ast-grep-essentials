@@ -6,8 +6,11 @@ valid:
   - 'void *p = malloc(n); use(p); return 0;'
   - 'void *p = get(); return init(p);'
   - 'void *p = malloc(n); use(p); free(p); return g();'
+  - 'void *p = emalloc(n); use(p); efree(p); return g();'
+  - 'void *p = pemalloc(n, 0); use(p); pefree(p, 0); return g();'
 invalid:
   - 'void *p = pemalloc(n, 0); return zend_hash_add_ptr(ht, key, p);'
   - 'void *p = malloc(n); return register_ptr(ctx, p);'
   - 'char *b = pemalloc(n, 1); x = 1; return g(b);'
   - 'void *p = malloc(n); use(p); free(q); return g();'
+  - 'size_t p = malloc(n); return register_ptr(ctx, p);'

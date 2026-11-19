@@ -17,6 +17,10 @@ valid:
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (!key) { continue; } n = ZSTR_LEN(key); } ZEND_HASH_FOREACH_END();
   - |-
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (!key) continue; use(ZSTR_VAL(key)); } ZEND_HASH_FOREACH_END();
+  - 'ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (!key) return; use(ZSTR_VAL(key)); } ZEND_HASH_FOREACH_END();'
+  - 'ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (!key) break; use(ZSTR_VAL(key)); } ZEND_HASH_FOREACH_END();'
+  - 'ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (!key) { log(); return; } n = ZSTR_LEN(key); } ZEND_HASH_FOREACH_END();'
+  - 'ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { if (!key) { log(); break; } n = ZSTR_LEN(key); } ZEND_HASH_FOREACH_END();'
 invalid:
   - >-
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, key, val) { use(ZSTR_VAL(key)); }

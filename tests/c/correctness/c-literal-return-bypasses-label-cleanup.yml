@@ -131,3 +131,15 @@ invalid:
         }
         return 1;
     }
+  - |-
+    int f(int n) {
+        char *p = malloc(8);
+        if (!p) goto cleanup;
+        use(p);
+        return 0;
+        if (n) {
+        cleanup:
+            free(p);
+        }
+        return 1;
+    }

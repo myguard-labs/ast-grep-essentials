@@ -21,6 +21,25 @@ valid:
     void f(int *p, int *q) { if (p) { p = next(p); } if (!p) return; p = next(p); use(*q); if (!p) return; use(*p); }
   - |-
     void f(int *p) { if (p) { p = next(p); } if (!p) return; p = next(p); if (!p) return; use(*p); p = next(p); if (!p) return; use(*p); }
+  - 'void f(int *p) { if (p) { p = next(p); } if (p == NULL) return; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) goto out; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) break; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) continue; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) { log(); goto out; } use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) { log(); break; } use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) { log(); continue; } use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (p != NULL) { use(*p); } }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (p && q) { use(*p); } }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (p) { p = next(p); if (p != NULL) { use(*p); } } }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (p) { p = next(p); if (p && q) { use(*p); } } }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) return; p = next(p); if (p == NULL) return; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) goto out; p = next(p); if (!p) goto out; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) break; p = next(p); if (!p) break; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) continue; p = next(p); if (!p) continue; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) { log(); goto out; } p = next(p); if (!p) { log(); goto out; } use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) { log(); break; } p = next(p); if (!p) { log(); break; } use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) { log(); continue; } p = next(p); if (!p) { log(); continue; } use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) { log(); return; } p = next(p); if (!p) { log(); return; } use(*p); }'
 
 invalid:
   - >-
@@ -40,3 +59,10 @@ invalid:
     void f(int *p) { if (p) { p = next(p); } if (!p) { return; } p = NULL; use(*p); }
   - |-
     void f(int *p) { if (p) { p = next(p); } if (!p) return; p = NULL; use(*p); if (!p) return; use(*p); }
+  - 'void f(int *p) { if (p) { p = next(p); } if (p == NULL) return; p = NULL; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) goto out; p = NULL; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) break; p = NULL; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) continue; p = NULL; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) { log(); goto out; } p = NULL; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) { log(); break; } p = NULL; use(*p); }'
+  - 'void f(int *p) { if (p) { p = next(p); } if (!p) { log(); continue; } p = NULL; use(*p); }'

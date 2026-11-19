@@ -9,6 +9,8 @@ valid:
   - "void f(int pid) {\n struct kinfo_proc *kp;\n kp = kinfo_getproc(pid);\n free(kp);\n}"
   - "void f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n if (kp) { free(kp); }\n}"
   - "struct kinfo_proc *f(int pid) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n return kp;\n}"
+  - "void f(int pid, int ok) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n if (ok) { if (kp) { free(kp); } }\n}"
+  - "struct kinfo_proc *f(int pid, int ok) {\n struct kinfo_proc *kp = kinfo_getproc(pid);\n if (ok) { return kp; }\n return NULL;\n}"
 invalid:
   - |-
     struct kinfo_proc *p = kinfo_getproc(0);

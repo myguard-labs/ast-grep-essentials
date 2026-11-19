@@ -72,6 +72,60 @@ snapshots:
       style: secondary
       start: 51
       end: 57
+  "void f(int *p) { if (p) { p = next(p); } if (!p) break; p = NULL; use(*p); }":
+    labels:
+    - source: if (p) { p = next(p); }
+      style: primary
+      start: 17
+      end: 40
+    - source: p = next(p)
+      style: secondary
+      start: 26
+      end: 37
+    - source: "*p"
+      style: secondary
+      start: 70
+      end: 72
+    - source: use(*p);
+      style: secondary
+      start: 66
+      end: 74
+  "void f(int *p) { if (p) { p = next(p); } if (!p) continue; p = NULL; use(*p); }":
+    labels:
+    - source: if (p) { p = next(p); }
+      style: primary
+      start: 17
+      end: 40
+    - source: p = next(p)
+      style: secondary
+      start: 26
+      end: 37
+    - source: "*p"
+      style: secondary
+      start: 73
+      end: 75
+    - source: use(*p);
+      style: secondary
+      start: 69
+      end: 77
+  "void f(int *p) { if (p) { p = next(p); } if (!p) goto out; p = NULL; use(*p); }":
+    labels:
+    - source: if (p) { p = next(p); }
+      style: primary
+      start: 17
+      end: 40
+    - source: p = next(p)
+      style: secondary
+      start: 26
+      end: 37
+    - source: "*p"
+      style: secondary
+      start: 73
+      end: 75
+    - source: use(*p);
+      style: secondary
+      start: 69
+      end: 77
   "void f(int *p) { if (p) { p = next(p); } if (!p) return; p = NULL; use(*p); if (!p) return; use(*p); }":
     labels:
     - source: if (p) { p = next(p); }
@@ -90,6 +144,60 @@ snapshots:
       style: secondary
       start: 67
       end: 75
+  "void f(int *p) { if (p) { p = next(p); } if (!p) { log(); break; } p = NULL; use(*p); }":
+    labels:
+    - source: if (p) { p = next(p); }
+      style: primary
+      start: 17
+      end: 40
+    - source: p = next(p)
+      style: secondary
+      start: 26
+      end: 37
+    - source: "*p"
+      style: secondary
+      start: 81
+      end: 83
+    - source: use(*p);
+      style: secondary
+      start: 77
+      end: 85
+  "void f(int *p) { if (p) { p = next(p); } if (!p) { log(); continue; } p = NULL; use(*p); }":
+    labels:
+    - source: if (p) { p = next(p); }
+      style: primary
+      start: 17
+      end: 40
+    - source: p = next(p)
+      style: secondary
+      start: 26
+      end: 37
+    - source: "*p"
+      style: secondary
+      start: 84
+      end: 86
+    - source: use(*p);
+      style: secondary
+      start: 80
+      end: 88
+  "void f(int *p) { if (p) { p = next(p); } if (!p) { log(); goto out; } p = NULL; use(*p); }":
+    labels:
+    - source: if (p) { p = next(p); }
+      style: primary
+      start: 17
+      end: 40
+    - source: p = next(p)
+      style: secondary
+      start: 26
+      end: 37
+    - source: "*p"
+      style: secondary
+      start: 84
+      end: 86
+    - source: use(*p);
+      style: secondary
+      start: 80
+      end: 88
   "void f(int *p) { if (p) { p = next(p); } if (!p) { return; } p = NULL; use(*p); }":
     labels:
     - source: if (p) { p = next(p); }
@@ -108,6 +216,24 @@ snapshots:
       style: secondary
       start: 71
       end: 79
+  "void f(int *p) { if (p) { p = next(p); } if (p == NULL) return; p = NULL; use(*p); }":
+    labels:
+    - source: if (p) { p = next(p); }
+      style: primary
+      start: 17
+      end: 40
+    - source: p = next(p)
+      style: secondary
+      start: 26
+      end: 37
+    - source: "*p"
+      style: secondary
+      start: 78
+      end: 80
+    - source: use(*p);
+      style: secondary
+      start: 74
+      end: 82
   "void f(int *p) { if (p) { p = next(p); } if (p) { p = NULL; use(*p); } }":
     labels:
     - source: if (p) { p = next(p); }
