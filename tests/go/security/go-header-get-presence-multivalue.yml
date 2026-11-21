@@ -1,0 +1,30 @@
+id: go-header-get-presence-multivalue
+valid:
+  - |
+    func f(r *http.Request) bool { return len(r.Header.Values("Content-Encoding")) > 0 }
+  - |
+    func f(r *http.Request) bool { return r.Header.Get("Content-Type") != "" }
+  - |
+    func f(r *http.Request) bool { return r.Header.Get("Content-Encoding") == "gzip" }
+  - |
+    func f(r *http.Request) bool { return r.Header.Get("Content-Encoding") != r.Header.Get("X-Other") }
+  - |
+    func f(r *http.Request) { v := r.Header.Get("Content-Encoding"); _ = v }
+  - |
+    func f(r *http.Request) bool { return r.Trailer.Get("Content-Encoding") != "" }
+  - |
+    func f(r *http.Request) {
+    	// if r.Header.Get("Content-Encoding") != "" { reject() }
+    	_ = len(r.Header.Values("Content-Encoding"))
+    }
+  - |
+    func f(r *http.Request) bool { return r.Header.Get("Transfer-Encoding") != "" }
+invalid:
+  - |
+    func f(r *http.Request) { if r.Header.Get("Content-Encoding") != "" { reject() } }
+  - |
+    func f(req *http.Request) { if req.Header.Get("Content-Encoding") == "" { ok() } }
+  - |
+    func f(resp *http.Response) { if "" != resp.Header.Get("content-encoding") { a() } }
+  - |
+    func f(r *http.Request) bool { return r.Header.Get("Content-Encoding") != "" }
