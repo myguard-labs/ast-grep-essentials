@@ -1,0 +1,405 @@
+id: py-os-open-blocking-before-type-check
+snapshots:
+  "import os\nimport stat\n\ndef check(path):\n    fd = os.open(path, flags=os.O_RDONLY)\n    return stat.S_ISREG(os.fstat(fd).st_mode)\n":
+    labels:
+    - source: fd = os.open(path, flags=os.O_RDONLY)
+      style: primary
+      start: 44
+      end: 81
+    - source: fd
+      style: secondary
+      start: 44
+      end: 46
+    - source: os.open
+      style: secondary
+      start: 49
+      end: 56
+    - source: flags=os.O_RDONLY
+      style: secondary
+      start: 63
+      end: 80
+    - source: flags=os.O_RDONLY
+      style: secondary
+      start: 63
+      end: 80
+    - source: os.open(path, flags=os.O_RDONLY)
+      style: secondary
+      start: 49
+      end: 81
+    - source: os.fstat(fd)
+      style: secondary
+      start: 106
+      end: 118
+    - source: stat.S_ISREG
+      style: secondary
+      start: 93
+      end: 105
+    - source: stat.S_ISREG(os.fstat(fd).st_mode)
+      style: secondary
+      start: 93
+      end: 127
+    - source: |-
+        def check(path):
+            fd = os.open(path, flags=os.O_RDONLY)
+            return stat.S_ISREG(os.fstat(fd).st_mode)
+      style: secondary
+      start: 23
+      end: 127
+  "import os\nimport stat\n\ndef check(path):\n    fd = os.open(path, mode=0o644, flags=os.O_RDONLY)\n    return stat.S_ISREG(os.fstat(fd).st_mode)\n":
+    labels:
+    - source: fd = os.open(path, mode=0o644, flags=os.O_RDONLY)
+      style: primary
+      start: 44
+      end: 93
+    - source: fd
+      style: secondary
+      start: 44
+      end: 46
+    - source: os.open
+      style: secondary
+      start: 49
+      end: 56
+    - source: flags
+      style: secondary
+      start: 75
+      end: 80
+    - source: flags=os.O_RDONLY
+      style: secondary
+      start: 75
+      end: 92
+    - source: flags=os.O_RDONLY
+      style: secondary
+      start: 75
+      end: 92
+    - source: os.open(path, mode=0o644, flags=os.O_RDONLY)
+      style: secondary
+      start: 49
+      end: 93
+    - source: os.fstat(fd)
+      style: secondary
+      start: 118
+      end: 130
+    - source: stat.S_ISREG
+      style: secondary
+      start: 105
+      end: 117
+    - source: stat.S_ISREG(os.fstat(fd).st_mode)
+      style: secondary
+      start: 105
+      end: 139
+    - source: |-
+        def check(path):
+            fd = os.open(path, mode=0o644, flags=os.O_RDONLY)
+            return stat.S_ISREG(os.fstat(fd).st_mode)
+      style: secondary
+      start: 23
+      end: 139
+  "import os\nimport stat\n\ndef check(path):\n    fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC)\n    st = os.fstat(fd)\n    return stat.S_ISFIFO(st.st_mode)\n":
+    labels:
+    - source: fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC)
+      style: primary
+      start: 44
+      end: 90
+    - source: fd
+      style: secondary
+      start: 44
+      end: 46
+    - source: os.open
+      style: secondary
+      start: 49
+      end: 56
+    - source: os.O_RDONLY | os.O_CLOEXEC
+      style: secondary
+      start: 63
+      end: 89
+    - source: os.O_RDONLY | os.O_CLOEXEC
+      style: secondary
+      start: 63
+      end: 89
+    - source: os.open(path, os.O_RDONLY | os.O_CLOEXEC)
+      style: secondary
+      start: 49
+      end: 90
+    - source: os.fstat(fd)
+      style: secondary
+      start: 100
+      end: 112
+    - source: stat.S_ISFIFO
+      style: secondary
+      start: 124
+      end: 137
+    - source: stat.S_ISFIFO(st.st_mode)
+      style: secondary
+      start: 124
+      end: 149
+    - source: |-
+        def check(path):
+            fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC)
+            st = os.fstat(fd)
+            return stat.S_ISFIFO(st.st_mode)
+      style: secondary
+      start: 23
+      end: 149
+  "import os\nimport stat\n\ndef check(path):\n    fd = os.open(path, os.O_RDONLY)\n    if not stat.S_ISREG(os.fstat(fd).st_mode):\n        raise ValueError('not a regular file')\n":
+    labels:
+    - source: fd = os.open(path, os.O_RDONLY)
+      style: primary
+      start: 44
+      end: 75
+    - source: fd
+      style: secondary
+      start: 44
+      end: 46
+    - source: os.open
+      style: secondary
+      start: 49
+      end: 56
+    - source: os.O_RDONLY
+      style: secondary
+      start: 63
+      end: 74
+    - source: os.O_RDONLY
+      style: secondary
+      start: 63
+      end: 74
+    - source: os.open(path, os.O_RDONLY)
+      style: secondary
+      start: 49
+      end: 75
+    - source: os.fstat(fd)
+      style: secondary
+      start: 100
+      end: 112
+    - source: stat.S_ISREG
+      style: secondary
+      start: 87
+      end: 99
+    - source: stat.S_ISREG(os.fstat(fd).st_mode)
+      style: secondary
+      start: 87
+      end: 121
+    - source: |-
+        def check(path):
+            fd = os.open(path, os.O_RDONLY)
+            if not stat.S_ISREG(os.fstat(fd).st_mode):
+                raise ValueError('not a regular file')
+      style: secondary
+      start: 23
+      end: 169
+  "import os\nimport stat\n\ndef check(path):\n    fd = os.open(path, os.O_RDONLY, 0o644)\n    return stat.S_ISCHR(os.fstat(fd).st_mode)\n":
+    labels:
+    - source: fd = os.open(path, os.O_RDONLY, 0o644)
+      style: primary
+      start: 44
+      end: 82
+    - source: fd
+      style: secondary
+      start: 44
+      end: 46
+    - source: os.open
+      style: secondary
+      start: 49
+      end: 56
+    - source: os.O_RDONLY
+      style: secondary
+      start: 63
+      end: 74
+    - source: os.O_RDONLY
+      style: secondary
+      start: 63
+      end: 74
+    - source: os.open(path, os.O_RDONLY, 0o644)
+      style: secondary
+      start: 49
+      end: 82
+    - source: os.fstat(fd)
+      style: secondary
+      start: 107
+      end: 119
+    - source: stat.S_ISCHR
+      style: secondary
+      start: 94
+      end: 106
+    - source: stat.S_ISCHR(os.fstat(fd).st_mode)
+      style: secondary
+      start: 94
+      end: 128
+    - source: |-
+        def check(path):
+            fd = os.open(path, os.O_RDONLY, 0o644)
+            return stat.S_ISCHR(os.fstat(fd).st_mode)
+      style: secondary
+      start: 23
+      end: 128
+  "import os\nimport stat\n\ndef check(path):\n    flags = os.O_RDONLY | os.O_CLOEXEC\n    fd = os.open(path, flags)\n    st = os.fstat(fd)\n    if not stat.S_ISREG(st.st_mode):\n        os.close(fd)\n        return None\n":
+    labels:
+    - source: fd = os.open(path, flags)
+      style: primary
+      start: 83
+      end: 108
+    - source: fd
+      style: secondary
+      start: 83
+      end: 85
+    - source: os.open
+      style: secondary
+      start: 88
+      end: 95
+    - source: flags
+      style: secondary
+      start: 102
+      end: 107
+    - source: flags
+      style: secondary
+      start: 102
+      end: 107
+    - source: os.open(path, flags)
+      style: secondary
+      start: 88
+      end: 108
+    - source: os.fstat(fd)
+      style: secondary
+      start: 118
+      end: 130
+    - source: stat.S_ISREG
+      style: secondary
+      start: 142
+      end: 154
+    - source: stat.S_ISREG(st.st_mode)
+      style: secondary
+      start: 142
+      end: 166
+    - source: |-
+        def check(path):
+            flags = os.O_RDONLY | os.O_CLOEXEC
+            fd = os.open(path, flags)
+            st = os.fstat(fd)
+            if not stat.S_ISREG(st.st_mode):
+                os.close(fd)
+                return None
+      style: secondary
+      start: 23
+      end: 208
+    - source: flags
+      style: secondary
+      start: 44
+      end: 49
+    - source: os.O_RDONLY | os.O_CLOEXEC
+      style: secondary
+      start: 52
+      end: 78
+    - source: flags = os.O_RDONLY | os.O_CLOEXEC
+      style: secondary
+      start: 44
+      end: 78
+    - source: |-
+        def check(path):
+            flags = os.O_RDONLY | os.O_CLOEXEC
+            fd = os.open(path, flags)
+            st = os.fstat(fd)
+            if not stat.S_ISREG(st.st_mode):
+                os.close(fd)
+                return None
+      style: secondary
+      start: 23
+      end: 208
+  "import os\nimport stat\n\ndef check(path):\n    other = os.O_RDONLY\n    other |= os.O_NONBLOCK\n    fd = os.open(path, os.O_RDONLY)\n    return other, stat.S_ISREG(os.fstat(fd).st_mode)\n":
+    labels:
+    - source: fd = os.open(path, os.O_RDONLY)
+      style: primary
+      start: 95
+      end: 126
+    - source: fd
+      style: secondary
+      start: 95
+      end: 97
+    - source: os.open
+      style: secondary
+      start: 100
+      end: 107
+    - source: os.O_RDONLY
+      style: secondary
+      start: 114
+      end: 125
+    - source: os.O_RDONLY
+      style: secondary
+      start: 114
+      end: 125
+    - source: os.open(path, os.O_RDONLY)
+      style: secondary
+      start: 100
+      end: 126
+    - source: os.fstat(fd)
+      style: secondary
+      start: 158
+      end: 170
+    - source: stat.S_ISREG
+      style: secondary
+      start: 145
+      end: 157
+    - source: stat.S_ISREG(os.fstat(fd).st_mode)
+      style: secondary
+      start: 145
+      end: 179
+    - source: |-
+        def check(path):
+            other = os.O_RDONLY
+            other |= os.O_NONBLOCK
+            fd = os.open(path, os.O_RDONLY)
+            return other, stat.S_ISREG(os.fstat(fd).st_mode)
+      style: secondary
+      start: 23
+      end: 179
+  "import os\nimport stat\n\ndef check(path):\n    try:\n        descriptor = os.open(path, os.O_RDONLY | getattr(os, \"O_NOFOLLOW\", 0))\n    except OSError:\n        return None\n    try:\n        before = os.fstat(descriptor)\n        if not stat.S_ISREG(before.st_mode):\n            return None\n    finally:\n        os.close(descriptor)\n":
+    labels:
+    - source: descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+      style: primary
+      start: 57
+      end: 127
+    - source: descriptor
+      style: secondary
+      start: 57
+      end: 67
+    - source: os.open
+      style: secondary
+      start: 70
+      end: 77
+    - source: os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+      style: secondary
+      start: 84
+      end: 126
+    - source: os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+      style: secondary
+      start: 84
+      end: 126
+    - source: os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+      style: secondary
+      start: 70
+      end: 127
+    - source: os.fstat(descriptor)
+      style: secondary
+      start: 194
+      end: 214
+    - source: stat.S_ISREG
+      style: secondary
+      start: 230
+      end: 242
+    - source: stat.S_ISREG(before.st_mode)
+      style: secondary
+      start: 230
+      end: 258
+    - source: |-
+        def check(path):
+            try:
+                descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+            except OSError:
+                return None
+            try:
+                before = os.fstat(descriptor)
+                if not stat.S_ISREG(before.st_mode):
+                    return None
+            finally:
+                os.close(descriptor)
+      style: secondary
+      start: 23
+      end: 325

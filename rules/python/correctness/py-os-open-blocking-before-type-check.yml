@@ -1,0 +1,122 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-os-open-blocking-before-type-check
+language: python
+severity: warning
+message: >-
+  This opens a path with os.open without O_NONBLOCK and then checks the file
+  type (os.fstat plus stat.S_ISREG or S_ISFIFO) in the same function. The type
+  check shows the path may be a non-regular file, but a blocking open of a
+  FIFO with no writer hangs inside os.open, before the check can reject it. Add
+  os.O_NONBLOCK to the open flags and validate the type on the descriptor
+  afterwards; a stat of the path before opening is not enough, because the
+  path can be swapped for a FIFO between the stat and the open.
+note: >-
+  This is the type-check-anchored companion of
+  py-blocking-open-before-regular-file-check. That rule flags any blocking
+  os.open(path, os.O_RDONLY) with the literal flags; this one flags an
+  os.open assignment whose flags (inline, or a name assigned in the same
+  function) lack O_NONBLOCK in code that evidently expects non-regular files,
+  because the same function calls os.fstat on the descriptor and a
+  stat.S_ISREG, S_ISFIFO, S_ISCHR, S_ISBLK or S_ISSOCK predicate. The literal
+  os.O_RDONLY form is matched by both rules, which is why both exist. The
+  fstat and the S_IS* call may sit in a different try or if block than the
+  open; order is not checked, and the fstat is not tied to the S_IS* call.
+  O_NONBLOCK anywhere in the flags expression (including
+  getattr(os, "O_NONBLOCK", 0)), or in the name's assignment or a later
+  `flags |= os.O_NONBLOCK`, suppresses the report. Not reported: flags that are
+  a parameter or global with no assignment in the same function, an open with
+  no fstat plus S_IS* check, and an open outside a function.
+rule:
+  kind: assignment
+  all:
+    - has:
+        field: left
+        pattern: $FD
+    - has:
+        field: right
+        kind: call
+        all:
+          - has:
+              field: function
+              pattern: os.open
+          - has:
+              field: arguments
+              has:
+                any:
+                  - all:
+                      - nthChild: 2
+                      - regex: 'os\.O_'
+                      - not:
+                          regex: 'O_NONBLOCK'
+                  - all:
+                      - kind: keyword_argument
+                      - has:
+                          field: name
+                          regex: '^flags$'
+                      - regex: 'os\.O_'
+                      - not:
+                          regex: 'O_NONBLOCK'
+                  - all:
+                      - nthChild: 2
+                      - kind: identifier
+                      - pattern: $FL
+    - inside:
+        stopBy: end
+        kind: function_definition
+        all:
+          - has:
+              stopBy: end
+              kind: call
+              pattern: os.fstat($FD)
+          - has:
+              stopBy: end
+              kind: call
+              has:
+                field: function
+                regex: '^(stat\.)?S_IS(REG|FIFO|CHR|BLK|SOCK)$'
+    - any:
+        - not:
+            has:
+              field: right
+              has:
+                field: arguments
+                has:
+                  all:
+                    - nthChild: 2
+                    - kind: identifier
+        - inside:
+            stopBy: end
+            kind: function_definition
+            all:
+              - has:
+                  stopBy: end
+                  kind: assignment
+                  all:
+                    - has:
+                        field: left
+                        pattern: $FL
+                    - has:
+                        field: right
+                        regex: 'os\.O_'
+              - not:
+                  has:
+                    stopBy: end
+                    any:
+                      - kind: assignment
+                      - kind: augmented_assignment
+                    all:
+                      - has:
+                          field: left
+                          pattern: $FL
+                      - regex: 'O_NONBLOCK'
+metadata:
+  known_false_positives: 'The fstat and the S_IS* predicate are only required to appear somewhere in the same function, so an fstat on this descriptor and an unrelated S_IS* call on another stat result also qualify. A path already known to be a regular file (checked earlier by os.stat or by the caller) is still reported when the open flags lack O_NONBLOCK. A flags expression that mixes os.O_* constants with a name or call that itself carries O_NONBLOCK is still reported'
+  known_false_negatives: 'Flags passed as a parameter or global with no assignment in the same function are not reported; a local flags name passed as the flags= keyword (os.open(path, flags=flags)) is not reported; the function scope is not isolated from nested functions, so a nested function that assigns the same flags name with O_NONBLOCK suppresses the outer report, and an fstat plus S_IS* check in an enclosing function also qualifies an open in a nested one; flags built by a call or helper are not reported; os.open not assigned to a name (for example used directly as an argument, or in a with block) is not reported; an open outside a function is not reported; a pathlib or builtin open is not covered; a type check through a helper function, or through st_mode & S_IFMT comparison, is not recognised'
+  rule_modified_at: '2026-11-21'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-21'
+  created_at: '2026-11-21'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
