@@ -3,45 +3,45 @@
 id: py-resource-warning-before-finally-in-del
 language: python
 severity: warning
-message: ResourceWarning is emitted before a subsequent try/finally in __del__.
+message: ResourceWarning is emitted in __del__ before a later cleanup try; a warning filter set to error aborts the cleanup.
 note: >-
-  This matches only a direct warning statement and a later sibling try/finally
-  in __del__; it does not resolve names, determine warning filters, or prove
-  runtime cleanup behavior.
+  Matches a warnings.warn(message, ResourceWarning, ...) statement (extra
+  positional or keyword arguments allowed) in __del__, either directly in the
+  method body or nested in a block such as an if, followed by a later sibling
+  try statement in the same block that has a finally or an except clause.
+  Under a warning filter set to error the warn raises and the try never runs,
+  so descriptors or locks stay held. Move the warn after the cleanup or into
+  a finally. Limits: the cleanup try must be a sibling of the warn statement
+  (a warn inside an if with the try after the if is not matched); a
+  ResourceWarning alias, warn imported by name, or warnings.warn_explicit is
+  not matched; a warn inside a function nested in __del__ is not attributed
+  to __del__; names are not resolved and warning filters are not evaluated.
 rule:
   all:
     - kind: expression_statement
     - has:
-        pattern: 'warnings.warn($MESSAGE, ResourceWarning)'
+        any:
+          - pattern: 'warnings.warn($MESSAGE, ResourceWarning)'
+          - pattern: 'warnings.warn($MESSAGE, ResourceWarning, $$$REST)'
     - inside:
-        kind: block
-        inside:
-          all:
-            - kind: function_definition
-            - regex: '^def\s+__del__\s*\('
+        stopBy:
+          kind: function_definition
+        all:
+          - kind: function_definition
+          - regex: '^def\s+__del__\s*\('
     - precedes:
         stopBy: end
         all:
           - kind: try_statement
-          - has:
-              kind: finally_clause
+          - any:
+              - has:
+                  kind: finally_clause
+              - has:
+                  kind: except_clause
 metadata:
-  todo_cases:
-    - |-
-      import warnings
-
-
-      class R:
-          def __del__(self):
-              if self.f:
-                  warnings.warn("leak", ResourceWarning, stacklevel=2)
-              try:
-                  self.close()
-              finally:
-                  pass
-  rule_modified_at: '2026-09-22'
-  ast_grep_tested_version: 0.45.3
-  validated_at: '2026-09-22'
+  rule_modified_at: '2026-11-21'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-21'
   created_at: '2026-09-22'
   source: 'MyGuard'
   modified_by: 'MyGuard'
