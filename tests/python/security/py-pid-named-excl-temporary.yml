@@ -103,7 +103,44 @@ valid:
         t = f"{p}.{secrets.token_hex(8)}.tmp"
         with open(t, "x") as handle:
             handle.write(b)
+  - |
+    import os
+    import secrets
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}.{secrets.token_hex(16)}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+    import uuid
+
+    def w(p, b):
+        fd = os.open("%s.%d.%s" % (p, os.getpid(), uuid.uuid4().hex), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+    import secrets
+
+    def w(p, b):
+        fd = os.open(p + str(os.getpid()) + secrets.token_urlsafe(8), os.O_WRONLY | os.O_EXCL)
+        os.write(fd, b)
 invalid:
+  - |
+    import os
+    import random
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}.{random.randint(0, 10**9)}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+    import secrets
+
+    def w(p, b):
+        token = secrets.token_hex(16)
+        fd = os.open(f"{p}.{os.getpid()}.tmp", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+        return token
   - |
     import os
 
