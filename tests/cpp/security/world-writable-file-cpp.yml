@@ -13,6 +13,18 @@ valid:
       openat(fd, "log", O_CREAT, mode);
       creat("log", mode);
     }
+  - |
+    void test_octal_good_0755(const char *p) { chmod(p, 0755); }
+  - |
+    void test_octal_good_0750(const char *p) { chmod(p, 0750); }
+  - |
+    void test_octal_good_0751(const char *p) { chmod(p, 0751); }
+  - |
+    void test_octal_good_0644(const char *p) { chmod(p, 0644); }
+  - |
+    void test_decimal_good_493(const char *p) { chmod(p, 493); }
+  - |
+    void test_decimal_good_16(const char *p) { chmod(p, 16); }
 invalid:
   - |
     void test_octal_bad() {
@@ -37,3 +49,13 @@ invalid:
       openat(fd, "log", O_CREAT, S_IWOTH | S_IUSR | S_IGRP);
       creat("log", S_IWOTH);
     }
+  - |
+    void test_octal_0777(const char *p) { chmod(p, 0777); }
+  - |
+    void test_octal_0707(const char *p) { chmod(p, 0707); }
+  - |
+    void test_mode_var_0666(const char *p) { mode_t mode = 0666; chmod(p, mode); }
+  - |
+    void test_decimal_438(const char *p) { chmod(p, 438); }
+  - |
+    void test_decimal_18(const char *p) { chmod(p, 18); }
