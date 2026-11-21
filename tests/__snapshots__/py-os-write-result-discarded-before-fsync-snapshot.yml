@@ -1,0 +1,42 @@
+id: py-os-write-result-discarded-before-fsync
+snapshots:
+  "import os\ndef reserve(descriptor, generation):\n    try:\n        marker = 3\n        try:\n            os.write(marker, generation.encode(\"ascii\"))\n            os.fsync(marker)\n        finally:\n            os.close(marker)\n    finally:\n        pass":
+    labels:
+    - source: os.write(marker, generation.encode("ascii"))
+      style: primary
+      start: 100
+      end: 144
+    - source: os.fsync(marker)
+      style: secondary
+      start: 157
+      end: 173
+  "import os\ndef write_marker(fd):\n    os.write(fd, b\"x\")\n    os.fsync(fd)":
+    labels:
+    - source: os.write(fd, b"x")
+      style: primary
+      start: 36
+      end: 54
+    - source: os.fsync(fd)
+      style: secondary
+      start: 59
+      end: 71
+  "import os\ndef write_marker(fd, data):\n    os.write(fd, data)\n    os.fsync(fd)":
+    labels:
+    - source: os.write(fd, data)
+      style: primary
+      start: 42
+      end: 60
+    - source: os.fsync(fd)
+      style: secondary
+      start: 65
+      end: 77
+  "import os\ndef write_marker(fd, data, durable):\n    if durable:\n        os.write(fd, data)\n        os.fsync(fd)":
+    labels:
+    - source: os.write(fd, data)
+      style: primary
+      start: 71
+      end: 89
+    - source: os.fsync(fd)
+      style: secondary
+      start: 98
+      end: 110
