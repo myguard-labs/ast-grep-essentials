@@ -1,0 +1,170 @@
+id: py-os-open-blocking-before-type-check
+valid:
+  - |
+    import os
+    import stat
+
+    def check(path):
+        fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
+        try:
+            if not stat.S_ISREG(os.fstat(fd).st_mode):
+                raise ValueError('not a regular file')
+        finally:
+            os.close(fd)
+  - |
+    import os
+    import stat
+
+    def check(path):
+        flags = (
+            os.O_RDONLY
+            | getattr(os, "O_CLOEXEC", 0)
+            | getattr(os, "O_NONBLOCK", 0)
+        )
+        try:
+            fd = os.open(path, flags)
+        except OSError:
+            return None
+        try:
+            if not stat.S_ISREG(os.fstat(fd).st_mode):
+                os.close(fd)
+                return None
+        finally:
+            os.close(fd)
+  - |
+    import os
+    import stat
+
+    def check(path):
+        flags = os.O_RDONLY
+        flags |= os.O_NONBLOCK
+        fd = os.open(path, flags)
+        st = os.fstat(fd)
+        return stat.S_ISFIFO(st.st_mode)
+  - |
+    import os
+
+    def read_it(path):
+        fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC)
+        try:
+            return os.read(fd, 4096)
+        finally:
+            os.close(fd)
+  - |
+    import os
+    import stat
+
+    def check(path):
+        # fd = os.open(path, os.O_RDONLY)
+        st = os.fstat(3)
+        return stat.S_ISREG(st.st_mode)
+  - |
+    import os
+    import stat
+
+    def check(path):
+        text = "fd = os.open(path, os.O_RDONLY)"
+        st = os.fstat(3)
+        return text, stat.S_ISREG(st.st_mode)
+  - |
+    import os
+    import stat
+
+    def check(path, flags):
+        fd = os.open(path, flags)
+        return stat.S_ISREG(os.fstat(fd).st_mode)
+  - |
+    import os
+    import stat
+
+    def check(path):
+        fd = os.open(path, os.O_RDONLY, 0o644)
+        other = os.fstat(7)
+        return stat.S_ISREG(other.st_mode)
+  - |
+    import os
+    import stat
+
+    def check(path):
+        fd = os.open(path, flags=os.O_RDONLY | os.O_NONBLOCK)
+        return stat.S_ISREG(os.fstat(fd).st_mode)
+  - |
+    import os
+    import stat
+
+    def check(path):
+        fd = os.open(path, mode=0o644, flags=os.O_RDONLY | os.O_NONBLOCK)
+        return stat.S_ISREG(os.fstat(fd).st_mode)
+invalid:
+  - |
+    import os
+    import stat
+
+    def check(path):
+        fd = os.open(path, os.O_RDONLY)
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise ValueError('not a regular file')
+  - |
+    import os
+    import stat
+
+    def check(path):
+        fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC)
+        st = os.fstat(fd)
+        return stat.S_ISFIFO(st.st_mode)
+  - |
+    import os
+    import stat
+
+    def check(path):
+        flags = os.O_RDONLY | os.O_CLOEXEC
+        fd = os.open(path, flags)
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode):
+            os.close(fd)
+            return None
+  - |
+    import os
+    import stat
+
+    def check(path):
+        try:
+            descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+        except OSError:
+            return None
+        try:
+            before = os.fstat(descriptor)
+            if not stat.S_ISREG(before.st_mode):
+                return None
+        finally:
+            os.close(descriptor)
+  - |
+    import os
+    import stat
+
+    def check(path):
+        fd = os.open(path, os.O_RDONLY, 0o644)
+        return stat.S_ISCHR(os.fstat(fd).st_mode)
+  - |
+    import os
+    import stat
+
+    def check(path):
+        fd = os.open(path, flags=os.O_RDONLY)
+        return stat.S_ISREG(os.fstat(fd).st_mode)
+  - |
+    import os
+    import stat
+
+    def check(path):
+        other = os.O_RDONLY
+        other |= os.O_NONBLOCK
+        fd = os.open(path, os.O_RDONLY)
+        return other, stat.S_ISREG(os.fstat(fd).st_mode)
+  - |
+    import os
+    import stat
+
+    def check(path):
+        fd = os.open(path, mode=0o644, flags=os.O_RDONLY)
+        return stat.S_ISREG(os.fstat(fd).st_mode)
