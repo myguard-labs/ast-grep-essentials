@@ -282,3 +282,15 @@ invalid:
     def w(p, b):
         fd = os.open(f"{p}.{os.getpid()}.{my_token_hex(16)}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b, obj):
+        fd = os.open(f"{p}.{os.getpid()}.{obj.token_hex(8)}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b, myuuid):
+        fd = os.open(f"{p}.{os.getpid()}.{myuuid.uuid4()}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
