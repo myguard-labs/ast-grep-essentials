@@ -1,0 +1,88 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: ts-dom-html-sink
+language: typescript
+severity: error
+message: >-
+  HTML written to a DOM sink from a non-literal value. innerHTML, outerHTML,
+  document.write and insertAdjacentHTML parse their input as markup, so a
+  script attribute or an injected tag in that value runs in the page origin.
+  Assign textContent instead, or pass the value through a sanitizer that
+  returns HTML.
+note: >-
+  Matches plain and compound assignment to an innerHTML or outerHTML property,
+  any argument of a document.write or document.writeln call, and the second
+  argument of an insertAdjacentHTML call, when that value is not a plain string
+  literal. Comments between arguments are skipped. A call to sanitizeHtml,
+  escapeHtml or a method named sanitize on any object (as DOMPurify.sanitize)
+  is treated as safe by name only. Provenance of the value is unknown, so trusted
+  server-rendered templates also match. JSX or TSX dangerouslySetInnerHTML is
+  not covered by this rule.
+utils:
+  string-literal:
+    any:
+      - kind: string
+      - kind: template_string
+        not: {has: {kind: template_substitution}}
+  sanitized:
+    kind: call_expression
+    has:
+      field: function
+      regex: '(?:^|\.)(sanitize|sanitizeHtml|escapeHtml)$'
+  unsafe-value:
+    all:
+      - not: {matches: string-literal}
+      - not: {matches: sanitized}
+rule:
+  any:
+    - all:
+        - any:
+            - kind: assignment_expression
+            - kind: augmented_assignment_expression
+        - has:
+            field: left
+            kind: member_expression
+            has: {field: property, regex: '^(innerHTML|outerHTML)$'}
+        - has: {field: right, matches: unsafe-value}
+    - kind: call_expression
+      all:
+        - has:
+            field: function
+            kind: member_expression
+            all:
+              - has: {field: object, regex: '^document$'}
+              - has: {field: property, regex: '^(write|writeln)$'}
+        - has:
+            stopBy: neighbor
+            kind: arguments
+            has:
+              stopBy: neighbor
+              nthChild: 'n+1'
+              matches: unsafe-value
+              not: {kind: comment}
+    - kind: call_expression
+      all:
+        - has:
+            field: function
+            kind: member_expression
+            has: {field: property, regex: '^insertAdjacentHTML$'}
+        - has:
+            stopBy: neighbor
+            kind: arguments
+            has:
+              nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+              matches: unsafe-value
+              not: {kind: comment}
+metadata:
+  created_at: '2026-11-21'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-79'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/79.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A05:2025'
+  known_false_negatives: 'TSX or JSX dangerouslySetInnerHTML is not matched; window.document.write, bracket access such as el["innerHTML"] and Range.createContextualFragment are not matched; a value built in a variable before the sink is not followed; a sanitizer is recognised by name only, so any method named sanitize, even one that does not sanitize HTML, is treated as safe'
+  known_false_positives: 'A trusted server-rendered template or constant still reports, because provenance is not known'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-21'

@@ -1,0 +1,27 @@
+id: ts-dom-html-sink
+valid:
+  - "app.innerHTML = '';"
+  - 'el.innerHTML = `<b>hi</b>`;'
+  - 'el.innerHTML = sanitizeHtml(x);'
+  - 'el.innerHTML = DOMPurify.sanitize(x);'
+  - 'el.textContent = msg;'
+  - "document.write('<p>static</p>');"
+  - "document.write('<p>', '</p>');"
+  - "document.writeln('<p>', sanitizeHtml(x));"
+  - "document.writeln('a' /* note */, 'b');"
+  - "el.insertAdjacentHTML('beforeend', '<li></li>');"
+  - "el.insertAdjacentHTML(pos, '<li></li>');"
+  - "el.insertAdjacentHTML('beforeend' /* note */, '<li></li>');"
+  - "el.insertAdjacentText('beforeend', msg);"
+  - 'const h: string = el.innerHTML;'
+  - "const text = 'el.innerHTML = value';"
+  - '// el.innerHTML = value;'
+invalid:
+  - 'toast.innerHTML = `<span>${message}</span>`;'
+  - 'el.outerHTML = html;'
+  - 'el.innerHTML += row;'
+  - 'document.write(content);'
+  - "document.write('<p>', userInput, '</p>');"
+  - "el.insertAdjacentHTML('beforeend', markup);"
+  - "el.insertAdjacentHTML('beforeend' /* note */, markup);"
+  - 'function show(el: HTMLElement, msg: string): void { el.innerHTML = msg; }'
