@@ -1,0 +1,94 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-dict-get-set-membership-unhashable
+language: python
+severity: info
+message: >-
+  This tests a .get() value for membership in a set. Set membership hashes the
+  value, so if it is a list or dict (for example from parsed JSON) it raises
+  TypeError instead of simply not matching, and the code crashes rather than
+  rejecting the input. Check isinstance(value, str) (or another hashable type)
+  first, or compare against a tuple literal, which uses equality and never
+  hashes.
+note: >-
+  Advisory. Fires on `X.get(key) in {...}` and `not in`, with or without a
+  default argument, and on `in frozenset({...})`, `frozenset([...])` or
+  `frozenset((...))` with an inline literal. Whether the value can be
+  unhashable depends on where the mapping came from (untrusted parsed JSON
+  versus a dict the code built itself). That is dataflow and is not checked, so
+  a reviewer decides; a mapping that only ever holds strings is the routine
+  dismissal. Not reported: tuple or list literals, == comparison, a set held in
+  a name, and a test guarded by isinstance on the same X.get(...) either as the
+  left operand of an enclosing `and` or by an earlier `if not isinstance(...)`
+  with return, raise or continue in the same function.
+rule:
+  kind: comparison_operator
+  all:
+    - has:
+        nthChild: 1
+        pattern: '$X.get($$$A)'
+    - has:
+        field: operators
+        regex: '^(not )?in$'
+    - has:
+        nthChild:
+          position: 1
+          reverse: true
+        any:
+          - kind: set
+          - kind: call
+            all:
+              - has: {field: function, regex: '^frozenset$'}
+              - has:
+                  field: arguments
+                  has:
+                    any:
+                      - kind: set
+                      - kind: list
+                      - kind: tuple
+    - not:
+        inside:
+          field: right
+          kind: boolean_operator
+          pattern: '$L and $R'
+          has:
+            field: left
+            any:
+              - pattern: 'isinstance($X.get($$$A), $$$B)'
+              - has:
+                  stopBy: end
+                  pattern: 'isinstance($X.get($$$A), $$$B)'
+    - not:
+        inside:
+          stopBy:
+            kind: function_definition
+          not:
+            kind: function_definition
+          follows:
+            stopBy: end
+            kind: if_statement
+            all:
+              - has:
+                  field: condition
+                  pattern: 'not isinstance($X.get($$$A), $$$B)'
+              - has:
+                  field: consequence
+                  has:
+                    any:
+                      - kind: return_statement
+                      - kind: raise_statement
+                      - kind: continue_statement
+metadata:
+  cwe: 'CWE-248|CWE-20'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/248.html|https://cwe.mitre.org/data/definitions/20.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A10:2025|A05:2025'
+  known_false_positives: 'A mapping that only ever holds strings or other hashable values (a dict the code built itself, not parsed input) is reported because origin is dataflow and is not checked; no file-level json.loads scoping is applied, as it is neither cheap nor precise. Any receiver with a .get() method is matched, so a non-dict object whose get() returns only hashable values is also reported'
+  known_false_negatives: 'A set held in a name (in ALLOWED), a set comprehension or set() call, a value bound to a variable first (t = x.get("k"); t in {...}), and a subscript x["k"] in {...} are not reported; the X.get(...) isinstance guard is only recognised when it is the left operand of an enclosing and, or an earlier if not isinstance(...) with return, raise or continue in the same function; other guards (isinstance in an else branch, try/except TypeError, a type check on a variable) are not recognised and the test is still reported. The guard check is syntactic: any isinstance type argument (even list or dict) suppresses the report, and an isinstance anywhere in the left operand of the and also suppresses it, including one that sits inside an or and so may not hold'
+  rule_modified_at: '2026-11-21'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-21'
+  created_at: '2026-11-21'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0

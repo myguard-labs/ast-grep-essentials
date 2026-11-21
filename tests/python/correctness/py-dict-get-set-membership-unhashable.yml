@@ -1,0 +1,78 @@
+id: py-dict-get-set-membership-unhashable
+valid:
+  - |
+    if event.get("type") in ("error", "turn.failed"):
+        handle(event)
+  - |
+    if event.get("type") in ["error", "turn.failed"]:
+        handle(event)
+  - |
+    if event.get("type") == "error":
+        handle(event)
+  - |
+    if isinstance(event.get("type"), str) and event.get("type") in {"error", "turn.failed"}:
+        handle(event)
+  - |
+    def handle(event):
+        if not isinstance(event.get("type"), str):
+            return
+        if event.get("type") in {"error", "turn.failed"}:
+            raise RuntimeError("failed")
+  - |
+    def handle(events):
+        for event in events:
+            if not isinstance(event.get("type"), str):
+                continue
+            if event.get("type") in {"error", "turn.failed"}:
+                report(event)
+  - |
+    # if event.get("type") in {"error", "turn.failed"}:
+    pass
+  - |
+    note = 'event.get("type") in {"error", "turn.failed"}'
+  - |
+    if event.get("type") in ALLOWED:
+        handle(event)
+  - |
+    if isinstance(event.get("type"), str) and ready and event.get("type") in {"error", "turn.failed"}:
+        handle(event)
+  - |
+    def handle(event):
+        if not isinstance(event.get("type"), str):
+            raise ValueError("bad type")
+        if event.get("type") not in {"error", "turn.failed"}:
+            return
+invalid:
+  - |
+    if event.get("type") in {"error", "turn.failed"}:
+        handle(event)
+  - |
+    if event.get("type") not in {"error", "turn.failed"}:
+        handle(event)
+  - |
+    if event.get("type") in frozenset({"error", "turn.failed"}):
+        handle(event)
+  - |
+    if event.get("type") in frozenset(["error", "turn.failed"]):
+        handle(event)
+  - |
+    if event.get("type") in frozenset(("error", "turn.failed")):
+        handle(event)
+  - |
+    if event.get("type", "") in {"error", "turn.failed"}:
+        handle(event)
+  - |
+    def handle(event):
+        if isinstance(event.get("other"), str):
+            return
+        if event.get("type") in {"error", "turn.failed"}:
+            raise RuntimeError("failed")
+  - |
+    if isinstance(other.get("type"), str) and event.get("type") in {"error", "turn.failed"}:
+        handle(event)
+  - |
+    def handle(event):
+        if not isinstance(event.get("type"), str):
+            log("bad type")
+        if event.get("type") in {"error", "turn.failed"}:
+            raise RuntimeError("failed")
