@@ -15,7 +15,7 @@ note: >-
   dangerouslySetInnerHTML attribute, when the value is not a plain string
   literal. Calls to DOMPurify.sanitize and sanitizeHtml are treated as safe by
   name only. Provenance of the value is unknown, so trusted server-rendered
-  templates also match.
+  templates also match. Comments between arguments are skipped.
 utils:
   string-literal:
     any:
@@ -53,7 +53,11 @@ rule:
         - has:
             stopBy: neighbor
             kind: arguments
-            has: {nthChild: 1, matches: unsafe-value}
+            has:
+              stopBy: neighbor
+              nthChild: 'n+1'
+              matches: unsafe-value
+              not: {kind: comment}
     - kind: call_expression
       all:
         - has:
@@ -63,7 +67,10 @@ rule:
         - has:
             stopBy: neighbor
             kind: arguments
-            has: {nthChild: 2, matches: unsafe-value}
+            has:
+              nthChild: {position: 2, ofRule: {not: {kind: comment}}}
+              matches: unsafe-value
+              not: {kind: comment}
     - kind: jsx_attribute
       all:
         - has: {kind: property_identifier, regex: '^dangerouslySetInnerHTML$'}
