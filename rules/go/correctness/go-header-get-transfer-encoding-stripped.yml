@@ -4,10 +4,11 @@ id: go-header-get-transfer-encoding-stripped
 language: go
 severity: warning
 message: >-
-  Transfer-Encoding is read from a Header field, but net/http removes it from
-  Header when it parses a request or response and stores it in
-  TransferEncoding, so this read is always empty and any check on it is dead.
-  Test len(r.TransferEncoding) > 0 (or resp.TransferEncoding) instead.
+  Transfer-Encoding is read from a Header field. When net/http parses a request
+  or response it removes Transfer-Encoding from Header and stores it in
+  TransferEncoding, so on a parsed message this read is always empty and any
+  check on it is dead. Test len(r.TransferEncoding) > 0 (or
+  resp.TransferEncoding) instead.
 note: >-
   Syntactic check only. It flags a call to `.Header.Get("Transfer-Encoding")` or
   `.Header.Values("Transfer-Encoding")` on any receiver, with the header name
@@ -32,7 +33,7 @@ rule:
           nthChild: 1
           regex: '(?i)^"transfer-encoding"$'
 metadata:
-  known_false_negatives: 'The Header copied to a variable before the read (`h := r.Header; h.Get("Transfer-Encoding")`), a header name held in a variable or constant, the name passed through http.CanonicalHeaderKey, a direct map index (`r.Header["Transfer-Encoding"]`), and a raw string literal (backquoted name) are not flagged; a comment placed between the header name and the call arguments shifts nthChild'
+  known_false_negatives: 'The Header copied to a variable before the read (`h := r.Header; h.Get("Transfer-Encoding")`), a header name held in a variable or constant, the name passed through http.CanonicalHeaderKey, a direct map index (`r.Header["Transfer-Encoding"]`), and a raw string literal (backquoted name) are not flagged; a comment inside the argument list before the header name shifts nthChild and is not flagged'
   known_false_positives: 'A Header the program built itself (outgoing request or response it filled in) is still reported; dismiss it'
   rule_modified_at: '2026-11-22'
   ast_grep_tested_version: 0.51.3
