@@ -25,6 +25,73 @@ valid:
     void test_decimal_good_493(const char *p) { chmod(p, 493); }
   - |
     void test_decimal_good_16(const char *p) { chmod(p, 16); }
+  - |
+    void test_literal_good_hex_0x1a4(void) { chmod("/tmp/foo", 0x1a4); }
+  - |
+    void test_literal_good_hex_0X1A4(void) { chmod("/tmp/foo", 0X1A4); }
+  - |
+    void test_literal_good_oct_0644u(void) { chmod("/tmp/foo", 0644u); }
+  - |
+    void test_literal_good_oct_0644UL(void) { chmod("/tmp/foo", 0644UL); }
+  - |
+    void test_literal_good_dec_420u(void) { chmod("/tmp/foo", 420u); }
+  - |
+    void test_var_good_chmod(int fd, int dirfd) {
+      mode_t mode = 0644;
+      chmod("/tmp/foo", mode);
+    }
+  - |
+    void test_var_good_fchmod(int fd, int dirfd) {
+      mode_t mode = 0644;
+      fchmod(fd, mode);
+    }
+  - |
+    void test_var_good_creat(int fd, int dirfd) {
+      mode_t mode = 0644;
+      creat("log", mode);
+    }
+  - |
+    void test_var_good_fchmodat(int fd, int dirfd) {
+      mode_t mode = 0644;
+      fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW);
+    }
+  - |
+    void test_var_good_open(int fd, int dirfd) {
+      mode_t mode = 0644;
+      open("log", O_CREAT, mode);
+    }
+  - |
+    void test_var_good_openat(int fd, int dirfd) {
+      mode_t mode = 0644;
+      openat(fd, "log", O_CREAT, mode);
+    }
+  - |
+    void test_umask_good(int fd, int dirfd) {
+      umask(0);
+      chmod("/tmp/foo", 0666);
+      fchmod(fd, 0666);
+      creat("log", 0666);
+      fchmodat(dirfd, "log", 0666, AT_SYMLINK_NOFOLLOW);
+      open("log", O_CREAT, 0666);
+      openat(fd, "log", O_CREAT, 0666);
+    }
+  - |
+    void test_umask_var_good(int fd, int dirfd) {
+      mode_t mode = 0666;
+      umask(0);
+      chmod("/tmp/foo", mode);
+      fchmod(fd, mode);
+      creat("log", mode);
+      fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW);
+      open("log", O_CREAT, mode);
+      openat(fd, "log", O_CREAT, mode);
+    }
+  - |
+    void test_literal_good_sep_oct(void) { chmod("/tmp/foo", 0'644); }
+  - |
+    void test_literal_good_sep_hex(void) { chmod("/tmp/foo", 0x1'a4); }
+  - |
+    void test_literal_good_sep_dec(void) { chmod("/tmp/foo", 4'20); }
 invalid:
   - |
     void test_octal_bad() {
@@ -59,3 +126,145 @@ invalid:
     void test_decimal_438(const char *p) { chmod(p, 438); }
   - |
     void test_decimal_18(const char *p) { chmod(p, 18); }
+  - |
+    void test_literal_bad_hex_0x1ff(void) { chmod("/tmp/foo", 0x1ff); }
+  - |
+    void test_literal_bad_hex_0x1B6(void) { chmod("/tmp/foo", 0x1B6); }
+  - |
+    void test_literal_bad_oct_0777u(void) { chmod("/tmp/foo", 0777u); }
+  - |
+    void test_literal_bad_oct_0666UL(void) { chmod("/tmp/foo", 0666UL); }
+  - |
+    void test_literal_bad_dec_438u(void) { chmod("/tmp/foo", 438u); }
+  - |
+    void test_literal_bad_dec_18UL(void) { chmod("/tmp/foo", 18UL); }
+  - |
+    void test_call_direct_fchmod(int fd, int dirfd) {
+      fchmod(fd, 0666);
+    }
+  - |
+    void test_call_direct_creat(int fd, int dirfd) {
+      creat("log", 0666);
+    }
+  - |
+    void test_call_direct_fchmodat(int fd, int dirfd) {
+      fchmodat(dirfd, "log", 0666, AT_SYMLINK_NOFOLLOW);
+    }
+  - |
+    void test_call_direct_open(int fd, int dirfd) {
+      open("log", O_CREAT, 0666);
+    }
+  - |
+    void test_call_direct_openat(int fd, int dirfd) {
+      openat(fd, "log", O_CREAT, 0666);
+    }
+  - |
+    void test_var_decl_chmod(int fd, int dirfd) {
+      mode_t mode = 0666;
+      chmod("/tmp/foo", mode);
+    }
+  - |
+    void test_var_assign_chmod(int fd, int dirfd) {
+      mode_t mode;
+      mode = 0666;
+      chmod("/tmp/foo", mode);
+    }
+  - |
+    void test_var_comma_chmod(int fd, int dirfd) {
+      mode_t mode;
+      (void)0, mode = 0666;
+      chmod("/tmp/foo", mode);
+    }
+  - |
+    void test_var_decl_fchmod(int fd, int dirfd) {
+      mode_t mode = 0666;
+      fchmod(fd, mode);
+    }
+  - |
+    void test_var_assign_fchmod(int fd, int dirfd) {
+      mode_t mode;
+      mode = 0666;
+      fchmod(fd, mode);
+    }
+  - |
+    void test_var_comma_fchmod(int fd, int dirfd) {
+      mode_t mode;
+      (void)0, mode = 0666;
+      fchmod(fd, mode);
+    }
+  - |
+    void test_var_decl_creat(int fd, int dirfd) {
+      mode_t mode = 0666;
+      creat("log", mode);
+    }
+  - |
+    void test_var_assign_creat(int fd, int dirfd) {
+      mode_t mode;
+      mode = 0666;
+      creat("log", mode);
+    }
+  - |
+    void test_var_comma_creat(int fd, int dirfd) {
+      mode_t mode;
+      (void)0, mode = 0666;
+      creat("log", mode);
+    }
+  - |
+    void test_var_decl_fchmodat(int fd, int dirfd) {
+      mode_t mode = 0666;
+      fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW);
+    }
+  - |
+    void test_var_assign_fchmodat(int fd, int dirfd) {
+      mode_t mode;
+      mode = 0666;
+      fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW);
+    }
+  - |
+    void test_var_comma_fchmodat(int fd, int dirfd) {
+      mode_t mode;
+      (void)0, mode = 0666;
+      fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW);
+    }
+  - |
+    void test_var_decl_open(int fd, int dirfd) {
+      mode_t mode = 0666;
+      open("log", O_CREAT, mode);
+    }
+  - |
+    void test_var_assign_open(int fd, int dirfd) {
+      mode_t mode;
+      mode = 0666;
+      open("log", O_CREAT, mode);
+    }
+  - |
+    void test_var_comma_open(int fd, int dirfd) {
+      mode_t mode;
+      (void)0, mode = 0666;
+      open("log", O_CREAT, mode);
+    }
+  - |
+    void test_var_decl_openat(int fd, int dirfd) {
+      mode_t mode = 0666;
+      openat(fd, "log", O_CREAT, mode);
+    }
+  - |
+    void test_var_assign_openat(int fd, int dirfd) {
+      mode_t mode;
+      mode = 0666;
+      openat(fd, "log", O_CREAT, mode);
+    }
+  - |
+    void test_var_comma_openat(int fd, int dirfd) {
+      mode_t mode;
+      (void)0, mode = 0666;
+      openat(fd, "log", O_CREAT, mode);
+    }
+  - |
+    void test_literal_bad_sep_oct(void) { chmod("/tmp/foo", 0'777); }
+  - |
+    void test_literal_bad_sep_hex(void) { chmod("/tmp/foo", 0x1'ff); }
+  - |
+    void test_literal_bad_sep_dec(void) { chmod("/tmp/foo", 4'38u); }
+  - |
+    void test_literal_bad_sep_dec18(void) { chmod("/tmp/foo", 1'8); }

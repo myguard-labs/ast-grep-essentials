@@ -1,5 +1,95 @@
 id: world-writable-file-c
 snapshots:
+  "void test_call_direct_creat(int fd, int dirfd) {\n  creat(\"log\", 0666);\n}\n":
+    labels:
+    - source: "0666"
+      style: primary
+      start: 64
+      end: 68
+    - source: creat("log", 0666)
+      style: secondary
+      start: 51
+      end: 69
+    - source: creat
+      style: secondary
+      start: 51
+      end: 56
+    - source: ("log", 0666)
+      style: secondary
+      start: 56
+      end: 69
+  "void test_call_direct_fchmod(int fd, int dirfd) {\n  fchmod(fd, 0666);\n}\n":
+    labels:
+    - source: "0666"
+      style: primary
+      start: 63
+      end: 67
+    - source: fchmod(fd, 0666)
+      style: secondary
+      start: 52
+      end: 68
+    - source: fchmod
+      style: secondary
+      start: 52
+      end: 58
+    - source: (fd, 0666)
+      style: secondary
+      start: 58
+      end: 68
+  "void test_call_direct_fchmodat(int fd, int dirfd) {\n  fchmodat(dirfd, \"log\", 0666, AT_SYMLINK_NOFOLLOW);\n}\n":
+    labels:
+    - source: "0666"
+      style: primary
+      start: 77
+      end: 81
+    - source: fchmodat(dirfd, "log", 0666, AT_SYMLINK_NOFOLLOW)
+      style: secondary
+      start: 54
+      end: 103
+    - source: fchmodat
+      style: secondary
+      start: 54
+      end: 62
+    - source: (dirfd, "log", 0666, AT_SYMLINK_NOFOLLOW)
+      style: secondary
+      start: 62
+      end: 103
+  "void test_call_direct_open(int fd, int dirfd) {\n  open(\"log\", O_CREAT, 0666);\n}\n":
+    labels:
+    - source: "0666"
+      style: primary
+      start: 71
+      end: 75
+    - source: open("log", O_CREAT, 0666)
+      style: secondary
+      start: 50
+      end: 76
+    - source: open
+      style: secondary
+      start: 50
+      end: 54
+    - source: ("log", O_CREAT, 0666)
+      style: secondary
+      start: 54
+      end: 76
+  "void test_call_direct_openat(int fd, int dirfd) {\n  openat(fd, \"log\", O_CREAT, 0666);\n}\n":
+    labels:
+    - source: "0666"
+      style: primary
+      start: 79
+      end: 83
+    - source: openat(fd, "log", O_CREAT, 0666)
+      style: secondary
+      start: 52
+      end: 84
+    - source: openat
+      style: secondary
+      start: 52
+      end: 58
+    - source: (fd, "log", O_CREAT, 0666)
+      style: secondary
+      start: 58
+      end: 84
   "void test_decimal_18(const char *p) { chmod(p, 18); }\n":
     labels:
     - source: "18"
@@ -36,6 +126,114 @@ snapshots:
       style: secondary
       start: 44
       end: 52
+  "void test_literal_bad_dec_18UL(void) { chmod(\"/tmp/foo\", 18UL); }\n":
+    labels:
+    - source: 18UL
+      style: primary
+      start: 57
+      end: 61
+    - source: chmod("/tmp/foo", 18UL)
+      style: secondary
+      start: 39
+      end: 62
+    - source: chmod
+      style: secondary
+      start: 39
+      end: 44
+    - source: ("/tmp/foo", 18UL)
+      style: secondary
+      start: 44
+      end: 62
+  "void test_literal_bad_dec_438u(void) { chmod(\"/tmp/foo\", 438u); }\n":
+    labels:
+    - source: 438u
+      style: primary
+      start: 57
+      end: 61
+    - source: chmod("/tmp/foo", 438u)
+      style: secondary
+      start: 39
+      end: 62
+    - source: chmod
+      style: secondary
+      start: 39
+      end: 44
+    - source: ("/tmp/foo", 438u)
+      style: secondary
+      start: 44
+      end: 62
+  "void test_literal_bad_hex_0x1B6(void) { chmod(\"/tmp/foo\", 0x1B6); }\n":
+    labels:
+    - source: "0x1B6"
+      style: primary
+      start: 58
+      end: 63
+    - source: chmod("/tmp/foo", 0x1B6)
+      style: secondary
+      start: 40
+      end: 64
+    - source: chmod
+      style: secondary
+      start: 40
+      end: 45
+    - source: ("/tmp/foo", 0x1B6)
+      style: secondary
+      start: 45
+      end: 64
+  "void test_literal_bad_hex_0x1ff(void) { chmod(\"/tmp/foo\", 0x1ff); }\n":
+    labels:
+    - source: "0x1ff"
+      style: primary
+      start: 58
+      end: 63
+    - source: chmod("/tmp/foo", 0x1ff)
+      style: secondary
+      start: 40
+      end: 64
+    - source: chmod
+      style: secondary
+      start: 40
+      end: 45
+    - source: ("/tmp/foo", 0x1ff)
+      style: secondary
+      start: 45
+      end: 64
+  "void test_literal_bad_oct_0666UL(void) { chmod(\"/tmp/foo\", 0666UL); }\n":
+    labels:
+    - source: 0666UL
+      style: primary
+      start: 59
+      end: 65
+    - source: chmod("/tmp/foo", 0666UL)
+      style: secondary
+      start: 41
+      end: 66
+    - source: chmod
+      style: secondary
+      start: 41
+      end: 46
+    - source: ("/tmp/foo", 0666UL)
+      style: secondary
+      start: 46
+      end: 66
+  "void test_literal_bad_oct_0777u(void) { chmod(\"/tmp/foo\", 0777u); }\n":
+    labels:
+    - source: 0777u
+      style: primary
+      start: 58
+      end: 63
+    - source: chmod("/tmp/foo", 0777u)
+      style: secondary
+      start: 40
+      end: 64
+    - source: chmod
+      style: secondary
+      start: 40
+      end: 45
+    - source: ("/tmp/foo", 0777u)
+      style: secondary
+      start: 45
+      end: 64
   "void test_mode_var_0666(const char *p) { mode_t mode = 0666; chmod(p, mode); }\n":
     labels:
     - source: mode
@@ -166,3 +364,711 @@ snapshots:
       style: secondary
       start: 39
       end: 110
+  "void test_var_assign_chmod(int fd, int dirfd) {\n  mode_t mode;\n  mode = 0666;\n  chmod(\"/tmp/foo\", mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 98
+      end: 102
+    - source: mode
+      style: secondary
+      start: 65
+      end: 69
+    - source: "0666"
+      style: secondary
+      start: 72
+      end: 76
+    - source: mode = 0666
+      style: secondary
+      start: 65
+      end: 76
+    - source: mode = 0666;
+      style: secondary
+      start: 65
+      end: 77
+    - source: mode = 0666;
+      style: secondary
+      start: 65
+      end: 77
+    - source: chmod("/tmp/foo", mode)
+      style: secondary
+      start: 80
+      end: 103
+    - source: chmod
+      style: secondary
+      start: 80
+      end: 85
+    - source: ("/tmp/foo", mode)
+      style: secondary
+      start: 85
+      end: 103
+  "void test_var_assign_creat(int fd, int dirfd) {\n  mode_t mode;\n  mode = 0666;\n  creat(\"log\", mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 93
+      end: 97
+    - source: mode
+      style: secondary
+      start: 65
+      end: 69
+    - source: "0666"
+      style: secondary
+      start: 72
+      end: 76
+    - source: mode = 0666
+      style: secondary
+      start: 65
+      end: 76
+    - source: mode = 0666;
+      style: secondary
+      start: 65
+      end: 77
+    - source: mode = 0666;
+      style: secondary
+      start: 65
+      end: 77
+    - source: creat("log", mode)
+      style: secondary
+      start: 80
+      end: 98
+    - source: creat
+      style: secondary
+      start: 80
+      end: 85
+    - source: ("log", mode)
+      style: secondary
+      start: 85
+      end: 98
+  "void test_var_assign_fchmod(int fd, int dirfd) {\n  mode_t mode;\n  mode = 0666;\n  fchmod(fd, mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 92
+      end: 96
+    - source: mode
+      style: secondary
+      start: 66
+      end: 70
+    - source: "0666"
+      style: secondary
+      start: 73
+      end: 77
+    - source: mode = 0666
+      style: secondary
+      start: 66
+      end: 77
+    - source: mode = 0666;
+      style: secondary
+      start: 66
+      end: 78
+    - source: mode = 0666;
+      style: secondary
+      start: 66
+      end: 78
+    - source: fchmod(fd, mode)
+      style: secondary
+      start: 81
+      end: 97
+    - source: fchmod
+      style: secondary
+      start: 81
+      end: 87
+    - source: (fd, mode)
+      style: secondary
+      start: 87
+      end: 97
+  "void test_var_assign_fchmodat(int fd, int dirfd) {\n  mode_t mode;\n  mode = 0666;\n  fchmodat(dirfd, \"log\", mode, AT_SYMLINK_NOFOLLOW);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 106
+      end: 110
+    - source: mode
+      style: secondary
+      start: 68
+      end: 72
+    - source: "0666"
+      style: secondary
+      start: 75
+      end: 79
+    - source: mode = 0666
+      style: secondary
+      start: 68
+      end: 79
+    - source: mode = 0666;
+      style: secondary
+      start: 68
+      end: 80
+    - source: mode = 0666;
+      style: secondary
+      start: 68
+      end: 80
+    - source: fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW)
+      style: secondary
+      start: 83
+      end: 132
+    - source: fchmodat
+      style: secondary
+      start: 83
+      end: 91
+    - source: (dirfd, "log", mode, AT_SYMLINK_NOFOLLOW)
+      style: secondary
+      start: 91
+      end: 132
+  "void test_var_assign_open(int fd, int dirfd) {\n  mode_t mode;\n  mode = 0666;\n  open(\"log\", O_CREAT, mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 100
+      end: 104
+    - source: mode
+      style: secondary
+      start: 64
+      end: 68
+    - source: "0666"
+      style: secondary
+      start: 71
+      end: 75
+    - source: mode = 0666
+      style: secondary
+      start: 64
+      end: 75
+    - source: mode = 0666;
+      style: secondary
+      start: 64
+      end: 76
+    - source: mode = 0666;
+      style: secondary
+      start: 64
+      end: 76
+    - source: open("log", O_CREAT, mode)
+      style: secondary
+      start: 79
+      end: 105
+    - source: open
+      style: secondary
+      start: 79
+      end: 83
+    - source: ("log", O_CREAT, mode)
+      style: secondary
+      start: 83
+      end: 105
+  "void test_var_assign_openat(int fd, int dirfd) {\n  mode_t mode;\n  mode = 0666;\n  openat(fd, \"log\", O_CREAT, mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 108
+      end: 112
+    - source: mode
+      style: secondary
+      start: 66
+      end: 70
+    - source: "0666"
+      style: secondary
+      start: 73
+      end: 77
+    - source: mode = 0666
+      style: secondary
+      start: 66
+      end: 77
+    - source: mode = 0666;
+      style: secondary
+      start: 66
+      end: 78
+    - source: mode = 0666;
+      style: secondary
+      start: 66
+      end: 78
+    - source: openat(fd, "log", O_CREAT, mode)
+      style: secondary
+      start: 81
+      end: 113
+    - source: openat
+      style: secondary
+      start: 81
+      end: 87
+    - source: (fd, "log", O_CREAT, mode)
+      style: secondary
+      start: 87
+      end: 113
+  "void test_var_comma_chmod(int fd, int dirfd) {\n  mode_t mode;\n  (void)0, mode = 0666;\n  chmod(\"/tmp/foo\", mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 106
+      end: 110
+    - source: mode
+      style: secondary
+      start: 73
+      end: 77
+    - source: "0666"
+      style: secondary
+      start: 80
+      end: 84
+    - source: mode = 0666
+      style: secondary
+      start: 73
+      end: 84
+    - source: (void)0, mode = 0666
+      style: secondary
+      start: 64
+      end: 84
+    - source: (void)0, mode = 0666;
+      style: secondary
+      start: 64
+      end: 85
+    - source: (void)0, mode = 0666;
+      style: secondary
+      start: 64
+      end: 85
+    - source: chmod("/tmp/foo", mode)
+      style: secondary
+      start: 88
+      end: 111
+    - source: chmod
+      style: secondary
+      start: 88
+      end: 93
+    - source: ("/tmp/foo", mode)
+      style: secondary
+      start: 93
+      end: 111
+  "void test_var_comma_creat(int fd, int dirfd) {\n  mode_t mode;\n  (void)0, mode = 0666;\n  creat(\"log\", mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 101
+      end: 105
+    - source: mode
+      style: secondary
+      start: 73
+      end: 77
+    - source: "0666"
+      style: secondary
+      start: 80
+      end: 84
+    - source: mode = 0666
+      style: secondary
+      start: 73
+      end: 84
+    - source: (void)0, mode = 0666
+      style: secondary
+      start: 64
+      end: 84
+    - source: (void)0, mode = 0666;
+      style: secondary
+      start: 64
+      end: 85
+    - source: (void)0, mode = 0666;
+      style: secondary
+      start: 64
+      end: 85
+    - source: creat("log", mode)
+      style: secondary
+      start: 88
+      end: 106
+    - source: creat
+      style: secondary
+      start: 88
+      end: 93
+    - source: ("log", mode)
+      style: secondary
+      start: 93
+      end: 106
+  "void test_var_comma_fchmod(int fd, int dirfd) {\n  mode_t mode;\n  (void)0, mode = 0666;\n  fchmod(fd, mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 100
+      end: 104
+    - source: mode
+      style: secondary
+      start: 74
+      end: 78
+    - source: "0666"
+      style: secondary
+      start: 81
+      end: 85
+    - source: mode = 0666
+      style: secondary
+      start: 74
+      end: 85
+    - source: (void)0, mode = 0666
+      style: secondary
+      start: 65
+      end: 85
+    - source: (void)0, mode = 0666;
+      style: secondary
+      start: 65
+      end: 86
+    - source: (void)0, mode = 0666;
+      style: secondary
+      start: 65
+      end: 86
+    - source: fchmod(fd, mode)
+      style: secondary
+      start: 89
+      end: 105
+    - source: fchmod
+      style: secondary
+      start: 89
+      end: 95
+    - source: (fd, mode)
+      style: secondary
+      start: 95
+      end: 105
+  "void test_var_comma_fchmodat(int fd, int dirfd) {\n  mode_t mode;\n  (void)0, mode = 0666;\n  fchmodat(dirfd, \"log\", mode, AT_SYMLINK_NOFOLLOW);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 114
+      end: 118
+    - source: mode
+      style: secondary
+      start: 76
+      end: 80
+    - source: "0666"
+      style: secondary
+      start: 83
+      end: 87
+    - source: mode = 0666
+      style: secondary
+      start: 76
+      end: 87
+    - source: (void)0, mode = 0666
+      style: secondary
+      start: 67
+      end: 87
+    - source: (void)0, mode = 0666;
+      style: secondary
+      start: 67
+      end: 88
+    - source: (void)0, mode = 0666;
+      style: secondary
+      start: 67
+      end: 88
+    - source: fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW)
+      style: secondary
+      start: 91
+      end: 140
+    - source: fchmodat
+      style: secondary
+      start: 91
+      end: 99
+    - source: (dirfd, "log", mode, AT_SYMLINK_NOFOLLOW)
+      style: secondary
+      start: 99
+      end: 140
+  "void test_var_comma_open(int fd, int dirfd) {\n  mode_t mode;\n  (void)0, mode = 0666;\n  open(\"log\", O_CREAT, mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 108
+      end: 112
+    - source: mode
+      style: secondary
+      start: 72
+      end: 76
+    - source: "0666"
+      style: secondary
+      start: 79
+      end: 83
+    - source: mode = 0666
+      style: secondary
+      start: 72
+      end: 83
+    - source: (void)0, mode = 0666
+      style: secondary
+      start: 63
+      end: 83
+    - source: (void)0, mode = 0666;
+      style: secondary
+      start: 63
+      end: 84
+    - source: (void)0, mode = 0666;
+      style: secondary
+      start: 63
+      end: 84
+    - source: open("log", O_CREAT, mode)
+      style: secondary
+      start: 87
+      end: 113
+    - source: open
+      style: secondary
+      start: 87
+      end: 91
+    - source: ("log", O_CREAT, mode)
+      style: secondary
+      start: 91
+      end: 113
+  "void test_var_comma_openat(int fd, int dirfd) {\n  mode_t mode;\n  (void)0, mode = 0666;\n  openat(fd, \"log\", O_CREAT, mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 116
+      end: 120
+    - source: mode
+      style: secondary
+      start: 74
+      end: 78
+    - source: "0666"
+      style: secondary
+      start: 81
+      end: 85
+    - source: mode = 0666
+      style: secondary
+      start: 74
+      end: 85
+    - source: (void)0, mode = 0666
+      style: secondary
+      start: 65
+      end: 85
+    - source: (void)0, mode = 0666;
+      style: secondary
+      start: 65
+      end: 86
+    - source: (void)0, mode = 0666;
+      style: secondary
+      start: 65
+      end: 86
+    - source: openat(fd, "log", O_CREAT, mode)
+      style: secondary
+      start: 89
+      end: 121
+    - source: openat
+      style: secondary
+      start: 89
+      end: 95
+    - source: (fd, "log", O_CREAT, mode)
+      style: secondary
+      start: 95
+      end: 121
+  "void test_var_decl_chmod(int fd, int dirfd) {\n  mode_t mode = 0666;\n  chmod(\"/tmp/foo\", mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 88
+      end: 92
+    - source: mode
+      style: secondary
+      start: 55
+      end: 59
+    - source: "0666"
+      style: secondary
+      start: 62
+      end: 66
+    - source: mode = 0666
+      style: secondary
+      start: 55
+      end: 66
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 48
+      end: 67
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 48
+      end: 67
+    - source: chmod("/tmp/foo", mode)
+      style: secondary
+      start: 70
+      end: 93
+    - source: chmod
+      style: secondary
+      start: 70
+      end: 75
+    - source: ("/tmp/foo", mode)
+      style: secondary
+      start: 75
+      end: 93
+  "void test_var_decl_creat(int fd, int dirfd) {\n  mode_t mode = 0666;\n  creat(\"log\", mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 83
+      end: 87
+    - source: mode
+      style: secondary
+      start: 55
+      end: 59
+    - source: "0666"
+      style: secondary
+      start: 62
+      end: 66
+    - source: mode = 0666
+      style: secondary
+      start: 55
+      end: 66
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 48
+      end: 67
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 48
+      end: 67
+    - source: creat("log", mode)
+      style: secondary
+      start: 70
+      end: 88
+    - source: creat
+      style: secondary
+      start: 70
+      end: 75
+    - source: ("log", mode)
+      style: secondary
+      start: 75
+      end: 88
+  "void test_var_decl_fchmod(int fd, int dirfd) {\n  mode_t mode = 0666;\n  fchmod(fd, mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 82
+      end: 86
+    - source: mode
+      style: secondary
+      start: 56
+      end: 60
+    - source: "0666"
+      style: secondary
+      start: 63
+      end: 67
+    - source: mode = 0666
+      style: secondary
+      start: 56
+      end: 67
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 49
+      end: 68
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 49
+      end: 68
+    - source: fchmod(fd, mode)
+      style: secondary
+      start: 71
+      end: 87
+    - source: fchmod
+      style: secondary
+      start: 71
+      end: 77
+    - source: (fd, mode)
+      style: secondary
+      start: 77
+      end: 87
+  "void test_var_decl_fchmodat(int fd, int dirfd) {\n  mode_t mode = 0666;\n  fchmodat(dirfd, \"log\", mode, AT_SYMLINK_NOFOLLOW);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 96
+      end: 100
+    - source: mode
+      style: secondary
+      start: 58
+      end: 62
+    - source: "0666"
+      style: secondary
+      start: 65
+      end: 69
+    - source: mode = 0666
+      style: secondary
+      start: 58
+      end: 69
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 51
+      end: 70
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 51
+      end: 70
+    - source: fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW)
+      style: secondary
+      start: 73
+      end: 122
+    - source: fchmodat
+      style: secondary
+      start: 73
+      end: 81
+    - source: (dirfd, "log", mode, AT_SYMLINK_NOFOLLOW)
+      style: secondary
+      start: 81
+      end: 122
+  "void test_var_decl_open(int fd, int dirfd) {\n  mode_t mode = 0666;\n  open(\"log\", O_CREAT, mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 90
+      end: 94
+    - source: mode
+      style: secondary
+      start: 54
+      end: 58
+    - source: "0666"
+      style: secondary
+      start: 61
+      end: 65
+    - source: mode = 0666
+      style: secondary
+      start: 54
+      end: 65
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 47
+      end: 66
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 47
+      end: 66
+    - source: open("log", O_CREAT, mode)
+      style: secondary
+      start: 69
+      end: 95
+    - source: open
+      style: secondary
+      start: 69
+      end: 73
+    - source: ("log", O_CREAT, mode)
+      style: secondary
+      start: 73
+      end: 95
+  "void test_var_decl_openat(int fd, int dirfd) {\n  mode_t mode = 0666;\n  openat(fd, \"log\", O_CREAT, mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 98
+      end: 102
+    - source: mode
+      style: secondary
+      start: 56
+      end: 60
+    - source: "0666"
+      style: secondary
+      start: 63
+      end: 67
+    - source: mode = 0666
+      style: secondary
+      start: 56
+      end: 67
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 49
+      end: 68
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 49
+      end: 68
+    - source: openat(fd, "log", O_CREAT, mode)
+      style: secondary
+      start: 71
+      end: 103
+    - source: openat
+      style: secondary
+      start: 71
+      end: 77
+    - source: (fd, "log", O_CREAT, mode)
+      style: secondary
+      start: 77
+      end: 103
