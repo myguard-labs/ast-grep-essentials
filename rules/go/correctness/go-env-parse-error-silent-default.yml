@@ -1,0 +1,61 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-env-parse-error-silent-default
+language: go
+severity: warning
+message: >-
+  A numeric or boolean environment variable is parsed with strconv and, when
+  parsing fails, the function silently returns a default with no log or
+  warning; an operator typo is indistinguishable from an unset variable.
+note: >-
+  Advisory, low precision: a silent default is sometimes intended. Syntactic
+  check only. It flags an `if n, err := strconv.X(os.Getenv(...)); err == nil
+  { return n }` with no else branch (argument optionally wrapped in
+  strings.TrimSpace) whose
+  immediately following sibling is a bare `return` that contains no call, so
+  nothing is logged between the failed parse and the default. It does not
+  resolve imports or types, does not follow the value through a local variable
+  (`raw := os.Getenv(...)`, a known false negative), and does not inspect
+  other statements in the same function. Report location is the if_statement.
+rule:
+  all:
+    - kind: if_statement
+    - has:
+        field: initializer
+        any:
+          - pattern: '$N, err := strconv.$P(os.Getenv($$$G))'
+          - pattern: '$N, err := strconv.$P(os.Getenv($$$G), $$$R)'
+          - pattern: '$N, err := strconv.$P(strings.TrimSpace(os.Getenv($$$G)))'
+          - pattern: '$N, err := strconv.$P(strings.TrimSpace(os.Getenv($$$G)), $$$R)'
+    - has:
+        field: condition
+        pattern: 'err == nil'
+    - has:
+        field: consequence
+        has:
+          stopBy: end
+          kind: return_statement
+          pattern: 'return $N'
+    - not:
+        has:
+          field: alternative
+          any:
+            - kind: block
+            - kind: if_statement
+    - precedes:
+        stopBy: neighbor
+        kind: return_statement
+        not:
+          has:
+            stopBy: end
+            kind: call_expression
+metadata:
+  known_false_negatives: 'The value read into a local first (`raw := os.Getenv(n); if v, err := strconv.Atoi(raw); err == nil {...}`) time.ParseDuration, the reversed condition `nil == err`, and a default returned through a type conversion (`return int64(def)`, which the grammar parses as a call) are not flagged; the strconv receiver is matched by name only'
+  known_false_positives: 'A silent default that is intentional (documented fallback) is still reported'
+  rule_modified_at: '2026-11-21'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-21'
+  created_at: '2026-11-21'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
