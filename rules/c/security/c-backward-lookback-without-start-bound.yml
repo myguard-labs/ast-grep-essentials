@@ -13,15 +13,20 @@ note: >-
   if-statement inside a for or while loop whose condition compares the same
   pointer (p > start, start < p, p != start), since the loop bounds the
   lookback; >= and <= loop bounds do not count because they admit
-  p == start. It does not resolve types, buffer bounds, or other guards.
+  p == start. Only the if-statement's own condition is examined: relational
+  comparisons in the body or else branch do not count as a bound, and a
+  lookback read only in the body is not attributed to the if. It does not
+  resolve types, buffer bounds, or other guards.
 rule:
   all:
     - kind: if_statement
     - has:
-        pattern: '*($P - $K)'
+        field: condition
         stopBy: end
+        pattern: '*($P - $K)'
     - not:
         has:
+          field: condition
           stopBy: end
           kind: binary_expression
           any:
@@ -44,9 +49,9 @@ rule:
               - pattern: '$_ != $P'
           stopBy: end
 metadata:
-  rule_modified_at: '2026-10-15'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-15'
+  rule_modified_at: '2026-11-21'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-21'
   created_at: '2026-10-14'
   source: 'MyGuard'
   modified_by: MyGuard
