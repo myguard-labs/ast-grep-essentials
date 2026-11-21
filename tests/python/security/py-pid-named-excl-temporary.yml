@@ -124,6 +124,40 @@ valid:
     def w(p, b):
         fd = os.open(p + str(os.getpid()) + secrets.token_urlsafe(8), os.O_WRONLY | os.O_EXCL)
         os.write(fd, b)
+  - |
+    import os
+    from secrets import token_hex
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}.{token_hex(16)}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}.{os.urandom(8).hex()}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+    import secrets
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}.{secrets.token_bytes(8).hex()}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+    from uuid import uuid4
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}.{uuid4()}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+    import secrets
+
+    def w(p, b):
+        with open(f"{p}.{os.getpid()}.{secrets.token_hex(8)}", "x") as handle:
+            handle.write(b)
 invalid:
   - |
     import os
@@ -241,3 +275,10 @@ invalid:
         except OSError:
             create = None
         return create
+  - |
+    import os
+    from my_helpers import my_token_hex
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}.{my_token_hex(16)}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
