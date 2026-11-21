@@ -1,0 +1,474 @@
+id: py-pid-named-excl-temporary
+snapshots:
+  "import os\n\ndef outer(p):\n    try:\n        def create():\n            return os.open(f\"{p}.{os.getpid()}\", os.O_WRONLY | os.O_EXCL)\n    except OSError:\n        create = None\n    return create\n":
+    labels:
+    - source: os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)
+      style: primary
+      start: 75
+      end: 129
+    - source: os.open
+      style: secondary
+      start: 75
+      end: 82
+    - source: os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 105
+      end: 128
+    - source: os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 105
+      end: 128
+    - source: os.getpid()
+      style: secondary
+      start: 90
+      end: 101
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 83
+      end: 103
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 83
+      end: 103
+  "import os\n\ndef w(p, b):\n    fd = os.open(\"{}.{}.tmp\".format(p, os.getpid()), os.O_WRONLY | os.O_EXCL)\n    os.write(fd, b)\n":
+    labels:
+    - source: os.open("{}.{}.tmp".format(p, os.getpid()), os.O_WRONLY | os.O_EXCL)
+      style: primary
+      start: 33
+      end: 101
+    - source: os.open
+      style: secondary
+      start: 33
+      end: 40
+    - source: os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 77
+      end: 100
+    - source: os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 77
+      end: 100
+    - source: os.getpid()
+      style: secondary
+      start: 63
+      end: 74
+    - source: "\"{}.{}.tmp\".format(p, os.getpid())"
+      style: secondary
+      start: 41
+      end: 75
+    - source: "\"{}.{}.tmp\".format(p, os.getpid())"
+      style: secondary
+      start: 41
+      end: 75
+  "import os\n\ndef w(p, b):\n    fd = os.open(f\"{p}.{os.getpid()}\", flags=os.O_WRONLY | os.O_EXCL)\n    os.write(fd, b)\n":
+    labels:
+    - source: os.open(f"{p}.{os.getpid()}", flags=os.O_WRONLY | os.O_EXCL)
+      style: primary
+      start: 33
+      end: 93
+    - source: os.open
+      style: secondary
+      start: 33
+      end: 40
+    - source: flags=os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 63
+      end: 92
+    - source: flags=os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 63
+      end: 92
+    - source: os.getpid()
+      style: secondary
+      start: 48
+      end: 59
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 41
+      end: 61
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 41
+      end: 61
+  "import os\n\ndef w(p, b):\n    fd = os.open(f\"{p}.{os.getpid()}\", mode=0o600, flags=os.O_WRONLY | os.O_EXCL)\n    os.write(fd, b)\n":
+    labels:
+    - source: os.open(f"{p}.{os.getpid()}", mode=0o600, flags=os.O_WRONLY | os.O_EXCL)
+      style: primary
+      start: 33
+      end: 105
+    - source: os.open
+      style: secondary
+      start: 33
+      end: 40
+    - source: flags
+      style: secondary
+      start: 75
+      end: 80
+    - source: flags=os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 75
+      end: 104
+    - source: flags=os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 75
+      end: 104
+    - source: os.getpid()
+      style: secondary
+      start: 48
+      end: 59
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 41
+      end: 61
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 41
+      end: 61
+  "import os\n\ndef w(p, b):\n    fd = os.open(f\"{p}.{os.getpid()}.tmp\", os.O_WRONLY | os.O_CREAT | os.O_EXCL)\n    os.write(fd, b)\n":
+    labels:
+    - source: os.open(f"{p}.{os.getpid()}.tmp", os.O_WRONLY | os.O_CREAT | os.O_EXCL)
+      style: primary
+      start: 33
+      end: 104
+    - source: os.open
+      style: secondary
+      start: 33
+      end: 40
+    - source: os.O_WRONLY | os.O_CREAT | os.O_EXCL
+      style: secondary
+      start: 67
+      end: 103
+    - source: os.O_WRONLY | os.O_CREAT | os.O_EXCL
+      style: secondary
+      start: 67
+      end: 103
+    - source: os.getpid()
+      style: secondary
+      start: 48
+      end: 59
+    - source: f"{p}.{os.getpid()}.tmp"
+      style: secondary
+      start: 41
+      end: 65
+    - source: f"{p}.{os.getpid()}.tmp"
+      style: secondary
+      start: 41
+      end: 65
+  "import os\n\ndef w(p, b):\n    fd = os.open(p + \".\" + str(os.getpid()), os.O_WRONLY | os.O_EXCL)\n    os.write(fd, b)\n":
+    labels:
+    - source: os.open(p + "." + str(os.getpid()), os.O_WRONLY | os.O_EXCL)
+      style: primary
+      start: 33
+      end: 93
+    - source: os.open
+      style: secondary
+      start: 33
+      end: 40
+    - source: os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 69
+      end: 92
+    - source: os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 69
+      end: 92
+    - source: os.getpid()
+      style: secondary
+      start: 55
+      end: 66
+    - source: p + "." + str(os.getpid())
+      style: secondary
+      start: 41
+      end: 67
+    - source: p + "." + str(os.getpid())
+      style: secondary
+      start: 41
+      end: 67
+  "import os\n\ndef w(p, b):\n    t = \"%s.%d.tmp\" % (p, os.getpid())\n    fd = os.open(t, os.O_CREAT | os.O_EXCL | os.O_WRONLY)\n    os.write(fd, b)\n":
+    labels:
+    - source: os.open(t, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+      style: primary
+      start: 72
+      end: 120
+    - source: os.open
+      style: secondary
+      start: 72
+      end: 79
+    - source: os.O_CREAT | os.O_EXCL | os.O_WRONLY
+      style: secondary
+      start: 83
+      end: 119
+    - source: os.O_CREAT | os.O_EXCL | os.O_WRONLY
+      style: secondary
+      start: 83
+      end: 119
+    - source: t
+      style: secondary
+      start: 28
+      end: 29
+    - source: os.getpid()
+      style: secondary
+      start: 50
+      end: 61
+    - source: os.getpid()
+      style: secondary
+      start: 50
+      end: 61
+    - source: t = "%s.%d.tmp" % (p, os.getpid())
+      style: secondary
+      start: 28
+      end: 62
+    - source: |-
+        def w(p, b):
+            t = "%s.%d.tmp" % (p, os.getpid())
+            fd = os.open(t, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.write(fd, b)
+      style: secondary
+      start: 11
+      end: 140
+    - source: t
+      style: secondary
+      start: 80
+      end: 81
+    - source: t
+      style: secondary
+      start: 80
+      end: 81
+  "import os\n\ndef w(p, b):\n    t = f\"{p}.{os.getpid()}.tmp\"\n    fd = os.open(t, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)\n    os.write(fd, b)\n":
+    labels:
+    - source: os.open(t, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+      style: primary
+      start: 66
+      end: 121
+    - source: os.open
+      style: secondary
+      start: 66
+      end: 73
+    - source: os.O_WRONLY | os.O_CREAT | os.O_EXCL
+      style: secondary
+      start: 77
+      end: 113
+    - source: os.O_WRONLY | os.O_CREAT | os.O_EXCL
+      style: secondary
+      start: 77
+      end: 113
+    - source: t
+      style: secondary
+      start: 28
+      end: 29
+    - source: os.getpid()
+      style: secondary
+      start: 39
+      end: 50
+    - source: os.getpid()
+      style: secondary
+      start: 39
+      end: 50
+    - source: t = f"{p}.{os.getpid()}.tmp"
+      style: secondary
+      start: 28
+      end: 56
+    - source: |-
+        def w(p, b):
+            t = f"{p}.{os.getpid()}.tmp"
+            fd = os.open(t, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            os.write(fd, b)
+      style: secondary
+      start: 11
+      end: 141
+    - source: t
+      style: secondary
+      start: 74
+      end: 75
+    - source: t
+      style: secondary
+      start: 74
+      end: 75
+  "import os\n\ndef w(p, b):\n    try:\n        fd = os.open(f\"{p}.{os.getpid()}\", os.O_WRONLY | os.O_EXCL)\n    except ValueError as OSError:\n        fd = None\n    return fd\n":
+    labels:
+    - source: os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)
+      style: primary
+      start: 46
+      end: 100
+    - source: os.open
+      style: secondary
+      start: 46
+      end: 53
+    - source: os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 76
+      end: 99
+    - source: os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 76
+      end: 99
+    - source: os.getpid()
+      style: secondary
+      start: 61
+      end: 72
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 54
+      end: 74
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 54
+      end: 74
+  "import os\n\ndef w(p, b):\n    try:\n        fd = os.open(f\"{p}.{os.getpid()}\", os.O_WRONLY | os.O_EXCL)\n    except ValueError:\n        fd = None\n    return fd\n":
+    labels:
+    - source: os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)
+      style: primary
+      start: 46
+      end: 100
+    - source: os.open
+      style: secondary
+      start: 46
+      end: 53
+    - source: os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 76
+      end: 99
+    - source: os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 76
+      end: 99
+    - source: os.getpid()
+      style: secondary
+      start: 61
+      end: 72
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 54
+      end: 74
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 54
+      end: 74
+  "import os\n\ndef w(p, b):\n    try:\n        os.makedirs(p)\n    except OSError:\n        fd = os.open(f\"{p}.{os.getpid()}\", os.O_WRONLY | os.O_EXCL)\n        os.write(fd, b)\n":
+    labels:
+    - source: os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)
+      style: primary
+      start: 89
+      end: 143
+    - source: os.open
+      style: secondary
+      start: 89
+      end: 96
+    - source: os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 119
+      end: 142
+    - source: os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 119
+      end: 142
+    - source: os.getpid()
+      style: secondary
+      start: 104
+      end: 115
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 97
+      end: 117
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 97
+      end: 117
+  "import os\n\ndef w(p, b):\n    with open(f\"{p}.{os.getpid()}\", \"x\") as handle:\n        handle.write(b)\n":
+    labels:
+    - source: open(f"{p}.{os.getpid()}", "x")
+      style: primary
+      start: 33
+      end: 64
+    - source: open
+      style: secondary
+      start: 33
+      end: 37
+    - source: "\"x\""
+      style: secondary
+      start: 60
+      end: 63
+    - source: "\"x\""
+      style: secondary
+      start: 60
+      end: 63
+    - source: os.getpid()
+      style: secondary
+      start: 45
+      end: 56
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 38
+      end: 58
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 38
+      end: 58
+  "import os\n\ndef w(p, b):\n    with open(p + \".\" + str(os.getpid()), mode=\"x\") as handle:\n        handle.write(b)\n":
+    labels:
+    - source: open(p + "." + str(os.getpid()), mode="x")
+      style: primary
+      start: 33
+      end: 75
+    - source: open
+      style: secondary
+      start: 33
+      end: 37
+    - source: mode
+      style: secondary
+      start: 66
+      end: 70
+    - source: "\"x\""
+      style: secondary
+      start: 71
+      end: 74
+    - source: mode="x"
+      style: secondary
+      start: 66
+      end: 74
+    - source: mode="x"
+      style: secondary
+      start: 66
+      end: 74
+    - source: os.getpid()
+      style: secondary
+      start: 52
+      end: 63
+    - source: p + "." + str(os.getpid())
+      style: secondary
+      start: 38
+      end: 64
+    - source: p + "." + str(os.getpid())
+      style: secondary
+      start: 38
+      end: 64
+  "import os\nfrom os import O_WRONLY, O_EXCL\n\ndef w(p, b):\n    fd = os.open(f\"{p}.{os.getpid()}\", O_WRONLY | O_EXCL)\n    return fd\n":
+    labels:
+    - source: os.open(f"{p}.{os.getpid()}", O_WRONLY | O_EXCL)
+      style: primary
+      start: 65
+      end: 113
+    - source: os.open
+      style: secondary
+      start: 65
+      end: 72
+    - source: O_WRONLY | O_EXCL
+      style: secondary
+      start: 95
+      end: 112
+    - source: O_WRONLY | O_EXCL
+      style: secondary
+      start: 95
+      end: 112
+    - source: os.getpid()
+      style: secondary
+      start: 80
+      end: 91
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 73
+      end: 93
+    - source: f"{p}.{os.getpid()}"
+      style: secondary
+      start: 73
+      end: 93

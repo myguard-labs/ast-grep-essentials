@@ -1,0 +1,206 @@
+id: py-pid-named-excl-temporary
+valid:
+  - |
+    import os
+    import secrets
+
+    def atomic(path, data):
+        temporary = f".{path.name}.{secrets.token_hex(8)}.tmp"
+        fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, data)
+  - |
+    import tempfile
+
+    def atomic(path, data):
+        fd, name = tempfile.mkstemp(dir=path.parent)
+        os.write(fd, data)
+  - |
+    import os
+
+    class AtomicWriteError(Exception):
+        pass
+
+    def w(p, b):
+        t = f"{p}.{os.getpid()}.tmp"
+        try:
+            fd = os.open(t, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        except OSError as error:
+            raise AtomicWriteError("cannot create temporary") from error
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        try:
+            fd = os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)
+        except FileExistsError:
+            return None
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        try:
+            with open(f"{p}.{os.getpid()}", "x") as handle:
+                handle.write(b)
+        except (ValueError, OSError):
+            raise
+  - |
+    import os
+
+    def w(p, b):
+        try:
+            fd = os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)
+        except:
+            fd = None
+  - |
+    import os
+
+    def w(p, b):
+        t = f"{p}.{os.getpid()}.tmp"
+        fd = os.open(t, os.O_WRONLY | os.O_CREAT, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        with open(f"{p}.{os.getpid()}", "w") as handle:
+            handle.write(b)
+  - |
+    import os
+    import uuid
+
+    def w(p, b):
+        t = f"{p}.{uuid.uuid4().hex}.tmp"
+        fd = os.open(t, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        # fd = os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)
+        return b
+  - |
+    def w(p):
+        return 'os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)'
+  - |
+    import os
+
+    def w(p, b):
+        try:
+            fd = os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)
+        except (FileExistsError, ValueError) as error:
+            raise RuntimeError("cannot create temporary") from error
+        return fd
+  - |
+    import os
+    import secrets
+
+    def outer(p, b):
+        def helper():
+            t = f"{p}.{os.getpid()}.log"
+            return t
+        t = f"{p}.{secrets.token_hex(8)}.tmp"
+        with open(t, "x") as handle:
+            handle.write(b)
+invalid:
+  - |
+    import os
+
+    def w(p, b):
+        t = f"{p}.{os.getpid()}.tmp"
+        fd = os.open(t, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}.tmp", os.O_WRONLY | os.O_CREAT | os.O_EXCL)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        with open(f"{p}.{os.getpid()}", "x") as handle:
+            handle.write(b)
+  - |
+    import os
+
+    def w(p, b):
+        fd = os.open("{}.{}.tmp".format(p, os.getpid()), os.O_WRONLY | os.O_EXCL)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        t = "%s.%d.tmp" % (p, os.getpid())
+        fd = os.open(t, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        fd = os.open(p + "." + str(os.getpid()), os.O_WRONLY | os.O_EXCL)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        try:
+            fd = os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)
+        except ValueError:
+            fd = None
+        return fd
+  - |
+    import os
+    from os import O_WRONLY, O_EXCL
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}", O_WRONLY | O_EXCL)
+        return fd
+  - |
+    import os
+
+    def w(p, b):
+        with open(p + "." + str(os.getpid()), mode="x") as handle:
+            handle.write(b)
+  - |
+    import os
+
+    def w(p, b):
+        try:
+            os.makedirs(p)
+        except OSError:
+            fd = os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)
+            os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}", flags=os.O_WRONLY | os.O_EXCL)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}", mode=0o600, flags=os.O_WRONLY | os.O_EXCL)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        try:
+            fd = os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)
+        except ValueError as OSError:
+            fd = None
+        return fd
+  - |
+    import os
+
+    def outer(p):
+        try:
+            def create():
+                return os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL)
+        except OSError:
+            create = None
+        return create
