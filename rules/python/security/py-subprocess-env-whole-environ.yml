@@ -1,0 +1,78 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-subprocess-env-whole-environ
+language: python
+severity: info
+message: >-
+  This subprocess call passes the whole parent environment to the child, so the
+  child receives every variable the parent holds, including any API keys,
+  tokens or passwords, even if it needs none of them. Pass an explicit, minimal
+  mapping of the variables the child needs, or omit env= when inheriting the
+  environment is intended and documented.
+note: >-
+  Advisory. Fires on subprocess.run, call, check_call, check_output and Popen
+  (and a bare Popen, check_call or check_output) whose env= keyword is
+  os.environ, os.environ.copy(), dict(os.environ[, ...]) or a dict display
+  spreading **os.environ (with or without overrides), also through a bare
+  environ imported from os. Whether the child needs the secret is semantic and
+  cannot be checked here, so a reviewer decides; a deliberate pass-through to a
+  trusted child is the routine dismissal. Not reported: env= omitted, a literal
+  mapping, a helper call result, and a comprehension filtering os.environ by an
+  allowlist.
+rule:
+  kind: call
+  all:
+    - has:
+        field: function
+        any:
+          - kind: attribute
+            all:
+              - has: {field: object, regex: '^subprocess$'}
+              - has: {field: attribute, regex: '^(run|call|check_call|check_output|Popen)$'}
+          - kind: identifier
+            regex: '^(Popen|check_call|check_output)$'
+    - has:
+        field: arguments
+        has:
+          kind: keyword_argument
+          all:
+            - has: {field: name, regex: '^env$'}
+            - has:
+                field: value
+                any:
+                  - kind: attribute
+                    regex: '^(os\.)?environ$'
+                  - kind: identifier
+                    regex: '^environ$'
+                  - kind: call
+                    any:
+                      - has:
+                          field: function
+                          kind: attribute
+                          regex: '^(os\.)?environ\.copy$'
+                      - all:
+                          - has: {field: function, regex: '^dict$'}
+                          - has:
+                              field: arguments
+                              has:
+                                nthChild: 1
+                                regex: '^(os\.)?environ$'
+                  - kind: dictionary
+                    has:
+                      kind: dictionary_splat
+                      has:
+                        regex: '^(os\.)?environ$'
+metadata:
+  cwe: 'CWE-526'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/526.html'
+  taxonomy_cited_keys: 'cwe'
+  owasp: 'A02:2025'
+  known_false_positives: 'A child that is trusted and genuinely needs the inherited environment (a wrapper re-running the same tool, a build step needing PATH, HOME and proxy variables) is reported, and so is a parent whose environment holds no secrets; the rule cannot see secret names or what the child needs'
+  known_false_negatives: 'Bare run and call (too generic, only the subprocess. prefix is accepted), an aliased module (import subprocess as sp), an environment held in a variable (env = os.environ.copy() then env=env), a helper that returns a copy of the whole environment, a mapping built with a comprehension that copies everything, a **kwargs call, a project wrapper around subprocess (for example a _run helper taking env=), and os.environb are not reported'
+  rule_modified_at: '2026-11-21'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-21'
+  created_at: '2026-11-21'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
