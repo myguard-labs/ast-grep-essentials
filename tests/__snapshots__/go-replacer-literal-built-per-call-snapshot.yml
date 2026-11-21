@@ -1,0 +1,175 @@
+id: go-replacer-literal-built-per-call
+snapshots:
+  "package p\n\nimport \"strings\"\n\nfunc f(s string) string {\n\tr := strings.NewReplacer(\n\t\t// xml entities\n\t\t\"&lt;\", \"<\",\n\t\t\"&gt;\", \">\", // gt\n\t)\n\treturn r.Replace(s)\n}\n":
+    labels:
+    - source: |-
+        strings.NewReplacer(
+        		// xml entities
+        		"&lt;", "<",
+        		"&gt;", ">", // gt
+        	)
+      style: primary
+      start: 61
+      end: 138
+    - source: strings.NewReplacer
+      style: secondary
+      start: 61
+      end: 80
+    - source: "\"&lt;\""
+      style: secondary
+      start: 102
+      end: 108
+    - source: "\"&lt;\""
+      style: secondary
+      start: 102
+      end: 108
+    - source: |-
+        func f(s string) string {
+        	r := strings.NewReplacer(
+        		// xml entities
+        		"&lt;", "<",
+        		"&gt;", ">", // gt
+        	)
+        	return r.Replace(s)
+        }
+      style: secondary
+      start: 29
+      end: 161
+  "package p\n\nimport \"strings\"\n\nvar clean = func(s string) string {\n\treturn strings.NewReplacer(\"a\", \"b\").Replace(s)\n}\n":
+    labels:
+    - source: strings.NewReplacer("a", "b")
+      style: primary
+      start: 73
+      end: 102
+    - source: strings.NewReplacer
+      style: secondary
+      start: 73
+      end: 92
+    - source: "\"a\""
+      style: secondary
+      start: 93
+      end: 96
+    - source: "\"a\""
+      style: secondary
+      start: 93
+      end: 96
+    - source: |-
+        func(s string) string {
+        	return strings.NewReplacer("a", "b").Replace(s)
+        }
+      style: secondary
+      start: 41
+      end: 115
+  "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nfunc f(items []string) {\n\tclean := func(s string) string {\n\t\tr := strings.NewReplacer(\"a\", \"b\")\n\t\treturn r.Replace(s)\n\t}\n\t_ = clean\n}\n":
+    labels:
+    - source: strings.NewReplacer("a", "b")
+      style: primary
+      start: 108
+      end: 137
+    - source: strings.NewReplacer
+      style: secondary
+      start: 108
+      end: 127
+    - source: "\"a\""
+      style: secondary
+      start: 128
+      end: 131
+    - source: "\"a\""
+      style: secondary
+      start: 128
+      end: 131
+    - source: |-
+        func(s string) string {
+        		r := strings.NewReplacer("a", "b")
+        		return r.Replace(s)
+        	}
+      style: secondary
+      start: 77
+      end: 162
+  "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nfunc unescapeMount(s string) string {\n\treturn strings.NewReplacer(\"\\\\040\", \" \", \"\\\\011\", \"\\t\", \"\\\\012\", \"\\n\", \"\\\\134\", \"\\\\\").Replace(s)\n}\n":
+    labels:
+    - source: strings.NewReplacer("\\040", " ", "\\011", "\t", "\\012", "\n", "\\134", "\\")
+      style: primary
+      start: 88
+      end: 166
+    - source: strings.NewReplacer
+      style: secondary
+      start: 88
+      end: 107
+    - source: "\"\\\\040\""
+      style: secondary
+      start: 108
+      end: 115
+    - source: "\"\\\\040\""
+      style: secondary
+      start: 108
+      end: 115
+    - source: |-
+        func unescapeMount(s string) string {
+        	return strings.NewReplacer("\\040", " ", "\\011", "\t", "\\012", "\n", "\\134", "\\").Replace(s)
+        }
+      style: secondary
+      start: 42
+      end: 179
+  "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nfunc unescapeXMLText(s string) string {\n\tif !strings.ContainsAny(s, \"&\") {\n\t\treturn s\n\t}\n\tr := strings.NewReplacer(\n\t\t\"&#61;\", \"=\", \"&#x3D;\", \"=\",\n\t\t\"&lt;\", \"<\", \"&gt;\", \">\", \"&quot;\", `\"`, \"&amp;\", \"&\",\n\t)\n\treturn r.Replace(s)\n}\n":
+    labels:
+    - source: |-
+        strings.NewReplacer(
+        		"&#61;", "=", "&#x3D;", "=",
+        		"&lt;", "<", "&gt;", ">", "&quot;", `"`, "&amp;", "&",
+        	)
+      style: primary
+      start: 137
+      end: 248
+    - source: strings.NewReplacer
+      style: secondary
+      start: 137
+      end: 156
+    - source: "\"&#61;\""
+      style: secondary
+      start: 160
+      end: 167
+    - source: "\"&#61;\""
+      style: secondary
+      start: 160
+      end: 167
+    - source: |-
+        func unescapeXMLText(s string) string {
+        	if !strings.ContainsAny(s, "&") {
+        		return s
+        	}
+        	r := strings.NewReplacer(
+        		"&#61;", "=", "&#x3D;", "=",
+        		"&lt;", "<", "&gt;", ">", "&quot;", `"`, "&amp;", "&",
+        	)
+        	return r.Replace(s)
+        }
+      style: secondary
+      start: 42
+      end: 271
+  "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\ntype T struct{}\n\nfunc (t *T) clean(s string) string {\n\tr := strings.NewReplacer(`\\`, `/`, `\"`, `'`)\n\treturn r.Replace(s)\n}\n":
+    labels:
+    - source: strings.NewReplacer(`\`, `/`, `"`, `'`)
+      style: primary
+      start: 102
+      end: 141
+    - source: strings.NewReplacer
+      style: secondary
+      start: 102
+      end: 121
+    - source: "`\\`"
+      style: secondary
+      start: 122
+      end: 125
+    - source: "`\\`"
+      style: secondary
+      start: 122
+      end: 125
+    - source: |-
+        func (t *T) clean(s string) string {
+        	r := strings.NewReplacer(`\`, `/`, `"`, `'`)
+        	return r.Replace(s)
+        }
+      style: secondary
+      start: 59
+      end: 164

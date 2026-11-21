@@ -1,0 +1,69 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-replacer-literal-built-per-call
+language: go
+severity: warning
+message: >-
+  strings.NewReplacer is called with only string literal arguments inside a
+  function body, so the same constant replacement table is rebuilt on every
+  call; hoist it to a package-level var.
+note: >-
+  Advisory, low precision; does not prove a performance impact. Syntactic
+  check only. It flags a `strings.NewReplacer(...)` call with at least one
+  argument where every argument is an interpreted or raw string literal and
+  that sits inside a function_declaration, method_declaration or func_literal
+  body. A package-level var, a call with any non-literal argument (identifier,
+  call, concatenation; a const name is a known false negative), a call with no
+  arguments, and a construction inside a sync.Once `.Do(func() { ... })`
+  closure are not flagged. It does not establish that the function is hot, nor
+  resolve the strings import alias. Report location is the call_expression.
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        regex: '^strings\.NewReplacer$'
+    - has:
+        field: arguments
+        has:
+          any:
+            - kind: interpreted_string_literal
+            - kind: raw_string_literal
+    - not:
+        has:
+          field: arguments
+          has:
+            all:
+              - not:
+                  any:
+                    - kind: interpreted_string_literal
+                    - kind: raw_string_literal
+                    - kind: comment
+                    - regex: '^[(),]$'
+    - inside:
+        stopBy: end
+        any:
+          - kind: function_declaration
+          - kind: method_declaration
+          - kind: func_literal
+    - not:
+        inside:
+          stopBy: end
+          kind: func_literal
+          inside:
+            kind: argument_list
+            inside:
+              kind: call_expression
+              has:
+                field: function
+                regex: '\.Do$'
+metadata:
+  known_false_negatives: 'A const name or a string-typed variable holding a literal passed as an argument is not flagged; the strings receiver and the .Do method are matched by name only (any x.Do(func(){...}) closure is treated as a once-guard)'
+  known_false_positives: 'A function that really runs once (main, init, a constructor, a helper reached only once) is flagged; a package-level `var r = func() *strings.Replacer { return strings.NewReplacer("a", "b") }()` is flagged because the call sits in a func_literal'
+  rule_modified_at: '2026-11-21'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-21'
+  created_at: '2026-11-21'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
