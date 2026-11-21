@@ -1,0 +1,76 @@
+id: ts-regexp-constructor-unescaped-interpolation
+language: typescript
+severity: warning
+message: >-
+  The pattern passed to RegExp is built by interpolating or concatenating a
+  bare variable or property. Regular expression metacharacters in that value
+  change what the pattern matches (wrong matches, or catastrophic backtracking
+  when the value is attacker-controlled). Escape the value first, for example
+  with an escapeRegExp helper, unless it is already escaped or a trusted
+  constant.
+note: >-
+  Syntactic only. Reports new RegExp(...) and RegExp(...) whose first argument
+  is a template literal with a substitution that is a bare identifier, member
+  access or subscript, or a + concatenation with such an operand (other binary operators such as ?? or || are not reported). A substitution
+  or operand that is a call (escapeRegExp(x), _.escapeRegExp(x), any call), a
+  literal, a substitution-free template, a plain string, and a dynamic value
+  that appears only in the flags argument are not reported. A SCREAMING_CASE
+  identifier is still reported, because a constant is not told apart from a
+  variable by name. The rule cannot tell whether the value was escaped earlier,
+  is constant, or is trusted.
+rule:
+  any:
+    - kind: new_expression
+    - kind: call_expression
+  all:
+    - any:
+        - has:
+            field: constructor
+            kind: identifier
+            regex: '^RegExp$'
+        - has:
+            field: function
+            kind: identifier
+            regex: '^RegExp$'
+    - has:
+        field: arguments
+        has:
+          nthChild: 1
+          any:
+            - kind: template_string
+              has:
+                kind: template_substitution
+                has:
+                  any:
+                    - kind: identifier
+                    - kind: member_expression
+                    - kind: subscript_expression
+            - kind: binary_expression
+              all:
+                - has:
+                    field: operator
+                    regex: '^\+$'
+                - has:
+                    stopBy:
+                      not:
+                        kind: binary_expression
+                        has:
+                          field: operator
+                          regex: '^\+$'
+                    any:
+                      - kind: identifier
+                      - kind: member_expression
+                      - kind: subscript_expression
+metadata:
+  known_false_positives: 'A value escaped earlier into a variable (const safe = escapeRegExp(x); new RegExp(`^${safe}$`)) still reports; a variable holding a trusted constant, including a SCREAMING_CASE one, still reports'
+  known_false_negatives: 'A pattern built in a variable before the constructor (const p = `^${x}$`; new RegExp(p)) is not matched; a call-wrapped value that is not an escape (String(x), x.trim()) is not reported; a parenthesized operand is not reported; String.raw tagged templates are not matched; a concatenation whose only dynamic operand sits inside a nested parenthesis is not reported'
+  rule_modified_at: '2026-11-21'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-21'
+  created_at: '2026-11-21'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
+  cwe: 'CWE-185'
+  taxonomy_source: 'https://cwe.mitre.org/data/definitions/185.html'
+  taxonomy_cited_keys: 'cwe'
