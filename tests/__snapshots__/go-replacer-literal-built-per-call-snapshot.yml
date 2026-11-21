@@ -1,5 +1,40 @@
 id: go-replacer-literal-built-per-call
 snapshots:
+  "package p\n\nimport \"strings\"\n\nfunc f(s string) string {\n\tr := strings.NewReplacer(\n\t\t// xml entities\n\t\t\"&lt;\", \"<\",\n\t\t\"&gt;\", \">\", // gt\n\t)\n\treturn r.Replace(s)\n}\n":
+    labels:
+    - source: |-
+        strings.NewReplacer(
+        		// xml entities
+        		"&lt;", "<",
+        		"&gt;", ">", // gt
+        	)
+      style: primary
+      start: 61
+      end: 138
+    - source: strings.NewReplacer
+      style: secondary
+      start: 61
+      end: 80
+    - source: "\"&lt;\""
+      style: secondary
+      start: 102
+      end: 108
+    - source: "\"&lt;\""
+      style: secondary
+      start: 102
+      end: 108
+    - source: |-
+        func f(s string) string {
+        	r := strings.NewReplacer(
+        		// xml entities
+        		"&lt;", "<",
+        		"&gt;", ">", // gt
+        	)
+        	return r.Replace(s)
+        }
+      style: secondary
+      start: 29
+      end: 161
   "package p\n\nimport \"strings\"\n\nvar clean = func(s string) string {\n\treturn strings.NewReplacer(\"a\", \"b\").Replace(s)\n}\n":
     labels:
     - source: strings.NewReplacer("a", "b")

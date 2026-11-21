@@ -38,6 +38,7 @@ rule:
                   any:
                     - kind: interpreted_string_literal
                     - kind: raw_string_literal
+                    - kind: comment
                     - regex: '^[(),]$'
     - inside:
         stopBy: end
@@ -57,8 +58,8 @@ rule:
                 field: function
                 regex: '\.Do$'
 metadata:
-  known_false_negatives: 'A const name or a string-typed variable holding a literal passed as an argument is not flagged; a replacer built inside a loop or helper reached only once is still treated like any other; the strings receiver and the .Do method are matched by name only (any x.Do(func(){...}) closure is treated as a once-guard)'
-  known_false_positives: 'A function that really runs once (main, init, a constructor) is flagged; a package-level `var r = func() *strings.Replacer { return strings.NewReplacer("a", "b") }()` is flagged because the call sits in a func_literal'
+  known_false_negatives: 'A const name or a string-typed variable holding a literal passed as an argument is not flagged; the strings receiver and the .Do method are matched by name only (any x.Do(func(){...}) closure is treated as a once-guard)'
+  known_false_positives: 'A function that really runs once (main, init, a constructor, a helper reached only once) is flagged; a package-level `var r = func() *strings.Replacer { return strings.NewReplacer("a", "b") }()` is flagged because the call sits in a func_literal'
   rule_modified_at: '2026-11-21'
   ast_grep_tested_version: 0.51.3
   validated_at: '2026-11-21'
