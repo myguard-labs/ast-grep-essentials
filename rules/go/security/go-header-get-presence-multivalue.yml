@@ -6,8 +6,8 @@ severity: warning
 message: >-
   A presence test on a repeatable header uses Header.Get, which returns only the first
   value. A request with an empty first Content-Encoding value and a later gzip value
-  passes this check. Test all values with len(r.Header.Values("Content-Encoding")) > 0
-  instead.
+  passes this check. Test all values instead: len(r.Header.Values("Content-Encoding")) > 0
+  for presence, or == 0 for absence.
 note: >-
   Fires on a call to a Get method on a Header field (for example r.Header.Get or
   resp.Header.Get) with the literal name Content-Encoding, in any letter case, when its
