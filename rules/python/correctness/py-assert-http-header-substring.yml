@@ -1,0 +1,45 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: py-assert-http-header-substring
+language: python
+severity: info
+message: >-
+  This assert checks an HTTP header with a substring test over a lowercased
+  header block (`"name: value" in headers.lower()`). The test also passes when
+  the block carries a conflicting duplicate of the same header, for example two
+  Content-Length values or a Content-Length next to Transfer-Encoding, so it
+  does not prove the header is unique or that this value is the effective one.
+  Review whether uniqueness matters here; if so, parse the headers and assert on
+  the field's value list (for example that it equals `["4"]`).
+note: >-
+  Advisory and syntactic. It matches an assert statement whose test is
+  `<literal> in <expr>.lower()` or `.casefold()`, where the literal is a
+  string starting with a lowercase header field name made of letters, digits
+  and hyphens followed by a colon and a space, and where the source text of
+  <expr> contains "header" (case-insensitive). The rule is not limited to test
+  files, because python rules here carry no file scoping; the smell is the same
+  wherever such an assert sits. Whether a duplicate header matters is a semantic
+  question, hence info severity.
+rule:
+  kind: assert_statement
+  has:
+    nthChild: 1
+    any:
+      - pattern: $LIT in $RECV.lower()
+      - pattern: $LIT in $RECV.casefold()
+constraints:
+  LIT:
+    kind: string
+    regex: '^[rRuU]?["''][a-z0-9-]+: '
+  RECV:
+    regex: '(?i)header'
+metadata:
+  known_false_positives: 'An assert where a duplicate header is harmless or already excluded by an earlier check still reports; a literal that is a header-like line in a non-HTTP text (a mail or log line) held in a variable whose name contains "header" also reports'
+  known_false_negatives: 'Headers stored under a name that does not contain "header" (for example resp.raw or row["h"]) are not matched; literals built at runtime (f-strings, concatenation, a name holding the literal) are not matched; a literal with uppercase letters in the field name is not matched; membership tests outside an assert (if, all(), a helper) are not matched; an assert with the header test after a boolean operator (and, or) is not matched; a lower() applied before assignment is not seen'
+  rule_modified_at: '2026-11-21'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-21'
+  created_at: '2026-11-21'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
