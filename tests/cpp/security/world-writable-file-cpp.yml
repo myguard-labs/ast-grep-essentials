@@ -67,7 +67,7 @@ valid:
     }
   - |
     void test_umask_good(int fd, int dirfd) {
-      umask(0);
+      umask(077);
       chmod("/tmp/foo", 0666);
       fchmod(fd, 0666);
       creat("log", 0666);
@@ -78,7 +78,7 @@ valid:
   - |
     void test_umask_var_good(int fd, int dirfd) {
       mode_t mode = 0666;
-      umask(0);
+      umask(077);
       chmod("/tmp/foo", mode);
       fchmod(fd, mode);
       creat("log", mode);
@@ -92,6 +92,12 @@ valid:
     void test_literal_good_sep_hex(void) { chmod("/tmp/foo", 0x1'a4); }
   - |
     void test_literal_good_sep_dec(void) { chmod("/tmp/foo", 4'20); }
+  - |
+    void test_literal_good_bin(void) { chmod("/tmp/foo", 0b110100100); }
+  - |
+    void test_literal_good_sep_bin(void) { chmod("/tmp/foo", 0b1'10100100); }
+  - |
+    void test_literal_good_z(void) { chmod("/tmp/foo", 0644uz); }
 invalid:
   - |
     void test_octal_bad() {
@@ -268,3 +274,9 @@ invalid:
     void test_literal_bad_sep_dec(void) { chmod("/tmp/foo", 4'38u); }
   - |
     void test_literal_bad_sep_dec18(void) { chmod("/tmp/foo", 1'8); }
+  - |
+    void test_literal_bad_bin(void) { chmod("/tmp/foo", 0b110110110); }
+  - |
+    void test_literal_bad_sep_bin(void) { chmod("/tmp/foo", 0b1'10110110); }
+  - |
+    void test_literal_bad_z(void) { chmod("/tmp/foo", 0777uz); }

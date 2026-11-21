@@ -3,7 +3,7 @@
 # CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/c/security/world-writable-file-c.yml
 # Original author (Git): ESS-ENN
 # License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
-# Modified by MyGuard: provenance metadata added; utility IDs normalized; mode-literal regex fixed to read octal literals and widened to hex, u/l-suffixed literals (ESS-026); other matcher behavior is unchanged.
+# Modified by MyGuard: provenance metadata added; utility IDs normalized; mode-literal regex fixed to read octal literals and widened to hex, binary, u/l-suffixed and C23 digit-separated literals (ESS-026); other matcher behavior is unchanged.
 
 id: world-writable-file-c
 language: c
@@ -12,6 +12,8 @@ message: >-
   This call makes a world-writable file which allows any user on a machine to write to the file. This may allow attackers to influence the behaviour of this process by writing to the file.
 note: >-
   [CWE-732]: Incorrect Permission Assignment for Critical Resource
+  [KNOWN FALSE NEGATIVES] Any preceding umask call suppresses the finding, including umask(0), which leaves the file world-writable.
+  chmod, fchmod and fchmodat are not affected by umask at all, yet are suppressed the same way.
   [REFERENCES]
       - https://wiki.sei.cmu.edu/confluence/display/c/FIO06-C.+Create+files+with+appropriate+access+permissions
 
@@ -38,9 +40,10 @@ utils:
     any:
       - kind: number_literal
         any:
-          - regex: ^0[0-7]*[2367][uUlL]*$
-          - regex: ^0[xX][0-9a-fA-F]*[2367aAbBeEfF][uUlL]*$
-          - regex: ^-?([2367]|([1-9][0-9]*)?(0[2367]|1[014589]|2[2367]|3[014589]|4[2367]|5[014589]|6[2367]|7[014589]|8[2367]|9[014589]))[uUlL]*$
+          - regex: ^0[0-7']*[2367][uUlL]*$
+          - regex: ^0[xX][0-9a-fA-F']*[2367aAbBeEfF][uUlL]*$
+          - regex: ^0[bB][01']*1'?[01][uUlL]*$
+          - regex: ^-?([2367]|([1-9][0-9']*)?(0'?[2367]|1'?[014589]|2'?[2367]|3'?[014589]|4'?[2367]|5'?[014589]|6'?[2367]|7'?[014589]|8'?[2367]|9'?[014589]))[uUlL]*$
       - all:
           - any:
               - kind: binary_expression

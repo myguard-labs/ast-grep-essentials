@@ -126,6 +126,24 @@ snapshots:
       style: secondary
       start: 44
       end: 52
+  "void test_literal_bad_bin(void) { chmod(\"/tmp/foo\", 0b110110110); }\n":
+    labels:
+    - source: "0b110110110"
+      style: primary
+      start: 52
+      end: 63
+    - source: chmod("/tmp/foo", 0b110110110)
+      style: secondary
+      start: 34
+      end: 64
+    - source: chmod
+      style: secondary
+      start: 34
+      end: 39
+    - source: ("/tmp/foo", 0b110110110)
+      style: secondary
+      start: 39
+      end: 64
   "void test_literal_bad_dec_18UL(void) { chmod(\"/tmp/foo\", 18UL); }\n":
     labels:
     - source: 18UL
@@ -234,6 +252,42 @@ snapshots:
       style: secondary
       start: 45
       end: 64
+  "void test_literal_bad_sep_bin(void) { chmod(\"/tmp/foo\", 0b1'10110110); }\n":
+    labels:
+    - source: 0b1'10110110
+      style: primary
+      start: 56
+      end: 68
+    - source: chmod("/tmp/foo", 0b1'10110110)
+      style: secondary
+      start: 38
+      end: 69
+    - source: chmod
+      style: secondary
+      start: 38
+      end: 43
+    - source: ("/tmp/foo", 0b1'10110110)
+      style: secondary
+      start: 43
+      end: 69
+  "void test_literal_bad_sep_oct(void) { chmod(\"/tmp/foo\", 0'777); }\n":
+    labels:
+    - source: 0'777
+      style: primary
+      start: 56
+      end: 61
+    - source: chmod("/tmp/foo", 0'777)
+      style: secondary
+      start: 38
+      end: 62
+    - source: chmod
+      style: secondary
+      start: 38
+      end: 43
+    - source: ("/tmp/foo", 0'777)
+      style: secondary
+      start: 43
+      end: 62
   "void test_mode_var_0666(const char *p) { mode_t mode = 0666; chmod(p, mode); }\n":
     labels:
     - source: mode
