@@ -13,17 +13,39 @@ note: >-
   Matches plain and compound assignment to an innerHTML or outerHTML property,
   any argument of a document.write or document.writeln call, and the second
   argument of an insertAdjacentHTML call, when that value is not a plain string
-  literal. Comments between arguments are skipped. A call to sanitizeHtml,
+  literal; a literal wrapped in as, satisfies, a non-null assertion or parentheses
+  (up to three levels) counts as a literal. Comments between arguments are skipped. A call to sanitizeHtml,
   escapeHtml or a method named sanitize on any object (as DOMPurify.sanitize)
   is treated as safe by name only. Provenance of the value is unknown, so trusted
   server-rendered templates also match. JSX or TSX dangerouslySetInnerHTML is
   not covered by this rule.
 utils:
-  string-literal:
+  literal-core:
     any:
       - kind: string
       - kind: template_string
         not: {has: {kind: template_substitution}}
+  literal-wrapper:
+    any:
+      - kind: as_expression
+      - kind: satisfies_expression
+      - kind: non_null_expression
+      - kind: parenthesized_expression
+  string-literal:
+    any:
+      - matches: literal-core
+      - matches: literal-wrapper
+        has: {matches: literal-core}
+      - matches: literal-wrapper
+        has:
+          matches: literal-wrapper
+          has: {matches: literal-core}
+      - matches: literal-wrapper
+        has:
+          matches: literal-wrapper
+          has:
+            matches: literal-wrapper
+            has: {matches: literal-core}
   sanitized:
     kind: call_expression
     has:
@@ -85,4 +107,4 @@ metadata:
   known_false_negatives: 'TSX or JSX dangerouslySetInnerHTML is not matched; window.document.write, bracket access such as el["innerHTML"] and Range.createContextualFragment are not matched; a value built in a variable before the sink is not followed; a sanitizer is recognised by name only, so any method named sanitize, even one that does not sanitize HTML, is treated as safe'
   known_false_positives: 'A trusted server-rendered template or constant still reports, because provenance is not known'
   ast_grep_tested_version: 0.51.3
-  validated_at: '2026-11-21'
+  validated_at: '2026-11-22'
