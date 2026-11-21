@@ -1,0 +1,43 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-header-get-transfer-encoding-stripped
+language: go
+severity: warning
+message: >-
+  Transfer-Encoding is read from a Header field, but net/http removes it from
+  Header when it parses a request or response and stores it in
+  TransferEncoding, so this read is always empty and any check on it is dead.
+  Test len(r.TransferEncoding) > 0 (or resp.TransferEncoding) instead.
+note: >-
+  Syntactic check only. It flags a call to `.Header.Get("Transfer-Encoding")` or
+  `.Header.Values("Transfer-Encoding")` on any receiver, with the header name
+  matched case-insensitively as the first argument. It does not resolve types
+  and does not know where the Header came from. Dismiss the finding when the
+  program built that Header itself (for example an outgoing request whose
+  Header it set), since net/http does not strip headers the program writes.
+  Report location is the call_expression. The call on a ResponseWriter
+  (`w.Header().Get`) is not matched on purpose: its Header is not parsed.
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        any:
+          - pattern: $R.Header.Get
+          - pattern: $R.Header.Values
+    - has:
+        field: arguments
+        has:
+          kind: interpreted_string_literal
+          nthChild: 1
+          regex: '(?i)^"transfer-encoding"$'
+metadata:
+  known_false_negatives: 'The Header copied to a variable before the read (`h := r.Header; h.Get("Transfer-Encoding")`), a header name held in a variable or constant, the name passed through http.CanonicalHeaderKey, a direct map index (`r.Header["Transfer-Encoding"]`), and a raw string literal (backquoted name) are not flagged; a comment placed between the header name and the call arguments shifts nthChild'
+  known_false_positives: 'A Header the program built itself (outgoing request or response it filled in) is still reported; dismiss it'
+  rule_modified_at: '2026-11-22'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-22'
+  created_at: '2026-11-22'
+  source: 'MyGuard'
+  modified_by: MyGuard
+  license: MyGuard Internal Use License 1.0
