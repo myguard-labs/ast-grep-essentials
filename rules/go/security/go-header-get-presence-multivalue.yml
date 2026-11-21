@@ -5,16 +5,18 @@ language: go
 severity: warning
 message: >-
   A presence test on a repeatable header uses Header.Get, which returns only the first
-  value. A request with an empty first Content-Encoding or Transfer-Encoding value and a
-  later gzip or chunked value passes this check. Test all values with
-  len(r.Header.Values(name)) > 0 instead.
+  value. A request with an empty first Content-Encoding value and a later gzip value
+  passes this check. Test all values with len(r.Header.Values("Content-Encoding")) > 0
+  instead.
 note: >-
   Fires on a call to a Get method on a Header field (for example r.Header.Get or
-  resp.Header.Get) with the literal name Content-Encoding or Transfer-Encoding, in any
-  letter case, when its result is compared with == or != against the empty string, in
-  either operand order. Header.Get returns only the first of the repeated values, so
-  this is a presence check that can miss a later value. Dismissed when the code also
-  rejects or normalizes repeated headers elsewhere, or when the value is only logged.
+  resp.Header.Get) with the literal name Content-Encoding, in any letter case, when its
+  result is compared with == or != against the empty string, in either operand order.
+  Header.Get returns only the first of the repeated values, so this is a presence check
+  that can miss a later value. Transfer-Encoding is not covered: net/http removes it from
+  Header when parsing and exposes it as Request.TransferEncoding or Response.TransferEncoding.
+  Dismissed when the code also rejects or normalizes repeated headers elsewhere, or when
+  the value is only logged.
 
   Known false negatives: a Header copied to a variable and then h.Get(...) compared;
   the header name held in a variable or constant; the len form wrapped around the Get call;
@@ -58,7 +60,7 @@ utils:
           has:
             kind: interpreted_string_literal
             nthChild: 1
-            regex: '(?i)^"(content|transfer)-encoding"$'
+            regex: '(?i)^"content-encoding"$'
 metadata:
   created_at: '2026-11-22'
   source: 'MyGuard'

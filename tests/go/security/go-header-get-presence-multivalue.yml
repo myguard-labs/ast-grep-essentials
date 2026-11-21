@@ -17,12 +17,14 @@ valid:
     	// if r.Header.Get("Content-Encoding") != "" { reject() }
     	_ = len(r.Header.Values("Content-Encoding"))
     }
+  - |
+    func f(r *http.Request) bool { return r.Header.Get("Transfer-Encoding") != "" }
 invalid:
   - |
     func f(r *http.Request) { if r.Header.Get("Content-Encoding") != "" { reject() } }
   - |
-    func f(req *http.Request) { if req.Header.Get("Transfer-Encoding") == "" { ok() } }
+    func f(req *http.Request) { if req.Header.Get("Content-Encoding") == "" { ok() } }
   - |
     func f(resp *http.Response) { if "" != resp.Header.Get("content-encoding") { a() } }
   - |
-    func f(r *http.Request) bool { return r.Header.Get("Transfer-Encoding") != "" }
+    func f(r *http.Request) bool { return r.Header.Get("Content-Encoding") != "" }
