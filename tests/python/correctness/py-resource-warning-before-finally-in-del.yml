@@ -47,11 +47,88 @@ valid:
             self.stream = stream
 
         def __del__(self):
-            warnings.warn("Unclosed writer", ResourceWarning)
+            try:
+                self.stream.flush()
+            finally:
+                warnings.warn("Unclosed writer", ResourceWarning, stacklevel=2)
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
             try:
                 self.stream.flush()
             except OSError:
                 pass
+            warnings.warn("Unclosed writer", ResourceWarning, stacklevel=2)
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
+            warnings.warn("Unclosed writer", DeprecationWarning)
+            try:
+                self.stream.flush()
+            except OSError:
+                pass
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def release(self):
+            if self.stream:
+                warnings.warn("Unclosed writer", ResourceWarning, stacklevel=2)
+                try:
+                    self.stream.flush()
+                except OSError:
+                    pass
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
+            # warnings.warn("Unclosed writer", ResourceWarning, stacklevel=2)
+            try:
+                self.stream.flush()
+            except OSError:
+                pass
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
+            note = 'warnings.warn("Unclosed writer", ResourceWarning, stacklevel=2)'
+            try:
+                self.stream.flush()
+            except OSError:
+                pass
+  - |-
+    import warnings
+
+    class Handle:
+        def __del__(self):
+            def report():
+                warnings.warn("leak", ResourceWarning)
+                try:
+                    self.log()
+                finally:
+                    pass
+            report()
 invalid:
   - |
     import warnings
@@ -108,3 +185,61 @@ invalid:
                 self.stream.flush()
             finally:
                 self.stream.close()
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
+            warnings.warn("Unclosed writer", ResourceWarning)
+            try:
+                self.stream.flush()
+            except OSError:
+                pass
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
+            if getattr(self, "stream", None) is not None:
+                warnings.warn(
+                    "unclosed Writer; use close() or a context manager",
+                    ResourceWarning,
+                    stacklevel=2,
+                )
+                try:
+                    self.close()
+                except OSError:
+                    pass
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
+            warnings.warn("Unclosed writer", ResourceWarning, stacklevel=2)
+            try:
+                self.stream.flush()
+            finally:
+                self.stream.close()
+  - |-
+    import warnings
+
+    class Writer:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __del__(self):
+            if self.stream:
+                warnings.warn("Unclosed writer", ResourceWarning, stacklevel=2)
+                try:
+                    self.stream.flush()
+                finally:
+                    self.stream.close()
