@@ -4,15 +4,20 @@ id: go-sql-sprintf
 language: go
 severity: warning
 message: >-
-  SQL query expression contains fmt.Sprintf/Sprint or strings.Join and is
-  passed to a Query/Exec/Prepare call. Review it as a SQL-injection candidate;
-  use numbered dollar placeholders or question marks and pass values as separate
-  arguments for binding.
+  SQL query expression is built with fmt.Sprintf/Sprint, strings.Join or `+`
+  string concatenation and is passed to a Query/Exec/Prepare call. Review it as
+  a SQL-injection candidate; use numbered dollar placeholders or question marks
+  and pass values as separate arguments for binding.
 note: >-
   Checks the query position, accounting for Context variants. Receiver types
   are unresolved, so Query/Exec on a prepared statement can still need review.
   Dismiss only if every interpolated value is a compile-time constant (for
-  example, a table name from a fixed allowlist).
+  example, a table name from a fixed allowlist). A `+` concatenation whose
+  non-literal operand is a compile-time constant or a value drawn from a fixed
+  literal allowlist (for example a key of a literal map, as in a PRAGMA name)
+  can also be dismissed. False negatives: a concatenation built in a separate
+  variable before the call, `+=` accumulation, and parenthesized operands are
+  not followed.
 rule:
   all:
     - kind: call_expression
@@ -68,9 +73,25 @@ utils:
         - all:
             - has: {field: operand, regex: ^strings$}
             - has: {field: field, regex: ^Join$}
+  concat-query:
+    kind: binary_expression
+    all:
+      - has: {field: operator, regex: '^\+$'}
+      - has:
+          stopBy: end
+          any:
+            - kind: interpreted_string_literal
+            - kind: raw_string_literal
+      - has:
+          stopBy: end
+          any:
+            - kind: identifier
+            - kind: selector_expression
+            - kind: call_expression
   formatted-query:
     any:
       - matches: query-builder
+      - matches: concat-query
       - has:
           stopBy:
             kind: func_literal

@@ -1,9 +1,7 @@
 id: go-sql-sprintf
 snapshots:
-  ? |-
-    package p
-    func f() { db . Query(fmt . Sprintf("SELECT %s", value)) }
-  : labels:
+  "package p\nfunc f() { db . Query(fmt . Sprintf(\"SELECT %s\", value)) }":
+    labels:
     - source: db . Query(fmt . Sprintf("SELECT %s", value))
       style: primary
       start: 21
@@ -36,10 +34,42 @@ snapshots:
       style: secondary
       start: 31
       end: 66
-  ? |-
-    package p
-    func f() { db.Exec(fmt.Sprintf("DELETE FROM %s", table)) }
-  : labels:
+  "package p\nfunc f() { db.Exec(`DELETE FROM ` + cfg.Table) }\n":
+    labels:
+    - source: db.Exec(`DELETE FROM ` + cfg.Table)
+      style: primary
+      start: 21
+      end: 56
+    - source: Exec
+      style: secondary
+      start: 24
+      end: 28
+    - source: db.Exec
+      style: secondary
+      start: 21
+      end: 28
+    - source: +
+      style: secondary
+      start: 44
+      end: 45
+    - source: "`DELETE FROM `"
+      style: secondary
+      start: 29
+      end: 43
+    - source: cfg.Table
+      style: secondary
+      start: 46
+      end: 55
+    - source: "`DELETE FROM ` + cfg.Table"
+      style: secondary
+      start: 29
+      end: 55
+    - source: (`DELETE FROM ` + cfg.Table)
+      style: secondary
+      start: 28
+      end: 56
+  "package p\nfunc f() { db.Exec(fmt.Sprintf(\"DELETE FROM %s\", table)) }":
+    labels:
     - source: db.Exec(fmt.Sprintf("DELETE FROM %s", table))
       style: primary
       start: 21
@@ -72,10 +102,8 @@ snapshots:
       style: secondary
       start: 28
       end: 66
-  ? |-
-    package p
-    func f() { db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s", table)) }
-  : labels:
+  "package p\nfunc f() { db.ExecContext(ctx, fmt.Sprintf(\"DELETE FROM %s\", table)) }":
+    labels:
     - source: db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s", table))
       style: primary
       start: 21
@@ -108,10 +136,8 @@ snapshots:
       style: secondary
       start: 35
       end: 78
-  ? |-
-    package p
-    func f() { db.Prepare(fmt.Sprintf("SELECT %s", column)) }
-  : labels:
+  "package p\nfunc f() { db.Prepare(fmt.Sprintf(\"SELECT %s\", column)) }":
+    labels:
     - source: db.Prepare(fmt.Sprintf("SELECT %s", column))
       style: primary
       start: 21
@@ -144,10 +170,8 @@ snapshots:
       style: secondary
       start: 31
       end: 65
-  ? |-
-    package p
-    func f() { db.PrepareContext(ctx, fmt.Sprintf("SELECT %s", column)) }
-  : labels:
+  "package p\nfunc f() { db.PrepareContext(ctx, fmt.Sprintf(\"SELECT %s\", column)) }":
+    labels:
     - source: db.PrepareContext(ctx, fmt.Sprintf("SELECT %s", column))
       style: primary
       start: 21
@@ -180,10 +204,110 @@ snapshots:
       style: secondary
       start: 38
       end: 77
-  ? |
-    package p
-    func f() { db.Query(/* query */ fmt.Sprintf("SELECT %s", value)) }
-  : labels:
+  "package p\nfunc f() { db.Query(\"SELECT \" + strconv.Itoa(n)) }\n":
+    labels:
+    - source: db.Query("SELECT " + strconv.Itoa(n))
+      style: primary
+      start: 21
+      end: 58
+    - source: Query
+      style: secondary
+      start: 24
+      end: 29
+    - source: db.Query
+      style: secondary
+      start: 21
+      end: 29
+    - source: +
+      style: secondary
+      start: 40
+      end: 41
+    - source: "\"SELECT \""
+      style: secondary
+      start: 30
+      end: 39
+    - source: strconv.Itoa(n)
+      style: secondary
+      start: 42
+      end: 57
+    - source: "\"SELECT \" + strconv.Itoa(n)"
+      style: secondary
+      start: 30
+      end: 57
+    - source: ("SELECT " + strconv.Itoa(n))
+      style: secondary
+      start: 29
+      end: 58
+  "package p\nfunc f() { db.Query(\"SELECT * FROM t WHERE id = \" + id + \" LIMIT 1\") }\n":
+    labels:
+    - source: db.Query("SELECT * FROM t WHERE id = " + id + " LIMIT 1")
+      style: primary
+      start: 21
+      end: 78
+    - source: Query
+      style: secondary
+      start: 24
+      end: 29
+    - source: db.Query
+      style: secondary
+      start: 21
+      end: 29
+    - source: +
+      style: secondary
+      start: 65
+      end: 66
+    - source: "\"SELECT * FROM t WHERE id = \""
+      style: secondary
+      start: 30
+      end: 59
+    - source: id
+      style: secondary
+      start: 62
+      end: 64
+    - source: "\"SELECT * FROM t WHERE id = \" + id + \" LIMIT 1\""
+      style: secondary
+      start: 30
+      end: 77
+    - source: ("SELECT * FROM t WHERE id = " + id + " LIMIT 1")
+      style: secondary
+      start: 29
+      end: 78
+  "package p\nfunc f() { db.Query(\"SELECT * FROM t WHERE id = \" + id) }\n":
+    labels:
+    - source: db.Query("SELECT * FROM t WHERE id = " + id)
+      style: primary
+      start: 21
+      end: 65
+    - source: Query
+      style: secondary
+      start: 24
+      end: 29
+    - source: db.Query
+      style: secondary
+      start: 21
+      end: 29
+    - source: +
+      style: secondary
+      start: 60
+      end: 61
+    - source: "\"SELECT * FROM t WHERE id = \""
+      style: secondary
+      start: 30
+      end: 59
+    - source: id
+      style: secondary
+      start: 62
+      end: 64
+    - source: "\"SELECT * FROM t WHERE id = \" + id"
+      style: secondary
+      start: 30
+      end: 64
+    - source: ("SELECT * FROM t WHERE id = " + id)
+      style: secondary
+      start: 29
+      end: 65
+  "package p\nfunc f() { db.Query(/* query */ fmt.Sprintf(\"SELECT %s\", value)) }\n":
+    labels:
     - source: db.Query(/* query */ fmt.Sprintf("SELECT %s", value))
       style: primary
       start: 21
@@ -216,10 +340,8 @@ snapshots:
       style: secondary
       start: 29
       end: 74
-  ? |-
-    package p
-    func f() { db.Query(fmt.Sprintf("SELECT %s", value)) }
-  : labels:
+  "package p\nfunc f() { db.Query(fmt.Sprintf(\"SELECT %s\", value)) }":
+    labels:
     - source: db.Query(fmt.Sprintf("SELECT %s", value))
       style: primary
       start: 21
@@ -252,10 +374,8 @@ snapshots:
       style: secondary
       start: 29
       end: 62
-  ? |
-    package p
-    func f() { db.QueryContext(/* context */ ctx, fmt.Sprintf("SELECT %s", value)) }
-  : labels:
+  "package p\nfunc f() { db.QueryContext(/* context */ ctx, fmt.Sprintf(\"SELECT %s\", value)) }\n":
+    labels:
     - source: db.QueryContext(/* context */ ctx, fmt.Sprintf("SELECT %s", value))
       style: primary
       start: 21
@@ -288,10 +408,8 @@ snapshots:
       style: secondary
       start: 36
       end: 88
-  ? |
-    package p
-    func f() { db.QueryContext(ctx, /* query */ fmt.Sprintf("SELECT %s", value)) }
-  : labels:
+  "package p\nfunc f() { db.QueryContext(ctx, /* query */ fmt.Sprintf(\"SELECT %s\", value)) }\n":
+    labels:
     - source: db.QueryContext(ctx, /* query */ fmt.Sprintf("SELECT %s", value))
       style: primary
       start: 21
@@ -324,10 +442,8 @@ snapshots:
       style: secondary
       start: 36
       end: 86
-  ? |-
-    package p
-    func f() { db.QueryContext(ctx, strings.Join(parts, " ")) }
-  : labels:
+  "package p\nfunc f() { db.QueryContext(ctx, strings.Join(parts, \" \")) }":
+    labels:
     - source: db.QueryContext(ctx, strings.Join(parts, " "))
       style: primary
       start: 21
@@ -360,10 +476,8 @@ snapshots:
       style: secondary
       start: 36
       end: 67
-  ? |-
-    package p
-    func f() { db.QueryRow(fmt.Sprint("SELECT ", column)) }
-  : labels:
+  "package p\nfunc f() { db.QueryRow(fmt.Sprint(\"SELECT \", column)) }":
+    labels:
     - source: db.QueryRow(fmt.Sprint("SELECT ", column))
       style: primary
       start: 21
@@ -396,10 +510,42 @@ snapshots:
       style: secondary
       start: 32
       end: 63
-  ? |-
-    package p
-    func f() { db.QueryRowContext(ctx, fmt.Sprintf("SELECT %s", column)) }
-  : labels:
+  "package p\nfunc f() { db.QueryRowContext(ctx, \"PRAGMA \"+name) }\n":
+    labels:
+    - source: db.QueryRowContext(ctx, "PRAGMA "+name)
+      style: primary
+      start: 21
+      end: 60
+    - source: QueryRowContext
+      style: secondary
+      start: 24
+      end: 39
+    - source: db.QueryRowContext
+      style: secondary
+      start: 21
+      end: 39
+    - source: +
+      style: secondary
+      start: 54
+      end: 55
+    - source: "\"PRAGMA \""
+      style: secondary
+      start: 45
+      end: 54
+    - source: name
+      style: secondary
+      start: 55
+      end: 59
+    - source: "\"PRAGMA \"+name"
+      style: secondary
+      start: 45
+      end: 59
+    - source: (ctx, "PRAGMA "+name)
+      style: secondary
+      start: 39
+      end: 60
+  "package p\nfunc f() { db.QueryRowContext(ctx, fmt.Sprintf(\"SELECT %s\", column)) }":
+    labels:
     - source: db.QueryRowContext(ctx, fmt.Sprintf("SELECT %s", column))
       style: primary
       start: 21
@@ -432,10 +578,8 @@ snapshots:
       style: secondary
       start: 39
       end: 78
-  ? |-
-    package p
-    func f() { stmt.Query(fmt.Sprintf("%s", value)) }
-  : labels:
+  "package p\nfunc f() { stmt.Query(fmt.Sprintf(\"%s\", value)) }":
+    labels:
     - source: stmt.Query(fmt.Sprintf("%s", value))
       style: primary
       start: 21
