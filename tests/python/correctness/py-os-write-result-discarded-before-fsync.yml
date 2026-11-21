@@ -1,0 +1,74 @@
+id: py-os-write-result-discarded-before-fsync
+valid:
+  - |-
+    import os
+    def write_marker(fd, generation):
+        data = generation.encode("ascii")
+        n = os.write(fd, data)
+        os.fsync(fd)
+        return n
+  - |-
+    import os
+    def write_marker(fd, data):
+        view = memoryview(data)
+        while view:
+            n = os.write(fd, view)
+            view = view[n:]
+        os.fsync(fd)
+  - |-
+    import os
+    def write_marker(fd, data):
+        os.write(fd, data)
+        os.close(fd)
+  - |-
+    import os
+    def write_marker(fd, other, data):
+        os.write(fd, data)
+        os.fsync(other)
+  - |-
+    import os
+    def write_marker(path, data):
+        with open(path, "wb") as f:
+            f.write(data)
+            os.fsync(f.fileno())
+  - |-
+    import os
+    def write_marker(fd, data):
+        # os.write(fd, data)
+        # os.fsync(fd)
+        return None
+  - |-
+    import os
+    def write_marker(fd, data):
+        text = """os.write(fd, data)
+    os.fsync(fd)"""
+        return text
+invalid:
+  - |-
+    import os
+    def reserve(descriptor, generation):
+        try:
+            marker = 3
+            try:
+                os.write(marker, generation.encode("ascii"))
+                os.fsync(marker)
+            finally:
+                os.close(marker)
+        finally:
+            pass
+  - |-
+    import os
+    def write_marker(fd, data):
+        os.write(fd, data)
+        os.fsync(fd)
+  - |-
+    import os
+    def write_marker(fd):
+        os.write(fd, b"x")
+        os.fsync(fd)
+  - |-
+    import os
+    def write_marker(fd, data, durable):
+        if durable:
+            os.write(fd, data)
+            os.fsync(fd)
