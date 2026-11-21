@@ -1,0 +1,19 @@
+id: go-replacer-literal-built-per-call
+valid:
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nvar r = strings.NewReplacer(\"a\", \"b\")\n"
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nvar (\n\tr1 = strings.NewReplacer(\"a\", \"b\")\n\tr2 = strings.NewReplacer(\"&lt;\", \"<\", \"&gt;\", \">\")\n)\n"
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nfunc f(s, x string) string {\n\treturn strings.NewReplacer(\"a\", x).Replace(s)\n}\n"
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nfunc f(s string) string {\n\treturn strings.NewReplacer(\"a\", strings.ToUpper(\"a\")).Replace(s)\n}\n"
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nfunc f(s, x string) string {\n\treturn strings.NewReplacer(\"a\", \"b\"+x).Replace(s)\n}\n"
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nvar (\n\tonce sync.Once\n\tr    *strings.Replacer\n)\n\nfunc get() *strings.Replacer {\n\tonce.Do(func() { r = strings.NewReplacer(\"a\", \"b\") })\n\treturn r\n}\n"
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nfunc f(s string) string {\n\treturn strings.NewReplacer().Replace(s)\n}\n"
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\n// r := strings.NewReplacer(\"a\", \"b\")\nfunc noop() {}\n"
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nvar doc = `r := strings.NewReplacer(\"a\", \"b\")`\n\nfunc f() string { return \"x := strings.NewReplacer(\\\"a\\\", \\\"b\\\")\" }\n"
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nfunc f(s string) string {\n\treturn strings.NewReplacer(\"a\", \"b\", s).Replace(s)\n}\n"
+  - "package p\n\nimport \"strings\"\n\nfunc f(s, x string) string {\n\treturn strings.NewReplacer(\"a\", (\"b\" + x)).Replace(s)\n}\n"
+invalid:
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nfunc unescapeXMLText(s string) string {\n\tif !strings.ContainsAny(s, \"&\") {\n\t\treturn s\n\t}\n\tr := strings.NewReplacer(\n\t\t\"&#61;\", \"=\", \"&#x3D;\", \"=\",\n\t\t\"&lt;\", \"<\", \"&gt;\", \">\", \"&quot;\", `\"`, \"&amp;\", \"&\",\n\t)\n\treturn r.Replace(s)\n}\n"
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nfunc unescapeMount(s string) string {\n\treturn strings.NewReplacer(\"\\\\040\", \" \", \"\\\\011\", \"\\t\", \"\\\\012\", \"\\n\", \"\\\\134\", \"\\\\\").Replace(s)\n}\n"
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\ntype T struct{}\n\nfunc (t *T) clean(s string) string {\n\tr := strings.NewReplacer(`\\`, `/`, `\"`, `'`)\n\treturn r.Replace(s)\n}\n"
+  - "package p\n\nimport (\n\t\"strings\"\n\t\"sync\"\n)\n\nfunc f(items []string) {\n\tclean := func(s string) string {\n\t\tr := strings.NewReplacer(\"a\", \"b\")\n\t\treturn r.Replace(s)\n\t}\n\t_ = clean\n}\n"
+  - "package p\n\nimport \"strings\"\n\nvar clean = func(s string) string {\n\treturn strings.NewReplacer(\"a\", \"b\").Replace(s)\n}\n"
