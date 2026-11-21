@@ -1,0 +1,29 @@
+id: py-assert-http-header-substring
+valid:
+  - |-
+    assert "debug-marker" in row["note"].lower()
+  - |-
+    assert "content-length" in row["origin_headers"].lower(), row
+  - |-
+    assert headers.get_all("content-length") == ["4"]
+  - |-
+    assert "content-length: 4" in body.lower()
+  - |-
+    if "content-length: 4" in h.lower():
+        handle()
+  - |-
+    # assert "content-length: 4" in row["origin_headers"].lower(), row
+    check()
+  - |-
+    note = 'assert "content-length: 4" in row["origin_headers"].lower(), row'
+  - |-
+    assert "Content-Length: 4" in raw_headers
+invalid:
+  - |-
+    assert "content-length: 4" in row["origin_headers"].lower(), row
+  - |-
+    assert "transfer-encoding: chunked" in resp_headers.lower()
+  - |-
+    assert "content-length: 4" in self.raw_headers.lower()
+  - |-
+    assert "content-length: 4" in self.raw_headers.casefold(), "dup"
