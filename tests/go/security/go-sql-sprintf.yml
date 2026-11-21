@@ -34,6 +34,24 @@ valid:
 - 'package p
 
   var text = "package p\nfunc f() { db.Query(fmt.Sprintf(\"SELECT %s\", value)) }"'
+- |
+  package p
+  func f() { db.Query("SELECT " + "1") }
+- |
+  package p
+  func f() { db.Query(queryPrefix + querySuffix) }
+- |
+  package p
+  func f() { db.Query("SELECT * FROM t WHERE id = ?", id) }
+- |
+  package p
+  func f() { db.QueryRowContext(ctx, "PRAGMA max_page_count") }
+- |
+  package p
+  func f() { db.Query("SELECT ?", "a"+id) }
+- |
+  package p
+  func f() { n := 1 + x }
 invalid:
 - |
   package p
@@ -74,3 +92,18 @@ invalid:
 - 'package p
 
   func f() { stmt.Query(fmt.Sprintf("%s", value)) }'
+- |
+  package p
+  func f() { db.QueryRowContext(ctx, "PRAGMA "+name) }
+- |
+  package p
+  func f() { db.Query("SELECT * FROM t WHERE id = " + id) }
+- |
+  package p
+  func f() { db.Query("SELECT * FROM t WHERE id = " + id + " LIMIT 1") }
+- |
+  package p
+  func f() { db.Exec(`DELETE FROM ` + cfg.Table) }
+- |
+  package p
+  func f() { db.Query("SELECT " + strconv.Itoa(n)) }
