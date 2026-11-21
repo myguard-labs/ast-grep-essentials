@@ -1,0 +1,31 @@
+id: ts-regexp-constructor-unescaped-interpolation
+valid:
+  - 'const re = new RegExp(`Model: +${escapeRegExp(SWITCH_MODEL)}\\b`)'
+  - 'const re = new RegExp(''^abc$'')'
+  - 'const re = new RegExp(`^abc$`)'
+  - 'const re = new RegExp(`^${''abc''}$`)'
+  - 'const re = new RegExp(`^${42}$`)'
+  - 'const re = new RegExp(''^abc$'', flags)'
+  - 'const re = new RegExp(`^abc$`, `${flags}`)'
+  - 'const re = new RegExp(''^'' + escapeRegExp(name))'
+  - 'const re = new RegExp(escapeRegExp(a + b))'
+  - 'const re = new RegExp(`^${_.escapeRegExp(name)}$`)'
+  - 'const re = /^abc$/'
+  - '// const re = new RegExp(`^ARG ${name}=(.+)$`, ''m'')'
+  - '// const re = new RegExp(''^'' + name + ''$'')'
+  - >-
+    const astgrepFixture: string = "const re = new RegExp(`^ARG
+    ${name}=(.+)$`, 'm')";
+  - 'const re = new RegExp(`^${escapeRegExp(name)}$`, `${flags}`)'
+  - 'const re = new RegExp(pattern ?? ''^default$'')'
+  - 'const re = new RegExp(custom || fallback)'
+invalid:
+  - 'const re = new RegExp(`^ARG ${name}=(.+)$`, ''m'')'
+  - 'const re = new RegExp(''^'' + name + ''$'')'
+  - 'const re = new RegExp(`^${opts.prefix}-\\d+`)'
+  - 'const re = RegExp(`${sep}`, ''g'')'
+  - 'function f(name: string): RegExp { return new RegExp(`^${name}$`); }'
+  - 'const re = new RegExp(`^${rows[0]}$`)'
+  - 'const re = new RegExp(`^${escapeRegExp(a)}-${b}$`)'
+  - 'const re = new RegExp(''^'' + opts.prefix + ''-'')'
+  - 'const re = new RegExp(''^'' + rows[0] + ''-'')'
