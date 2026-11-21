@@ -1,0 +1,70 @@
+# https://deb.myguard.nl/articles/ast-grep-security-rules-pack/ | https://github.com/myguard-labs/ast-grep-essentials
+
+id: go-header-get-presence-multivalue
+language: go
+severity: warning
+message: >-
+  A presence test on a repeatable header uses Header.Get, which returns only the first
+  value. A request with an empty first Content-Encoding or Transfer-Encoding value and a
+  later gzip or chunked value passes this check. Test all values with
+  len(r.Header.Values(name)) > 0 instead.
+note: >-
+  Fires on a call to a Get method on a Header field (for example r.Header.Get or
+  resp.Header.Get) with the literal name Content-Encoding or Transfer-Encoding, in any
+  letter case, when its result is compared with == or != against the empty string, in
+  either operand order. Header.Get returns only the first of the repeated values, so
+  this is a presence check that can miss a later value. Dismissed when the code also
+  rejects or normalizes repeated headers elsewhere, or when the value is only logged.
+
+  Known false negatives: a Header copied to a variable and then h.Get(...) compared;
+  the header name held in a variable or constant; the len form wrapped around the Get call;
+  an http.Header.Values call with only index [0] read; Get on a header map reached
+  through another name.
+
+  [CWE-444] [A06:2025]
+
+  [REFERENCES]
+      - https://cwe.mitre.org/data/definitions/444.html
+rule:
+  kind: binary_expression
+  all:
+    - has: {field: operator, regex: '^(==|!=)$'}
+    - has:
+        field: left
+        any:
+          - kind: interpreted_string_literal
+            regex: '^""$'
+          - matches: header-get
+    - has:
+        field: right
+        any:
+          - kind: interpreted_string_literal
+            regex: '^""$'
+          - matches: header-get
+    - has:
+        kind: interpreted_string_literal
+        regex: '^""$'
+    - has:
+        matches: header-get
+utils:
+  header-get:
+    kind: call_expression
+    all:
+      - has:
+          field: function
+          pattern: $R.Header.Get
+      - has:
+          field: arguments
+          has:
+            kind: interpreted_string_literal
+            nthChild: 1
+            regex: '(?i)^"(content|transfer)-encoding"$'
+metadata:
+  created_at: '2026-11-22'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'
+  cwe: 'CWE-444'
+  owasp: 'A06:2025'
+  category: 'security'
+  references: 'https://cwe.mitre.org/data/definitions/444.html'
