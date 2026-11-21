@@ -1,0 +1,18 @@
+id: go-header-get-transfer-encoding-stripped
+valid:
+  - "package p\n\nimport \"net/http\"\n\nfunc v1(r *http.Request) bool { return len(r.TransferEncoding) > 0 }\n"
+  - "package p\n\nimport \"net/http\"\n\nfunc v2(r *http.Request) bool { return r.Header.Get(\"Content-Encoding\") != \"\" }\n"
+  - "package p\n\nimport \"net/http\"\n\nfunc v3(w http.ResponseWriter) string { return w.Header().Get(\"Transfer-Encoding\") }\n"
+  - "package p\n\nimport \"net/http\"\n\nfunc v4(r *http.Request) { r.Header.Set(\"Transfer-Encoding\", \"chunked\") }\n"
+  - "package p\n\nimport \"net/http\"\n\nfunc v5(r *http.Request) string { return r.Trailer.Get(\"Transfer-Encoding\") }\n"
+  - "package p\n\nimport \"net/http\"\n\nfunc v6(h http.Header) string { return h.Get(\"Transfer-Encoding\") }\n"
+  - "package p\n\nimport \"net/http\"\n\nfunc v7(r *http.Request) string { return r.Header.Get(\"X-Transfer-Encoding\") }\n"
+  - "package p\n\nimport \"net/http\"\n\n// r.Header.Get(\"Transfer-Encoding\") != \"\"\nfunc noop() {}\n"
+  - "package p\n\nimport \"net/http\"\n\nfunc v8(r *http.Request) string { return r.Header.Get(`Transfer-Encoding`) }\n"
+invalid:
+  - "package p\n\nimport \"net/http\"\n\nfunc a1(r *http.Request) bool { return r.Header.Get(\"Transfer-Encoding\") != \"\" }\n"
+  - "package p\n\nimport \"net/http\"\n\nfunc a2(resp *http.Response) bool { return resp.Header.Get(\"transfer-encoding\") == \"chunked\" }\n"
+  - "package p\n\nimport \"net/http\"\n\nfunc a3(r *http.Request) []string { return r.Header.Values(\"Transfer-Encoding\") }\n"
+  - "package p\n\nimport \"net/http\"\n\nfunc a4(r *http.Request) string { val := r.Header.Get(\"TRANSFER-ENCODING\"); return val }\n"
+  - "package p\n\nimport \"net/http\"\n\nfunc a5(resp *http.Response) []string { return resp.Header.Values(\"Transfer-Encoding\") }\n"
+  - "package p\n\nimport \"net/http\"\n\ntype Ctx struct{ Req *http.Request }\n\nfunc a6(ctx *Ctx) string { return ctx.Req.Header.Get(\"Transfer-Encoding\") }\n"
