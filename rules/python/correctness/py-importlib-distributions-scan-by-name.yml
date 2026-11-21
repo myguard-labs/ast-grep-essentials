@@ -1,0 +1,44 @@
+id: py-importlib-distributions-scan-by-name
+language: python
+severity: warning
+message: >-
+  This loop iterates every installed distribution and reads each one's
+  metadata Name. Decoding all METADATA files to find one package lets an
+  unrelated malformed distribution abort the lookup. Use
+  importlib.metadata.distribution(name) or distributions(name=...) to look up
+  only the target.
+note: >-
+  Syntactic check: the loop iterable is a zero-argument distributions() call
+  (bare, metadata.distributions() or importlib.metadata.distributions()) and
+  the body reads the loop variable's metadata Name through .get("Name") or
+  ["Name"]. It does not resolve the distributions binding and does not prove
+  the loop is a name lookup beyond the Name read.
+rule:
+  kind: for_statement
+  all:
+    - has:
+        field: left
+        pattern: $D
+    - has:
+        field: right
+        any:
+          - pattern: distributions()
+          - pattern: metadata.distributions()
+          - pattern: importlib.metadata.distributions()
+    - has:
+        field: body
+        stopBy: end
+        any:
+          - pattern: $D.metadata.get("Name")
+          - pattern: $D.metadata.get("Name", $$$)
+          - pattern: $D.metadata["Name"]
+metadata:
+  known_false_positives: 'A loop that reads the Name of every distribution for a purpose other than finding one package (for example building a full name index in one pass) is still reported. A Name read that only logs a diagnostic is still reported.'
+  known_false_negatives: 'A Name read through the distribution name attribute (dist.name) is not reported because that attribute is also used by legitimate inventory loops. A metadata object first bound to a variable (md = dist.metadata; md.get("Name")) is not reported. A distributions() call with a path or keyword argument, an iterable first bound to a variable (dists = distributions(); for d in dists), a comprehension, and an alias import (from importlib.metadata import distributions as dl) are not reported. Loop-variable tuple unpacking is not reported.'
+  rule_modified_at: '2026-11-21'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-21'
+  created_at: '2026-11-21'
+  source: 'MyGuard'
+  modified_by: 'MyGuard'
+  license: 'MyGuard Internal Use License 1.0'

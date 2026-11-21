@@ -1,0 +1,81 @@
+id: py-importlib-distributions-scan-by-name
+valid:
+  - |-
+    from importlib.metadata import distributions
+    def find(name):
+        return list(distributions(name=name))
+  - |-
+    from importlib.metadata import distribution
+    def find(name):
+        return distribution(name)
+  - |-
+    from importlib.metadata import distributions
+    def inventory():
+        versions = {}
+        for dist in distributions():
+            versions[id(dist)] = dist.version
+        return versions
+  - |-
+    from importlib.metadata import distributions
+    def locate():
+        for dist in distributions():
+            print(dist.locate_file(""))
+  - |-
+    def find(name):
+        for item in foo():
+            if item.metadata.get("Name", "") == name:
+                return item
+  - |-
+    from importlib.metadata import distributions
+    def find(name, other):
+        for dist in distributions():
+            if other.metadata.get("Name", "") == name:
+                return dist
+  - |-
+    from importlib.metadata import distributions
+    def find(name):
+        for dist in distributions(name=name):
+            if dist.metadata.get("Name", "") == name:
+                return dist
+  - |-
+    from importlib.metadata import distributions
+    def find(name):
+        # for dist in distributions():
+        #     if dist.metadata.get("Name", "") == name:
+        #         return dist
+        return None
+  - |-
+    NOTE = 'for dist in distributions(): dist.metadata.get("Name")'
+invalid:
+  - |-
+    from importlib.metadata import distributions
+    def find(name):
+        for installed in distributions():
+            package = installed.metadata.get("Name", "")
+            if package.lower() != name.lower():
+                continue
+            return installed
+  - |-
+    from importlib.metadata import distributions
+    def find(name):
+        for dist in distributions():
+            if dist.metadata.get("Name") == name:
+                return dist
+  - |-
+    from importlib.metadata import distributions
+    def find(name):
+        for dist in distributions():
+            if dist.metadata["Name"] == name:
+                return dist
+  - |-
+    import importlib.metadata
+    def find(name):
+        for dist in importlib.metadata.distributions():
+            if dist.metadata.get("Name", "") == name:
+                return dist
+  - |-
+    from importlib import metadata
+    def find(name):
+        for dist in metadata.distributions():
+            if dist.metadata["Name"] == name:
+                return dist
