@@ -218,7 +218,7 @@ rule:
                       regex: '\b(OSError|FileExistsError)\b'
 metadata:
   known_false_positives: 'Still reported: a random token from a stored instance (rng.getrandbits(...) on a SystemRandom() name; only the inline random.SystemRandom().getrandbits form is excluded), a temporary in a per-process private directory, a local name assigned a getpid()-plus-random name (only the inline expression is excluded), a FileExistsError caught up the call chain or by except Exception, BaseException, IOError or EnvironmentError, and a PID name rebound before the open'
-  known_false_negatives: 'Not reported: a call whose text starts with a listed random source (secrets.token_*, randbits, random.SystemRandom().getrandbits, uuid4, os.urandom) anywhere in the name suppresses the finding even if its output never reaches the name or it is a local or third-party function (imports unchecked; obj.token_hex(8) is not matched). Also: os import aliases, helper or cross-function paths, two-step getpid() names, nested functions, path=/file= locals, flags or modes in a variable, pathlib. See note'
+  known_false_negatives: 'Not reported: any call whose text starts with a listed source (secrets.token_*, randbits, SystemRandom().getrandbits, uuid4, os.urandom) in the name suppresses it, even if its output never reaches the name or it is a local or third-party function (imports unchecked). Also: os import aliases, helper or cross-function paths, two-step getpid() names, nested functions, path=/file= locals, flags or modes in a variable, pathlib. A method call on another object (obj.token_hex(8)) still reports. See note'
   cwe: 'CWE-377'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/377.html'
   taxonomy_cited_keys: 'cwe'
