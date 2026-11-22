@@ -69,7 +69,7 @@ metadata:
   taxonomy_cited_keys: 'cwe'
   owasp: 'A02:2025|A01:2025'
   known_false_positives: 'A child that is trusted and genuinely needs the inherited environment (a wrapper re-running the same tool, a build step needing PATH, HOME and proxy variables) is reported, and so is a parent whose environment holds no secrets, and a local variable that happens to be named environ (not imported from os); the rule cannot see secret names or what the child needs'
-  known_false_negatives: 'Bare run and call (too generic, only the subprocess. prefix is accepted), an aliased module (import subprocess as sp), an environment held in a variable (env = os.environ.copy() then env=env), a helper that returns a copy of the whole environment, a mapping built with a comprehension that copies everything, dict(**os.environ), dict(os.environ.copy()) and {**os.environ.copy()} (only the first positional dict argument and a direct splat of os.environ are checked), a **kwargs call, a project wrapper around subprocess (for example a _run helper taking env=), and os.environb are not reported'
+  known_false_negatives: 'Not reported: bare run and call (only the subprocess. prefix is accepted), an aliased module (import subprocess as sp), an environment held in a variable (env = os.environ.copy()), a helper returning a copy, a comprehension copying everything, dict(**os.environ), dict(os.environ.copy()), {**os.environ.copy()} (only the first positional dict argument and a direct splat of os.environ are checked), a **kwargs call, a project wrapper taking env=, and os.environb'
   rule_modified_at: '2026-11-21'
   ast_grep_tested_version: 0.51.3
   validated_at: '2026-11-21'

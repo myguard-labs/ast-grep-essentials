@@ -20,7 +20,7 @@ rule:
       selector: expression_statement
 metadata:
   known_false_positives: 'A write whose completeness is checked another way after the fsync (for example by comparing the os.fstat size) is still reported when the adjacent statement is os.fsync on the same descriptor. A descriptor that is a pipe or socket, where fsync fails and the write is not a durability point, is still reported.'
-  known_false_negatives: 'A write whose return value is bound (n = os.write(...)) is not reported. An os.write that is not immediately followed by os.fsync on the same descriptor (for example followed by os.close, another statement, a comment line, or an os.fsync on a different name) is not reported. A file-object write (f.write) followed by os.fsync(f.fileno()) is not reported. Descriptor identity is textual: an alias (fd2 = fd) or a different spelling of the same descriptor is not matched. os bindings are not resolved, so a from-import or a renamed os module is not covered.'
+  known_false_negatives: 'Not reported: a write whose return value is bound (n = os.write(...)); an os.write not immediately followed by os.fsync on the same descriptor (followed by os.close, another statement, a comment line, or fsync on a different name); f.write followed by os.fsync(f.fileno()). Descriptor identity is textual, so an alias (fd2 = fd) is not matched. os bindings are not resolved: a from-import or renamed os module is not covered.'
   rule_modified_at: '2026-11-21'
   ast_grep_tested_version: 0.51.3
   validated_at: '2026-11-21'

@@ -34,7 +34,7 @@ rule:
           - pattern: $D.metadata["Name"]
 metadata:
   known_false_positives: 'A loop that reads the Name of every distribution for a purpose other than finding one package (for example building a full name index in one pass) is still reported. A Name read that only logs a diagnostic is still reported.'
-  known_false_negatives: 'A Name read through the distribution name attribute (dist.name) is not reported because that attribute is also used by legitimate inventory loops. A metadata object first bound to a variable (md = dist.metadata; md.get("Name")) is not reported. A distributions() call with a path or keyword argument, an iterable first bound to a variable (dists = distributions(); for d in dists), a comprehension, and an alias import (from importlib.metadata import distributions as dl) are not reported. Loop-variable tuple unpacking is not reported.'
+  known_false_negatives: 'Not reported: a Name read through dist.name (also used by legitimate inventory loops), a metadata object first bound to a variable (md = dist.metadata; md.get("Name")), a distributions() call with a path or keyword argument, an iterable first bound to a variable, a comprehension, an alias import (distributions as dl), and loop-variable tuple unpacking.'
   rule_modified_at: '2026-11-21'
   ast_grep_tested_version: 0.51.3
   validated_at: '2026-11-21'
