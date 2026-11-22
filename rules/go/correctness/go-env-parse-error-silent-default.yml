@@ -18,7 +18,8 @@ note: >-
   nothing is logged between the failed parse and the default. It does not
   resolve imports or types, does not follow the value through a local variable
   (`raw := os.Getenv(...)`, a known false negative), and does not inspect
-  other statements in the same function. Report location is the if_statement.
+  other statements in the same function. A `return n` inside a func literal in the
+  consequence is not counted. Report location is the if_statement.
 rule:
   all:
     - kind: if_statement
@@ -35,17 +36,10 @@ rule:
     - has:
         field: consequence
         has:
-          stopBy: end
+          stopBy:
+            kind: func_literal
           kind: return_statement
           pattern: 'return $N'
-          not:
-            inside:
-              kind: func_literal
-              stopBy:
-                kind: if_statement
-                has:
-                  field: initializer
-                  regex: 'strconv\.'
     - not:
         has:
           field: alternative
