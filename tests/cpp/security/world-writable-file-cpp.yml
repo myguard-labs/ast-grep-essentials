@@ -68,10 +68,7 @@ valid:
   - |
     void test_umask_good(int fd, int dirfd) {
       umask(077);
-      chmod("/tmp/foo", 0666);
-      fchmod(fd, 0666);
       creat("log", 0666);
-      fchmodat(dirfd, "log", 0666, AT_SYMLINK_NOFOLLOW);
       open("log", O_CREAT, 0666);
       openat(fd, "log", O_CREAT, 0666);
     }
@@ -79,10 +76,7 @@ valid:
     void test_umask_var_good(int fd, int dirfd) {
       mode_t mode = 0666;
       umask(077);
-      chmod("/tmp/foo", mode);
-      fchmod(fd, mode);
       creat("log", mode);
-      fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW);
       open("log", O_CREAT, mode);
       openat(fd, "log", O_CREAT, mode);
     }
@@ -99,6 +93,21 @@ valid:
   - |
     void test_literal_good_z(void) { chmod("/tmp/foo", 0644uz); }
 invalid:
+  - |
+    void test_umask_bad(int fd, int dirfd) {
+      umask(077);
+      chmod("/tmp/foo", 0666);
+      fchmod(fd, 0666);
+      fchmodat(dirfd, "log", 0666, AT_SYMLINK_NOFOLLOW);
+    }
+  - |
+    void test_umask_var_bad(int fd, int dirfd) {
+      mode_t mode = 0666;
+      umask(077);
+      chmod("/tmp/foo", mode);
+      fchmod(fd, mode);
+      fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW);
+    }
   - |
     void test_octal_bad() {
       mode_t mode = 0666;
