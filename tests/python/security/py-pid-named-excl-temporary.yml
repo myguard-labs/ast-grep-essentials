@@ -206,6 +206,13 @@ valid:
     def w(p, b):
         fd = os.open(flags=os.O_WRONLY | os.O_EXCL | os.getpid(), path="/var/lib/app/lock")
         os.write(fd, b)
+  - |
+    import os
+    from secrets import randbits
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}.{randbits(64)}", os.O_WRONLY | os.O_EXCL)
+        os.write(fd, b)
 invalid:
   - |
     import os
@@ -366,4 +373,12 @@ invalid:
 
     def w(p, b):
         fd = os.open(f"{p}.{os.getpid()}.{uuid.uuid1().hex}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+    import random
+
+    def w(p, b):
+        rng = random.SystemRandom()
+        fd = os.open(f"{p}.{os.getpid()}.{rng.getrandbits(64)}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         os.write(fd, b)

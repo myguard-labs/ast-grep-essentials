@@ -718,6 +718,38 @@ snapshots:
       style: secondary
       start: 55
       end: 102
+  "import os\nimport random\n\ndef w(p, b):\n    rng = random.SystemRandom()\n    fd = os.open(f\"{p}.{os.getpid()}.{rng.getrandbits(64)}\", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)\n    os.write(fd, b)\n":
+    labels:
+    - source: >-
+        os.open(f"{p}.{os.getpid()}.{rng.getrandbits(64)}", os.O_WRONLY | os.O_CREAT |
+        os.O_EXCL, 0o600)
+      style: primary
+      start: 79
+      end: 175
+    - source: os.open
+      style: secondary
+      start: 79
+      end: 86
+    - source: os.O_WRONLY | os.O_CREAT | os.O_EXCL
+      style: secondary
+      start: 131
+      end: 167
+    - source: os.O_WRONLY | os.O_CREAT | os.O_EXCL
+      style: secondary
+      start: 131
+      end: 167
+    - source: os.getpid()
+      style: secondary
+      start: 94
+      end: 105
+    - source: f"{p}.{os.getpid()}.{rng.getrandbits(64)}"
+      style: secondary
+      start: 87
+      end: 129
+    - source: f"{p}.{os.getpid()}.{rng.getrandbits(64)}"
+      style: secondary
+      start: 87
+      end: 129
   "import os\nimport secrets\n\ndef w(p, b):\n    token = secrets.token_hex(16)\n    fd = os.open(f\"{p}.{os.getpid()}.tmp\", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)\n    os.write(fd, b)\n    return token\n":
     labels:
     - source: os.open(f"{p}.{os.getpid()}.tmp", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
