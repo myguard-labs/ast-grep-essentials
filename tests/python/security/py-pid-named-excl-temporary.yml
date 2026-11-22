@@ -200,7 +200,19 @@ valid:
     def w(p, b):
         fd = os.open(f"{p}.{os.getpid()}.{random.SystemRandom().getrandbits(64)}", os.O_WRONLY | os.O_EXCL)
         os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        fd = os.open(flags=os.O_WRONLY | os.O_EXCL | os.getpid(), path="/var/lib/app/lock")
+        os.write(fd, b)
 invalid:
+  - |
+    import os
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL, mode=0o600)
+        os.write(fd, b)
   - |
     import os
     import random

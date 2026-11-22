@@ -17,7 +17,11 @@ note: >-
   flags= keyword) mentions O_EXCL (os.O_EXCL or a bare O_EXCL), and on the
   builtin open(path, mode) where the mode (or a mode= keyword) is a string
   literal containing x. The path is the first positional argument or a
-  path= / file= keyword, in any position. It must contain a call to
+  path= / file= keyword, in any position; a leading keyword argument (such
+  as flags= or mode=) is never read as the positional path. path= and file=
+  are accepted for both os.open and open on purpose: a mismatched keyword
+  (os.open(file=...), open(path=...)) raises TypeError at runtime, so the
+  wider match only covers code that cannot run. It must contain a call to
   os.getpid() inline (f-string, str.format, % formatting, concatenation); a
   local name assigned such an expression in the same function also counts
   for the positional path only (assignments in nested functions do not
@@ -84,6 +88,8 @@ rule:
         has:
           any:
             - nthChild: 1
+              not:
+                kind: keyword_argument
               any:
                 - has:
                     stopBy: end
@@ -127,6 +133,8 @@ rule:
           has:
             any:
               - nthChild: 1
+                not:
+                  kind: keyword_argument
                 has:
                   stopBy: end
                   kind: call
@@ -170,7 +178,7 @@ rule:
                       regex: '\b(OSError|FileExistsError)\b'
 metadata:
   known_false_positives: 'A temporary in a per-process private directory is still reported; a local name assigned a name that mixes os.getpid() with a random token is still reported (only the inline name expression is excluded, so the assignment is not followed); so is a create whose FileExistsError is caught by a handler further up the call chain or by except Exception, BaseException, IOError or EnvironmentError, which are not recognised (only OSError, FileExistsError and a bare except count); a local name assigned from os.getpid() anywhere in the same function counts even when it is rebound before the open'
-  known_false_negatives: 'Breadth trade-off (documented): any call whose text starts with a listed name (secrets.token_hex/token_urlsafe/token_bytes, bare token_hex/token_urlsafe/token_bytes, uuid4 or uuid.uuid4, os.urandom) anywhere inside the name expression suppresses the finding, even one whose output does not reach the name text (for example wrapped in len()). The rule does not check imports, so a function of one of these names from any source (local, third-party, even one returning a predictable value) also suppresses it. Syntactic: a method call on another object (obj.token_hex(8), myuuid.uuid4()) is not matched and still reports. os import aliases (from os import open, import os as o, from os import getpid) are not resolved; a path built by a helper or in another function (cross-function builders) is not reported; a path name assigned from a name that itself came from os.getpid() (two-step) is not reported; a nested function that opens a name assigned in its enclosing function is not reported; a path= or file= keyword whose value is a local name assigned from os.getpid() is not followed (only the inline expression and the positional path are); flags held in a variable (flags = os.O_WRONLY | os.O_EXCL; os.open(p, flags)) are not reported, nor are modes held in a variable; pathlib Path.open("x") and Path.touch(exist_ok=False) are not covered; os.open with the flags as a keyword other than flags= is not reported; a try that catches the error only in its else or finally block, or a handler in the except clause body, does not count'
+  known_false_negatives: 'Breadth trade-off (documented): any call whose text starts with a listed name (secrets.token_hex/token_urlsafe/token_bytes, secrets.randbits, random.SystemRandom().getrandbits, bare token_hex/token_urlsafe/token_bytes, uuid4 or uuid.uuid4, os.urandom) anywhere inside the name expression suppresses the finding, even one whose output does not reach the name text (for example wrapped in len()). The rule does not check imports, so a function of one of these names from any source (local, third-party, even one returning a predictable value) also suppresses it. Syntactic: a method call on another object (obj.token_hex(8), myuuid.uuid4()) is not matched and still reports. os import aliases (from os import open, import os as o, from os import getpid) are not resolved; a path built by a helper or in another function (cross-function builders) is not reported; a path name assigned from a name that itself came from os.getpid() (two-step) is not reported; a nested function that opens a name assigned in its enclosing function is not reported; a path= or file= keyword whose value is a local name assigned from os.getpid() is not followed (only the inline expression and the positional path are); flags held in a variable (flags = os.O_WRONLY | os.O_EXCL; os.open(p, flags)) are not reported, nor are modes held in a variable; pathlib Path.open("x") and Path.touch(exist_ok=False) are not covered; os.open with the flags as a keyword other than flags= is not reported; a try that catches the error only in its else or finally block, or a handler in the except clause body, does not count'
   cwe: 'CWE-377'
   taxonomy_source: 'https://cwe.mitre.org/data/definitions/377.html'
   taxonomy_cited_keys: 'cwe'
