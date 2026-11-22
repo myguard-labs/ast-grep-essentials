@@ -63,7 +63,7 @@ rule:
                   stopBy: end
                   kind: call_expression
 metadata:
-  known_false_negatives: 'Only one comment node between the if and the fallback return is skipped (one // line, or one multi-line /* */ block); two or more comment nodes, such as two // lines, are a false negative. The value read into a local first (`raw := os.Getenv(n); if v, err := strconv.Atoi(raw); err == nil {...}`), time.ParseDuration, the reversed condition `nil == err`, and a default returned through a type conversion (`return int64(def)`, which the grammar parses as a call) are not flagged; the strconv receiver is matched by name only'
+  known_false_negatives: 'Only one comment node between the if and the fallback return is skipped (one // line or one /* */ block); two or more, such as two // lines, are a false negative. Not flagged: the value read into a local first (`raw := os.Getenv(n)` then Atoi(raw)), time.ParseDuration, the reversed condition `nil == err`, and a default returned through a type conversion (`return int64(def)`, parsed as a call). The strconv receiver is matched by name only'
   known_false_positives: 'A silent default that is intentional (documented fallback) is still reported'
   rule_modified_at: '2026-11-22'
   ast_grep_tested_version: 0.51.3
