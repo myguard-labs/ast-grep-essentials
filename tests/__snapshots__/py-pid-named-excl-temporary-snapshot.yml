@@ -154,6 +154,48 @@ snapshots:
       style: secondary
       start: 41
       end: 65
+  "import os\n\ndef w(p, b):\n    fd = os.open(flags=os.O_WRONLY | os.O_EXCL, path=f\"{p}.{os.getpid()}\")\n    os.write(fd, b)\n":
+    labels:
+    - source: os.open(flags=os.O_WRONLY | os.O_EXCL, path=f"{p}.{os.getpid()}")
+      style: primary
+      start: 33
+      end: 98
+    - source: os.open
+      style: secondary
+      start: 33
+      end: 40
+    - source: flags
+      style: secondary
+      start: 41
+      end: 46
+    - source: flags=os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 41
+      end: 70
+    - source: flags=os.O_WRONLY | os.O_EXCL
+      style: secondary
+      start: 41
+      end: 70
+    - source: path
+      style: secondary
+      start: 72
+      end: 76
+    - source: os.getpid()
+      style: secondary
+      start: 84
+      end: 95
+    - source: os.getpid()
+      style: secondary
+      start: 84
+      end: 95
+    - source: path=f"{p}.{os.getpid()}"
+      style: secondary
+      start: 72
+      end: 97
+    - source: path=f"{p}.{os.getpid()}"
+      style: secondary
+      start: 72
+      end: 97
   "import os\n\ndef w(p, b):\n    fd = os.open(p + \".\" + str(os.getpid()), os.O_WRONLY | os.O_EXCL)\n    os.write(fd, b)\n":
     labels:
     - source: os.open(p + "." + str(os.getpid()), os.O_WRONLY | os.O_EXCL)
@@ -404,6 +446,52 @@ snapshots:
       style: secondary
       start: 38
       end: 58
+  "import os\n\ndef w(p, b):\n    with open(mode=\"x\", file=f\"{p}.{os.getpid()}\") as handle:\n        handle.write(b)\n":
+    labels:
+    - source: open(mode="x", file=f"{p}.{os.getpid()}")
+      style: primary
+      start: 33
+      end: 74
+    - source: open
+      style: secondary
+      start: 33
+      end: 37
+    - source: mode
+      style: secondary
+      start: 38
+      end: 42
+    - source: "\"x\""
+      style: secondary
+      start: 43
+      end: 46
+    - source: mode="x"
+      style: secondary
+      start: 38
+      end: 46
+    - source: mode="x"
+      style: secondary
+      start: 38
+      end: 46
+    - source: file
+      style: secondary
+      start: 48
+      end: 52
+    - source: os.getpid()
+      style: secondary
+      start: 60
+      end: 71
+    - source: os.getpid()
+      style: secondary
+      start: 60
+      end: 71
+    - source: file=f"{p}.{os.getpid()}"
+      style: secondary
+      start: 48
+      end: 73
+    - source: file=f"{p}.{os.getpid()}"
+      style: secondary
+      start: 48
+      end: 73
   "import os\n\ndef w(p, b):\n    with open(p + \".\" + str(os.getpid()), mode=\"x\") as handle:\n        handle.write(b)\n":
     labels:
     - source: open(p + "." + str(os.getpid()), mode="x")
@@ -630,3 +718,35 @@ snapshots:
       style: secondary
       start: 90
       end: 114
+  "import os\nimport uuid\n\ndef w(p, b):\n    fd = os.open(f\"{p}.{os.getpid()}.{uuid.uuid1().hex}\", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)\n    os.write(fd, b)\n":
+    labels:
+    - source: >-
+        os.open(f"{p}.{os.getpid()}.{uuid.uuid1().hex}", os.O_WRONLY | os.O_CREAT |
+        os.O_EXCL, 0o600)
+      style: primary
+      start: 45
+      end: 138
+    - source: os.open
+      style: secondary
+      start: 45
+      end: 52
+    - source: os.O_WRONLY | os.O_CREAT | os.O_EXCL
+      style: secondary
+      start: 94
+      end: 130
+    - source: os.O_WRONLY | os.O_CREAT | os.O_EXCL
+      style: secondary
+      start: 94
+      end: 130
+    - source: os.getpid()
+      style: secondary
+      start: 60
+      end: 71
+    - source: f"{p}.{os.getpid()}.{uuid.uuid1().hex}"
+      style: secondary
+      start: 53
+      end: 92
+    - source: f"{p}.{os.getpid()}.{uuid.uuid1().hex}"
+      style: secondary
+      start: 53
+      end: 92
