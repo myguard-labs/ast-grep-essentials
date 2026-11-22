@@ -490,6 +490,174 @@ snapshots:
       style: secondary
       start: 39
       end: 110
+  "void test_umask_chmod_bad(void) {\n  umask(077);\n  chmod(\"/tmp/foo\", 0666);\n}\n":
+    labels:
+    - source: "0666"
+      style: primary
+      start: 68
+      end: 72
+    - source: chmod("/tmp/foo", 0666)
+      style: secondary
+      start: 50
+      end: 73
+    - source: chmod
+      style: secondary
+      start: 50
+      end: 55
+    - source: ("/tmp/foo", 0666)
+      style: secondary
+      start: 55
+      end: 73
+  "void test_umask_fchmod_bad(int fd) {\n  umask(077);\n  fchmod(fd, 0666);\n}\n":
+    labels:
+    - source: "0666"
+      style: primary
+      start: 64
+      end: 68
+    - source: fchmod(fd, 0666)
+      style: secondary
+      start: 53
+      end: 69
+    - source: fchmod
+      style: secondary
+      start: 53
+      end: 59
+    - source: (fd, 0666)
+      style: secondary
+      start: 59
+      end: 69
+  "void test_umask_fchmodat_bad(int dirfd) {\n  umask(077);\n  fchmodat(dirfd, \"log\", 0666, AT_SYMLINK_NOFOLLOW);\n}\n":
+    labels:
+    - source: "0666"
+      style: primary
+      start: 81
+      end: 85
+    - source: fchmodat(dirfd, "log", 0666, AT_SYMLINK_NOFOLLOW)
+      style: secondary
+      start: 58
+      end: 107
+    - source: fchmodat
+      style: secondary
+      start: 58
+      end: 66
+    - source: (dirfd, "log", 0666, AT_SYMLINK_NOFOLLOW)
+      style: secondary
+      start: 66
+      end: 107
+  "void test_umask_var_chmod_bad(void) {\n  mode_t mode = 0666;\n  umask(077);\n  chmod(\"/tmp/foo\", mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 94
+      end: 98
+    - source: mode
+      style: secondary
+      start: 47
+      end: 51
+    - source: "0666"
+      style: secondary
+      start: 54
+      end: 58
+    - source: mode = 0666
+      style: secondary
+      start: 47
+      end: 58
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 40
+      end: 59
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 40
+      end: 59
+    - source: chmod("/tmp/foo", mode)
+      style: secondary
+      start: 76
+      end: 99
+    - source: chmod
+      style: secondary
+      start: 76
+      end: 81
+    - source: ("/tmp/foo", mode)
+      style: secondary
+      start: 81
+      end: 99
+  "void test_umask_var_fchmod_bad(int fd) {\n  mode_t mode = 0666;\n  umask(077);\n  fchmod(fd, mode);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 90
+      end: 94
+    - source: mode
+      style: secondary
+      start: 50
+      end: 54
+    - source: "0666"
+      style: secondary
+      start: 57
+      end: 61
+    - source: mode = 0666
+      style: secondary
+      start: 50
+      end: 61
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 43
+      end: 62
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 43
+      end: 62
+    - source: fchmod(fd, mode)
+      style: secondary
+      start: 79
+      end: 95
+    - source: fchmod
+      style: secondary
+      start: 79
+      end: 85
+    - source: (fd, mode)
+      style: secondary
+      start: 85
+      end: 95
+  "void test_umask_var_fchmodat_bad(int dirfd) {\n  mode_t mode = 0666;\n  umask(077);\n  fchmodat(dirfd, \"log\", mode, AT_SYMLINK_NOFOLLOW);\n}\n":
+    labels:
+    - source: mode
+      style: primary
+      start: 107
+      end: 111
+    - source: mode
+      style: secondary
+      start: 55
+      end: 59
+    - source: "0666"
+      style: secondary
+      start: 62
+      end: 66
+    - source: mode = 0666
+      style: secondary
+      start: 55
+      end: 66
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 48
+      end: 67
+    - source: mode_t mode = 0666;
+      style: secondary
+      start: 48
+      end: 67
+    - source: fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW)
+      style: secondary
+      start: 84
+      end: 133
+    - source: fchmodat
+      style: secondary
+      start: 84
+      end: 92
+    - source: (dirfd, "log", mode, AT_SYMLINK_NOFOLLOW)
+      style: secondary
+      start: 92
+      end: 133
   "void test_var_assign_chmod(int fd, int dirfd) {\n  mode_t mode;\n  mode = 0666;\n  chmod(\"/tmp/foo\", mode);\n}\n":
     labels:
     - source: mode

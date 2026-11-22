@@ -68,10 +68,7 @@ valid:
   - |
     void test_umask_good(int fd, int dirfd) {
       umask(077);
-      chmod("/tmp/foo", 0666);
-      fchmod(fd, 0666);
       creat("log", 0666);
-      fchmodat(dirfd, "log", 0666, AT_SYMLINK_NOFOLLOW);
       open("log", O_CREAT, 0666);
       openat(fd, "log", O_CREAT, 0666);
     }
@@ -79,10 +76,7 @@ valid:
     void test_umask_var_good(int fd, int dirfd) {
       mode_t mode = 0666;
       umask(077);
-      chmod("/tmp/foo", mode);
-      fchmod(fd, mode);
       creat("log", mode);
-      fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW);
       open("log", O_CREAT, mode);
       openat(fd, "log", O_CREAT, mode);
     }
@@ -93,6 +87,39 @@ valid:
   - |
     void test_literal_good_sep_bin(void) { chmod("/tmp/foo", 0b1'10100100); }
 invalid:
+  - |
+    void test_umask_chmod_bad(void) {
+      umask(077);
+      chmod("/tmp/foo", 0666);
+    }
+  - |
+    void test_umask_fchmod_bad(int fd) {
+      umask(077);
+      fchmod(fd, 0666);
+    }
+  - |
+    void test_umask_fchmodat_bad(int dirfd) {
+      umask(077);
+      fchmodat(dirfd, "log", 0666, AT_SYMLINK_NOFOLLOW);
+    }
+  - |
+    void test_umask_var_chmod_bad(void) {
+      mode_t mode = 0666;
+      umask(077);
+      chmod("/tmp/foo", mode);
+    }
+  - |
+    void test_umask_var_fchmod_bad(int fd) {
+      mode_t mode = 0666;
+      umask(077);
+      fchmod(fd, mode);
+    }
+  - |
+    void test_umask_var_fchmodat_bad(int dirfd) {
+      mode_t mode = 0666;
+      umask(077);
+      fchmodat(dirfd, "log", mode, AT_SYMLINK_NOFOLLOW);
+    }
   - |
     void test_octal_bad() {
       mode_t mode = 0666;

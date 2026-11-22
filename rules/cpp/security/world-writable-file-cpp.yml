@@ -3,7 +3,7 @@
 # CodeRabbit source file: https://github.com/coderabbitai/ast-grep-essentials/blob/73120109bf45c284d0cd8a37bdd7082e80e92e87/rules/cpp/security/world-writable-file-cpp.yml
 # Original author (Git): ESS-ENN
 # License: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
-# Modified by MyGuard: provenance metadata added; utility IDs normalized; mode-literal regex fixed to read octal literals and widened to hex, binary, u/l/z-suffixed and digit-separated literals (ESS-026); other matcher behavior is unchanged.
+# Modified by MyGuard: provenance metadata added; utility IDs normalized; mode-literal regex fixed to read octal literals and widened to hex, binary, u/l/z-suffixed and digit-separated literals (ESS-026); umask suppression limited to creat/open/openat (ESS-026); other matcher behavior is unchanged.
 
 id: world-writable-file-cpp
 language: cpp
@@ -12,8 +12,7 @@ message: >-
   This call makes a world-writable file which allows any user on a machine to write to the file. This may allow attackers to influence the behaviour of this process by writing to the file.
 note: >-
   [CWE-732]: Incorrect Permission Assignment for Critical Resource
-  [KNOWN FALSE NEGATIVES] Any preceding umask call suppresses the finding, including umask(0), which leaves the file world-writable.
-  chmod, fchmod and fchmodat are not affected by umask at all, yet are suppressed the same way.
+  [KNOWN FALSE NEGATIVES] Any preceding umask call suppresses the creat, open and openat findings, including umask(0), which leaves the file world-writable. chmod, fchmod and fchmodat are not affected by umask and are always reported.
   [REFERENCES]
       - https://wiki.sei.cmu.edu/confluence/display/c/FIO06-C.+Create+files+with+appropriate+access+permissions
 
@@ -121,11 +120,16 @@ rule:
         inside:
           kind: call_expression
           not:
-            any:
-              - matches: follows_umask
-              - inside:
-                  stopBy: end
-                  matches: follows_umask
+            all:
+              # umask does not affect chmod/fchmod; only creat is suppressed
+              - has:
+                  field: function
+                  regex: ^creat$
+              - any:
+                  - matches: follows_umask
+                  - inside:
+                      stopBy: end
+                      matches: follows_umask
 
     # fchmodat
     - any:
@@ -186,12 +190,6 @@ rule:
           regex: ^(fchmodat)$
         inside:
           kind: call_expression
-          not:
-            any:
-              - matches: follows_umask
-              - inside:
-                  stopBy: end
-                  matches: follows_umask
 
     # open
     - any:
