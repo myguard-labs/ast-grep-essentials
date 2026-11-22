@@ -158,7 +158,61 @@ valid:
     def w(p, b):
         with open(f"{p}.{os.getpid()}.{secrets.token_hex(8)}", "x") as handle:
             handle.write(b)
+  - |
+    import os
+    import secrets
+
+    def w(p, b):
+        fd = os.open(flags=os.O_WRONLY | os.O_EXCL, path=f"{p}.{secrets.token_hex(8)}")
+        os.write(fd, b)
+  - |
+    import os
+    import secrets
+
+    def w(p, b):
+        with open(mode="x", file=f"{p}.{secrets.token_hex(8)}") as handle:
+            handle.write(b)
+  - |
+    import os
+    import secrets
+
+    def w(p, b):
+        fd = os.open(flags=os.O_WRONLY | os.O_EXCL, path=f"{p}.{os.getpid()}.{secrets.token_hex(8)}")
+        os.write(fd, b)
+  - |
+    import os
+    import secrets
+
+    def w(p, b):
+        with open(mode="x", file=f"{p}.{os.getpid()}.{secrets.token_hex(8)}") as handle:
+            handle.write(b)
+  - |
+    import os
+    import secrets
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}.{secrets.randbits(64)}", os.O_WRONLY | os.O_EXCL)
+        os.write(fd, b)
+  - |
+    import os
+    import random
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}.{random.SystemRandom().getrandbits(64)}", os.O_WRONLY | os.O_EXCL)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        fd = os.open(flags=os.O_WRONLY | os.O_EXCL | os.getpid(), path="/var/lib/app/lock")
+        os.write(fd, b)
 invalid:
+  - |
+    import os
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}", os.O_WRONLY | os.O_EXCL, mode=0o600)
+        os.write(fd, b)
   - |
     import os
     import random
@@ -293,4 +347,23 @@ invalid:
 
     def w(p, b, myuuid):
         fd = os.open(f"{p}.{os.getpid()}.{myuuid.uuid4()}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        fd = os.open(flags=os.O_WRONLY | os.O_EXCL, path=f"{p}.{os.getpid()}")
+        os.write(fd, b)
+  - |
+    import os
+
+    def w(p, b):
+        with open(mode="x", file=f"{p}.{os.getpid()}") as handle:
+            handle.write(b)
+  - |
+    import os
+    import uuid
+
+    def w(p, b):
+        fd = os.open(f"{p}.{os.getpid()}.{uuid.uuid1().hex}", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         os.write(fd, b)
