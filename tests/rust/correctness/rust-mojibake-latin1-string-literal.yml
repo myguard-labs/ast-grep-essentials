@@ -13,17 +13,26 @@ valid:
   - |-
     const RAW: &str = r"C:\temp\cafe";
     const QUOTED: &str = r#"quote "ok" und über"#;
+  - 'const QUOTED: &str = r#"quote "ok" und über"#;'
+  - 'const PLAIN: &str = r"plain ascii menu";'
+  - 'const BROKEN: &str = r"cafÃ© menu'
+  - |-
+    // cafÃ© menu
+    fn main() {}
 invalid:
   - 'const ERRORS_NOTE_NAME: &str = "âš ï¸ Errors";'
-  - |-
-    const APOSTROPHE: &str = "itâ€™s fine";
+  - 'const APOSTROPHE: &str = "itâ€™s fine";'
   - |-
     fn label() -> &'static str {
         "CafÃ©"
     }
-  - |-
-    const BOM_PREFIX: &str = "ï»¿name";
+  - 'const BOM_PREFIX: &str = "ï»¿name";'
   - |-
     fn main() {
         println!("Ã¼ber {}", 1);
     }
+  - |-
+    fn f() {
+        let s = r"cafÃ© menu";
+    }
+  - 'const QUOTE: &str = r#"itâ€™s "fine""#;'

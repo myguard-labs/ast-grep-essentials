@@ -7,23 +7,20 @@ message: >-
   This string literal contains Latin-1 mojibake characters, which usually
   means UTF-8 text was decoded as Windows-1252 and stored again.
 note: >-
-  Matches string literals containing the mojibake lead characters â, Ã, or ï
-  purely by their literal characters; it does not verify the original
-  encoding, runtime values, or whether the text is intentional.
+  Matches ordinary and raw string literals containing the mojibake lead
+  characters â, Ã, or ï purely by their literal characters; it does not verify
+  the original encoding, runtime values, or whether the text is intentional.
 rule:
-  kind: string_literal
-  regex: 'â|Ã|ï'
+  all:
+    - any:
+        - kind: string_literal
+        - kind: raw_string_literal
+    - regex: 'â|Ã|ï'
 metadata:
-  rule_modified_at: '2026-10-17'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-17'
+  rule_modified_at: '2026-11-23'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-23'
   created_at: '2026-10-17'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  known_false_positives: 'legitimate text with a diaeresis i, such as the Dutch word naïef in a plain string literal, is reported (the lead character ï is also valid text)'
-  todo_cases:
-    - |-
-      fn f() {
-          let s = r"cafÃ© menu";
-      }
