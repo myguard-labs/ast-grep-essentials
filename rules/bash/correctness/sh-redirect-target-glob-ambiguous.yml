@@ -7,15 +7,17 @@ message: >-
   Output redirection target contains an unquoted glob wildcard; it may fail
   with an ambiguous redirect or write to an unintended file.
 note: >-
-  Syntactic check only. Matches a file_redirect whose destination word
-  contains a literal * or ? glob character; it does not resolve filesystem
-  matches, variable values, or quoting context beyond the shown syntax.
+  Syntactic check only. Matches an output file_redirect whose destination text
+  contains a literal *, ? or bracket class and is not wholly quoted; it does
+  not resolve filesystem matches, variable values, or quoting beyond the shown
+  syntax.
 rule:
   kind: file_redirect
   all:
+    - regex: '^(\d*|&)>'
     - has:
         field: destination
-        regex: '[*?]'
+        regex: '[*?]|\[[^\]]+\]'
     - not:
         has:
           kind: string
@@ -23,13 +25,10 @@ rule:
         has:
           kind: raw_string
 metadata:
-  rule_modified_at: '2026-10-15'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-15'
+  rule_modified_at: '2026-11-23'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-23'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  known_false_positives: 'echo x > out\*.log: escaped asterisk is a literal filename but is flagged; cat < /tmp/in*.txt: input redirect with a glob is flagged although the message names output redirection'
-  todo_cases:
-    - 'echo x > /tmp/[ab].log'

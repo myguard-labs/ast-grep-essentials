@@ -1,17 +1,17 @@
 id: sh-redirect-target-glob-ambiguous
 valid:
   - 'echo "[docker : production]" >> $dir/application.ini'
-  - |-
-    echo x > /tmp/out.log
-  - |-
-    echo x > '/tmp/out*.log'
-  - |-
-    echo x > "$dir/out*.log"
+  - 'echo x > /tmp/out.log'
+  - 'echo x > ''/tmp/out*.log'''
+  - 'echo x > "$dir/out*.log"'
+  - 'cat < /tmp/in*.txt'
+  - 'echo x > ''/tmp/out?.log'''
+  - 'echo "unterminated >> out*.log'
 invalid:
   - 'echo "[docker : production]" >> $dir/application.ini*'
-  - |-
-    echo x >> /var/log/app-*.log
-  - |-
-    echo x 2> /tmp/err*.txt
-  - |-
-    echo x > "$dir"/out*.log
+  - 'echo x >> /var/log/app-*.log'
+  - 'echo x 2> /tmp/err*.txt'
+  - 'echo x > "$dir"/out*.log'
+  - 'printf ''%s\n'' ready >> logs/run-?.log'
+  - 'cmd >> "$LOG_DIR"/*.log'
+  - 'echo x > "$dir"/out?.log'

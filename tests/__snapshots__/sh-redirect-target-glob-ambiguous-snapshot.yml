@@ -1,5 +1,15 @@
 id: sh-redirect-target-glob-ambiguous
 snapshots:
+  cmd >> "$LOG_DIR"/*.log:
+    labels:
+    - source: ">> \"$LOG_DIR\"/*.log"
+      style: primary
+      start: 4
+      end: 23
+    - source: "\"$LOG_DIR\"/*.log"
+      style: secondary
+      start: 7
+      end: 23
   "echo \"[docker : production]\" >> $dir/application.ini*":
     labels:
     - source: ">> $dir/application.ini*"
@@ -30,6 +40,16 @@ snapshots:
       style: secondary
       start: 9
       end: 24
+  echo x > "$dir"/out?.log:
+    labels:
+    - source: "> \"$dir\"/out?.log"
+      style: primary
+      start: 7
+      end: 24
+    - source: "\"$dir\"/out?.log"
+      style: secondary
+      start: 9
+      end: 24
   echo x >> /var/log/app-*.log:
     labels:
     - source: ">> /var/log/app-*.log"
@@ -40,3 +60,13 @@ snapshots:
       style: secondary
       start: 10
       end: 28
+  printf '%s\n' ready >> logs/run-?.log:
+    labels:
+    - source: ">> logs/run-?.log"
+      style: primary
+      start: 20
+      end: 37
+    - source: logs/run-?.log
+      style: secondary
+      start: 23
+      end: 37
