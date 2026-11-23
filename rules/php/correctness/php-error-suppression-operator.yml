@@ -7,26 +7,23 @@ message: >-
   The @ operator silences all warnings and notices from the expression it
   prefixes; check the result or failure explicitly instead.
 note: >-
-  Single-file syntactic match on any expression prefixed by the @ silencing
-  operator that occurs inside an expression statement, including nested positions
-  such as call arguments, operands and assignment right-hand sides (calls, property
-  reads, array reads, variables, includes, new). Does not match @ in echo, return
-  or if/while conditions, unless that code sits in a closure inside an expression
-  statement (array_map(function ($x) { return @foo($x); }, $a); is reported). Does
-  not resolve function identity, types, or whether the failure is handled
+  Single-file syntactic match on any @-prefixed expression (calls, property
+  reads, array reads, variables, includes, new), including nested positions
+  such as call arguments, operands, assignment right-hand sides and if/while
+  conditions. Deliberately skips @ located inside an echo statement. Does not
+  resolve function identity, types, or whether the failure is handled
   elsewhere.
 rule:
   pattern: '@$CALL'
-  inside:
-    kind: expression_statement
-    stopBy: end
+  not:
+    inside:
+      kind: echo_statement
+      stopBy: end
 metadata:
-  rule_modified_at: '2026-11-18'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-15'
+  rule_modified_at: '2026-11-23'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-23'
   created_at: '2026-10-15'
   source: 'MyGuard'
   modified_by: MyGuard
   license: MyGuard Internal Use License 1.0
-  todo_cases:
-    - "<?php if ( @mkdir( $d ) ) { $x = 1; }"

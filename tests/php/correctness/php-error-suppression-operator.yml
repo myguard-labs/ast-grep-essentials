@@ -3,9 +3,21 @@ valid:
   - '<?php $ok = is_dir( $path );'
   - '<?php if ( is_dir( $path ) ) { $x = 1; }'
   - '<?php $m = ''user@example.com''; // @unlink( $m );'
+  - '<?php $m = ''user@example.com'';'
+  - |-
+    <?php // @unlink( $f );
+    $x = 1;
+  - '<?php $ok = is_dir('
+  - '<?php echo @foo();'
 invalid:
   - '<?php $ok = @is_dir( $path );'
   - '<?php @unlink( $f );'
   - '<?php $h = @fopen( $p, ''r'' );'
   - '<?php @$obj->prop;'
   - '<?php @include ''f.php'';'
+  - '<?php $v = @$arr[''key''];'
+  - '<?php process( @file_get_contents( $p ) );'
+  - '<?php \process( @file_get_contents( $p ) );'
+  - |-
+    <?php
+    use function process as process_alias; process_alias( @file_get_contents( $p ) );
