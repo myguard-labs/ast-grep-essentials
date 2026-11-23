@@ -1,34 +1,25 @@
 id: nginx-http-version-space-literal
 valid:
   - 'http_response_ver = "HTTP/1.1";'
-  - |-
-    const char *v = "HTTP/1.0 200 OK";
-  - |-
-    const char *v = "HTTP/2";
-  - |-
-    const char *v = "HTTP version mismatch";
-  - |-
-    const char *v = "HTTP 404 Not Found";
-  - |-
-    const char *v = "HTTP 500";
-  - |-
-    const char *v = "HTTP 10 retries";
+  - 'const char *v = "HTTP/1.0 200 OK";'
+  - 'const char *v = "HTTP/2";'
+  - 'const char *v = "HTTP version mismatch";'
+  - 'const char *v = "HTTP 404 Not Found";'
+  - 'const char *v = "HTTP 500";'
+  - 'const char *v = "HTTP 10 retries";'
+  - 'const wchar_t *t = L"HTTP/1.1";'
+  - 'const char *u = u8"HTTP 404 Not Found";'
+  - 'const char *v = u8"HTTP/2.0 200 OK";'
+  - 'const wchar_t *v = L"HTTP 1.1;'
 invalid:
   - 'http_response_ver = "HTTP 1.1";'
-  - |-
-    const char *v = "HTTP 1.0";
-  - |-
-    const char *v = "HTTP 2";
-  - |-
-    const char *v = "HTTP 1.1 200 OK";
-  - |-
-    const char *v = "HTTP 3";
-  - |-
-    const char *v = "HTTP 1.1";
-  - |-
-    const char *v = "HTTP 1.1\r\n";
-  - |-
-    const char *v = "HTTP 2\r\n";
+  - 'const char *v = "HTTP 1.0";'
+  - 'const char *v = "HTTP 2";'
+  - 'const char *v = "HTTP 1.1 200 OK";'
+  - 'const char *v = "HTTP 3";'
+  - 'const char *v = "HTTP 1.1";'
+  - 'const char *v = "HTTP 1.1\r\n";'
+  - 'const char *v = "HTTP 2\r\n";'
   - |-
     #include <stdio.h>
 
@@ -36,3 +27,7 @@ invalid:
         puts("HTTP 404 Not Found");
         puts("HTTP 1.1 200 OK");
     }
+  - 'const wchar_t *t = L"HTTP 1.1";'
+  - 'const char *u = u8"HTTP 2.0";'
+  - 'const char16_t *w = u"HTTP 3.0";'
+  - 'const wchar_t *v = L"HTTP 2";'

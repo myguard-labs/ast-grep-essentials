@@ -7,23 +7,19 @@ message: >-
   This string literal names an HTTP version with a space instead of a slash
   (for example "HTTP 1.1" instead of "HTTP/1.1").
 note: >-
-  Matches only string literals whose text begins with HTTP, a space and a
-  single digit that is not followed by another digit (so "HTTP 1.1", "HTTP 2"
-  and "HTTP 1.x" are reported). A multi-digit number such as
-  "HTTP 404 Not Found" or "HTTP 10 retries" is not reported. It is a purely
-  syntactic check and does not verify how the string is used at runtime.
+  Matches string literals, including L, u8, u and U prefixed ones, that
+  contain the word HTTP, a space and a single digit not followed by another
+  digit (so "HTTP 1.1", L"HTTP 2" and "protocol HTTP 1.x" are reported). A
+  multi-digit number such as "HTTP 404 Not Found" is not reported. It is a
+  purely syntactic check and does not verify how the string is used at
+  runtime.
 rule:
   kind: string_literal
-  regex: '^"HTTP [0-9]([^0-9]|$)'
+  regex: '^(L|u8|u|U)?"(.*[^A-Za-z0-9_])?HTTP [0-9]([^0-9].*)?"$'
 metadata:
-  known_false_positives: '`const char *s = "HTTP 4xx error";` is reported although it names a status class, not a version'
-  todo_cases:
-    - 'const char *s = "protocol HTTP 1.1";'
-    - 'const char *t = L"HTTP 1.1";'
-    - 'const char *u = u8"HTTP 1.1";'
-  rule_modified_at: '2026-10-16'
-  ast_grep_tested_version: 0.50.0
-  validated_at: '2026-10-16'
+  rule_modified_at: '2026-11-23'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-23'
   created_at: '2026-10-16'
   source: 'MyGuard'
   modified_by: MyGuard
