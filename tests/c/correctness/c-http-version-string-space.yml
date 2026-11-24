@@ -5,9 +5,20 @@ valid:
   - 'static const char *f(void) { return "HTTP/2"; }'
   - 'static const char *f(void) { return "HTTP/1.1 200 OK\r\n"; }'
   - 'static const char *f(void) { return "HTTP status"; }'
+  - >-
+    const char *http_response_ver(int major) { return major == 2 ? "HTTP/2.0" :
+    "HTTP/3.0"; }
+  - 'static const char *v = "http 1.1";'
+  - 'static const char *v = "HTTP version 1.1";'
+  - 'static const char *v = "HTTP 1.1;'
 invalid:
   - 'static const char *v = "HTTP 1.1";'
   - 'static const char *f(void) { return "HTTP 1.0"; }'
   - 'static const char *f(void) { return "HTTP 2"; }'
   - 'static const char *f(void) { return "HTTP 1.1 200 OK\r\n"; }'
   - 'static const char *v[] = { "HTTP 1.0", NULL };'
+  - >-
+    const char *http_response_ver(int major) { if (major == 2) { return "HTTP
+    2.0"; } return "HTTP 3.0"; }
+  - 'ngx_str_t proto = ngx_string("HTTP 3.0");'
+  - 'static const char *v = "HTTP 0";'
