@@ -50,6 +50,8 @@ jobs:
           python trusted/ci/validate_changed_rules.py
           --root candidate
       - name: Check changed rules meet fixture depth
+        # The trusted base checkout lacks this script until the PR adding it merges.
+        if: hashFiles('trusted/ci/check_fixture_depth.py') != ''
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: >-

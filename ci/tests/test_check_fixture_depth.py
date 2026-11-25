@@ -1,3 +1,4 @@
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -12,7 +13,9 @@ import check_fixture_depth as depth
 
 
 class CheckFixtureDepthTests(unittest.TestCase):
-    def make(self, root: Path, rule_id: str, valid: int, invalid: int, fixture: bool = True) -> str:
+    def make(
+        self, root: Path, rule_id: str, valid: int, invalid: int, fixture: bool = True
+    ) -> str:
         rule = root / f"rules/python/security/{rule_id}.yml"
         rule.parent.mkdir(parents=True, exist_ok=True)
         rule.write_text(f"id: {rule_id}\nlanguage: python\nrule: {{kind: call}}\n")
@@ -56,3 +59,60 @@ class CheckFixtureDepthTests(unittest.TestCase):
         ids = depth.load_grandfather()
         self.assertGreater(len(ids), 1000)
         self.assertNotIn("swift-cc-md5-sha1", ids)
+
+    def git_repo(self, root: Path, rule_id: str | None, file_id: str) -> str:
+        """Commit a base (rule file with rule_id, or none) and return its sha."""
+        env = [
+            "-c",
+            "user.name=t",
+            "-c",
+            "user.email=t@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+        ]
+        subprocess.run(["git", "init", "-q", str(root)], check=True)
+        if rule_id is not None:
+            self.make(root, file_id, 1, 1)
+        else:
+            (root / "README").write_text("x\n")
+        subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
+        subprocess.run(
+            ["git", "-C", str(root), *env, "commit", "-q", "-m", "base"], check=True
+        )
+        out = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return out.stdout.strip()
+
+    def test_new_rule_reusing_grandfathered_id_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            base = self.git_repo(root, None, "")
+            path = self.make(root, "py-old", 1, 1)
+            failures = depth.check(root, [path], frozenset(["py-old"]), base)
+            self.assertEqual(len(failures), 1)
+
+    def test_existing_rule_renamed_to_grandfathered_id_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            base = self.git_repo(root, "py-new", "py-new")
+            rule = root / "rules/python/security/py-new.yml"
+            rule.write_text("id: py-old\nlanguage: python\nrule: {kind: call}\n")
+            failures = depth.check(
+                root, ["rules/python/security/py-new.yml"], frozenset(["py-old"]), base
+            )
+            self.assertEqual(len(failures), 1)
+
+    def test_unchanged_id_grandfathered_existing_rule_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            base = self.git_repo(root, "py-old", "py-old")
+            rule = root / "rules/python/security/py-old.yml"
+            rule.write_text(rule.read_text() + "message: edited\n")
+            failures = depth.check(
+                root, ["rules/python/security/py-old.yml"], frozenset(["py-old"]), base
+            )
+            self.assertEqual(failures, [])

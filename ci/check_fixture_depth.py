@@ -4,6 +4,12 @@
 Mirrors the count part of the harness fixture-depth gate (issue #410). Rules
 listed in ``ci/fixture-depth-grandfather.txt`` are exempt; every other changed
 rule needs a mirrored fixture with at least MIN_CASES valid and invalid cases.
+
+The id is candidate-controlled, so with a base revision a rule is exempt only
+when the same rule path existed at the base with that same grandfathered id.
+A new rule file, or an existing file whose id was changed to a grandfathered
+one, gets no exemption. With explicit paths and no base the exemption keys on
+the candidate id alone (local use only; CI always passes a base).
 """
 
 from __future__ import annotations
@@ -40,11 +46,33 @@ def _load(path: Path) -> dict | None:
     return document if isinstance(document, dict) else None
 
 
-def depth_failure(root: Path, rule: PurePosixPath, grandfathered: frozenset[str]) -> str | None:
+def _rule_id(document: dict | None, rule: PurePosixPath) -> str:
+    return str(document.get("id")) if document and document.get("id") else rule.stem
+
+
+def _base_rule_id(root: Path, base: str, rule: PurePosixPath) -> str | None:
+    """Id of the rule at the base revision, or None when absent or unreadable."""
+    data = gate._base_blob(root, base, rule)  # pylint: disable=protected-access
+    if data is None:
+        return None
+    try:
+        document = yaml.safe_load(data)
+    except yaml.YAMLError:
+        return None
+    return _rule_id(document if isinstance(document, dict) else None, rule)
+
+
+def depth_failure(
+    root: Path,
+    rule: PurePosixPath,
+    grandfathered: frozenset[str],
+    base: str | None = None,
+) -> str | None:
     """Return the failure reason for one rule, or None when it passes."""
-    document = _load(root / rule)
-    rule_id = str(document.get("id")) if document and document.get("id") else rule.stem
-    if rule_id in grandfathered:
+    rule_id = _rule_id(_load(root / rule), rule)
+    if rule_id in grandfathered and (
+        base is None or _base_rule_id(root, base, rule) == rule_id
+    ):
         return None
     fixture_path = root / gate.mirrored_fixture(rule)
     if not fixture_path.is_file():
@@ -61,12 +89,17 @@ def depth_failure(root: Path, rule: PurePosixPath, grandfathered: frozenset[str]
     return "; ".join(reasons) or None
 
 
-def check(root: Path, paths: Sequence[str], grandfathered: frozenset[str]) -> list[str]:
+def check(
+    root: Path,
+    paths: Sequence[str],
+    grandfathered: frozenset[str],
+    base: str | None = None,
+) -> list[str]:
     failures = []
     for rule in gate.changed_rule_paths(root, paths):
         if not (root / rule).is_file():
             continue  # removed rule
-        reason = depth_failure(root, rule, grandfathered)
+        reason = depth_failure(root, rule, grandfathered, base)
         if reason:
             failures.append(f"{rule}: {reason}")
     return failures
@@ -75,7 +108,9 @@ def check(root: Path, paths: Sequence[str], grandfathered: frozenset[str]) -> li
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base", default=os.environ.get("BASE_SHA"))
-    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
+    parser.add_argument(
+        "--root", type=Path, default=Path(__file__).resolve().parents[1]
+    )
     parser.add_argument("--grandfather", type=Path, default=GRANDFATHER)
     parser.add_argument("paths", nargs="*")
     args = parser.parse_args()
@@ -84,7 +119,7 @@ def main() -> int:
     try:
         root = args.root.resolve(strict=True)
         paths = args.paths or gate.changed_paths(root, args.base)
-        failures = check(root, paths, load_grandfather(args.grandfather))
+        failures = check(root, paths, load_grandfather(args.grandfather), args.base)
     except (OSError, gate.ValidationError) as error:
         print(f"check-fixture-depth: {error}", file=sys.stderr)
         return 1
