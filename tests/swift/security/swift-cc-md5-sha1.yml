@@ -4,8 +4,14 @@ valid:
     CC_SHA256(bytes, length, &digest)
   - |
     let size = Int(CC_MD5_DIGEST_LENGTH)
+  - |
+    CC_SHA512(bytes, length, &digest)
 invalid:
   - |
     CC_MD5(bytes, length, &digest)
   - |
     CC_SHA1(bytes, length, &digest)
+  - |
+    let r = CC_MD5(data.bytes, CC_LONG(data.count), &digest)
+  - |
+    _ = CC_SHA1(ptr, len, &out)
