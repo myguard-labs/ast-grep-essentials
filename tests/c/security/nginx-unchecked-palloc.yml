@@ -18,6 +18,9 @@ valid:
 - void f(void) { p = ngx_pcalloc(pool, size); q = ngx_palloc(pool, size); if (p == NULL || q == NULL) { return NGX_ERROR; } }
 - void f(void) { ngx_str_t *p = ngx_pcalloc(pool, size); q = ngx_palloc(pool, size); if (!p || !q) { return NGX_ERROR; } }
 - void f(void) { ngx_str_t *p = (ngx_str_t *) ngx_pcalloc(pool, size); q = (u_char *) ngx_pnalloc(pool, n + 1); if (!p || q == NULL) { return NGX_ERROR; } }
+- void f(void) { p = ngx_palloc(pool, size); if ((p == NULL)) { return NGX_ERROR; } }
+- void f(void) { p = ngx_palloc(pool, size); if (ready && (p == NULL || !q)) { return NGX_ERROR; } }
+- void f(void) { if (ready || !(p = ngx_palloc(pool, size))) { return NGX_ERROR; } }
 invalid:
 - void f(void) { ngx_palloc(pool, size); }
 - void f(void) { ngx_pnalloc(pool, size); }
@@ -44,3 +47,8 @@ invalid:
 - void f(void) { p = ngx_palloc(pool, size); q = ngx_palloc(pool, p->len); if (!p || !q) { return NGX_ERROR; } }
 - void f(void) { ngx_str_t *p = ngx_palloc(pool, size); ngx_str_t *q = ngx_palloc(pool, p->len); if (!p || !q) { return NGX_ERROR; } }
 - void f(void) { p = ngx_palloc(pool, size); p->next = ngx_palloc(pool, size); if (!p || !p->next) { return NGX_ERROR; } }
+- void f(void) { p = ngx_palloc(pool, size); if (sizeof(p == NULL)) { p->len = 0; } }
+- void f(void) { p = ngx_palloc(pool, size); if (!(p == NULL)) { p->len = 0; } }
+- void f(void) { p = ngx_palloc(pool, size); if (f(p == NULL)) { p->len = 0; } }
+- void f(void) { ngx_str_t *p = ngx_palloc(pool, size); if (sizeof(p == NULL)) { p->len = 0; } }
+- void f(void) { if (f((p = ngx_palloc(pool, size)) == NULL)) { return NGX_ERROR; } }

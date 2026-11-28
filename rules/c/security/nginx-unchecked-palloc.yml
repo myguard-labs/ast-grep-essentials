@@ -15,7 +15,8 @@ note: >-
   allocation statements, the first other statement after the run is an `if`)
   whose condition contains `!p`,
   `p == NULL` or `NULL == p` for that same lvalue (also as one operand of `||`
-  or `&&`). A call inside an `if` condition is skipped when it is assigned
+  or `&&`, through parentheses only; a comparison nested under a call,
+  `sizeof`, `!(...)`, a comma or any other operator does not count). A call inside an `if` condition is skipped when it is assigned
   within `(p = ngx_palloc(...)) == NULL`, `NULL == (p = ...)` or
   `!(p = ...)`. Not recognised, so these are still reported: a check that is
   not the immediately following statement (another non-allocation statement
@@ -104,10 +105,22 @@ rule:
                           has:
                             field: condition
                             stopBy: end
-                            any:
-                              - pattern: '$L == NULL'
-                              - pattern: 'NULL == $L'
-                              - pattern: '!$L'
+                            all:
+                              - any:
+                                  - pattern: '$L == NULL'
+                                  - pattern: 'NULL == $L'
+                                  - pattern: '!$L'
+                              - inside:
+                                  stopBy:
+                                    not:
+                                      any:
+                                        - kind: parenthesized_expression
+                                        - kind: binary_expression
+                                          has:
+                                            field: operator
+                                            regex: '^(\|\||&&)$'
+                                  kind: if_statement
+                                  field: condition
           - inside:
               stopBy:
                 not:
@@ -182,10 +195,22 @@ rule:
                           has:
                             field: condition
                             stopBy: end
-                            any:
-                              - pattern: '$L == NULL'
-                              - pattern: 'NULL == $L'
-                              - pattern: '!$L'
+                            all:
+                              - any:
+                                  - pattern: '$L == NULL'
+                                  - pattern: 'NULL == $L'
+                                  - pattern: '!$L'
+                              - inside:
+                                  stopBy:
+                                    not:
+                                      any:
+                                        - kind: parenthesized_expression
+                                        - kind: binary_expression
+                                          has:
+                                            field: operator
+                                            regex: '^(\|\||&&)$'
+                                  kind: if_statement
+                                  field: condition
           - inside:
               stopBy:
                 not:
@@ -200,11 +225,16 @@ rule:
                     - pattern: 'NULL == $_'
                     - pattern: '!$_'
                   inside:
-                    stopBy: end
-                    kind: parenthesized_expression
-                    inside:
-                      kind: if_statement
-                      field: condition
+                    stopBy:
+                      not:
+                        any:
+                          - kind: parenthesized_expression
+                          - kind: binary_expression
+                            has:
+                              field: operator
+                              regex: '^(\|\||&&)$'
+                    kind: if_statement
+                    field: condition
 metadata:
   rule_modified_at: '2026-11-28'
   ast_grep_tested_version: 0.51.3
