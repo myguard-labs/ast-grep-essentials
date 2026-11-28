@@ -12,7 +12,9 @@ note: >-
   Candidate only. A call is skipped when its result (a plain call or one
   behind a cast) is assigned to an lvalue or initialises a declaration and the
   next sibling statement is an `if` (or, for a run of consecutive plain
-  allocation statements, the first other statement after the run is an `if`)
+  allocation statements, the first other statement after the run is an `if`;
+  a statement in the run that uses the same lvalue, such as `q = ngx_palloc(pool, p->len)`,
+  disqualifies the run, so the call is reported)
   whose condition contains `!p`,
   `p == NULL` or `NULL == p` for that same lvalue (also as one operand of `||`
   or `&&`, through parentheses only; a comparison nested under a call,
@@ -21,9 +23,13 @@ note: >-
   `!(p = ...)`. Not recognised, so these are still reported: a check that is
   not the immediately following statement (another non-allocation statement
   or a comment between, or a check in a later or unrelated block), `p != NULL` or a bare
-  truthiness test as the guard, a chained `a = p = ngx_palloc(...)`, the call
+  truthiness test as the guard, a parenthesized call `p = (ngx_palloc(...))`
+  (reported even when guarded, only a cast is looked through), a chained `a = p = ngx_palloc(...)`, the call
   passed to another function or returned, and a goto/return label guard
-  placed away from the allocation. The rule does not prove that the guard
+  placed away from the allocation. For a declaration the checked name is the
+  declarator name, so pointer-to-array and array declarators (`char (*p)[n]`,
+  `u_char *p[n]`) are matched on `p`, never on an array dimension; a guard on
+  the dimension is reported. The rule does not prove that the guard
   returns or that the pointer is unused on the failure path.
 rule:
   all:
