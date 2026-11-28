@@ -10,6 +10,26 @@ snapshots:
       style: secondary
       start: 27
       end: 37
+  "void f(void) { consume(p = (u_char *) ngx_pnalloc(pool, size)); if (p == NULL) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_pnalloc(pool, size)
+      style: primary
+      start: 38
+      end: 61
+    - source: ngx_pnalloc
+      style: secondary
+      start: 38
+      end: 49
+  "void f(void) { consume(p = ngx_palloc(pool, size)); if (!p) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 27
+      end: 49
+    - source: ngx_palloc
+      style: secondary
+      start: 27
+      end: 37
   "void f(void) { if ((q = ngx_palloc(pool, size)) == NULL) { return NGX_ERROR; } p = ngx_palloc(pool, size); p->len = 0; }":
     labels:
     - source: ngx_palloc(pool, size)
@@ -40,6 +60,16 @@ snapshots:
       style: secondary
       start: 37
       end: 47
+  "void f(void) { int n = consume(p = ngx_palloc(pool, size)); if (!p) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 35
+      end: 57
+    - source: ngx_palloc
+      style: secondary
+      start: 35
+      end: 45
   "void f(void) { ngx_palloc(pool, size); }":
     labels:
     - source: ngx_palloc(pool, size)
@@ -71,6 +101,16 @@ snapshots:
       start: 15
       end: 26
   "void f(void) { ngx_str_t *p = ngx_palloc(pool, size); if (!q) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 30
+      end: 52
+    - source: ngx_palloc
+      style: secondary
+      start: 30
+      end: 40
+  "void f(void) { ngx_str_t *p = ngx_palloc(pool, size); ngx_str_t *q = ngx_palloc(pool, p->len); if (!p || !q) { return NGX_ERROR; } }":
     labels:
     - source: ngx_palloc(pool, size)
       style: primary
@@ -121,6 +161,26 @@ snapshots:
       start: 19
       end: 29
   "void f(void) { p = ngx_palloc(pool, size); p->len = size; }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 19
+      end: 41
+    - source: ngx_palloc
+      style: secondary
+      start: 19
+      end: 29
+  "void f(void) { p = ngx_palloc(pool, size); p->next = ngx_palloc(pool, size); if (!p || !p->next) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 19
+      end: 41
+    - source: ngx_palloc
+      style: secondary
+      start: 19
+      end: 29
+  "void f(void) { p = ngx_palloc(pool, size); q = ngx_palloc(pool, p->len); if (!p || !q) { return NGX_ERROR; } }":
     labels:
     - source: ngx_palloc(pool, size)
       style: primary

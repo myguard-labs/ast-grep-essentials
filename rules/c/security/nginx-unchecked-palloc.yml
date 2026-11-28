@@ -11,8 +11,8 @@ message: >-
 note: >-
   Candidate only. A call is skipped when its result (a plain call or one
   behind a cast) is assigned to an lvalue or initialises a declaration and the
-  next sibling statement is an `if` (or, for a run of consecutive allocation
-  statements, the first non-allocation statement after the run is an `if`)
+  next sibling statement is an `if` (or, for a run of consecutive plain
+  allocation statements, the first other statement after the run is an `if`)
   whose condition contains `!p`,
   `p == NULL` or `NULL == p` for that same lvalue (also as one operand of `||`
   or `&&`). A call inside an `if` condition is skipped when it is assigned
@@ -44,32 +44,70 @@ rule:
                     pattern: '$L'
                 - inside:
                     kind: expression_statement
-                    precedes:
-                      stopBy:
-                        not:
-                          any:
-                            - kind: expression_statement
-                              has:
-                                stopBy: end
-                                kind: call_expression
-                                has:
-                                  field: function
-                                  regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
-                            - kind: declaration
-                              has:
-                                stopBy: end
-                                kind: call_expression
-                                has:
-                                  field: function
-                                  regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
-                      kind: if_statement
-                      has:
-                        field: condition
-                        stopBy: end
-                        any:
-                          - pattern: '$L == NULL'
-                          - pattern: 'NULL == $L'
-                          - pattern: '!$L'
+                    all:
+                      - not:
+                          precedes:
+                            stopBy:
+                              kind: if_statement
+                            all:
+                              - any:
+                                  - kind: expression_statement
+                                  - kind: declaration
+                              - has:
+                                  stopBy: end
+                                  kind: call_expression
+                                  has:
+                                    field: function
+                                    regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                              - has:
+                                  stopBy: end
+                                  pattern: '$L'
+                      - precedes:
+                          stopBy:
+                            not:
+                              any:
+                                - kind: expression_statement
+                                  has:
+                                    kind: assignment_expression
+                                    has:
+                                      field: right
+                                      any:
+                                        - kind: call_expression
+                                          has:
+                                            field: function
+                                            regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                                        - kind: cast_expression
+                                          has:
+                                            field: value
+                                            kind: call_expression
+                                            has:
+                                              field: function
+                                              regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                                - kind: declaration
+                                  has:
+                                    kind: init_declarator
+                                    has:
+                                      field: value
+                                      any:
+                                        - kind: call_expression
+                                          has:
+                                            field: function
+                                            regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                                        - kind: cast_expression
+                                          has:
+                                            field: value
+                                            kind: call_expression
+                                            has:
+                                              field: function
+                                              regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                          kind: if_statement
+                          has:
+                            field: condition
+                            stopBy: end
+                            any:
+                              - pattern: '$L == NULL'
+                              - pattern: 'NULL == $L'
+                              - pattern: '!$L'
           - inside:
               stopBy:
                 not:
@@ -84,32 +122,70 @@ rule:
                     pattern: '$L'
                 - inside:
                     kind: declaration
-                    precedes:
-                      stopBy:
-                        not:
-                          any:
-                            - kind: expression_statement
-                              has:
-                                stopBy: end
-                                kind: call_expression
-                                has:
-                                  field: function
-                                  regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
-                            - kind: declaration
-                              has:
-                                stopBy: end
-                                kind: call_expression
-                                has:
-                                  field: function
-                                  regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
-                      kind: if_statement
-                      has:
-                        field: condition
-                        stopBy: end
-                        any:
-                          - pattern: '$L == NULL'
-                          - pattern: 'NULL == $L'
-                          - pattern: '!$L'
+                    all:
+                      - not:
+                          precedes:
+                            stopBy:
+                              kind: if_statement
+                            all:
+                              - any:
+                                  - kind: expression_statement
+                                  - kind: declaration
+                              - has:
+                                  stopBy: end
+                                  kind: call_expression
+                                  has:
+                                    field: function
+                                    regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                              - has:
+                                  stopBy: end
+                                  pattern: '$L'
+                      - precedes:
+                          stopBy:
+                            not:
+                              any:
+                                - kind: expression_statement
+                                  has:
+                                    kind: assignment_expression
+                                    has:
+                                      field: right
+                                      any:
+                                        - kind: call_expression
+                                          has:
+                                            field: function
+                                            regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                                        - kind: cast_expression
+                                          has:
+                                            field: value
+                                            kind: call_expression
+                                            has:
+                                              field: function
+                                              regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                                - kind: declaration
+                                  has:
+                                    kind: init_declarator
+                                    has:
+                                      field: value
+                                      any:
+                                        - kind: call_expression
+                                          has:
+                                            field: function
+                                            regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                                        - kind: cast_expression
+                                          has:
+                                            field: value
+                                            kind: call_expression
+                                            has:
+                                              field: function
+                                              regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                          kind: if_statement
+                          has:
+                            field: condition
+                            stopBy: end
+                            any:
+                              - pattern: '$L == NULL'
+                              - pattern: 'NULL == $L'
+                              - pattern: '!$L'
           - inside:
               stopBy:
                 not:
