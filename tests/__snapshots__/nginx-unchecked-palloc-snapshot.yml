@@ -1,6 +1,46 @@
 id: nginx-unchecked-palloc
 snapshots:
-  void f(void) { ngx_palloc(pool, size); }:
+  "void f(void) { bad = ((p = ngx_palloc(pool, size)) == NULL); p->len = 0; }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 27
+      end: 49
+    - source: ngx_palloc
+      style: secondary
+      start: 27
+      end: 37
+  "void f(void) { if ((q = ngx_palloc(pool, size)) == NULL) { return NGX_ERROR; } p = ngx_palloc(pool, size); p->len = 0; }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 83
+      end: 105
+    - source: ngx_palloc
+      style: secondary
+      start: 83
+      end: 93
+  "void f(void) { if (ready) { p = ngx_palloc(pool, size); } if (p == NULL) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 32
+      end: 54
+    - source: ngx_palloc
+      style: secondary
+      start: 32
+      end: 42
+  "void f(void) { if (ready) { use((p = ngx_palloc(pool, size)) == NULL); } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 37
+      end: 59
+    - source: ngx_palloc
+      style: secondary
+      start: 37
+      end: 47
+  "void f(void) { ngx_palloc(pool, size); }":
     labels:
     - source: ngx_palloc(pool, size)
       style: primary
@@ -10,7 +50,7 @@ snapshots:
       style: secondary
       start: 15
       end: 25
-  void f(void) { ngx_pcalloc(pool, size); }:
+  "void f(void) { ngx_pcalloc(pool, size); }":
     labels:
     - source: ngx_pcalloc(pool, size)
       style: primary
@@ -20,7 +60,7 @@ snapshots:
       style: secondary
       start: 15
       end: 26
-  void f(void) { ngx_pnalloc(pool, size); }:
+  "void f(void) { ngx_pnalloc(pool, size); }":
     labels:
     - source: ngx_pnalloc(pool, size)
       style: primary
@@ -30,3 +70,123 @@ snapshots:
       style: secondary
       start: 15
       end: 26
+  "void f(void) { ngx_str_t *p = ngx_palloc(pool, size); if (!q) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 30
+      end: 52
+    - source: ngx_palloc
+      style: secondary
+      start: 30
+      end: 40
+  "void f(void) { ngx_str_t *p = ngx_palloc(pool, size); p->len = size; }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 30
+      end: 52
+    - source: ngx_palloc
+      style: secondary
+      start: 30
+      end: 40
+  "void f(void) { ngx_str_t *p = ngx_palloc(pool, size); use(p); if (p == NULL) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 30
+      end: 52
+    - source: ngx_palloc
+      style: secondary
+      start: 30
+      end: 40
+  "void f(void) { p = ngx_palloc(pool, size); /* check */ if (p == NULL) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 19
+      end: 41
+    - source: ngx_palloc
+      style: secondary
+      start: 19
+      end: 29
+  "void f(void) { p = ngx_palloc(pool, size); if (q == NULL) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 19
+      end: 41
+    - source: ngx_palloc
+      style: secondary
+      start: 19
+      end: 29
+  "void f(void) { p = ngx_palloc(pool, size); p->len = size; }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 19
+      end: 41
+    - source: ngx_palloc
+      style: secondary
+      start: 19
+      end: 29
+  "void f(void) { p = ngx_palloc(pool, size); use(p); if (p == NULL) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 19
+      end: 41
+    - source: ngx_palloc
+      style: secondary
+      start: 19
+      end: 29
+  "void f(void) { p = ngx_palloc(pool, size); use(p); { if (p == NULL) { return NGX_ERROR; } } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 19
+      end: 41
+    - source: ngx_palloc
+      style: secondary
+      start: 19
+      end: 29
+  "void f(void) { p = ngx_pcalloc(pool, size); if (p->len == 0) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_pcalloc(pool, size)
+      style: primary
+      start: 19
+      end: 42
+    - source: ngx_pcalloc
+      style: secondary
+      start: 19
+      end: 30
+  "void f(void) { p = ngx_pcalloc(pool, size); q = ngx_palloc(pool, size); if (q == NULL) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_pcalloc(pool, size)
+      style: primary
+      start: 19
+      end: 42
+    - source: ngx_pcalloc
+      style: secondary
+      start: 19
+      end: 30
+  "void f(void) { p = ngx_pcalloc(pool, size); q = ngx_palloc(pool, size); use(q); if (p == NULL || q == NULL) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_pcalloc(pool, size)
+      style: primary
+      start: 19
+      end: 42
+    - source: ngx_pcalloc
+      style: secondary
+      start: 19
+      end: 30
+  "void f(void) { p = wrap(ngx_palloc(pool, size)); if (p == NULL) { return NGX_ERROR; } }":
+    labels:
+    - source: ngx_palloc(pool, size)
+      style: primary
+      start: 24
+      end: 46
+    - source: ngx_palloc
+      style: secondary
+      start: 24
+      end: 34

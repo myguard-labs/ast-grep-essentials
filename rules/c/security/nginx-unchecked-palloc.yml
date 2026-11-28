@@ -4,21 +4,135 @@ id: nginx-unchecked-palloc
 language: c
 severity: info
 message: >-
-  Pool allocation site — verify the result is NULL-checked before use.
-  ngx_palloc/ngx_pnalloc/ngx_pcalloc return NULL on failure; dereferencing the
-  result without `if (p == NULL) return NGX_ERROR;` (or
-  NGX_HTTP_INTERNAL_SERVER_ERROR) is a NULL-deref crash under memory pressure.
+  Pool allocation without a NULL check in the next statement.
+  ngx_palloc/ngx_pnalloc/ngx_pcalloc return NULL on failure, so using the
+  result without a check like `if (p == NULL) return NGX_ERROR;` can
+  dereference NULL when memory is low.
 note: >-
-  Candidate only — this flags every pool-alloc call, it does NOT prove the guard
-  is missing. The reviewer confirms whether a NULL check follows. Encoding the
-  guard structurally is unreliable (declaration-init vs assignment, return/goto
-  guards), so verification is left to the model pass.
+  Candidate only. A call is skipped when its result (a plain call or one
+  behind a cast) is assigned to an lvalue or initialises a declaration and the
+  next sibling statement is an `if` (or, for a run of consecutive allocation
+  statements, the first non-allocation statement after the run is an `if`)
+  whose condition contains `!p`,
+  `p == NULL` or `NULL == p` for that same lvalue (also as one operand of `||`
+  or `&&`). A call inside an `if` condition is skipped when it is assigned
+  within `(p = ngx_palloc(...)) == NULL`, `NULL == (p = ...)` or
+  `!(p = ...)`. Not recognised, so these are still reported: a check that is
+  not the immediately following statement (another non-allocation statement
+  or a comment between, or a check in a later or unrelated block), `p != NULL` or a bare
+  truthiness test as the guard, a chained `a = p = ngx_palloc(...)`, the call
+  passed to another function or returned, and a goto/return label guard
+  placed away from the allocation. The rule does not prove that the guard
+  returns or that the pointer is unused on the failure path.
 rule:
-  kind: call_expression
-  has:
-    field: function
-    regex: ^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+    - not:
+        any:
+          - inside:
+              stopBy:
+                not:
+                  kind: cast_expression
+              kind: assignment_expression
+              field: right
+              all:
+                - has:
+                    field: left
+                    pattern: '$L'
+                - inside:
+                    kind: expression_statement
+                    precedes:
+                      stopBy:
+                        not:
+                          any:
+                            - kind: expression_statement
+                              has:
+                                stopBy: end
+                                kind: call_expression
+                                has:
+                                  field: function
+                                  regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                            - kind: declaration
+                              has:
+                                stopBy: end
+                                kind: call_expression
+                                has:
+                                  field: function
+                                  regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                      kind: if_statement
+                      has:
+                        field: condition
+                        stopBy: end
+                        any:
+                          - pattern: '$L == NULL'
+                          - pattern: 'NULL == $L'
+                          - pattern: '!$L'
+          - inside:
+              stopBy:
+                not:
+                  kind: cast_expression
+              kind: init_declarator
+              field: value
+              all:
+                - has:
+                    field: declarator
+                    stopBy: end
+                    kind: identifier
+                    pattern: '$L'
+                - inside:
+                    kind: declaration
+                    precedes:
+                      stopBy:
+                        not:
+                          any:
+                            - kind: expression_statement
+                              has:
+                                stopBy: end
+                                kind: call_expression
+                                has:
+                                  field: function
+                                  regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                            - kind: declaration
+                              has:
+                                stopBy: end
+                                kind: call_expression
+                                has:
+                                  field: function
+                                  regex: '^(ngx_palloc|ngx_pnalloc|ngx_pcalloc)$'
+                      kind: if_statement
+                      has:
+                        field: condition
+                        stopBy: end
+                        any:
+                          - pattern: '$L == NULL'
+                          - pattern: 'NULL == $L'
+                          - pattern: '!$L'
+          - inside:
+              stopBy:
+                not:
+                  kind: cast_expression
+              kind: assignment_expression
+              field: right
+              inside:
+                kind: parenthesized_expression
+                inside:
+                  any:
+                    - pattern: '$_ == NULL'
+                    - pattern: 'NULL == $_'
+                    - pattern: '!$_'
+                  inside:
+                    stopBy: end
+                    kind: parenthesized_expression
+                    inside:
+                      kind: if_statement
+                      field: condition
 metadata:
+  rule_modified_at: '2026-11-28'
+  ast_grep_tested_version: 0.51.3
+  validated_at: '2026-11-28'
   created_at: '2026-09-04'
   source: 'MyGuard'
   modified_by: 'MyGuard'
